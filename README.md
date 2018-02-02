@@ -1,4 +1,4 @@
-# captk
+# CaPTk
 Cancer Imaging Phenomics Toolkit
 
 
