@@ -1,4 +1,4 @@
-# CaPTk
+# CaPTk:
 
 <u>Ca</u>ncer Imaging <u>P</u>henomics <u>T</u>ool<u>k</u>it
 
