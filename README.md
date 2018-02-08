@@ -9,8 +9,7 @@ CaPTk is developed and maintained by the <a href="https://www.cbica.upenn.edu/">
 For more details, please visit us at https://www.med.upenn.edu/cbica/captk
 
 ## Supporting Grant
-This work is in part supported by the NIH/NCI/ITCR* grant U24-CA189523.
-* National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research
+This work is in part supported by the grant U24-CA189523, awarded by the National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research (NIH/NCI/ITCR).
 
 ## Disclaimer
 - The software has been designed for research purposes only and has neither been reviewed nor approved for clinical use by the Food and Drug Administration (FDA) or by any other federal/state agency.
