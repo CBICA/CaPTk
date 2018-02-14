@@ -1,0 +1,9 @@
+/**
+
+\page Changelog Changelog
+
+Version 1.0.0 (insert current date here)
+<ul>
+<li>First public release of SBRT_Lung.</li>
+</ul>
+*/

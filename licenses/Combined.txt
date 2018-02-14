@@ -1,0 +1,9 @@
+By installing the Cancer and Phenomics Toolkit (CaPTk), the user agrees to the following licenses, which pertain to the code and its different constituents:
+
+1. SBIA Software License - https://www.med.upenn.edu/sbia/software-agreement.html
+2. SBIA Non-Commercial Software License - https://www.med.upenn.edu/sbia/software-agreement-non-commercial.html
+3. Insight Toolkit License - https://cmake.org/Wiki/ITK/License_Information
+4. Visualization Toolkit License - http://www.vtk.org/licensing/
+5. Qt Open Source License - https://doc.qt.io/qt-4.8/opensourceedition.html
+6. CC Attribution-ShareAlike for SRI24 data - https://creativecommons.org/licenses/by-sa/3.0/us/legalcode 
+7. MRIcroGL License - BSD

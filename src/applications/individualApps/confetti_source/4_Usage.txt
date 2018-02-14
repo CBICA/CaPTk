@@ -1,0 +1,10 @@
+/**
+
+\page Usage Usage
+For commandline version 
+1)Genrate Connectivity: Confetti -g -d <dataDir(ProbtrackX)> -i <indexFile(GM ROIs)> -f <fiberFile(Bfloat)> -o <outputSignature(csv)>" << endl;
+2)Genrate Cluster: Confetti -c -s <signatureFile(csv)> -t <templateDir(Alp,Pr)> -o <outputClusterIDs(csv)>" << endl;
+3)Extract Tracks: Confetti -e -f <fiberFile(Bfloat)> -t <templateDir(tract ids, names)> -l <labelClusterIDs(csv)> -o <outputDir>" << endl;
+
+
+*/

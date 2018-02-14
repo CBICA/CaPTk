@@ -1,0 +1,123 @@
+..
+  Computational Breast Imaging Group
+  Department of Radiology
+  University of Pennsylvania
+  Richards Building
+  3700 Hamilton Walk, 7th floor
+  Philadelphia, PA 19104
+
+  Web:   http://www.uphs.upenn.edu/radiology/research/labs/cbig/
+
+  Copyright (c) 2014-2016 University of Pennsylvania. All rights reserved.
+  See http://www.cbica.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+.. This file is formatted using reStructuredText (reST) and included by doc/changelog.rst !
+
+
+Changes
+=======
+
+.. _v1.0.4:
+
+Public Release 1.0.4 (Oct 14 2016 Expected)
+------------------------------------
+- Improved air theshold estimation and overall breast segmentation.
+- Made the density estimation robust against markers, clips and calcifications that are of high intensity in mammograms.
+
+.. _v1.0.3:
+
+Public Release 1.0.3 (Dec 23rd 2015)
+------------------------------------
+- Improved the training of the SVM models for GE mammograms hence more reliable density segmentation in low density breasts.
+
+
+.. _v1.0.2:
+
+Public Release 1.0.2 (Dec 1st 2015)
+-----------------------------------
+
+- Improved stability of airtheshold estimation in breast segmentation.
+- Addressed failure in breast segmentation when spacing paddles present.
+- Re-implemented fuzzy-cmean clustering.
+- And other bug fixes.
+
+.. _v1.0.1:
+
+Public Release 1.0.1 (Nov 23rd 2015)
+------------------------------------
+
+- More robust against variations in dicom header.
+- Removed age as a hard requirement of the dicom.
+- And other bug fixes.
+
+.. _v1.0.0:
+
+Public Release 1.0.0 (Oct 31st 2014)
+------------------------------------
+
+- First stable public release.
+- Improved the run-time speed by sub-sampling the image histogram using its CDF.
+- Added regression tests in libra_demo.m and a ground truth mat file in Sample_Data/.
+- Added a libra_version.m for versioning purpose.
+- Added a libra_compile.m for binary compilation.
+- Added a unified libra.m that works on one dicom and multiple dicoms in one input directory. (Spinned off from libra_batchProcessing.m)
+- Merged the GUI into libra.m and greatly enhanced functionality and usability of the GUI. 
+- No longer supports output breast mask in nifti format.
+- Fixed the aspect ratio of the output jpg images.
+
+.. pre-release_v1.5.0:
+
+Pre-release 1.5.0:
+------------------
+
+- Updated SVM models.
+- Added a GUI and files.
+- Added package "dicom_readwrite" to ensure version compatibility with Matlab R2013b,
+- Modified training model selection process, so that raw/processed model selection is de-coupled from the manufacturer choice selection
+- Updated readme file to include biblographic information.
+- Moved imaging physic checks from libra_batchProcessing to Code/libra_exper.m.
+- Added a startup script.
+- Removed modelDir from input argument.
+
+.. pre-release_v1.4.3:
+
+Pre-release 1.4.3:
+------------------
+
+- Added package "dcm2nii" to enable nifti breast mask output,
+- Added complete breast estimation numbers into output mat file,
+- Added output file checking in batchProcessing script to skip those already processed images in the same output directory.
+- Added an user-input option saveIntermediate to save additional figures or not,
+- Enhanced laterality checking,
+- Enhanced testing/demo in SCRIPT_2_Get_Breast_Density.m.
+
+.. pre-release_v1.4.2:
+
+Pre-release 1.4.2:
+------------------
+
+- Added software SVN information (svn properties) to codes,
+- Applied a Gaussian smoothing on the full-image histogram to be more adaptive on thresholding air-breast boundary, and increased the airthreshold cutoff to 0.05 in Code/con_breast2c.m.
+- Fixed the cutting-from-the-middle problem. 
+
+.. pre-release_v1.4.1:
+
+Pre-release 1.4.1:
+------------------
+
+- Added a batch processing script: libra_batchProcessing.m. It loops through a folder to collect all DICOM images to process, checks if the necessary header information exist,
+- Added a Readme documentation,
+- Added the Sample_data for testing purpose,
+- Added a sub-function to print out the imaging physics information from the DICOM header into a SkippedImg.csv for debugging purpose,
+- Fixed the Left-Right flipping bug. Now the program will determin what DICOM needs to be flipped properly. It used to flipped incorrectly the HOLOGIC images. Now the right breast will be flipped to the left and horizontal flipped left breast, which appears on the right, will be flipped as well.
+
+.. pre-release_v1.4.0:
+
+Pre-release 1.4.0:
+------------------
+
+- Fixed the air-breast boundary segmentation problem,
+- Added image vendor checking mechanisms to choose the right SVM model and functions to use for each image, therefore it is not necessary to choose the corresponding SVM model,
+- Minor change in output text file format from tab separated to comma separated,
+- Minor change in the libra_exper.m so that it can be given with any output directory and thus enhances the portability. 

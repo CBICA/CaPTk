@@ -1,0 +1,21 @@
+FeatureName,ParamName,Type,Range,Default,Comments
+Intensity,,,,,
+Morphologic,Axis,string,[z:x:y],z,Combo box showing 2d/3d values allows to select one 
+Morphologic,Dimension,int,[2D:3D],3D,For calculating 2d slice or 3d volume features
+Volumetric,Dimension,int,[2D:3D],3D,For calculating 2d slice or 3d volume features
+Volumetric,Axis,string,[z:x:y],z,Combo box showing 2d/3d values allows to select one 
+LBP2D,Radius,Int,(1:9),2,Radius around the center voxel
+LBP2D,Neighborhood,Int,[2:4:8],8,Neighborhood value to select
+GLCM,Bins,int,,10,
+GLCM,Directions,int,3:13,13,The number of directions around the center voxel to calculate features on
+GLCM,Radius,int,(1:9),2,Radius around the center voxel
+GLCM,Offset,string,[Individual:Average],Average,Either individual offset values or averaged
+GLCM,Dimension,string,[2D:3D],3D,For calculating 2D slice or full 3D volume features
+GLCM,Axis,string,[z:x:y],z,The axis for which the 2D slice computation is to be done
+GLRLM,Bins,int,,10,
+GLRLM,Directions,int,3:13,13,The number of directions around the center voxel to calculate features on
+GLRLM,Radius,int,(1:9),2,Radius around the center voxel
+GLRLM,Dimension,string,[2D:3D],3D,For calculating 2D slice or full 3D volume features
+GLRLM,Axis,string,[z:x:y],z,The axis for which the 2D slice computation is to be done
+GLRLM,Offset,string,[Individual:Average],Average,Either individual offset values or averaged
+GLRLM,Range,int,,1,The run length distance 
