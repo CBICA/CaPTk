@@ -1,0 +1,56 @@
+
+  Computational Breast Imaging Group
+  Department of Radiology
+  University of Pennsylvania
+  Richards Building
+  3700 Hamilton Walk, 7th floor
+  Philadelphia, PA 19104
+
+  Web:   http://www.uphs.upenn.edu/radiology/research/labs/cbig/
+
+  Copyright (c) 2014-2016 University of Pennsylvania. All rights reserved.
+  See http://www.cbica.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+INTRODUCTION
+============
+
+  This document lists the authors of this software and further people who
+  significantly contributed to it.
+
+  See the README and COPYING documents for general information,
+  acknowledgements of contributions other kind, and licensing.
+
+
+ADVISORS
+========
+
+- Despina Kontos, Ph.D.  Despina.Kontos@uphs.upenn.edu
+
+
+DEVELOPERS
+==========
+
+  The original authors of this software are:
+
+  - Brad M. Keller (algorithm)  Brad.Keller@uphs.upenn.edu
+  - Michael M.K. Hsieh (packaging/testing)  Meng-Kang.Hsieh@uphs.upenn.edu
+
+
+
+CONTRIBUTORS
+============
+
+  Listed below are the names of the ones who contributed notably to this software.
+
+  - Diane L. Nathan, M.D.
+  - Emily F. Conant, M.D.
+  - Bilwaj Gaonkar, Ph.D
+  - Jia Wu, Ph.D.
+  - Harini Eavani, Ph.D.c
+  - Aimilia Gastounioti, Ph.D.
+  - Dong Wei, Ph.D.
+  - Yan Wang, Ph.D.
+  - James C. Gee, Ph.D.
+  - Yuanjie Zheng, Ph.D.
+  
