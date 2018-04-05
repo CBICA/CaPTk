@@ -1,9 +1,0 @@
-/**
-
-\page Publications Publications
-
-Please cite the following publications when you use Geodesic Segmentation in your research:
-
- H. Li, M. Galperin-Aizenberg, D. Pryma, C. Simone, Y. Fan, “Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features”, The 2017 International Workshop on Pulmonary Imaging (Submitted)
-
-*/
