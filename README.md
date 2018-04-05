@@ -18,3 +18,14 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a> .
+
+## GitHub Distribution
+
+We currently provide only our tagged versions of the code via GitHub. Check the "tags" using your favorite Git client after cloning our repository. The analogous commands are as follows:
+
+```
+git clone https://github.com/cbica/captk.git
+latesttag=$(git describe --tags)
+echo checking out ${latesttag}
+git checkout ${latesttag}
+```
