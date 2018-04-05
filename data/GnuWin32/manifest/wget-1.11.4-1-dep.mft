@@ -1,0 +1,6 @@
+bin/libeay32.dll 
+bin/libiconv2.dll 
+bin/libintl3.dll 
+bin/libssl32.dll 
+manifest/wget-1.11.4-1-dep.mft
+manifest/wget-1.11.4-1-dep.ver 9e65e8f98e3a0bb89d0f83ebb4cea315

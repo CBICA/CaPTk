@@ -1,0 +1,31 @@
+
+
+
+The MathWorks, Inc.
+
+MCR (MATLAB COMPILER RUNTIME) LIBRARIES LICENSE
+ 
+IMPORTANT NOTICE
+BY CLICKING THE "YES" BUTTON BELOW, YOU ACCEPT THE TERMS OF THIS LICENSE.  IF YOU ARE NOT WILLING TO DO SO, SELECT THE "NO" BUTTON AND THE INSTALLATION WILL BE ABORTED.
+
+1. LICENSE GRANT.   Subject to the restrictions below, The MathWorks, Inc. ("MathWorks") hereby grants to you, whether you are an individual or an entity, a license to install and use the MATLAB Compiler Runtime Libraries ("MCR"), solely and expressly for the purpose of running software created with the MATLAB Compiler (the "Application Software"), and for no other purpose.  This license is personal, nonexclusive, and nontransferable. 
+ 
+2. LICENSE RESTRICTIONS.  You shall not modify or adapt the MCR for any reason.  You shall not disassemble, decompile, or reverse engineer the MCR.  You shall not alter or remove any proprietary or other legal notices on or in copies of the MCR. Unless used to run Application Software, you shall not rent, lease, or loan the MCR, time share the MCR, provide service bureau use, or use the MCR for supporting any other party's use of the MCR. You shall not sublicense, sell, or otherwise transfer the MCR to any third party. You shall not republish any documentation which may be provided in connection with the MCR.  All rights not granted, including without limitation rights to reproduce, sublicense, rent, sell, distribute, create derivative works, serve other software by means of, decompile, reverse engineer, and disassemble the MCR, are expressly reserved by MathWorks. 
+
+3. NO TECHNICAL SUPPORT.  Technical support is not provided by MathWorks for users of the MCR under this license.  MathWorks may, at its sole discretion, offer bug fixes or updates to the MCR.  
+
+4. TERM AND TERMINATION.  This license shall automatically terminate upon your failure to comply with this license. 
+
+5. EXPORT CONTROL.  The MCR may be subject to U.S. and non-U.S. export control laws and other applicable governmental export and import laws and regulations.  In exercising your rights under this license, you agree not to violate any such laws and regulations.  You also represent and warrant that (i) you are not located in a country that is subject to a U.S. Government embargo, or that has been designated by the U.S. Government as a "terrorist supporting" country; and (ii) you are not listed on any U.S. Government list of prohibited or restricted parties. 
+
+6. U.S. GOVERNMENT LICENSEES:  You agree that the MCR qualifies as commercial computer software or documentation as defined in the FAR and/or DFARS; that the terms and conditions of this MCR (MATLAB Compiler Runtime) LIBRARIES LICENSE shall govern your use, reproduction, performance, display, and disclosure of the MCR, superseding any inconsistent government provisions.  
+
+7. ASSIGNMENT.  You may not assign or otherwise transfer this license and its rights and obligations hereunder, in whole or in part. 
+
+8. LIMITATION OF LIABILITY.  To the extent permitted by law, any liability of MathWorks (whether in relation to breach of contract, negligence or otherwise) shall be limited to ten dollars ($10.00 USD); and MathWorks shall have no liability for any indirect or consequential loss (whether foreseeable or otherwise and including loss of profits, loss of business, loss of opportunity, and loss of use, or unauthorized use or access, of any computer hardware or software).  Some states do not allow the exclusion or limitation of incidental or consequential damages, so the above exclusion or limitation may not apply to you. MathWorks' liability for death or personal injury resulting from negligence or for any other matter in relation to which liability by law cannot be excluded or limited shall not be excluded or limited.  
+
+9. DISCLAIMER OF WARRANTIES.  The MCR is delivered "as is" and MathWorks makes and you receive no additional express or implied warranties.  MathWorks hereby expressly disclaims any and all other conditions, warranties, or other terms of any kind or nature concerning the MCR (including, without limitation, any with regard to noninfringement, merchantability, quality, accuracy, or fitness for a particular purpose or for your purpose).  MathWorks also expressly disclaims any warranties that may be implied from usage of trade, course of dealing, or course of performance.  
+
+10. GOVERNING LAW; JURISDICTION.  This license shall be governed by the laws of the Commonwealth of Massachusetts, United States of America, without regard to its conflicts of law provisions. Neither the U.N. Convention on Contracts for the International Sale of Goods nor the Uniform Computer Information Transactions Act, or any version thereof ("UCITA"), shall apply to this license. To the extent that UCITA is applicable, the parties agree to opt out of the applicability of UCITA. 
+
+11. ENTIRE AGREEMENT.  This license contains the entire understanding of the parties with respect to the MCR provided hereunder, and may not be modified or amended except by written instrument, executed by MathWorks and you.  This license shall not supersede any product license you have with MathWorks for the MATLAB Compiler. 

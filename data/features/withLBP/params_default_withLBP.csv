@@ -1,0 +1,34 @@
+FeatureName,ParamName,Type,Range,Default,Comments
+Intensity,,,,,
+Morphologic,Dimension,int,[2D:3D],3D,For calculating 2D slice or full 3D volume features
+Morphologic,Axis,string,[z:x:y],z,The axis for which the 2D slice computation is to be done
+Volumetric,Dimension,int,[2D:3D],3D,For calculating 2D slice or full 3D volume features
+Volumetric,Axis,string,[z:x:y],z,The axis for which the 2D slice computation is to be done
+Histogram,Bins,Int,,10,The number of bins to calculate for the Histogram
+LBP2D,Radius,Int,(1:9),1,Radius around the center voxel
+LBP2D,Neighborhood,Int,[2:4:8],8,Neighborhood value to select
+GLCM,Bins,int,,10,
+GLCM,Directions,int,3:13,13,The number of directions around the center voxel to calculate features on
+GLCM,Radius,int,(1:9),1,Radius around the center voxel
+GLCM,Offset,string,[Individual:Average],Average,Either individual offset values or averaged
+GLCM,Dimension,string,[2D:3D],3D,For calculating 2D slice or full 3D volume features
+GLCM,Axis,string,[z:x:y],z,The axis for which the 2D slice computation is to be done
+GLRLM,Bins,int,,10,
+GLRLM,Directions,int,3:13,13,The number of directions around the center voxel to calculate features on
+GLRLM,Radius,int,(1:9),1,Radius around the center voxel
+GLRLM,Dimension,string,[2D:3D],3D,For calculating 2D slice or full 3D volume features
+GLRLM,Axis,string,[z:x:y],z,The axis for which the 2D slice computation is to be done
+GLRLM,Offset,string,[Individual:Average],Average,Either individual offset values or averaged
+GLRLM,Range,int,,1,distance range over which the features will be calculated.
+NGTDM,Bins,int,,10,
+NGTDM,Radius,int,(1:9),1,Radius around the center voxel
+NGTDM,Directions,int,3:13,13,The number of directions around the center voxel to calculate features on
+NGTDM,Dimension,string,[2D:3D],3D,For calculating 2D slice or full 3D volume features
+NGTDM,Axis,string,[z:x:y],z,The axis for which the 2D slice computation is to be done
+NGTDM,Range,int,,4,distance range over which the features will be calculated.
+GLSZM,Bins,int,,10,
+GLSZM,Directions,int,3:13,13,The number of directions around the center voxel to calculate features on
+GLSZM,Radius,int,(1:9),1,Radius around the center voxel
+GLSZM,Dimension,string,[2D:3D],3D,For calculating 2D slice or full 3D volume features
+GLSZM,Axis,string,[z:x:y],z,The axis for which the 2D slice computation is to be done
+GLSZM,Range,int,,4,distance range over which the features will be calculated.

@@ -1,0 +1,175 @@
+/**
+
+\page Compilation Compilation Instructions
+
+## Pre-requisites
+
+Before building Confetti, the following software libraries are required to be installed. <strong>Please note</strong> that to build in Windows, CMake needs to be used an appropriate compiler (Win64 version of Visual Studio is recommended). The selected solution platform is needed to match with dependent libraries. 
+
+<table border="0">
+	<tr>
+    <td width="7%"><strong>Package</strong></td>      
+	  <td width="7%"><strong>Version</strong></td>      
+    <td width="100%"><strong>Description</strong></td>  
+	</tr>
+	<tr>
+		<td>C++ compiler</td>
+		<td>n/a</td>
+		<td>MSVC/13.x (Visual Studio 2013) and GCC/4.8.1+ are supported. <br>MSVC/14+ (2015) and GCC/5+ are <b>NOT</b> supported yet</td>
+	</tr>
+	<tr>
+		<td><a href="http://www.cmake.org/">CMake</a></td>
+		<td>2.8.12 or higher</td>
+		<td>To configure the Confetti compilation along with its dependencies</td>
+	</tr>
+	<tr>
+		<td><a href="http://www.itk.org/">ITK</a></td>
+		<td>4.10 and above</td>
+		<td>Build VTK and GDCM before proceeding to compile ITK. Instructions to compile ITK are given <a href="http://www.itk.org/Wiki/ITK/Configuring_and_Building">here</a>. During CMake configuration, enable the <b>Module_ITKVtkGlue</b>, <b>ITK_USE_SYSTEM_GDCM</b> and <b>VCL_INCLUDE_CXX_0X</b> flags. <br><b>GCC Users</b>: For compilation use the command <b>make CXXFLAGS=-std=c++11</b>.</td>
+	</tr>
+	<tr>
+		<td><a href="http://opencv.org/downloads.html">OpenCV</a></td>
+		<td>3.0 or higher</td>
+		<td>All machine learning algorithms. This generally comes pre-compiled; if not found for your system, steps similar to those done for VTK and ITK compilation can be followed. <br><b>GCC Users</b>: For compilation use the command <b>make CXXFLAGS=-std=c++11</b>.</td>
+	</tr>
+	<tr>
+		<td><a href="http://qt-project.org/downloads">Qt</a></td>
+		<td>4.8.x</td>
+		<td>The main GUI interface for Confetti. For the python based GUI, all the requirements need to be met in the pyGUI folder.</td>
+		<td>[OPTIONAL] For GUI only</td>
+	</tr>
+	<tr>
+		<td><a href="http://www.stack.nl/~dimitri/doxygen/">Doxygen</a></td>
+		<td>n/a</td>
+		<td>[OPTIONAL] For documentation only</td>
+	</tr>
+</table>
+
+Ensure all dependencies are met before proceeding. 
+
+## Build
+
+Please follow commands below in a shell/terminal (e.g., <a href="http://www.gnu.org/software/bash/">Bash</a>). They will configure and build WhiteStripe using <a href="http://www.gnu.org/software/make/">GNU Make</a>. The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface.
+
+### Extract source files and create the build directory
+
+\verbatim
+tar xzf WhiteStripe-${version}-source.tar.gz
+mkdir WhiteStripe-${version}-build
+cd WhiteStripe-${version}-build
+\endverbatim
+<b>Windows Users</b>: an appropriate compression program (e.g., <a href="http://www.7-zip.org/">7-zip</a>) might be used to extract the files.
+
+### Run CMake to configure the build tree
+
+\verbatim
+cmake ../WhiteStripe-${version}-source
+\endverbatim
+Use the CMake variable <b>CMAKE_INSTALL_PREFIX</b> to specify the installation
+directory, as in:
+\verbatim
+cmake -DCMAKE_INSTALL_PREFIX=/opt/software/geodesic ../WhiteStripe-${version}-source
+\endverbatim
+
+For <b>GCC</b> users, WhiteStripe needs the <b>c++11</b> flag, so ensure that <b>"-std=c++11"</b> option gets added for <b>CMAKE_CXX_FLAGS</b> during the CMake configuration step. This should get done automatically by the CMakeLists.txt file provided but in case of custom build environments, it might get overwritten with other options.
+
+<b>Windows Users</b>: open CMake-GUI and select <code>WhiteStripe-${version}-source</code> as the "source" directory and select <code>WhiteStripe-${version}-build</code> as the "build" directory. Click on "Configure" and select the appropriate C++ compiler. If there weren't any configuration errors, click "Generate".
+
+CMake should be able to find the dependencies if they are specified in the <code>$PATH</code> variable in your environment. If you have custom installation directories, then ensure that they have been added to the <code>$PATH</code> variable or point the variable(s) <b>${Dependency}_DIR</b> to the appropriate build paths where <b>${Dependency}Config.cmake</b> is/are present (for example, in the case of ITK, point <code>ITK_DIR</code> to the directory where <code>ITKConfig.cmake</code> is present) - this should be either the build directory or the installation directory. If you are using a bash shell, it can be done using the following command:
+
+\verbatim
+cmake -DITKDIR=${path_to_custom_ITK_build_dir} -DVTK_DIR=${path_to_custom_VTK_build_dir} -DQT_QMAKE_EXECUTABLE=${path_to_custom_qt_installation} WhiteStripe-${version}-source
+\endverbatim
+
+<b>Windows Users</b>: set the variables <code>ITK_DIR</code>, <code>VTK_DIR</code> and <code>QT_QMAKE_EXECUTABLE</code> using the CMake-GUI.
+
+This step will generate compiler-specific project files (for example, Make file for GCC and Visual Studio solution file for MSVC). For a full list of generators, please see <a href="https://cmake.org/cmake/help/v3.0/manual/cmake-generators.7.html">CMake documentation on generators</a></td>. CMake can be used to set various other configuration options and some of those options are:
+
+<table border="0">
+	<tr>
+		<td width="200px"><b>BUILD_DOCUMENTATION</b></td>
+		<td>Builds the documentation (HTML and PDF) from scratch</td>
+	</tr>
+	<tr>
+		<td><b>BUILD_TESTING</b></td>
+		<td>Enables unit testing of the software package</td>
+	</tr>
+	<tr>
+		<td><b>CMAKE_INSTALL_PREFIX</b></td>
+		<td>Path where the project will be installed</td>
+	</tr>
+	<tr>
+		<td><b>PACKAGE_PROJECT</b></td>
+		<td>Create installer for project (not available for all platforms)</td>
+	</tr>
+</table>
+
+### Compile the project
+
+\verbatim
+make CXXFLAGS=-std=c++11 #this ensures c++11 flag is enabled for this build
+\endverbatim
+
+<b>Windows Users</b>: you should launch the generated solution file of Visual Studio (by default, only <code>Release</code> version of the code will be compiled - if this needs to be changed, it can be done so by editing the variable <code>CMAKE_CONFIGURATION_TYPE</code> during the CMake configuration step), and then build solution.
+
+### [OPTIONAL] Compile the documentation
+
+To build the documentation from scratch, the <code>BUILD_DOCUMENTATION</code> option in the CMake configuration needs to be enabled.
+
+\verbatim
+make doc
+\endverbatim
+
+<b>Windows Users</b>: build the <b>doc</b> project in the loaded solution.
+
+### [OPTIONAL] Test the Compilation
+
+To perform tests, the <code>BUILD_TESTING</code> option in the CMake configuration needs to be enabled.
+
+\verbatim
+make test
+\endverbatim
+
+<b>Windows Users</b>: you should build the <b>RUN_TESTS</b> project.
+
+In case of failing tests, re-run the tests, but this time by executing <a href="http://www.cmake.org/cmake/help/v2.8.8/ctest.html">CTest</a> directly with the '-V' option to enable verbose output and redirect the output to a text file, as in the example below (works for both Windows and Linux on the command line or shell):
+
+\verbatim
+ctest -V >& WhiteStripe-test.log
+\endverbatim
+
+And send the file <b>WhiteStripe-test.log</b> as attachment of the issue report to <mailto:software@cbica.upenn.edu>.
+
+### [OPTIONAL] Install 
+
+\verbatim
+make install
+\endverbatim
+
+<b>Windows Users</b>: you should build the <b>INSTALL</b> project.
+
+Upon the success of the above compilation and build process, WhiteStripe is installed into the directory specified by the <code>CMAKE_INSTALL_PREFIX</code>, which was set during step 3.2 above.
+
+### [OPTIONAL] Strip executables (Linux only) 
+
+\verbatim
+make install/strip
+\endverbatim
+
+<b>Note</b> - this is not needed if you plan to package the project.
+
+### [OPTIONAL] Package Project
+
+Enable the <b>PACKAGE_PROJECT</b> flag in the CMake configuration step to package the project.
+
+\verbatim
+make package
+sudo dpkg -i WhiteStripe-Linux.deb
+\endverbatim
+
+<b>Windows Users</b>: Build the <b>PACKAGE</b> project in Visual Studio; you will need <a href="http://nsis.sourceforge.net/Main_Page">NSIS</a> to package the project as an installer.
+
+
+<div align="right"><a href="Usage.html"><b>Next (Usage)<b></a>
+
+*/
