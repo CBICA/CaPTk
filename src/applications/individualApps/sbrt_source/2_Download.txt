@@ -1,7 +1,0 @@
-/**
-
-\page Download Download
-
-To download this package, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.
-
-*/
