@@ -1,0 +1,6 @@
+Software from CBICA will use one of the following licenses:
+
+1. SBIA Software License (governs most of CBICA Software) - https://www.med.upenn.edu/sbia/software-agreement.html
+2. SBIA Non-Commercial Software License (governs some of CBICA Software) - https://www.med.upenn.edu/sbia/software-agreement-non-commercial.html
+
+They may depend on other libraries and toolkits (which will be clearnly shown in the respective package) that are governed by their own licenses.
