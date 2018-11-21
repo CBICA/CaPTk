@@ -1,0 +1,26 @@
+/**
+
+\page ReleaseNotes Release Notes
+
+## New Applications and Tools
+
+-# Lung Cancer Segmentation/Analysis
+-# Pseudo-Progression
+-# EGFRvIII-SVM
+-# DeepMedic Segmentation
+-# Training Module
+-# Greedy Registration
+
+## Updates
+
+-# New Feature Families and Lattice-based extraction added to Feature Extraction Panel
+-# macOS package has been added
+-# Interface improvements
+-# CWL implementation added
+
+## Known Issues
+
+https://github.com/CBICA/CaPTk/issues
+
+Contact <a href="mailto:software@cbica.upenn.edu">software@cbica.upenn.edu</a> for questions, etc.
+*/

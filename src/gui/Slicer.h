@@ -1,0 +1,160 @@
+/**
+\file  Slicer.h
+
+\brief Implementation of Slicer class
+
+http://www.med.upenn.edu/sbia/software/ <br>
+software@cbica.upenn.edu
+
+Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
+See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+
+*/
+
+#ifndef _Slicer_h_
+#define _Slicer_h_
+
+
+#include "CAPTk.h"
+#include "Landmarks.h"
+#include "QBorderWidget.h"
+
+class Slicer : public vtkImageViewer2
+{
+public:
+  Slicer();
+  ~Slicer();
+
+  static Slicer *New();
+#if VTK_MAJOR_VERSION >= 6
+  vtkTypeMacro(Slicer, vtkImageViewer2);
+#else
+  vtkTypeRevisionMacro(Slicer, vtkImageViewer2);
+#endif
+
+  void SetImage(vtkImageData* image, vtkTransform* transform);
+  vtkImageData* GetImage() {
+    return mImage;
+  }
+  vtkTransform* GetTransform() {
+    return mTransform;
+  }
+  void SetOverlay(vtkImageData* overlay);
+  vtkImageData* GetOverlay()
+  {
+    return mOverlay;
+  }
+  void SetOverlayOpacity(double opacity);
+  void RemoveOverlay();
+  void SetMask(vtkImageData* mask);
+  vtkImageData* GetMask()
+  {
+    return mMask;
+  }
+  void SetMaskOpacity(double opacity);
+  double GetMaskOpacity();
+  void RemoveMask();
+
+  void SetLandmarks(Landmarks* landmarks, int type);
+  void SetSliceOrientation(int orientation);
+  void SetSlice(int s);
+
+  void SetOpacity(double s);
+  void SetRenderWindow(int orientation, vtkRenderWindow * rw);
+  void SetDisplayMode(bool i);
+  void FlipHorizontalView();
+  void FlipVerticalView();
+  static double GetScalarComponentAsDouble(vtkSmartPointer< vtkImageData > image, double X, double Y, double Z, int &ix, int &iy, int &iz, int component = 0);
+  void Render();
+  void ResetCamera();
+
+  void SetInitPosition();
+  void SetCurrentPosition(double x, double y, double z);
+  double* GetCurrentPosition() {
+	  return mCursor;
+  }
+  double* GetCursorPosition() {
+    return mCursor;
+  }
+  void UpdateCursorPosition();
+  void SetCursorVisibility(bool s);
+  bool GetCursorVisibility();
+  void SetActive(bool active);
+  bool GetActive();
+  void SetCursorColor(double r, double g, double b);
+  bool GetCornerAnnotationVisibility();
+  void SetLandmarksVisibility(bool s);
+  bool GetLandmarksVisibility();
+
+  void UpdateLandmarks();
+  void ForceUpdateDisplayExtent();
+
+  virtual void SetColorWindow(double s);
+  virtual void SetColorLevel(double s);
+
+  int* GetDisplayExtent();
+  int GetOrientation();
+  void UpdateOrientation();
+  void UpdateDisplayExtent();
+
+  void AdjustResliceToSliceOrientation(vtkImageReslice *reslice);
+  void ConvertImageToImageDisplayExtent(vtkSmartPointer< vtkImageData > sourceImage, const int sourceExtent[6], vtkSmartPointer< vtkImageData > targetImage, int targetExtent[6]);
+  void ClipDisplayedExtent(int extent[6], int refExtent[6]);
+
+  bool mActive;
+
+
+  int mCornerAnnotationVisibility;
+  int mLandmarksVisibility;
+
+  vtkSmartPointer<vtkImageData> mImage;
+  vtkSmartPointer<vtkImageData> mOverlay;
+  vtkSmartPointer<vtkImageData> mMask;
+  vtkSmartPointer<vtkTransform> mTransform;
+  Landmarks* mLandmarks;
+  int mLandmarksType;
+
+  vtkSmartPointer<vtkImageReslice> mImageReslice;
+  vtkSmartPointer<vtkCursor2D> crossCursor;
+  vtkSmartPointer<vtkPolyDataMapper2D> pdm;
+  vtkSmartPointer<vtkActor2D> pdmA;
+  //
+  vtkSmartPointer<vtkImageReslice> mOverlayReslice;
+  vtkSmartPointer<vtkImageActor> mOverlayActor;
+  vtkSmartPointer<vtkImageMapToWindowLevelColors> mOverlayMapper;
+  double mOverlayOpacity;
+  //
+  vtkSmartPointer<vtkImageReslice> mMaskReslice;
+  vtkSmartPointer<vtkImageActor> mMaskActor;
+  vtkSmartPointer<vtkImageMapToColors> mMaskMapper;
+  double mMaskOpacity;
+  //
+  vtkSmartPointer<vtkBox> mClipBox;
+  //
+  vtkSmartPointer<vtkCursor3D> mCross;
+  vtkSmartPointer<vtkGlyph3D> mLandGlyph;
+  vtkSmartPointer<vtkClipPolyData> mLandClipper;
+  vtkSmartPointer<vtkPolyDataMapper> mLandMapper;
+  vtkSmartPointer<vtkActor> mLandActor;
+  //
+  vtkSmartPointer<vtkVertexGlyphFilter> mLandLabelGlyph;
+  vtkSmartPointer<vtkClipPolyData> mLandLabelClipper;
+  vtkSmartPointer<vtkLabeledDataMapper> mLandLabelMapper;
+  vtkSmartPointer<vtkActor2D> mLandLabelActor;
+  //
+  vtkSmartPointer<vtkRegularPolygonSource> mCircle;
+  vtkSmartPointer<vtkGlyph3D> mLandRadiusGlyph;
+  vtkSmartPointer<vtkClipPolyData> mLandRadiusClipper;
+  vtkSmartPointer<vtkPolyDataMapper> mLandRadiusMapper;
+  vtkSmartPointer<vtkActor> mLandRadiusActor;
+
+
+  double mCursor[3];
+
+  vtkSmartPointer<vtkBorderWidget> borderWidget;
+  vtkBorderCallback * borderCallback;
+
+};
+
+
+#endif

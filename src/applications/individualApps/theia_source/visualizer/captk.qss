@@ -1,0 +1,122 @@
+QWidget
+{
+  color: rgb(255 ,255, 255);
+  background-color: rgb(50, 50, 50);
+}
+QSlider::groove:vertical
+{
+  background: rgb(50, 50, 50);
+  border: 2px solid rgb(0,0,0);
+  width: 5px; 
+}
+QSlider::handle:vertical
+{
+  background: rgb(80, 80, 80);
+  height: 10px;
+  margin: 0 -4px;
+}
+QCheckBox{
+  color: rgb(255 ,255, 255);
+}
+QCheckBox::disabled
+{
+  color: rgb(100,100,100);
+}
+QLineEdit::disabled
+{
+  color: rgb(100,100,100);
+}
+QSlider::groove:horizontal {
+  border: 2px solid rgb(0,0,0);
+  height: 5px; 
+  background: rgb(50, 50, 50);
+}
+QSlider::handle:horizontal {
+  background: rgb(80, 80, 80);
+  width: 10px;
+  margin: -4px 0; 
+}
+QTableView QTableCornerButton::section 
+{
+  background: rgb(50, 50, 50);
+}
+QMenuBar::item
+{
+  background: transparent;
+}
+QMenuBar::item:selected
+{
+  background: transparent;
+  border: 2px solid rgb(0,140,149);
+}
+QPushButton::hover
+{
+  border: 2px solid rgb(0,140,149);
+}
+QPushButton::checked
+{
+  background-color: rgb(0,140,149);
+}
+QRadioButton::disabled
+{
+  color: rgb(80, 80, 80);
+}
+QToolButton::hover
+{
+  border: 2px solid rgb(0,140,149);
+}
+QHeaderView::section
+{
+  color: rgb(255 ,255, 255);
+  background-color: rgb(50, 50, 50);
+}
+QTabBar::tab 
+{
+  color: rgb(255 ,255, 255);
+  background-color: rgb(50, 50, 50);
+  border: 2px solid rgb(0,0,0);
+}
+QTabBar::tab 
+{
+  color: rgb(255,255,255);
+  border: 2px solid rgb(80, 80, 80);
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+QTabBar::tab:!selected
+{
+  margin-top: 3px;
+}
+QTabBar::tab:selected
+{
+  color: rgb(0,140,149);
+}
+QTabWidget::pane 
+{
+  border: 2px solid rgb(80, 80, 80);
+  top: 2px;
+}
+QMenu
+{
+  border: 2px solid rgb(0,0,0);
+}
+QMenu::item:selected
+{
+  color: rgb(0,140,149);
+}
+QMenu::item:disabled 
+{
+  color: rgb(180, 90, 45);
+}
+QProgressBar
+{
+  text-align: center;
+}
+QProgressBar::chunk
+{
+  background-color: rgb(0,140,149);
+}
+
+
