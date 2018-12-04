@@ -1,0 +1,46 @@
+## Functionality > Specialized Apps
+
+# Survival Prediction Index
+
+This tool extracts and employs distinctive imaging biomarkers predictive of <i>de novo</i> glioblastoma patients’ survival via multi-parametric MRI pattern analysis which might assist in personalized treatment [5-7].
+
+<b>REQUIREMENTS:</b>
+
+-# T1-weighted (T1)
+-# Post-contrast T1-weighted (T1-Gd)
+-# T2-weighted (T2)
+-# T2-weighted Fluid Attenuated Inversion Recovery (T2-FLAIR)
+-# Diffusion Tensor Imaging (DTI) images: AX, FA, RAD, TR
+-# Dynamic susceptibility contrast-enhanced MRI (DSC-MRI)
+-# Segmentations for the following tissues:
+  - Ventricles  - Peritumoral Edema
+  - Non-Enhancing tumor core
+  - Enhancing tumor core
+
+<b>USAGE:</b>
+
+Training process:
+- As inputs, user needs to select TrainingDirectory and OutputDirectory.
+- In the TrainingDirectory, the data of each subject should be in separate folders such as : <br>
+/AAAA, /AAAB, /AAAC
+
+- In each subject folder, there should be the following sub-folders
+  - AAAA/SEGMENTATION (one file for segmentation of the tumor)
+  - AAAA/DTI (AX, FA, RAD, TR)
+  - AAAA/PERFUSION (RCBV, PSR, PH)
+  - AAAA/T1 (T1 image)
+  - AAAA/T2 (T2 image)
+  - AAAA/T1CE (Post-contrast T1-weighted image)
+  - AAAA/FLAIR (Flair image)
+Each sub-folder must hold images with filenames
+that include the corresponding modality, such as t1, t1ce for T1 and T2 images and
+"labels" tag, in the name for segmentation, as in "AAAC0_t1ce_pp.nii"
+
+- There will be two model files generated as output; one for 6 months
+prediction and the other for 18 months prediction. The application will also write "mean.csv" and "std.csv" files to be used to z-score test subjects.  
+
+Testing process:
+- As inputs, user needs to select TestDirectory and ModelDirectory.
+- The data in TestDirectory should be organized the same way as in TrainingDirectory. ModelDirectory will have the files written as output of the training phase.
+- A csv file having SPI indices of all the test subjects is written as output.
+NOTE: Currently, the user only has the option to train a new classifier based on their data and do testing on that trained classifier. In the future, a classifier trained on a large cohort will be provided.
