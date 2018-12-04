@@ -12,7 +12,7 @@ matrix:
     - os: linux
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --yes gcc g++ make cmake libgl-dev python3-pip python-numpy; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --yes gcc g++ make cmake python3-pip python-numpy; fi
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; ./scripts/test-build.sh; fi
