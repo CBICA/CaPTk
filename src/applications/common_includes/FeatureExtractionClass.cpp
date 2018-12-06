@@ -15,7 +15,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 //#include "itkVariableSizeMatrix.h"
 //#include "itkVariableLengthVector.h"
 //#include "CAPTk.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 FeatureExtractionClass::FeatureExtractionClass()
 {

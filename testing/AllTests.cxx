@@ -9,8 +9,8 @@
 
 #include "GeodesicSegmentation.h"
 #include "EGFRvIIISurrogateIndex.h"
-#include "CapTkEnums.h"
-#include "CapTkUtils.h"
+#include "CaPTkEnums.h"
+#include "CaPTkUtils.h"
 
 int main(int argc, char** argv)
 {

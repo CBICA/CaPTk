@@ -15,7 +15,7 @@
 
 #include "fTumorPanel.h"
 //#include "CAPTk.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 #include "fMainWindow.h"
 #include "SlicerManager.h"
 #include "Landmarks.h"

@@ -1,6 +1,6 @@
 #include <sstream>
 #include "PopulationAtlases.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 
 typedef itk::Image< float, 3 > ImageType;

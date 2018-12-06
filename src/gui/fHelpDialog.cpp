@@ -21,7 +21,7 @@
 #include <QPushButton>
 #include <QApplication>
 #include <QDesktopWidget>
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 #include "cbicaUtilities.h"
 #include "cbicaLogging.h"
 

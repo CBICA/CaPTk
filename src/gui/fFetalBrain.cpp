@@ -1,6 +1,6 @@
 #include "fFetalBrain.h"
 #include "FetalBrain.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 
 fFetalBrain::fFetalBrain()
 {

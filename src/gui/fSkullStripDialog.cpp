@@ -2,7 +2,7 @@
 #include "fProgressDialog.h"
 
 #include "cbicaITKUtilities.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 
 fSkullStripper::fSkullStripper()
 {

@@ -46,7 +46,7 @@
 #include <qsize.h>
 
 //#include "CAPTk.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 
 QT_BEGIN_NAMESPACE
 

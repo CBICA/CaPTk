@@ -2,7 +2,7 @@
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
 #include "cbicaLogging.h"
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 #include "cbicaITKSafeImageIO.h"
 
 int main(int argc, char **argv)
