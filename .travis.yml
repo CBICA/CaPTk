@@ -18,6 +18,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --yes -qq git-lfs; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs install; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs pull; fi
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/test-build.sh; fi
