@@ -2,7 +2,7 @@ language: cpp
 
 os:
   - os: linux
-    dist: trusty
+    dist: xenial
     sudo: required
     compiler: gcc
     env:
@@ -18,7 +18,16 @@ matrix:
 
 before_install:
   # Linux install step
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --yes -qq gcc g++ make cmake python3-pip python-numpy; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq gcc g++ make cmake python3-pip python-numpy; fi
+  
+  # Load qt env into repos
+  - if [[ "$QT_BASE" = "511" && "$TRAVIS_OS_NAME" = "linux" ]]; then sudo add-apt-repository ppa:beineri/opt-qt-5.11.0-xenial -y; fi
+  
+  # Update step
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
 
+  # Install qt
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq qt511base; source /opt/qt511/bin/qt511-env.sh;
+  
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/test-build.sh; fi
