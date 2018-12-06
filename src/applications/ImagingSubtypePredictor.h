@@ -15,7 +15,7 @@ See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
 #ifndef _ImagingSubtypePredictor_h_
 #define _ImagingSubtypePredictor_h_
 
-#include "CAPTk.h"
+//#include "CAPTk.h"
 #include "NiftiDataManager.h"
 #include "FeatureReductionClass.h"
 #include "FeatureScalingClass.h"
