@@ -12,7 +12,12 @@ matrix:
     - os: linux
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --yes gcc g++ make cmake python3-pip python-numpy; fi
+  # Linux install step
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --yes -qq gcc g++ make cmake python3-pip python-numpy; fi
+  # Git LFS required
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --yes -qq git-lfs; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs install; fi
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/test-build.sh; fi
