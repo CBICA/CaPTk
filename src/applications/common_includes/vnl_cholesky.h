@@ -17,8 +17,8 @@
 //   Feb.2002 - Peter Vanroose - brief doxygen comment placed on single line
 // \endverbatim
 
-#include <vnl/vnl_vector.h>
-#include <vnl/vnl_matrix.h>
+#include "vnl/vnl_vector.h"
+#include "vnl/vnl_matrix.h"
 
 //: Decomposition of symmetric matrix.
 //  A class to hold the Cholesky decomposition of a symmetric matrix and

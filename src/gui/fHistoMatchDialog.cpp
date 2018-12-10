@@ -1,7 +1,7 @@
 #include "fHistoMatchDialog.h"
 //#include "fProgressDialog.h"
 //#include "CAPTk.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 
 #include "cbicaITKUtilities.h"
 

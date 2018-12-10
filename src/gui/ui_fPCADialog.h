@@ -33,7 +33,7 @@
 #include <QtWidgets/QSpinBox>
 #include <QGroupBox>
 #include <QtWidgets/QRadioButton>
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 #include <QDir>
 
 QT_BEGIN_NAMESPACE

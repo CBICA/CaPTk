@@ -18,10 +18,10 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 //#include "CAPTk.h"
 #include "cbicaDTIProcessingManager.h"
 #include <QString>
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 #include "cbicaLogging.h"
 #include <vtksys/SystemTools.hxx>
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 //#include "cbicaDTI.h"
 

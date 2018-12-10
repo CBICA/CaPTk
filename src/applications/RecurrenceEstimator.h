@@ -23,10 +23,10 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkMeanImageFilter.h"
 //#include "itkBinaryErodeImageFilter.h"
 //#include "itkBinaryBallStructuringElement.h"
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 #include "cbicaLogging.h"
-#include "CapTkEnums.h"
-#include "CapTkClassifierUtils.h"
+#include "CaPTkEnums.h"
+#include "CaPTkClassifierUtils.h"
 
 #define RECURRENCE_MODEL_G 0.5
 #define RECURRENCE_MODEL_RHO 0.0896

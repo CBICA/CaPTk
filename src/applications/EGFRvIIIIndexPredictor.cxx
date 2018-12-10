@@ -1,7 +1,7 @@
 #include "EGFRvIIIIndexPredictor.h"
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 //------------------EGFRvIII Prediction on existing model-----------------------
 std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname)

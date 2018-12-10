@@ -43,7 +43,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QCheckBox>
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 
 QT_BEGIN_NAMESPACE
 enum TAB_IMAGES_COLUMNS

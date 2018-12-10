@@ -1,7 +1,7 @@
 #include "EGFRvIIIIndexPredictor.h"
 #include "itkCSVNumericObjectFileWriter.h"
-#include "CapTkGUIUtils.h"
-#include "CapTkClassifierUtils.h"
+#include "CaPTkGUIUtils.h"
+#include "CaPTkClassifierUtils.h"
 
 
 typedef itk::Image< float, 3 > ImageType;

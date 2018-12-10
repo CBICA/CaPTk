@@ -26,7 +26,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "vtkDoubleArray.h"
 #include "vtkPCAStatistics.h"
 #include "vtkStatisticsAlgorithm.h""
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 
 FeatureReductionClass::FeatureReductionClass()
 {

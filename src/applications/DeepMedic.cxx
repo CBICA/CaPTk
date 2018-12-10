@@ -5,7 +5,7 @@
 #include "cbicaITKUtilities.h"
 #include "cbicaITKImageInfo.h"
 #include "cbicaITKSafeImageIO.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 
 #ifdef _WIN32
 #include <direct.h>

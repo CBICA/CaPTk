@@ -19,7 +19,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <QString>
 #include <QDir>
 #include "cbicaLogging.h"
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 
 OutputWritingManager::OutputWritingManager()
 {

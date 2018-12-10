@@ -39,7 +39,7 @@
 #include <map>
 //#include "CAPTk.h"
 #include <QCheckBox>
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 #include <QLineEdit>
 
 QT_BEGIN_NAMESPACE

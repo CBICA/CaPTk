@@ -7,7 +7,7 @@
 #include <QCheckBox>
 #include <QApplication>
 #include <QDesktopWidget>
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 #include "cbicaLogging.h"
 
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CapTkDefines.h"
-#include "CapTkEnums.h"
+#include "CaPTkDefines.h"
+#include "CaPTkEnums.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/ml.hpp"
 /**
