@@ -3,9 +3,8 @@ language: cpp
 matrix:
   include:
     - os: linux
-    dist: xenial
-    sudo: required
-    compiler: gcc
+      dist: xenial
+      sudo: required
   fast_finish: true
   # Temporary, used for testing
   allow_failures:
@@ -23,4 +22,3 @@ before_install:
   
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/test-build.sh; fi
-
