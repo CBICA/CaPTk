@@ -440,7 +440,7 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
   ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/
   ${PROJECT_SOURCE_DIR}/src/gui/
-  ${PROJECT_SOURCE_DIR}/src/Common/inc/
+  ${PROJECT_SOURCE_DIR}/src/common/inc/
   ${APPLICATION_INCLUDES}
 )
 
