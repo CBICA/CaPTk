@@ -131,8 +131,9 @@ INSTALL( TARGETS ${PROJECT_NAME}
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/1_params_default.csv DESTINATION data )
-INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/1_params_default_lattice.csv DESTINATION data )
+INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/1_params_default.csv DESTINATION data/features )
+INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/2_params_default_lattice.csv DESTINATION data/features )
+INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureextraction.csv DESTINATION data/features/batchMode )
 
 ## this is for packaging only
 SET( PROJECT_VENDOR "CBICA - UPenn" )
