@@ -4,15 +4,15 @@ SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 	${CaPTk_BINARY_DIR})
   
 SET( ${PROJECT_NAME}_HDRS
-  inc/CapTkClassifierUtils.h
-  inc/CapTkDefines.h
-  inc/CapTkEnums.h
-  inc/CapTkGUIUtils.h
-  inc/CapTkUtils.h
+  inc/CaPTkClassifierUtils.h
+  inc/CaPTkDefines.h
+  inc/CaPTkEnums.h
+  inc/CaPTkGUIUtils.h
+  inc/CaPTkUtils.h
 )
 
 SET( ${PROJECT_NAME}_SRCS
-  src/CapTkGUIUtils.cpp
+  src/CaPTkGUIUtils.cpp
 )
 
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/inc

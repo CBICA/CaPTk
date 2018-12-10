@@ -19,14 +19,5 @@ ENDIF(WIN32)
 
 SET( EXE_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/CAPTk.cpp"
-<<<<<<< HEAD
-=======
-  "${CMAKE_CURRENT_SOURCE_DIR}/CaPTkClassifierUtils.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/CaPTkDefines.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/CaPTkEnums.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/CaPTkGUIUtils.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/CaPTkGUIUtils.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/CaPTkUtils.h"
->>>>>>> master
   CACHE STRING "Executable sources"
 )
