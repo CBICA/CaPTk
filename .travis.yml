@@ -1,14 +1,11 @@
 language: cpp
 
-os:
-  - os: linux
+matrix:
+  include:
+    - os: linux
     dist: xenial
     sudo: required
     compiler: gcc
-#  - osx
-#  - windows
-
-matrix:
   fast_finish: true
   # Temporary, used for testing
   allow_failures:
