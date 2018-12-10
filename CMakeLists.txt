@@ -440,6 +440,7 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
   ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/
   ${PROJECT_SOURCE_DIR}/src/gui/
+  ${PROJECT_SOURCE_DIR}/src/Common/inc/
   ${APPLICATION_INCLUDES}
 )
 
@@ -711,6 +712,7 @@ ADD_DEPENDENCIES( ${LIBNAME_Applications} ${LIBNAME_GUI} ${LIBNAME_FeatureExtrac
 
 SET_TARGET_PROPERTIES( ${LIBNAME_CBICATK} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 SET_TARGET_PROPERTIES( ${LIBNAME_GUI} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+SET_TARGET_PROPERTIES( CaPTk_Common PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 #SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
@@ -1132,6 +1134,7 @@ IF( NOT CAPTK_CLI_MODE )
   TARGET_LINK_LIBRARIES( ${EXE_NAME}
     ${DEPENDENT_LIBS}
     ${LIBNAME_GUI}
+    CaPTk_Common
     ${LIBNAME_Applications}
     ${LIBNAME_FeatureExtractor}
     ${LIBNAME_CBICATK}
@@ -1139,6 +1142,7 @@ IF( NOT CAPTK_CLI_MODE )
 
   ADD_DEPENDENCIES( ${EXE_NAME}
     ${LIBNAME_GUI}
+    CaPTk_Common
     ${LIBNAME_Applications}
     ${LIBNAME_FeatureExtractor}
     ${LIBNAME_CBICATK}

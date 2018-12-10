@@ -11,7 +11,7 @@
 #include <direct.h>
 #endif
 
-#include "CAPTk.h"
+//#include "CAPTk.h"
 
 std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, inputBValName, inputBVecName, outputDirectory, loggerFileIn;
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;
