@@ -13,7 +13,7 @@
 //#include "CAPTk.h"
 #include "CaPTkGUIUtils.h"
 #include "fMainWindow.h"
-#include "FeatureExtraction.h"
+#include "FeatureExtraction/src/FeatureExtraction.h"
 #include "exception"
 
 #include "itkExtractImageFilter.h"
