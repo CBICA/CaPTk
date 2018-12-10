@@ -19,7 +19,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "cbicaUtilities.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include "GreedyRegistration.h"
+//#include "GreedyRegistration.h"
 #include "itkDOMNodeXMLReader.h"
 #include "itkDOMNodeXMLWriter.h"
 #include "itkDOMNode.h"
