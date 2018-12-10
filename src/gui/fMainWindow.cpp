@@ -49,8 +49,8 @@
 #include "SlicerManager.h"
 #include "Slicer.h"
 #include "InteractorStyleNavigator.h"
-#include "CapTkUtils.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkUtils.h"
+#include "CaPTkGUIUtils.h"
 
 #include "vtkTransform.h"
 #include "vtkImageMapToWindowLevelColors.h"

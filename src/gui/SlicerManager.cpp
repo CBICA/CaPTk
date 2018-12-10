@@ -34,7 +34,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <QVariant>
 
 #include "cbicaITKImageInfo.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 SlicerManager::SlicerManager(int numberOfSlicers, Landmarks* landmarks, Landmarks* seedPoints, Landmarks* tissuePoints)
 {

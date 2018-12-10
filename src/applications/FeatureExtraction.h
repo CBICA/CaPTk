@@ -298,22 +298,22 @@ public:
     }
     if (!cbica::isFile(m_outputFile) && !m_Features.empty())
     {
-      if (m_outputVerticallyConcatenated)
-      {
-        std::ofstream myfile;
-        myfile.open(m_outputFile, std::ofstream::out);
-        // check for locks in a cluster environment
-        while (!myfile.is_open())
-        {
-          cbica::sleep(100);
-          myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
-        }
-        myfile << "SubID,Modality,ROI,FeatureFamily,Feature,Value,Parameters\n";
-#ifndef WIN32
-        myfile.flush();
-#endif
-        myfile.close();
-      }
+//      if (m_outputVerticallyConcatenated)
+//      {
+//        std::ofstream myfile;
+//        myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
+//        // check for locks in a cluster environment
+//        while (!myfile.is_open())
+//        {
+//          cbica::sleep(100);
+//          myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
+//        }
+//        myfile << "SubID,Modality,ROI,FeatureFamily,Feature,Value,Parameters\n";
+//#ifndef WIN32
+//        myfile.flush();
+//#endif
+//        myfile.close();
+//      }
     }
     if (m_writeIntermediateFiles)
     {

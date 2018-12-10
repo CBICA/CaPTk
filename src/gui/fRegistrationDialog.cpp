@@ -1,7 +1,7 @@
 #include "fRegistrationDialog.h"
 #include "fProgressDialog.h"
 //#include "CAPTk.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 #include "itkFileTools.h"
 #include <sys/types.h>
 #include <sys/stat.h>

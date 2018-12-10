@@ -17,8 +17,8 @@ see SBIA_noncommercial_license.txt file.
 #define _EGFRvIIISurrogateIndex_h_
 
 //#include "CAPTk.h"
-#include "CapTkEnums.h"
-#include "CapTkDefines.h"
+#include "CaPTkEnums.h"
+#include "CaPTkDefines.h"
 #include "FeatureReductionClass.h"
 //#include "itkImage.h"
 #include "vtkVariant.h"

@@ -22,7 +22,7 @@ See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
 #include "FeatureScalingClass.h"
 #include "FeatureExtractionClass.h"
 #include "cbicaLogging.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 #include "itkCSVArray2DFileReader.h"
 #include "itkImageFileReader.h"
 #include "itkRescaleIntensityImageFilter.h"

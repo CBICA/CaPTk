@@ -1,6 +1,6 @@
 #include "NiftiDataManager.h"
 //#include "CAPTk.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 NiftiDataManager::NiftiDataManager()
 {

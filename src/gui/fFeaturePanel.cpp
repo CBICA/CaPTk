@@ -11,7 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 #include "fFeaturePanel.h"
 //#include "CAPTk.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 #include "fMainWindow.h"
 #include "FeatureExtraction.h"
 #include "exception"

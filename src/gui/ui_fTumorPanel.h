@@ -26,7 +26,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QGroupBox>
 #include <QDir>
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 
 struct ButtonStructure
 {
