@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Any subsequent(*) commands which fail will 
+# cause the shell script to exit immediately
+set -e
+
 # CaPTk Packager
 
 # Cmake command to run from /trunk/bin
@@ -96,7 +100,7 @@ fi
 
 # Create binary directory
 echo "[:] Creating binary directory..."
-mkdir bin
+mkdir -p bin
 cd bin
 
 # Expose ITK_PATH if given one
