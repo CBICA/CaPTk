@@ -19,14 +19,14 @@ See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
 
 #include "cbicaUtilities.h"
 #include "FeatureReductionClass.h"
-//#include "CAPTk.h"
+//#include "CaPTk.h"
 #include "cbicaLogging.h"
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 #include "itkExtractImageFilter.h"
 #include "NiftiDataManager.h"
 
 
-#ifdef APP_BASE_CAPTK_H
+#ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
 #endif
 
@@ -56,7 +56,7 @@ publisher={Radiological Society of North America}
 */
 
 class PerfusionDerivatives
-#ifdef APP_BASE_CAPTK_H
+#ifdef APP_BASE_CaPTk_H
   : public ApplicationBase
 #endif
 {

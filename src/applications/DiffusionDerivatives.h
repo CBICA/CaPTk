@@ -20,7 +20,7 @@ See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
 #include "qstring.h"
 #include "cbicaUtilities.h"
 #include "FeatureReductionClass.h"
-//#include "CAPTk.h"
+//#include "CaPTk.h"
 #include "itkImageIOBase.h"
 #include "itkExtractImageFilter.h"
 #include "itkFlipImageFilter.h"
@@ -31,7 +31,7 @@ See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "cbicaLogging.h"
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 
 /**
 \class DiffusionDerivatives
@@ -57,13 +57,13 @@ publisher={Radiological Society of North America}
 
 #define Malloc(type, n) (type *)malloc((n)*sizeof(type))
 
-#ifdef APP_BASE_CAPTK_H
+#ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
 #endif
 
 
 class DiffusionDerivatives
-#ifdef APP_BASE_CAPTK_H
+#ifdef APP_BASE_CaPTk_H
 	: public ApplicationBase
 #endif
 {
