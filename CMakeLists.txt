@@ -664,8 +664,8 @@ ADD_LIBRARY(
   ${FEATURE_EXTRACTION_DEPENDS}
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/FeatureExtraction.h
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/FeatureExtraction.hxx
-  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/LBPFeatures2D.h
-  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/LBPFeatures2D.cpp
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/LBPFeatures2D.h
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/LBPFeatures2D.cpp
   #${CBICA-TK_SOURCES}
 )
 
