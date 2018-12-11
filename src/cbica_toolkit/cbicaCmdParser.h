@@ -255,6 +255,11 @@ namespace cbica
     void setExeName(const std::string exeName){ m_exeName = exeName; };
 
     /**
+    \get the executable name
+    */
+    std::string getExeName() { return m_exeName; };
+
+    /**
     \brief Adding parameters: defaults to optional parameters
 
     As a standard, neither the laconic nor verbose parameters should have any '-' in the constructor.

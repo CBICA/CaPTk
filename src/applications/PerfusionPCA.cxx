@@ -12,6 +12,9 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
 
+  parser.writeCWLFile(".", parser.getExeName(), false);
+  parser.exampleUsage("");
+
   // parameters to get from the command line
   cbica::Logging logger;
   std::string loggerFile;
@@ -75,9 +78,6 @@ int main(int argc, char **argv)
 
   std::cout<<"principal components have been saved at the specified locations."; 
   std::cout << "Finished successfully.\n";
-  std::cout << "\nPress any key to continue............\n";
 
-  int input;
-  std::cin >> input;
   return EXIT_SUCCESS;
 }

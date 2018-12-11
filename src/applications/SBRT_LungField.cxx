@@ -27,6 +27,9 @@ int main( int argc,char**argv )
 	parser.addOptionalParameter("m", "maskImage", cbica::Parameter::STRING, "none", "Absolute path of mask image", "For example /data/.../mask.nii.gz");
 	parser.addOptionalParameter("L", "logFile", cbica::Parameter::STRING, "none", "Absolute path of log file", "For example log_file.txt");
 
+	parser.writeCWLFile(".", parser.getExeName(), false);
+	parser.exampleUsage("SBRT_LungField -p AAAC0_flair_pp_shrunk_75.nii.gz -c AAAC0_flair_pp_shrunk_75.nii.gz -o <output dir>");
+
 	string petName;
 	string ctName;
 	string oName;

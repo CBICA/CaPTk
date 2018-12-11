@@ -190,6 +190,9 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
 
+  parser.writeCWLFile(".", parser.getExeName(), false);
+  parser.exampleUsage("PopulationAtlases -i <input dir> -l atlaslabelfile.csv -a jakob_stripped_with_cere_lps_256256128.nii.gz -o <output dir>");
+
   // parameters to get from the command line
   cbica::Logging logger;
   std::string loggerFile;

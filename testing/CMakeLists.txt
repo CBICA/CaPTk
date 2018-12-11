@@ -150,6 +150,8 @@ IF(WIN32)
   ADD_TEST(NAME DeepMedicTest COMMAND DeepMedic -t1 ${TESTING_DATA_DIR}/deepmedic/ -t1c ${TESTING_DATA_DIR}/deepmedic/ -t2 ${TESTING_DATA_DIR}/deepmedic/ -fl ${TESTING_DATA_DIR}/deepmedic/ -o ${TESTING_OUTPUT_DIR}/deepmedic/ )
 ENDIF()
 
+# Diffusion Derivatives !!
+
 # Directionality Estimate Tests
 
 ADD_TEST(NAME DirectionalityEstimateTest COMMAND DirectionalityEstimate -l ${TESTING_DATA_DIR}/direst/img_timepoint_1.nii.gz -o ${TESTING_OUTPUT_DIR}/dirEst.txt )
@@ -187,7 +189,11 @@ ADD_TEST(NAME FeatureExtractionFeatureMapsWriteTest COMMAND FeatureExtraction -n
 ADD_TEST(NAME FeatureExtractionHelpTest COMMAND FeatureExtraction -h )
 ADD_TEST(NAME FeatureExtractionVersionTest COMMAND FeatureExtraction -v )
 
-# Greedy Registration Tests
+# Geodesic Segmentation Tests !!
+
+# Greedy Registration Tests !!
+
+# -reg -trf -i moving.nii.gz -f fixed.nii.gz -o output.nii.gz -t matrix.mat -a -m MI -n 100x50x5 -th 4
 
 ADD_TEST(NAME GreedyRegistrationHelpTest COMMAND GreedyRegistration -h )
 ADD_TEST(NAME GreedyRegistrationVersionTest COMMAND GreedyRegistration -v )
@@ -222,6 +228,8 @@ ADD_TEST(NAME PerfusionDerivativesEcho10Test COMMAND PerfusionDerivatives -i ${T
 
 ADD_TEST(NAME PerfusionDerivativesHelpTest COMMAND PerfusionDerivatives -h )
 ADD_TEST(NAME PerfusionDerivativesVersionTest COMMAND PerfusionDerivatives -v )
+
+# Perfusion PCA Tests !!
 
 # PopulationAtlases Tests
 

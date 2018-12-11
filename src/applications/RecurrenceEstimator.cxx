@@ -179,6 +179,8 @@ int main(int argc, char **argv)
   //parser.addOptionalParameter("d", "DTI usage", cbica::Parameter::STRING, "", "Whether to use DTI imaging for model building or not? 1 for YES, 2 for NO");
   //parser.addOptionalParameter("s", "Distance usage", cbica::Parameter::STRING, "", "Whether to use distance measure for model building or not? 1 for YES, 2 for NO");
 
+  parser.writeCWLFile(".", parser.getExeName(), false);
+  parser.exampleUsage("RecurrenceEstimator -t 0 -i <input dir> -o <output dir>");
 
   // parameters to get from the command line
   cbica::Logging logger;

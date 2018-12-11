@@ -20,6 +20,9 @@ int main(int argc, char **argv)
   parser.getParameterValue("l", file_labelMap);
   parser.getParameterValue("o", file_output);
 
+  parser.writeCWLFile(".", parser.getExeName(), false);
+  parser.exampleUsage("DirectionalityEstimate -l img_timepoint_1.nii.gz -o <output file>");
+
   std::string output_message = "Output Point:\nCoordinate = ";
   std::string seedPoint;
   bool realCoordinatesPassed = false;

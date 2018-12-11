@@ -26,6 +26,9 @@ int main( int argc, char** argv )
     parser.addOptionalParameter("s", "seedImage", cbica::Parameter::STRING, "none", "Absolute path of seed image", "For example /data/.../seed_img.nii.gz");
 	parser.addOptionalParameter("L", "logFile", cbica::Parameter::STRING, "none", "Absolute path of log file", "For example log_file.txt");
 
+	parser.writeCWLFile(".", parser.getExeName(), false);
+  	parser.exampleUsage("SBRT_Nodule -p AAAC0_flair_pp_shrunk_75.nii.gz -c AAAC0_flair_pp_shrunk_75.nii.gz -m AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -o <output dir>");
+
   std::string petName, ctName, maskName, oName, seedName, logName;
   int seedAvail = 0;
   int lf_lab = 2;

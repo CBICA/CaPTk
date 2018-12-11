@@ -15,6 +15,9 @@ int main(int argc, char **argv)
   parser.getParameterValue("i", inputFile);
   parser.getParameterValue("m", drawingFile);
 
+  parser.writeCWLFile(".", parser.getExeName(), false);
+  parser.exampleUsage("EGFRvIIISurrogateIndex -i DSC-MRI_data.nii.gz -m Near_Far_masks.nii.gz");
+
   if (!cbica::fileExists(inputFile))
   {
     std::cerr << "Input image file not found :'" << inputFile << "'\n";

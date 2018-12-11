@@ -24,6 +24,9 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("n", "normalize", cbica::Parameter::BOOLEAN, "flag", "Normalize output map between 0-255 or not", "Defaults to true/1");
   parser.addOptionalParameter("t", "threshold", cbica::Parameter::INTEGER, "0-255", "Threshold distance for geodesic mask", "By default, full geodesic mask is written");
 
+  parser.writeCWLFile(".", parser.getExeName(), false);
+  parser.exampleUsage("");
+
   // argc check, "u", "h" and "v" checks are done inside CmdParser
 
   //if (parser.isPresent("d"))

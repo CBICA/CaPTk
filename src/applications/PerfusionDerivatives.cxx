@@ -13,6 +13,9 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
 
+  parser.writeCWLFile(".", parser.getExeName(), false);
+  parser.exampleUsage("PerfusionDerivatives -i AAAC_PreOp_perf_pp.nii.gz -e 1 -o <output dir> -p 1 -r 1");
+
   // parameters to get from the command line
   cbica::Logging logger;
   std::string loggerFile;
