@@ -1,6 +1,8 @@
 #!/bin/bash
 
-#!/bin/bash
+# Any subsequent(*) commands which fail will 
+# cause the shell script to exit immediately
+set -e
 
 # CaPTk Packager
 
@@ -65,6 +67,11 @@ else
   echo "[!] Error: You do not appear to be in trunk (CMakeLists.txt not found)"
   exit -1
 fi
+
+# Extract Qt5
+
+# Set up exports
+
 
 # Create binary directory
 echo "[:] Creating binary directory..."

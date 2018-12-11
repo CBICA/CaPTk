@@ -18,7 +18,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
 
   # Git LFS
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs pull; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
   
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/test-build.sh; fi
