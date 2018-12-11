@@ -435,6 +435,8 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/src/
   ${PROJECT_SOURCE_DIR}/src/applications/
   ${PROJECT_SOURCE_DIR}/src/applications/common_includes/
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
   ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/
   ${PROJECT_SOURCE_DIR}/src/gui/
@@ -664,8 +666,8 @@ TARGET_LINK_LIBRARIES(
 ADD_LIBRARY(
   ${LIBNAME_FeatureExtractor}
   ${FEATURE_EXTRACTION_DEPENDS}
-  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction.h
-  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction.hxx
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/FeatureExtraction.h
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/FeatureExtraction.hxx
   #${CBICA-TK_SOURCES}
 )
 
@@ -712,7 +714,8 @@ SET_TARGET_PROPERTIES( ${LIBNAME_CBICATK} PROPERTIES FOLDER "${CaPTk_Libs_Folder
 SET_TARGET_PROPERTIES( ${LIBNAME_GUI} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 SET_TARGET_PROPERTIES( CaPTk_Common PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
-SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+#SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 
 # find stand-alone CMD applications
 FILE( GLOB STANDALONE_APPS

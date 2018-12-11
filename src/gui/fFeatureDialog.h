@@ -1,6 +1,7 @@
 #ifndef _fFeatureDialog_h_
 #define _fFeatureDialog_h_
-#include "featureParser.h"
+//#include "featureParser.h"
+#include "FeatureExtraction/src/depends/featureParser.h"
 
 // #include <QtGui>
 // NEW CHANGES
