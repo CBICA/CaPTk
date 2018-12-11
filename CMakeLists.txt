@@ -185,8 +185,6 @@ IF(NOT EXISTS ${ITK_USE_FILE})
 
   IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
 
-    MESSAGE( STATUS "[DEBUG] In if block" )
-    
     OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
     IF( CAPTK_SUPERBUILD )
       PROJECT(${PROJECT_NAME}_Depends)
@@ -196,9 +194,7 @@ IF(NOT EXISTS ${ITK_USE_FILE})
 
   ENDIF()
   
-ENDIF()
-
-IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
+ELSEIF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
   
   LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/qt/5.11.2/lib/cmake/Qt5")
   LIST(APPEND CMAKE_PROGRAM_PATH  "${QT_EXTRACTED_DIR}/5.11.2/bin")
