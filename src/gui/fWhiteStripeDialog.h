@@ -33,7 +33,7 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "CaptkEnums.h"
+#include "CaPTkEnums.h"
 
 /**
 \class HistWidget

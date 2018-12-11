@@ -22,19 +22,19 @@ See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
 #include "FeatureReductionClass.h"
 #include "vtkTable.h"
 #include "vtkVariant.h"
-//#include "CAPTk.h"
+//#include "CaPTk.h"
 #include <itkExtractImageFilter.h>
 #include "cbicaLogging.h"
-#include "CapTkDefines.h"
-#include "CapTkEnums.h"
+#include "CaPTkDefines.h"
+#include "CaPTkEnums.h"
 
-#ifdef APP_BASE_CAPTK_H
+#ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
 #endif
 
 
 class PerfusionPCA
-#ifdef APP_BASE_CAPTK_H
+#ifdef APP_BASE_CaPTk_H
 	: public ApplicationBase
 #endif
 {
