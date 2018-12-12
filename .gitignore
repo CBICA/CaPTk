@@ -3,7 +3,7 @@
 bin_debug
 bin
 CaPTk.bin
-makeself-*.run
+makeself-*.run*
 
 # Misc
 .vs
