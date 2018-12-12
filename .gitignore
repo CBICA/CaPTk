@@ -8,3 +8,6 @@ makeself-*.run
 # Misc
 .vs
 .vscode/
+
+# Linux Testing. Will be removed or implemented better
+src/applications/individualApps/libra/MCR
