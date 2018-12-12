@@ -1,7 +1,7 @@
 # Binaries, binary folders
 
 bin_debug
-bin
+./bin
 CaPTk.bin
 makeself-*.run*
 
