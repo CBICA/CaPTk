@@ -241,8 +241,10 @@ ADD_TEST(NAME PopulationAtlasesVersionTest COMMAND PopulationAtlases -v )
 # PseudoProgressionEstimator Tests
 
 # Doesn't actually create a new model
-ADD_TEST(NAME PseudoProgressionEstimatorNewModelTest COMMAND PseudoProgressionEstimator -t 0 -i ${TESTING_DATA_DIR}/pseudo -o ${TESTING_OUTPUT_DIR}/pseudo  )
-ADD_TEST(NAME PseudoProgressionEstimatorExistingModelTest COMMAND PseudoProgressionEstimator -t 1 -i ${TESTING_DATA_DIR}/pseudo -o ${TESTING_OUTPUT_DIR}/pseudo -m ${TESTING_OUTPUT_DIR}/pseudo )
+
+# Takes REALLY long
+# ADD_TEST(NAME PseudoProgressionEstimatorNewModelTest COMMAND PseudoProgressionEstimator -t 0 -i ${TESTING_DATA_DIR}/pseudo -o ${TESTING_OUTPUT_DIR}/pseudo  )
+# ADD_TEST(NAME PseudoProgressionEstimatorExistingModelTest COMMAND PseudoProgressionEstimator -t 1 -i ${TESTING_DATA_DIR}/pseudo -o ${TESTING_OUTPUT_DIR}/pseudo -m ${TESTING_OUTPUT_DIR}/pseudo )
 
 ADD_TEST(NAME PseudoProgressionEstimatorHelpTest COMMAND PseudoProgressionEstimator -h )
 ADD_TEST(NAME PseudoProgressionEstimatorVersionTest COMMAND PseudoProgressionEstimator -v )
