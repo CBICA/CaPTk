@@ -5,13 +5,13 @@
 #include "cbicaITKUtilities.h"
 #include "cbicaITKImageInfo.h"
 #include "cbicaITKSafeImageIO.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 
 #ifdef _WIN32
 #include <direct.h>
 #endif
 
-#include "CAPTk.h"
+//#include "CAPTk.h"
 
 std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, inputBValName, inputBVecName, outputDirectory, loggerFileIn;
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;

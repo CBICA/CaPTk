@@ -1,7 +1,7 @@
 #include "fSBRTNoduleDialog.h"
 #include "fProgressDialog.h"
 //#include "CAPTk.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 
 fSBRTNoduleDialog::fSBRTNoduleDialog()
 {

@@ -11,31 +11,31 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES)
 
-INCLUDE(FindSubversion)
-IF(Subversion_FOUND) 
-  IF(EXISTS "${CMAKE_SOURCE_DIR}/../../.svn")
-    Subversion_WC_INFO("${CMAKE_SOURCE_DIR}/../../" MY)
-    SET(SVN_REVISION "${MY_WC_REVISION}")
-  ELSEIF(EXISTS "${CMAKE_SOURCE_DIR}/../.svn")
-    Subversion_WC_INFO("${CMAKE_SOURCE_DIR}/../" MY)
-    SET(SVN_REVISION "${MY_WC_REVISION}")
-  ELSEIF(EXISTS "${CMAKE_SOURCE_DIR}/.svn")
-    Subversion_WC_INFO("${CMAKE_SOURCE_DIR}/" MY)
-    SET(SVN_REVISION "${MY_WC_REVISION}")
-  ELSE ()
-    SET(SVN_REVISION "-1")
-  ENDIF()
-ELSE(Subversion_FOUND)
-  SET(SVN_REVISION "-1")
-ENDIF(Subversion_FOUND) 
+#INCLUDE(FindSubversion)
+#IF(Subversion_FOUND) 
+#  IF(EXISTS "${CMAKE_SOURCE_DIR}/../../.svn")
+#    Subversion_WC_INFO("${CMAKE_SOURCE_DIR}/../../" MY)
+#    SET(SVN_REVISION "${MY_WC_REVISION}")
+#  ELSEIF(EXISTS "${CMAKE_SOURCE_DIR}/../.svn")
+#    Subversion_WC_INFO("${CMAKE_SOURCE_DIR}/../" MY)
+#    SET(SVN_REVISION "${MY_WC_REVISION}")
+#  ELSEIF(EXISTS "${CMAKE_SOURCE_DIR}/.svn")
+#    Subversion_WC_INFO("${CMAKE_SOURCE_DIR}/" MY)
+#    SET(SVN_REVISION "${MY_WC_REVISION}")
+#  ELSE ()
+#    SET(SVN_REVISION "-1")
+#  ENDIF()
+#ELSE(Subversion_FOUND)
+#  SET(SVN_REVISION "-1")
+#ENDIF(Subversion_FOUND) 
 
 # set project name. The exe name is taken from this
 PROJECT( CaPTk )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
 SET (PROJECT_VERSION_MAJOR 1 )
 SET (PROJECT_VERSION_MINOR 6 )
-SET (PROJECT_VERSION_PATCH 0 )
-SET (SVN_REVISION "${SVN_REVISION}")
+SET (PROJECT_VERSION_PATCH 1 )
+#SET (SVN_REVISION "${SVN_REVISION}")
 
 IF (APPLE)
   SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
@@ -121,6 +121,17 @@ ELSE()
 
 ENDIF()
 
+IF(WIN32)
+  SET(CMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS 1)
+  SET(CMAKE_CXX_USE_RESPONSE_FILE_FOR_OBJECTS 1)
+  SET(CMAKE_C_USE_RESPONSE_FILE_FOR_INCLUDES 1)
+  SET(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES 1)
+  SET(CMAKE_C_RESPONSE_FILE_LINK_FLAG "@")
+  SET(CMAKE_CXX_RESPONSE_FILE_LINK_FLAG "@")
+  SET(CMAKE_C_CREATE_STATIC_LIBRARY "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>") 
+  SET(CMAKE_CXX_CREATE_STATIC_LIBRARY "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>") 
+ENDIF()
+
 MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
 MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
 
@@ -174,8 +185,6 @@ IF(NOT EXISTS ${ITK_USE_FILE})
 
   IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
 
-    MESSAGE( STATUS "[DEBUG] In if block" )
-    
     OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
     IF( CAPTK_SUPERBUILD )
       PROJECT(${PROJECT_NAME}_Depends)
@@ -185,9 +194,7 @@ IF(NOT EXISTS ${ITK_USE_FILE})
 
   ENDIF()
   
-ENDIF()
-
-IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
+ELSEIF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
   
   LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/qt/5.11.2/lib/cmake/Qt5")
   LIST(APPEND CMAKE_PROGRAM_PATH  "${QT_EXTRACTED_DIR}/5.11.2/bin")
@@ -424,9 +431,12 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/src/
   ${PROJECT_SOURCE_DIR}/src/applications/
   ${PROJECT_SOURCE_DIR}/src/applications/common_includes/
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
   ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/
   ${PROJECT_SOURCE_DIR}/src/gui/
+  ${PROJECT_SOURCE_DIR}/src/common/inc/
   ${APPLICATION_INCLUDES}
 )
 
@@ -652,8 +662,10 @@ TARGET_LINK_LIBRARIES(
 ADD_LIBRARY(
   ${LIBNAME_FeatureExtractor}
   ${FEATURE_EXTRACTION_DEPENDS}
-  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction.h
-  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction.hxx
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/FeatureExtraction.h
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/FeatureExtraction.hxx
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/LBPFeatures2D.h
+  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/LBPFeatures2D.cpp
   #${CBICA-TK_SOURCES}
 )
 
@@ -698,7 +710,9 @@ ADD_DEPENDENCIES( ${LIBNAME_Applications} ${LIBNAME_GUI} ${LIBNAME_FeatureExtrac
 
 SET_TARGET_PROPERTIES( ${LIBNAME_CBICATK} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 SET_TARGET_PROPERTIES( ${LIBNAME_GUI} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+SET_TARGET_PROPERTIES( CaPTk_Common PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 
 # find stand-alone CMD applications
@@ -794,14 +808,14 @@ IF (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 ENDIF()
 
 ## Build test(s) only if CAPTK_PACKAGE_PROJECT is OFF
-IF( NOT CAPTK_PACKAGE_PROJECT )
+#IF( NOT CAPTK_PACKAGE_PROJECT )
   SET( BUILD_TESTING TRUE CACHE BOOL "Build testing" )
   IF( BUILD_TESTING )
     ENABLE_TESTING()
     ADD_SUBDIRECTORY( testing )
-    INCLUDE(CTest)
+    #INCLUDE(CTest)
   ENDIF( BUILD_TESTING )
-ENDIF()
+#ENDIF()
 
 # generates the utilities
 ADD_EXECUTABLE( CaPTk_Utilities
@@ -1118,6 +1132,7 @@ IF( NOT CAPTK_CLI_MODE )
   TARGET_LINK_LIBRARIES( ${EXE_NAME}
     ${DEPENDENT_LIBS}
     ${LIBNAME_GUI}
+    CaPTk_Common
     ${LIBNAME_Applications}
     ${LIBNAME_FeatureExtractor}
     ${LIBNAME_CBICATK}
@@ -1125,6 +1140,7 @@ IF( NOT CAPTK_CLI_MODE )
 
   ADD_DEPENDENCIES( ${EXE_NAME}
     ${LIBNAME_GUI}
+    CaPTk_Common
     ${LIBNAME_Applications}
     ${LIBNAME_FeatureExtractor}
     ${LIBNAME_CBICATK}

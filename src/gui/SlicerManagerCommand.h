@@ -4,7 +4,7 @@
 
 //#include "CAPTk.h"
 #include "SlicerManager.h"
-#include "CapTkUtils.h"
+#include "CaPTkUtils.h"
 #include "vtkCommand.h"
 #include "vtkSmartPointer.h"
 

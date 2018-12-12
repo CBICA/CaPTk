@@ -13,7 +13,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 #include "SimpleImageManager.h"
 #include "NiftiDataManager.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 #include <QDirIterator>
 #include <QStringList>
 #include <QDir>

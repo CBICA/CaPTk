@@ -2,7 +2,7 @@
 
 #include <string>
 #include <QString>
-#include <CapTkDefines.h>
+#include <CaPTkDefines.h>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QComboBox>

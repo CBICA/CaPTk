@@ -1651,15 +1651,15 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
           {
             cbica::sleep(100);
             myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
-            myfile << "SubjectID_Modality_ROILabel_FeatureFamily_Feature,Value,Parameters\n";
           }
+          myfile << "SubjectID_Modality_ROILabel_FeatureFamily_Feature,Value,Parameters\n";
+#ifndef WIN32
+          myfile.flush();
+#endif
+          myfile.close();
         }
-        else // otherwise, append
+        //else // otherwise, append
         {
-          if (m_debug)
-          {
-            m_logger.Write("Output file present for Feature Extraction, so appending");
-          }
           myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
           // check for locks in a cluster environment
           while (!myfile.is_open())
@@ -1670,6 +1670,10 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
           myfile << m_patientID + "_" + modality + "_" + label + "_" + featureFamily + "_" + f.first +
             "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
         }
+#ifndef WIN32
+        myfile.flush();
+#endif
+        myfile.close();
       }
 
       // for training file, populate these 2 member variables
@@ -2053,6 +2057,7 @@ void FeatureExtraction< TImage >::Update()
       //#pragma omp parallel for num_threads(m_threads)
       for (/*j has been initialized earlier*/; j < allROIs.size(); j++)
       {
+        bool volumetricFeaturesExtracted = false, morphologicFeaturesExtracted = false;
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
           auto writeFeatureMapsAndLattice = m_LatticeComputation && allROIs[j].latticeGridPoint;
@@ -2177,38 +2182,42 @@ void FeatureExtraction< TImage >::Update()
               {
                 if (std::get<0>(temp->second))
                 {
-                  auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                  std::get<2>(temp->second) = m_modality[i];
-                  std::get<3>(temp->second) = allROIs[j].label;
-
-                  /* this dimensionality reduction applies only to shape and Volumetric features */
-                  if (TImage::ImageDimension == 3)
+                  if (!morphologicFeaturesExtracted) // because this feature is to be extracted per ROI and not per ROI & modality
                   {
-                    if (m_Dimension == 2) // extracts slice with maximum area along the specified axis
+                    auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<3>(temp->second) = allROIs[j].label;
+
+                    /* this dimensionality reduction applies only to shape and Volumetric features */
+                    if (TImage::ImageDimension == 3)
                     {
-                      //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
-                      auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
-                      //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
-                      //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
-                      CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
+                      if (m_Dimension == 2) // extracts slice with maximum area along the specified axis
+                      {
+                        //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
+                        auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
+                        //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
+                        //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
+                        CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
+                      }
+                      else
+                      {
+                        CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
+                      }
                     }
                     else
                     {
                       CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
                     }
-                  }
-                  else
-                  {
-                    CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
-                  }
-                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                  if (m_debug)
-                  {
-                    auto tempT2 = std::chrono::high_resolution_clock::now();
-                    m_logger.Write("Morphologic Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    if (m_debug)
+                    {
+                      auto tempT2 = std::chrono::high_resolution_clock::now();
+                      m_logger.Write("Morphologic Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    }
+                    morphologicFeaturesExtracted = true;
                   }
                 }
               }
@@ -2221,37 +2230,41 @@ void FeatureExtraction< TImage >::Update()
               {
                 if (std::get<0>(temp->second))
                 {
-                  auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                  std::get<2>(temp->second) = m_modality[i];
-                  std::get<3>(temp->second) = allROIs[j].label;
-
-                  /* this dimensionality reduction applies only to shape and Volumetric features */
-                  if (TImage::ImageDimension == 3)
+                  if (!volumetricFeaturesExtracted) // because this feature is to be extracted per ROI and not per ROI & modality
                   {
-                    if (m_Dimension == 2)
+                    auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<3>(temp->second) = allROIs[j].label;
+
+                    /* this dimensionality reduction applies only to shape and Volumetric features */
+                    if (TImage::ImageDimension == 3)
                     {
-                      //ImageType2D::Pointer selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
-                      //CalculateVolumetric<ImageType2D>(selected_axis_image, std::get<4>(temp->second));
-                      auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
-                      CalculateVolumetric<TImage>(selected_axis_image, std::get<4>(temp->second));
+                      if (m_Dimension == 2)
+                      {
+                        //ImageType2D::Pointer selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
+                        //CalculateVolumetric<ImageType2D>(selected_axis_image, std::get<4>(temp->second));
+                        auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
+                        CalculateVolumetric<TImage>(selected_axis_image, std::get<4>(temp->second));
+                      }
+                      else
+                      {
+                        CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
+                      }
                     }
                     else
                     {
                       CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
                     }
-                  }
-                  else
-                  {
-                    CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
-                  }
-                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                  if (m_debug)
-                  {
-                    auto tempT2 = std::chrono::high_resolution_clock::now();
-                    m_logger.Write("Volumetric Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    if (m_debug)
+                    {
+                      auto tempT2 = std::chrono::high_resolution_clock::now();
+                      m_logger.Write("Volumetric Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    }
+                    volumetricFeaturesExtracted = true;
                   }
                 }
               }
@@ -2822,6 +2835,8 @@ void FeatureExtraction< TImage >::Update()
         {
           myfile << "SubjectID," + m_trainingFile_featureNames + "\n"; // the assumption is that the filename for m_outputFile is used in the same study, i.e., has same # of features
         }
+        myfile.close();
+        myfile.open(m_outputFile, std::ios_base::app);
         myfile << m_patientID + "," + m_trainingFile_features + "\n";
 #ifndef WIN32
         myfile.flush();

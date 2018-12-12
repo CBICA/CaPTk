@@ -15,8 +15,8 @@
 
 #include "fImagesPanel.h"
 //#include "CAPTk.h"
-#include "CapTkEnums.h"
-#include "CapTkUtils.h"
+#include "CaPTkEnums.h"
+#include "CaPTkUtils.h"
 
 fImagesPanel::fImagesPanel(QWidget * parent) : QWidget(parent)
 {

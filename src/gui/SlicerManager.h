@@ -15,9 +15,9 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #define _SlicerManager_h_
 
 //#include "CAPTk.h"
-//#include "CapTkUtils.h"
-#include "CapTkDefines.h"
-#include "CapTkUtils.h"
+//#include "CaPTkUtils.h"
+#include "CaPTkDefines.h"
+#include "CaPTkUtils.h"
 #include "vtkSmartPointer.h"
 #include "itkImageSeriesReader.h"
 #include "itkGDCMSeriesFileNames.h"

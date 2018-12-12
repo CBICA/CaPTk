@@ -1,7 +1,7 @@
 #include "fSurvivalDialog.h"
 //#include "fProgressDialog.h"
 //#include "CAPTk.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 #include "cbicaLogging.h"
 
 fSurvivalPredictor::fSurvivalPredictor()
