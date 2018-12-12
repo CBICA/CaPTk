@@ -152,6 +152,9 @@ ENDIF()
 
 # Diffusion Derivatives !!
 
+ADD_TEST(NAME DiffusionDerivativesHelpTest COMMAND DiffusionDerivatives -h )
+ADD_TEST(NAME DiffusionDerivativesVersionTest COMMAND DiffusionDerivatives -v )
+
 # Directionality Estimate Tests
 
 ADD_TEST(NAME DirectionalityEstimateTest COMMAND DirectionalityEstimate -l ${TESTING_DATA_DIR}/direst/img_timepoint_1.nii.gz -o ${TESTING_OUTPUT_DIR}/dirEst.txt )
@@ -191,7 +194,14 @@ ADD_TEST(NAME FeatureExtractionVersionTest COMMAND FeatureExtraction -v )
 
 # Geodesic Segmentation Tests !!
 
+# bad yaml???
+
+ADD_TEST(NAME GeodesicSegmentationHelpTest COMMAND GeodesicSegmentation -h )
+ADD_TEST(NAME GeodesicSegmentationVersionTest COMMAND GeodesicSegmentation -v )
+
 # Greedy Registration Tests !!
+
+# bad yaml???
 
 # -reg -trf -i moving.nii.gz -f fixed.nii.gz -o output.nii.gz -t matrix.mat -a -m MI -n 100x50x5 -th 4
 
@@ -231,6 +241,9 @@ ADD_TEST(NAME PerfusionDerivativesVersionTest COMMAND PerfusionDerivatives -v )
 
 # Perfusion PCA Tests !!
 
+ADD_TEST(NAME PerfusionPCAHelpTest COMMAND PerfusionPCA -h )
+ADD_TEST(NAME PerfusionPCAVersionTest COMMAND PerfusionPCA -v )
+
 # PopulationAtlases Tests
 
 ADD_TEST(NAME PopulationAtlasesTest COMMAND PopulationAtlases -i ${TESTING_DATA_DIR}/popatlas/atlas/ -l ${TESTING_DATA_DIR}/popatlas/atlaslabelfile.csv -a ${TESTING_DATA_DIR}/popatlas/jakob_stripped_with_cere_lps_256256128.nii.gz -o ${TESTING_OUTPUT_DIR}/popatlas )
@@ -259,23 +272,30 @@ ADD_TEST(NAME RecurrenceEstimatorVersionTest COMMAND RecurrenceEstimator -v )
 
 # SBRT Tests
 
+# Analysis
+
+# bad yaml???
+ADD_TEST(NAME SBRT_AnalysisTest COMMAND SBRT_Analysis -i ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 1 )
+ADD_TEST(NAME SBRT_AnalysisOutputTest COMMAND SBRT_Analysis -i ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 1 ${TESTING_OUTPUT_DIR}/sbrt/analysis )
+
+ADD_TEST(NAME SBRT_AnalysisHelpTest COMMAND SBRT_Analysis -h )
+ADD_TEST(NAME SBRT_AnalysisVersionTest COMMAND SBRT_Analysis -v )
+
+# Lung 
+# bad yaml???
 ADD_TEST(NAME SBRT_LungFieldTest COMMAND SBRT_LungField -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -o ${TESTING_OUTPUT_DIR}/sbrt/lung )
 ADD_TEST(NAME SBRT_LungFieldMaskTest COMMAND SBRT_LungField -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -o ${TESTING_OUTPUT_DIR}/sbrt/lung -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz )
 
 ADD_TEST(NAME SBRT_LungFieldHelpTest COMMAND SBRT_LungField -h )
 ADD_TEST(NAME SBRT_LungFieldVersionTest COMMAND SBRT_LungField -v )
 
+# Nodule
+# bad yaml???
 ADD_TEST(NAME SBRT_NoduleTest COMMAND SBRT_Nodule -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -o ${TESTING_OUTPUT_DIR}/sbrt/nodule )
 ADD_TEST(NAME SBRT_NoduleLabelTest COMMAND SBRT_Nodule -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 2 -o ${TESTING_OUTPUT_DIR}/sbrt/nodule )
 
 ADD_TEST(NAME SBRT_NoduleHelpTest COMMAND SBRT_Nodule -h )
 ADD_TEST(NAME SBRT_NoduleVersionTest COMMAND SBRT_Nodule -v )
-
-ADD_TEST(NAME SBRT_AnalysisTest COMMAND SBRT_Analysis -i ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 1 )
-ADD_TEST(NAME SBRT_AnalysisOutputTest COMMAND SBRT_Analysis -i ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 1 ${TESTING_OUTPUT_DIR}/sbrt/analysis )
-
-ADD_TEST(NAME SBRT_AnalysisHelpTest COMMAND SBRT_Analysis -h )
-ADD_TEST(NAME SBRT_AnalysisVersionTest COMMAND SBRT_Analysis -v )
 
 # Survival Predictor Tests
 
@@ -294,6 +314,8 @@ ADD_TEST(NAME TrainingModuleHelpTest COMMAND TrainingModule -h )
 ADD_TEST(NAME TrainingModuleVersionTest COMMAND TrainingModule -v )
 
 # White Stripe Tests 
+
+# bad yaml???
 
 # White stripe has a bunch of flags that affect a bunch of default values
 # since we want to test for "does it work", whatever data we get out we really don't care about and thus
