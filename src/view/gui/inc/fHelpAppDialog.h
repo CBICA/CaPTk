@@ -17,7 +17,7 @@
 #define _fHelpAppDialog_h_
 
 
-#include "CAPTk.h"
+//#include "CAPTk.h"
 #include "ui_fHelpAppDialog.h"
 
 

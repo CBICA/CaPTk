@@ -17,7 +17,7 @@
 #define _fSegmentationPanel_h_
 
 
-#include "CAPTk.h"
+//#include "CAPTk.h"
 #include "Landmarks.h"
 #include "ui_fSegmentationPanel.h"
 #include "fFeatureDialog.h"

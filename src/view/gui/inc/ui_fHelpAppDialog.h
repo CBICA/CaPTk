@@ -50,8 +50,9 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QWidget>
 #include "QVTKWidget.h"
+#include <QtWidgets/QDialog>
 
-#include "CAPTk.h"
+//#include "CAPTk.h"
 
 QT_BEGIN_NAMESPACE
 

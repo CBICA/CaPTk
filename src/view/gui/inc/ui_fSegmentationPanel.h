@@ -32,12 +32,15 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QLineEdit>
 #include <qcombobox.h>
 #include <QToolButton>
 #include <qgroupbox.h>
 #include <qsize.h>
 #include <map>
-#include "CAPTk.h"
+//#include "CAPTk.h"
+#include "CaPTkGUIUtils.h"
 
 QT_BEGIN_NAMESPACE
 
