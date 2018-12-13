@@ -200,6 +200,38 @@ namespace cbica
   }
 
   //! copied from cbicaUtilities to ensure CmdParser stays header-only
+  std::string _getFullPath()
+  {
+#if defined(_WIN32)
+    //! Initialize pointers to file and user names
+    char path[FILENAME_MAX];
+    GetModuleFileNameA(NULL, path, FILENAME_MAX);
+    //_splitpath_s(filename, NULL, NULL, NULL, NULL, filename, NULL, NULL, NULL);
+#elif __APPLE__
+    char path[PATH_MAX];
+    uint32_t size = PATH_MAX - 1;
+    if (path != NULL)
+    {
+      if (_NSGetExecutablePath(path, &size) != 0)
+      {
+        std::cerr << "[getFullPath()] Error during getting full path..";
+      }
+    }
+#else
+    //! Initialize pointers to file and user names
+    char path[PATH_MAX];
+    if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
+      //path = dirname(path);
+      std::cerr << "[getFullPath()] Error during getting full path..";
+#endif
+
+    std::string return_string = std::string(path);
+    path[0] = '\0';
+
+    return return_string;
+  }
+
+  //! copied from cbicaUtilities to ensure CmdParser stays header-only
   static inline bool splitFileName(const std::string &dataFile, std::string &path,
     std::string &baseName, std::string &extension)
   {
@@ -289,6 +321,14 @@ namespace cbica
 
       return true;
     }
+  }
+
+  //! copied from cbicaUtilities to ensure CmdParser stays header-only
+  std::string _getExecutablePath()
+  {
+    std::string path, base, ext;
+    cbica::splitFileName(cbica::_getFullPath(), path, base, ext);
+    return path;
   }
 
   //! copied from cbicaUtilities to ensure CmdParser stays header-only
@@ -805,7 +845,7 @@ namespace cbica
       {
         helpRequested = true;
         position = i;
-        // writeCWLFile(cbica::getExecutablePath(), false);
+        writeCWLFile(_getExecutablePath(), false);
         exit(EXIT_SUCCESS);
         //return true;
       }
@@ -1144,9 +1184,9 @@ namespace cbica
 
     std::string cwlfileName = dirName_wrap + m_exeName + ".cwl";
 
-    std::cout << "[DEBUG]dirName_wrap: " << dirName_wrap << std::endl;
-    std::cout << "[DEBUG]m_exeName: " << m_exeName << std::endl;
-    std::cout << "[DEBUG]cwlfileName: " << cwlfileName << std::endl;
+    // std::cout << "[DEBUG]dirName_wrap: " << dirName_wrap << std::endl;
+    // std::cout << "[DEBUG]m_exeName: " << m_exeName << std::endl;
+    // std::cout << "[DEBUG]cwlfileName: " << cwlfileName << std::endl;
     
     std::ofstream file;
     if (!cbica::fileExists(cwlfileName) || overwriteFile)

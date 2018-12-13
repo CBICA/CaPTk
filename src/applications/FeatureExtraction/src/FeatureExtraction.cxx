@@ -196,8 +196,6 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("d", "debug", cbica::Parameter::BOOLEAN, "true or false", "Whether to print out additional debugging info", "Defaults to '0'");
   parser.addOptionalParameter("dw", "debugWrite", cbica::Parameter::BOOLEAN, "true or false", "Whether to write intermediate files or not", "Defaults to '0'");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::FILE, "Text file with write access", "Full path to log file to store logging information", "By default, only console output is generated");
-
-  parser.writeCWLFile(".", parser.getExeName(), false);
   parser.exampleUsage("FeatureExtraction -n AAAC -i AAAC0_flair_pp_shrunk.nii.gz -p 1_params_default.csv -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -o featExParam1.csv -t FL -r 1 -l ED,NC");
 
   //bool loggerRequested = false;
