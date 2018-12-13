@@ -93,8 +93,6 @@ ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
 #SET(GUI_SOURCES_DIR "${PROJECT_SOURCE_DIR}/src/gui")
 SET(GUI_SOURCES_DIR "${PROJECT_SOURCE_DIR}")
 SET(GUI_SOURCES_UPDATED ${GUI_SOURCES} )
-message("before for loop")
-message(${GUI_SOURCES_UPDATED})
 FOREACH(gui_tool ${UI_ELEMENTS})
 
   IF( EXISTS "${GUI_SOURCES_DIR}/ui_${gui_tool}.h" )
@@ -127,9 +125,6 @@ FOREACH(gui_tool ${UI_ELEMENTS})
   ENDIF()
 
 ENDFOREACH(gui_tool)
-message("after for loop")
-message(${GUI_SOURCES_UPDATED})
-message(${PROJECT_NAME})
 
 INCLUDE_DIRECTORIES( ${CaPTk_SOURCE_DIR}/src
                      ${CaPTk_SOURCE_DIR}/src/cbica_toolkit
