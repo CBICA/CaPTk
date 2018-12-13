@@ -167,8 +167,6 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having model");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-
-  parser.writeCWLFile(".", parser.getExeName(), false);
   parser.exampleUsage("ImagingSubtypePredictor -i <input dir> -o <output dir>");
 
   // parameters to get from the command line

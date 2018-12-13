@@ -9,14 +9,12 @@ int main(int argc, char **argv)
   auto parser = cbica::CmdParser(argc, argv);
   parser.addRequiredParameter("i", "image", cbica::Parameter::FILE, "NIfTI or DICOM", "Input Perfusion image on which computation is done");
   parser.addRequiredParameter("m", "mask", cbica::Parameter::FILE, "NIfTI or DICOM", "Mask containing near (1) and far (2) labels");
-
+  parser.exampleUsage("EGFRvIIISurrogateIndex -i DSC-MRI_data.nii.gz -m Near_Far_masks.nii.gz");
+  
   std::string inputFile, drawingFile;
 
   parser.getParameterValue("i", inputFile);
   parser.getParameterValue("m", drawingFile);
-
-  parser.writeCWLFile(".", parser.getExeName(), false);
-  parser.exampleUsage("EGFRvIIISurrogateIndex -i DSC-MRI_data.nii.gz -m Near_Far_masks.nii.gz");
 
   if (!cbica::fileExists(inputFile))
   {

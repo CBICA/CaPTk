@@ -11,8 +11,6 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("n", "number of PCAs", cbica::Parameter::STRING, "", "The number of principal components.");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-
-  parser.writeCWLFile(".", parser.getExeName(), false);
   parser.exampleUsage("");
 
   // parameters to get from the command line

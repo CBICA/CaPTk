@@ -13,15 +13,13 @@ int main( int argc, char** argv )
 
 	// 
 	cbica::CmdParser parser(argc, argv);
-	parser.addRequiredParameter("i", "inputImage", cbica::Parameter::STRING, "none", "Absolute path of PET image", "For example pet.nii.gz");	
-	parser.addRequiredParameter("m", "maskImage", cbica::Parameter::STRING, "none", "Absolute path of mask image", "For example mask.nii.gz");
+	parser.addRequiredParameter("i", "inputImage", cbica::Parameter::FILE, "none", "Absolute path of PET image", "For example pet.nii.gz");	
+	parser.addRequiredParameter("m", "maskImage", cbica::Parameter::FILE, "none", "Absolute path of mask image", "For example mask.nii.gz");
 	parser.addRequiredParameter("l", "label", cbica::Parameter::INTEGER, "none", "Label value of the ROI", "For example 2");	
-	parser.addOptionalParameter("o", "outputFile", cbica::Parameter::STRING, "none", "Absolute path and basename of output file (without extension)", "For example radiomic_feature");
-	parser.addOptionalParameter("L", "logFile", cbica::Parameter::STRING, "none", "Absolute path of log file", "For example log_file.txt");
-  	parser.addOptionalParameter("D", "Directory", cbica::Parameter::STRING, "none", "Absolute path of model directory", "For example C:/Model");
-
-	parser.writeCWLFile(".", parser.getExeName(), false);
-  	parser.exampleUsage("SBRT_Analysis -i AAAC0_flair_pp_shrunk_75.nii.gz -m AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 1");
+	parser.addOptionalParameter("o", "outputFile", cbica::Parameter::FILE, "none", "Absolute path and basename of output file (without extension)", "For example radiomic_feature");
+	parser.addOptionalParameter("L", "logFile", cbica::Parameter::FILE, "none", "Absolute path of log file", "For example log_file.txt");
+  	parser.addOptionalParameter("D", "Directory", cbica::Parameter::DIRECTORY, "none", "Absolute path of model directory", "For example C:/Model");
+	parser.exampleUsage("SBRT_Analysis -i AAAC0_flair_pp_shrunk_75.nii.gz -m AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 1");
 
 	std::string inputFileName;
 	std::string maskName;
