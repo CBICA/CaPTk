@@ -1,9 +1,15 @@
 # Binaries, binary folders
 
 bin_debug
-bin/
+bin
 CaPTk.bin
 makeself-*.run*
+
+# Linux specific paths that get pulled in
+src/applications/individualApps/dcm2nii
+src/applications/individualApps/itksnap/lib
+src/applications/individualApps/libra/libexec
+src/applications/individualApps/libra/MCRInstaller.zip
 
 # Misc
 .vs
