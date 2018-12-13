@@ -431,7 +431,7 @@ namespace cbica
 	  \param workflowName For more advanced CWL workflows
     \param overwriteFile If the current file should be overwritten or not
 	  */
-	  void writeCWLFile(const std::string & dirName, const std::string &workflowName, bool overwriteFile);
+	  void writeCWLFile(const std::string & dirName, bool overwriteFile);
 
 	  /*
 	  \brief Gets the command line string with all the parameters from input yml file

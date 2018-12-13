@@ -358,7 +358,7 @@ namespace cbica
 #endif    
     if (input_exeName.empty())
     {
-      m_exeName = cbica::getExecutableName();
+      m_exeName = m_argv[0]/*(cbica::getExecutableName()*/;
     }
     else
     {
@@ -378,6 +378,7 @@ namespace cbica
     m_optionalParameters.push_back(Parameter("u", "usage", cbica::Parameter::NONE, "", "Prints basic usage message.", "", "", "", ""));
     m_optionalParameters.push_back(Parameter("h", "help", cbica::Parameter::NONE, "", "Prints verbose usage information.", "", "", "", ""));
     m_optionalParameters.push_back(Parameter("v", "version", cbica::Parameter::NONE, "", "Prints information about software version.", "", "", "", ""));
+    m_optionalParameters.push_back(Parameter("rt", "run-test", cbica::Parameter::NONE, "", "Runs the tests", "", "", "", ""));
   }
 
   CmdParser::CmdParser(int argc, char **argv, const std::string &exe_name)
@@ -497,7 +498,7 @@ namespace cbica
     const std::string &description_line4,
     const std::string &description_line5)
   {
-    if ((laconic == "u") || (laconic == "h") || (laconic == "v"))
+    if ((laconic == "u") || (laconic == "h") || (laconic == "v") || (laconic == "rt"))
     {
       return;
     }
@@ -528,7 +529,7 @@ namespace cbica
     const std::string &description_line5)
   {
     //std::cout << laconic << verbose << verbose << dataRange << description_line1 << std::endl;
-    if ((laconic == "u") || (laconic == "h") || (laconic == "v"))
+    if ((laconic == "u") || (laconic == "h") || (laconic == "v") || (laconic == "rt"))
     {
       return;
     }
@@ -613,7 +614,7 @@ namespace cbica
         }
       }
 
-      if (verbose && (inputParameters[i].laconic != "u") && (inputParameters[i].laconic != "h") && (inputParameters[i].laconic != "v"))
+      if (verbose && (inputParameters[i].laconic != "u") && (inputParameters[i].laconic != "h") && (inputParameters[i].laconic != "v") && (inputParameters[i].laconic != "rt") )
       {
         std::cout << spaces_verb_line2 << "Expected Type  :: " << inputParameters[i].dataType_string << "\n" <<
           spaces_verb_line2 << "Expected Range :: " << inputParameters[i].dataRange << "\n";
@@ -714,6 +715,12 @@ namespace cbica
     {
       input_string = "v";
     }
+    else if ((input_string_lower == "run-test") || (input_string_lower == "-run-test") || (input_string_lower == "--run-test")
+      || (input_string_lower == "rt") || (input_string_lower == "-rt") || (input_string_lower == "--rt"))
+    {
+      input_string = "rt";
+    }
+
 
     if (!checkMaxLen)
     {
@@ -791,6 +798,14 @@ namespace cbica
         helpRequested = true;
         position = i;
         echoVersion();
+        exit(EXIT_SUCCESS);
+        //return true;
+      }
+      if (inputParamToCheck == "rt")
+      {
+        helpRequested = true;
+        position = i;
+        // writeCWLFile(cbica::getExecutablePath(), false);
         exit(EXIT_SUCCESS);
         //return true;
       }
@@ -1109,7 +1124,7 @@ namespace cbica
     m_exampleOfUsage = cbica::stringReplace(m_exampleOfUsage, "./" + m_exeName, "");
   }
 
-  void CmdParser::writeCWLFile(const std::string &dirName, const std::string &workflowName, bool overwriteFile = false) 
+  void CmdParser::writeCWLFile(const std::string &dirName, bool overwriteFile = false) 
   {
     if (!checkMaxLen)
     {
@@ -1129,6 +1144,10 @@ namespace cbica
 
     std::string cwlfileName = dirName_wrap + m_exeName + ".cwl";
 
+    std::cout << "[DEBUG]dirName_wrap: " << dirName_wrap << std::endl;
+    std::cout << "[DEBUG]m_exeName: " << m_exeName << std::endl;
+    std::cout << "[DEBUG]cwlfileName: " << cwlfileName << std::endl;
+    
     std::ofstream file;
     if (!cbica::fileExists(cwlfileName) || overwriteFile)
     {
@@ -1140,9 +1159,9 @@ namespace cbica
       config["class"] = "CommandLineTool";
       config["version"] = m_version;
       config["baseCommand"] = m_exeName;
-
+      
       YAML::Node inputs = config["inputs"];
-
+      
       for (size_t i = 0; i < m_requiredParameters.size(); i++)
       {
         config["inputs"]["-" + m_requiredParameters[i].verbose];
