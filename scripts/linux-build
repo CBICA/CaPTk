@@ -1,0 +1,138 @@
+#!/bin/bash
+
+# Any subsequent(*) commands which fail will 
+# cause the shell script to exit immediately
+set -e
+
+# CaPTk Packager
+
+# Cmake command to run from /trunk/bin
+# We need this directory structure for appimages to be generated
+CMAKE_CMD () {
+  cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+}
+
+# Process files for linux
+
+PROCESS_CMD () {
+  INSTALL_DIR=`pwd`
+  # Needs to be marked as executable for LIBRA
+  cd ./libexec/MCR/v84/bin/glnxa64
+  chmod +x matlab_helper
+  # Go back up to /bin
+  cd ${INSTALL_DIR}/bin
+  # dos2unix stage
+  dos2unix libra
+  chmod +x libra
+  dos2unix ConfettiGUI.py
+  chmod +x ConfettiGUI.py
+  cd ../libexec
+  dos2unix ConfettiCore.py
+  chmod +x ConfettiCore.py
+  chmod +x libra
+  # Up to install
+  cd ${INSTALL_DIR}
+}
+
+# linuxdeployqt command
+LINDEPQT_CMD () {
+  APP_DIR=`pwd`
+  cd ./appdir/usr/
+  cp /usr/lib/x86_64-linux-gnu/nss/* ./lib
+  echo "[:] Processing files for linux..."
+  PROCESS_CMD
+  cd ${APP_DIR}
+  # Download linuxdeployqt and run it
+  echo "[:] Downloading linuxdeployqt..."
+  wget https://github.com/probonopd/linuxdeployqt/releases/download/5/linuxdeployqt-5-x86_64.AppImage
+  chmod +x linuxdeployqt-5-x86_64.AppImage
+  ./linuxdeployqt-5-x86_64.AppImage ./appdir/usr/share/applications/*.desktop -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**} -appimage
+  mv ./CaPTk*.AppImage ../../CaPTk.bin
+  cd ../../
+}
+
+usage () {
+  echo "CaPTk Packager for Linux"
+  echo ""
+  echo "  usage: ${0} --itk=/path/to/ITK-build"
+  echo ""
+  echo "  ${0} is an automated linux packager for CaPTk. Make sure to run it from the project root, and"
+  echo "  pass in the location to your built ITK directory if it isn't in your path"
+  exit 0
+}
+
+echo "[!] Warn: This script has not been updated for the superbuild option. If you are building with the superbuild enabled, note that this script may not work as intended"
+
+# Check commandline arguments for ITK-PATH
+ITK_PATH=""
+case $1 in
+  --itk=*)
+  ITK_PATH="${1#*=}"
+  if [[ -d "${ITK_PATH}" ]] ; then
+    echo "[*] Got ITK Path: ${ITK_PATH}"
+  else
+    echo "[!] Error: No ITK Path found."
+    usage
+  fi
+  ;;
+  -h|--help)
+  usage
+  ;;
+  *)
+  echo "[!] Warn: You did not supply an ITK path, and it is assumed it is in your PATH variable. see ${0} -h for more"
+esac
+
+echo "[:] Starting CaPTk packaging process..."
+
+echo "[?] Checking if you are in trunk..."
+# Test to see if the user is in trunk
+# First see if CMakeLists.txt exists
+if [[ -e CMakeLists.txt ]] ; then
+  # See if it contains PROJECT( CaPTk )
+  if [[ -z  `cat CMakeLists.txt | grep "PROJECT( CaPTk )"`  ]] ; then
+    echo "[!] Error: You do not appear to be within trunk of CaPTk (Project is not CaPTk)"
+    exit -1
+  fi
+else
+  echo "[!] Error: You do not appear to be in trunk (CMakeLists.txt not found)"
+  exit -1
+fi
+
+# Create binary directory
+echo "[:] Creating binary directory..."
+mkdir -p bin
+cd bin
+
+# Expose ITK_PATH if given one
+echo "[:] Making ITK visible to cmake..."
+if [[ -z "${ITK_PATH}" ]] ; then
+  echo "[!] Assuming it is in your PATH"
+else
+  export PATH=${ITK_PATH}:$PATH
+fi
+
+# Cmake
+echo "[:] Running cmake command..."
+CMAKE_CMD
+
+# Make install/strip
+echo "[:] Building CaPTk..."
+make -j2 install/strip
+
+# Install docs
+echo "[:] Installing docs..."
+cp -r docs install/appdir/usr/
+
+# For some reason LIBRA won't get added to the bin or libexec folders
+# So just manually do it
+# In addition LIBRA needs the Matlab runtime with one VERY SPECIFIC file
+# to be marked as executable or else the whole thing WILL NOT work. This
+# gets handled once we process files.
+# echo "[:] Running LIBRA Fix..."
+# cd ..
+# cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
+# cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
+# cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/
+# cd ./bin
+
+echo "[:] done"
