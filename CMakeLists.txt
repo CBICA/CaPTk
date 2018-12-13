@@ -436,7 +436,7 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
   ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/
   ${PROJECT_SOURCE_DIR}/src/common/inc/
-  ${PROJECT_SOURCE_DIR}/src/view/gui/inc
+  ${PROJECT_SOURCE_DIR}/src/view/gui/
   ${APPLICATION_INCLUDES}
 )
 
@@ -664,9 +664,6 @@ ADD_LIBRARY(
   ${FEATURE_EXTRACTION_DEPENDS}
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/FeatureExtraction.h
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/FeatureExtraction.hxx
-  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/LBPFeatures2D.h
-  ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/LBPFeatures2D.cpp
-
   #${CBICA-TK_SOURCES}
 )
 

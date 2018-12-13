@@ -17,7 +17,7 @@
 #define _fLungFieldDialog_h_
 
 
-//#include "CAPTk.h"
+#include "CAPTk.h"
 #include "ui_fLungFieldDialog.h"
 
 #define SUBJECT_CLASSIFICATION 0

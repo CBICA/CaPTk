@@ -1,6 +1,5 @@
 #include "fLungFieldDialog.h"
 #include "fProgressDialog.h"
-#include "CaPTkGUIUtils.h"
 
 fLungFieldDialog::fLungFieldDialog()
 {
