@@ -148,6 +148,143 @@ fMainWindow::fMainWindow()
 
   setupUi(this);
 
+  std::string nonNativeAppPaths_wrap = std::string(CAPTK_APP_LIST_PY_GUI);
+  if (nonNativeAppPaths_wrap[0] == ' ')
+  {
+    nonNativeAppPaths_wrap.erase(0, 1);
+  }
+  nonNativeAppPaths_wrap = nonNativeAppPaths_wrap + " itksnap";
+  m_pyGUIApps = cbica::stringSplit(nonNativeAppPaths_wrap, " ");
+  nonNativeAppPaths_wrap = std::string(CAPTK_APP_LIST_PY_CLI);
+  if (nonNativeAppPaths_wrap[0] == ' ')
+  {
+    nonNativeAppPaths_wrap.erase(0, 1);
+  }
+
+  m_pyCLIApps = cbica::stringSplit(nonNativeAppPaths_wrap, " ");
+  size_t allAppCounter = 0;
+  for (size_t i = 0; i < m_pyGUIApps.size(); i++)
+  {
+    if (m_pyGUIApps[i] == "confetti")
+    {
+      m_pyGUIApps[i] = "ConfettiGUI";
+    }
+    if ((m_pyGUIApps[i] == "librabatch") || (m_pyGUIApps[i] == "librasingle"))
+    {
+      m_pyGUIApps[i] = "libra";
+    }
+    if (m_pyGUIApps[i] == "SBRT_Segment")
+    {
+      m_pyGUIApps[i] = "SBRT_Lung_Segment";
+    }
+    if (m_pyGUIApps[i] == "SBRT_Analyze")
+    {
+      m_pyGUIApps[i] = "SBRT_Lung_Analyze";
+    }
+
+    m_allNonNativeApps[m_pyGUIApps[i]] = getApplicationPath(m_pyGUIApps[i]);
+    allAppCounter++;
+  }
+
+  for (size_t i = 0; i < m_pyCLIApps.size(); i++)
+  {
+    m_allNonNativeApps[m_pyCLIApps[i]] = getApplicationPath(m_pyCLIApps[i]);
+  }
+
+  // TBD: this needs to be controlled from CMake and not hard-coded here
+  auto brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator SurvivalPredictor MolecularSubtypePredictor PopulationAtlases WhiteStripe confetti";
+  std::string breastAppList = "";
+
+#ifndef APPLE
+  breastAppList = " librasingle librabatch";
+#endif
+
+  auto lungAppList = " LungField Nodule Analysis";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionDerivatives PerfusionPCA TrainingModule";
+  std::string segAppList = " itksnap GeodesicSegmentation";
+#ifdef WIN32
+  segAppList += " deepmedic";
+#endif
+  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching DeepMedicNormalizer";
+
+  vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
+  menuApp->addSeparator();
+  if (!breastAppList.empty())
+  {
+    vectorOfBreastApps = populateStringListInMenu(breastAppList, this, menuApp, "Breast Cancer", false);
+    menuApp->addSeparator();
+  }
+  vectorOfLungApps = populateStringListInMenu(lungAppList, this, menuApp, "Lung Cancer", false);
+  menuApp->addSeparator();
+  vectorOfSegmentationApps = populateStringListInMenu(segAppList, this, menuApp, "Segmentation", false);
+  vectorOfMiscApps = populateStringListInMenu(miscAppList, this, menuApp, "Miscellaneous", false);
+  vectorOfPreprocessingActionsAndNames = populateStringListInMenu(preProcessingAlgos, this, menuPreprocessing, "", false);
+
+  menuDownload->addAction("All");
+  for (const auto &currentActionAndName : vectorOfGBMApps)
+  {
+    if (currentActionAndName.name != "Glioblastoma")
+    {
+      if (currentActionAndName.name == "confetti")
+      {
+        menuDownload->addAction("Confetti");
+      }
+      else
+      {
+        menuDownload->addAction(currentActionAndName.name.c_str());
+      }
+    }
+  }
+
+  bool libraCheck = false;
+  for (const auto &currentActionAndName : vectorOfBreastApps)
+  {
+    if (currentActionAndName.name != "Breast Cancer")
+    {
+      if (!libraCheck)
+      {
+        if (currentActionAndName.name.find("libra") != std::string::npos)
+        {
+          libraCheck = true;
+          menuDownload->addAction("LIBRA");
+        }
+      }
+    }
+  }
+
+  bool sbrtCheck = false;
+  for (const auto &currentActionAndName : vectorOfLungApps)
+  {
+    if (currentActionAndName.name != "Lung Cancer")
+    {
+      if (!sbrtCheck)
+      {
+        if ((currentActionAndName.name.find("LungField") != std::string::npos) ||
+          (currentActionAndName.name.find("Nodule") != std::string::npos) ||
+          (currentActionAndName.name.find("Analysis") != std::string::npos))
+        {
+          sbrtCheck = true;
+          menuDownload->addAction("LungCancer");
+        }
+      }
+    }
+  }
+
+  for (const auto &currentActionAndName : vectorOfMiscApps)
+  {
+    if (currentActionAndName.name != "Miscellaneous")
+    {
+      if ((currentActionAndName.name != "itksnap") && (currentActionAndName.name != "deepmedic"))
+      {
+        if (!currentActionAndName.name.empty())
+        {
+          menuDownload->addAction(currentActionAndName.name.c_str());
+        }
+      }
+    }
+  }
+
+
   featurePanel->setListner(this);//TBD bad design RK
   featurePanel->setListner(this);//TBD bad design RK
   m_imagesTable = imagesPanel->GetImagesTable();
@@ -7668,4 +7805,68 @@ void fMainWindow::help_contextual(const std::string startPage)
 {
   mHelpDlg->setNewStartPage(startPage);
   mHelpDlg->show();
+}
+
+std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(const std::string &inputList, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic)
+{
+  if (!inputList.empty())
+  {
+    std::string inputList_wrap = inputList;
+    if (inputList_wrap[0] == ' ')
+    {
+      inputList_wrap.erase(0, 1);
+    }
+    std::vector< std::string > vectorOfInputs = cbica::stringSplit(inputList_wrap, " ");
+    return populateStringListInMenu(vectorOfInputs, inputFMainWindow, menuToPopulate, menuAppSubGroup, ExcludeGeodesic);
+  }
+  else
+  {
+    return std::vector< fMainWindow::ActionAndName >{};
+  }
+}
+
+std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(const std::vector< std::string > &vectorOfInputs, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic)
+{
+  std::vector< fMainWindow::ActionAndName > returnVector;
+  if (ExcludeGeodesic)
+  {
+    returnVector.resize(vectorOfInputs.size());
+  }
+  else
+  {
+    returnVector.resize(vectorOfInputs.size() + 1);
+  }
+  size_t returnVecCounter = 0;
+
+  if (!menuAppSubGroup.empty())
+  {
+    returnVector[returnVecCounter].action = new QAction(inputFMainWindow);
+    returnVector[returnVecCounter].action->setObjectName(QString::fromUtf8(std::string("action" + menuAppSubGroup).c_str()));
+    returnVector[returnVecCounter].action->setIconText(QString(menuAppSubGroup.c_str()));
+    returnVector[returnVecCounter].action->setText(QString(menuAppSubGroup.c_str()));
+    returnVector[returnVecCounter].action->setEnabled(false);
+    returnVector[returnVecCounter].name = menuAppSubGroup;
+    returnVector[returnVecCounter].action->setEnabled(false);
+    menuToPopulate->addAction(returnVector[returnVecCounter].action);
+    returnVecCounter++;
+  }
+
+  for (size_t i = 0; i < vectorOfInputs.size(); i++)
+  {
+    if ((vectorOfInputs[i] != "FeatureExtraction"))
+    {
+      returnVector[returnVecCounter].action = new QAction(inputFMainWindow);
+      returnVector[returnVecCounter].action->setObjectName(QString::fromUtf8(std::string("action" + vectorOfInputs[i]).c_str()));
+      returnVector[returnVecCounter].action->setIconText(QString(vectorOfInputs[i].c_str()));
+      returnVector[returnVecCounter].name = vectorOfInputs[i];
+#ifdef CAPTK_BUILD_CONSOLE_ONLY
+      returnVector[returnVecCounter].action->setEnabled(false);
+#endif
+      menuToPopulate->addAction(returnVector[returnVecCounter].action);
+      returnVecCounter++;
+    }
+  }
+  //}
+
+  return returnVector;
 }

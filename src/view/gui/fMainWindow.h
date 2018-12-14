@@ -187,6 +187,41 @@ class fMainWindow : public QMainWindow, private Ui::fMainWindow
 {
   Q_OBJECT
 
+private:
+
+  /**
+\struct ActionAndName
+
+\brief This is a helper struct to tie an action with its name as a std::string
+*/
+  struct ActionAndName
+  {
+    QAction* action;
+    std::string name;
+  };
+
+  //! Wrap to ensure previous functionality doesn't break
+  std::vector< ActionAndName > populateStringListInMenu(const std::string &inputList, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic);
+
+  /**
+  \brief Takes a list of application variables from CMake defines and put it in specified window and menu
+
+    \param inputList The list obtained from CMake variable which is added to cache
+    \param inputFMainWindow The current fMainWindow from which the QActions need to inherit
+    \param menuToPopulate The QMenu in which the QActions need to be populated *visualizationInputImagesLabel
+    \return A vector of ActionAndName structs which ties a QAction to the corresponding name from inputList
+    **/
+    std::vector< ActionAndName > populateStringListInMenu(const std::vector< std::string > &vectorOfInputs, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic);
+
+  // initialize vectors of Actions and Names so that the process can be automated and the QAction is tied to its corresponding Name
+  std::vector< ActionAndName >
+    vectorOfGBMApps, // GBM-specific applications
+    vectorOfBreastApps, // breast-specific applications
+    vectorOfLungApps, // lung-specific applications
+    vectorOfSegmentationApps, // the segmentation applications
+    vectorOfMiscApps, // the rest
+    vectorOfPreprocessingActionsAndNames; // for preprocessing algorithms
+
 public:
   //! Default constructor
   fMainWindow();
@@ -780,6 +815,11 @@ signals:
   \brief Load annotated ROI from qt file accept box
   */
   void LoadDrawing();
+
+///**
+//\brief Load near/far drawing from a DICOM file
+//*/
+//void LoadDicomDrawing();
 
   /**
   \brief Load annotated ROI from filename
