@@ -3,6 +3,7 @@
 bin_debug
 bin
 CaPTk.bin
+*Installer.bin
 makeself-*.run*
 
 # Linux specific paths that get pulled in

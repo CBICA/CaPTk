@@ -1,53 +1,162 @@
 #!/bin/bash
 
-# Any subsequent(*) commands which fail will 
-# cause the shell script to exit immediately
+#
+# CaPTk-Pkg
+#
+# This script is an automated configurator, builder, linker, and package deployer for linux builds of CaPTk.
+# It's intended use is to be as a standalone end-to-end from source to finished deployable binary builder
+#
+# There's a lot going on here becasue of the way certain things function on linux, the way multiple OS development works
+# and the fact no one has actually done this before, so there are plenty of quirks that need to be overcome as a part of this script
+#
+# REQUIREMENTS
+# 
+# This script implies you have the following:
+# - Built the dependency manager
+# - Installed Qt via the installer on their website, preferably for the LTS (at this time 5.12 as of 12/14/2018)
+# - Included those in your .bashrc or somehow exported them as a $PATH
+# - MCR folder is present in src/applications/individualAppls/libra that contains the extracted v84 MATLAB runtime
+# - NOTE: This last thing should be put in via git-lfs otherwise you can install libra normally, move the folder back there, 
+# and then re-build CaPTk with this script. Hopefully LIBRA will be implemented in C++ sometime in the future.
+# - Have dos2unix installed (It's in aptitude)
+# 
+# Example bashrc additions:
+# export PATH=/home/user/bin:$PATH
+# export PATH=/home/user/Qt/5.10.0/gcc_64/bin:$PATH
+# export PATH=/home/user/Qt/5.10.0/gcc_64/libexec:$PATH
+# export PATH=/home/user/Qt/5.10.0/gcc_64/lib/cmake/Qt5:$PATH
+# export PATH=/home/user/CBICA/git/CaPTk/bin:$PATH
+# export PATH=/home/user/CBICA/dependency_manager/bin/OpenCV-build:$PATH
+# export PATH=/home/user/CBICA/dependency_manager/bin/VTK-build:$PATH
+# export PATH=/home/user/CBICA/dependency_manager/bin/ITK-build:$PATH
+# 
+# NOTE: make sure to switch those directories with the relevant paths to your respective build locations. This is NOT a swap in addition!
+#
+# A final note:
+# Please make sure you read through this script before modifying it. Provided you have the following prerequisites, you should be able to build
+# CaPTk packages for linux using this script without modifications.
+
+# HOW IT WORKS
+#
+# This script works by:
+# - Configuring cmake to the proper linux-specific settings for linuxdeployqt
+# - Builds the project with make -j
+# - Installs project to a very specific set of subdirectories for linuxdeployqt
+# - Runs a set of fixes that otherwise would render specific features useless without them
+# - Neatly packages an AppImage with linuxdeployqt
+# - Wraps the AppImage in an installer that displays the license to the user, that then places the AppImage in the user's home/CaPTk folder
+#
+
+# HOW TO USE IT
+#
+# From the project root, run ./scripts/captk-kg
+# Make sure you are in the root. It won't work otherwise
+#
+
+# Set -e causes any subsequent commands which fail will cause the shell script to exit immediately.
+# This is here because typically, bash just plows through errors, and that's an awful thing.
+# When interacting with users, or helping them with this script, they may not know what error is important.
+# With this, they'll see the first error and the script will terminate.
 set -e
 
-# CaPTk Packager
+# Store the root dir this is being run from
+SRC_DIR=`pwd`
 
-# Cmake command to run from /trunk/bin
-# We need this directory structure for appimages to be generated
+# Linuxdeployqt requires a very special directory structure to use with it, therefore we should configure cmake
+# to inherently install CaPTk to that directory structure.
 CMAKE_CMD () {
   cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
 }
 
-# Process files for linux
-
-PROCESS_CMD () {
+# Run the fixes for linux
+FIX_CMD () {
+  # Save the install dir for later
   INSTALL_DIR=`pwd`
+
+  echo "[:] Running Linux Fixes..."
+
+  # Fix 1: LIBRA is awful on linux, and it only gets worse from here
+  # 
+  # For some reason LIBRA won't get added to the bin or libexec folders
+  # So just manually do it
+  # In addition LIBRA needs the Matlab runtime with one VERY SPECIFIC file
+  # to be marked as executable or else the whole thing WILL NOT work. We'll get to this in a second
+  echo "[:] Adding LIBRA..."
+  cd ${SRC_DIR}
+  cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
+  cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
+  cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
+
+  # Move into install
+  cd ./bin/install/appdir/usr
+
+  # Fix 2: WebEngine stuff
+  #
+  # From what I understand, linuxdeployqt will pull in all the required packages, binaries and link them dynamically
+  # so that it can wrap that in an AppImage so those links are preserved at runtime.
+  #
+  # However, the WebEngine requires libraries that chromium uses (Since it's literally just a chromium instance)
+  # but for SOME reason linuxdeployqt doesn't pull in. So we need to manually add these nss libraries in for the webengine
+  # to work.
+  echo "[:] Adding NSS libs..."
+  cp /usr/lib/x86_64-linux-gnu/nss/* ./lib
+
+  # Fix 3: LIBRA was made on windows and none of the stuff is marked as executable by default
+  # All of these need to be exec or else it flat out doesnt work.
   # Needs to be marked as executable for LIBRA
+
+  echo "[:] Marking MATLAB binaries as executable..."
+
+  # The magic file that we need from earlier
   cd ./libexec/MCR/v84/bin/glnxa64
   chmod +x matlab_helper
+
   # Go back up to /bin
   cd ${INSTALL_DIR}/bin
-  # dos2unix stage
+  
+  # Fix 4: DOS sucks and that file format literally cannot be run on linux so an external tool is needed
+  # to mark them as usable
+
+  echo "[:] Running dos2unix..."
+
+  # Libra needs it
   dos2unix libra
   chmod +x libra
+  # So does confetti
   dos2unix ConfettiGUI.py
   chmod +x ConfettiGUI.py
+  # And also the files in libexec
   cd ../libexec
   dos2unix ConfettiCore.py
   chmod +x ConfettiCore.py
   chmod +x libra
-  # Up to install
+
+  # Go back up to install
   cd ${INSTALL_DIR}
 }
 
-# linuxdeployqt command
+# Linuxdeployqt packaging command
 LINDEPQT_CMD () {
   APP_DIR=`pwd`
   cd ./appdir/usr/
-  cp /usr/lib/x86_64-linux-gnu/nss/* ./lib
-  echo "[:] Processing files for linux..."
-  PROCESS_CMD
+  # We need to fix the project first
+  FIX_CMD
   cd ${APP_DIR}
   # Download linuxdeployqt and run it
   echo "[:] Downloading linuxdeployqt..."
   wget https://github.com/probonopd/linuxdeployqt/releases/download/5/linuxdeployqt-5-x86_64.AppImage
   chmod +x linuxdeployqt-5-x86_64.AppImage
+  # Okay here's where it gets insane
+  # So we need to run linuxdeployqt, and show it where our *.desktop files are so it can generate an AppImage that
+  # properly can provide a direct link to the CaPTk binary within the /bin folder of the appdir structure
+  # 
+  # After that it attempts to link EVERYTHING IT CAN FIND
+  # Yes, that means at some point it will try to link the **ENTIRE** MATLAB runtime and ITK-snap libraries even though they don't need it
+  # So this insane regex was created to make sure linuxdeployqt just flat out recursively ignores those directories
   ./linuxdeployqt-5-x86_64.AppImage ./appdir/usr/share/applications/*.desktop -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**} -appimage
+  # Move the appimage up to the root
   mv ./CaPTk*.AppImage ../../CaPTk.bin
+  # And likewise move there as well
   cd ../../
 }
 
@@ -123,43 +232,40 @@ make -j2 install/strip
 echo "[:] Installing docs..."
 cp -r docs install/appdir/usr/
 
-# For some reason LIBRA won't get added to the bin or libexec folders
-# So just manually do it
-# In addition LIBRA needs the Matlab runtime with one VERY SPECIFIC file
-# to be marked as executable or else the whole thing WILL NOT work. This
-# gets handled once we process files.
-echo "[:] Running LIBRA Fix..."
-cd ..
-cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
-cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
-cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/
-cd ./bin
-
+# Insall and deploy
 cd install
 LINDEPQT_CMD
 
 echo "[:] Building Installer..."
 
-# Step 1
+# Okay so we use makeself to package the appimage (wrap your head around that one)
+# You can read more about it but it basically creates a micro-temp disk that you can read and move files from
+
+# Step 1: Get makeself, and extract it
 wget https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
 chmod +x ./makeself-2.4.0.run
 ./makeself-2.4.0.run
 rm makeself-2.4.0.run
 
-# Step 2
+# Step 2: Create a package directory for makeself to package
 mkdir pkg
+# We package the AppImage, the license, and a script to display the agreement and install the AppImage
 mv CaPTk.bin ./pkg/
 cp ./licenses/Combined.txt ./pkg/
 cp ./scripts/makeself ./pkg/
 chmod +x ./pkg/makeself
 
-# Step 3
+# Step 3: Wrap it all upp
 
-# Version 
+# Version number for CaPTk
 ver=`./pkg/CaPTk.bin -v | grep Version | awk '{print $2}'`
 
+# Create the installer
 ./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./makeself
+
+# Cleanup
 rm -rf ./pkg
 rm -rf ./makeself-2.4.0*
 
+# Done
 echo "[:] Done. Created installer"
