@@ -40,4 +40,28 @@ MACRO(CAPTK_ADD_EXECUTABLE APPLICATION)
   )
 
   ENDIF()
+
+  # Add test for run tests
+  ADD_TEST( NAME ${APPLICATION}_rt COMMAND ${APPLICATION} -rt )
+
+  # Post build cwl generation
+  add_custom_command(TARGET ${APPLICATION}
+    POST_BUILD
+    COMMAND ${APPLICATION} -cwl
+    COMMENT "Generating cwl for ${APPLICATION}..."
+    VERBATIM
+  )
+
+  IF (APPLE) 
+    # list (APPEND STANDALONE_APPS_LIST ${APPLICATION})
+    INSTALL( FILES ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl
+    DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+  ) 
+
+  ELSE()
+    INSTALL( FILES ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl
+    DESTINATION bin
+  )
+
+  ENDIF()
 ENDMACRO()

@@ -419,6 +419,7 @@ namespace cbica
     m_optionalParameters.push_back(Parameter("h", "help", cbica::Parameter::NONE, "", "Prints verbose usage information.", "", "", "", ""));
     m_optionalParameters.push_back(Parameter("v", "version", cbica::Parameter::NONE, "", "Prints information about software version.", "", "", "", ""));
     m_optionalParameters.push_back(Parameter("rt", "run-test", cbica::Parameter::NONE, "", "Runs the tests", "", "", "", ""));
+    m_optionalParameters.push_back(Parameter("cwl", "cwl", cbica::Parameter::NONE, "", "Generates a .cwl file for the software", "", "", "", ""));
   }
 
   CmdParser::CmdParser(int argc, char **argv, const std::string &exe_name)
@@ -538,7 +539,7 @@ namespace cbica
     const std::string &description_line4,
     const std::string &description_line5)
   {
-    if ((laconic == "u") || (laconic == "h") || (laconic == "v") || (laconic == "rt"))
+    if ((laconic == "u") || (laconic == "h") || (laconic == "v") || (laconic == "rt") || (laconic == "cwl"))
     {
       return;
     }
@@ -569,7 +570,7 @@ namespace cbica
     const std::string &description_line5)
   {
     //std::cout << laconic << verbose << verbose << dataRange << description_line1 << std::endl;
-    if ((laconic == "u") || (laconic == "h") || (laconic == "v") || (laconic == "rt"))
+    if ((laconic == "u") || (laconic == "h") || (laconic == "v") || (laconic == "rt") || (laconic == "cwl"))
     {
       return;
     }
@@ -654,7 +655,7 @@ namespace cbica
         }
       }
 
-      if (verbose && (inputParameters[i].laconic != "u") && (inputParameters[i].laconic != "h") && (inputParameters[i].laconic != "v") && (inputParameters[i].laconic != "rt") )
+      if (verbose && (inputParameters[i].laconic != "u") && (inputParameters[i].laconic != "h") && (inputParameters[i].laconic != "v") && (inputParameters[i].laconic != "rt") && (inputParameters[i].laconic != "cwl") )
       {
         std::cout << spaces_verb_line2 << "Expected Type  :: " << inputParameters[i].dataType_string << "\n" <<
           spaces_verb_line2 << "Expected Range :: " << inputParameters[i].dataRange << "\n";
@@ -760,6 +761,11 @@ namespace cbica
     {
       input_string = "rt";
     }
+    else if ((input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl")
+      || (input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl"))
+    {
+      input_string = "cwl";
+    }
 
 
     if (!checkMaxLen)
@@ -842,6 +848,14 @@ namespace cbica
         //return true;
       }
       if (inputParamToCheck == "rt")
+      {
+        helpRequested = true;
+        position = i;
+        // writeCWLFile(_getExecutablePath(), false);
+        exit(EXIT_SUCCESS);
+        //return true;
+      }
+      if (inputParamToCheck == "cwl")
       {
         helpRequested = true;
         position = i;
