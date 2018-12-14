@@ -11,14 +11,9 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 */
 
-
-
-
 #ifndef _fMainWindow_h_
 #define _fMainWindow_h_
 
-
-//#include "CAPTk.h"
 #include "NiftiDataManager.h"
 #include "RecurrenceEstimator.h"
 #include "PseudoProgressionEstimator.h"
@@ -179,17 +174,6 @@ typename itk::Image<OutputPixelType, VImageDimension>::Pointer convertVtkToItk(v
   }
   return NULL;
 }
-
-//template <unsigned int VDim, typename TReal>
-//class GreedyRunner
-//{
-//public:
-//    static int Run(GreedyParameters &param)
-//    {
-//        GreedyApproach<VDim, TReal> greedy;
-//        return greedy.Run(param);
-//    }
-//};
 
 /**
 \class fMainWindow
@@ -484,22 +468,7 @@ signals:
   param cbDistData Whether Distance feature need to be used or not
   */
   void TrainNewModelOnGivenData(const std::string &directory, const std::string &outputdirectory,  bool cbConvData,  bool cbDTIData,  bool cbPerfData,  bool cbDistData);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
   /**
   \brief Main function that estimates pseudoprogression on the displayed test subject
   param outputdirectory The directory where recurrence map will be written
@@ -542,10 +511,6 @@ signals:
   param cbDistData Whether Distance feature need to be used or not
   */
   void TrainNewPseudoprogressionModelOnGivenData(const std::string &directory, const std::string &outputdirectory, bool cbConvData, bool cbDTIData, bool cbPerfData, bool cbDistData);
-
-
-
-
 
   /**
   \brief Survival analysis using Existing model
@@ -811,11 +776,6 @@ signals:
   */
   void SaveSeedDrawing();
 
-  ///**
-  //\brief Load seed drawing from a Nifti file
-  //*/
-  //void LoadSeedDrawing();
-
   /**
   \brief Load annotated ROI from qt file accept box
   */
@@ -826,11 +786,6 @@ signals:
   */
   void LoadDrawing(const std::string &maskFile);
 
-  ///**
-  //\brief Load near/far drawing from a DICOM file
-  //*/
-  //void LoadDicomDrawing();
-
   /**
   \brief Combines near and far drawn points in one long vector to be used for edema segmentation based on region growing
   */
@@ -840,8 +795,6 @@ signals:
   \brief Puts initial seed points in one vector to be used for tumor segmentation 
   */
   VectorVectorDouble FormulateDrawingPointsForTumorSegmentation();
-
-
 
   /**
   \brief Save the current selected Nifti image
@@ -922,8 +875,6 @@ signals:
   \brief Close all loaded images
   */
   void CloseAllImages();
-
-
   
   /**
   \brief Reset the number of points in the table when all the images are closed
@@ -1014,7 +965,6 @@ signals:
   */
   void MousePositionChanged(int visibility, double x, double y, double z, double X, double Y, double Z, double value);
 
-
   /**
   \brief Sets the window and level values. Calls UpdateWindowLevel function internally
   */
@@ -1037,7 +987,6 @@ signals:
   \brief Applies the value of threshold slider on the displayed images
   */
   void thresholdSpinBoxChanged();
-
 
   /**
   \brief Enable mask thresholding using the radio button
@@ -1075,7 +1024,6 @@ signals:
   \brief Moves the cursor on the given co-ordinates
   */
   void MoveSlicerCursor(double x, double y, double z, int mode = 0);
-
 
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForSurvival (const std::string directoryname);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useConventionalData, const bool &useDTIData, const bool &usePerfData, const bool &useDistData);
@@ -1119,7 +1067,6 @@ signals:
   {
     return tumorPanel->mTumorPointsSelected;
   }
-  
 
   void ApplicationLIBRASingle();
   void ApplicationLIBRABatch();
@@ -1130,7 +1077,6 @@ signals:
 
   //! Convert 2D image to 3D image with a single slice and write to temp folder
   void ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage = false);
-
 
   void ApplicationDirectionality();
 #ifdef BUILD_FETALBRAIN
@@ -1211,7 +1157,6 @@ public:
   std::vector<SlicerManager*> mSlicerManagers;
   std::vector<SimpleImageManager*> mNonViewingImageManager;
 
-  //QWidget* mMainWidget;
   QString mInputPathName;
   std::vector<QSlider*> verticalSliders;
   //
@@ -1247,7 +1192,6 @@ public:
   int mBorderEndY;
   int mBorderEndZ;
 
-
   PreprocessingPipelineClass mPreprocessingObj;
   OutputWritingManager mOutputManager;
   NiftiDataManager mNifiDataManager;
@@ -1261,7 +1205,6 @@ public:
   ImagingSubtypePredictor mImagingSubtype;
   MolecularSubtypePredictor mMolecularSubtype;
   Fetalbrain mfetalbrain;
-
 
   fHelpDialog* mHelpDlg;
   fHelpTutorial mHelpTutorial;
@@ -1278,8 +1221,6 @@ public:
   GenericImage::Pointer mCustomImageToThreshold;
 
   int mSequenceNumber, mCustomImageToThreshold_min, mCustomImageToThreshold_max;
-
-
 
   private:
     ImageTypeFloat3D::Pointer m_InputGeomasks;
