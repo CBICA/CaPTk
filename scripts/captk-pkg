@@ -137,11 +137,6 @@ FIX_CMD () {
 
 # Linuxdeployqt packaging command
 LINDEPQT_CMD () {
-  APP_DIR=`pwd`
-  cd ./appdir/usr/
-  # We need to fix the project first
-  FIX_CMD
-  cd ${APP_DIR}
   # Download linuxdeployqt and run it
   echo "[:] Downloading linuxdeployqt..."
   wget https://github.com/probonopd/linuxdeployqt/releases/download/5/linuxdeployqt-5-x86_64.AppImage
@@ -232,8 +227,16 @@ make -j2 install/strip
 echo "[:] Installing docs..."
 cp -r docs install/appdir/usr/
 
-# Insall and deploy
+# Fix
 cd install
+APP_DIR=`pwd`
+cd ./appdir/usr/
+# We need to fix the project first
+FIX_CMD
+cd ${APP_DIR}
+
+# Install and deploy
+
 LINDEPQT_CMD
 
 echo "[:] Building Installer..."
@@ -252,8 +255,8 @@ mkdir pkg
 # We package the AppImage, the license, and a script to display the agreement and install the AppImage
 mv CaPTk.bin ./pkg/
 cp ./licenses/Combined.txt ./pkg/
-cp ./scripts/makeself ./pkg/
-chmod +x ./pkg/makeself
+cp ./scripts/linux-installer ./pkg/
+chmod +x ./pkg/linux-installer
 
 # Step 3: Wrap it all upp
 
@@ -261,7 +264,7 @@ chmod +x ./pkg/makeself
 ver=`./pkg/CaPTk.bin -v | grep Version | awk '{print $2}'`
 
 # Create the installer
-./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./makeself
+./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./linux-installer
 
 # Cleanup
 rm -rf ./pkg
