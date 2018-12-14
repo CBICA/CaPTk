@@ -22,7 +22,7 @@ before_install:
 
 ### OSX
 # OSX install step
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo apt-get install -qq gcc g++ make cmake python3-pip python-numpy; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cmake make python3 llvm; fi
 
 # Git LFS
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
