@@ -10,27 +10,6 @@
 #define UI_FMAINWINDOW_H
 
 #include <QtCore/QVariant>
-// #include <QtWidgets/QAction>
-// #include <QtGui/QApplication>
-// #include <QtGui/QButtonGroup>
-// #include <QtGui/QCheckBox>
-// #include <QtGui/QComboBox>
-// #include <QtGui/QDoubleSpinBox>
-// #include <QtGui/QFrame>
-// #include <QtGui/QGridLayout>
-// #include <QtGui/QHeaderView>
-// #include <QtGui/QLabel>
-// #include <QtGui/QMainWindow>
-// #include <QtGui/QMenu>
-// #include <QtGui/QMenuBar>
-// #include <QtGui/QSlider>
-// #include <QtGui/QStatusBar>
-// #include <QtGui/QTabWidget>
-// #include <QtGui/QTableWidget>
-// #include <QtGui/QToolBar>
-// #include <QtGui/QWidget>
-// #include <QtGui/QDockWidget>
-// NEW CHANGES
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
@@ -64,7 +43,6 @@
 #include "fPseudoProgressionDialog.h"
 #include "fRegistrationDialog.h"
 #include "fPreprocessingDialog.h"
-//#include "fBiasCorrection.h"
 #include "fSurvivalDialog.h"
 #include "fEGFRvIIIDialog.h"
 #include "fSkullStripDialog.h"
@@ -83,7 +61,6 @@
 #include "fFetalBrain.h"
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
-//#include "fSegmentationPanel.h"
 
 #include "QVTKOpenGLWidget.h"
 #include "vtkGenericOpenGLRenderWindow.h"
@@ -135,14 +112,6 @@ private:
   inline std::vector< ActionAndName > populateStringListInMenu(const std::vector< std::string > &vectorOfInputs, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic)
   {
     std::vector< ActionAndName > returnVector;
-    //if (!inputList.empty())
-    //{
-    //  std::string inputList_wrap = inputList;
-    //  if (inputList_wrap[0] == ' ')
-    //  {
-    //    inputList_wrap.erase(0, 1);
-    //  }
-    //  std::vector< std::string > vectorOfInputs = cbica::stringSplit(inputList_wrap, " ");
       if (ExcludeGeodesic)
       {
         returnVector.resize(vectorOfInputs.size());
@@ -178,11 +147,6 @@ private:
           returnVector[returnVecCounter].action->setEnabled(false);
 #endif
           menuToPopulate->addAction(returnVector[returnVecCounter].action);
-
-          //if (vectorOfInputs[i] == "GeodesicSegmentation")
-          //{
-          //  menuToPopulate->addSeparator();
-          //}
           returnVecCounter++;
         }
       }
@@ -196,7 +160,6 @@ public:
   fPseudoProgressionDialog pseudoPanel;
   fPopulationAtlasDialog	atlasPanel;
   fRegistrationDialog		registrationPanel;
-  //fBiasCorrection biasCorrectionPanel;
   fPreprocessingDialog	preprocessingPanel;
   fSurvivalPredictor survivalPanel;
   fEGFRvIIIPredictor egfrv3Panel;
@@ -223,7 +186,6 @@ public:
   fImagesPanel *imagesPanel;
   fBottomImageInfoTip *infoPanel;
   fTumorPanel *tumorPanel;
-  //fSegmentationPanel *segPanel;
 
   QSlider *image4DSlider;
   QGroupBox *preferencesGroupBox;
@@ -285,8 +247,6 @@ public:
   QAction *help_forum;
   QAction *help_bugs;
   QAction *help_features;
-  //QMenu* menuAbout;
-  //QMenu* menuShortcuts;
   //-------------actions-------------
 
   QAction *actionLoad_Recurrence_Images;
@@ -304,18 +264,6 @@ public:
   QAction *actionAbout;
   QAction *actionExit;
 
-  //QAction *actionDownload_Full;
-  //QAction *actionDownload_WhiteStripe;
-  //QAction *actionDownload_Survival;
-  //QAction *actionDownload_SBRT;
-  //QAction *actionDownload_LIBRA;
-  //QAction *actionDownload_Recurrence;
-  //QAction *actionDownload_PopulationAtlas;
-  //QAction *actionDownload_MolecularSubTypes;
-  //QAction *actionDownload_Geodesic;
-  //QAction *actionDownload_EGFRvIII_PHI;
-  //QAction *actionDownload_Confetti;
-
   QAction *actionAppEGFR;
   QAction *actionAppRecurrence;
   QAction *actionAppGeodesic;
@@ -329,8 +277,6 @@ public:
     vectorOfMiscApps, // the rest
     vectorOfPreprocessingActionsAndNames; // for preprocessing algorithms
 
-  //ActionAndName app_directionalityEstimation;
-
   // obtain list from CMake variables using populateStringListInMenu() function
   std::vector< std::string >
     m_nativeApps, // native CPP applications
@@ -338,12 +284,7 @@ public:
     m_pyCLIApps, // python command line applications
     m_pyGUIApps; // python graphical applications
 
-  //std::vector< NonNativeApp > m_allNonNativeApps;
   std::map< std::string, std::string > m_allNonNativeApps;
-
-
-  //std::vector< ActionAndName > vectorOfDownloadLinks;
-
 
   void setupUi(QMainWindow *fMainWindow)
   {
@@ -361,10 +302,7 @@ public:
     actionAppRecurrence = new QAction(fMainWindow);
     actionAppGeodesic = new QAction(fMainWindow);
 
-    //QRect rec = QApplication::desktop()->screenGeometry();
     centralwidget = new QWidget(fMainWindow);
-    //centralwidget->setMinimumSize(rec.width() * 0.3, rec.height() * 0.5);
-    //centralwidget->setMinimumSize(1024, 768);
     //--------------------main vertical layout--------------------------
     overallGridLayout = new QGridLayout(centralwidget);
     overallGridLayout->setSpacing(2);
@@ -380,14 +318,12 @@ public:
     sizePolicy2.setHeightForWidth(SaggitalWidget->sizePolicy().hasHeightForWidth());
     SaggitalWidget->setSizePolicy(sizePolicy2);
 
-    //vtkNew<vtkGenericOpenGLRenderWindow> window_sag;
     QGridLayout * SaggitalWidgetGridLayout = new QGridLayout(SaggitalWidget);
     SaggitalWidgetGridLayout->setContentsMargins(0, 0, 0, 0);
     SaggitalWidgetGridLayout->setSizeConstraint(QLayout::SetMinimumSize);
     SaggitalWidgetGridLayout->setHorizontalSpacing(0);
     SaggitalViewWidget = new QVTKWidget(SaggitalWidget);
     SaggitalViewWidget->setMouseTracking(true);
-    //SaggitalViewWidget->SetRenderWindow(window_sag.Get());
     SaggitalWidgetGridLayout->addWidget(SaggitalViewWidget, 0, 0, 1, 1);
     SaggitalViewSlider = new QSlider(SaggitalWidget);
     SaggitalViewSlider->setOrientation(Qt::Vertical);
@@ -407,17 +343,14 @@ public:
     AxialWidgetGridLayout->setSizeConstraint(QLayout::SetMinimumSize);
     AxialWidgetGridLayout->setHorizontalSpacing(0);
 
-    //vtkNew<vtkGenericOpenGLRenderWindow> window_axi;
     AxialViewWidget = new QVTKWidget(AxialWidget);
     AxialViewWidget->setMouseTracking(true);
-    //AxialViewWidget->SetRenderWindow(window_axi.Get());
     AxialWidgetGridLayout->addWidget(AxialViewWidget, 0, 0, 1, 1);
     AxialViewSlider = new QSlider(AxialWidget);
     AxialViewSlider->setOrientation(Qt::Vertical);
     AxialWidgetGridLayout->addWidget(AxialViewSlider, 0, 1, 1, 1);
     overallGridLayout->addWidget(AxialWidget, 2, 1, 1, 1);
 
-    //vtkNew<vtkGenericOpenGLRenderWindow> window_cor;
     CoronalWidget = new QWidget(centralwidget);
     QSizePolicy sizePolicy7(QSizePolicy::Expanding, QSizePolicy::Expanding);
     sizePolicy7.setHorizontalStretch(20);
@@ -430,7 +363,6 @@ public:
     CoronalWidgetGridLayout->setHorizontalSpacing(0);
     CoronalViewWidget = new QVTKWidget(CoronalWidget);
     CoronalViewWidget->setMouseTracking(true);
-    //CoronalViewWidget->SetRenderWindow(window_cor.Get());
     CoronalWidgetGridLayout->addWidget(CoronalViewWidget, 0, 0, 1, 1);
     CoronalViewSlider = new QSlider(CoronalWidget);
     CoronalViewSlider->setOrientation(Qt::Vertical);
@@ -455,7 +387,6 @@ public:
     bottomLayout->addWidget(infoPanel);
     bottomLayout->addStretch();
     bottomLayout->addWidget(preferencesGroupBox);
-    //overallGridLayout->addWidget(InfoPanelWidget, 4, 0, 1, 2);
     overallGridLayout->addLayout(bottomLayout, 4, 0, 2, 3);
     //-------------------preferences related objects----------------------
 
@@ -511,9 +442,6 @@ public:
     PrefGridLayout->addWidget(thresholdLabel, 1, 2, 1, 1);
     PrefGridLayout->addWidget(thresholdSpinBox, 1, 3, 1, 1);
 
-    //overallGridLayout->addWidget(preferencesGroupBox, 4, 2, 1, 1);
-
-
     m_tabWidget = new QTabWidget();
 
 
@@ -525,8 +453,6 @@ public:
 
     imagesPanel = new fImagesPanel(); // New Images Panel
     m_tabWidget->addTab(imagesPanel, QString());
-    //segPanel = new fSegmentationPanel(); // new SegmentationPanel
-    //m_tabWidget->addTab(segPanel, QString());
     tumorPanel = new fTumorPanel();
     m_tabWidget->addTab(tumorPanel, QString());
     drawingPanel = new fDrawingPanel();
@@ -586,45 +512,9 @@ public:
 
     actionHelp_Interactions = new QAction(fMainWindow);
 
-    //actionDownload_Full = new QAction(fMainWindow);
-    //actionDownload_Full->setText("Full");
-    //actionDownload_Full->setToolTip("Download Full Data");
-    //actionDownload_WhiteStripe = new QAction(fMainWindow);
-    //actionDownload_WhiteStripe->setText("WhiteStripe");
-    //actionDownload_WhiteStripe->setToolTip("Download WhiteStripe");
-    //actionDownload_Survival = new QAction(fMainWindow);
-    //actionDownload_Survival->setText("Survival");
-    //actionDownload_Survival->setToolTip("Download Survival");
-    //actionDownload_SBRT = new QAction(fMainWindow);
-    //actionDownload_SBRT->setText("SBRT");
-    //actionDownload_SBRT->setToolTip("Download SBRT");
-    //actionDownload_LIBRA = new QAction(fMainWindow);
-    //actionDownload_LIBRA->setText("LIBRA");
-    //actionDownload_LIBRA->setToolTip("Download LIBRA");
-    //actionDownload_Recurrence = new QAction(fMainWindow);
-    //actionDownload_Recurrence->setText("Recurrence");
-    //actionDownload_Recurrence->setToolTip("Download Recurrence");
-    //actionDownload_PopulationAtlas = new QAction(fMainWindow);
-    //actionDownload_PopulationAtlas->setText("PopulationAtlas");
-    //actionDownload_PopulationAtlas->setToolTip("Download PopulationAtlas");
-    //actionDownload_MolecularSubTypes = new QAction(fMainWindow);
-    //actionDownload_MolecularSubTypes->setText("MolecularSubTypes");
-    //actionDownload_MolecularSubTypes->setToolTip("Download MolecularSubTypes");
-    //actionDownload_Geodesic = new QAction(fMainWindow);
-    //actionDownload_Geodesic->setText("Geodesic");
-    //actionDownload_Geodesic->setToolTip("Download Geodesic");
-    //actionDownload_EGFRvIII_PHI = new QAction(fMainWindow);
-    //actionDownload_EGFRvIII_PHI->setText("EGFRvIII_PHI");
-    //actionDownload_EGFRvIII_PHI->setToolTip("Download EGFRvIII_PHI");
-    //actionDownload_Confetti = new QAction(fMainWindow);
-    //actionDownload_Confetti->setText("Confetti");
-    //actionDownload_Confetti->setToolTip("Download Confetti");
-
     actionAbout = new QAction(fMainWindow);
 
     menuHelp = new QMenu("Help");
-    //menuAbout = new QMenu("About");
-    //menuShortcuts = new QMenu("Shortcuts");
     menuHelp->addAction(actionHelp_Interactions);
     menuDownload = menuHelp->addMenu("Sample Data");
     auto supportMenu = menuHelp->addMenu("Support Links");
@@ -635,24 +525,9 @@ public:
     help_bugs = new QAction(fMainWindow);
     help_features = new QAction(fMainWindow);
     help_download = new QAction(fMainWindow);
-    //supportMenu->addAction(help_discussion);
-    //supportMenu->addAction(help_forum);
     supportMenu->addAction(help_bugs);
-    //supportMenu->addAction(help_features);
     supportMenu->addAction(help_download);
-
-    //downloadMenu->addAction(actionDownload_Full);
-    //downloadMenu->addAction(actionDownload_EGFRvIII_PHI);
-    //downloadMenu->addAction(actionDownload_Recurrence);
-    //downloadMenu->addAction(actionDownload_Survival);
-    //downloadMenu->addAction(actionDownload_LIBRA);
-    //downloadMenu->addAction(actionDownload_WhiteStripe);
-    //downloadMenu->addAction(actionDownload_PopulationAtlas);
-    //downloadMenu->addAction(actionDownload_MolecularSubTypes);
-    //downloadMenu->addAction(actionDownload_Geodesic);
-    //downloadMenu->addAction(actionDownload_SBRT);
-    //downloadMenu->addAction(actionDownload_Confetti);
-
+    
     menubar->addMenu(menuFile);
     menubar->addMenu(menuPreprocessing);
 #ifndef PACKAGE_VIEWER
@@ -672,13 +547,9 @@ public:
     menuLoadFile->addAction(actionLoad_Nifti_ROI);
 
     menuSaveFile->addAction(actionSave_Nifti_Images);
-    //menuSaveFile->addAction(actionSave_Dicom_Images);
     menuSaveFile->addAction(actionSave_ROI_Images);
-    //menuSaveFile->addAction(actionSave_ROI_Dicom_Images);
 
     menuFile->addAction(actionExit);
-    //menuAbout->addAction(actionAbout);
-    //menuShortcuts->addAction(actionHelp);
 
     std::string nonNativeAppPaths_wrap = std::string(CAPTK_APP_LIST_PY_GUI);
     if (nonNativeAppPaths_wrap[0] == ' ')
@@ -694,7 +565,6 @@ public:
     }
 
     m_pyCLIApps = cbica::stringSplit(nonNativeAppPaths_wrap, " ");
-    //m_allNonNativeApps.resize(m_pyGUIApps.size() + m_pyCLIApps.size());
     size_t allAppCounter = 0;
     for (size_t i = 0; i < m_pyGUIApps.size(); i++)
     {
@@ -714,44 +584,14 @@ public:
       {
         m_pyGUIApps[i] = "SBRT_Lung_Analyze";
       }
-      //m_allNonNativeApps[allAppCounter].name = m_pyGUIApps[i];
-//#ifndef CAPTK_PACKAGE_PROJECT
-//      if (m_pyGUIApps[i] == "itksnap")
-//      {
-//        m_allNonNativeApps[m_pyGUIApps[i]] = std::string(PROJECT_SOURCE_DIR) + "src/applications/individualApps/itksnap/bin/";
-//        //m_allNonNativeApps[allAppCounter].path = std::string(PROJECT_SOURCE_DIR) + "src/applications/individualApps/" + m_allNonNativeApps[allAppCounter].name + "/bin/";
-//      }
-//      else
-//      {
-//        m_allNonNativeApps[m_pyGUIApps[i]] = std::string(PROJECT_SOURCE_DIR) + "src/applications/individualApps/";
-//        if ((m_pyGUIApps[i] == "SBRT_Segment") || (m_pyGUIApps[i] == "SBRT_Analyze"))
-//        {
-//          m_allNonNativeApps[m_pyGUIApps[i]] = captk_currentApplicationPath + "/";
-//        }
-//        //m_allNonNativeApps[allAppCounter].path = std::string(PROJECT_SOURCE_DIR) + "src/applications/individualApps/";
-//      }
-//#else
-      //m_allNonNativeApps[allAppCounter].path = captk_currentApplicationPath + "/";
+ 
       m_allNonNativeApps[m_pyGUIApps[i]] = getApplicationPath(m_pyGUIApps[i]);
       allAppCounter++;
     }
 
     for (size_t i = 0; i < m_pyCLIApps.size(); i++)
     {
-      //m_allNonNativeApps[allAppCounter].name = m_pyCLIApps[i];
       m_allNonNativeApps[m_pyCLIApps[i]] = getApplicationPath(m_pyCLIApps[i]);
-//#ifndef CAPTK_PACKAGE_PROJECT
-//      std::string(PROJECT_SOURCE_DIR) + "src/applications/individualApps/"
-//#else
-//      captk_currentApplicationPath + "/"
-//#endif
-//      ;
-//
-//      m_allNonNativeApps[m_pyCLIApps[i]] += m_pyCLIApps[i]
-//#ifdef _WIN32
-//        + ".exe"
-//#endif
-//        ;
     }
 
     // TBD: this needs to be controlled from CMake and not hard-coded here
@@ -767,17 +607,10 @@ public:
     std::string segAppList = " itksnap GeodesicSegmentation";
 #ifdef WIN32
     segAppList += " deepmedic";
-    //miscAppList += " deepmedic";
 #endif
     auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching DeepMedicNormalizer";
 
     vectorOfGBMApps = populateStringListInMenu(brainAppList, fMainWindow, menuApp, "Glioblastoma", false);
-    //app_directionalityEstimation.action = new QAction(fMainWindow);
-    //app_directionalityEstimation.action->setObjectName(QString::fromUtf8(std::string("actionDirectionalityEstimate").c_str()));
-    //app_directionalityEstimation.action->setIconText(QString("Directionality Estimation"));
-    //app_directionalityEstimation.action->setText("Directionality Estimation");
-    //app_directionalityEstimation.name = "DirectionalityEstimate";
-    //menuApp->addAction(app_directionalityEstimation.action);
     menuApp->addSeparator();
     if(!breastAppList.empty())
     {
@@ -866,32 +699,7 @@ public:
 
   void retranslateUi(QMainWindow *fMainWindow)
   {
-    // fMainWindow->setWindowTitle(QApplication::translate("fMainWindow", "fMainWindow", 0, QApplication::UnicodeUTF8));
-    // actionLoad_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image(s)", 0, QApplication::UnicodeUTF8));
-    // actionLoad_Nifti_ROI->setText(QApplication::translate("fMainWindow", "ROI", 0, QApplication::UnicodeUTF8));
-    //
-    // actionSave_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image (NIfTI)", 0, QApplication::UnicodeUTF8));
-    // actionSave_Dicom_Images->setText(QApplication::translate("fMainWindow", "Image (DICOM)", 0, QApplication::UnicodeUTF8));
-    // actionSave_ROI_Images->setText(QApplication::translate("fMainWindow", "ROI (NIfTI)", 0, QApplication::UnicodeUTF8));
-    // actionSave_ROI_Dicom_Images->setText(QApplication::translate("fMainWindow", "ROI (DICOM)", 0, QApplication::UnicodeUTF8));
-    // actionHelp_Interactions->setText(QApplication::translate("fMainWindow", "Usage", 0, QApplication::UnicodeUTF8));
-    // help_discussion->setText(QApplication::translate("fMainWindow", "Discussion Forum", 0, QApplication::UnicodeUTF8));
-    // help_forum->setText(QApplication::translate("fMainWindow", "Help Forum", 0, QApplication::UnicodeUTF8));
-    // help_bugs->setText(QApplication::translate("fMainWindow", "Bug Tracker", 0, QApplication::UnicodeUTF8));
-    // help_features->setText(QApplication::translate("fMainWindow", "Feature Requests", 0, QApplication::UnicodeUTF8));
-    // help_download->setText(QApplication::translate("fMainWindow", "Latest Downloads", 0, QApplication::UnicodeUTF8));
-    // actionAbout->setText(QApplication::translate("fMainWindow", "About", 0, QApplication::UnicodeUTF8));
-    // actionExit->setText(QApplication::translate("fMainWindow", "Exit", 0, QApplication::UnicodeUTF8));
-    // actionAppGeodesic->setText(QApplication::translate("fMainWindow", "Geodesic segmentation", 0, QApplication::UnicodeUTF8));
-    //
-    // thresholdLabel->setText(QApplication::translate("fMainWindow", "Threshold", 0, QApplication::UnicodeUTF8));
-    // presetLabel->setText(QApplication::translate("fMainWindow", "Preset", 0, QApplication::UnicodeUTF8));
-    // windowLabel->setText(QApplication::translate("fMainWindow", "Window", 0, QApplication::UnicodeUTF8));
-    // levelLabel->setText(QApplication::translate("fMainWindow", "Level", 0, QApplication::UnicodeUTF8));
-    // m_tabWidget->setTabText(m_tabWidget->indexOf(tumorPanel), QApplication::translate("fMainWindow", "Seed Points", 0, QApplication::UnicodeUTF8));
-    // m_tabWidget->setTabText(m_tabWidget->indexOf(drawingPanel), QApplication::translate("fMainWindow", "Drawing", 0, QApplication::UnicodeUTF8));
-    // m_tabWidget->setTabText(m_tabWidget->indexOf(imagesPanel), QApplication::translate("fMainWindow", "Images", 0, QApplication::UnicodeUTF8));
-    // NEW CHANGES
+ 
     fMainWindow->setWindowTitle(QApplication::translate("fMainWindow", "fMainWindow", 0));
     actionLoad_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image(s)", 0));
     actionLoad_Nifti_ROI->setText(QApplication::translate("fMainWindow", "ROI", 0));
