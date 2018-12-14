@@ -148,6 +148,7 @@ MARK_AS_ADVANCED(CAPTK_BUILD_CONSOLE_ONLY)
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules)
+INCLUDE(CaPTk_macros)
 
 SET( CAPTK_CLI_MODE OFF CACHE BOOL "Builds only CLI apps of CaPTk." )
 ADD_DEFINITIONS(-DCAPTK_CLI_MODE)
@@ -161,20 +162,6 @@ ENDIF()
 SET( THIRDPARTY_LIB_PATH ${PROJECT_SOURCE_DIR}/src/thirdparty )
 INCLUDE_DIRECTORIES( ${THIRDPARTY_LIB_PATH} )
 
-# macro to find all sub-directories
-MACRO(SUBDIRLIST result curdir)
-  FILE(GLOB children
-    RELATIVE ${curdir} ${curdir}/*
-    PATTERN "svn" EXCLUDE
-  )
-  SET(dirlist "")
-  FOREACH(child ${children})
-    IF(IS_DIRECTORY ${curdir}/${child})
-      LIST(APPEND dirlist ${child})
-    ENDIF()
-  ENDFOREACH()
-  SET(${result} ${dirlist})
-ENDMACRO()
 
 ### third party library processing
 # find and include all third party libraries
@@ -732,13 +719,9 @@ FOREACH(application ${STANDALONE_APPS})
   
     IF( (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") AND WIN32 ) 
 
-      INCLUDE(CaPTk_macros)
-
       CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME})
 
     ELSEIF(NOT (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") )
-    
-      INCLUDE(CaPTk_macros)
 
       CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME})
     

@@ -6,6 +6,8 @@
 
 # each application-specific include folder, "/$application_includes" : dependencies which are not taken care by the default dependencies (i.e., ITK and OpenCV), for example libSVM for recurrence
 
+INCLUDE(CaPTk_macros)
+
 FILE( GLOB
   COMMON_DEPENDENCIES
   "${CMAKE_CURRENT_SOURCE_DIR}/common_includes/*.*"
@@ -170,21 +172,6 @@ ENDFOREACH()
 
 ## this is for all stand-alone applications which do not integrate at source code level with CaPTk
 SET( CAPTK_APP_LIST_PY_GUI "" )
-
-# macro to find all sub-directories
-MACRO(SUBDIRLIST result curdir)
-  FILE(GLOB children
-    RELATIVE ${curdir} ${curdir}/*
-    PATTERN "svn" EXCLUDE
-  )
-  SET(dirlist "")
-  FOREACH(child ${children})
-    IF(IS_DIRECTORY ${curdir}/${child})
-      LIST(APPEND dirlist ${child})
-    ENDIF()
-  ENDFOREACH()
-  SET(${result} ${dirlist})
-ENDMACRO()
 
 ## download and extract the prepared binaries of external apps
 
