@@ -8,7 +8,7 @@ sudo: required
 fast_finish: true
 # Temporary, used for testing
 allow_failures:
-- os: linux
+- os: osx
 
 before_install:
 ### LINUX
