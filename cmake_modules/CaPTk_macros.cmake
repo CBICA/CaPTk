@@ -1,5 +1,4 @@
-# CAPTK_ADD_EXECUTABLE
-# Add executable -> install for each platform -> run test -> add cwl
+# Macro to add, link, build, and install an application and it's cwl file
 MACRO(CAPTK_ADD_EXECUTABLE APPLICATION)
   ADD_EXECUTABLE(${APPLICATION}
     ${PROJECT_SOURCE_DIR}/src/applications/${APPLICATION}.cxx
@@ -44,6 +43,13 @@ MACRO(CAPTK_ADD_EXECUTABLE APPLICATION)
   # Add test for run tests
   ADD_TEST( NAME ${APPLICATION}_rt COMMAND ${APPLICATION} -rt )
 
+  CWL_INSTALL(${APPLICATION})
+  
+ENDMACRO()
+
+# Macro to generate and install a cwl file after target application is built
+MACRO(CWL_INSTALL APPLICATION)
+
   # Post build cwl generation
   add_custom_command(TARGET ${APPLICATION}
     POST_BUILD
@@ -64,4 +70,5 @@ MACRO(CAPTK_ADD_EXECUTABLE APPLICATION)
   )
 
   ENDIF()
+
 ENDMACRO()
