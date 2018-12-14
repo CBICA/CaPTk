@@ -2,7 +2,7 @@ language: cpp
 
 matrix:
 include:
-- os: linux
+- os: osx
 dist: xenial
 sudo: required
 fast_finish: true
