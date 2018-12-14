@@ -731,7 +731,7 @@ FOREACH(application ${STANDALONE_APPS})
   IF( NOT (${STANDALONE_APP_NAME} STREQUAL "ImagingSubtypePredictor" ) )
   
     IF( (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") AND WIN32 ) 
-           
+
       INCLUDE(CaPTk_macros)
 
       CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME})

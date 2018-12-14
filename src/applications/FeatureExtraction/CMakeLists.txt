@@ -135,6 +135,10 @@ INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/1_params_default.csv DESTINATION data/
 INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/2_params_default_lattice.csv DESTINATION data/features )
 INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureExtraction.csv DESTINATION data/features/batchMode )
 
+# Build CWL
+INCLUDE(CaPTk_macros)
+CWL_INSTALL(FeatureExtraction)
+
 ## this is for packaging only
 SET( PROJECT_VENDOR "CBICA - UPenn" )
 #SET( LICENSE_FILE "${PROJECT_SOURCE_DIR}/licenses/Combined.txt" )
