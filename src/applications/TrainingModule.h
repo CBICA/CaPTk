@@ -1,7 +1,7 @@
 /**
 \file  TrainingModule.h
 
-\brief The header file containing the SurvivaPredictor class, used to find Survival Prediction Index
+\brief The header file containing the TrainingModule class, used to build machine learning models
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
 
@@ -35,25 +35,6 @@ typedef std::map<int, FoldTupleType> MapType;
 typedef itk::CSVArray2DFileReader<double> CSVFileReaderType;
 typedef vnl_matrix<double> MatrixType;
 
-/**
-\class TrainingModule
-
-\brief Calculates Survival Prediction Index
-
-Reference:
-
-@article{macyszyn2015imaging,
-title={Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques},
-author={Macyszyn, Luke and Akbari, Hamed and Pisapia, Jared M and Da, Xiao and Attiah, Mark and Pigrish, Vadim and Bi, Yingtao and Pal, Sharmistha and Davuluri, Ramana V and Roccograndi, Laura and others},
-journal={Neuro-oncology},
-volume={18},
-number={3},
-pages={417--425},
-year={2015},
-publisher={Society for Neuro-Oncology}
-}
-
-*/
 class TrainingModule
 #ifdef APP_BASE_CAPTK_H
   : public ApplicationBase

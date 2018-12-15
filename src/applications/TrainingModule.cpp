@@ -1,7 +1,7 @@
 /**
 \file  TrainingSimulator.cpp
 
-\brief The source file containing the SurvivaPredictor class, used to find Survival Prediction Index
+\brief The source file containing the TrainingModule class, used to build machine learning models
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
 
