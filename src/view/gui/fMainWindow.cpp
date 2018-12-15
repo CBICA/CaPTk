@@ -629,7 +629,7 @@ fMainWindow::fMainWindow()
   connect(&deepMedicNormPanel, SIGNAL(RunDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)), this, SLOT(CallImageDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)));
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
   connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string)));
-  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string,int,int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string,int,int)));
+  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, int, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -6845,10 +6845,10 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   }
 }
 
-void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder,int classifier,int folds)
+void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder, int classifier, int folds, int conf)
 {
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder,classifier,folds))
+  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";

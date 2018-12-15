@@ -1,7 +1,7 @@
 /**
 \file  TrainingModule.h
 
-\brief The header file containing the SurvivaPredictor class, used to find Survival Prediction Index 
+\brief The header file containing the SurvivaPredictor class, used to find Survival Prediction Index
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
 
@@ -20,7 +20,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkExtractImageFilter.h"
 #include "itkCSVArray2DFileReader.h"
 #include "FeatureScalingClass.h"
-#include "CaPTkDefines.h"
+#include "CapTkDefines.h"
 #include "cbicaLogging.h"
 
 
@@ -29,7 +29,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #endif
 
 typedef itk::Image< float, 3 > ImageType;
-typedef std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble, VectorDouble, VariableSizeMatrixType,VectorDouble> FoldTupleType;
+typedef std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble> FoldTupleType;
 typedef std::map<int, FoldTupleType> MapType;
 
 typedef itk::CSVArray2DFileReader<double> CSVFileReaderType;
@@ -38,7 +38,7 @@ typedef vnl_matrix<double> MatrixType;
 /**
 \class TrainingModule
 
-\brief Calculates Survival Prediction Index 
+\brief Calculates Survival Prediction Index
 
 Reference:
 
@@ -64,10 +64,10 @@ public:
   cbica::Logging logger;
 
   //! Default constructor
-  TrainingModule(){};
- ~TrainingModule(){};
+  TrainingModule() {};
+  ~TrainingModule() {};
 
-  bool Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory,const int classifierType, const int foldtype);
+  bool Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory,const int classifierType, const int foldtype, const int conftype);
 
   std::string mEighteenTrainedFile, mSixTrainedFile;
 
@@ -75,16 +75,16 @@ public:
 
   bool CheckPerformanceStatus(double ist, double second, double third, double fourth, double fifth, double sixth, double seventh, double eighth, double ninth, double tenth);
   VectorDouble CalculatePerformanceMeasures(VectorDouble predictedLabels, VectorDouble GivenLabels);
-  
+
   VectorDouble CrossValidation(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder,
     const int classifiertype, const int foldtype);
 
   VectorDouble InternalCrossValidation(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue,int kerneltype);
 
 
-  VectorDouble SplitTrainTest(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder, const int classifiertype, const int number_of_folds, const int traiing_size);
+  VectorDouble SplitTrainTest(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder, const int classifiertype, const int training_size);
 
- VectorDouble trainOpenCVSVM(const VariableSizeMatrixType &trainingDataAndLabels, const std::string &outputModelName, bool considerWeights, int ApplicationCallingSVM, double bestc, double bestg);
+  VectorDouble trainOpenCVSVM(const VariableSizeMatrixType &trainingDataAndLabels, const std::string &outputModelName, bool considerWeights, int ApplicationCallingSVM, double bestc, double bestg);
 
   VectorDouble testOpenCVSVM(const VariableSizeMatrixType &testingData, const std::string &inputModelName);
 
@@ -99,8 +99,3 @@ public:
 private:
 
 };
-
-
-
-
-
