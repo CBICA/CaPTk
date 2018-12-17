@@ -27,7 +27,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install; fi
 
   # Git LFS
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
 
 script:
   ### LINUX
