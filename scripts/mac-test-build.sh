@@ -4,7 +4,9 @@
 
 # Set up environment variables
 ENV_CMD() {
-unzip -a binaries/qt5.11.2_macos.zip
+cd binaries
+unzip -a qt5.11.2_macos.zip
+cd ../
 
 export PATH="$PATH:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/lib/cmake/Qt5:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/bin"
 
@@ -69,8 +71,8 @@ ls
 # exit -1
 # fi
 
-# echo "[:] Set up env..."
-# ENV_CMD
+echo "[:] Set up env..."
+ENV_CMD
 
 # echo "[:] Building dependency manager..."
 # DEP_MNGR_CMD
