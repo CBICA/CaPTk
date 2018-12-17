@@ -52,9 +52,6 @@ cd ../../CaPTk
 ###########################
 echo "[!] Warn: This script is intended for CI use. Only use it if you know what you are doing."
 
-cd binaries
-ls
-
 # echo "[:] Starting CaPTk packaging process..."
 
 # echo "[?] Checking if you are in trunk..."
