@@ -3,12 +3,15 @@ language: cpp
 matrix:
 include:
 - os: osx
-dist: xenial
-sudo: required
+  sudo: required
+- os: linux
+  dist: xenial
+  sudo: required
 fast_finish: true
 # Temporary, used for testing
 allow_failures:
-- os: osx
+  - os: osx
+  - os: linux
 
 before_install:
 ### LINUX
