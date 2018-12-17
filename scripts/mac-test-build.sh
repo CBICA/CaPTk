@@ -6,7 +6,7 @@
 ENV_CMD() {
 cd binaries
 ls
-unzip -a *_macos.zip
+unzip *_macos.zip
 cd ../
 
 export PATH="$PATH:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/lib/cmake/Qt5:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/bin"
