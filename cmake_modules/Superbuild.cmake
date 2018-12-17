@@ -104,10 +104,3 @@ INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
 
 MESSAGE( STATUS "Adding ITK-4.13.0 ...")
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
-
-ExternalProject_Add( CaPTk
-  DEPENDS ITK
-  DOWNLOAD_COMMAND ""
-  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..
-  BINARY_DIR ${PROJECT_BINARY_DIR}
-)
