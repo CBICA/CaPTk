@@ -2,6 +2,8 @@
 
 #MESSAGE( "External project - ITK" )
 
+PROJECT(ITK)
+
 SET( ITK_DEPENDENCIES )
 
 SET( ITK_DEPENDS VTK OpenCV )
