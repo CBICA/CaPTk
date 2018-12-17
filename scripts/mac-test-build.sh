@@ -50,39 +50,41 @@ cd ../../CaPTk
 ###########################
 echo "[!] Warn: This script is intended for CI use. Only use it if you know what you are doing."
 
-echo "[:] Starting CaPTk packaging process..."
+ls
 
-echo "[?] Checking if you are in trunk..."
-# Test to see if the user is in trunk
-# First see if CMakeLists.txt exists
-if [[ -e CMakeLists.txt ]] ; then
-# See if it contains PROJECT( CaPTk )
-if [[ -z `cat CMakeLists.txt | grep "PROJECT( CaPTk )"` ]] ; then
-echo "[!] Error: You do not appear to be within trunk of CaPTk (Project is not CaPTk)"
-exit -1
-fi
-else
-echo "[!] Error: You do not appear to be in trunk (CMakeLists.txt not found)"
-exit -1
-fi
+# echo "[:] Starting CaPTk packaging process..."
 
-echo "[:] Set up env..."
-ENV_CMD
+# echo "[?] Checking if you are in trunk..."
+# # Test to see if the user is in trunk
+# # First see if CMakeLists.txt exists
+# if [[ -e CMakeLists.txt ]] ; then
+# # See if it contains PROJECT( CaPTk )
+# if [[ -z `cat CMakeLists.txt | grep "PROJECT( CaPTk )"` ]] ; then
+# echo "[!] Error: You do not appear to be within trunk of CaPTk (Project is not CaPTk)"
+# exit -1
+# fi
+# else
+# echo "[!] Error: You do not appear to be in trunk (CMakeLists.txt not found)"
+# exit -1
+# fi
 
-echo "[:] Building dependency manager..."
-DEP_MNGR_CMD
+# echo "[:] Set up env..."
+# ENV_CMD
 
-# Create binary directory
-echo "[:] Creating binary directory..."
-mkdir bin
-cd bin
+# echo "[:] Building dependency manager..."
+# DEP_MNGR_CMD
 
-# Cmake
-echo "[:] Running cmake command..."
-CAPTK_CMD
+# # Create binary directory
+# echo "[:] Creating binary directory..."
+# mkdir bin
+# cd bin
 
-# Make install/strip
-echo "[:] Building CaPTk..."
-make
+# # Cmake
+# echo "[:] Running cmake command..."
+# CAPTK_CMD
 
-echo "[:] Done. Built test target"
+# # Make install/strip
+# echo "[:] Building CaPTk..."
+# make
+
+# echo "[:] Done. Built test target"
