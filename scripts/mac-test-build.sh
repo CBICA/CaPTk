@@ -4,7 +4,9 @@
 
 # Set up environment variables
 ENV_CMD() {
-export PATH="$PATH:/usr/local/Cellar/qt/5.11.2/lib/cmake/Qt5:/usr/local/Cellar/qt/5.11.2/bin"
+unzip -a ./binaries/qt5.11.2_macos.zip
+
+export PATH="$PATH:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/lib/cmake/Qt5:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/bin"
 
 export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build
 # :/Library/TeX/texbin
