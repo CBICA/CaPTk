@@ -22,7 +22,8 @@ before_install:
 
   ### OSX
   # OSX install step
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make llvm; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make git-lfs llvm; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install; fi
 
   # Git LFS
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
