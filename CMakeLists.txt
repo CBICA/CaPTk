@@ -198,6 +198,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
           COMMAND ${CMAKE_COMMAND} --build .
           WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/ITK-download"
         )
+        add_subdirectory("${CMAKE_BINARY_DIR}/ITK-source"
+                 "${CMAKE_BINARY_DIR}/ITK-build")
       ENDIF()
 
     ENDIF()
