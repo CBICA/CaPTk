@@ -187,15 +187,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
       OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
       IF( CAPTK_SUPERBUILD )
-        #PROJECT(${PROJECT_NAME}_Depends)
         INCLUDE( cmake_modules/Superbuild.cmake )
-        #return()
         EXECUTE_PROCESS(
-          COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-          WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/ITK-download"
-        )
-        EXECUTE_PROCESS(
-          COMMAND ${CMAKE_COMMAND} --build .
+          COMMAND ${CMAKE_COMMAND} --build . ${CMAKE_SOURCE_DIR}/ITK
           WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/ITK-download"
         )
         add_subdirectory("${CMAKE_BINARY_DIR}/ITK-source"
