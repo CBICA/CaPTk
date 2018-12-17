@@ -2,17 +2,16 @@
 
 # Set up environment variables
 ENV_CMD() {
-git lfs fetch --all
-cd binaries
-unzip *_macos.zip
-cd ../
+# git lfs fetch --all
+# cd binaries
+# unzip *_macos.zip
+# cd ../
 
-export PATH="$PATH:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/lib/cmake/Qt5:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/bin"
+# export PATH="$PATH:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/lib/cmake/Qt5:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/bin"
 export PATH="$PATH:/usr/local/Cellar/qt/5.*/lib/cmake/Qt5:/usr/local/Cellar/qt/5.*/bin"
+echo $PATH
 
-
-export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build
-# :/Library/TeX/texbin
+export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build:/Library/TeX/texbin
 
 export CC=/usr/local/opt/llvm/bin/clang
 export CXX=/usr/local/opt/llvm/bin/clang++
