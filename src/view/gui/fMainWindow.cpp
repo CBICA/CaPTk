@@ -56,15 +56,6 @@
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkLookupTable.h"
 
-
-///// debug
-//#define _CRTDBG_MAP_ALLOC
-//#include <stdlib.h>
-//#include <crtdbg.h>
-//#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-//#define new DBG_NEW
-///// debug
-
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
@@ -156,6 +147,143 @@ fMainWindow::fMainWindow()
 {
 
   setupUi(this);
+
+  std::string nonNativeAppPaths_wrap = std::string(CAPTK_APP_LIST_PY_GUI);
+  if (nonNativeAppPaths_wrap[0] == ' ')
+  {
+    nonNativeAppPaths_wrap.erase(0, 1);
+  }
+  nonNativeAppPaths_wrap = nonNativeAppPaths_wrap + " itksnap";
+  m_pyGUIApps = cbica::stringSplit(nonNativeAppPaths_wrap, " ");
+  nonNativeAppPaths_wrap = std::string(CAPTK_APP_LIST_PY_CLI);
+  if (nonNativeAppPaths_wrap[0] == ' ')
+  {
+    nonNativeAppPaths_wrap.erase(0, 1);
+  }
+
+  m_pyCLIApps = cbica::stringSplit(nonNativeAppPaths_wrap, " ");
+  size_t allAppCounter = 0;
+  for (size_t i = 0; i < m_pyGUIApps.size(); i++)
+  {
+    if (m_pyGUIApps[i] == "confetti")
+    {
+      m_pyGUIApps[i] = "ConfettiGUI";
+    }
+    if ((m_pyGUIApps[i] == "librabatch") || (m_pyGUIApps[i] == "librasingle"))
+    {
+      m_pyGUIApps[i] = "libra";
+    }
+    if (m_pyGUIApps[i] == "SBRT_Segment")
+    {
+      m_pyGUIApps[i] = "SBRT_Lung_Segment";
+    }
+    if (m_pyGUIApps[i] == "SBRT_Analyze")
+    {
+      m_pyGUIApps[i] = "SBRT_Lung_Analyze";
+    }
+
+    m_allNonNativeApps[m_pyGUIApps[i]] = getApplicationPath(m_pyGUIApps[i]);
+    allAppCounter++;
+  }
+
+  for (size_t i = 0; i < m_pyCLIApps.size(); i++)
+  {
+    m_allNonNativeApps[m_pyCLIApps[i]] = getApplicationPath(m_pyCLIApps[i]);
+  }
+
+  // TBD: this needs to be controlled from CMake and not hard-coded here
+  auto brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator SurvivalPredictor MolecularSubtypePredictor PopulationAtlases WhiteStripe confetti";
+  std::string breastAppList = "";
+
+#ifndef APPLE
+  breastAppList = " librasingle librabatch";
+#endif
+
+  auto lungAppList = " LungField Nodule Analysis";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionDerivatives PerfusionPCA TrainingModule";
+  std::string segAppList = " itksnap GeodesicSegmentation";
+#ifdef WIN32
+  segAppList += " deepmedic";
+#endif
+  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching DeepMedicNormalizer";
+
+  vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
+  menuApp->addSeparator();
+  if (!breastAppList.empty())
+  {
+    vectorOfBreastApps = populateStringListInMenu(breastAppList, this, menuApp, "Breast Cancer", false);
+    menuApp->addSeparator();
+  }
+  vectorOfLungApps = populateStringListInMenu(lungAppList, this, menuApp, "Lung Cancer", false);
+  menuApp->addSeparator();
+  vectorOfSegmentationApps = populateStringListInMenu(segAppList, this, menuApp, "Segmentation", false);
+  vectorOfMiscApps = populateStringListInMenu(miscAppList, this, menuApp, "Miscellaneous", false);
+  vectorOfPreprocessingActionsAndNames = populateStringListInMenu(preProcessingAlgos, this, menuPreprocessing, "", false);
+
+  menuDownload->addAction("All");
+  for (const auto &currentActionAndName : vectorOfGBMApps)
+  {
+    if (currentActionAndName.name != "Glioblastoma")
+    {
+      if (currentActionAndName.name == "confetti")
+      {
+        menuDownload->addAction("Confetti");
+      }
+      else
+      {
+        menuDownload->addAction(currentActionAndName.name.c_str());
+      }
+    }
+  }
+
+  bool libraCheck = false;
+  for (const auto &currentActionAndName : vectorOfBreastApps)
+  {
+    if (currentActionAndName.name != "Breast Cancer")
+    {
+      if (!libraCheck)
+      {
+        if (currentActionAndName.name.find("libra") != std::string::npos)
+        {
+          libraCheck = true;
+          menuDownload->addAction("LIBRA");
+        }
+      }
+    }
+  }
+
+  bool sbrtCheck = false;
+  for (const auto &currentActionAndName : vectorOfLungApps)
+  {
+    if (currentActionAndName.name != "Lung Cancer")
+    {
+      if (!sbrtCheck)
+      {
+        if ((currentActionAndName.name.find("LungField") != std::string::npos) ||
+          (currentActionAndName.name.find("Nodule") != std::string::npos) ||
+          (currentActionAndName.name.find("Analysis") != std::string::npos))
+        {
+          sbrtCheck = true;
+          menuDownload->addAction("LungCancer");
+        }
+      }
+    }
+  }
+
+  for (const auto &currentActionAndName : vectorOfMiscApps)
+  {
+    if (currentActionAndName.name != "Miscellaneous")
+    {
+      if ((currentActionAndName.name != "itksnap") && (currentActionAndName.name != "deepmedic"))
+      {
+        if (!currentActionAndName.name.empty())
+        {
+          menuDownload->addAction(currentActionAndName.name.c_str());
+        }
+      }
+    }
+  }
+
 
   featurePanel->setListner(this);//TBD bad design RK
   featurePanel->setListner(this);//TBD bad design RK
@@ -375,21 +503,6 @@ fMainWindow::fMainWindow()
       vectorOfMiscApps[i].action->setText("  Directionality Estimator"); //TBD set at source
       connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationDirectionality()));
     }
-    //else if (vectorOfMiscApps[i].name.find("itksnap") != std::string::npos)
-    //{
-    //  vectorOfMiscApps[i].action->setText("  ITK-SNAP"); //TBD set at source
-    //  connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationITKSNAP()));
-    //}
-    //else if (vectorOfMiscApps[i].name.find("Geodesic") != std::string::npos)
-    //{
-    //  vectorOfMiscApps[i].action->setText("  Geodesic Segmentation"); // TBD set at source
-    //  connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationGeodesic()));
-    //}
-    //else if (vectorOfMiscApps[i].name.find("deepmedic") != std::string::npos)
-    //{
-    //  vectorOfMiscApps[i].action->setText("  DeepMedic Segmentation (Brain)"); // TBD set at source
-    //  connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationDeepMedicSegmentation()));
-    //}
     else if (vectorOfMiscApps[i].name.find("PerfusionPCA") != std::string::npos)
     {
       vectorOfMiscApps[i].action->setText("  PCA Volume Extraction"); //TBD set at source
@@ -454,11 +567,6 @@ fMainWindow::fMainWindow()
       vectorOfPreprocessingActionsAndNames[i].action->setText("DICOM to NIfTI");
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(DCM2NIfTIConversion()));
     }
-
-    //else if (vectorOfPreprocessingActionsAndNames[i].name.find("Custom") != std::string::npos)
-    //{
-    //  connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(CustomPreprocessing()));
-    //}
   }
 
   connect(&fetalbrainpanel, SIGNAL(skullstripfun()), this, SLOT(skullstripfunc()));
@@ -500,7 +608,6 @@ fMainWindow::fMainWindow()
   connect(&recurrencePanel, SIGNAL(ExistingModelBasedRecurrenceEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(RecurrenceEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(TrainNewModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
 
-  //connect(&pseudoPanel, SIGNAL(SubjectBasedExistingPseudoprogessionEstimate(std::string, std::string, bool, bool, bool, bool)), this, SLOT(LoadedSubjectExistingPseudoprogressionEstimate(const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&pseudoPanel, SIGNAL(ExistingModelBasedPseudoprogressionEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(PseudoprogressionEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&pseudoPanel, SIGNAL(TrainNewPseudoModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewPseudoprogressionModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
 
@@ -575,22 +682,10 @@ fMainWindow::fMainWindow()
 
   //connect
   connect(m_toolTabdock, SIGNAL(topLevelChanged(bool)), this, SLOT(toolTabDockChanged(bool)));
-
-  //Connect applications with progress/ message bar - not working since the compilation chain has been modularized
-  //connect(&mRecurrenceEstimator, SIGNAL(signalProgress(int)), this->m_progressBar, SLOT(setValue(int)));
-  //connect(&mRecurrenceEstimator, SIGNAL(signalMessage(QString)), this->m_messageLabel, SLOT(setText(QString)));
-  //connect(&mGeodesicSegmentation, SIGNAL(signalProgress(int)), this->m_progressBar, SLOT(setValue(int)));
-  //connect(&mGeodesicSegmentation, SIGNAL(signalMessage(QString)), this->m_messageLabel, SLOT(setText(QString)));
-  //connect(&mEGFRPredictor, SIGNAL(signalProgress(int)), this->m_progressBar, SLOT(setValue(int)));
-  //connect(&mEGFRPredictor, SIGNAL(signalMessage(QString)), this->m_messageLabel, SLOT(setText(QString)));
-
+  
   recurrencePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   msubtypePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   survivalPanel.SetCurrentLoggerPath(m_tempFolderLocation);
-
-  //  LoadSlicerImages("E:/SoftwareDevelopmentProjects/DownloadedDataset/RecurrenceEstimator/RecurrenceEstimator/Recurrence/subjectBased/data/AAAC_PreOp_t1ce_pp.nii.gz",1);
-  //  LoadDrawing("E:/SoftwareDevelopmentProjects/DownloadedDataset/RecurrenceEstimator/RecurrenceEstimator/Recurrence/subjectBased/AAAC_label_map.nii.gz");
-
 }
 
 fMainWindow::~fMainWindow()
@@ -1068,8 +1163,6 @@ void fMainWindow::updateDrawMode(int shapeMode)
     color[3] = 255;
   }
 
-
-
   QImage img(33, 33, QImage::Format_ARGB32);
   for (int j = -16; j <= 16; j++)
   {
@@ -1186,7 +1279,6 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     }
     else if (!bFirstLoad)
     {
-      /*else if (mSlicerManagers[0]->mImageSubType != IMAGE_TYPE_PERFUSION)*/ // do all these checks only if the previously loaded image isn't perfusion
       {
         auto imageInfoPrev = cbica::ImageInfo(mSlicerManagers[0]->GetPathFileName());
         auto sizePrev = imageInfoPrev.GetImageSize();
@@ -1256,16 +1348,8 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins());
       auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fileName);
-      //auto orientationCheck = cbica::GetImageOrientation<ImageTypeFloat3D>(cbica::ReadImage<ImageTypeFloat3D>(fileName));
-      //if (orientationCheck.first != "RAI")
-      //{
-      //  statusbar->showMessage("Showing image in RAI for visualization and consistency", 30);
-      //  //ShowMessage("Loaded image was not in RAI orientation, it has been converted for visualization and consistency", "Loaded Image Orientation");
-      //  orientationCheck.second = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fileName);
-      //}
-      imageManager->SetOriginalDirection(currentImage->GetDirection());
+       imageManager->SetOriginalDirection(currentImage->GetDirection());
       currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fileName));
-      //orientationCheck.second = ChangeImageDirectionToIdentity<ImageTypeFloat3D>(orientationCheck.second);
       imageManager->SetImage(currentImage);
       imageManager->mImageSubType = guessImageType(fileName);
     }
@@ -1325,7 +1409,6 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     connect(mSlicerManagers.back(), SIGNAL(UpdateBorderWidgetInMain(double, double, double, double)), this, SLOT(UpdateBorderWidget(double, double, double, double)));
     connect(mSlicerManagers.back(), SIGNAL(UpdateBorderWidgetInMain(double, double)), this, SLOT(UpdateBorderWidget(double, double)));
     connect(mSlicerManagers.back(), SIGNAL(UpdateActionInMain(const QVariantList&)), this, SLOT(UpdateActionQ(const QVariantList&)));
-    //assert(bres); // Qt cannot directly connect the custom signals TBD
 
     connect(mSlicerManagers.back(), SIGNAL(SeedPointsAdded()), tumorPanel, SLOT(sAddPoint()));
     connect(mSlicerManagers.back(), SIGNAL(SeedPointsAdded(int, bool)), tumorPanel, SLOT(sAddPoint(int, bool)));
@@ -1363,8 +1446,6 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       }
       AxialViewWidget->show();
       infoPanel->show();
-
-      //overlayUse->setEnabled(true);
 
       windowLabel->setEnabled(true);
       windowSpinBox->setEnabled(true);
@@ -1449,7 +1530,6 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     else // for 3D images, call dcm2nii
     {
       CallDCM2NIfTIConversion(fileName, true);
-      //DCM2NIfTIConversion();
     }
 
     return;
@@ -1549,7 +1629,6 @@ void fMainWindow::ImageInfoChanged()
   imageSelected = mSlicerManagers[index]->GetSlicer(0)->GetImage();
   transformSelected = mSlicerManagers[index]->GetSlicer(0)->GetTransform();
 
-  //int dimension = GetNumberOfDimensions(imageSelected);
   std::string vtktype = mSlicerManagers[index]->GetImage()->GetScalarTypeAsString();
   QString pixelType = vtktype.c_str();
 
@@ -1834,10 +1913,8 @@ void fMainWindow::WindowLevelEdited()
 
 void fMainWindow::SetWindowLevel(double w, double l)
 {
-  //windowSlider->setValue(w);
   windowSpinBox->setValue(w);
   levelSpinBox->setValue(l);
-  //levelSlider->setValue(l);
   presetComboBox->setCurrentIndex(PRESET_USER);
   UpdateWindowLevel();
 }
@@ -1925,7 +2002,6 @@ void fMainWindow::CloseImage()
 }
 void fMainWindow::CloseAllImages()
 {
-  //int rows = m_imagesTable->rowCount();
   while (m_imagesTable->rowCount() > 0)
   {
     m_imagesTable->selectRow(0);//TBD speedup this
@@ -1952,8 +2028,6 @@ void fMainWindow::ResetTransformationToIdentity()
 
 void fMainWindow::AddLink(const std::string &image1, const std::string &image2)
 {
-  //unsigned int sm1 = 0;
-  //unsigned int sm2 = 0;
 
   for (int i = 0; i < (int)mSlicerManagers.size(); i++)
   {
@@ -1968,9 +2042,6 @@ void fMainWindow::AddLink(const std::string &image1, const std::string &image2)
       //sm2 = i;
     }
   }
-
-  //emit UpdateLinkedNavigation(mSlicerManagers[sm1]->GetId(), mSlicerManagers[mCurrentPickedImageIndex], mSlicerManagers[mCurrentPickedImageIndex]->GetSlicer(0));
-  //emit UpdateLinkedNavigation(mSlicerManagers[sm2]->GetId(), mSlicerManagers[mCurrentPickedImageIndex], mSlicerManagers[mCurrentPickedImageIndex]->GetSlicer(0));
 }
 
 void fMainWindow::RemoveLink(const std::string &image1, const std::string &image2)
@@ -1995,9 +2066,6 @@ void fMainWindow::ChangeImageWithOrder(SlicerManager *sm, int order)
   if (order >= (int)mSlicerManagers.size()) {
     return;
   }
-  //if (sm != mSlicerManagers[order]) {
-  //	return;
-  //}
 
   QTableWidgetItem* item;
   item = GetItemFromSlicerManager(mSlicerManagers[order]);
@@ -2008,12 +2076,8 @@ void fMainWindow::ChangeImageWithOrder(SlicerManager *sm, int order)
 void fMainWindow::AxialViewSliderChanged()
 {
   static int value = -1;
-  //if (value == AxialViewSlider->value()) {
-  //  return;
-  //}
-  //else {
+
   value = AxialViewSlider->value();
-  //}
   QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
   if (items.empty()) {
     return;
@@ -2316,14 +2380,7 @@ void fMainWindow::SaveDicomImage()
   {
     directory_wrap += "/";
   }
-
-  // check write access
-  //if (((_access(directory_wrap.c_str(), 2)) == -1) || ((_access(directory_wrap.c_str(), 6)) == -1))
-  //{
-  //  ShowErrorMessage("You don't have write access in selected location. Please check.");
-  //  return;
-  //}
-
+  
   typedef itk::Image<PixelType, Dimensions> ImageType;
   typedef itk::CastImageFilter< itk::Image< float, Dimensions >, ImageType > CastFilterType;
   CastFilterType::Pointer castFilter = CastFilterType::New();
@@ -2332,7 +2389,6 @@ void fMainWindow::SaveDicomImage()
 
   try
   {
-    //    cbica::WriteDicomImage<ImageType>(mSlicerManagers[index]->mSeriesReader, castFilter->GetOutput(), directory_wrap);
     updateProgress(0, "Image saved! (" + directory_wrap + ")");
   }
   catch (itk::ExceptionObject & excp)
@@ -2385,7 +2441,6 @@ void fMainWindow::SaveDicomDrawing()
 
   try
   {
-    //    cbica::WriteDicomImage<ImageType>(mSlicerManagers[index]->mSeriesReader, imageToWrite, directory_wrap);
     updateProgress(0, "Success!");
   }
   catch (itk::ExceptionObject & excp)
@@ -2472,7 +2527,6 @@ void fMainWindow::SaveSeedDrawing()
   QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
   if (items.empty())
     return;
-  //int index = GetSlicerIndexFromItem(items[0]);
 
   QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "drawing_seed.nii.gz");
   if (!saveFileName.isEmpty())
@@ -2657,7 +2711,6 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     {
       using ImageType = itk::Image<unsigned int, 3>; 
       auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName);
-      //auto inputImage = cbica::ReadImage< ImageType >(maskFileName);
       inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
 
       auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();
@@ -3494,12 +3547,8 @@ void fMainWindow::StartRecurrenceEstimate(const std::string &outputdirectory, bo
   if (distanceDataPresent)
   {
     VectorVectorDouble tumorPoints = FormulateDrawingPointsForTumorSegmentation();
-    //tumorMaskFinal = mPreprocessingObj.Tumor3DSegmentationInGivenImage<ImageTypeFloat3D>(FinalT1CEImagePointer, tumorPoints);
     tumorMaskFinal = mPreprocessingObj.PrepareTumroImageFromPoints<ImageTypeFloat3D>(FinalT1CEImagePointer, tumorPoints);
   }
-
-  //edemaMask =  mNifiDataManager.ReadNiftiImage("E:/SoftwareDevelopmentProjects/captk-dev_trunk/data/Edema.nii");
-  //tumorMaskFinal = mNifiDataManager.ReadNiftiImage("E:/SoftwareDevelopmentProjects/captk-dev_trunk/data/Tumor.nii");
 
   mRecurrenceEstimator.Run<ImageTypeFloat3D>(edemaMask, tumorMaskFinal,
     FinalT1CEImagePointer, FinalT2FlairImagePointer, FinalT1ImagePointer, FinalT2ImagePointer, FinalPerfusionImagePointer, FinalDTIImagePointer,
@@ -3582,35 +3631,6 @@ void fMainWindow::UpdateNumberOfPointsInTable()
   mCurrentInitPoints = initCounter;
 
 }
-//bool fMainWindow::CheckSeedPointsForRecurrence()
-//{
-//	typedef itk::Image<short, 3> ImageType;
-//	ImageType::Pointer img = convertVtkToItk<short, 3>(mSlicerManagers[0]->mMask);
-//	int  NET_counter = 0;
-//	int  ET_counter = 0;
-//	int  ED_counter = 0;
-//
-//	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-//	IteratorType maskIt(img, img->GetLargestPossibleRegion());
-//
-//  for (maskIt.GoToBegin(); !maskIt.IsAtEnd(); ++maskIt)
-//  {
-//    if ((NET_counter == 0) || (ET_counter == 0) || (ED_counter == 0))
-//    {
-//      if (maskIt.Get() == GLISTR_OUTPUT_LABELS::NONENHANCING)
-//        NET_counter++;
-//      else if (maskIt.Get() == GLISTR_OUTPUT_LABELS::TUMOR)
-//        ET_counter++;
-//      else if (maskIt.Get() == GLISTR_OUTPUT_LABELS::EDEMA)
-//        ED_counter++;
-//    }
-//  }
-//
-//	if (ET_counter > 0 && NET_counter > 0 && ED_counter > 0)
-//		return true;
-//	else
-//		return false;
-//}
 
 void fMainWindow::SetPresetComboBox()
 {
@@ -4586,37 +4606,6 @@ void fMainWindow::LoadDrawing()
     return;
   }
 }
-//void fMainWindow::LoadSeedDrawing()
-//{
-//  QString extensions = IMAGES_EXTENSIONS;
-//  extensions += ";;All Files (*)";
-//  QString file = getExistingFile(this, mInputPathName);
-//
-//  std::string filename = file.toStdString();
-//  itk::ImageIOBase::Pointer reader = itk::ImageIOFactory::CreateImageIO(filename.c_str(), itk::ImageIOFactory::ReadMode);
-//  if (reader)
-//  {
-//    ImageTypeFloat3D::Pointer inputImage = cbica::ReadImage<ImageTypeFloat3D>(filename);
-//
-//    std::vector<ImageType::IndexType> seedIndices;
-//    typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-//    IteratorType maskIt(inputImage, inputImage->GetLargestPossibleRegion());
-//    maskIt.GoToBegin();
-//    while (!maskIt.IsAtEnd())
-//    {
-//      if (maskIt.Get() == INIT_POINT_SAVE_LABEL)
-//      {
-//        ImageType::IndexType currentIndex = maskIt.GetIndex();
-//        seedIndices.push_back(currentIndex);
-//        float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
-//        *pData = INIT_POINT_LABEL;
-//      }
-//      ++maskIt;
-//    }
-//    this->mSlicerManagers[0]->GetSlicer(0)->mMask->Modified();
-//    this->mSlicerManagers[0]->Render();
-//  }
-//}
 
 void fMainWindow::UpdateBorderWidget(double startX, double startY, double endX, double endY)
 {
@@ -5081,13 +5070,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
   {
     anaObject.OutputFeature(oname);
   }
-
-  //! commented part here temporarily
-  //analysisPanel.SetCurrentImagePath(mInputPathName);
-  //analysisPanel.SetSurvivalValue(anaObject.GetSurivalRisk());
-  //analysisPanel.SetNodalFailureValue(anaObject.GetNodalFailureRisk());
-  //analysisPanel.exec();
-
+  
   updateProgress(0, ""); //! reset progress bar
 
   QString msgStr = QString("Predicted Risk (Survival): %1\nPredicted Risk(Nodal Failure): %2").arg(anaObject.GetSurivalRisk())
@@ -5185,7 +5168,6 @@ void fMainWindow::skullstripfunc()
   }
   this->mSlicerManagers[0]->GetSlicer(0)->mMask->Modified();
   this->mSlicerManagers[0]->Render();
-  //statusbar->showMessage("Segmentation finished", 50);
 
   updateProgress(50, "Segmentation finished");
 }
@@ -5293,14 +5275,11 @@ void fMainWindow::ApplicationEGFR()
 
 
   QString msg;
-  //if (EGFRStatusParams[0] <= 0.1377)
   msg = "PHI = " + QString::number(EGFRStatusParams[0]) + "\n\n----------\n\n(Near:Far) Peak Height ratio = " +
     QString::number(EGFRStatusParams[1] / EGFRStatusParams[2]) + "\n\nNear ROI voxels used = " +
     QString::number(EGFRStatusParams[3]) + "/" + QString::number(nearIndices.size()) + "\nFar ROI voxels used =   " +
     QString::number(EGFRStatusParams[4]) + "/" + QString::number(farIndices.size()) +
     "\n\n\n----------\n\nPHI Threshold = 0.1377\n[based on 142 UPenn brain tumor scans]";
-  //else
-  //msg = " PHI = " + QString::number(EGFRStatusParams[0]) + "\n\nNear/Far perfusion drop ratio = " + QString::number(EGFRStatusParams[1] / EGFRStatusParams[2]) + "\n\nNear ROI voxels used = " + QString::number(EGFRStatusParams[3]) + "/" + QString::number(nearIndices.size()) + "\nFar ROI voxels used =   " + QString::number(EGFRStatusParams[4]) + "/" + QString::number(farIndices.size());
 
   updateProgress(0);
   ShowMessage(msg.toStdString());
@@ -5310,18 +5289,10 @@ void fMainWindow::ApplicationEGFR()
 #ifdef BUILD_RECURRENCE
 void fMainWindow::ApplicationRecurrence()
 {
-  //std::vector< std::string > fileNames;
-  //std::vector<std::string> modality;
-  //this->getLodedImages(fileNames,modality, true);
-  //if (fileNames.size())
   {
     recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
     recurrencePanel.exec();
   }
-  //else
-  //{
-  //  ShowErrorMessage("No images selected!");
-  //}
 }
 #endif
 
@@ -5329,18 +5300,10 @@ void fMainWindow::ApplicationRecurrence()
 #ifdef BUILD_PSEUDOPROGRESSION
 void fMainWindow::ApplicationPseudoProgression()
 {
-  //std::vector< std::string > fileNames;
-  //std::vector<std::string> modality;
-  //this->getLodedImages(fileNames,modality, true);
-  //if (fileNames.size())
   {
     pseudoPanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
     pseudoPanel.exec();
   }
-  //else
-  //{
-  //  ShowErrorMessage("No images selected!");
-  //}
 }
 #endif
 
@@ -5520,12 +5483,6 @@ void fMainWindow::ApplicationMolecularSubtype()
 #ifdef BUILD_SURVIVAL
 void fMainWindow::ApplicationSurvival()
 {
-  //QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
-  //if (items.empty())
-  //{
-  //  ShowErrorMessage("Please specify input images.");
-  //  return;
-  //}
   survivalPanel.SetCurrentImagePath(mInputPathName);
   survivalPanel.setModal(false);
   survivalPanel.exec();
@@ -5546,29 +5503,6 @@ void fMainWindow::ApplicationITKSNAP()
 {
   if (mSlicerManagers.size() > 0)
   {
-    //int vd_x, vd_y, vd_z;
-    //vd_x = mSlicerManagers[0]->mMask->GetDimensions()[0];
-    //vd_y = mSlicerManagers[0]->mMask->GetDimensions()[1];
-    //vd_z = mSlicerManagers[0]->mMask->GetDimensions()[2];
-    //float* pData = (float*)mSlicerManagers[0]->mMask->GetScalarPointer();
-    //int counter = 0;
-    //for (unsigned int k = 0; k < vd_z; k++)
-    //{
-    //	for (unsigned int j = 0; j < vd_y; j++)
-    //	{
-    //		for (unsigned int i = 0; i < vd_x; i++)
-    //		{
-    //			if (*pData > 0)
-    //				counter++;
-    //			pData++;
-    //		}
-    //	}
-    //}
-    //if (counter==0)
-    //{
-    //	ShowErrorMessage("Please load a single image and ROI before calling ITK-SNAP");
-    //	return;
-    //}
   }
   else
   {
@@ -5587,8 +5521,6 @@ void fMainWindow::ApplicationITKSNAP()
 
   for (int i = 0; i < m_imagesTable->rowCount(); i++)
   {
-    //auto test = m_imagesTable->item(i, 2);
-    //auto pathTest = mSlicerManagers[i]->mPathFileName;
     Registry &rl = r.Folder(Registry::Key("Layers.Layer[%03d]", i));
     rl["AbsolutePath"] << mSlicerManagers[i]->mPathFileName;
     if (i == 0)
@@ -5851,7 +5783,6 @@ void fMainWindow::ImageDenoising()
   if (!saveFileName.isEmpty())
   {
     auto saveFileName_string = saveFileName.toStdString();
-    // typedef ImageType::Pointer ImageTypePointer;
     //Job TBD replace with app name
     typedef itk::ImageDuplicator<ImageTypeFloat3D> DuplicatorType;
     DuplicatorType::Pointer duplicator = DuplicatorType::New();
@@ -6009,34 +5940,6 @@ void fMainWindow::ApplicationPCA()
 }
 void fMainWindow::PerfusionMeasuresCalculation()
 {
-  //typedef ImageTypeFloat3D ImageType;
-  //typedef ImageTypeFloat4D PerfusionImageType;
-  //ImageTypeFloat4D::Pointer perfusionImage = ImageTypeFloat4D::New();
-  //std::string msg = "";
-
-  //bool perfusionDataPresent = false;
-  //for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
-  //{
-  //  if (mSlicerManagers[index]->mImageSubType == IMAGE_TYPE_PERFUSION)
-  //  {
-  //    perfusionDataPresent = true;
-  //    perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
-  //  }
-  //}
-  //if (perfusionDataPresent == false)
-  //  msg = msg + "\n DSC-MRI scan";
-
-  //if (msg != "")
-  //{
-  //  msg = "Please provide the following items:\n" + msg;
-  //  QMessageBox box(this);
-  //  box.setIcon(QMessageBox::Information);
-  //  box.addButton(QMessageBox::Ok);
-  //  box.setText(QString::fromStdString(msg));
-  //  box.setWindowTitle(tr("Missing Data"));
-  //  box.exec();
-  //  return;
-  //}
   perfmeasuresPanel.exec();
 }
 void fMainWindow::DiffusionMeasuresCalculation()
@@ -6109,135 +6012,15 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     {
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1CE:
       file_t1ce = mSlicerManagers[i]->GetPathFileName();
-      //statsCalculator->SetInput(mSlicerManagers[i]->mITKImage);
-      //statsCalculator->Update();
-      //if (statsCalculator->GetMean() != 0)
-      //{
-      //  if (!isMaskDefined() && !noMaskNorm)
-      //  {
-      //    QMessageBox *box = new QMessageBox(QMessageBox::Question, "DeepMedic Segmentation: Normalization Needed",
-      //      "A brain mask will be needed for the most correct image normalization, press 'OK' to continue without mask or 'Cancel' to return and load a mask.",
-      //      QMessageBox::Ok | QMessageBox::Cancel);
-      //    box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
-      //    box->setWindowModality(Qt::NonModal);
-      //    QCoreApplication::processEvents();
-      //    if (box->exec() == QMessageBox::Cancel)
-      //    {
-      //      return;
-      //    }
-      //    noMaskNorm = true;
-      //  }
-      //  updateProgress(progressBar++, "Doing normalization of T1Gd");
-      //  DeepMedicNormalizer< ImageTypeFloat3D > normalizer;
-      //  normalizer.SetInputImage(mSlicerManagers[i]->mITKImage);
-      //  normalizer.SetInputMask(getMaskImage());
-      //  normalizer.Update();
-      //  file_t1ce = outputDirectory + "/dm_t1ce.nii.gz";
-      //  cbica::WriteImage< ImageTypeFloat3D >(normalizer.GetOutput(), file_t1ce);
-      //}
-      //else
-      //{
-      //  file_t1ce = mSlicerManagers[i]->mFileName;
-      //}
       break;
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1:
       file_t1 = mSlicerManagers[i]->GetPathFileName();
-      //statsCalculator->SetInput(mSlicerManagers[i]->mITKImage);
-      //statsCalculator->Update();
-      //if (statsCalculator->GetMean() != 0)
-      //{
-      //  if (!isMaskDefined() && !noMaskNorm)
-      //  {
-      //    QMessageBox *box = new QMessageBox(QMessageBox::Question, "DeepMedic Segmentation: Normalization Needed",
-      //      "A brain mask will be needed for the most correct image normalization, press 'OK' to continue without mask or 'Cancel' to return and load a mask.",
-      //      QMessageBox::Ok | QMessageBox::Cancel);
-      //    box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
-      //    box->setWindowModality(Qt::NonModal);
-      //    QCoreApplication::processEvents();
-      //    if (box->exec() == QMessageBox::Cancel)
-      //    {
-      //      return;
-      //    }
-      //    noMaskNorm = true;
-      //  }
-      //  updateProgress(progressBar++, "Doing normalization of T1");
-      //  DeepMedicNormalizer< ImageTypeFloat3D > normalizer;
-      //  normalizer.SetInputImage(mSlicerManagers[i]->mITKImage);
-      //  normalizer.SetInputMask(getMaskImage());
-      //  normalizer.Update();
-      //  file_t1 = outputDirectory + "/dm_t1.nii.gz";
-      //  cbica::WriteImage< ImageTypeFloat3D >(normalizer.GetOutput(), file_t1);
-      //}
-      //else
-      //{
-      //  file_t1 = mSlicerManagers[i]->mFileName;
-      //}
       break;
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2:
       file_t2 = mSlicerManagers[i]->GetPathFileName();
-      //statsCalculator->SetInput(mSlicerManagers[i]->mITKImage);
-      //statsCalculator->Update();
-      //if (statsCalculator->GetMean() != 0)
-      //{
-      //  if (!isMaskDefined() && !noMaskNorm)
-      //  {
-      //    QMessageBox *box = new QMessageBox(QMessageBox::Question, "DeepMedic Segmentation: Normalization Needed",
-      //      "A brain mask will be needed for the most correct image normalization, press 'OK' to continue without mask or 'Cancel' to return and load a mask.",
-      //      QMessageBox::Ok | QMessageBox::Cancel);
-      //    box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
-      //    box->setWindowModality(Qt::NonModal);
-      //    QCoreApplication::processEvents();
-      //    if (box->exec() == QMessageBox::Cancel)
-      //    {
-      //      return;
-      //    }
-      //    noMaskNorm = true;
-      //  }
-      //  updateProgress(progressBar++, "Doing normalization of T2");
-      //  DeepMedicNormalizer< ImageTypeFloat3D > normalizer;
-      //  normalizer.SetInputImage(mSlicerManagers[i]->mITKImage);
-      //  normalizer.SetInputMask(getMaskImage());
-      //  normalizer.Update();
-      //  file_t2 = outputDirectory + "/dm_t2.nii.gz";
-      //  cbica::WriteImage< ImageTypeFloat3D >(normalizer.GetOutput(), file_t2);
-      //}
-      //else
-      //{
-      //  file_t2 = mSlicerManagers[i]->mFileName;
-      //}
       break;
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR:
       file_flair = mSlicerManagers[i]->GetPathFileName();
-      //statsCalculator->SetInput(mSlicerManagers[i]->mITKImage);
-      //statsCalculator->Update();
-      //if (statsCalculator->GetMean() != 0)
-      //{
-      //  if (!isMaskDefined() && !noMaskNorm)
-      //  {
-      //    QMessageBox *box = new QMessageBox(QMessageBox::Question, "DeepMedic Segmentation: Normalization Needed",
-      //      "A brain mask will be needed for the most correct image normalization, press 'OK' to continue without mask or 'Cancel' to return and load a mask.",
-      //      QMessageBox::Ok | QMessageBox::Cancel);
-      //    box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
-      //    box->setWindowModality(Qt::NonModal);
-      //    QCoreApplication::processEvents();
-      //    if (box->exec() == QMessageBox::Cancel)
-      //    {
-      //      return;
-      //    }
-      //    noMaskNorm = true;
-      //  }
-      //  updateProgress(progressBar++, "Doing normalization of T2-Flair");
-      //  DeepMedicNormalizer< ImageTypeFloat3D > normalizer;
-      //  normalizer.SetInputImage(mSlicerManagers[i]->mITKImage);
-      //  normalizer.SetInputMask(getMaskImage());
-      //  normalizer.Update();
-      //  file_flair = outputDirectory + "/dm_flair.nii.gz";
-      //  cbica::WriteImage< ImageTypeFloat3D >(normalizer.GetOutput(), file_flair);
-      //}
-      //else
-      //{
-      //  file_flair = mSlicerManagers[i]->mFileName;
-      //}
       break;
     default:
       ShowErrorMessage("DeepMedic needs the following images to work: T1CE, T1, T2, FLAIR", this);
@@ -6246,10 +6029,6 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
   }
 
   std::string dataDir = getCaPTkDataDir() + "deepMedic/";
-
-  //QStringList args;
-  //args << "-newModel" << (dataDir + "examples/configFiles/tinyCnn/model/modelConfig.cfg").c_str() << "-test" << (dataDir + "examples/configFiles/tinyCnn/test/testConfig.cfg").c_str()
-  //  << "-model" << (dataDir + "saved_models/tinyCnn/tinyCnn.trainSessionWithValidTinyCnn.final.2018-02-16.13.45.09.726509.model.ckpt").c_str() << "-dev" << "cpu";
 
   QStringList args;
   args /*<< "-model" << (dataDir + "to_use/modelConfig.txt").c_str()*/
@@ -6270,16 +6049,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     return;
   }
 
-  //ShowErrorMessage("DM:\n" + dmExe + " " + temp);
-
-  //if (startExternalProcess(("E:/Projects/NITRC/CaPTk_dev/trunk/bin_vs2017/install/bin/DeepMedic.exe " + temp).c_str(), QStringList()) != 0) // for whatever reason, this is not working with the DM executable
-  //{
-  //  ShowErrorMessage("DeepMedic returned with exit code != 0");
-  //  updateProgress(0, "");
-  //  return;
-  //}
-
-  if (std::system((dmExe + " " + temp).c_str()) != 0)
+   if (std::system((dmExe + " " + temp).c_str()) != 0)
   {
     ShowErrorMessage("DeepMedic returned with exit code != 0");
     updateProgress(0, "");
@@ -6360,21 +6130,6 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, 
     ShowMessage("Saved in:\n\n " + outputDir, "DICOM Conversion Success");
   }
 
-  //QProcess process;
-  //process.start(fullCommandToRun.c_str());
-  //process.write("exit\n\r");
-  //process.waitForFinished(-1);
-  //process.close();
-
-  //if (process.exitCode() != 0)
-  //{
-  //	ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
-  //	return;
-  //}
-  //else
-  //{
-  //	ShowMessage("Saved in:\n\n " + outputDir, "DICOM Conversion Success");
-  //}
 }
 
 void fMainWindow::CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask,
@@ -6473,17 +6228,14 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
 
       roi1It.SetIndex(currentIndex);
-      //roiNew.SetIndex(currentIndex);
 
       if (roi1It.Get() > 0) // if pre-injection ROI is defined, then the mask to be displayed is under label 1
       {
         *pData = 1.0;
-        //roiNew.Set(1.0);
       }
       else // this is for the section of the ROI which is post-injection
       {
         *pData = 2.0;
-        //roiNew.Set(2.0);
       }
     }
   }
@@ -6508,10 +6260,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     help_contextual("Glioblastoma_Directionality.html");
     return;
   }
-
-  //// this could be used to store output if there are multiple seed points used.
-  //std::vector< std::map< std::string, std::pair< typename TImageType::IndexType, float > > > output;
-  //output.resize(numberOfSeeds);
 
   QString output_msg = "";
   QString outputPoints = (m_tempFolderLocation + "/directionalityOutput_points.txt").c_str();
@@ -6585,21 +6333,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
         }
       };
 
-      //----------------testing--------------------------
-      //cbica::WriteImage< ImageType >(newROIImage, "E:/roi_new.nii.gz");
-      //int counter1 = 0;
-      //int counter2 = 0;
-      //for (roiNew.GoToBegin(); !roiNew.IsAtEnd(); ++roiNew)
-      //{
-      // if (roiNew.Get() > 0)
-      //  counter1++;
-      //}
-      //for (roi2It.GoToBegin(); !roi2It.IsAtEnd(); ++roi2It)
-      //{
-      // if (roi2It.Get() > 0)
-      //  counter2++;
-      //}
-
       //-----------------------------------------------
       // mask iterator start
       for (roiNew.GoToBegin(); !roiNew.IsAtEnd(); ++roiNew)
@@ -6624,7 +6357,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
           if (!x && !y && !z) // 000
           {
-            //octFunc(0, roiNew.Get());
             int counter = 0;
             octrantVolume_1[counter]++;
 
@@ -6636,7 +6368,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
           if (!x && !y && z) // 001
           {
-            //octFunc(1, roiNew.Get());
             int counter = 1;
             octrantVolume_1[counter]++;
 
@@ -6648,7 +6379,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
           if (!x && y && !z) // 010
           {
-            //octFunc(2, roiNew.Get());
             int counter = 2;
             octrantVolume_1[counter]++;
 
@@ -6660,7 +6390,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
           if (!x && y && z) // 011
           {
-            //octFunc(3, roiNew.Get());
             int counter = 3;
             octrantVolume_1[counter]++;
 
@@ -6672,7 +6401,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
           if (x && !y && !z) // 100
           {
-            //octFunc(4, roiNew.Get());
             int counter = 4;
             octrantVolume_1[counter]++;
 
@@ -6684,7 +6412,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
           if (x && !y && z) // 101
           {
-            //octFunc(5, roiNew.Get());
             int counter = 5;
             octrantVolume_1[counter]++;
 
@@ -6696,7 +6423,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
           if (x && y && !z) // 110
           {
-            //octFunc(6, roiNew.Get());
             int counter = 6;
             octrantVolume_1[counter]++;
 
@@ -6708,7 +6434,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
           if (x && y && z) // 111
           {
-            //octFunc(7, roiNew.Get());
             int counter = 7;
             octrantVolume_1[counter]++;
 
@@ -6765,7 +6490,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
         if (!x && !y && !z) // 000
         {
-          //octFunc(0, roiNew.Get());
           int count = 0;
           if (roiNew.Get() > 0)
             octrantVolume_1_revised[count]++;
@@ -6813,7 +6537,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
         if (x && !y && !z) // 100
         {
-          //octFunc(4, roiNew.Get());
           int count = 4;
           if (roiNew.Get() > 0)
             octrantVolume_1_revised[count]++;
@@ -6826,7 +6549,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
         if (x && !y && z) // 101
         {
-          //octFunc(5, roiNew.Get());
           int count = 5;
           if (roiNew.Get() > 0)
             octrantVolume_1_revised[count]++;
@@ -6839,7 +6561,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
         if (x && y && !z) // 110
         {
-          //octFunc(6, roiNew.Get());
           int count = 6;
           if (roiNew.Get() > 0)
             octrantVolume_1_revised[count]++;
@@ -6947,12 +6668,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
         }
       }
 
-      //auto tempFileName = m_tempFolderLocation + "/directionalityOutput_output.nii.gz";
-      //cbica::WriteImage< ImageTypeFloat3D >(directionalityEstimator.GetOutputLabelMask(), tempFileName);
-      //readMaskFile(tempFileName);
-      //this->mSlicerManagers[0]->GetSlicer(0)->mMask->Modified();
-      //this->mSlicerManagers[0]->Render();
-
       output_xy_point = output_point;
       output_xy_point[2] = pointFromTumorPanel[2];
       output_yz_point = output_point;
@@ -6964,38 +6679,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       auto dist_xy = pointFromTumorPanel.EuclideanDistanceTo(output_xy_point);
       auto dist_yz = pointFromTumorPanel.EuclideanDistanceTo(output_yz_point);
       auto dist_xz = pointFromTumorPanel.EuclideanDistanceTo(output_xz_point);
-
-      // draw a line between the points
-      //auto linesPolyData = vtkSmartPointer< vtkPolyData >::New();
-      //auto pts = vtkSmartPointer< vtkPoints >::New();
-      //double origin[3] = { currentIndex[0], currentIndex[1], currentIndex[2] };
-      //double output_1[3] = { output_xy_point[0], output_xy_point[1], output_xy_point[2] },
-      //  output_2[3] = { output_yz_point[0], output_yz_point[1], output_yz_point[2] },
-      //  output_3[3] = { output_xz_point[0], output_xz_point[1], output_xz_point[2] };
-      //pts->InsertNextPoint(origin);
-      //pts->InsertNextPoint(output_1);
-      //pts->InsertNextPoint(output_2);
-      //pts->InsertNextPoint(output_3);
-      //linesPolyData->SetPoints(pts);
-      //auto line1 = vtkSmartPointer< vtkLine >::New();
-      //line1->GetPointIds()->SetId(0, 0);
-      //line1->GetPointIds()->SetId(1, 1);
-      //auto line2 = vtkSmartPointer< vtkLine >::New();
-      //line2->GetPointIds()->SetId(0, 0);
-      //line2->GetPointIds()->SetId(1, 2);
-      //auto line3 = vtkSmartPointer< vtkLine >::New();
-      //line3->GetPointIds()->SetId(0, 0);
-      //line3->GetPointIds()->SetId(1, 3);
-      //auto lines = vtkSmartPointer< vtkCellArray >::New();
-      //lines->InsertNextCell(line1);
-      //lines->InsertNextCell(line2);
-      //lines->InsertNextCell(line3);
-      //linesPolyData->SetLines(lines);
-      //unsigned char green[3] = { 0, 255, 0 }; // set color
-      //auto colors = vtkSmartPointer< vtkUnsignedCharArray >::New();
-      //colors->SetNumberOfComponents(3);
-      //colors->InsertNextTupleValue(green);
-      //linesPolyData->GetCellData()->SetScalars(colors);
 
       // place estimations back on the seed point map
       mSlicerManagers[index]->mTissuePoints->AddLandmark(output_point[0], output_point[1], output_point[2], 0.0, 0.0, RTN); // actual output
@@ -7136,13 +6819,6 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
 void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
 {
   typedef ImageTypeFloat4D PerfusionImageType;
-  //ImageTypeFloat4D::Pointer perfusionImage = ImageTypeFloat4D::New();
-
-  //for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
-  //{
-  //  if (mSlicerManagers[index]->mImageSubType == IMAGE_TYPE_PERFUSION)
-  //    perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
-  //}
 
   PerfusionDerivatives m_perfusionderivatives;
   std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, TE);
@@ -7273,7 +6949,6 @@ void fMainWindow::ChangeMaskOpacity(int newMaskOpacity) // multiLabel uncomment 
     }
   }
   this->mSlicerManagers[0]->Render();
-  //UpdateRenderWindows();
 }
 
 void fMainWindow::ChangeDrawingLabel(int drawingLabel) // multiLabel uncomment this function
@@ -7347,135 +7022,12 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
   updateProgress(5, "Starting Registration");
 
   auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
-  //std::vector< ImageTypeFloat3D::Pointer > outputImages; // commented because nothing was being done with these
 
   if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
   {
     ShowErrorMessage("Number of input, matrix and output file names do not match");
     return;
   }
-
-  //Using greedy classes
-  //for (unsigned int i = 0; i < inputFileNames.size(); i++)
-  //{
-  //    /*-------------Greedy Registration------------*/
-  //    GreedyParameters param;
-  //    GreedyParameters::SetToDefaults(param);
-
-  //    bool affineMode = false;
-  //    float current_weight = 1.0;
-
-  //    ImagePairSpec ip;
-  //    ip.weight = current_weight;
-  //    ip.fixed = fixedFileName;
-  //    ip.moving = inputFileNames[i];
-  //    param.inputs.push_back(ip);
-  //    if (affineMode) {
-  //        param.mode = GreedyParameters::AFFINE;
-  //        param.affine_dof = GreedyParameters::DOF_AFFINE;
-  //    }
-  //    else {
-  //        param.mode = GreedyParameters::AFFINE;
-  //        param.affine_dof = GreedyParameters::DOF_RIGID;
-  //    }
-
-  //    if (metrics == "NCC" || metrics == "ncc")
-  //    {
-  //        metrics = "NCC";
-  //        param.metric = GreedyParameters::NCC;
-  //    }
-  //    else if (metrics == "MI" || metrics == "mi")
-  //    {
-  //        metrics = "MI";
-  //        param.metric = GreedyParameters::MI;
-  //    }
-  //    else if (metrics == "NMI" || metrics == "nmi")
-  //    {
-  //        metrics = "NMI";
-  //        param.metric = GreedyParameters::NMI;
-  //    }
-  //    else if (metrics == "ssd" || metrics == "SSD")
-  //    {
-  //        metrics = "SSD";
-  //        param.metric = GreedyParameters::SSD;
-  //    }
-
-  //    param.output = matrixFileNames[i];
-
-  //    auto fixedImageInfo = cbica::ImageInfo(fixedFileName);
-  //    auto movingImageInfo = cbica::ImageInfo(inputFileNames[i]);
-
-
-  //    if (param.flag_float_math)
-  //    {
-  //        switch (fixedImageInfo.GetImageDimensions())
-  //        {
-  //        case 2: GreedyRunner<2, float>::Run(param); break;
-  //        case 3: GreedyRunner<3, float>::Run(param); break;
-  //        case 4: GreedyRunner<4, float>::Run(param); break;
-  //        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-  //        }
-  //    }
-  //    else
-  //    {
-  //        switch (fixedImageInfo.GetImageDimensions())
-  //        {
-  //        case 2: GreedyRunner<2, double>::Run(param); break;
-  //        case 3: GreedyRunner<3, double>::Run(param); break;
-  //        case 4: GreedyRunner<4, double>::Run(param); break;
-  //        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-  //        }
-  //    }
-
-  //    param.reslice_param.ref_image = fixedFileName;
-  //    TransformSpec spec;
-  //    ResliceSpec reslice;
-
-  //    InterpSpec interp_current;
-  //    reslice.interp = interp_current;
-  //    reslice.moving = inputFileNames[i];
-  //    reslice.output = outputFileNames[i];
-
-  //    param.reslice_param.images.push_back(reslice);
-
-  //    param.mode = GreedyParameters::RESLICE;
-  //    
-  //    spec = read_transform_spec(matrixFileNames[i]);
-
-  //    param.reslice_param.transforms.push_back(spec);
-
-  //    if (param.flag_float_math)
-  //    {
-  //        switch (fixedImageInfo.GetImageDimensions())
-  //        {
-  //        case 2: GreedyRunner<2, float>::Run(param); continue;
-  //        case 3: GreedyRunner<3, float>::Run(param); continue;
-  //        case 4: GreedyRunner<4, float>::Run(param); continue;
-  //        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-  //        }
-  //    }
-  //    else
-  //    {
-  //        switch (fixedImageInfo.GetImageDimensions())
-  //        {
-  //        case 2: GreedyRunner<2, double>::Run(param); continue;
-  //        case 3: GreedyRunner<3, double>::Run(param); continue;
-  //        case 4: GreedyRunner<4, double>::Run(param); continue;
-  //        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-  //        }
-  //    }
-
-  //    if (matrixFileNames[i].find("remove") != std::string::npos) {
-  //        if (cbica::isFile(matrixFileNames[i])) {
-  //            if (std::remove(matrixFileNames[i].c_str()) == 0) {
-  //                updateProgress(80, "Cleaning temporary files");
-  //            }
-  //        }
-
-  //        updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
-  //    }
-  //}
-
 
   configPathName = itksys::SystemTools::GetFilenamePath(matrixFileNames[0]).c_str();
   configFileName = configPathName + "/" + itksys::SystemTools::GetFilenameWithoutExtension(matrixFileNames[0]).c_str() + extn;
@@ -7535,23 +7087,11 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
 
       updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
     }
-    /*if (affineMatrix.size() == 1) {
-    ShowMessage(QString::number(affineMatrix.size()).toStdString() + " image was successfully registered.");
-    }
-    else if (affineMatrix.size() > 1)
-    ShowMessage(QString::number(affineMatrix.size()).toStdString() + " images were successfully registered.");
-    else
-    ShowMessage("No images were registered.");*/
-
+  
     updateProgress(100, "Registration Complete.");
 
     time_t t = std::time(0);
     long int now = static_cast<long int> (t);
-
-    /*
-    struct tm *tm = localtime(&t);
-    char date[20];
-    strftime(date, sizeof(date), "%Y-%m-%d", tm);*/
 
     std::ofstream file;
     file.open(configFileName.c_str());
@@ -7784,15 +7324,6 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
       {
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-
-        //if ((files[i].find("Axial") != std::string::npos || files[i].find("axial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-        //  axFilePath = subjectPath + "/DTI/" + files[i];
-        //else if ((files[i].find("Fractional") != std::string::npos || files[i].find("fractional") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-        //  faFilePath = subjectPath + "/DTI/" + files[i];
-        //else if ((files[i].find("Radial") != std::string::npos || files[i].find("radial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-        //  radFilePath = subjectPath + "/DTI/" + files[i];
-        //else if ((files[i].find("Trace") != std::string::npos || files[i].find("trace") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-        //  trFilePath = subjectPath + "/DTI/" + files[i];
 
         if ((files[i].find("AX") != std::string::npos || files[i].find("axial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           axFilePath = subjectPath + "/DTI/" + files[i];
@@ -8109,9 +7640,6 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
   return QualifiedSubjects;
 }
 
-
-
-
 void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const std::string modeldirectory, const std::string inputdirectory, const std::string outputdirectory)
 {
   if (modeldirectory == "")
@@ -8164,7 +7692,6 @@ void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const
       return;
     }
   }
-
 
   std::vector<double> finalresult;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForSurvival(inputdirectory);
@@ -8278,4 +7805,68 @@ void fMainWindow::help_contextual(const std::string startPage)
 {
   mHelpDlg->setNewStartPage(startPage);
   mHelpDlg->show();
+}
+
+std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(const std::string &inputList, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic)
+{
+  if (!inputList.empty())
+  {
+    std::string inputList_wrap = inputList;
+    if (inputList_wrap[0] == ' ')
+    {
+      inputList_wrap.erase(0, 1);
+    }
+    std::vector< std::string > vectorOfInputs = cbica::stringSplit(inputList_wrap, " ");
+    return populateStringListInMenu(vectorOfInputs, inputFMainWindow, menuToPopulate, menuAppSubGroup, ExcludeGeodesic);
+  }
+  else
+  {
+    return std::vector< fMainWindow::ActionAndName >{};
+  }
+}
+
+std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(const std::vector< std::string > &vectorOfInputs, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic)
+{
+  std::vector< fMainWindow::ActionAndName > returnVector;
+  if (ExcludeGeodesic)
+  {
+    returnVector.resize(vectorOfInputs.size());
+  }
+  else
+  {
+    returnVector.resize(vectorOfInputs.size() + 1);
+  }
+  size_t returnVecCounter = 0;
+
+  if (!menuAppSubGroup.empty())
+  {
+    returnVector[returnVecCounter].action = new QAction(inputFMainWindow);
+    returnVector[returnVecCounter].action->setObjectName(QString::fromUtf8(std::string("action" + menuAppSubGroup).c_str()));
+    returnVector[returnVecCounter].action->setIconText(QString(menuAppSubGroup.c_str()));
+    returnVector[returnVecCounter].action->setText(QString(menuAppSubGroup.c_str()));
+    returnVector[returnVecCounter].action->setEnabled(false);
+    returnVector[returnVecCounter].name = menuAppSubGroup;
+    returnVector[returnVecCounter].action->setEnabled(false);
+    menuToPopulate->addAction(returnVector[returnVecCounter].action);
+    returnVecCounter++;
+  }
+
+  for (size_t i = 0; i < vectorOfInputs.size(); i++)
+  {
+    if ((vectorOfInputs[i] != "FeatureExtraction"))
+    {
+      returnVector[returnVecCounter].action = new QAction(inputFMainWindow);
+      returnVector[returnVecCounter].action->setObjectName(QString::fromUtf8(std::string("action" + vectorOfInputs[i]).c_str()));
+      returnVector[returnVecCounter].action->setIconText(QString(vectorOfInputs[i].c_str()));
+      returnVector[returnVecCounter].name = vectorOfInputs[i];
+#ifdef CAPTK_BUILD_CONSOLE_ONLY
+      returnVector[returnVecCounter].action->setEnabled(false);
+#endif
+      menuToPopulate->addAction(returnVector[returnVecCounter].action);
+      returnVecCounter++;
+    }
+  }
+  //}
+
+  return returnVector;
 }

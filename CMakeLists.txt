@@ -435,8 +435,8 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/
   ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
   ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/
-  ${PROJECT_SOURCE_DIR}/src/gui/
   ${PROJECT_SOURCE_DIR}/src/common/inc/
+  ${PROJECT_SOURCE_DIR}/src/view/gui/
   ${APPLICATION_INCLUDES}
 )
 
@@ -589,40 +589,40 @@ ADD_DEFINITIONS(-DCAPTK_APP_LIST_PY_GUI="${CAPTK_APP_LIST_PY_GUI}")
 ADD_DEFINITIONS(-DCAPTK_APP_LIST_PY_CLI="${CAPTK_APP_LIST_PY_CLI}")
 
 # generate moc files for each GUI element
-SET(GUI_SOURCES_DIR "${PROJECT_SOURCE_DIR}/src/gui")
-SET(GUI_SOURCES_UPDATED ${GUI_SOURCES} )
-FOREACH(gui_tool ${UI_ELEMENTS})
+# SET(GUI_SOURCES_DIR "${PROJECT_SOURCE_DIR}/src/gui")
+# SET(GUI_SOURCES_UPDATED ${GUI_SOURCES} )
+# FOREACH(gui_tool ${UI_ELEMENTS})
 
-  IF( EXISTS "${GUI_SOURCES_DIR}/ui_${gui_tool}.h" )
-    SET(
-      GUI_SOURCES_UPDATED
-      ${GUI_SOURCES_UPDATED}
-      "${GUI_SOURCES_DIR}/ui_${gui_tool}.h"
-      CACHE STRING "All UI elements" FORCE
-    )
-  ENDIF()
-  IF( EXISTS "${GUI_SOURCES_DIR}/${gui_tool}.cpp" )
-    SET(
-      GUI_SOURCES_UPDATED
-      ${GUI_SOURCES_UPDATED}
-      "${GUI_SOURCES_DIR}/${gui_tool}.cpp"
-      CACHE STRING "All UI elements" FORCE
-    )
-  ENDIF()
-  IF( EXISTS "${GUI_SOURCES_DIR}/${gui_tool}.h" )
-    SET(
-      GUI_SOURCES_UPDATED
-      ${GUI_SOURCES_UPDATED}
-      "${GUI_SOURCES_DIR}/${gui_tool}.h"
-      CACHE STRING "All UI elements" FORCE
-    )
+  # IF( EXISTS "${GUI_SOURCES_DIR}/ui_${gui_tool}.h" )
+    # SET(
+      # GUI_SOURCES_UPDATED
+      # ${GUI_SOURCES_UPDATED}
+      # "${GUI_SOURCES_DIR}/ui_${gui_tool}.h"
+      # CACHE STRING "All UI elements" FORCE
+    # )
+  # ENDIF()
+  # IF( EXISTS "${GUI_SOURCES_DIR}/${gui_tool}.cpp" )
+    # SET(
+      # GUI_SOURCES_UPDATED
+      # ${GUI_SOURCES_UPDATED}
+      # "${GUI_SOURCES_DIR}/${gui_tool}.cpp"
+      # CACHE STRING "All UI elements" FORCE
+    # )
+  # ENDIF()
+  # IF( EXISTS "${GUI_SOURCES_DIR}/${gui_tool}.h" )
+    # SET(
+      # GUI_SOURCES_UPDATED
+      # ${GUI_SOURCES_UPDATED}
+      # "${GUI_SOURCES_DIR}/${gui_tool}.h"
+      # CACHE STRING "All UI elements" FORCE
+    # )
 
-    QT5_WRAP_CPP(GUI_SOURCES_UPDATED
-    "${GUI_SOURCES_DIR}/${gui_tool}.h"
-    )
-  ENDIF()
+    # QT5_WRAP_CPP(GUI_SOURCES_UPDATED
+    # "${GUI_SOURCES_DIR}/${gui_tool}.h"
+    # )
+  # ENDIF()
 
-ENDFOREACH(gui_tool)
+# ENDFOREACH(gui_tool)
 
 # keep source files structured as folders for clarity
 SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
@@ -635,7 +635,7 @@ SOURCE_GROUP( APPLICATIONS_Dependencies FILES ${APPLICATION_DEPENDS} )
 SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
 
 SET( LIBNAME_CBICATK "${PROJECT_NAME}_CBICATK" )
-SET( LIBNAME_GUI "${PROJECT_NAME}_GUI" )
+#SET( LIBNAME_GUI "${PROJECT_NAME}_GUI" )
 SET( LIBNAME_Applications "${PROJECT_NAME}_Applications" )
 SET( LIBNAME_FeatureExtractor "${PROJECT_NAME}_FeatureExtractor" )
 
@@ -677,17 +677,17 @@ TARGET_LINK_LIBRARIES(
   ${OpenCV_LIBRARIES}
 )
 
-ADD_LIBRARY(
-  ${LIBNAME_GUI}
-  ${GUI_SOURCES_UPDATED}
-)
+# ADD_LIBRARY(
+  # ${LIBNAME_GUI}
+  # ${GUI_SOURCES_UPDATED}
+# )
 
-TARGET_LINK_LIBRARIES(
-  ${LIBNAME_GUI}
-  ${DEPENDENT_LIBS}
-  ${LIBNAME_CBICATK}
-  ${LIBNAME_FeatureExtractor}
-)
+# TARGET_LINK_LIBRARIES(
+  # ${LIBNAME_GUI}
+  # ${DEPENDENT_LIBS}
+  # ${LIBNAME_CBICATK}
+  # ${LIBNAME_FeatureExtractor}
+# )
 
 ADD_LIBRARY(
   ${LIBNAME_Applications}
@@ -709,7 +709,7 @@ SET(CaPTk_Libs_Folder "CaPTk_Libs")
 ADD_DEPENDENCIES( ${LIBNAME_Applications} ${LIBNAME_GUI} ${LIBNAME_FeatureExtractor} )
 
 SET_TARGET_PROPERTIES( ${LIBNAME_CBICATK} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
-SET_TARGET_PROPERTIES( ${LIBNAME_GUI} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+SET_TARGET_PROPERTIES( CaPTk_GUI PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 SET_TARGET_PROPERTIES( CaPTk_Common PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
@@ -1131,7 +1131,7 @@ IF( NOT CAPTK_CLI_MODE )
 
   TARGET_LINK_LIBRARIES( ${EXE_NAME}
     ${DEPENDENT_LIBS}
-    ${LIBNAME_GUI}
+    CaPTk_GUI
     CaPTk_Common
     ${LIBNAME_Applications}
     ${LIBNAME_FeatureExtractor}
@@ -1139,7 +1139,7 @@ IF( NOT CAPTK_CLI_MODE )
   )
 
   ADD_DEPENDENCIES( ${EXE_NAME}
-    ${LIBNAME_GUI}
+    CaPTk_GUI
     CaPTk_Common
     ${LIBNAME_Applications}
     ${LIBNAME_FeatureExtractor}

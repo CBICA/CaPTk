@@ -11,14 +11,9 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 */
 
-
-
-
 #ifndef _fMainWindow_h_
 #define _fMainWindow_h_
 
-
-//#include "CAPTk.h"
 #include "NiftiDataManager.h"
 #include "RecurrenceEstimator.h"
 #include "PseudoProgressionEstimator.h"
@@ -180,17 +175,6 @@ typename itk::Image<OutputPixelType, VImageDimension>::Pointer convertVtkToItk(v
   return NULL;
 }
 
-//template <unsigned int VDim, typename TReal>
-//class GreedyRunner
-//{
-//public:
-//    static int Run(GreedyParameters &param)
-//    {
-//        GreedyApproach<VDim, TReal> greedy;
-//        return greedy.Run(param);
-//    }
-//};
-
 /**
 \class fMainWindow
 
@@ -202,6 +186,41 @@ typename itk::Image<OutputPixelType, VImageDimension>::Pointer convertVtkToItk(v
 class fMainWindow : public QMainWindow, private Ui::fMainWindow
 {
   Q_OBJECT
+
+private:
+
+  /**
+\struct ActionAndName
+
+\brief This is a helper struct to tie an action with its name as a std::string
+*/
+  struct ActionAndName
+  {
+    QAction* action;
+    std::string name;
+  };
+
+  //! Wrap to ensure previous functionality doesn't break
+  std::vector< ActionAndName > populateStringListInMenu(const std::string &inputList, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic);
+
+  /**
+  \brief Takes a list of application variables from CMake defines and put it in specified window and menu
+
+    \param inputList The list obtained from CMake variable which is added to cache
+    \param inputFMainWindow The current fMainWindow from which the QActions need to inherit
+    \param menuToPopulate The QMenu in which the QActions need to be populated *visualizationInputImagesLabel
+    \return A vector of ActionAndName structs which ties a QAction to the corresponding name from inputList
+    **/
+    std::vector< ActionAndName > populateStringListInMenu(const std::vector< std::string > &vectorOfInputs, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic);
+
+  // initialize vectors of Actions and Names so that the process can be automated and the QAction is tied to its corresponding Name
+  std::vector< ActionAndName >
+    vectorOfGBMApps, // GBM-specific applications
+    vectorOfBreastApps, // breast-specific applications
+    vectorOfLungApps, // lung-specific applications
+    vectorOfSegmentationApps, // the segmentation applications
+    vectorOfMiscApps, // the rest
+    vectorOfPreprocessingActionsAndNames; // for preprocessing algorithms
 
 public:
   //! Default constructor
@@ -484,22 +503,7 @@ signals:
   param cbDistData Whether Distance feature need to be used or not
   */
   void TrainNewModelOnGivenData(const std::string &directory, const std::string &outputdirectory,  bool cbConvData,  bool cbDTIData,  bool cbPerfData,  bool cbDistData);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
   /**
   \brief Main function that estimates pseudoprogression on the displayed test subject
   param outputdirectory The directory where recurrence map will be written
@@ -542,10 +546,6 @@ signals:
   param cbDistData Whether Distance feature need to be used or not
   */
   void TrainNewPseudoprogressionModelOnGivenData(const std::string &directory, const std::string &outputdirectory, bool cbConvData, bool cbDTIData, bool cbPerfData, bool cbDistData);
-
-
-
-
 
   /**
   \brief Survival analysis using Existing model
@@ -811,25 +811,20 @@ signals:
   */
   void SaveSeedDrawing();
 
-  ///**
-  //\brief Load seed drawing from a Nifti file
-  //*/
-  //void LoadSeedDrawing();
-
   /**
   \brief Load annotated ROI from qt file accept box
   */
   void LoadDrawing();
 
+///**
+//\brief Load near/far drawing from a DICOM file
+//*/
+//void LoadDicomDrawing();
+
   /**
   \brief Load annotated ROI from filename
   */
   void LoadDrawing(const std::string &maskFile);
-
-  ///**
-  //\brief Load near/far drawing from a DICOM file
-  //*/
-  //void LoadDicomDrawing();
 
   /**
   \brief Combines near and far drawn points in one long vector to be used for edema segmentation based on region growing
@@ -840,8 +835,6 @@ signals:
   \brief Puts initial seed points in one vector to be used for tumor segmentation 
   */
   VectorVectorDouble FormulateDrawingPointsForTumorSegmentation();
-
-
 
   /**
   \brief Save the current selected Nifti image
@@ -922,8 +915,6 @@ signals:
   \brief Close all loaded images
   */
   void CloseAllImages();
-
-
   
   /**
   \brief Reset the number of points in the table when all the images are closed
@@ -1014,7 +1005,6 @@ signals:
   */
   void MousePositionChanged(int visibility, double x, double y, double z, double X, double Y, double Z, double value);
 
-
   /**
   \brief Sets the window and level values. Calls UpdateWindowLevel function internally
   */
@@ -1037,7 +1027,6 @@ signals:
   \brief Applies the value of threshold slider on the displayed images
   */
   void thresholdSpinBoxChanged();
-
 
   /**
   \brief Enable mask thresholding using the radio button
@@ -1075,7 +1064,6 @@ signals:
   \brief Moves the cursor on the given co-ordinates
   */
   void MoveSlicerCursor(double x, double y, double z, int mode = 0);
-
 
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForSurvival (const std::string directoryname);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useConventionalData, const bool &useDTIData, const bool &usePerfData, const bool &useDistData);
@@ -1119,7 +1107,6 @@ signals:
   {
     return tumorPanel->mTumorPointsSelected;
   }
-  
 
   void ApplicationLIBRASingle();
   void ApplicationLIBRABatch();
@@ -1130,7 +1117,6 @@ signals:
 
   //! Convert 2D image to 3D image with a single slice and write to temp folder
   void ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage = false);
-
 
   void ApplicationDirectionality();
 #ifdef BUILD_FETALBRAIN
@@ -1211,7 +1197,6 @@ public:
   std::vector<SlicerManager*> mSlicerManagers;
   std::vector<SimpleImageManager*> mNonViewingImageManager;
 
-  //QWidget* mMainWidget;
   QString mInputPathName;
   std::vector<QSlider*> verticalSliders;
   //
@@ -1247,7 +1232,6 @@ public:
   int mBorderEndY;
   int mBorderEndZ;
 
-
   PreprocessingPipelineClass mPreprocessingObj;
   OutputWritingManager mOutputManager;
   NiftiDataManager mNifiDataManager;
@@ -1261,7 +1245,6 @@ public:
   ImagingSubtypePredictor mImagingSubtype;
   MolecularSubtypePredictor mMolecularSubtype;
   Fetalbrain mfetalbrain;
-
 
   fHelpDialog* mHelpDlg;
   fHelpTutorial mHelpTutorial;
@@ -1278,8 +1261,6 @@ public:
   GenericImage::Pointer mCustomImageToThreshold;
 
   int mSequenceNumber, mCustomImageToThreshold_min, mCustomImageToThreshold_max;
-
-
 
   private:
     ImageTypeFloat3D::Pointer m_InputGeomasks;
