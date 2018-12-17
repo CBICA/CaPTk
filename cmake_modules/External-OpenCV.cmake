@@ -15,8 +15,8 @@ ExternalProject_Add(
   BINARY_DIR OpenCV-build
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
-  #INSTALL_COMMAND ""
-  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+  #BUILD_COMMAND ""
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
     ${ep_common_args}
