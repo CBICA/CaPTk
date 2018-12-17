@@ -1,38 +1,35 @@
 language: cpp
 
 matrix:
-include:
-- os: osx
-  sudo: required
-- os: linux
-  dist: xenial
-  sudo: required
-fast_finish: true
-# Temporary, used for testing
-allow_failures:
-  - os: osx
-  - os: linux
+  include:
+    - os: linux
+      dist: xenial
+    - os: osx
+  fast_finish: true
+  allow_failures:
+    - os: linux
+    - os: osx
 
 before_install:
-### LINUX
-# Linux install step
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq gcc g++ make cmake python3-pip python-numpy; fi
-# Update step
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
+  ### LINUX
+  # Linux install step
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq gcc g++ make cmake python3-pip python-numpy; fi
+  # Update step
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
 
-# Git LFS
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
+  # Git LFS
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
 
-### OSX
-# OSX install step
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cmake make python3 llvm; fi
+  ### OSX
+  # OSX install step
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cmake make python3 llvm; fi
 
-# Git LFS
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
+  # Git LFS
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
 
 script:
-### LINUX
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/test-build.sh; fi
+  ### LINUX
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/test-build.sh; fi
 
-### OSX
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/mac-test-build.sh; fi
+  ### OSX
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/mac-test-build.sh; fi
