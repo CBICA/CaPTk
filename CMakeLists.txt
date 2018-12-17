@@ -188,12 +188,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
       IF( CAPTK_SUPERBUILD )
         INCLUDE( cmake_modules/Superbuild.cmake )
-        EXECUTE_PROCESS(
-          COMMAND ${CMAKE_COMMAND} --build . ${CMAKE_SOURCE_DIR}/ITK
-          WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/ITK-download"
-        )
-        add_subdirectory("${CMAKE_BINARY_DIR}/ITK-source"
-                 "${CMAKE_BINARY_DIR}/ITK-build")
       ENDIF()
 
     ENDIF()
@@ -520,6 +514,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/multinomialModel.h)
 
       ADD_EXECUTABLE(Confetti ${ConfettiSrcs} ${ConfettiHeaders})
+      ADD_DEPENDENCIES(Confetti ITK)
       TARGET_LINK_LIBRARIES(Confetti ${OpenCV_LIBS} ${ITK_LIBRARIES})
       SET_TARGET_PROPERTIES( Confetti PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
@@ -743,6 +738,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
           #${YAMLCPP_Sources}
           #${APPLICATION_DEPENDS}
         )
+        
+        ADD_DEPENDENCIES(${STANDALONE_APP_NAME} ITK)
 
         TARGET_LINK_LIBRARIES(${STANDALONE_APP_NAME}
           #${DEPENDENT_LIBS}
@@ -771,6 +768,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
           #${YAMLCPP_Sources}
           #${APPLICATION_DEPENDS}
         )
+        ADD_DEPENDENCIES(${STANDALONE_APP_NAME} ITK)
 
         TARGET_LINK_LIBRARIES(${STANDALONE_APP_NAME}
           #${DEPENDENT_LIBS}
@@ -829,6 +827,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     #${YAMLCPP_Headers}
     #${YAMLCPP_Sources}
   )
+  ADD_DEPENDENCIES(CaPTk_Utilities ITK)
 
   TARGET_LINK_LIBRARIES( CaPTk_Utilities ${DEPENDENT_LIBS} ${LIBNAME_CBICATK} )
 
