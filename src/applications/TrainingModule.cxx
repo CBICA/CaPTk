@@ -92,7 +92,8 @@ int main(int argc, char *argv[])
   }
   TrainingModule mTrainingSimulator;
   mTrainingSimulator.Run(inputFeaturesFile, inputLabelsFile, outputDirectoryName, classifierType, foldType, confType);
-  std::cout << "Finished successfully\n";
-
+  std::cout << "Finished successfully!!!\n";
+  int a;
+  std::cin >> a;
   return EXIT_SUCCESS;
 }

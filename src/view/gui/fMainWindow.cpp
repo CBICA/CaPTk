@@ -2533,7 +2533,6 @@ void fMainWindow::SaveSeedDrawing()
   {
     std::string filename = saveFileName.toStdString();
 
-
     ImageTypeShort3D::Pointer img = convertVtkToItk<ImageTypeShort3D::PixelType, ImageTypeShort3D::ImageDimension>(mSlicerManagers[0]->mMask);
     std::vector<ImageTypeShort3D::IndexType> seedIndices;
     itk::ImageRegionIteratorWithIndex <ImageTypeShort3D> maskIt(img, img->GetLargestPossibleRegion());

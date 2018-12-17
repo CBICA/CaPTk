@@ -758,7 +758,7 @@ VectorDouble TrainingModule::testOpenCVSVM(const VariableSizeMatrixType &testing
 
 bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory, const int classifiertype, const int foldtype, const int confType)
 {
-  std::cout << "Training module" << std::endl;
+  std::cout << "Training Module" << std::endl<<"---------------"<<std::endl << std::endl;
   //reading features and labels from the input data
   VariableSizeMatrixType FeaturesOfAllSubjects;
   VariableLengthVectorType LabelsOfAllSubjects;
@@ -848,10 +848,18 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
   else
     FinalResult = mTrainingSimulator.SplitTrainTest(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype);
 
+  std::cout << std::endl<< "Classification Performance:" << std::endl;
+  std::cout << "---------------------------" << std::endl;
   std::cout << "Accuray=" << FinalResult[0] << std::endl;
   std::cout << "Sensitivity=" << FinalResult[1] << std::endl;
   std::cout << "Specificity=" << FinalResult[2] << std::endl;
-  std::cout << "Balanced Accuracy=" << FinalResult[3] << std::endl;
+  std::cout << "Balanced Accuracy=" << FinalResult[3] << std::endl<<std::endl;
+
+  std::cout << std::endl << "Results written in the following files:" << std::endl;
+  std::cout << "Z-Score mean: " << outputdirectory + "/zscore_std.csv" << std::endl;
+  std::cout << "Z-Score standard deviation: " << outputdirectory + "/zscore_std.csv" << std::endl;
+  std::cout << "Predicted scores: " << outputdirectory + "/predicted_distances.csv" << std::endl;
+  std::cout << "Performance: " << outputdirectory + "/performance.csv" << std::endl << std::endl;
 
   //cbica::Logging(loggerFile, "Accuracy=" + std::to_string(FinalResult[0]) + "\n");
   //cbica::Logging(loggerFile, "Sensitivity=" + std::to_string(FinalResult[1]) + "\n");
@@ -899,7 +907,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   for (unsigned int index = training_size; index < inputLabels.Size(); index++)
     testingindices.push_back(index);
 
-  std::cout << "testigindices" << testingindices.size() << std::endl;
+  //std::cout << "testigindices" << testingindices.size() << std::endl;
 
   VariableSizeMatrixType trainingfeatures;
   VariableSizeMatrixType testingfeatures;
@@ -923,7 +931,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble> new_tuple(trainingindices, traininglabels, trainingfeatures, testingindices, testinglabels, testingfeatures, predictedlabels);
   FoldingDataMap[0] = new_tuple;
 
-  std::cout << "Folding map populated" << std::endl;
+  //std::cout << "Folding map populated" << std::endl;
 
   //feature selection mechanism
   //---------------------------
@@ -936,10 +944,10 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   std::vector<size_t> indices = sort_indexes(EffectSize);
 
   std::ofstream myfile;
-  myfile.open(outputfolder + "/effctsizes.csv");
-  for (unsigned int index1 = 0; index1 < EffectSize.size(); index1++)
-    myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
-  myfile.close();
+  //myfile.open(outputfolder + "/effctsizes.csv");
+  //for (unsigned int index1 = 0; index1 < EffectSize.size(); index1++)
+  //  myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
+  //myfile.close();
 
   VariableSizeMatrixType CrossValidatedPerformances;
   CrossValidatedPerformances.SetSize(std::get<2>(FoldingDataMap[0]).Cols(), 8);
@@ -949,7 +957,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
   for (int featureNo = 15; featureNo < std::get<2>(FoldingDataMap[0]).Cols(); featureNo++)
   {
-    std::cout << featureNo << std::endl;
+    //std::cout << featureNo << std::endl;
     VariableSizeMatrixType reducedFeatureSet;
     reducedFeatureSet.SetSize(std::get<1>(FoldingDataMap[0]).size(), featureNo + 1);
 
@@ -962,7 +970,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
     VectorDouble performance = InternalCrossValidation(reducedFeatureSet, traininglabels, 1, 0.01, 1);
     CrossValidatedPerformances(featureNo, 3) = performance[3];
   }
-  std::cout << "Feature Selection Done!!!" << std::endl;
+  std::cout << "Feature Selection Finished." << std::endl;
 
   for (unsigned int performanceNo = 17; performanceNo < CrossValidatedPerformances.Rows() - 2; performanceNo++)
   {
@@ -982,8 +990,8 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
       maxFeatureNumber = performanceNo;
     }
   }
-  std::cout << "maxFeatureNumber" << maxFeatureNumber << std::endl;
-  std::cout << "maxAveagePerformance:" << maxAveagePerformance << std::endl;
+  //std::cout << "maxFeatureNumber" << maxFeatureNumber << std::endl;
+  //std::cout << "maxAveagePerformance:" << maxAveagePerformance << std::endl;
 
   //std::ofstream myfile;
   //myfile.open("E:/Projects/PSU/CrossValidationTrainingData.csv");
@@ -1080,13 +1088,17 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   CrossValidatedPerformances(featureNo, 5) = FinalPerformance[1];
   CrossValidatedPerformances(featureNo, 6) = FinalPerformance[2];
   CrossValidatedPerformances(featureNo, 7) = FinalPerformance[3];
-  std::cout << "predicted balanced" << FinalPerformance[3] << std::endl;
-
+  //std::cout << "predicted balanced" << FinalPerformance[3] << std::endl;
 
 
   myfile.open(outputfolder + "/predicted_distances.csv");
   for (unsigned int index1 = 0; index1 < predictedDistances.size(); index1++)
     myfile << std::to_string(predictedDistances[index1]) + "," + std::to_string(std::get<4>(FoldingDataMap[0])[index1]) + "\n";
+  myfile.close();
+
+  myfile.open(outputfolder + "/performance.csv");
+  myfile << "Accuracy,Sensitivity,Specificity,BalancedAccuracy \n";
+  myfile << std::to_string(FinalPerformance[0]) + "," + std::to_string(FinalPerformance[1]) + "," + std::to_string(FinalPerformance[2]) + "," + std::to_string(FinalPerformance[3]) + "\n";
   myfile.close();
 
   return FinalPerformance;
