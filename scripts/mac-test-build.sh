@@ -6,8 +6,7 @@
 ENV_CMD() {
 export PATH="$PATH:/usr/local/Cellar/qt/5.11.2/lib/cmake/Qt5:/usr/local/Cellar/qt/5.11.2/bin"
 
-export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build
-# :/Library/TeX/texbin
+export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build:/Library/TeX/texbin
 
 export CC=/usr/local/opt/llvm/bin/clang
 export CXX=/usr/local/opt/llvm/bin/clang++
@@ -47,8 +46,6 @@ cd ../../CaPTk
 
 ###########################
 echo "[!] Warn: This script is intended for CI use. Only use it if you know what you are doing."
-
-pwd
 
 echo "[:] Starting CaPTk packaging process..."
 
