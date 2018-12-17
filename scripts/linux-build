@@ -169,8 +169,8 @@ else
 fi
 
 # Cmake
-echo "[:] Running cmake command..."
-CMAKE_CMD
+# echo "[:] Running cmake command..."
+# CMAKE_CMD
 
 # Make install/strip
 echo "[:] Building CaPTk..."
