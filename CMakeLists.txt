@@ -190,6 +190,14 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         #PROJECT(${PROJECT_NAME}_Depends)
         INCLUDE( cmake_modules/Superbuild.cmake )
         #return()
+        EXECUTE_PROCESS(
+          COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+          WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/ITK-download"
+        )
+        EXECUTE_PROCESS(
+          COMMAND ${CMAKE_COMMAND} --build .
+          WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/ITK-download"
+        )
       ENDIF()
 
     ENDIF()
