@@ -50,6 +50,7 @@ static const char  cSeparator = '/';
 #include <stdexcept>
 #include <algorithm>
 #include <string>
+#include <vector>
 #include "cbicaCmdParser.h"
 #include "yaml-cpp/yaml.h"
 
@@ -82,6 +83,12 @@ namespace cbica
       return true;
     else
       return false;
+  }
+
+  std::vector<std::string> getFilesInDir(const std::string path) {
+    std::vector<std::string> files;
+    files.push_back("test");
+    return files;
   }
 
   //! copied from cbicaUtilities to ensure CmdParser stays header-only
