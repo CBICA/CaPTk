@@ -187,7 +187,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
       OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
       IF( CAPTK_SUPERBUILD )
+        PROJECT(${PROJECT_NAME}_Depends)
         INCLUDE( cmake_modules/Superbuild.cmake )
+        return()
       ENDIF()
 
     ENDIF()
@@ -807,6 +809,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDFOREACH()
 
   IF (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    SET(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/install" CACHE PATH "Default Install Path" FORCE )
     SET(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/install" CACHE PATH "Default Install Path" FORCE )
   ENDIF()
 
