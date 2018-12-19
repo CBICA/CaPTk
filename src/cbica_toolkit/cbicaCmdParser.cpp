@@ -85,7 +85,7 @@ namespace cbica
       return false;
   }
 
-  std::vector<std::string> getCWLFilesInDir(const char* path) {
+  std::vector<std::string> getCWLFilesInCurrentDir() {
 
     std::vector<std::string> files;
 
@@ -102,7 +102,7 @@ namespace cbica
     #else
       DIR *dir;
       struct dirent *ent;
-      if ((dir = opendir(path)) != NULL) {
+      if ((dir = opendir(".")) != NULL) {
         /* print all the files and directories within directory */
         while ((ent = readdir (dir)) != NULL) {
           if (ent->d_type == DT_REG) {  
