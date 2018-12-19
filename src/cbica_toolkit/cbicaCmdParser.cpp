@@ -85,7 +85,7 @@ namespace cbica
       return false;
   }
 
-  std::vector<std::string> getCWLFilesInCurrentDir() {
+  std::vector<std::string> getCWLFilesInApplicationDir() {
 
     std::vector<std::string> files;
 
@@ -126,6 +126,9 @@ namespace cbica
       }
 
     }
+
+    // Sort cwl files
+    std::sort(cwlfiles.begin(), cwlfiles.end());
 
     return cwlfiles;
 
