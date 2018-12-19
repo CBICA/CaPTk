@@ -85,10 +85,42 @@ namespace cbica
       return false;
   }
 
-  std::vector<std::string> getFilesInDir(const std::string path) {
+  std::vector<std::string> getCWLFilesInDir(const char* path) {
+
     std::vector<std::string> files;
-    files.push_back("test");
-    return files;
+
+    #ifdef _WIN32
+      // windows
+    #else
+      DIR *dir;
+      struct dirent *ent;
+      if ((dir = opendir(path)) != NULL) {
+        /* print all the files and directories within directory */
+        while ((ent = readdir (dir)) != NULL) {
+          if (ent->d_type == DT_REG) {  
+            files.push_back(ent->d_name);
+          }
+        }
+        closedir (dir);
+      } else {
+        /* could not open directory */
+        perror ("");
+        return files;
+      }
+    #endif
+
+    // Prune non cwl files
+    std::vector<std::string> cwlfiles;
+    for(auto const& value: files) {
+
+      if (value.substr(value.size() - 4) == ".cwl") {
+        cwlfiles.push_back(value);
+      }
+
+    }
+
+    return cwlfiles;
+
   }
 
   //! copied from cbicaUtilities to ensure CmdParser stays header-only
