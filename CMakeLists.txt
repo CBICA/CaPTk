@@ -6,7 +6,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2)
 #  CMAKE_POLICY(SET CMP0003 NEW)
 #  CMAKE_POLICY(SET CMP0020 NEW)
 #  CMAKE_POLICY(SET CMP0010 NEW)
-#  #CMAKE_POLICY(SET CMP0048 NEW) # only with CMake 3
+CMAKE_POLICY(SET CMP0048 NEW) # only with CMake 3
 #ENDIF(COMMAND cmake_policy)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES)
@@ -187,9 +187,9 @@ IF(NOT EXISTS ${ITK_USE_FILE})
 
     OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
     IF( CAPTK_SUPERBUILD )
-      # PROJECT(${PROJECT_NAME}_Depends)
+      PROJECT(${PROJECT_NAME}_Depends)
       INCLUDE( cmake_modules/Superbuild.cmake )
-      # return()
+      return()
     ENDIF()
 
   ENDIF()

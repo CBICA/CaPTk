@@ -2,21 +2,9 @@
 
 # Set up environment variables
 ENV_CMD() {
-# git lfs fetch --all
-# cd binaries
-# unzip *_macos.zip
-# cd ../
-
 # export PATH="$PATH:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/lib/cmake/Qt5:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/bin"
-export PATH="$PATH:/usr/local/Cellar/qt/5.12.0/lib/cmake/Qt5:/usr/local/Cellar/qt/5.12.0/bin"
-echo $PATH
-
-export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build:/Library/TeX/texbin
-
-export CC=/usr/local/opt/llvm/bin/clang
-export CXX=/usr/local/opt/llvm/bin/clang++
-export LDFLAGS="-L/usr/local/opt/llvm/lib"
-export CPPFLAGS="-L/usr/local/opt/llvm/include"
+# export PATH="$PATH:/usr/local/Cellar/qt/5.12.0/lib/cmake/Qt5:/usr/local/Cellar/qt/5.12.0/bin"
+# echo $PATH
 }
 
 # CaPTk Packager
@@ -24,29 +12,22 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
 # cmake -DBUILD_DOCUMENTATION=OFF ..
+export CC=/usr/local/opt/llvm/bin/clang
+export CXX=/usr/local/opt/llvm/bin/clang++
+export LDFLAGS="-L/usr/local/opt/llvm/lib"
+export CPPFLAGS="-L/usr/local/opt/llvm/include"
+
+export CMAKE_PREFIX_PATH=/Library/TeX/texbin
+
+export CMAKE_INSTALL_PATH=/Users/travis/build/PhucNgo1711/dependency_manager/bin/
 cmake ../
+make
 
+export CMAKE_INSTALL_PATH=/Users/travis/build/PhucNgo1711/dependency_manager/bin/
 cmake ../
-}
+make
 
-# Dependency manager
-DEP_MNGR_CMD() {
-cd ../
-
-git clone https://github.com/PhucNgo1711/CaPTk.git dependency_manager
-pwd
-ls
-
-cd dependency_manager
-git checkout dependency_manager
-
-mkdir bin
-cd bin
-
-cmake ../
-make 
-
-cd ../../CaPTk
+# export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build
 }
 
 ###########################
@@ -68,11 +49,8 @@ echo "[!] Error: You do not appear to be in trunk (CMakeLists.txt not found)"
 exit -1
 fi
 
-echo "[:] Set up env..."
-ENV_CMD
-
-echo "[:] Building dependency manager..."
-DEP_MNGR_CMD
+# echo "[:] Set up env..."
+# ENV_CMD
 
 # Create binary directory
 echo "[:] Creating binary directory..."
@@ -80,11 +58,11 @@ mkdir bin
 cd bin
 
 # Cmake
-echo "[:] Running cmake command..."
+echo "[:] Running cmake command and build CaPTk..."
 CAPTK_CMD
 
-# Make install/strip
-echo "[:] Building CaPTk..."
-make
+# # Make install/strip
+# echo "[:] Building CaPTk..."
+# make
 
 echo "[:] Done. Built test target"
