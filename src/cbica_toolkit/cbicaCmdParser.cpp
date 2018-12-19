@@ -90,7 +90,15 @@ namespace cbica
     std::vector<std::string> files;
 
     #ifdef _WIN32
-      // windows
+      WIN32_FIND_DATA data;
+      HANDLE hFind = FindFirstFile("\\*", &data);
+
+      if ( hFind != INVALID_HANDLE_VALUE ) {
+        do {
+          files.push_back(data.cFileName);
+        } while (FindNextFile(hFind, &data));
+        FindClose(hFind);
+      }
     #else
       DIR *dir;
       struct dirent *ent;
