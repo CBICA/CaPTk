@@ -37,45 +37,59 @@ void ZScoreNormalizer< TImageType >::Update()
   {
     if (m_doSanityCheck)
     {
+      // if no mask has been initialized, then all non-zero voxel/pixel values are used as mask
       if (m_mask.IsNull())
       {
-        m_inputImage = cbica::CreateImage< TImageType >(m_inputImage);
-      }
-      auto inputSize = m_inputImage->GetLargestPossibleRegion().GetSize();
-      auto inputSpacing = m_inputImage->GetSpacing();
-      auto inputOrigin = m_inputImage->GetOrigin();
-      auto maskSize = m_mask->GetLargestPossibleRegion().GetSize();
-      auto maskSpacing = m_mask->GetSpacing();
-      auto maskOrigin = m_mask->GetOrigin();
+        m_mask = cbica::CreateImage< TImageType >(m_inputImage);
 
-      if (m_inputImage->GetNumberOfComponentsPerPixel() != 1)
-      {
-        std::cerr << "Only grayscale images are supported for normalization (inputImage is non-gray).\n";
-        exit(EXIT_FAILURE);
+        auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
+        thresholder->SetInput(m_inputImage);
+        thresholder->SetLowerThreshold(1);
+        thresholder->SetUpperThreshold(std::numeric_limits<float>::max());
+        thresholder->SetOutsideValue(0);
+        thresholder->SetInsideValue(1);
+        thresholder->Update();
+
+        m_mask = thresholder->GetOutput();
       }
-      if (m_mask->GetNumberOfComponentsPerPixel() != 1)
+      else
       {
-        std::cerr << "Only grayscale images are supported for normalization (maskImage is non-gray).\n";
-        exit(EXIT_FAILURE);
-      }
-      for (size_t i = 0; i < m_inputImage->GetImageDimension(); i++)
-      {
-        if (inputSize[i] != maskSize[i])
+        auto inputSize = m_inputImage->GetLargestPossibleRegion().GetSize();
+        auto inputSpacing = m_inputImage->GetSpacing();
+        auto inputOrigin = m_inputImage->GetOrigin();
+        auto maskSize = m_mask->GetLargestPossibleRegion().GetSize();
+        auto maskSpacing = m_mask->GetSpacing();
+        auto maskOrigin = m_mask->GetOrigin();
+
+        if (m_inputImage->GetNumberOfComponentsPerPixel() != 1)
         {
-          std::cerr << "Size mismatch between inputImage and maskImage.\n";
+          std::cerr << "Only grayscale images are supported for normalization (inputImage is non-gray).\n";
           exit(EXIT_FAILURE);
         }
-        if (inputSpacing[i] != maskSpacing[i])
+        if (m_mask->GetNumberOfComponentsPerPixel() != 1)
         {
-          std::cerr << "Spacing mismatch between inputImage and maskImage.\n";
+          std::cerr << "Only grayscale images are supported for normalization (maskImage is non-gray).\n";
           exit(EXIT_FAILURE);
         }
-        if (inputOrigin[i] != maskOrigin[i])
+        for (size_t i = 0; i < m_inputImage->GetImageDimension(); i++)
         {
-          std::cerr << "Origin mismatch between inputImage and maskImage.\n";
-          exit(EXIT_FAILURE);
+          if (inputSize[i] != maskSize[i])
+          {
+            std::cerr << "Size mismatch between inputImage and maskImage.\n";
+            exit(EXIT_FAILURE);
+          }
+          if (inputSpacing[i] != maskSpacing[i])
+          {
+            std::cerr << "Spacing mismatch between inputImage and maskImage.\n";
+            exit(EXIT_FAILURE);
+          }
+          if (inputOrigin[i] != maskOrigin[i])
+          {
+            std::cerr << "Origin mismatch between inputImage and maskImage.\n";
+            exit(EXIT_FAILURE);
+          }
         }
-      }
+      } 
 
       bool emptyMask = true;
       // ensure mask is always defined as '1' or '0'
@@ -236,7 +250,6 @@ typename TImageType::Pointer ZScoreNormalizer< TImageType >::GetOutput()
   {
     Update();
   }
-  auto blah = 1;
   return m_output;
 }
 
