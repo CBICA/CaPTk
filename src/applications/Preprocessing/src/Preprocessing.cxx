@@ -332,25 +332,30 @@ int algorithmsRunner()
       auto filesInFolder = cbica::filesInDirectory(allFolders[i]);
       for (size_t j = 0; j < filesInFolder.size(); j++)
       {
-        std::string inputBase, inputExt, inputPath;
-        cbica::splitFileName(filesInFolder[j], inputPath, inputBase, inputExt);
-        if (inputExt == ".nii.gz")
+        if (filesInFolder[j].find("_seg.nii.gz") == std::string::npos)
         {
-          auto inputImage = cbica::ReadImage< TImageType >(filesInFolder[j]);
-          ZScoreNormalizer< TImageType > normalizer;
-          normalizer.SetInputImage(inputImage);
-          normalizer.Update();
-          auto outputImage = normalizer.GetOutput();
+          std::string inputBase, inputExt, inputPath;
+          cbica::splitFileName(filesInFolder[j], inputPath, inputBase, inputExt);
+          if (inputExt == ".nii.gz")
+          {
+            auto inputImage = cbica::ReadImage< TImageType >(filesInFolder[j]);
+            ZScoreNormalizer< TImageType > normalizer;
+            normalizer.SetInputImage(inputImage);
+            normalizer.Update();
+            auto outputImage = normalizer.GetOutput();
 
-          if (allFolders[i].find("HGG") != std::string::npos)
-          {
-            cbica::WriteImage< TImageType >(outputImage, output_HGG + "/" + inputBase + inputExt);
-            file_hgg << output_HGG + "/" + inputBase + inputExt << "\n";
-          }
-          else
-          {
-            cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + inputExt);
-            file_lgg << output_LGG + "/" + inputBase + inputExt << "\n";
+            if (allFolders[i].find("HGG") != std::string::npos)
+            {
+              cbica::createDir(output_HGG + "/" + inputBase);
+              cbica::WriteImage< TImageType >(outputImage, output_HGG + "/" + inputBase + inputExt);
+              file_hgg << output_HGG + "/" + inputBase + inputExt << "\n";
+            }
+            else
+            {
+              cbica::createDir(output_LGG + "/" + inputBase);
+              cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + inputExt);
+              file_lgg << output_LGG + "/" + inputBase + inputExt << "\n";
+            }
           }
         }
       }
