@@ -314,6 +314,19 @@ int algorithmsRunner()
   
   if (requestedAlgorithm = ZScoreNormalize)
   {
+    auto currentDataDir = inputImageFile; // this is a data directory for now and will be changed
+    auto outputDir = outputImageFile;// this is a data directory for now and will be changed
+    if (!cbica::isDir(outputDir))
+    {
+      cbica::createDir(outputDir);
+    }
+    auto files = cbica::filesInDirectory(currentDataDir);
+
+    std::cout << "files: \n";
+    for (size_t i = 0; i < files.size(); i++)
+    {
+      std::cout << files[i] << "\n";
+    }
     ZScoreNormalizer< TImageType > normalizer;
   }
 
