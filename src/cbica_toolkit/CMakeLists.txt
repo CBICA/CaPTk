@@ -15,8 +15,8 @@ SOURCE_GROUP( YAMLCPP_Sources FILES ${YAMLCPP_Sources} )
 
 INCLUDE_DIRECTORIES( 
   ${PROJECT_SOURCE_DIR}/src/
-  ${PROJECT_SOURCE_DIR}/../thirdparty/
-  ${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/include/ 
+  ${CaPTk_SOURCE_DIR}/src/thirdparty/
+  ${CaPTk_SOURCE_DIR}/src/thirdparty/yaml-cpp/include/ 
 )
   
 SET( LIBNAME_CBICATK "${PROJECT_NAME}" )
@@ -27,6 +27,11 @@ IF(NOT (TARGET ${LIBNAME_CBICATK}))
     ${sources}
     ${YAMLCPP_Headers}
     ${YAMLCPP_Sources}
+  )
+  
+  TARGET_LINK_LIBRARIES(
+    ${LIBNAME_CBICATK}
+    ${DEPENDENT_LIBS}
   )
   
 ENDIF()

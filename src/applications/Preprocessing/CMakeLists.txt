@@ -10,9 +10,10 @@ ADD_DEFINITIONS(-DPROJECT_VERSION="${PROJECT_VERSION}" )
 #MESSAGE( STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}" )
 INCLUDE_DIRECTORIES( 
   ${PROJECT_SOURCE_DIR}/src/depends/ 
-  ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/ 
+  ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/
   ${PROJECT_SOURCE_DIR}/../../thirdparty/
-  ${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/include/ )
+  ${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/include/ 
+)
 
 #Find libraries
 FIND_PACKAGE( ITK REQUIRED )
@@ -68,7 +69,9 @@ SET(CMAKE_CXX_STANDARD_REQUIRED YES)
 SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
 
 FILE( GLOB sources "${PROJECT_SOURCE_DIR}/src/depends/*.*" )
-FILE( GLOB cbicatk "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/*.*" )
+FILE( GLOB cbicatk "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/*.*" )
+FILE( GLOB_RECURSE YAMLCPP_Headers "${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/src/*.h")
+FILE( GLOB_RECURSE YAMLCPP_Sources "${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/src/*.cpp")
 SET( YAMLCPP_Headers ${YAMLCPP_Headers} CACHE STRING "YAML-CPP headers" FORCE )
 SET( YAMLCPP_Sources ${YAMLCPP_Sources} CACHE STRING "YAML-CPP sources" FORCE )
 SOURCE_GROUP( YAMLCPP_Headers FILES ${YAMLCPP_Headers} )
@@ -79,49 +82,34 @@ ADD_EXECUTABLE(
   ${PROJECT_NAME} 
   ${PROJECT_SOURCE_DIR}/src/Preprocessing.cxx
   ${sources}
-  ${cbicatk}
-  ${YAMLCPP_Sources}
+  #${cbicatk}
+  #${YAMLCPP_Sources}
 )
+
+SET( LIBNAME_CBICATK "CaPTk_CBICATK" )
+IF(NOT (TARGET ${LIBNAME_CBICATK}))
+  
+  ADD_LIBRARY(
+    ${LIBNAME_CBICATK}
+    ${cbicatk}
+    ${YAMLCPP_Sources}
+  )
+  
+  TARGET_LINK_LIBRARIES(
+    ${LIBNAME_CBICATK}
+    ${ITK_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+  )
+  
+ENDIF()
+
+ADD_DEPENDENCIES( ${PROJECT_NAME} ${LIBNAME_CBICATK} )
 
 # Link the libraries to be used
 TARGET_LINK_LIBRARIES(
   ${PROJECT_NAME}
-  ${ITK_LIBRARIES}
+  ${LIBNAME_CBICATK}
 )
-
-OPTION( BUILD_REFERENCES "Build reference executables from CBICA pipeline" OFF )
-
-IF( BUILD_REFERENCES )
-
-  SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
-  SET( StandAloneCLIAppsFolder "References")
-  # find stand-alone CMD applications
-  FILE( GLOB STANDALONE_APPS
-    "${PROJECT_SOURCE_DIR}/src/reference/*.cxx"
-  )
-
-  INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/src/reference/ )
-    
-  FOREACH(application ${STANDALONE_APPS})
-
-    GET_FILENAME_COMPONENT( STANDALONE_APP_NAME ${application} NAME_WE )
-
-    ADD_EXECUTABLE( 
-      ${STANDALONE_APP_NAME}
-      ${PROJECT_SOURCE_DIR}/src/reference/${STANDALONE_APP_NAME}.cxx
-    )
-    
-    TARGET_LINK_LIBRARIES( 
-      ${STANDALONE_APP_NAME}
-      ${ITK_LIBRARIES}
-      ${OpenCV_LIBRARIES}
-    )
-    
-    SET_TARGET_PROPERTIES( ${STANDALONE_APP_NAME} PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-    
-  ENDFOREACH()
-  
-ENDIF()
 
 INSTALL( TARGETS ${PROJECT_NAME} 
   #DESTINATION bin  
