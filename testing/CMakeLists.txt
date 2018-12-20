@@ -150,6 +150,11 @@ IF(WIN32)
   ADD_TEST(NAME DeepMedicTest COMMAND DeepMedic -t1 ${TESTING_DATA_DIR}/deepmedic/ -t1c ${TESTING_DATA_DIR}/deepmedic/ -t2 ${TESTING_DATA_DIR}/deepmedic/ -fl ${TESTING_DATA_DIR}/deepmedic/ -o ${TESTING_OUTPUT_DIR}/deepmedic/ )
 ENDIF()
 
+# Diffusion Derivatives !!
+
+ADD_TEST(NAME DiffusionDerivativesHelpTest COMMAND DiffusionDerivatives -h )
+ADD_TEST(NAME DiffusionDerivativesVersionTest COMMAND DiffusionDerivatives -v )
+
 # Directionality Estimate Tests
 
 ADD_TEST(NAME DirectionalityEstimateTest COMMAND DirectionalityEstimate -l ${TESTING_DATA_DIR}/direst/img_timepoint_1.nii.gz -o ${TESTING_OUTPUT_DIR}/dirEst.txt )
@@ -187,7 +192,14 @@ ADD_TEST(NAME FeatureExtractionFeatureMapsWriteTest COMMAND FeatureExtraction -n
 ADD_TEST(NAME FeatureExtractionHelpTest COMMAND FeatureExtraction -h )
 ADD_TEST(NAME FeatureExtractionVersionTest COMMAND FeatureExtraction -v )
 
-# Greedy Registration Tests
+# Geodesic Segmentation Tests !!
+
+ADD_TEST(NAME GeodesicSegmentationHelpTest COMMAND GeodesicSegmentation -h )
+ADD_TEST(NAME GeodesicSegmentationVersionTest COMMAND GeodesicSegmentation -v )
+
+# Greedy Registration Tests !!
+
+# -reg -trf -i moving.nii.gz -f fixed.nii.gz -o output.nii.gz -t matrix.mat -a -m MI -n 100x50x5 -th 4
 
 ADD_TEST(NAME GreedyRegistrationHelpTest COMMAND GreedyRegistration -h )
 ADD_TEST(NAME GreedyRegistrationVersionTest COMMAND GreedyRegistration -v )
@@ -223,6 +235,11 @@ ADD_TEST(NAME PerfusionDerivativesEcho10Test COMMAND PerfusionDerivatives -i ${T
 ADD_TEST(NAME PerfusionDerivativesHelpTest COMMAND PerfusionDerivatives -h )
 ADD_TEST(NAME PerfusionDerivativesVersionTest COMMAND PerfusionDerivatives -v )
 
+# Perfusion PCA Tests !!
+
+ADD_TEST(NAME PerfusionPCAHelpTest COMMAND PerfusionPCA -h )
+ADD_TEST(NAME PerfusionPCAVersionTest COMMAND PerfusionPCA -v )
+
 # PopulationAtlases Tests
 
 ADD_TEST(NAME PopulationAtlasesTest COMMAND PopulationAtlases -i ${TESTING_DATA_DIR}/popatlas/atlas/ -l ${TESTING_DATA_DIR}/popatlas/atlaslabelfile.csv -a ${TESTING_DATA_DIR}/popatlas/jakob_stripped_with_cere_lps_256256128.nii.gz -o ${TESTING_OUTPUT_DIR}/popatlas )
@@ -233,8 +250,10 @@ ADD_TEST(NAME PopulationAtlasesVersionTest COMMAND PopulationAtlases -v )
 # PseudoProgressionEstimator Tests
 
 # Doesn't actually create a new model
-ADD_TEST(NAME PseudoProgressionEstimatorNewModelTest COMMAND PseudoProgressionEstimator -t 0 -i ${TESTING_DATA_DIR}/pseudo -o ${TESTING_OUTPUT_DIR}/pseudo  )
-ADD_TEST(NAME PseudoProgressionEstimatorExistingModelTest COMMAND PseudoProgressionEstimator -t 1 -i ${TESTING_DATA_DIR}/pseudo -o ${TESTING_OUTPUT_DIR}/pseudo -m ${TESTING_OUTPUT_DIR}/pseudo )
+
+# Takes REALLY long
+# ADD_TEST(NAME PseudoProgressionEstimatorNewModelTest COMMAND PseudoProgressionEstimator -t 0 -i ${TESTING_DATA_DIR}/pseudo -o ${TESTING_OUTPUT_DIR}/pseudo  )
+# ADD_TEST(NAME PseudoProgressionEstimatorExistingModelTest COMMAND PseudoProgressionEstimator -t 1 -i ${TESTING_DATA_DIR}/pseudo -o ${TESTING_OUTPUT_DIR}/pseudo -m ${TESTING_OUTPUT_DIR}/pseudo )
 
 ADD_TEST(NAME PseudoProgressionEstimatorHelpTest COMMAND PseudoProgressionEstimator -h )
 ADD_TEST(NAME PseudoProgressionEstimatorVersionTest COMMAND PseudoProgressionEstimator -v )
@@ -249,23 +268,27 @@ ADD_TEST(NAME RecurrenceEstimatorVersionTest COMMAND RecurrenceEstimator -v )
 
 # SBRT Tests
 
-ADD_TEST(NAME SBRT_LungFieldTest COMMAND SBRT_LungField -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -o ${TESTING_OUTPUT_DIR}/sbrt/lung )
-ADD_TEST(NAME SBRT_LungFieldMaskTest COMMAND SBRT_LungField -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -o ${TESTING_OUTPUT_DIR}/sbrt/lung -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz )
-
-ADD_TEST(NAME SBRT_LungFieldHelpTest COMMAND SBRT_LungField -h )
-ADD_TEST(NAME SBRT_LungFieldVersionTest COMMAND SBRT_LungField -v )
-
-ADD_TEST(NAME SBRT_NoduleTest COMMAND SBRT_Nodule -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -o ${TESTING_OUTPUT_DIR}/sbrt/nodule )
-ADD_TEST(NAME SBRT_NoduleLabelTest COMMAND SBRT_Nodule -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 2 -o ${TESTING_OUTPUT_DIR}/sbrt/nodule )
-
-ADD_TEST(NAME SBRT_NoduleHelpTest COMMAND SBRT_Nodule -h )
-ADD_TEST(NAME SBRT_NoduleVersionTest COMMAND SBRT_Nodule -v )
+# Analysis
 
 ADD_TEST(NAME SBRT_AnalysisTest COMMAND SBRT_Analysis -i ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 1 )
 ADD_TEST(NAME SBRT_AnalysisOutputTest COMMAND SBRT_Analysis -i ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 1 ${TESTING_OUTPUT_DIR}/sbrt/analysis )
 
 ADD_TEST(NAME SBRT_AnalysisHelpTest COMMAND SBRT_Analysis -h )
 ADD_TEST(NAME SBRT_AnalysisVersionTest COMMAND SBRT_Analysis -v )
+
+# Lung 
+ADD_TEST(NAME SBRT_LungFieldTest COMMAND SBRT_LungField -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -o ${TESTING_OUTPUT_DIR}/sbrt/lung )
+ADD_TEST(NAME SBRT_LungFieldMaskTest COMMAND SBRT_LungField -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -o ${TESTING_OUTPUT_DIR}/sbrt/lung -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz )
+
+ADD_TEST(NAME SBRT_LungFieldHelpTest COMMAND SBRT_LungField -h )
+ADD_TEST(NAME SBRT_LungFieldVersionTest COMMAND SBRT_LungField -v )
+
+# Nodule
+ADD_TEST(NAME SBRT_NoduleTest COMMAND SBRT_Nodule -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -o ${TESTING_OUTPUT_DIR}/sbrt/nodule )
+ADD_TEST(NAME SBRT_NoduleLabelTest COMMAND SBRT_Nodule -p ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -c ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_75.nii.gz -m ${TESTING_DATA_DIR}/sbrt/AAAC0_flair_pp_shrunk_testTumor_75.nii.gz -l 2 -o ${TESTING_OUTPUT_DIR}/sbrt/nodule )
+
+ADD_TEST(NAME SBRT_NoduleHelpTest COMMAND SBRT_Nodule -h )
+ADD_TEST(NAME SBRT_NoduleVersionTest COMMAND SBRT_Nodule -v )
 
 # Survival Predictor Tests
 

@@ -23,6 +23,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "NIfTI or Directory Path", "Output File to save the results for single subject", "If 'c' is passed, then this expects a directory where results will be stored");
   parser.addOptionalParameter("n", "normalize", cbica::Parameter::BOOLEAN, "flag", "Normalize output map between 0-255 or not", "Defaults to true/1");
   parser.addOptionalParameter("t", "threshold", cbica::Parameter::INTEGER, "0-255", "Threshold distance for geodesic mask", "By default, full geodesic mask is written");
+  parser.exampleUsage("");
 
   // argc check, "u", "h" and "v" checks are done inside CmdParser
 

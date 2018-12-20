@@ -530,7 +530,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/multinomialModel.h)
 
       ADD_EXECUTABLE(Confetti ${ConfettiSrcs} ${ConfettiHeaders})
-      ADD_DEPENDENCIES(Confetti ITK)
+
       TARGET_LINK_LIBRARIES(Confetti ${OpenCV_LIBS} ${ITK_LIBRARIES})
       SET_TARGET_PROPERTIES( Confetti PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
@@ -731,73 +731,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     
     IF( NOT (${STANDALONE_APP_NAME} STREQUAL "ImagingSubtypePredictor" ) )
     
-      IF( (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") AND WIN32 )        
-        ADD_EXECUTABLE(${STANDALONE_APP_NAME}
-          ${PROJECT_SOURCE_DIR}/src/applications/${STANDALONE_APP_NAME}.cxx
-          #${CBICA-TK_SOURCES}
-          #${YAMLCPP_Headers}
-          #${YAMLCPP_Sources}
-          #${APPLICATION_DEPENDS}
-        )
-        
-        TARGET_LINK_LIBRARIES(${STANDALONE_APP_NAME}
-          #${DEPENDENT_LIBS}
-          ${LIBNAME_CBICATK}
-          ${LIBNAME_Applications}
-          ${LIBNAME_FeatureExtractor}
-        )
+      IF( (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") AND WIN32 ) 
 
-        SET_TARGET_PROPERTIES( ${STANDALONE_APP_NAME} PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} )
 
-        ADD_DEPENDENCIES( ${STANDALONE_APP_NAME} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} ${LIBNAME_CBICATK} )
-        
-        INSTALL( TARGETS ${STANDALONE_APP_NAME}
-          BUNDLE DESTINATION .
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib
-          CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-        )        
       ELSEIF(NOT (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") )
       
-        ADD_EXECUTABLE(${STANDALONE_APP_NAME}
-          ${PROJECT_SOURCE_DIR}/src/applications/${STANDALONE_APP_NAME}.cxx
-          #${CBICA-TK_SOURCES}
-          #${YAMLCPP_Headers}
-          #${YAMLCPP_Sources}
-          #${APPLICATION_DEPENDS}
-        )
-
-        TARGET_LINK_LIBRARIES(${STANDALONE_APP_NAME}
-          #${DEPENDENT_LIBS}
-          ${LIBNAME_CBICATK}
-          ${LIBNAME_Applications}
-          ${LIBNAME_FeatureExtractor}
-        )
-
-        SET_TARGET_PROPERTIES( ${STANDALONE_APP_NAME} PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-
-        ADD_DEPENDENCIES( ${STANDALONE_APP_NAME} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} ${LIBNAME_CBICATK} )
-       
-        IF (APPLE) 
-          # list (APPEND STANDALONE_APPS_LIST ${STANDALONE_APP_NAME})
-          INSTALL( TARGETS ${STANDALONE_APP_NAME}
-            BUNDLE DESTINATION .
-            RUNTIME DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-            LIBRARY DESTINATION ${EXE_NAME}.app/Contents/Resources/lib
-            CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-          )
-          
-        ELSE()
-          INSTALL( TARGETS ${STANDALONE_APP_NAME}
-            BUNDLE DESTINATION .
-            RUNTIME DESTINATION bin
-            LIBRARY DESTINATION lib
-            CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-          )
-        ENDIF()
+        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} )
       
       ENDIF()
     

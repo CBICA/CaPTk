@@ -132,7 +132,7 @@ INCLUDE_DIRECTORIES( ${CaPTk_SOURCE_DIR}/src
   ${CaPTk_SOURCE_DIR}/src/applications
   ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction_includes
   ${CaPTk_SOURCE_DIR}/src/applications/WhiteStripe_includes
-  ${CaPTk_SOURCE_DIR}/src/Common/inc
+  ${CaPTk_SOURCE_DIR}/src/common/inc
   ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends
   #${CMAKE_CURRENT_SOURCE_DIR}/inc
   #${VTK_INCLUDE_DIRS} 

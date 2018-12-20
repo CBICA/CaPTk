@@ -50,6 +50,7 @@ static const char  cSeparator = '/';
 #include <stdexcept>
 #include <algorithm>
 #include <string>
+#include <vector>
 #include "cbicaCmdParser.h"
 #include "yaml-cpp/yaml.h"
 
@@ -200,6 +201,38 @@ namespace cbica
   }
 
   //! copied from cbicaUtilities to ensure CmdParser stays header-only
+  std::string _getFullPath()
+  {
+#if defined(_WIN32)
+    //! Initialize pointers to file and user names
+    char path[FILENAME_MAX];
+    GetModuleFileNameA(NULL, path, FILENAME_MAX);
+    //_splitpath_s(filename, NULL, NULL, NULL, NULL, filename, NULL, NULL, NULL);
+#elif __APPLE__
+    char path[PATH_MAX];
+    uint32_t size = PATH_MAX - 1;
+    if (path != NULL)
+    {
+      if (_NSGetExecutablePath(path, &size) != 0)
+      {
+        std::cerr << "[getFullPath()] Error during getting full path..";
+      }
+    }
+#else
+    //! Initialize pointers to file and user names
+    char path[PATH_MAX];
+    if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
+      //path = dirname(path);
+      std::cerr << "[getFullPath()] Error during getting full path..";
+#endif
+
+    std::string return_string = std::string(path);
+    path[0] = '\0';
+
+    return return_string;
+  }
+
+  //! copied from cbicaUtilities to ensure CmdParser stays header-only
   static inline bool splitFileName(const std::string &dataFile, std::string &path,
     std::string &baseName, std::string &extension)
   {
@@ -292,6 +325,14 @@ namespace cbica
   }
 
   //! copied from cbicaUtilities to ensure CmdParser stays header-only
+  std::string _getExecutablePath()
+  {
+    std::string path, base, ext;
+    cbica::splitFileName(cbica::_getFullPath(), path, base, ext);
+    return path;
+  }
+
+  //! copied from cbicaUtilities to ensure CmdParser stays header-only
   static inline std::string getExecutableName()
   {
     std::string return_string;
@@ -358,7 +399,7 @@ namespace cbica
 #endif    
     if (input_exeName.empty())
     {
-      m_exeName = cbica::getExecutableName();
+      m_exeName = m_argv[0]/*(cbica::getExecutableName()*/;
     }
     else
     {
@@ -378,6 +419,8 @@ namespace cbica
     m_optionalParameters.push_back(Parameter("u", "usage", cbica::Parameter::NONE, "", "Prints basic usage message.", "", "", "", ""));
     m_optionalParameters.push_back(Parameter("h", "help", cbica::Parameter::NONE, "", "Prints verbose usage information.", "", "", "", ""));
     m_optionalParameters.push_back(Parameter("v", "version", cbica::Parameter::NONE, "", "Prints information about software version.", "", "", "", ""));
+    m_optionalParameters.push_back(Parameter("rt", "run-test", cbica::Parameter::NONE, "", "Runs the tests", "", "", "", ""));
+    m_optionalParameters.push_back(Parameter("cwl", "cwl", cbica::Parameter::NONE, "", "Generates a .cwl file for the software", "", "", "", ""));
   }
 
   CmdParser::CmdParser(int argc, char **argv, const std::string &exe_name)
@@ -497,7 +540,7 @@ namespace cbica
     const std::string &description_line4,
     const std::string &description_line5)
   {
-    if ((laconic == "u") || (laconic == "h") || (laconic == "v"))
+    if ((laconic == "u") || (laconic == "h") || (laconic == "v") || (laconic == "rt") || (laconic == "cwl"))
     {
       return;
     }
@@ -528,7 +571,7 @@ namespace cbica
     const std::string &description_line5)
   {
     //std::cout << laconic << verbose << verbose << dataRange << description_line1 << std::endl;
-    if ((laconic == "u") || (laconic == "h") || (laconic == "v"))
+    if ((laconic == "u") || (laconic == "h") || (laconic == "v") || (laconic == "rt") || (laconic == "cwl"))
     {
       return;
     }
@@ -613,7 +656,7 @@ namespace cbica
         }
       }
 
-      if (verbose && (inputParameters[i].laconic != "u") && (inputParameters[i].laconic != "h") && (inputParameters[i].laconic != "v"))
+      if (verbose && (inputParameters[i].laconic != "u") && (inputParameters[i].laconic != "h") && (inputParameters[i].laconic != "v") && (inputParameters[i].laconic != "rt") && (inputParameters[i].laconic != "cwl") )
       {
         std::cout << spaces_verb_line2 << "Expected Type  :: " << inputParameters[i].dataType_string << "\n" <<
           spaces_verb_line2 << "Expected Range :: " << inputParameters[i].dataRange << "\n";
@@ -714,6 +757,17 @@ namespace cbica
     {
       input_string = "v";
     }
+    else if ((input_string_lower == "run-test") || (input_string_lower == "-run-test") || (input_string_lower == "--run-test")
+      || (input_string_lower == "rt") || (input_string_lower == "-rt") || (input_string_lower == "--rt"))
+    {
+      input_string = "rt";
+    }
+    else if ((input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl")
+      || (input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl"))
+    {
+      input_string = "cwl";
+    }
+
 
     if (!checkMaxLen)
     {
@@ -791,6 +845,22 @@ namespace cbica
         helpRequested = true;
         position = i;
         echoVersion();
+        exit(EXIT_SUCCESS);
+        //return true;
+      }
+      if (inputParamToCheck == "rt")
+      {
+        helpRequested = true;
+        position = i;
+        // writeCWLFile(_getExecutablePath(), false);
+        exit(EXIT_SUCCESS);
+        //return true;
+      }
+      if (inputParamToCheck == "cwl")
+      {
+        helpRequested = true;
+        position = i;
+        writeCWLFile(_getExecutablePath(), false);
         exit(EXIT_SUCCESS);
         //return true;
       }
@@ -1109,7 +1179,7 @@ namespace cbica
     m_exampleOfUsage = cbica::stringReplace(m_exampleOfUsage, "./" + m_exeName, "");
   }
 
-  void CmdParser::writeCWLFile(const std::string &dirName, const std::string &workflowName, bool overwriteFile = false) 
+  void CmdParser::writeCWLFile(const std::string &dirName, bool overwriteFile = false) 
   {
     if (!checkMaxLen)
     {
@@ -1129,6 +1199,10 @@ namespace cbica
 
     std::string cwlfileName = dirName_wrap + m_exeName + ".cwl";
 
+    // std::cout << "[DEBUG]dirName_wrap: " << dirName_wrap << std::endl;
+    // std::cout << "[DEBUG]m_exeName: " << m_exeName << std::endl;
+    // std::cout << "[DEBUG]cwlfileName: " << cwlfileName << std::endl;
+    
     std::ofstream file;
     if (!cbica::fileExists(cwlfileName) || overwriteFile)
     {
@@ -1140,9 +1214,9 @@ namespace cbica
       config["class"] = "CommandLineTool";
       config["version"] = m_version;
       config["baseCommand"] = m_exeName;
-
+      
       YAML::Node inputs = config["inputs"];
-
+      
       for (size_t i = 0; i < m_requiredParameters.size(); i++)
       {
         config["inputs"]["-" + m_requiredParameters[i].verbose];
