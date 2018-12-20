@@ -47,7 +47,12 @@ SET( CAPTK_LUNG_APPS "" )
 SET( CAPTK_MISC_APPS "" )
 
 ADD_SUBDIRECTORY( FeatureExtraction )
-INCLUDE_DIRECTORIES( FeatureExtraction/src/depends FeatureExtraction/src )
+ADD_SUBDIRECTORY( Preprocessing )
+INCLUDE_DIRECTORIES( 
+  FeatureExtraction/src/depends 
+  FeatureExtraction/src 
+  Preprocessing/src/depends
+)
 
 SET(PREPROCESSING_ALGOS "DCM2NIfTI Denoise-SUSAN Register BiasCorrect-N3 HistogramMatching SkullStripping" CACHE STRING "All Preprocessing algorithms available")
 
