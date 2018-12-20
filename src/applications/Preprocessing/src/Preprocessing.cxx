@@ -4,21 +4,39 @@
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
 
+#include "ZScoreNormalizer.h"
+
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
+
+//! Detail the available algorithms to make it easier to initialize
+enum AvailableAlgorithms
+{
+  None,
+  HistogramMatching,
+  Resize,
+  SanityCheck,
+  Information,
+  Casting,
+  UniqueValues,
+  TestComparison,
+  BoundingBox,
+  ZScoreNormalize
+};
+
+int requestedAlgorithm = 0;
 
 std::string inputImageFile, outputImageFile, targetImageFile;
 size_t resize = 100;
 int histoMatchQuantiles = 40, histoMatchBins = 100, testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0;
 
-bool requested_histoMatch = false, requested_resize = false, requested_sanity = false, requested_information = false, requested_casting = false, requested_uniqueVals = false,
-uniqueValsSort = true, requested_testComparison = false, requested_boundingBox = false, boundingBoxIsotropic = true;
+bool uniqueValsSort = true, boundingBoxIsotropic = true;
 
 template< class TImageType >
 int algorithmsRunner()
 {
-  if (requested_resize && (resize != 100))
+  if ((requestedAlgorithm = Resize) && (resize != 100))
   {
     auto outputImage = cbica::ResizeImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), resize);
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
@@ -27,7 +45,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requested_uniqueVals)
+  if (requestedAlgorithm = UniqueValues)
   {
     bool sort = true;
     if (uniqueValsSort == 0)
@@ -47,7 +65,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requested_histoMatch)
+  if (requestedAlgorithm = HistogramMatching)
   {
     cbica::WriteImage< TImageType >(
       cbica::GetHistogramMatchedImage< TImageType >(
@@ -56,7 +74,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requested_casting)
+  if (requestedAlgorithm = Casting)
   {
     if (targetImageFile == "uchar")
     {
@@ -128,7 +146,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requested_testComparison)
+  if (requestedAlgorithm = TestComparison)
   {
     auto diffFilter = itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
@@ -165,7 +183,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requested_boundingBox)
+  if (requestedAlgorithm = BoundingBox)
   {
     if (!cbica::ImageSanityCheck(inputImageFile, targetImageFile))
     {
@@ -293,6 +311,11 @@ int algorithmsRunner()
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
   }
+  
+  if (requestedAlgorithm = ZScoreNormalize)
+  {
+    ZScoreNormalizer< TImageType > normalizer;
+  }
 
   return EXIT_SUCCESS;
 }
@@ -342,7 +365,7 @@ int main(int argc, char** argv)
   if (parser.isPresent("hi"))
   {
     parser.getParameterValue("hi", targetImageFile);
-    requested_histoMatch = true;
+    requestedAlgorithm = HistogramMatching;
     if (parser.isPresent("hb"))
     {
       parser.getParameterValue("hb", histoMatchBins);
@@ -355,31 +378,31 @@ int main(int argc, char** argv)
   if (parser.isPresent("r"))
   {
     parser.getParameterValue("r", resize);
-    requested_resize = true;
+    requestedAlgorithm = Resize;
   }
   if (parser.isPresent("s"))
   {
     parser.getParameterValue("s", targetImageFile);
-    requested_sanity = true;
+    requestedAlgorithm = SanityCheck;
   }
   if (parser.isPresent("inf"))
   {
-    requested_information = true;
+    requestedAlgorithm = Information;
   }
   if (parser.isPresent("c"))
   {
     parser.getParameterValue("c", targetImageFile);
-    requested_casting = true;
+    requestedAlgorithm = Casting;
   }
   if (parser.isPresent("un"))
   {
     parser.getParameterValue("un", uniqueValsSort);
-    requested_uniqueVals = true;
+    requestedAlgorithm = UniqueValues;
   }
   if (parser.isPresent("tb"))
   {
     parser.getParameterValue("tb", targetImageFile);
-    requested_testComparison = true;
+    requestedAlgorithm = TestComparison;
     if (parser.isPresent("tr"))
     {
       parser.getParameterValue("tr", testRadius);
@@ -392,7 +415,7 @@ int main(int argc, char** argv)
   if (parser.isPresent("b"))
   {
     parser.getParameterValue("b", targetImageFile);
-    requested_boundingBox = true;
+    requestedAlgorithm = BoundingBox;
     if (parser.isPresent("bi"))
     {
       parser.getParameterValue("bi", boundingBoxIsotropic);
@@ -400,7 +423,7 @@ int main(int argc, char** argv)
   }
 
   // this doesn't need any template initialization
-  if (requested_sanity)
+  if (requestedAlgorithm = SanityCheck)
   {
     if (cbica::ImageSanityCheck(inputImageFile, targetImageFile))
     {
@@ -416,7 +439,7 @@ int main(int argc, char** argv)
 
   auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
-  if (requested_information)
+  if (requestedAlgorithm = Information)
   {
     auto dims = inputImageInfo.GetImageDimensions();
     auto size = inputImageInfo.GetImageSize();
