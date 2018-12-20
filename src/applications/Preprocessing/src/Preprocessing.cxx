@@ -318,9 +318,11 @@ int algorithmsRunner()
     auto outputDir = cbica::normalizePath(outputImageFile);// this is a data directory for now and will be changed
     cbica::createDir(outputDir);
     std::string hggFL_file = outputDir + "/hgg_fl.cfg", hggT1C_file = outputDir + "/hgg_t1c.cfg", hggT1_file = outputDir + "/hgg_t1.cfg", hggT2_file = outputDir + "/hgg_t2.cfg",
-      lggFL_file = outputDir + "/lgg_fl.cfg", lggT1C_file = outputDir + "/lgg_t1c.cfg", lggT1_file = outputDir + "/lgg_t1.cfg", lggT2_file = outputDir + "/lgg_t2.cfg";
+      lggFL_file = outputDir + "/lgg_fl.cfg", lggT1C_file = outputDir + "/lgg_t1c.cfg", lggT1_file = outputDir + "/lgg_t1.cfg", lggT2_file = outputDir + "/lgg_t2.cfg",
+      hggMask_file = outputDir + "/hgg_brainMask.cfg", lggMask_file = outputDir + "/lgg_brainMask.cfg";
     std::ofstream file_hggFL(hggFL_file, std::ofstream::out), file_hggT1C(hggT1C_file, std::ofstream::out), file_hggT1(hggT1_file, std::ofstream::out), file_hggT2(hggT2_file, std::ofstream::out),
-      file_lggFL(lggFL_file, std::ofstream::out), file_lggT1C(lggT1C_file, std::ofstream::out), file_lggT1(lggT1_file, std::ofstream::out), file_lggT2(lggT2_file, std::ofstream::out);
+      file_lggFL(lggFL_file, std::ofstream::out), file_lggT1C(lggT1C_file, std::ofstream::out), file_lggT1(lggT1_file, std::ofstream::out), file_lggT2(lggT2_file, std::ofstream::out),
+      file_hggBM(hggMask_file, std::ofstream::out), file_lggBM(lggMask_file, std::ofstream::out);
 
     auto output_HGG = outputDir + "/HGG";
     auto output_LGG = outputDir + "/LGG";
@@ -370,21 +372,44 @@ int algorithmsRunner()
               cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + inputExt);
               if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
               {
-                file_lggT1C << output_HGG + "/" + inputBase + inputExt << "\n";
+                file_lggT1C << output_LGG + "/" + inputBase + inputExt << "\n";
               }
               else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
               {
-                file_lggT1 << output_HGG + "/" + inputBase + inputExt << "\n";
+                file_lggT1 << output_LGG + "/" + inputBase + inputExt << "\n";
               }
               else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
               {
-                file_lggFL << output_HGG + "/" + inputBase + inputExt << "\n";
+                file_lggFL << output_LGG + "/" + inputBase + inputExt << "\n";
               }
               else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
               {
-                file_lggT2 << output_HGG + "/" + inputBase + inputExt << "\n";
+                file_lggT2 << output_LGG + "/" + inputBase + inputExt << "\n";
               }
             }
+          }
+        }
+        else
+        {
+          auto currentFile = cbica::replaceString(filesInFolder[j], "_seg.nii.gz", "t1ce.nii.gz");
+
+          auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
+          thresholder->SetInput(cbica::ReadImage< TImageType >(currentFile));
+          thresholder->SetLowerThreshold(1);
+          thresholder->SetUpperThreshold(std::numeric_limits<float>::max());
+          thresholder->SetOutsideValue(0);
+          thresholder->SetInsideValue(1);
+          thresholder->Update();
+
+          if (allFolders[i].find("HGG") != std::string::npos)
+          {
+            cbica::WriteImage< TImageType >(thresholder->GetOutput(), output_HGG + "/brainMask_" + inputBase + inputExt);
+            file_hggBM << output_HGG + "/brainMask_" + inputBase + inputExt << "\n";
+          }
+          else
+          {
+            cbica::WriteImage< TImageType >(thresholder->GetOutput(), output_LGG + "/brainMask_" + inputBase + inputExt);
+            file_lggBM << output_LGG + "/brainMask_" + inputBase + inputExt << "\n";
           }
         }
       }
@@ -397,6 +422,8 @@ int algorithmsRunner()
     file_lggT1.close();
     file_lggT2.close();
     file_lggFL.close();
+    file_hggBM.close();
+    file_lggBM.close();
   }
 
   return EXIT_SUCCESS;
