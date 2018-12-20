@@ -314,8 +314,8 @@ int algorithmsRunner()
   
   if (requestedAlgorithm == ZScoreNormalize)
   {
-    auto currentDataDir = inputImageFile; // this is a data directory for now and will be changed
-    auto outputDir = outputImageFile;// this is a data directory for now and will be changed
+    auto currentDataDir = cbica::normalizePath(inputImageFile); // this is a data directory for now and will be changed
+    auto outputDir = cbica::normalizePath(outputImageFile);// this is a data directory for now and will be changed
     if (!cbica::isDir(outputDir))
     {
       cbica::createDir(outputDir);
