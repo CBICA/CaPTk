@@ -335,10 +335,10 @@ int algorithmsRunner()
       auto filesInFolder = cbica::filesInDirectory(allFolders[i]);
       for (size_t j = 0; j < filesInFolder.size(); j++)
       {
+        std::string inputBase, inputExt, inputPath;
+        cbica::splitFileName(filesInFolder[j], inputPath, inputBase, inputExt);
         if (filesInFolder[j].find("_seg.nii.gz") == std::string::npos)
         {
-          std::string inputBase, inputExt, inputPath;
-          cbica::splitFileName(filesInFolder[j], inputPath, inputBase, inputExt);
           if (inputExt == ".nii.gz")
           {
             auto inputImage = cbica::ReadImage< TImageType >(filesInFolder[j]);
