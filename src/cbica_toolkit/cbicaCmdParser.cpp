@@ -85,55 +85,6 @@ namespace cbica
       return false;
   }
 
-  std::vector<std::string> getCWLFilesInApplicationDir() {
-
-    std::vector<std::string> files;
-
-    #ifdef _WIN32
-      WIN32_FIND_DATA data;
-      HANDLE hFind = FindFirstFile("\\*", &data);
-
-      if ( hFind != INVALID_HANDLE_VALUE ) {
-        do {
-          files.push_back(data.cFileName);
-        } while (FindNextFile(hFind, &data));
-        FindClose(hFind);
-      }
-    #else
-      DIR *dir;
-      struct dirent *ent;
-      if ((dir = opendir(".")) != NULL) {
-        /* print all the files and directories within directory */
-        while ((ent = readdir (dir)) != NULL) {
-          if (ent->d_type == DT_REG) {  
-            files.push_back(ent->d_name);
-          }
-        }
-        closedir (dir);
-      } else {
-        /* could not open directory */
-        perror ("");
-        return files;
-      }
-    #endif
-
-    // Prune non cwl files
-    std::vector<std::string> cwlfiles;
-    for(auto const& value: files) {
-
-      if (value.substr(value.size() - 4) == ".cwl") {
-        cwlfiles.push_back(value);
-      }
-
-    }
-
-    // Sort cwl files
-    std::sort(cwlfiles.begin(), cwlfiles.end());
-
-    return cwlfiles;
-
-  }
-
   //! copied from cbicaUtilities to ensure CmdParser stays header-only
   static inline bool fileExists(const std::string &fName)
   {
