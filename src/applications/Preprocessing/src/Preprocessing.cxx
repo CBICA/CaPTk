@@ -355,6 +355,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("hb", "hMatchBins", cbica::Parameter::INTEGER, "1-1000", "Number of histogram bins for histogram matching", "Only used for histoMatching", "Defaults to 100");
   parser.addOptionalParameter("hq", "hMatchQnts", cbica::Parameter::INTEGER, "1-1000", "Number of quantile values to match for histogram matching", "Only used for histoMatching", "Defaults to 40");
   parser.addOptionalParameter("utB", "unitTestBuffer", cbica::Parameter::STRING, "N.A.", "Buffer test of application");
+  parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization");
 
   /// unit testing
   if (parser.isPresent("utB"))
@@ -411,6 +412,10 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("un", uniqueValsSort);
     requestedAlgorithm = UniqueValues;
+  }
+  if (parser.isPresent("zn"))
+  {
+    requestedAlgorithm = ZScoreNormalize;
   }
   if (parser.isPresent("tb"))
   {
