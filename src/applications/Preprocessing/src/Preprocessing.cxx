@@ -320,9 +320,6 @@ int algorithmsRunner()
     std::string hggFL_file = outputDir + "/hgg_fl.cfg", hggT1C_file = outputDir + "/hgg_t1c.cfg", hggT1_file = outputDir + "/hgg_t1.cfg", hggT2_file = outputDir + "/hgg_t2.cfg",
       lggFL_file = outputDir + "/lgg_fl.cfg", lggT1C_file = outputDir + "/lgg_t1c.cfg", lggT1_file = outputDir + "/lgg_t1.cfg", lggT2_file = outputDir + "/lgg_t2.cfg",
       hggMask_file = outputDir + "/hgg_brainMask.cfg", lggMask_file = outputDir + "/lgg_brainMask.cfg";
-    std::ofstream file_hggFL(hggFL_file, std::ofstream::out), file_hggT1C(hggT1C_file, std::ofstream::out), file_hggT1(hggT1_file, std::ofstream::out), file_hggT2(hggT2_file, std::ofstream::out),
-      file_lggFL(lggFL_file, std::ofstream::out), file_lggT1C(lggT1C_file, std::ofstream::out), file_lggT1(lggT1_file, std::ofstream::out), file_lggT2(lggT2_file, std::ofstream::out),
-      file_hggBM(hggMask_file, std::ofstream::out), file_lggBM(lggMask_file, std::ofstream::out);
 
     auto output_HGG = outputDir + "/HGG";
     auto output_LGG = outputDir + "/LGG";
@@ -335,6 +332,9 @@ int algorithmsRunner()
       auto filesInFolder = cbica::filesInDirectory(allFolders[i]);
       for (size_t j = 0; j < filesInFolder.size(); j++)
       {
+        std::ofstream file_hggFL(hggFL_file, std::ofstream::out | std::ofstream::app), file_hggT1C(hggT1C_file, std::ofstream::out | std::ofstream::app), file_hggT1(hggT1_file, std::ofstream::out | std::ofstream::app), file_hggT2(hggT2_file, std::ofstream::out | std::ofstream::app),
+          file_lggFL(lggFL_file, std::ofstream::out | std::ofstream::app), file_lggT1C(lggT1C_file, std::ofstream::out | std::ofstream::app), file_lggT1(lggT1_file, std::ofstream::out | std::ofstream::app), file_lggT2(lggT2_file, std::ofstream::out | std::ofstream::app),
+          file_hggBM(hggMask_file, std::ofstream::out | std::ofstream::app), file_lggBM(lggMask_file, std::ofstream::out | std::ofstream::app);
         std::string inputBase, inputExt, inputPath;
         cbica::splitFileName(filesInFolder[j], inputPath, inputBase, inputExt);
         if (filesInFolder[j].find("_seg.nii.gz") == std::string::npos)
@@ -412,18 +412,18 @@ int algorithmsRunner()
             file_lggBM << output_LGG + "/brainMask_" + inputBase + inputExt << "\n";
           }
         }
+        file_hggT1C.close();
+        file_hggT1.close();
+        file_hggT2.close();
+        file_hggFL.close();
+        file_lggT1C.close();
+        file_lggT1.close();
+        file_lggT2.close();
+        file_lggFL.close();
+        file_hggBM.close();
+        file_lggBM.close();
       }
     }
-    file_hggT1C.close();
-    file_hggT1.close();
-    file_hggT2.close();
-    file_hggFL.close();
-    file_lggT1C.close();
-    file_lggT1.close();
-    file_lggT2.close();
-    file_lggFL.close();
-    file_hggBM.close();
-    file_lggBM.close();
   }
 
   return EXIT_SUCCESS;
