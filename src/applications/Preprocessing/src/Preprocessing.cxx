@@ -316,18 +316,39 @@ int algorithmsRunner()
   {
     auto currentDataDir = cbica::normalizePath(inputImageFile); // this is a data directory for now and will be changed
     auto outputDir = cbica::normalizePath(outputImageFile);// this is a data directory for now and will be changed
-    if (!cbica::isDir(outputDir))
-    {
-      cbica::createDir(outputDir);
-    }
+    cbica::createDir(outputDir);
+    auto output_HGG = outputDir + "/HGG";
+    auto output_LGG = outputDir + "/LGG";
+    cbica::createDir(output_HGG);
+    cbica::createDir(output_LGG);
     auto allFolders = cbica::subdirectoriesInDirectory(currentDataDir, true);
 
-    std::cout << "allFolders: \n";
     for (size_t i = 0; i < allFolders.size(); i++)
     {
-      std::cout << allFolders[i] << "\n";
+      auto filesInFolder = cbica::filesInDirectory(allFolders[i]);
+      for (size_t j = 0; j < filesInFolder.size(); j++)
+      {
+        std::string inputBase, inputExt, inputPath;
+        cbica::splitFileName(filesInFolder[j], inputPath, inputBase, inputExt);
+        if (inputExt == ".nii.gz")
+        {
+          auto inputImage = cbica::ReadImage< TImageType >(filesInFolder[j]);
+          ZScoreNormalizer< TImageType > normalizer;
+          normalizer.SetInputImage(inputImage);
+          normalizer.Update();
+          auto outputImage = normalizer.GetOutput();
+
+          if (allFolders[i].find("HGG") != std::string::npos)
+          {
+            cbica::WriteImage< TImageType >(output_HGG + "/" + inputBase + inputExt);
+          }
+          else
+          {
+            cbica::WriteImage< TImageType >(output_LGG + "/" + inputBase + inputExt);
+          }
+        }
+      }
     }
-    ZScoreNormalizer< TImageType > normalizer;
   }
 
   return EXIT_SUCCESS;
