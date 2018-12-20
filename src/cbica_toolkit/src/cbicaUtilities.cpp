@@ -123,6 +123,55 @@ namespace cbica
       return true;
   }
 
+  std::vector<std::string> getCWLFilesInApplicationDir() {
+
+    std::vector<std::string> files;
+
+    #ifdef _WIN32
+      WIN32_FIND_DATA data;
+      HANDLE hFind = FindFirstFile("\\*", &data);
+
+      if ( hFind != INVALID_HANDLE_VALUE ) {
+        do {
+          files.push_back(data.cFileName);
+        } while (FindNextFile(hFind, &data));
+        FindClose(hFind);
+      }
+    #else
+      DIR *dir;
+      struct dirent *ent;
+      if ((dir = opendir(".")) != NULL) {
+        /* print all the files and directories within directory */
+        while ((ent = readdir (dir)) != NULL) {
+          if (ent->d_type == DT_REG) {  
+            files.push_back(ent->d_name);
+          }
+        }
+        closedir (dir);
+      } else {
+        /* could not open directory */
+        perror ("");
+        return files;
+      }
+    #endif
+
+    // Prune non cwl files
+    std::vector<std::string> cwlfiles;
+    for(auto const& value: files) {
+
+      if (value.substr(value.size() - 4) == ".cwl") {
+        cwlfiles.push_back(value);
+      }
+
+    }
+
+    // Sort cwl files
+    std::sort(cwlfiles.begin(), cwlfiles.end());
+
+    return cwlfiles;
+
+  }
+
   std::string getEnvironmentVariableValue(const std::string &environmentVariable)
   {
     std::string returnString = "";
@@ -1280,7 +1329,7 @@ namespace cbica
       {
         if ((fd.dwFileAttributes | FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY && (fd.cFileName[0] != '.') && (fd.cFileName != ".svn"))
         {
-          allDirectories.push_back(std::string(fd.cFileName));
+          allDirectories.push_back(dirName + "/" + std::string(fd.cFileName));
           if (recursiveSearch)
           {
             std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true);
@@ -1311,7 +1360,7 @@ namespace cbica
 
       if (dirp->d_type == DT_DIR)
       {
-        allDirectories.push_back(dirp->d_name);
+        allDirectories.push_back(dirName + "/" + dirp->d_name);
       }
     }
     closedir(dp);

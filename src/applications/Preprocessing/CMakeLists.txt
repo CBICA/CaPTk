@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 
-SET( PROJECT_NAME FeatureExtraction )
+SET( PROJECT_NAME Preprocessing )
 
 # Set project name 
 PROJECT( ${PROJECT_NAME} VERSION 1.6.1 LANGUAGES CXX )
@@ -10,7 +10,7 @@ ADD_DEFINITIONS(-DPROJECT_VERSION="${PROJECT_VERSION}" )
 #MESSAGE( STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}" )
 INCLUDE_DIRECTORIES( 
   ${PROJECT_SOURCE_DIR}/src/depends/ 
-  ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/ 
+  ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/
   ${PROJECT_SOURCE_DIR}/../../thirdparty/
   ${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/include/ 
 )
@@ -80,9 +80,7 @@ SOURCE_GROUP( YAMLCPP_Sources FILES ${YAMLCPP_Sources} )
 # Add sources to executable
 ADD_EXECUTABLE(
   ${PROJECT_NAME} 
-  ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.cxx
-  ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.h
-  ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.hxx
+  ${PROJECT_SOURCE_DIR}/src/Preprocessing.cxx
   ${sources}
   #${cbicatk}
   #${YAMLCPP_Sources}
@@ -113,40 +111,6 @@ TARGET_LINK_LIBRARIES(
   ${LIBNAME_CBICATK}
 )
 
-OPTION( BUILD_REFERENCES "Build reference executables from CBICA pipeline" OFF )
-
-IF( BUILD_REFERENCES )
-
-  SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
-  SET( StandAloneCLIAppsFolder "References")
-  # find stand-alone CMD applications
-  FILE( GLOB STANDALONE_APPS
-    "${PROJECT_SOURCE_DIR}/src/reference/*.cxx"
-  )
-
-  INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/src/reference/ )
-    
-  FOREACH(application ${STANDALONE_APPS})
-
-    GET_FILENAME_COMPONENT( STANDALONE_APP_NAME ${application} NAME_WE )
-
-    ADD_EXECUTABLE( 
-      ${STANDALONE_APP_NAME}
-      ${PROJECT_SOURCE_DIR}/src/reference/${STANDALONE_APP_NAME}.cxx
-    )
-    
-    TARGET_LINK_LIBRARIES( 
-      ${STANDALONE_APP_NAME}
-      ${ITK_LIBRARIES}
-      ${OpenCV_LIBRARIES}
-    )
-    
-    SET_TARGET_PROPERTIES( ${STANDALONE_APP_NAME} PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-    
-  ENDFOREACH()
-  
-ENDIF()
-
 INSTALL( TARGETS ${PROJECT_NAME} 
   #DESTINATION bin  
   BUNDLE DESTINATION .
@@ -155,14 +119,6 @@ INSTALL( TARGETS ${PROJECT_NAME}
   CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
-
-INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/1_params_default.csv DESTINATION data/features )
-INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/2_params_default_lattice.csv DESTINATION data/features )
-INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureExtraction.csv DESTINATION data/features/batchMode )
-
-# Build CWL
-INCLUDE(CaPTk_macros)
-CWL_INSTALL(FeatureExtraction)
 
 ## this is for packaging only
 SET( PROJECT_VENDOR "CBICA - UPenn" )

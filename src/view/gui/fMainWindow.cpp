@@ -148,6 +148,137 @@ fMainWindow::fMainWindow()
 
   setupUi(this);
 
+  this->bottomLayout = new QHBoxLayout();
+
+  help_discussion = new QAction(this);
+  help_forum = new QAction(this);
+  help_bugs = new QAction(this);
+  help_features = new QAction(this);
+  help_download = new QAction(this);
+  actionLoad_Recurrence_Images = new QAction(this);
+  actionLoad_Nifti_Images = new QAction(this);
+  actionLoad_Nifti_ROI = new QAction(this);
+  actionSave_Nifti_Images = new QAction(this);
+  actionSave_Dicom_Images = new QAction(this);
+  actionSave_ROI_Images = new QAction(this);
+  actionSave_ROI_Dicom_Images = new QAction(this);
+  actionExit = new QAction(this);
+  actionAppEGFR = new QAction(this);
+  actionAppRecurrence = new QAction(this);
+  actionAppGeodesic = new QAction(this);
+  actionHelp_Interactions = new QAction(this);
+  actionAbout = new QAction(this);
+
+  //---------------setting menu and status bar for the main window---------------
+  this->setStatusBar(statusbar);
+
+  menubar = new QMenuBar(this);
+  menuFile = new QMenu("File");
+  menuLoadFile = new QMenu("Load");
+  menuSaveFile = new QMenu("Save");
+  menuExit = new QMenu("Exit");
+  menuLoadFileDicom = new QMenu("Dicom");
+  menuLoadFileNifti = new QMenu("Nifti");
+  menuFile->addMenu(menuLoadFile);
+  menuFile->addMenu(menuSaveFile);
+  menuApp = new QMenu("Applications");
+  menuPreprocessing = new QMenu("Preprocessing");
+  menuHelp = new QMenu("Help");
+
+  SaggitalViewWidget = new QVTKWidget(SaggitalWidget);
+  AxialViewWidget = new QVTKWidget(AxialWidget);
+  CoronalViewWidget = new QVTKWidget(CoronalWidget);
+
+  SaggitalViewWidget->setMouseTracking(true);
+  AxialViewWidget->setMouseTracking(true);
+  CoronalViewWidget->setMouseTracking(true);
+
+  SaggitalWidgetGridLayout->addWidget(SaggitalViewWidget, 0, 0, 1, 1);
+  AxialWidgetGridLayout->addWidget(AxialViewWidget, 0, 0, 1, 1);
+  CoronalWidgetGridLayout->addWidget(CoronalViewWidget, 0, 0, 1, 1);
+
+  QSizePolicy sizePolicy5(QSizePolicy::Preferred, QSizePolicy::Expanding);
+  sizePolicy5.setHorizontalStretch(0);
+  sizePolicy5.setVerticalStretch(0);
+
+  infoPanel = new fBottomImageInfoTip(centralwidget);
+  imagesPanel = new fImagesPanel(); // New Images Panel
+  m_tabWidget->addTab(imagesPanel, QString());
+  tumorPanel = new fTumorPanel();
+  m_tabWidget->addTab(tumorPanel, QString());
+  drawingPanel = new fDrawingPanel();
+  featurePanel = new fFeaturePanel();
+  m_tabWidget->addTab(drawingPanel, QString());
+  m_tabWidget->addTab(featurePanel, "Feature Extraction");
+  int minheight = /*std::max(drawingPanel->sizeHint().height(), featurePanel->sizeHint().height())*/featurePanel->sizeHint().height() + 25;
+  m_tabWidget->setMinimumHeight(minheight);
+  m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
+
+  m_toolTabdock->setWindowFlags(Qt::Window);
+
+#ifdef Q_OS_WIN
+  m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
+#else
+  //TBD fix this - work around untill solved
+  m_toolTabdock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+#endif
+  m_toolTabdock->setWidget(m_tabWidget);
+  overallGridLayout->addWidget(m_toolTabdock, 0, 0, 1, 3);
+
+  QFrame * frame = new QFrame(this);
+  sizePolicy5.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
+  frame->setSizePolicy(sizePolicy5);
+  frame->setFrameShape(QFrame::HLine);
+  frame->setFrameShadow(QFrame::Sunken);
+
+  overallGridLayout->addWidget(frame, 3, 0, 1, 3);
+  
+  this->setCentralWidget(centralwidget);
+  AxialViewWidget->raise();
+  CoronalViewWidget->raise();
+  SaggitalViewWidget->raise();
+  infoPanel->raise();
+  m_tabWidget->raise();
+
+  menuHelp->addAction(actionHelp_Interactions);
+  menuDownload = menuHelp->addMenu("Sample Data");
+  auto supportMenu = menuHelp->addMenu("Support Links");
+  menuHelp->addAction(actionAbout);
+
+  supportMenu->addAction(help_bugs);
+  supportMenu->addAction(help_download);
+
+  menubar->addMenu(menuFile);
+  menubar->addMenu(menuPreprocessing);
+#ifndef PACKAGE_VIEWER
+  menubar->addMenu(menuApp);
+#endif
+  menubar->addMenu(menuHelp);
+  this->setMenuBar(menubar);
+
+  menubar->addAction(menuFile->menuAction());
+  menubar->addAction(menuPreprocessing->menuAction());
+#ifndef PACKAGE_VIEWER
+  menubar->addAction(menuApp->menuAction());
+#endif
+  menubar->addAction(menuHelp->menuAction());
+
+  menuLoadFile->addAction(actionLoad_Nifti_Images);
+  menuLoadFile->addAction(actionLoad_Nifti_ROI);
+
+  menuSaveFile->addAction(actionSave_Nifti_Images);
+  menuSaveFile->addAction(actionSave_ROI_Images);
+
+  menuFile->addAction(actionExit);
+
+  menuDownload->addAction("GreedyRegistration");
+  m_tabWidget->setCurrentIndex(0);
+
+  bottomLayout->addWidget(infoPanel);
+  bottomLayout->addStretch();
+  bottomLayout->addWidget(preferencesGroupBox);
+  overallGridLayout->addLayout(bottomLayout, 4, 0, 2, 3);
+
   std::string nonNativeAppPaths_wrap = std::string(CAPTK_APP_LIST_PY_GUI);
   if (nonNativeAppPaths_wrap[0] == ' ')
   {
@@ -686,6 +817,27 @@ fMainWindow::fMainWindow()
   recurrencePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   msubtypePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   survivalPanel.SetCurrentLoggerPath(m_tempFolderLocation);
+
+  //
+  actionLoad_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image(s)", 0));
+  actionLoad_Nifti_ROI->setText(QApplication::translate("fMainWindow", "ROI", 0));
+
+  actionSave_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image (NIfTI)", 0));
+  actionSave_Dicom_Images->setText(QApplication::translate("fMainWindow", "Image (DICOM)", 0));
+  actionSave_ROI_Images->setText(QApplication::translate("fMainWindow", "ROI (NIfTI)", 0));
+  actionSave_ROI_Dicom_Images->setText(QApplication::translate("fMainWindow", "ROI (DICOM)", 0));
+  actionHelp_Interactions->setText(QApplication::translate("fMainWindow", "Usage", 0));
+  help_discussion->setText(QApplication::translate("fMainWindow", "Discussion Forum", 0));
+  help_forum->setText(QApplication::translate("fMainWindow", "Help Forum", 0));
+  help_bugs->setText(QApplication::translate("fMainWindow", "Bugs and Feature", 0));
+  help_features->setText(QApplication::translate("fMainWindow", "Feature Requests", 0));
+  help_download->setText(QApplication::translate("fMainWindow", "Latest Downloads", 0));
+  actionAbout->setText(QApplication::translate("fMainWindow", "About", 0));
+  actionExit->setText(QApplication::translate("fMainWindow", "Exit", 0));
+  actionAppGeodesic->setText(QApplication::translate("fMainWindow", "Geodesic segmentation", 0));
+  m_tabWidget->setTabText(m_tabWidget->indexOf(tumorPanel), QApplication::translate("fMainWindow", "Seed Points", 0));
+  m_tabWidget->setTabText(m_tabWidget->indexOf(drawingPanel), QApplication::translate("fMainWindow", "Drawing", 0));
+  m_tabWidget->setTabText(m_tabWidget->indexOf(imagesPanel), QApplication::translate("fMainWindow", "Images", 0));
 }
 
 fMainWindow::~fMainWindow()

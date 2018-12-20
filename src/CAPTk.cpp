@@ -12,6 +12,7 @@
 //#include "vtkOutputWindow"
 
 #include "cbicaCmdParser.h"
+#include "cbicaUtilities.h"
 
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
@@ -81,168 +82,41 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("tu", "tumorPt", cbica::Parameter::FILE, ".txt", "Tumor Point file for the image(s) being loaded");
   parser.addOptionalParameter("ts", "tissuePt", cbica::Parameter::FILE, ".txt", "Tissue Point file for the image(s) being loaded");
   parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
-  //parser.addOptionalParameter("de", "direction", cbica::Parameter::STRING, "", "Calls Directionality Estimator CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("eg", "egfrviii", cbica::Parameter::STRING, "", "Calls EGFRvIII PHI Calculator CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("fe", "feature", cbica::Parameter::STRING, "", "Calls Feature Extractor CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("ge", "geodesic", cbica::Parameter::STRING, "", "Calls Geodesic Segmentation CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("is", "imgsub", cbica::Parameter::STRING, "", "Calls Imaging SubType CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("ms", "molsub", cbica::Parameter::STRING, "", "Calls Molecular SubType CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("pa", "population", cbica::Parameter::STRING, "", "Calls Population Atlas CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("re", "recurrence", cbica::Parameter::STRING, "", "Calls Recurrence Estimator CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("ss", "sbrtSeg", cbica::Parameter::STRING, "", "Calls SBRT Segmentation CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("sa", "sbrtAna", cbica::Parameter::STRING, "", "Calls SBRT Analyze CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("su", "survival", cbica::Parameter::STRING, "", "Calls Survival Predictor CLI", "This needs to be passed first (before any images/masks)");
-  //parser.addOptionalParameter("ws", "whites", cbica::Parameter::STRING, "", "Calls WhiteStripe CLI", "This needs to be passed first (before any images/masks)");
+  
+  // parser.addOptionalParameter("de", "direction", cbica::Parameter::STRING, "", "Calls Directionality Estimator CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("eg", "egfrviii", cbica::Parameter::STRING, "", "Calls EGFRvIII PHI Calculator CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("fe", "feature", cbica::Parameter::STRING, "", "Calls Feature Extractor CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("ge", "geodesic", cbica::Parameter::STRING, "", "Calls Geodesic Segmentation CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("is", "imgsub", cbica::Parameter::STRING, "", "Calls Imaging SubType CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("ms", "molsub", cbica::Parameter::STRING, "", "Calls Molecular SubType CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("pa", "population", cbica::Parameter::STRING, "", "Calls Population Atlas CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("re", "recurrence", cbica::Parameter::STRING, "", "Calls Recurrence Estimator CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("ss", "sbrtSeg", cbica::Parameter::STRING, "", "Calls SBRT Segmentation CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("sa", "sbrtAna", cbica::Parameter::STRING, "", "Calls SBRT Analyze CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("su", "survival", cbica::Parameter::STRING, "", "Calls Survival Predictor CLI", "This needs to be passed first (before any images/masks)");
+  // parser.addOptionalParameter("ws", "whites", cbica::Parameter::STRING, "", "Calls WhiteStripe CLI", "This needs to be passed first (before any images/masks)");
+  
   parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
 
-  ///// debug
-  //HANDLE hLogFile;
-
-  //hLogFile = CreateFile("MemoryLeaks.txt", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-  //
-  //_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-  //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-  //_CrtSetReportFile(_CRT_WARN, hLogFile);
-  //_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
-  //_CrtSetReportFile(_CRT_ERROR, hLogFile);
-  //_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
-  //_CrtSetReportFile(_CRT_ASSERT, hLogFile);
-  ///// debug
-
-  /*if (parser.isPresent("de"))
-  {
-    int temp;
-    parser.compareParameter("de", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("DirectionalityEstimate") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("eg"))
-  {
-    int temp;
-    parser.compareParameter("eg", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("EGFRvIIISurrogateIndex") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("fe"))
-  {
-    int temp;
-    parser.compareParameter("fe", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("FeatureExtraction") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("ge"))
-  {
-    int temp;
-    parser.compareParameter("ge", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("GeodesicSegmentation") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("is"))
-  {
-    int temp;
-    parser.compareParameter("is", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("ImagingSubtypePredictor") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("ms"))
-  {
-    int temp;
-    parser.compareParameter("ms", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("MolecularSubtypePredictor") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("pa"))
-  {
-    int temp;
-    parser.compareParameter("pa", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("PopulationAtlases") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("re"))
-  {
-    int temp;
-    parser.compareParameter("re", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("RecurrenceEstimator") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("ss"))
-  {
-    int temp;
-    parser.compareParameter("ss", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("SBRT_Lung_Segment") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("sa"))
-  {
-    int temp;
-    parser.compareParameter("sa", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("SBRT_Lung_Analyze") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("su"))
-  {
-    int temp;
-    parser.compareParameter("su", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("SurvivalPredictor") + argv_complete).c_str());
-  }
-  else if (parser.isPresent("ws"))
-  {
-    int temp;
-    parser.compareParameter("ws", temp);
-    std::string argv_complete;
-    for (size_t i = temp + 1; i < argc; i++)
-    {
-      argv_complete = argv_complete + " " + std::string(argv[i]);
-    }
-    return std::system((getApplicationPath("WhiteStripe") + argv_complete).c_str());
-  }*/
-
   std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
+
+  // Handle CWL
+
+  // Check argv[1] to determine if we need to bypass typical CaPTk things
+  if (argc > 1) {
+    for (auto & file : cbica::getCWLFilesInApplicationDir()) {
+      if (argv[1] == file.substr(0, file.size() - 4)) {
+        std::string argv_complete;
+        for (size_t i = 1; i < argc; i++)
+        {
+          argv_complete = argv_complete + " " + std::string(argv[i]);
+        }
+        return std::system((getApplicationPath(argv[1]) + argv_complete).c_str());
+      }
+    }
+  }
+
+
   if (parser.isPresent("i"))
   {
     parser.getParameterValue("i", cmd_inputs);
@@ -259,6 +133,154 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("ts", cmd_tissue);
   }
+
+
+  ///// debug
+  //HANDLE hLogFile;
+
+  //hLogFile = CreateFile("MemoryLeaks.txt", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  //
+  //_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+  //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+  //_CrtSetReportFile(_CRT_WARN, hLogFile);
+  //_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+  //_CrtSetReportFile(_CRT_ERROR, hLogFile);
+  //_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+  //_CrtSetReportFile(_CRT_ASSERT, hLogFile);
+  ///// debug
+
+  // if (parser.isPresent("de"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("de", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("DirectionalityEstimate") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("eg"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("eg", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("EGFRvIIISurrogateIndex") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("fe"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("fe", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("FeatureExtraction") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("ge"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("ge", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("GeodesicSegmentation") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("is"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("is", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("ImagingSubtypePredictor") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("ms"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("ms", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("MolecularSubtypePredictor") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("pa"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("pa", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("PopulationAtlases") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("re"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("re", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("RecurrenceEstimator") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("ss"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("ss", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("SBRT_Lung_Segment") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("sa"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("sa", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("SBRT_Lung_Analyze") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("su"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("su", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("SurvivalPredictor") + argv_complete).c_str());
+  // }
+  // else if (parser.isPresent("ws"))
+  // {
+  //   int temp;
+  //   parser.compareParameter("ws", temp);
+  //   std::string argv_complete;
+  //   for (size_t i = temp + 1; i < argc; i++)
+  //   {
+  //     argv_complete = argv_complete + " " + std::string(argv[i]);
+  //   }
+  //   return std::system((getApplicationPath("WhiteStripe") + argv_complete).c_str());
+  // }
 
   //vtkOpenGLRenderWindow::SetGlobalMaximumNumberOfMultiSamples(0);
 

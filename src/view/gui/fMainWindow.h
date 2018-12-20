@@ -33,6 +33,37 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "vtkImageExport.h"
 #include "vtkImageData.h"
 
+#include "fTumorPanel.h"
+#include "fImagesPanel.h"
+#include "fDrawingPanel.h"
+#include "fTrainingDialog.h"
+#include "fFeaturePanel.h"
+#include "fRecurrenceDialog.h"
+#include "fPseudoProgressionDialog.h"
+#include "fRegistrationDialog.h"
+#include "fPreprocessingDialog.h"
+#include "fSurvivalDialog.h"
+#include "fEGFRvIIIDialog.h"
+#include "fSkullStripDialog.h"
+#include "fPerfusionMeasuresDialog.h"
+#include "fDiffusionMeasuresDialog.h"
+#include "fPCADialog.h"
+#include "fHistoMatchDialog.h"
+#include "fWhiteStripeDialog.h"
+#include "fDirectionalityDialog.h"
+#include "fPopulationAtlasDialog.h"
+#include "fImagingSubtypeDialog.h"
+#include "fMolecularSubtypeDialog.h"
+#include "fDCM2NIfTI.h"
+#include "fDeepMedicDialog.h"
+#include "fDeepMedicNormDialog.h"
+#include "fFetalBrain.h"
+#include "fSBRTNoduleDialog.h"
+#include "fSBRTAnalysisDialog.h"
+
+#include "QVTKOpenGLWidget.h"
+#include "vtkGenericOpenGLRenderWindow.h"
+#include "fBottomImageInfoTip.h"
 class SlicerManager;
 class Slicer;
 class SimpleImageManager;
@@ -188,6 +219,90 @@ class fMainWindow : public QMainWindow, private Ui::fMainWindow
   Q_OBJECT
 
 private:
+  fRecurrenceDialog			recurrencePanel;
+  fPseudoProgressionDialog pseudoPanel;
+  fPopulationAtlasDialog	atlasPanel;
+  fRegistrationDialog		registrationPanel;
+  fPreprocessingDialog	preprocessingPanel;
+  fSurvivalPredictor survivalPanel;
+  fEGFRvIIIPredictor egfrv3Panel;
+  fMolecularSubtypePredictor msubtypePanel;
+  fImagingSubtypePredictor isubtypePanel;
+  fFetalBrain fetalbrainpanel;
+  fSBRTNoduleDialog nodulePanel;
+  fSBRTAnalysisDialog analysisPanel;
+
+  fSkullStripper skullStrippingPanel;
+  fPCAEstimator pcaPanel;
+  fTrainingSimulator trainingPanel;
+  fPerfusionEstimator perfmeasuresPanel;
+  fDiffusionEstimator diffmeasuresPanel;
+  fDCM2NIfTIConverter dcmConverter;
+  fDeepMedicDialog deepMedicDialog;
+  fHistoMatcher histoMatchPanel;
+  fDeepMedicNormalizer deepMedicNormPanel;
+  fWhiteStripeObj whiteStripeNormalizer;
+  fDirectionalityDialog directionalityEstimator;
+
+  fDrawingPanel *drawingPanel;
+  fFeaturePanel *featurePanel;
+  fImagesPanel *imagesPanel;
+  fBottomImageInfoTip *infoPanel;
+  fTumorPanel *tumorPanel;
+
+  //-------------menu-----------
+  QMenuBar *menubar;
+  QMenu* menuFile;
+  QMenu* menuLoadFile;
+  QMenu* menuSaveFile;
+  QMenu* menuExit;
+  QMenu* menuLoadFileDicom;
+  QMenu* menuLoadFileNifti;
+  QMenu* menuDownload;
+
+  QMenu* menuApp;
+  QMenu* menuPreprocessing;
+  QMenu* menuHelp;
+
+  QAction *help_discussion;
+  QAction *help_download;
+  QAction *help_forum;
+  QAction *help_bugs;
+  QAction *help_features;
+  //-------------actions-------------
+
+  QAction *actionLoad_Recurrence_Images;
+  QAction *actionLoad_Nifti_Images;
+  QAction *actionLoad_Nifti_ROI;
+
+
+  QAction *actionSave_Nifti_Images;
+  QAction *actionSave_Dicom_Images;
+  QAction *actionSave_ROI_Images;
+  QAction *actionSave_ROI_Dicom_Images;
+
+  QAction *actionHelp_Interactions;
+  QAction *actionSave_Images;
+  QAction *actionAbout;
+  QAction *actionExit;
+
+  QAction *actionAppEGFR;
+  QAction *actionAppRecurrence;
+  QAction *actionAppGeodesic;
+
+  // obtain list from CMake variables using populateStringListInMenu() function
+  std::vector< std::string >
+    m_nativeApps, // native CPP applications
+    m_preprocessApps, // native pre-processing routines
+    m_pyCLIApps, // python command line applications
+    m_pyGUIApps; // python graphical applications
+
+  std::map< std::string, std::string > m_allNonNativeApps;
+
+  QVTKWidget *SaggitalViewWidget;
+  QVTKWidget *AxialViewWidget;
+  QVTKWidget *CoronalViewWidget;
+  QHBoxLayout* bottomLayout;
 
   /**
 \struct ActionAndName
