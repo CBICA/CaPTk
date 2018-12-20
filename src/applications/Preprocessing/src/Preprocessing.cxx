@@ -391,7 +391,7 @@ int algorithmsRunner()
         }
         else
         {
-          auto currentFile = cbica::replaceString(filesInFolder[j], "_seg.nii.gz", "t1ce.nii.gz");
+          auto currentFile = cbica::replaceString(filesInFolder[j], "_seg.nii.gz", "_t1ce.nii.gz");
 
           auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
           thresholder->SetInput(cbica::ReadImage< TImageType >(currentFile));
