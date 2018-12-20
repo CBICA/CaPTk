@@ -1360,7 +1360,7 @@ namespace cbica
 
       if (dirp->d_type == DT_DIR)
       {
-        allDirectories.push_back(dirp->d_name);
+        allDirectories.push_back(dirName + "/" + dirp->d_name);
       }
     }
     closedir(dp);
