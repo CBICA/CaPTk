@@ -324,6 +324,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     Qt5::X11Extras
   )
   ENDIF()
+  
+  SET( DEPENDENT_LIBS ${DEPENDENT_LIBS} CACHE STRING "All dependent libraries" )
 
   # find dependencies END
 
@@ -422,6 +424,18 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ADD_DEFINITIONS(-DBUILD_GEODESICTRAIN)
   ENDIF()
 
+  ## add the CBICA-TK library before any of the applications get added  
+  #ADD_LIBRARY(
+  #  ${LIBNAME_CBICATK}
+  #  ${CBICA-TK_SOURCES}
+  #  ${YAMLCPP_Headers}
+  #  ${YAMLCPP_Sources}
+  #)
+  #
+  #TARGET_LINK_LIBRARIES(
+  #  ${LIBNAME_CBICATK}
+  #  ${DEPENDENT_LIBS}
+  #)
   ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
   SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
 
@@ -435,7 +449,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
-    ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/
+    ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/
     ${PROJECT_SOURCE_DIR}/src/common/inc/
     ${PROJECT_SOURCE_DIR}/src/view/gui/
     ${APPLICATION_INCLUDES}
@@ -516,7 +530,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/multinomialModel.h)
 
       ADD_EXECUTABLE(Confetti ${ConfettiSrcs} ${ConfettiHeaders})
-      ADD_DEPENDENCIES(Confetti ITK)
+
       TARGET_LINK_LIBRARIES(Confetti ${OpenCV_LIBS} ${ITK_LIBRARIES})
       SET_TARGET_PROPERTIES( Confetti PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
@@ -633,13 +647,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SOURCE_GROUP( APPLICATIONS FILES ${APPLICATION_SOURCES} )
   SOURCE_GROUP( APPLICATIONS_Dependencies FILES ${APPLICATION_DEPENDS} )
 
-  # set up the libraries for use in CaPTK
-  SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
-
-  SET( LIBNAME_CBICATK "${PROJECT_NAME}_CBICATK" )
   #SET( LIBNAME_GUI "${PROJECT_NAME}_GUI" )
   SET( LIBNAME_Applications "${PROJECT_NAME}_Applications" )
   SET( LIBNAME_FeatureExtractor "${PROJECT_NAME}_FeatureExtractor" )
+  SET( LIBNAME_CBICATK "${PROJECT_NAME}_CBICATK" )
 
   # add all dependenciesO of ${application} to compilation
   FILE( GLOB 
@@ -647,18 +658,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     "${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/*.h"
     "${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/*.cpp"
     "${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/*.hxx"
-  )
-
-  ADD_LIBRARY(
-    ${LIBNAME_CBICATK}
-    ${CBICA-TK_SOURCES}
-    ${YAMLCPP_Headers}
-    ${YAMLCPP_Sources}
-  )
-
-  TARGET_LINK_LIBRARIES(
-    ${LIBNAME_CBICATK}
-    ${DEPENDENT_LIBS}
   )
 
   ADD_LIBRARY(
@@ -679,17 +678,17 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${OpenCV_LIBRARIES}
   )
 
-  # ADD_LIBRARY(
-    # ${LIBNAME_GUI}
-    # ${GUI_SOURCES_UPDATED}
-  # )
-
-  # TARGET_LINK_LIBRARIES(
-    # ${LIBNAME_GUI}
-    # ${DEPENDENT_LIBS}
-    # ${LIBNAME_CBICATK}
-    # ${LIBNAME_FeatureExtractor}
-  # )
+  #ADD_LIBRARY(
+  #  ${LIBNAME_GUI}
+  #  ${GUI_SOURCES_UPDATED}
+  #)
+  #
+  #TARGET_LINK_LIBRARIES(
+  #  ${LIBNAME_GUI}
+  #  ${DEPENDENT_LIBS}
+  #  ${LIBNAME_CBICATK}
+  #  ${LIBNAME_FeatureExtractor}
+  #)
 
   ADD_LIBRARY(
     ${LIBNAME_Applications}
@@ -732,76 +731,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     
     IF( NOT (${STANDALONE_APP_NAME} STREQUAL "ImagingSubtypePredictor" ) )
     
-      IF( (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") AND WIN32 )        
-        ADD_EXECUTABLE(${STANDALONE_APP_NAME}
-          ${PROJECT_SOURCE_DIR}/src/applications/${STANDALONE_APP_NAME}.cxx
-          #${CBICA-TK_SOURCES}
-          #${YAMLCPP_Headers}
-          #${YAMLCPP_Sources}
-          #${APPLICATION_DEPENDS}
-        )
-        
-        ADD_DEPENDENCIES(${STANDALONE_APP_NAME} ITK)
+      IF( (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") AND WIN32 ) 
 
-        TARGET_LINK_LIBRARIES(${STANDALONE_APP_NAME}
-          #${DEPENDENT_LIBS}
-          ${LIBNAME_CBICATK}
-          ${LIBNAME_Applications}
-          ${LIBNAME_FeatureExtractor}
-        )
+        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} )
 
-        SET_TARGET_PROPERTIES( ${STANDALONE_APP_NAME} PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-
-        ADD_DEPENDENCIES( ${STANDALONE_APP_NAME} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} ${LIBNAME_CBICATK} )
-        
-        INSTALL( TARGETS ${STANDALONE_APP_NAME}
-          BUNDLE DESTINATION .
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib
-          CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-        )        
       ELSEIF(NOT (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") )
       
-        ADD_EXECUTABLE(${STANDALONE_APP_NAME}
-          ${PROJECT_SOURCE_DIR}/src/applications/${STANDALONE_APP_NAME}.cxx
-          #${CBICA-TK_SOURCES}
-          #${YAMLCPP_Headers}
-          #${YAMLCPP_Sources}
-          #${APPLICATION_DEPENDS}
-        )
-        ADD_DEPENDENCIES(${STANDALONE_APP_NAME} ITK)
-
-        TARGET_LINK_LIBRARIES(${STANDALONE_APP_NAME}
-          #${DEPENDENT_LIBS}
-          ${LIBNAME_CBICATK}
-          ${LIBNAME_Applications}
-          ${LIBNAME_FeatureExtractor}
-        )
-
-        SET_TARGET_PROPERTIES( ${STANDALONE_APP_NAME} PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-
-        ADD_DEPENDENCIES( ${STANDALONE_APP_NAME} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} ${LIBNAME_CBICATK} )
-       
-        IF (APPLE) 
-          # list (APPEND STANDALONE_APPS_LIST ${STANDALONE_APP_NAME})
-          INSTALL( TARGETS ${STANDALONE_APP_NAME}
-            BUNDLE DESTINATION .
-            RUNTIME DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-            LIBRARY DESTINATION ${EXE_NAME}.app/Contents/Resources/lib
-            CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-          )
-          
-        ELSE()
-          INSTALL( TARGETS ${STANDALONE_APP_NAME}
-            BUNDLE DESTINATION .
-            RUNTIME DESTINATION bin
-            LIBRARY DESTINATION lib
-            CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-          )
-        ENDIF()
+        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} )
       
       ENDIF()
     
@@ -830,7 +766,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     #${YAMLCPP_Headers}
     #${YAMLCPP_Sources}
   )
-  ADD_DEPENDENCIES(CaPTk_Utilities ITK)
 
   TARGET_LINK_LIBRARIES( CaPTk_Utilities ${DEPENDENT_LIBS} ${LIBNAME_CBICATK} )
 

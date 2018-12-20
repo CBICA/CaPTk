@@ -16,9 +16,9 @@ SET( ${PROJECT_NAME}_SRCS
 )
 
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/inc
-                     ${CaPTk_SOURCE_DIR}/src/cbica_toolkit
-                     ${CaPTk_SOURCE_DIR}/src/applications/common_includes
-                     )
+  ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src
+  ${CaPTk_SOURCE_DIR}/src/applications/common_includes
+)
                      
 ADD_LIBRARY(
   ${PROJECT_NAME}

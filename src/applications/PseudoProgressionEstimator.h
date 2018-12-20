@@ -76,7 +76,7 @@ organization={RSNA Radiology}
 */
 class PseudoProgressionEstimator
 #ifdef APP_BASE_CAPTK_H
-  public ApplicationBase
+  : public ApplicationBase
 #endif
 {
 public:

@@ -66,7 +66,7 @@ publisher={Society for Neuro-Oncology}
 */
 class MolecularSubtypePredictor
 #ifdef APP_BASE_CAPTK_H
-	public ApplicationBase
+	: public ApplicationBase
 #endif
 {
 public:

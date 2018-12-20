@@ -173,12 +173,12 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
+  parser.exampleUsage("RecurrenceEstimator -t 0 -i <input dir> -o <output dir>");
 
   //parser.addOptionalParameter("c", "T1ce usage", cbica::Parameter::STRING, "", "Whether to use conventional imaging for model building or not? 1 for YES, 2 for NO");
   //parser.addOptionalParameter("p", "Perfusion usage", cbica::Parameter::STRING, "", "Whether to use perfusion imaging for model building or not? 1 for YES, 2 for NO");
   //parser.addOptionalParameter("d", "DTI usage", cbica::Parameter::STRING, "", "Whether to use DTI imaging for model building or not? 1 for YES, 2 for NO");
   //parser.addOptionalParameter("s", "Distance usage", cbica::Parameter::STRING, "", "Whether to use distance measure for model building or not? 1 for YES, 2 for NO");
-
 
   // parameters to get from the command line
   cbica::Logging logger;
