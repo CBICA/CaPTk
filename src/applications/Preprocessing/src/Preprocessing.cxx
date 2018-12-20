@@ -36,7 +36,7 @@ bool uniqueValsSort = true, boundingBoxIsotropic = true;
 template< class TImageType >
 int algorithmsRunner()
 {
-  if ((requestedAlgorithm = Resize) && (resize != 100))
+  if ((requestedAlgorithm == Resize) && (resize != 100))
   {
     auto outputImage = cbica::ResizeImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), resize);
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
@@ -45,7 +45,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm = UniqueValues)
+  if (requestedAlgorithm == UniqueValues)
   {
     bool sort = true;
     if (uniqueValsSort == 0)
@@ -65,7 +65,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm = HistogramMatching)
+  if (requestedAlgorithm == HistogramMatching)
   {
     cbica::WriteImage< TImageType >(
       cbica::GetHistogramMatchedImage< TImageType >(
@@ -74,7 +74,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm = Casting)
+  if (requestedAlgorithm == Casting)
   {
     if (targetImageFile == "uchar")
     {
@@ -146,7 +146,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm = TestComparison)
+  if (requestedAlgorithm == TestComparison)
   {
     auto diffFilter = itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
@@ -183,7 +183,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm = BoundingBox)
+  if (requestedAlgorithm == BoundingBox)
   {
     if (!cbica::ImageSanityCheck(inputImageFile, targetImageFile))
     {
@@ -312,7 +312,7 @@ int algorithmsRunner()
 
   }
   
-  if (requestedAlgorithm = ZScoreNormalize)
+  if (requestedAlgorithm == ZScoreNormalize)
   {
     auto currentDataDir = inputImageFile; // this is a data directory for now and will be changed
     auto outputDir = outputImageFile;// this is a data directory for now and will be changed
@@ -320,12 +320,12 @@ int algorithmsRunner()
     {
       cbica::createDir(outputDir);
     }
-    auto files = cbica::filesInDirectory(currentDataDir);
+    auto allFolders = cbica::subdirectoriesInDirectory(currentDataDir, true);
 
-    std::cout << "files: \n";
-    for (size_t i = 0; i < files.size(); i++)
+    std::cout << "allFolders: \n";
+    for (size_t i = 0; i < allFolders.size(); i++)
     {
-      std::cout << files[i] << "\n";
+      std::cout << allFolders[i] << "\n";
     }
     ZScoreNormalizer< TImageType > normalizer;
   }
@@ -441,7 +441,7 @@ int main(int argc, char** argv)
   }
 
   // this doesn't need any template initialization
-  if (requestedAlgorithm = SanityCheck)
+  if (requestedAlgorithm == SanityCheck)
   {
     if (cbica::ImageSanityCheck(inputImageFile, targetImageFile))
     {
@@ -454,7 +454,7 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
   }
-  if (requestedAlgorithm = ZScoreNormalize)
+  if (requestedAlgorithm == ZScoreNormalize)
   {
     using ImageType = itk::Image< float, 3 >;
     return algorithmsRunner< ImageType >();
@@ -463,7 +463,7 @@ int main(int argc, char** argv)
 
   auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
-  if (requestedAlgorithm = Information)
+  if (requestedAlgorithm == Information)
   {
     auto dims = inputImageInfo.GetImageDimensions();
     auto size = inputImageInfo.GetImageSize();
