@@ -389,6 +389,14 @@ int algorithmsRunner()
         }
       }
     }
+    file_hggT1C.close();
+    file_hggT1.close();
+    file_hggT2.close();
+    file_hggFL.close();
+    file_lggT1C.close();
+    file_lggT1.close();
+    file_lggT2.close();
+    file_lggFL.close();
   }
 
   return EXIT_SUCCESS;
