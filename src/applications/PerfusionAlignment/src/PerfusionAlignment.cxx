@@ -38,10 +38,10 @@ int main(int argc, char** argv)
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
     auto outputSpacing = inputImage->GetSpacing();
 
-    outputSpacing[3] = 1;
-
     // update the output image size
     outputSize[3] = outputSize[3] * outputSpacing[3];
+
+    outputSpacing[3] = 1;
 
     auto resampler = itk::ResampleImageFilter< ImageType, ImageType >::New();
     resampler->SetInput(inputImage);
