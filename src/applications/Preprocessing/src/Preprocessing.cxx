@@ -317,6 +317,10 @@ int algorithmsRunner()
     auto currentDataDir = cbica::normalizePath(inputImageFile); // this is a data directory for now and will be changed
     auto outputDir = cbica::normalizePath(outputImageFile);// this is a data directory for now and will be changed
     cbica::createDir(outputDir);
+    std::string hgg_file = outputDir + "/hgg.cfg", lgg_file = outputDir + "/lgg.cfg";
+    std::ofstream file_hgg(hgg_file, std::ofstream::out),
+      file_lgg(lgg_file, std::ofstream::out);
+
     auto output_HGG = outputDir + "/HGG";
     auto output_LGG = outputDir + "/LGG";
     cbica::createDir(output_HGG);
@@ -341,10 +345,12 @@ int algorithmsRunner()
           if (allFolders[i].find("HGG") != std::string::npos)
           {
             cbica::WriteImage< TImageType >(outputImage, output_HGG + "/" + inputBase + inputExt);
+            file_hgg << output_HGG + "/" + inputBase + inputExt << "\n";
           }
           else
           {
             cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + inputExt);
+            file_lgg << output_LGG + "/" + inputBase + inputExt << "\n";
           }
         }
       }
