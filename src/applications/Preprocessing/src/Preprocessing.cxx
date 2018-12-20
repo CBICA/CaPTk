@@ -317,9 +317,10 @@ int algorithmsRunner()
     auto currentDataDir = cbica::normalizePath(inputImageFile); // this is a data directory for now and will be changed
     auto outputDir = cbica::normalizePath(outputImageFile);// this is a data directory for now and will be changed
     cbica::createDir(outputDir);
-    std::string hgg_file = outputDir + "/hgg.cfg", lgg_file = outputDir + "/lgg.cfg";
-    std::ofstream file_hgg(hgg_file, std::ofstream::out),
-      file_lgg(lgg_file, std::ofstream::out);
+    std::string hggFL_file = outputDir + "/hgg_fl.cfg", hggT1C_file = outputDir + "/hgg_t1c.cfg", hggT1_file = outputDir + "/hgg_t1.cfg", hggT2_file = outputDir + "/hgg_t2.cfg",
+      lggFL_file = outputDir + "/lgg_fl.cfg", lggT1C_file = outputDir + "/lgg_t1c.cfg", lggT1_file = outputDir + "/lgg_t1.cfg", lggT2_file = outputDir + "/lgg_t2.cfg";
+    std::ofstream file_hggFL(hggFL_file, std::ofstream::out), file_hggT1C(hggT1C_file, std::ofstream::out), file_hggT1(hggT1_file, std::ofstream::out), file_hggT2(hggT2_file, std::ofstream::out),
+      file_lggFL(lggFL_file, std::ofstream::out), file_lggT1C(lggT1C_file, std::ofstream::out), file_lggT1(lggT1_file, std::ofstream::out), file_lggT2(lggT2_file, std::ofstream::out);
 
     auto output_HGG = outputDir + "/HGG";
     auto output_LGG = outputDir + "/LGG";
@@ -346,15 +347,43 @@ int algorithmsRunner()
 
             if (allFolders[i].find("HGG") != std::string::npos)
             {
-              cbica::createDir(output_HGG + "/" + inputBase);
-              cbica::WriteImage< TImageType >(outputImage, output_HGG + "/" + inputBase + "/" + inputBase + inputExt);
-              file_hgg << output_HGG + "/" + inputBase + "/" + inputBase + inputExt << "\n";
+              cbica::WriteImage< TImageType >(outputImage, output_HGG + "/" + inputBase + inputExt);
+              if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
+              {
+                file_hggT1C << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
+              {
+                file_hggT1 << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
+              {
+                file_hggFL << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
+              {
+                file_hggT2 << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
             }
             else
             {
-              cbica::createDir(output_LGG + "/" + inputBase);
-              cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + "/" + inputBase + inputExt);
-              file_lgg << output_LGG + "/" + inputBase + "/" + inputBase + inputExt << "\n";
+              cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + inputExt);
+              if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
+              {
+                file_lggT1C << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
+              {
+                file_lggT1 << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
+              {
+                file_lggFL << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
+              {
+                file_lggT2 << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
             }
           }
         }
