@@ -340,11 +340,11 @@ int algorithmsRunner()
 
           if (allFolders[i].find("HGG") != std::string::npos)
           {
-            cbica::WriteImage< TImageType >(output_HGG + "/" + inputBase + inputExt);
+            cbica::WriteImage< TImageType >(outputImage, output_HGG + "/" + inputBase + inputExt);
           }
           else
           {
-            cbica::WriteImage< TImageType >(output_LGG + "/" + inputBase + inputExt);
+            cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + inputExt);
           }
         }
       }
