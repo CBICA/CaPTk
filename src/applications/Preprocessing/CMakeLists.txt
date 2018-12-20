@@ -65,10 +65,14 @@ endif()
 
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
+SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
 
 FILE( GLOB sources "${PROJECT_SOURCE_DIR}/src/depends/*.*" )
 FILE( GLOB cbicatk "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/*.*" )
-FILE(GLOB_RECURSE YAMLCPP_Sources "${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/src/*.cpp")
+SET( YAMLCPP_Headers ${YAMLCPP_Headers} CACHE STRING "YAML-CPP headers" FORCE )
+SET( YAMLCPP_Sources ${YAMLCPP_Sources} CACHE STRING "YAML-CPP sources" FORCE )
+SOURCE_GROUP( YAMLCPP_Headers FILES ${YAMLCPP_Headers} )
+SOURCE_GROUP( YAMLCPP_Sources FILES ${YAMLCPP_Sources} )
 
 # Add sources to executable
 ADD_EXECUTABLE(
