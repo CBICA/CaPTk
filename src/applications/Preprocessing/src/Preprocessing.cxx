@@ -454,6 +454,12 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
   }
+  if (requestedAlgorithm = ZScoreNormalize)
+  {
+    using ImageType = itk::Image< float, 3 >;
+    return algorithmsRunner< ImageType >();
+    return EXIT_SUCCESS;
+  }
 
   auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
