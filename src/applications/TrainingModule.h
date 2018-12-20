@@ -73,6 +73,8 @@ public:
 
   VectorDouble EffectSizeFeatureSelection(const VariableSizeMatrixType training_features, std::vector<double> target);
 
+  std::string CheckDataQuality(const VariableSizeMatrixType & FeaturesOfAllSubjects, const VariableLengthVectorType & LabelsOfAllSubjects);
+
   VectorDouble InternalCrossValidationSplitTrainTest(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue, int kerneltype, int counter, std::string outputfolder);
   template <typename T>
   std::vector<size_t> sort_indexes(const std::vector<T> &v);

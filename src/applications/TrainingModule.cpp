@@ -806,6 +806,13 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     return false;
   }
 
+  std::string errorMessage = CheckDataQuality(FeaturesOfAllSubjects, LabelsOfAllSubjects);
+  if (errorMessage != "")
+  {
+    std::cout << errorMessage << std::endl;
+    return false;
+  }
+
   std::cout << "Data loaded." << std::endl;
   //scaling of input features and saving corresponding mean and standard deviation in the output directory
   FeatureScalingClass mFeaturesScaling;
@@ -1102,4 +1109,27 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   myfile.close();
 
   return FinalPerformance;
+}
+
+std::string TrainingModule::CheckDataQuality(const VariableSizeMatrixType & FeaturesOfAllSubjects, const VariableLengthVectorType & LabelsOfAllSubjects)
+{
+  std::string message = "";
+  int positiveLabels = 0;
+  int negativeLabels = 0;
+  for (unsigned int labelNo = 0; labelNo < LabelsOfAllSubjects.Size(); labelNo++)
+  {
+    if (LabelsOfAllSubjects[labelNo] == 1)
+      positiveLabels++;
+    if (LabelsOfAllSubjects[labelNo] == -1)
+      negativeLabels++;
+  }
+  if (positiveLabels == 0 || negativeLabels == 0)
+    message = "Labels should be +1 and -1. ";
+  if (positiveLabels < 5 || negativeLabels < 5)
+    message = message + "There should be atleast 5 +1 labels and 5 -1 labels for algorithm to generate sufficient results. ";
+  if (FeaturesOfAllSubjects.Cols()<20)
+    message = message + "There should be atleast 20 features for algorithm to generate sufficient results. ";
+  if(FeaturesOfAllSubjects.Rows() !=LabelsOfAllSubjects.Size())
+    message = message + "The number of subjects in feature file and label file do not match. ";
+  return message;
 }

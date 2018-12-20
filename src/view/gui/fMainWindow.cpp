@@ -629,7 +629,7 @@ fMainWindow::fMainWindow()
   connect(&deepMedicNormPanel, SIGNAL(RunDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)), this, SLOT(CallImageDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)));
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
   connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string)));
-  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, int, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)));
+  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -2478,31 +2478,31 @@ void fMainWindow::SaveDrawing()
 
   auto imageToWrite_wrap = imageToWrite;
   imageToWrite->DisconnectPipeline();
-  if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-  {
-    ImageTypeMask::DirectionType originalDirection;
-    originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
-    originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
-    originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
-    originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
-    originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
-    originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
-    originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
-    originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
-    originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
+  //if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+  //{
+  //  ImageTypeMask::DirectionType originalDirection;
+  //  originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
+  //  originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
+  //  originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
+  //  originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
+  //  originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
+  //  originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
+  //  originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
+  //  originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
+  //  originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
 
-    ImageTypeMask::PointType originalOrigin;
-    originalOrigin = mSlicerManagers[index]->mOrigin;
+  //  ImageTypeMask::PointType originalOrigin;
+  //  originalOrigin = mSlicerManagers[index]->mOrigin;
 
-    auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
-    infoChanger->SetInput(imageToWrite);
-    infoChanger->ChangeDirectionOn();
-    infoChanger->ChangeOriginOn();
-    infoChanger->SetOutputDirection(originalDirection);
-    infoChanger->SetOutputOrigin(originalOrigin);
-    infoChanger->Update();
-    imageToWrite_wrap = infoChanger->GetOutput();
-  }
+  //  auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
+  //  infoChanger->SetInput(imageToWrite);
+  //  infoChanger->ChangeDirectionOn();
+  //  infoChanger->ChangeOriginOn();
+  //  infoChanger->SetOutputDirection(originalDirection);
+  //  infoChanger->SetOutputOrigin(originalOrigin);
+  //  infoChanger->Update();
+  //  imageToWrite_wrap = infoChanger->GetOutput();
+  //}
 
   QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "mask.nii.gz");
   if (!saveFileName.isEmpty())
@@ -6844,7 +6844,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   }
 }
 
-void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder, int classifier, int folds, int conf)
+void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder, int classifier, int conf, int folds)
 {
   TrainingModule m_trainingsimulator;
   if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf))

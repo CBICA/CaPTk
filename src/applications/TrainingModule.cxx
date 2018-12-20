@@ -91,8 +91,11 @@ int main(int argc, char *argv[])
     confType = atoi(argv[tempPosition + 1]);
   }
   TrainingModule mTrainingSimulator;
-  mTrainingSimulator.Run(inputFeaturesFile, inputLabelsFile, outputDirectoryName, classifierType, foldType, confType);
-  std::cout << "Finished successfully!!!\n";
+  if(mTrainingSimulator.Run(inputFeaturesFile, inputLabelsFile, outputDirectoryName, classifierType, foldType, confType)==true)
+    std::cout << "Finished successfully!!!\n";
+  else
+    std::cout << "Encountered an error!!!\n";
+
   int a;
   std::cin >> a;
   return EXIT_SUCCESS;
