@@ -13,9 +13,10 @@ ExternalProject_Add(
   SOURCE_DIR VTK-source
   BINARY_DIR VTK-build
   UPDATE_COMMAND ""
+  #BUILD_COMMAND ""
   #PATCH_COMMAND "git apply --whitespace=nowarn ${CMAKE_CURRENT_BINARY_DIR}/vtk.patch"
   CMAKE_GENERATOR ${gen}
-  #INSTALL_COMMAND ""
+  INSTALL_COMMAND ""
   CMAKE_ARGS
     ${ep_common_args}
     #-DCMAKE_CONFIGURATION_TYPES=${CMAKE_CONFIGURATION_TYPES}

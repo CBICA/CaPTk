@@ -65,7 +65,7 @@ ENDIF()
 
 SET( 
   CMAKE_MODULE_PATH
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
+  ${PROJECT_SOURCE_DIR}/cmake_modules
   ${CMAKE_MODULE_PATH}
 )
 
@@ -88,19 +88,19 @@ INCLUDE( ExternalProject )
 #ENDIF()
 
 #MESSAGE( STATUS "Adding DCMTK-3.6.3 ...")
-#INCLUDE( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/External-DCMTK.cmake )
+#INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-DCMTK.cmake )
 
 #MESSAGE( STATUS "Adding YAML-CPP 0.6.2 ...")
-#INCLUDE( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/External-yaml-cpp.cmake )
+#INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-yaml-cpp.cmake )
 
 MESSAGE( STATUS "Adding EIGEN-3.3.4 ...")
-INCLUDE( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
+INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
 
 MESSAGE( STATUS "Adding OpenCV-3.4.1 ...")
-INCLUDE( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
+INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
 
 MESSAGE( STATUS "Adding VTK-8.1.0 ...")
-INCLUDE( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
+INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
 
 MESSAGE( STATUS "Adding ITK-4.13.0 ...")
-INCLUDE( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
+INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
