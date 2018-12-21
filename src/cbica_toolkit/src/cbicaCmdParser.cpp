@@ -397,19 +397,17 @@ namespace cbica
 #else
     m_version = 0.1.0;
 #endif    
+    std::string path, base, ext;
+    cbica::splitFileName(cbica::_getFullPath(), path, base, ext);
     if (input_exeName.empty())
     {
-      // m_exeName = m_argv[0] /*(cbica::getExecutableName()*/;
-
-      // Applications NEED to pass their exe name in or else Linux/windows will behave differently
-      // Only way for consistency between platforms is to provide the exe name
-      std::cerr << "Application needs to pass in exe name to parser" << std::endl;
-      throw "Application needs to pass in exe name to parser";
+      m_exeName = base;
     }
     else
     {
       m_exeName = input_exeName;
     }
+    m_exePath = path;
 
     m_argc = input_argc;
     m_argv = input_argv;
@@ -855,7 +853,7 @@ namespace cbica
       {
         helpRequested = true;
         position = i;
-        writeCWLFile(_getExecutablePath(), false);
+        writeCWLFile(m_exePath, false);
         exit(EXIT_SUCCESS);
         //return true;
       }

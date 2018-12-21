@@ -19,6 +19,8 @@ INCLUDE_DIRECTORIES(
 FIND_PACKAGE( ITK REQUIRED )
 INCLUDE( ${ITK_USE_FILE} )
 
+INCLUDE( ${PROJECT_SOURCE_DIR}/../../../cmake_modules/CaPTk_macros.cmake )
+
 if(APPLE)
 #  set(CMAKE_C_COMPILER "/usr/local/Cellar/llvm/6.0.1/bin/clang")
 #  set(CMAKE_CXX_COMPILER "/usr/local/Cellar/llvm/6.0.1/bin/clang++")
@@ -77,16 +79,16 @@ SET( YAMLCPP_Sources ${YAMLCPP_Sources} CACHE STRING "YAML-CPP sources" FORCE )
 SOURCE_GROUP( YAMLCPP_Headers FILES ${YAMLCPP_Headers} )
 SOURCE_GROUP( YAMLCPP_Sources FILES ${YAMLCPP_Sources} )
 
-# Add sources to executable
-ADD_EXECUTABLE(
-  ${PROJECT_NAME} 
-  ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.cxx
-  ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.h
-  ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.hxx
-  ${sources}
-  #${cbicatk}
-  #${YAMLCPP_Sources}
-)
+## Add sources to executable
+#ADD_EXECUTABLE(
+#  ${PROJECT_NAME} 
+#  ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.cxx
+#  ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.h
+#  ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.hxx
+#  ${sources}
+#  #${cbicatk}
+#  #${YAMLCPP_Sources}
+#)
 
 SET( LIBNAME_CBICATK "CaPTk_CBICATK" )
 IF(NOT (TARGET ${LIBNAME_CBICATK}))
@@ -105,13 +107,15 @@ IF(NOT (TARGET ${LIBNAME_CBICATK}))
   
 ENDIF()
 
+CAPTK_ADD_EXECUTABLE(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.cxx "${LIBNAME_CBICATK}")
+
 ADD_DEPENDENCIES( ${PROJECT_NAME} ${LIBNAME_CBICATK} )
 
-# Link the libraries to be used
-TARGET_LINK_LIBRARIES(
-  ${PROJECT_NAME}
-  ${LIBNAME_CBICATK}
-)
+## Link the libraries to be used
+#TARGET_LINK_LIBRARIES(
+#  ${PROJECT_NAME}
+#  ${LIBNAME_CBICATK}
+#)
 
 OPTION( BUILD_REFERENCES "Build reference executables from CBICA pipeline" OFF )
 
@@ -147,14 +151,14 @@ IF( BUILD_REFERENCES )
   
 ENDIF()
 
-INSTALL( TARGETS ${PROJECT_NAME} 
-  #DESTINATION bin  
-  BUNDLE DESTINATION .
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-)
+#INSTALL( TARGETS ${PROJECT_NAME} 
+#  #DESTINATION bin  
+#  BUNDLE DESTINATION .
+#  RUNTIME DESTINATION bin
+#  LIBRARY DESTINATION lib
+#  CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
+#  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+#)
 
 INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/1_params_default.csv DESTINATION data/features )
 INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/2_params_default_lattice.csv DESTINATION data/features )
