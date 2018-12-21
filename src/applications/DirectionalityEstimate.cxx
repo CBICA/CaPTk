@@ -7,7 +7,7 @@
 
 int main(int argc, char **argv)
 {
-  auto parser = cbica::CmdParser(argc, argv);
+  auto parser = cbica::CmdParser(argc, argv, "DirectionalityEstimate");
   parser.addRequiredParameter("l", "labelMap", cbica::Parameter::FILE, "NIfTI file", "The label map on which calculations are to be done");
   parser.addRequiredParameter("o", "outputFile", cbica::Parameter::FILE, "text file", "Where output gets stored");
   parser.addOptionalParameter("r", "real", cbica::Parameter::FLOAT, "labelMap Dimensions", "The real world coordinates (in mm) of file",
