@@ -19,7 +19,9 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
 export PATH="$PATH:/usr/local/opt/llvm/bin:/usr/local/Cellar/qt/5.12.0/bin:/usr/local/Cellar/qt/5.12.0/lib/cmake/Qt5"
 
-export CMAKE_PREFIX_PATH=/Library/TeX/texbin
+if test -d /usr/local/Cellar/qt/5.12.0/lib/cmake/Qt5; then echo "EXIST"; fi
+
+# export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
 make -j 8
