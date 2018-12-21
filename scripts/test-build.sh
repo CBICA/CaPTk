@@ -68,22 +68,21 @@ else
   exit -1
 fi
 
-# Extract Qt5
-
-# Set up exports
-
-
 # Create binary directory
 echo "[:] Creating binary directory..."
 mkdir bin
 cd bin
 
 # Cmake
-echo "[:] Running cmake command..."
+echo "[:] Running cmake command to configure superbuild..."
 CMAKE_CMD
 
 # Make install/strip
-echo "[:] Building CaPTk..."
-make
+echo "[:] Building depends..."
+make -j
 
-echo "[:] Done. Built test target"
+echo "[:] Running cmake command to configure CaPTk..."
+CMAKE_CMD
+
+echo "[:] Building CaPTk..."
+make -j
