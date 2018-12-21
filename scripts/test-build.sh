@@ -68,6 +68,10 @@ else
   exit -1
 fi
 
+# Nuclear option
+rm -rf binaries
+rm -rf data
+
 # Create binary directory
 echo "[:] Creating binary directory..."
 mkdir bin
@@ -75,7 +79,7 @@ cd bin
 
 # FTP override
 wget ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.11.2/linux.zip
-mv linux.zip qt
+mv linux.zip qt.zip
 
 # Cmake
 echo "[:] Running cmake command to configure superbuild..."
