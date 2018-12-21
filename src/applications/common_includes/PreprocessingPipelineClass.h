@@ -48,8 +48,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "cbicaUtilities.h"
 
 //#include "CAPTk.h"
-#include "CapTkDefines.h"
-#include "CapTkEnums.h"
+#include "CaPTkDefines.h"
+#include "CaPTkEnums.h"
 #include <QMessageBox>
 #include <QString>
 

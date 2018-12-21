@@ -1,7 +1,7 @@
 #include "PopulationAtlases.h"
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 //------------------Survival Prediction on existing model-----------------------
 std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname)
@@ -189,6 +189,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("a", "atlas", cbica::Parameter::STRING, "", "The atlas template.");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
+  parser.exampleUsage("PopulationAtlases -i <input dir> -l atlaslabelfile.csv -a jakob_stripped_with_cere_lps_256256128.nii.gz -o <output dir>");
 
   // parameters to get from the command line
   cbica::Logging logger;

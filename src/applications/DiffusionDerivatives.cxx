@@ -2,7 +2,7 @@
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
 #include "cbicaLogging.h"
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 #include "cbicaITKSafeImageIO.h"
 
 int main(int argc, char **argv)
@@ -20,6 +20,7 @@ int main(int argc, char **argv)
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
+  parser.exampleUsage("");
 
   // parameters to get from the command line
   cbica::Logging logger;
@@ -132,9 +133,6 @@ int main(int argc, char **argv)
     cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[3], outputDirectoryName + "/AxialDiffusivity.nii.gz");
 
   std::cout << "Finished successfully.\n";
-  std::cout << "\nPress any key to continue............\n";
 
-  int input;
-  std::cin >> input;
   return EXIT_SUCCESS;
 }

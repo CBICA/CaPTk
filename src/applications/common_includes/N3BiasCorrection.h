@@ -35,7 +35,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 //#include "qstring.h"
 #include "cbicaUtilities.h"
 #include "cbicaLogging.h"
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 #include "ApplicationBase.h"
 
 //template<class TFilter>

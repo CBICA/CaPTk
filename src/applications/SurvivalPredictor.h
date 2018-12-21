@@ -27,7 +27,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkConnectedComponentImageFilter.h"
 #include "itkCastImageFilter.h"
 #include "itkSignedMaurerDistanceMapImageFilter.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 #include "cbicaLogging.h"
 #ifdef APP_BASE_CAPTK_H
 #include "ApplicationBase.h"
@@ -68,7 +68,7 @@ publisher={Society for Neuro-Oncology}
 */
 class SurvivalPredictor
 #ifdef APP_BASE_CAPTK_H
-  public ApplicationBase
+  : public ApplicationBase
 #endif
 {
 public:

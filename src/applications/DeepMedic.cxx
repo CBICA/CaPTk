@@ -5,13 +5,13 @@
 #include "cbicaITKUtilities.h"
 #include "cbicaITKImageInfo.h"
 #include "cbicaITKSafeImageIO.h"
-#include "CapTkGUIUtils.h"
+#include "CaPTkGUIUtils.h"
 
 #ifdef _WIN32
 #include <direct.h>
 #endif
 
-#include "CAPTk.h"
+//#include "CAPTk.h"
 
 std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, inputBValName, inputBVecName, outputDirectory, loggerFileIn;
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;
@@ -144,6 +144,7 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("cl", "cutOffLower", cbica::Parameter::FLOAT, "0-10", "The Lower Cut-off (multiple of stdDev) to remove", "This is needed for normalization only", "Default: 3");
   parser.addOptionalParameter("cu", "cutOffUpper", cbica::Parameter::FLOAT, "0-10", "The Upper Cut-off (multiple of stdDev) to remove", "This is needed for normalization only", "Default: 3");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
+  parser.exampleUsage("DeepMedic -t1 <input dir> -t1c <input dir> -t2 <input dir> -fl <input dir> -o <output dir>");
 
   // parameters to get from the command line
   cbica::Logging logger;

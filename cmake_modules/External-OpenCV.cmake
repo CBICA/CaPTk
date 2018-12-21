@@ -15,7 +15,8 @@ ExternalProject_Add(
   BINARY_DIR OpenCV-build
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
-  #INSTALL_COMMAND ""
+  INSTALL_COMMAND ""
+  #BUILD_COMMAND ""
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
     ${ep_common_args}
@@ -32,6 +33,7 @@ ExternalProject_Add(
     -DBUILD_opencv_python_bindings_generator:BOOL=OFF
     -DWITH_CUDA:BOOL=OFF
     -DBUILD_DOCS:BOOL=OFF
+    -DWITH_OPENCL_SVM:BOOL=ON
     #-DWITH_QT:BOOL=TRUE # [QT] dependency, enables better GUI
     -DWITH_EIGEN:BOOL=TRUE # [Eigen] dependency, enables better matrix operations 
     -DWITH_OPENMP:BOOL=ON

@@ -1,7 +1,7 @@
 #include "EGFRvIIIIndexPredictor.h"
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 //------------------EGFRvIII Prediction on existing model-----------------------
 std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname)
@@ -189,6 +189,7 @@ int main(int argc, char **argv)
 	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
 	parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
 	parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
+  	parser.exampleUsage("EGFRvIIIIndexPredictor -i <input dir> -t 0 -o <output dir>");
 
 	// parameters to get from the command line
 	cbica::Logging logger;

@@ -30,8 +30,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkScalarImageToRunLengthFeaturesFilter.h"
 #include "itkCSVArray2DFileReader.h"
 #include "itkConnectedComponentImageFilter.h"
-#include "CapTkEnums.h"
-#include "CapTkClassifierUtils.h"
+#include "CaPTkEnums.h"
+#include "CaPTkClassifierUtils.h"
 #include "cbicaLogging.h"
 
 #define RECURRENCE_MODEL_G 0.5
@@ -76,7 +76,7 @@ organization={RSNA Radiology}
 */
 class PseudoProgressionEstimator
 #ifdef APP_BASE_CAPTK_H
-  public ApplicationBase
+  : public ApplicationBase
 #endif
 {
 public:

@@ -21,6 +21,7 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("d", "deltaSmooth", cbica::Parameter::FLOAT, "0.0 to 10.0", "Smoothing Delta", "Default: 0.5");
   parser.addOptionalParameter("b", "binsHist", cbica::Parameter::INTEGER, "100 to 3000", "Number of Histogram bins to do processing", "Default: 2000");
   parser.addOptionalParameter("t1", "t1Image", cbica::Parameter::BOOLEAN, "0 or 1", "T1 Image being passed or not", "Default: 1");
+  parser.exampleUsage("WhiteStripe -i in.nii.gz -o <output dir>");
 
   bool t1Image = true, skullStrippedImage = true;
   int zSliceStart = -1, zSliceEnd = -1, tissuesMax = 5, histSize = 2000;

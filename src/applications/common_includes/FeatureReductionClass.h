@@ -15,7 +15,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 #include "iostream"
 #include "vtkSmartPointer.h"
-#include "vnl_matrix.h"
+#include "vnl/vnl_matrix.h"
+//#include "vnl_matrix.h"
 #include "itkVariableSizeMatrix.h"
 #include "itkVariableLengthVector.h"
 //#include "vtkTable.h"

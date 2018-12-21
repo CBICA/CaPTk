@@ -1,7 +1,7 @@
 #include "PseudoProgressionEstimator.h"
 #include "fMainWindow.h"
 #include "cbicaStatistics.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 
 typedef itk::Image< float, 3 > ImageType;

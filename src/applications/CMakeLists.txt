@@ -6,6 +6,8 @@
 
 # each application-specific include folder, "/$application_includes" : dependencies which are not taken care by the default dependencies (i.e., ITK and OpenCV), for example libSVM for recurrence
 
+INCLUDE(CaPTk_macros)
+
 FILE( GLOB
   COMMON_DEPENDENCIES
   "${CMAKE_CURRENT_SOURCE_DIR}/common_includes/*.*"
@@ -45,6 +47,14 @@ SET( CAPTK_BRAIN_APPS "" )
 SET( CAPTK_BREAST_APPS "" )
 SET( CAPTK_LUNG_APPS "" )
 SET( CAPTK_MISC_APPS "" )
+
+ADD_SUBDIRECTORY( FeatureExtraction )
+ADD_SUBDIRECTORY( Preprocessing )
+INCLUDE_DIRECTORIES( 
+  FeatureExtraction/src/depends 
+  FeatureExtraction/src 
+  Preprocessing/src/depends
+)
 
 SET(PREPROCESSING_ALGOS "DCM2NIfTI Denoise-SUSAN Register BiasCorrect-N3 HistogramMatching SkullStripping" CACHE STRING "All Preprocessing algorithms available")
 
@@ -167,21 +177,6 @@ ENDFOREACH()
 
 ## this is for all stand-alone applications which do not integrate at source code level with CaPTk
 SET( CAPTK_APP_LIST_PY_GUI "" )
-
-# macro to find all sub-directories
-MACRO(SUBDIRLIST result curdir)
-  FILE(GLOB children
-    RELATIVE ${curdir} ${curdir}/*
-    PATTERN "svn" EXCLUDE
-  )
-  SET(dirlist "")
-  FOREACH(child ${children})
-    IF(IS_DIRECTORY ${curdir}/${child})
-      LIST(APPEND dirlist ${child})
-    ENDIF()
-  ENDFOREACH()
-  SET(${result} ${dirlist})
-ENDMACRO()
 
 ## download and extract the prepared binaries of external apps
 

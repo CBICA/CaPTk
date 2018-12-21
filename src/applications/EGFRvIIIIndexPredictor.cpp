@@ -1,7 +1,7 @@
 #include "EGFRvIIIIndexPredictor.h"
 #include "itkCSVNumericObjectFileWriter.h"
-#include "CapTkGUIUtils.h"
-#include "CapTkClassifierUtils.h"
+#include "CaPTkGUIUtils.h"
+#include "CaPTkClassifierUtils.h"
 
 
 typedef itk::Image< float, 3 > ImageType;
@@ -350,8 +350,7 @@ int EGFRvIIIIndexPredictor::PrepareNewEGFRvIIIPredictionModel(const std::string 
     return false;
   }
   std::cout << std::endl << "Model saved to the output directory." << std::endl;
-  int c;
-  std::cin >> c;
+
   return true;
 }
 

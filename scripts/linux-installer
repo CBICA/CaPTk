@@ -1,0 +1,108 @@
+#!/bin/bash
+
+# NOTE: This is NOT a script intended to be run as a part of the linux build or configuration process!
+# It is meant to be bundled within makerun to install the binaries to the correct directories.
+
+install_captk () {
+  # Prep stage
+
+  # Check for file
+  if [ -f ~/CaPTk ]
+  then
+    echo "Fatal: ~/CaPTk exists and is a file, not a directory"
+    echo "To install, please ensure this file is renamed or moved"
+    exit 1
+  fi
+
+  # Check for directory
+  if [ -d ~/CaPTk ]
+  then
+    echo "~/CaPTk exists. Proceeding..."
+  else
+    echo "Creating ~/CaPTk/..."
+    mkdir ~/CaPTk/
+  fi
+
+  # Version 
+  ver=`./CaPTk.bin -v | grep Version | awk '{print $2}'`
+
+  # Check version dir/file
+  if [ -f ~/CaPTk/${ver} ]
+  then
+    echo "Fatal: ~/CaPTk exists and is a file, not a directory"
+    echo "To install, please ensure this file is renamed or moved"
+    exit 1
+  fi
+
+  # Check for directory
+  if [ -d ~/CaPTk/${ver} ]
+  then
+    echo "~/CaPTk exists. Proceeding..."
+  else
+    echo "Creating ~/CaPTk/..."
+    mkdir ~/CaPTk/${ver}/
+  fi
+
+
+  # Check disk space
+  echo "Checking disk space..."
+
+  # Total free disk space is gotten with df . and we want the "availible" column. 
+  # This is in kb so we need to convert to b as well
+  # The middle part gets df, gets the last line of output, and gets the 4th column
+  # the rest of it gets the result of that in bytes
+  freedisk=`echo "$(df . | tail -n -1 | awk '{print $3}') * 1024" | bc -l`
+
+  # Used space is gotten by analyzing the CaPTk.bin file with ls -l
+  useddisk=`ls -l CaPTk.bin | awk '{print $5}'`
+
+  if [ ${useddisk} -gt ${freedisk} ]
+  then
+    echo "Not enough free space on disk for operation. Aborting installation."
+    exit 1
+  fi
+
+  # Move file but preserve pid
+  mv ./CaPTk.bin ~/CaPTk/${ver}/CaPTk_${ver}.bin 2>/dev/null &
+  pid=$!
+    
+  # The latest in bash spinner technology from npm
+  spin='-\|/'
+
+  # Show a spinner until the file is done moving
+  i=0
+  while kill -0 $pid 2>/dev/null
+  do
+    i=$(( (i+1) %4 ))
+    printf "\rInstalling... ${spin:$i:1}"
+    sleep .1
+  done
+  printf "\n"
+
+  # Last case
+  chmod +x ~/CaPTk/${ver}/CaPTk_${ver}.bin
+  if [ $? -ne 0 ]; then
+    echo "Warning: It appears as if something is wrong with your installation. Please make sure there is enough room on your disk, and that CaPTk_${ver}.bin is present under ~/CaPTk"
+    exit 1
+  fi
+
+  # CWL
+  echo "Installing CWL"
+  mv ./*.cwl ~/CaPTk/${ver}/ 2>/dev/null
+
+  echo "Done."
+  echo "Run the binary by navigating to the ~/CaPTk/${ver}/ directory and running './CaPTk_${ver}.bin' in the console"
+  
+}
+
+# Print license with a reader
+cat ./Combined.txt | more
+
+echo "I accept the terms of the licenses above."
+
+select yn in "Yes" "No"; do
+  case $yn in
+    Yes ) install_captk ; break  ;;
+    No ) echo "Goodbye" ; exit 0 ;;
+  esac
+done

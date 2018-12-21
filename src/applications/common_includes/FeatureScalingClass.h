@@ -15,7 +15,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 #include "iostream"
 //#include "CAPTk.h"
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 //#include "itkVariableSizeMatrix.h"
 //#include "itkVariableLengthVector.h"
 //
