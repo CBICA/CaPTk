@@ -23,7 +23,7 @@ before_install:
   ### OSX
   # OSX install step
   # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make git-lfs doxygen llvm caskroom/cask/mactex; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make git-lfs qt doxygen llvm caskroom/cask/mactex; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install; fi
 
   # Git LFS

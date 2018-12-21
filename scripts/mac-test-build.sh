@@ -17,7 +17,7 @@ export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-export PATH="$PATH:/usr/local/opt/llvm/bin"
+export PATH="$PATH:/usr/local/opt/llvm/bin:/usr/local/Cellar/qt/5.12.0/bin:/usr/local/Cellar/qt/5.12.0/lib/cmake/Qt5"
 
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
