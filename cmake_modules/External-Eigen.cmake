@@ -13,4 +13,4 @@ ExternalProject_Add(
   INSTALL_COMMAND ""
 )
 
-SET( EIGEN_INCLUDE_DIR ${CMAKE_BINARY_DIR}/Eigen-source)
+SET( EIGEN_INCLUDE_DIR ${CMAKE_BINARY_DIR}/Eigen-source CACHE )
