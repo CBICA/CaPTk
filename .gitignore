@@ -18,3 +18,5 @@ src/applications/individualApps/libra/MCRInstaller.zip
 
 # Linux Testing. Will be removed or implemented better
 src/applications/individualApps/libra/MCR
+src/applications/FeatureExtraction/data/output
+/src/applications/FeatureExtraction/data/params_test.csv
