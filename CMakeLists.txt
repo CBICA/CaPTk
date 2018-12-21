@@ -529,9 +529,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/dtiUtils.h
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/multinomialModel.h)
 
-      ADD_EXECUTABLE(Confetti ${ConfettiSrcs} ${ConfettiHeaders})
-
-      TARGET_LINK_LIBRARIES(Confetti ${OpenCV_LIBS} ${ITK_LIBRARIES})
+      CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} "${ConfettiSrcs} ${ConfettiHeaders}" "${OpenCV_LIBS} ${ITK_LIBRARIES}")
+      
+      #ADD_EXECUTABLE(Confetti ${ConfettiSrcs} ${ConfettiHeaders})
+      #TARGET_LINK_LIBRARIES(Confetti ${OpenCV_LIBS} ${ITK_LIBRARIES})
       SET_TARGET_PROPERTIES( Confetti PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
       ADD_LIBRARY(ConfettiCore SHARED
@@ -715,6 +716,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
   SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  
+  SET( CAPTK_LIBRARIES ${LIBNAME_CBICATK} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} )
 
   # find stand-alone CMD applications
   FILE( GLOB STANDALONE_APPS
@@ -733,11 +736,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     
       IF( (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") AND WIN32 ) 
 
-        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} )
+        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} ${PROJECT_SOURCE_DIR}/src/applications/${STANDALONE_APP_NAME}.cxx "${CAPTK_LIBRARIES}" )
 
       ELSEIF(NOT (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") )
       
-        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} )
+        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} ${PROJECT_SOURCE_DIR}/src/applications/${STANDALONE_APP_NAME}.cxx "${CAPTK_LIBRARIES}" )
       
       ENDIF()
     
@@ -759,42 +762,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF( BUILD_TESTING )
   #ENDIF()
 
-  # generates the utilities
-  ADD_EXECUTABLE( CaPTk_Utilities
-    ${PROJECT_SOURCE_DIR}/src/CaPTk_Utilities.cxx
-    #${CBICA-TK_SOURCES}
-    #${YAMLCPP_Headers}
-    #${YAMLCPP_Sources}
-  )
-
-  TARGET_LINK_LIBRARIES( CaPTk_Utilities ${DEPENDENT_LIBS} ${LIBNAME_CBICATK} )
-
-  SET_TARGET_PROPERTIES( CaPTk_Utilities PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-
   # installation
   IF (UNIX)
     IF(NOT LIBEXEC_INSTALL_DIR)
       SET(LIBEXEC_INSTALL_DIR "./libexec")
     ENDIF()
-  ENDIF()
-
-  IF (APPLE) 
-    INSTALL( TARGETS CaPTk_Utilities
-    BUNDLE DESTINATION .
-    RUNTIME DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-    LIBRARY DESTINATION ${EXE_NAME}.app/Contents/Resources/lib
-    CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    )
-
-  ELSE()
-    INSTALL( TARGETS CaPTk_Utilities
-      BUNDLE DESTINATION .
-      RUNTIME DESTINATION bin
-      LIBRARY DESTINATION lib
-      CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    )
   ENDIF()
 
   ## symlink creation for UNIX machines - currently only works for DEB or RPM
