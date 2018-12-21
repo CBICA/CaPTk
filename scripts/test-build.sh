@@ -74,10 +74,7 @@ mkdir bin
 cd bin
 
 # FTP override
-mkdir qt
-cd qt
 wget ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.11.2/linux.zip
-cd ..
 
 # Cmake
 echo "[:] Running cmake command to configure superbuild..."
