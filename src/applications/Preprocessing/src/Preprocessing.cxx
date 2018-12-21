@@ -333,101 +333,101 @@ int algorithmsRunner()
       auto filesInFolder = cbica::filesInDirectory(allFolders[i]);
       for (size_t j = 0; j < filesInFolder.size(); j++)
       {
-        std::ofstream /*file_hggFL(hggFL_file, std::ofstream::out | std::ofstream::app), file_hggT1C(hggT1C_file, std::ofstream::out | std::ofstream::app), file_hggT1(hggT1_file, std::ofstream::out | std::ofstream::app), file_hggT2(hggT2_file, std::ofstream::out | std::ofstream::app),
+        std::ofstream file_hggFL(hggFL_file, std::ofstream::out | std::ofstream::app), file_hggT1C(hggT1C_file, std::ofstream::out | std::ofstream::app), file_hggT1(hggT1_file, std::ofstream::out | std::ofstream::app), file_hggT2(hggT2_file, std::ofstream::out | std::ofstream::app),
           file_lggFL(lggFL_file, std::ofstream::out | std::ofstream::app), file_lggT1C(lggT1C_file, std::ofstream::out | std::ofstream::app), file_lggT1(lggT1_file, std::ofstream::out | std::ofstream::app), file_lggT2(lggT2_file, std::ofstream::out | std::ofstream::app),
-          file_hggBM(hggMask_file, std::ofstream::out | std::ofstream::app), file_lggBM(lggMask_file, std::ofstream::out | std::ofstream::app)*/
+          file_hggBM(hggMask_file, std::ofstream::out | std::ofstream::app), file_lggBM(lggMask_file, std::ofstream::out | std::ofstream::app),
           file_hggGT(hggGt_file, std::ofstream::out | std::ofstream::app), file_lggGT(lggGt_file, std::ofstream::out | std::ofstream::app);
         std::string inputBase, inputExt, inputPath;
         cbica::splitFileName(filesInFolder[j], inputPath, inputBase, inputExt);
         if (filesInFolder[j].find("_seg.nii.gz") == std::string::npos)
         {
-          //if (inputExt == ".nii.gz")
-          //{
-          //  auto inputImage = cbica::ReadImage< TImageType >(filesInFolder[j]);
-          //  ZScoreNormalizer< TImageType > normalizer;
-          //  normalizer.SetInputImage(inputImage);
-          //  normalizer.Update();
-          //  auto outputImage = normalizer.GetOutput();
+          if (inputExt == ".nii.gz")
+          {
+            auto inputImage = cbica::ReadImage< TImageType >(filesInFolder[j]);
+            ZScoreNormalizer< TImageType > normalizer;
+            normalizer.SetInputImage(inputImage);
+            normalizer.Update();
+            auto outputImage = normalizer.GetOutput();
 
-          //  if (allFolders[i].find("HGG") != std::string::npos)
-          //  {
-          //    cbica::WriteImage< TImageType >(outputImage, output_HGG + "/" + inputBase + inputExt);
-          //    if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
-          //    {
-          //      file_hggT1C << output_HGG + "/" + inputBase + inputExt << "\n";
-          //    }
-          //    else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
-          //    {
-          //      file_hggT1 << output_HGG + "/" + inputBase + inputExt << "\n";
-          //    }
-          //    else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
-          //    {
-          //      file_hggFL << output_HGG + "/" + inputBase + inputExt << "\n";
-          //    }
-          //    else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
-          //    {
-          //      file_hggT2 << output_HGG + "/" + inputBase + inputExt << "\n";
-          //    }
-          //  }
-          //  else
-          //  {
-          //    cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + inputExt);
-          //    if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
-          //    {
-          //      file_lggT1C << output_LGG + "/" + inputBase + inputExt << "\n";
-          //    }
-          //    else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
-          //    {
-          //      file_lggT1 << output_LGG + "/" + inputBase + inputExt << "\n";
-          //    }
-          //    else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
-          //    {
-          //      file_lggFL << output_LGG + "/" + inputBase + inputExt << "\n";
-          //    }
-          //    else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
-          //    {
-          //      file_lggT2 << output_LGG + "/" + inputBase + inputExt << "\n";
-          //    }
-          //  }
-          //}
+            if (allFolders[i].find("HGG") != std::string::npos)
+            {
+              cbica::WriteImage< TImageType >(outputImage, output_HGG + "/" + inputBase + inputExt);
+              if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
+              {
+                file_hggT1C << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
+              {
+                file_hggT1 << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
+              {
+                file_hggFL << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
+              {
+                file_hggT2 << output_HGG + "/" + inputBase + inputExt << "\n";
+              }
+            }
+            else
+            {
+              cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + inputExt);
+              if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
+              {
+                file_lggT1C << output_LGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
+              {
+                file_lggT1 << output_LGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
+              {
+                file_lggFL << output_LGG + "/" + inputBase + inputExt << "\n";
+              }
+              else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
+              {
+                file_lggT2 << output_LGG + "/" + inputBase + inputExt << "\n";
+              }
+            }
+          }
         }
         else
         {
           auto currentFile = cbica::replaceString(filesInFolder[j], "_seg.nii.gz", "_t1ce.nii.gz");
 
-          //auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
-          //thresholder->SetInput(cbica::ReadImage< TImageType >(currentFile));
-          //thresholder->SetLowerThreshold(1);
-          //thresholder->SetUpperThreshold(std::numeric_limits<float>::max());
-          //thresholder->SetOutsideValue(0);
-          //thresholder->SetInsideValue(1);
-          //thresholder->Update();
+          auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
+          thresholder->SetInput(cbica::ReadImage< TImageType >(currentFile));
+          thresholder->SetLowerThreshold(1);
+          thresholder->SetUpperThreshold(std::numeric_limits<float>::max());
+          thresholder->SetOutsideValue(0);
+          thresholder->SetInsideValue(1);
+          thresholder->Update();
 
           if (allFolders[i].find("HGG") != std::string::npos)
           {
             file_hggGT << filesInFolder[j] << "\n";
-            //cbica::WriteImage< TImageType >(thresholder->GetOutput(), output_HGG + "/brainMask_" + inputBase + inputExt);
-            //file_hggBM << output_HGG + "/brainMask_" + inputBase + inputExt << "\n";
+            cbica::WriteImage< TImageType >(thresholder->GetOutput(), output_HGG + "/brainMask_" + inputBase + inputExt);
+            file_hggBM << output_HGG + "/brainMask_" + inputBase + inputExt << "\n";
           }
           else
           {
             file_lggGT << filesInFolder[j] << "\n";
-            //cbica::WriteImage< TImageType >(thresholder->GetOutput(), output_LGG + "/brainMask_" + inputBase + inputExt);
-            //file_lggBM << output_LGG + "/brainMask_" + inputBase + inputExt << "\n";
+            cbica::WriteImage< TImageType >(thresholder->GetOutput(), output_LGG + "/brainMask_" + inputBase + inputExt);
+            file_lggBM << output_LGG + "/brainMask_" + inputBase + inputExt << "\n";
           }
         }
         file_lggGT.close();
         file_hggGT.close();
-        //file_hggT1C.close();
-        //file_hggT1.close();
-        //file_hggT2.close();
-        //file_hggFL.close();
-        //file_lggT1C.close();
-        //file_lggT1.close();
-        //file_lggT2.close();
-        //file_lggFL.close();
-        //file_hggBM.close();
-        //file_lggBM.close();
+        file_hggT1C.close();
+        file_hggT1.close();
+        file_hggT2.close();
+        file_hggFL.close();
+        file_lggT1C.close();
+        file_lggT1.close();
+        file_lggT2.close();
+        file_lggFL.close();
+        file_hggBM.close();
+        file_lggBM.close();
       }
     }
   }
