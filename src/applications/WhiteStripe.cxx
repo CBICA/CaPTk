@@ -10,7 +10,7 @@
 
 int main(int argc, char **argv)
 {
-  auto parser = cbica::CmdParser(argc, argv);
+  auto parser = cbica::CmdParser(argc, argv, "WhiteStripe");
   parser.addRequiredParameter("i", "inputImages", cbica::Parameter::FILE, "3D NIfTI Image(s)", "Input Images on which WhiteStripe needs to be applied", "Delieanted by ','");
   parser.addRequiredParameter("o", "outputDir", cbica::Parameter::DIRECTORY, "Dir with write access", "Output directory where results are to be saved");
   parser.addOptionalParameter("r", "radius", cbica::Parameter::FLOAT, "0.0 to 5.0", "WhiteStripe Radius", "Default: 0.05");

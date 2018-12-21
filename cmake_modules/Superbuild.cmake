@@ -56,7 +56,7 @@ LINK_DIRECTORIES(${QT_LIBRARY_DIR})
 SET( Qt5_DIR ${Qt5_DIR} CACHE STRING "Qt5_DIR Path for use in other builds" FORCE )
 LIST(APPEND CMAKE_PREFIX_PATH "${Qt5_DIR}")
 
-LIST(APPEND CMAKE_PROGRAM_PATH  "c:/MyProject/Tools/mingw/bin/" ...)
+#LIST(APPEND CMAKE_PROGRAM_PATH  "c:/MyProject/Tools/mingw/bin/" ...)
 
 SET(git_protocol "git")
 IF(NOT USE_GIT_PROTOCOL)
