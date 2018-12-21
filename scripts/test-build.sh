@@ -71,6 +71,8 @@ fi
 # Nuclear option
 rm -rf binaries
 rm -rf data
+rm -rf history
+rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
 # Create binary directory
 echo "[:] Creating binary directory..."
@@ -87,10 +89,10 @@ CMAKE_CMD
 
 # Make install/strip
 echo "[:] Building depends..."
-make -j
+make
 
 echo "[:] Running cmake command to configure CaPTk..."
 CMAKE_CMD
 
 echo "[:] Building CaPTk..."
-make -j
+make
