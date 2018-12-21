@@ -348,7 +348,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_ITKSNAP ON CACHE BOOL "Do you want to connect ITK-SNAP to CaPTk Console?" )
   SET( BUILD_LIBRASINGLE ON CACHE BOOL "Do you want to connect LIBRA to CaPTk Console (needs MATLAB runtime)?" )
   SET( BUILD_LIBRABATCH ON CACHE BOOL "Do you want to connect LIBRA to CaPTk Console (needs MATLAB runtime)?" )
-  SET( BUILD_CONFETTI OFF CACHE BOOL "Do you want to connect Confetti to CaPTk Console (needs Python 2.7 and other dependencies)?" )
+  SET( BUILD_CONFETTI ON CACHE BOOL "Do you want to connect Confetti to CaPTk Console (needs Python 2.7 and other dependencies)?" )
   SET( BUILD_FETALBRAIN OFF CACHE BOOL "Do you want to build FetalBrain?" )
   IF(WIN32)
     SET( BUILD_DEEPMEDIC ON CACHE BOOL "Do you want to package DeepMedic?" )
@@ -529,10 +529,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/dtiUtils.h
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/multinomialModel.h)
 
-      CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} "${ConfettiSrcs} ${ConfettiHeaders}" "${OpenCV_LIBS} ${ITK_LIBRARIES}")
+      #CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} "${ConfettiSrcs} ${ConfettiHeaders}" "${OpenCV_LIBS} ${ITK_LIBRARIES}")
       
-      #ADD_EXECUTABLE(Confetti ${ConfettiSrcs} ${ConfettiHeaders})
-      #TARGET_LINK_LIBRARIES(Confetti ${OpenCV_LIBS} ${ITK_LIBRARIES})
+      ADD_EXECUTABLE(Confetti ${ConfettiSrcs} ${ConfettiHeaders})
+      TARGET_LINK_LIBRARIES(Confetti ${OpenCV_LIBS} ${ITK_LIBRARIES})
       SET_TARGET_PROPERTIES( Confetti PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
       ADD_LIBRARY(ConfettiCore SHARED
@@ -541,7 +541,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/multinomialModel.h
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/dtiUtils.h
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/confettiApi.cpp
-        )
+      )
       TARGET_LINK_LIBRARIES(ConfettiCore ${OpenCV_LIBS} ${ITK_LIBRARIES})
 
       # install all targets and scripts
