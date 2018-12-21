@@ -17,14 +17,16 @@ export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
+export PATH="$PATH:/usr/local/opt/llvm/bin"
+
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
-make
+make -j 4
 
-export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK-build
-cmake ../
-make
+# export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK-build
+# cmake ../
+# make
 
 # export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build
 }
