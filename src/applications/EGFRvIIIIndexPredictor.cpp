@@ -350,8 +350,7 @@ int EGFRvIIIIndexPredictor::PrepareNewEGFRvIIIPredictionModel(const std::string 
     return false;
   }
   std::cout << std::endl << "Model saved to the output directory." << std::endl;
-  int c;
-  std::cin >> c;
+
   return true;
 }
 

@@ -1,57 +1,10 @@
 #!/bin/bash
 
-#
-# CaPTk-Pkg
-#
-# This script is an automated configurator, builder, linker, and package deployer for linux builds of CaPTk.
-# It's intended use is to be as a standalone end-to-end from source to finished deployable binary builder
-#
-# There's a lot going on here becasue of the way certain things function on linux, the way multiple OS development works
-# and the fact no one has actually done this before, so there are plenty of quirks that need to be overcome as a part of this script
-#
-# REQUIREMENTS
-# 
-# This script implies you have the following:
-# - Built the dependency manager
-# - Installed Qt via the installer on their website, preferably for the LTS (at this time 5.12 as of 12/14/2018)
-# - Included those in your .bashrc or somehow exported them as a $PATH
-# - MCR folder is present in src/applications/individualAppls/libra that contains the extracted v84 MATLAB runtime
-# - NOTE: This last thing should be put in via git-lfs otherwise you can install libra normally, move the folder back there, 
-# and then re-build CaPTk with this script. Hopefully LIBRA will be implemented in C++ sometime in the future.
-# - Have dos2unix installed (It's in aptitude)
-# 
-# Example bashrc additions:
-# export PATH=/home/user/bin:$PATH
-# export PATH=/home/user/Qt/5.10.0/gcc_64/bin:$PATH
-# export PATH=/home/user/Qt/5.10.0/gcc_64/libexec:$PATH
-# export PATH=/home/user/Qt/5.10.0/gcc_64/lib/cmake/Qt5:$PATH
-# export PATH=/home/user/CBICA/git/CaPTk/bin:$PATH
-# export PATH=/home/user/CBICA/dependency_manager/bin/OpenCV-build:$PATH
-# export PATH=/home/user/CBICA/dependency_manager/bin/VTK-build:$PATH
-# export PATH=/home/user/CBICA/dependency_manager/bin/ITK-build:$PATH
-# 
-# NOTE: make sure to switch those directories with the relevant paths to your respective build locations. This is NOT a swap in addition!
-#
-# A final note:
-# Please make sure you read through this script before modifying it. Provided you have the following prerequisites, you should be able to build
-# CaPTk packages for linux using this script without modifications.
+# This build script is a copy of captk-pkg with stripped back features.
+# For relevant documentation/requirements please refer to that file.
+# The intention of this script is to provide a very simple configuration/compilation
+# without the long packaging step of captk-pkg for testing purposes
 
-# HOW IT WORKS
-#
-# This script works by:
-# - Configuring cmake to the proper linux-specific settings for linuxdeployqt
-# - Builds the project with make -j
-# - Installs project to a very specific set of subdirectories for linuxdeployqt
-# - Runs a set of fixes that otherwise would render specific features useless without them
-# - Neatly packages an AppImage with linuxdeployqt
-# - Wraps the AppImage in an installer that displays the license to the user, that then places the AppImage in the user's home/CaPTk folder
-#
-
-# HOW TO USE IT
-#
-# From the project root, run ./scripts/captk-kg
-# Make sure you are in the root. It won't work otherwise
-#
 
 # Set -e causes any subsequent commands which fail will cause the shell script to exit immediately.
 # This is here because typically, bash just plows through errors, and that's an awful thing.
@@ -216,8 +169,8 @@ else
 fi
 
 # Cmake
-echo "[:] Running cmake command..."
-CMAKE_CMD
+# echo "[:] Running cmake command..."
+# CMAKE_CMD
 
 # Make install/strip
 echo "[:] Building CaPTk..."
@@ -235,41 +188,4 @@ cd ./appdir/usr/
 FIX_CMD
 cd ${APP_DIR}
 
-# Install and deploy
-
-LINDEPQT_CMD
-
-echo "[:] Building Installer..."
-
-# Okay so we use makeself to package the appimage (wrap your head around that one)
-# You can read more about it but it basically creates a micro-temp disk that you can read and move files from
-
-# Step 1: Get makeself, and extract it
-wget https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
-chmod +x ./makeself-2.4.0.run
-./makeself-2.4.0.run
-rm makeself-2.4.0.run
-
-# Step 2: Create a package directory for makeself to package
-mkdir pkg
-# We package the AppImage, the license, and a script to display the agreement and install the AppImage
-mv CaPTk.bin ./pkg/
-mv ./bin/install/appdir/usr/bin/*.cwl ./pkg/
-cp ./licenses/Combined.txt ./pkg/
-cp ./scripts/linux-installer ./pkg/
-chmod +x ./pkg/linux-installer
-
-# Step 3: Wrap it all upp
-
-# Version number for CaPTk
-ver=`./pkg/CaPTk.bin -v | grep Version | awk '{print $2}'`
-
-# Create the installer
-./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./linux-installer
-
-# Cleanup
-rm -rf ./pkg
-rm -rf ./makeself-2.4.0*
-
-# Done
-echo "[:] Done. Created installer"
+echo "[:] Done. Project has been built"

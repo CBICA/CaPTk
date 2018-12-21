@@ -4,11 +4,11 @@
 
 # Add a variable to the local cache which denotes the number of applications, so that it can be accessed by the c++ source code and add the requisite number of menu items
 
-ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src/applications)
-
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src/cbica_toolkit)
 
-ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src/gui)
+ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src/applications)
+
+ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src/view)
 
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src/common)
 

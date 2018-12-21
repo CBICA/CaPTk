@@ -255,6 +255,11 @@ namespace cbica
     void setExeName(const std::string exeName){ m_exeName = exeName; };
 
     /**
+    \get the executable name
+    */
+    std::string getExeName() { return m_exeName; };
+
+    /**
     \brief Adding parameters: defaults to optional parameters
 
     As a standard, neither the laconic nor verbose parameters should have any '-' in the constructor.
@@ -426,7 +431,7 @@ namespace cbica
 	  \param workflowName For more advanced CWL workflows
     \param overwriteFile If the current file should be overwritten or not
 	  */
-	  void writeCWLFile(const std::string & dirName, const std::string &workflowName, bool overwriteFile);
+	  void writeCWLFile(const std::string & dirName, bool overwriteFile);
 
 	  /*
 	  \brief Gets the command line string with all the parameters from input yml file
@@ -588,7 +593,7 @@ namespace cbica
     {
       argc1ignore = true;
     }
-
+    
   private:
     //! Executable name
     std::string m_exeName;

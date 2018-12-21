@@ -2,6 +2,8 @@
 
 #find_package(Qt4 REQUIRED)
 
+PROJECT(CaPTk_GUI)
+
 # NEW CHANGES
 FIND_PACKAGE(Qt5 COMPONENTS Core Widgets Concurrent Test REQUIRED)
 
@@ -50,6 +52,7 @@ SET( GUI
   #fHelpAppDialog
 )
 
+
 SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/SimpleImageManager.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/SimpleImageManager.cpp"
@@ -64,8 +67,8 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/QBorderWidget.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/OutputInteractorStyleNavigator.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ASyncAppManager.h"
-  "${PROJECT_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
-  "${PROJECT_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
+  "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
+  "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
   #"${CMAKE_CURRENT_SOURCE_DIR}/ApplicationBase.h"
   #"${CMAKE_CURRENT_SOURCE_DIR}/NearFarDrawingManager.h"
   #"${CMAKE_CURRENT_SOURCE_DIR}/NearFarDrawingManager.cpp"
@@ -81,3 +84,70 @@ SET( UI_ELEMENTS ${GUI}
 
 MARK_AS_ADVANCED(${GUI_SOURCES})
 MARK_AS_ADVANCED(${UI_ELEMENTS})
+
+
+ADD_DEFINITIONS(-DCAPTK_APP_LIST_PY_GUI="${CAPTK_APP_LIST_PY_GUI}")
+ADD_DEFINITIONS(-DCAPTK_APP_LIST_PY_CLI="${CAPTK_APP_LIST_PY_CLI}")
+ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
+
+#SET(GUI_SOURCES_DIR "${PROJECT_SOURCE_DIR}/src/gui")
+SET(GUI_SOURCES_DIR "${PROJECT_SOURCE_DIR}")
+SET(GUI_SOURCES_UPDATED ${GUI_SOURCES} )
+FOREACH(gui_tool ${UI_ELEMENTS})
+
+  IF( EXISTS "${GUI_SOURCES_DIR}/ui_${gui_tool}.h" )
+    SET(
+      GUI_SOURCES_UPDATED
+      ${GUI_SOURCES_UPDATED}
+      "${GUI_SOURCES_DIR}/ui_${gui_tool}.h"
+      CACHE STRING "All UI elements" FORCE
+    )
+  ENDIF()
+  IF( EXISTS "${GUI_SOURCES_DIR}/${gui_tool}.cpp" )
+    SET(
+      GUI_SOURCES_UPDATED
+      ${GUI_SOURCES_UPDATED}
+      "${GUI_SOURCES_DIR}/${gui_tool}.cpp"
+      CACHE STRING "All UI elements" FORCE
+    )
+  ENDIF()
+  IF( EXISTS "${GUI_SOURCES_DIR}/${gui_tool}.h" )
+    SET(
+      GUI_SOURCES_UPDATED
+      ${GUI_SOURCES_UPDATED}
+      "${GUI_SOURCES_DIR}/${gui_tool}.h"
+      CACHE STRING "All UI elements" FORCE
+    )
+
+    QT5_WRAP_CPP(GUI_SOURCES_UPDATED
+    "${GUI_SOURCES_DIR}/${gui_tool}.h"
+    )
+  ENDIF()
+
+ENDFOREACH(gui_tool)
+
+INCLUDE_DIRECTORIES( ${CaPTk_SOURCE_DIR}/src
+  ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src
+  ${CaPTk_SOURCE_DIR}/src/applications/common_includes
+  ${CaPTk_SOURCE_DIR}/src/applications
+  ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction_includes
+  ${CaPTk_SOURCE_DIR}/src/applications/WhiteStripe_includes
+  ${CaPTk_SOURCE_DIR}/src/common/inc
+  ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends
+  #${CMAKE_CURRENT_SOURCE_DIR}/inc
+  #${VTK_INCLUDE_DIRS} 
+)
+                     
+ADD_LIBRARY(
+  #${LIBNAME_GUI}
+  ${PROJECT_NAME}
+  ${GUI_SOURCES_UPDATED}
+)
+
+TARGET_LINK_LIBRARIES(
+  #${LIBNAME_GUI}
+  ${PROJECT_NAME}
+  ${DEPENDENT_LIBS}
+  ${LIBNAME_CBICATK}
+  ${LIBNAME_FeatureExtractor}
+)
