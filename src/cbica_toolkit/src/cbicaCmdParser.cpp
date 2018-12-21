@@ -397,14 +397,17 @@ namespace cbica
 #else
     m_version = 0.1.0;
 #endif    
+    std::string path, base, ext;
+    cbica::splitFileName(cbica::_getFullPath(), path, base, ext);
     if (input_exeName.empty())
     {
-      m_exeName = m_argv[0]/*(cbica::getExecutableName()*/;
+      m_exeName = base;
     }
     else
     {
       m_exeName = input_exeName;
     }
+    m_exePath = path;
 
     m_argc = input_argc;
     m_argv = input_argv;
@@ -860,7 +863,7 @@ namespace cbica
       {
         helpRequested = true;
         position = i;
-        writeCWLFile(_getExecutablePath(), false);
+        writeCWLFile(m_exePath, false);
         exit(EXIT_SUCCESS);
         //return true;
       }
@@ -1199,9 +1202,9 @@ namespace cbica
 
     std::string cwlfileName = dirName_wrap + m_exeName + ".cwl";
 
-    // std::cout << "[DEBUG]dirName_wrap: " << dirName_wrap << std::endl;
-    // std::cout << "[DEBUG]m_exeName: " << m_exeName << std::endl;
-    // std::cout << "[DEBUG]cwlfileName: " << cwlfileName << std::endl;
+    std::cout << "[DEBUG]dirName_wrap: " << dirName_wrap << std::endl;
+    std::cout << "[DEBUG]m_exeName: " << m_exeName << std::endl;
+    std::cout << "[DEBUG]cwlfileName: " << cwlfileName << std::endl;
     
     std::ofstream file;
     if (!cbica::fileExists(cwlfileName) || overwriteFile)
