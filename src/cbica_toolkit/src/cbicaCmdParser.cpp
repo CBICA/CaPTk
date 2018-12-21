@@ -399,7 +399,12 @@ namespace cbica
 #endif    
     if (input_exeName.empty())
     {
-      m_exeName = m_argv[0]/*(cbica::getExecutableName()*/;
+      // m_exeName = m_argv[0] /*(cbica::getExecutableName()*/;
+
+      // Applications NEED to pass their exe name in or else Linux/windows will behave differently
+      // Only way for consistency between platforms is to provide the exe name
+      std::cerr << "Application needs to pass in exe name to parser" << std::endl;
+      throw "Application needs to pass in exe name to parser";
     }
     else
     {
@@ -431,16 +436,6 @@ namespace cbica
       {
         m_argv.push_back(std::string(argv[i]));
       }
-    }
-
-    initializeClass(argc, m_argv, exe_name);
-  }
-
-  CmdParser::CmdParser(int argc, const char **argv, const std::string &exe_name)
-  {
-    for (int i = 0; i < argc; i++)
-    {
-      m_argv.push_back(std::string(argv[i]));
     }
     initializeClass(argc, m_argv, exe_name);
   }

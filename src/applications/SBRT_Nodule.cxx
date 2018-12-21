@@ -17,7 +17,7 @@ int main( int argc, char** argv )
 		return EXIT_FAILURE;
 	}
 
-	cbica::CmdParser parser(argc, argv);
+	cbica::CmdParser parser(argc, argv, "SBRT_Nodule");
 	parser.addRequiredParameter("p", "petImage", cbica::Parameter::STRING, "none", "Absolute path of PET image", "For example /data/.../pet.nii.gz");	
 	parser.addRequiredParameter("c", "ctImage", cbica::Parameter::STRING, "none", "Absolute path of CT image", "For example /data/.../ct.nii.gz");
 	parser.addRequiredParameter("m", "maskImage", cbica::Parameter::STRING, "none", "Absolute path of mask image", "For example /data/.../mask.nii.gz");

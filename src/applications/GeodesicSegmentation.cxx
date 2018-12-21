@@ -11,7 +11,7 @@
 using VectorDouble = std::vector < double >;
 int main(int argc, char **argv)
 {
-  auto parser = cbica::CmdParser(argc, argv);
+  auto parser = cbica::CmdParser(argc, argv, "GeodesicSegmentation");
 
   parser.addOptionalParameter("c", "inputCSV", cbica::Parameter::FILE, "csv File", "CSV containing list of input subjects and GLISTR/GLISTRboost labels", "If this is provided, only 'o' is needed as parameter");
   parser.addOptionalParameter("ci", "imageCSV", cbica::Parameter::STRING, "String", "CSV header of input image to process", "Required if 'c' is passed");

@@ -71,7 +71,7 @@ public:
 
 int main(int argc, char** argv)
 {
-    cbica::CmdParser parser(argc, argv);
+    cbica::CmdParser parser(argc, argv, "GreedyRegistration");
 
     parser.addRequiredParameter("i", "movingImage", cbica::Parameter::FILE, "NIfTI", "Input Image for processing", "Becomes moving image in Registration mode");
     parser.addRequiredParameter("f", "fixedImage", cbica::Parameter::STRING, "NIfTI", "Fixed Image for registration");
