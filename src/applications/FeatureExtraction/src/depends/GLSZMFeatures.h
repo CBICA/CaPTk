@@ -229,6 +229,10 @@ public:
         }
       }
 
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - m_bins = " << m_bins << std::endl;
+
       GreyLevelSizeZoneMatrixHolder tmpHolder(m_minimum, m_maximum, m_bins, TImageType::ImageDimension);
       int largestRegion = CalculateGlSZMatrix(true, tmpHolder);
       GreyLevelSizeZoneMatrixHolder holderOverall(m_minimum, m_maximum, m_bins, largestRegion);
@@ -415,6 +419,16 @@ private:
     this->m_features["ZoneSizeMean"] = results.ZoneSizeMean;
     this->m_features["ZoneSizeVariance"] = results.ZoneSizeVariance;
     this->m_features["ZoneSizeEntropy"] = results.ZoneSizeEntropy;
+
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - SmallZoneEmphasis = " << results.SmallZoneEmphasis << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - LargeZoneEmphasis = " << results.LargeZoneEmphasis << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - LowGreyLevelEmphasis = " << results.LowGreyLevelEmphasis << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - HighGreyLevelEmphasis = " << results.HighGreyLevelEmphasis << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - SmallZoneLowGreyLevelEmphasis = " << results.SmallZoneLowGreyLevelEmphasis << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - SmallZoneHighGreyLevelEmphasis = " << results.SmallZoneHighGreyLevelEmphasis << std::endl;
+
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - ZoneSizeVariance = " << results.ZoneSizeVariance << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - ZoneSizeEntropy = " << results.ZoneSizeEntropy << std::endl;
   }
 
   int CalculateGlSZMatrix(bool estimateLargestRegion, GreyLevelSizeZoneMatrixHolder &holder)
@@ -497,11 +511,13 @@ private:
       ++imageIter;
       ++maskIter;
     }
+
     //TBD - for debugging GLSZM matrix
-    //if (!estimateLargestRegion){
-    //  std::cout << "holder.m_Matrix : \n" << holder.m_Matrix << "\n";
-    //}
+    if (!estimateLargestRegion){
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - CalculateGLSZMatrix() - holder.m_Matrix = \n" << holder.m_Matrix << std::endl;
+    }
     //TBD - for debugging GLSZM matrix
+
     return largestRegion;
   }
 
