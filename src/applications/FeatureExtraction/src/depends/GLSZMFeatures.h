@@ -241,6 +241,7 @@ public:
       GreyLevelSizeZoneMatrixHolder holderOverall(m_minimum, m_maximum, m_bins, largestRegion);
 
       std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - holderOverall Completed" << std::endl;
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - Error causing program to quit seems to be happening at CalculateGLSZMatrix function." << std::endl;
 
       CalculateGlSZMatrix(false, holderOverall);
 
@@ -457,10 +458,15 @@ private:
     typedef itk::ImageRegionIteratorWithIndex<TImageType> ConstIterType;
     typedef itk::ImageRegionIteratorWithIndex<TImageType> ConstMaskIterType;
 
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - [bool]estimateLargestRegion = " << estimateLargestRegion << std::endl;
+
     auto region = this->m_Mask->GetLargestPossibleRegion();
     typename TImageType::RegionType newRegion;
     newRegion.SetSize(region.GetSize());
     newRegion.SetIndex(region.GetIndex());
+
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - region.GetSize = " << region.GetSize() << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - region.GetIndex = " << region.GetIndex() << std::endl;
 
     ConstIterType imageIter(this->m_inputImage, this->m_inputImage->GetLargestPossibleRegion());
     ConstMaskIterType maskIter(this->m_Mask, this->m_Mask->GetLargestPossibleRegion());
@@ -477,6 +483,15 @@ private:
       if (maskIter.Value() > 0)
       {
         auto startIntensityIndex = holder.IntensityToIndex(imageIter.Value());
+
+        //TBD
+        //if (startIntensityIndex < 0 && estimateLargestRegion == 0) {
+        //  std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - startIntensityIndex = " << startIntensityIndex << std::endl;
+        //  std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - imageIter.Value() = " << imageIter.Value() << std::endl;
+        //  std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - maskIter.Value() = " << maskIter.Value() << std::endl;
+        //}
+        //TBD
+
         std::vector<IndexType> indices;
         indices.push_back(maskIter.GetIndex());
         unsigned int steps = 0;
@@ -500,6 +515,11 @@ private:
             (wasVisited < 1))
           {
             ++steps;
+
+            //TBD
+            //std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - steps = " << steps << " | currentIndex = " << currentIndex << " | newIntensityIndex = startIntensityIndex = " << startIntensityIndex << std::endl;
+            //TBD
+
             visitedImage->SetPixel(currentIndex, 1);
             for (size_t i = 0; i < m_offsets->size(); i++)
             {
@@ -510,19 +530,77 @@ private:
             }
           }
         }
+
+        //TBD
+        if (steps > 0 && startIntensityIndex < 0 && estimateLargestRegion == 0) {
+          std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - After finishing loop" << std::endl;
+          std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - steps = " << steps << std::endl;
+          std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - largestRegion = " << largestRegion << std::endl;
+          std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - holder.m_MaximumSize = " << holder.m_MaximumSize << std::endl;
+          std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - startIntensityIndex = " << startIntensityIndex << std::endl;
+          std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - imageIter.Value() = " << imageIter.Value() << std::endl;
+          std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - maskIter.Value() = " << maskIter.Value() << std::endl;
+          std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - Code fails and aborts if startIntensityIndex == -1 while estimateLargestRegion = 0 " << std::endl;
+        }
+        //TBD
+
         if ((steps > 0) /*&& (startIntensityIndex < holder.m_Matrix.rows())*/)
         {
-          //std::cout << "[DEBUG] GLSZMFeatures.h - steps = " << steps << std::endl;
           largestRegion = std::max<int>(steps, largestRegion);
           steps = std::min<unsigned int>(steps, holder.m_MaximumSize);
 
+          //TBD
+          if (steps > 0 && startIntensityIndex < 0 && estimateLargestRegion == 0) {
+            std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - After Re-assigning largestRegion and steps" << std::endl;
+            std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - steps = " << steps << std::endl;
+            std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - largestRegion = " << largestRegion << std::endl;
+          }
+          //TBD
           if (!estimateLargestRegion)
           {
             if (startIntensityIndex >= holder.m_Matrix.rows())
             {
+              //TBD
+              if (steps > 0 && startIntensityIndex < 0 && estimateLargestRegion == 0) {
+                std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - Before Re-assigning startIntensityIndex after comparing to holder.m_Matrix.rows()" << std::endl;
+                std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - holder.m_Matrix.rows() = " << (holder.m_Matrix.rows()) << std::endl;
+                std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - startIntensityIndex = " << startIntensityIndex << std::endl;
+                std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - holder.m_Matrix.rows() - 1 = " << (holder.m_Matrix.rows() - 1.0 ) << std::endl;
+              } 
+              //TBD
+
               startIntensityIndex = holder.m_Matrix.rows() - 1;
+            
+              //TBD
+              if (steps > 0 && startIntensityIndex < 0 && estimateLargestRegion == 0) {
+                std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - After Re-assigning startIntensityIndex after comparing to holder.m_Matrix.rows()" << std::endl;
+                std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - startIntensityIndex = " << startIntensityIndex << std::endl;
+              }
+              //TBD
+
             }
+
+            //TBD
+            if (steps > 0 && startIntensityIndex < 0 && estimateLargestRegion == 0) {
+              std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - Before Re-assigning holder.m_Matrix(startIntensityIndex, steps - 1)" << std::endl;
+              std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - startIntensityIndex = " << startIntensityIndex << std::endl;
+              std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - holder.m_Matrix.rows() = " << holder.m_Matrix.rows() << std::endl;
+              std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - holder.m_Matrix.cols() = " << holder.m_Matrix.cols() << std::endl;
+              std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - holder.m_Matrix.size() = " << holder.m_Matrix.size() << std::endl;
+              std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - holder.m_Matrix(startIntensityIndex, steps) = " << holder.m_Matrix(startIntensityIndex, steps) << std::endl;
+              std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - holder.m_Matrix(startIntensityIndex, steps - 1) = " << holder.m_Matrix(startIntensityIndex, steps - 1) << std::endl;
+            }
+            //TBD
+
             holder.m_Matrix(startIntensityIndex, steps - 1) += 1;
+
+            //TBD
+            if (steps > 0 && startIntensityIndex < 0 && estimateLargestRegion == 0) {
+              std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - After Re-assigning holder.m_Matrix(startIntensityIndex, steps - 1)" << std::endl;
+              std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - holder.m_Matrix(startIntensityIndex, steps - 1) = " << holder.m_Matrix(startIntensityIndex, steps - 1) << std::endl;
+            }
+            //TBD
+
           }
 
         }
@@ -532,7 +610,7 @@ private:
     }
 
     //TBD - for debugging GLSZM matrix
-    if (!estimateLargestRegion){
+    if (!estimateLargestRegion) {
       std::cout << "\n[DEBUG] NGTDMFeatures.h - CalculateGLSZMatrix() - holder.m_Matrix = \n" << holder.m_Matrix << std::endl;
     }
     //TBD - for debugging GLSZM matrix
@@ -552,7 +630,7 @@ private:
 
     if (!m_histogram->GetIndex(temp_mv, temp_idx))
     {
-      std::cerr << "Couldn't find index for intensity value '" << intensity << "' in histogram for NGTDM.\n";
+      std::cerr << "Couldn't find index for intensity value '" << intensity << "' in histogram for GLSZM.\n";
     }
     {
       double index = temp_idx[0]; // for uniform histogram, use "std::floor((intensity - m_minimum) / m_bins)"
