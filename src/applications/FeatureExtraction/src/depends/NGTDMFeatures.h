@@ -98,14 +98,17 @@ public:
       if ((m_minimum == 0) || (m_maximum == 0))
       {
         auto maskFilter = itk::MaskImageFilter< TImageType, TImageType, TImageType >::New();
-        maskFilter->SetInput(this->m_inputImage);
-        maskFilter->SetMaskImage(this->m_Mask);
+        maskFilter->SetInput(this->m_inputImage); //full input image
+        maskFilter->SetMaskImage(this->m_Mask);   //Assumed this is single label binary mask (already extracted from multi-label segmentation ROI)
         maskFilter->SetOutsideValue(0);
         maskFilter->Update();
+        //Masked out regions outside of the mask (ROI region, single label of multi label ROi).
+        //Question: Is the mask being read in only one label of multi-label (e.g. edema of multi label segmentation?)
 
         auto minMaxComputer = itk::MinimumMaximumImageCalculator< TImageType >::New();
         minMaxComputer->SetImage(maskFilter->GetOutput());
         minMaxComputer->Compute();
+        //Calculated min and max of the input image masked out for the given ROI single label
 
         if (m_minimum == 0)
         {
@@ -117,23 +120,29 @@ public:
         }
       }
 
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
+
       /// histogram calculation from ITK -- for texture feature pipeline
       using TMaskImageType = itk::Image< int, TImageType::ImageDimension >;
       auto caster = itk::CastImageFilter< TImageType, TMaskImageType >::New();
-      caster->SetInput(this->m_Mask);
+      caster->SetInput(this->m_Mask); //original input binary mask, not the masked image
       caster->Update();
 
       auto stats = itk::LabelStatisticsImageFilter< TImageType, TMaskImageType >::New();
-      stats->SetLabelInput(caster->GetOutput());
-      stats->SetInput(this->m_inputImage);
+      stats->SetLabelInput(caster->GetOutput());  //Masked Image
+      stats->SetInput(this->m_inputImage);  //input, unmasked full image
       stats->Update();
       stats->SetUseHistograms(true);
       stats->SetHistogramParameters(m_bins, m_minimum, m_maximum);
       stats->Update();
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - itk::LabelStatisticsImageFilter->SetHistogramParameters: (m_bins=" << m_bins << " | m_minimum=" << m_minimum << " | m_maximum=" << m_maximum << ")" << std::endl;
 
-      m_histogram = stats->GetHistogram(1);
+      m_histogram = stats->GetHistogram(1); //Get Histogram for the label value one
 
       m_radius.Fill(m_range);
+
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_range = " << m_ranged << std::endl;
 
       using NeighborhoodType = itk::NeighborhoodIterator< TImageType, itk::ConstantBoundaryCondition< TImageType > >;
       //using NeighborhoodType = itk::NeighborhoodIterator< TImageType >;
@@ -200,9 +209,11 @@ public:
       {
         sumS += sVector[i];
         sumStimesP += pVector[i] * sVector[i];
+
         //TBD - for debugging NGTDM matrix
-        //std::cout << "\n bin[" << i << "] | p[" << i << "] * s[" << i << "] = " << pVector[i] << " * " << sVector[i] << " = " << (pVector[i] * sVector[i]) << std::endl;
+        std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - bin[" << i << "] | p[" << i << "] * s[" << i << "] = " << pVector[i] << " * " << sVector[i] << " = " << (pVector[i] * sVector[i]) << std::endl;
         //TBD - for debugging NGTDM matrix
+
         for (unsigned int j = 0; j < m_bins; ++j)
         {
           double iMinusj = 1.0*i - 1.0*j;
@@ -216,16 +227,7 @@ public:
         }
       }
       double coarsness_temp = 1.0 / sumStimesP;
-
-      //TBD - for debugging NGTDM features
-      //std::cout << "\n coursness_temp = " << coarsness_temp << std::endl;
-      //TBD - for debugging NGTDM features
-
       double coarsness = std::min<double>(coarsness_temp, 1000000); // SH: The MAX possible courseness is 10^6
-
-      //TBD - for debugging NGTDM matrix
-      //std::cout << "\n coarsness = " << coarsness << std::endl;
-      //TBD - for debugging NGTDM matrix
 
       // SH - orignilly: double coarsness = 1.0 / std::min<double>(sumStimesP, 1000000); // TBD (SP): does it make sense to use "std::numeric_limits< double >::max()" here?
       double contrast = 0;
@@ -248,6 +250,13 @@ public:
       this->m_features["Busyness"] = busyness;
       this->m_features["Complexity"] = complexity;
       this->m_features["Strength"] = strength;
+
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Coarsness = " << coarsness << std::endl;
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Contrast = " << contrast << std::endl;
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Busyness = " << busyness << std::endl;
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Complexity = " << complexity << std::endl;
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Strength = " << strength << std::endl;
+
 
       this->m_algorithmDone = true;
     }
