@@ -142,7 +142,7 @@ public:
 
       m_radius.Fill(m_range);
 
-      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_range = " << m_ranged << std::endl;
+      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_range = " << m_range << std::endl;
 
       using NeighborhoodType = itk::NeighborhoodIterator< TImageType, itk::ConstantBoundaryCondition< TImageType > >;
       //using NeighborhoodType = itk::NeighborhoodIterator< TImageType >;
