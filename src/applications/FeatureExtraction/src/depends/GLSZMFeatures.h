@@ -426,7 +426,15 @@ private:
     std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - HighGreyLevelEmphasis = " << results.HighGreyLevelEmphasis << std::endl;
     std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - SmallZoneLowGreyLevelEmphasis = " << results.SmallZoneLowGreyLevelEmphasis << std::endl;
     std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - SmallZoneHighGreyLevelEmphasis = " << results.SmallZoneHighGreyLevelEmphasis << std::endl;
-
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - LargeZoneLowGreyLevelEmphasis = " << results.LargeZoneLowGreyLevelEmphasis << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - LargeZoneHighGreyLevelEmphasis = " << results.LargeZoneHighGreyLevelEmphasis << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - GreyLevelNonUniformity = " << results.GreyLevelNonUniformity << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - GreyLevelNonUniformityNormalized = " << results.GreyLevelNonUniformityNormalized << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - ZoneSizeNonUniformity = " << results.ZoneSizeNonUniformity << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - ZoneSizeNoneUniformityNormalized = " << results.ZoneSizeNoneUniformityNormalized << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - ZonePercentage = " << results.ZonePercentage << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - GreyLevelVariance = " << results.GreyLevelVariance << std::endl;
+    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - ZoneSizeMean = " << results.ZoneSizeMean << std::endl;
     std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - ZoneSizeVariance = " << results.ZoneSizeVariance << std::endl;
     std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateFeatures - ZoneSizeEntropy = " << results.ZoneSizeEntropy << std::endl;
   }
