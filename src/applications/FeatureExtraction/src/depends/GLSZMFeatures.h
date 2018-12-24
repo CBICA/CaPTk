@@ -239,8 +239,16 @@ public:
       std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - largestRegion = " << largestRegion << std::endl;
 
       GreyLevelSizeZoneMatrixHolder holderOverall(m_minimum, m_maximum, m_bins, largestRegion);
+
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - holderOverall Completed" << std::endl;
+
       CalculateGlSZMatrix(false, holderOverall);
+
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - CalculateGlSZMatrix Completed" << std::endl;
+
       CalculateFeatures(holderOverall);
+
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - CalculateFeatures Completed" << std::endl;
 
       this->m_algorithmDone = true;
     }
