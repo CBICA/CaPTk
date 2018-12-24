@@ -235,6 +235,9 @@ public:
 
       GreyLevelSizeZoneMatrixHolder tmpHolder(m_minimum, m_maximum, m_bins, TImageType::ImageDimension);
       int largestRegion = CalculateGlSZMatrix(true, tmpHolder);
+
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - largestRegion = " << largestRegion << std::endl;
+
       GreyLevelSizeZoneMatrixHolder holderOverall(m_minimum, m_maximum, m_bins, largestRegion);
       CalculateGlSZMatrix(false, holderOverall);
       CalculateFeatures(holderOverall);
