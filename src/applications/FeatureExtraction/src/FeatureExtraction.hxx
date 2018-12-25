@@ -1377,6 +1377,14 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         {
           m_QuantizationType = currentValue;
         }
+        else if (outer_key == ParamsString[Resampling])
+        {
+          m_resamplingResolution = std::atof(currentValue.c_str());
+        }
+        else if (outer_key == ParamsString[ResamplingInterpolator])
+        {
+        m_resamplingInterpolator = currentValue;
+        }
         else if (outer_key == ParamsString[LBPStyle])
         {
           m_LBPStyle = std::atoi(currentValue.c_str());
@@ -1971,15 +1979,23 @@ void FeatureExtraction< TImage >::Update()
 
       // get the quantization properties, if any
       {
-        auto temp = m_Features.find(FeatureFamilyString[Quantization]);
+        auto temp = m_Features.find(FeatureFamilyString[Generic]);
         if (temp != m_Features.end())
         {
           if (std::get<0>(temp->second)) // if the feature family has been selected in the GUI
           {
-            m_LatticeComputation = true;
-            SetFeatureParam(FeatureFamilyString[Quantization]);
+            SetFeatureParam(FeatureFamilyString[Generic]);
           }
         }
+      }
+
+      if (m_resamplingResolution > 0)
+      {
+        for (size_t i = 0; i < m_inputImages.size(); i++)
+        {
+          m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator);
+        }
+        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator);        
       }
 
       if (m_debug)
