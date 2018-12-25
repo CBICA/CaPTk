@@ -471,7 +471,7 @@ private:
           std::cerr << "Offset provided does not match input image/mask dimension; SubjectID: '" << m_patientID << "'\n";
           //exit(EXIT_FAILURE);
           WriteErrorFile("Offset provided does not match input image/mask dimension");
-          return;
+          return offsets;
         }
         else
         {

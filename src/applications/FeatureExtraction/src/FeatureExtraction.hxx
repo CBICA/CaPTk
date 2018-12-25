@@ -207,6 +207,11 @@ void FeatureExtraction< TImage >::CalculateMorphologic(const typename TImage::Po
   morphologicCalculator.SetStartingIndex(m_currentLatticeStart);
   morphologicCalculator.Update();
   auto temp = morphologicCalculator.GetOutput();
+  if (temp.empty())
+  {
+    WriteErrorFile("");
+    return;
+  }
   for (auto const &f : temp)
   {
     featurevec[f.first] = f.second;
@@ -1893,7 +1898,7 @@ void FeatureExtraction< TImage >::Update()
             ++maskIt;
             if (maskIt.IsAtEnd())
             {
-              std::cerr << "The ROI for calculation, '" << std::to_string(m_roi[x]) << "' does not exist in the mask.\n";
+              std::cerr << "The ROI for calculation, '" << std::to_string(m_roi[x]) << "' does not exist in the mask; SubjectID: " << m_patientID << "\n";
               WriteErrorFile("The ROI for calculation, '" + std::to_string(m_roi[x]) + "' does not exist in the mask.");
               //exit(EXIT_FAILURE);
               return;
