@@ -42,7 +42,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "itkLinearInterpolateImageFunction.h"
 #include "itkBSplineInterpolateImageFunction.h"
-#include "itkNearestNeighborInterpolateImageFunction.h"
+//#include "itkNearestNeighborInterpolateImageFunction.h"
 #include "itkTestingComparisonImageFilter.h"
 
 #include "itkStripTsImageFilter.h"
@@ -995,6 +995,57 @@ namespace cbica
     resampler->SetOutputDirection(inputImage->GetDirection());
     resampler->SetOutputStartIndex(inputImage->GetLargestPossibleRegion().GetIndex());
     resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
+    resampler->UpdateLargestPossibleRegion();
+
+    return resampler->GetOutput();
+  }
+
+  /**
+  \brief Resample an image to an isotropic resolution using the specified output spacing
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const float outputSpacing = 1.0, const std::string interpolator = "Linear")
+  {
+    auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
+    auto outputSpacingVector = inputImage->GetSpacing();
+    if (TImageType::ImageDimension != 4)
+    {
+      for (size_t i = 0; i < TImageType::ImageDimension; i++)
+      {
+        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
+        outputSpacingVector[i] = outputSpacing;
+      }
+    }
+    else // preserve all time points of a time series image
+    {
+      for (size_t i = 0; i < 3; i++)
+      {
+        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
+        outputSpacingVector[i] = outputSpacing;
+      }
+    }
+
+    std::string interpolator_wrap = interpolator;
+    std::transform(interpolator_wrap.begin(), interpolator_wrap.end(), interpolator_wrap.begin(), ::tolower);
+
+    auto resampler = itk::ResampleImageFilter< TImageType, TImageType >::New();
+    resampler->SetInput(inputImage);
+    resampler->SetSize(outputSize);
+    resampler->SetOutputSpacing(outputSpacingVector);
+    resampler->SetOutputOrigin(inputImage->GetOrigin());
+    resampler->SetOutputDirection(inputImage->GetDirection());
+    resampler->SetOutputStartIndex(inputImage->GetLargestPossibleRegion().GetIndex());
+    resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
+    if (interpolator_wrap == "bspline")
+    {
+      auto interpolatorFunc = typename itk::BSplineInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else 
+    {
+      auto interpolatorFunc = typename itk::LinearInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
     resampler->UpdateLargestPossibleRegion();
 
     return resampler->GetOutput();
