@@ -1661,7 +1661,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
             cbica::sleep(100);
             myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
           }
-          myfile << "SubjectID_Modality_ROILabel_FeatureFamily_Feature,Value,Parameters\n";
+          myfile << "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
 #ifndef WIN32
           myfile.flush();
 #endif
@@ -1676,7 +1676,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
             cbica::sleep(100);
             myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
           }
-          myfile << m_patientID + "_" + modality + "_" + label + "_" + featureFamily + "_" + f.first +
+          myfile << m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
             "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
         }
 #ifndef WIN32
