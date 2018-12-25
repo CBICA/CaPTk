@@ -529,8 +529,8 @@ private:
 
   unsigned int m_maxSize = 1;
   unsigned int m_bins = 10;
-  int m_minimum = 0;
-  int m_maximum = 0;
+  float m_minimum = 0;
+  float m_maximum = 0;
 
   int m_radius = -1;
   float m_radius_float = -1;
