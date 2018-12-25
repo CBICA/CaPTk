@@ -468,8 +468,10 @@ private:
         auto tempCurrentOffset = cbica::stringSplit(m_offsetString[i], "x");
         if (tempCurrentOffset.size() != TImageType::ImageDimension)
         {
-          std::cerr << "Offset provided does not match input image/mask dimension.\n";
-          exit(EXIT_FAILURE);
+          std::cerr << "Offset provided does not match input image/mask dimension; SubjectID: '" << m_patientID << "'\n";
+          //exit(EXIT_FAILURE);
+          WriteErrorFile("Offset provided does not match input image/mask dimension");
+          return;
         }
         else
         {
@@ -639,6 +641,16 @@ private:
   */
   typename TImageType::Pointer GetPatchedImage(const typename TImageType::Pointer inputImage);
 
+  /**
+  \brief Write the error file with some comments
+  */
+  void WriteErrorFile(const std::string &comments)
+  {
+    std::ofstream myfile(m_outputPath + "/" + m_patientID + ".error");
+    myfile << comments << "\n";
+    myfile.close();
+  }
+  
   // member variables
   cbica::Statistics< typename TImageType::PixelType > m_statistics_local; //! this is for the intensity features
   typename TImageType::PixelType m_minimumToConsider, m_maximumToConsider;

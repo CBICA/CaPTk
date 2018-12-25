@@ -1436,7 +1436,9 @@ void FeatureExtraction< TImage >::SetSelectedROIsAndLabels(std::string roi, std:
     else
     {
       m_logger.WriteError(errorString);
-      exit(EXIT_FAILURE);
+      WriteErrorFile(errorString);
+      //exit(EXIT_FAILURE);
+      return;
     }
   }
   m_algorithmDone = false;
@@ -1461,7 +1463,9 @@ void FeatureExtraction< TImage >::SetSelectedROIsAndLabels(std::vector< std::str
     else
     {
       m_logger.WriteError(errorString);
-      exit(EXIT_FAILURE);
+      WriteErrorFile(errorString);
+      //exit(EXIT_FAILURE);
+      return;
     }
   }
   else
@@ -1716,8 +1720,10 @@ void FeatureExtraction< TImage >::SetInputImages(std::vector< typename TImage::P
 {
   if (images.size() != modality.size())
   {
-    m_logger.Write("Number of Images and number of modalities are not same");
-    exit(EXIT_FAILURE);
+    m_logger.Write("Number of Images and number of modalities are not same; SubjectID: " + m_patientID);
+    WriteErrorFile("Number of Images and number of modalities are not same");
+    //exit(EXIT_FAILURE);
+    return;
   }
   m_inputImages = images;
   m_modality = modality;
@@ -1888,11 +1894,14 @@ void FeatureExtraction< TImage >::Update()
             if (maskIt.IsAtEnd())
             {
               std::cerr << "The ROI for calculation, '" << std::to_string(m_roi[x]) << "' does not exist in the mask.\n";
-              exit(EXIT_FAILURE);
+              WriteErrorFile("The ROI for calculation, '" + std::to_string(m_roi[x]) + "' does not exist in the mask.");
+              //exit(EXIT_FAILURE);
+              return;
             }
           }
         }
       }
+      m_maskValidated = true;
     }
 
     bool imagesAreOkay = true;
@@ -1935,7 +1944,9 @@ void FeatureExtraction< TImage >::Update()
         else
         {
           m_logger.WriteError(errorString);
-          exit(EXIT_FAILURE);
+          WriteErrorFile(errorString);
+          //exit(EXIT_FAILURE);
+          return;
         }
       }
 
@@ -2807,8 +2818,10 @@ void FeatureExtraction< TImage >::Update()
         if (featureNamesVec.size() != featureVec.size())
         {
           m_logger.WriteError("Something went wrong and the featureNames (" + std::to_string(featureNamesVec.size()) +
-            ") and featureVec (" + std::to_string(featureVec.size()) + ") is not of same size.");
-          exit(EXIT_FAILURE);
+            ") and featureVec (" + std::to_string(featureVec.size()) + ") are not of same size.");
+          //exit(EXIT_FAILURE);
+          WriteErrorFile("featureNames and featureVector are not of the same size");
+          return;
         }
 
         bool firstRun = true;
