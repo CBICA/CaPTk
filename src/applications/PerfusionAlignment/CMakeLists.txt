@@ -19,6 +19,9 @@ INCLUDE_DIRECTORIES(
 FIND_PACKAGE( ITK REQUIRED )
 INCLUDE( ${ITK_USE_FILE} )
 
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/../../../cmake_modules/)
+INCLUDE( CaPTk_macros )
+
 if(APPLE)
 #  set(CMAKE_C_COMPILER "/usr/local/Cellar/llvm/6.0.1/bin/clang")
 #  set(CMAKE_CXX_COMPILER "/usr/local/Cellar/llvm/6.0.1/bin/clang++")
