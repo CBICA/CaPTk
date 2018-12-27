@@ -15,8 +15,8 @@ SOURCE_GROUP( YAMLCPP_Sources FILES ${YAMLCPP_Sources} )
 
 INCLUDE_DIRECTORIES( 
   ${PROJECT_SOURCE_DIR}/src/
-  ${CaPTk_SOURCE_DIR}/src/thirdparty/
-  ${CaPTk_SOURCE_DIR}/src/thirdparty/yaml-cpp/include/ 
+  ${PROJECT_SOURCE_DIR}/../thirdparty/
+  ${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/include/ 
 )
   
 SET( LIBNAME_CBICATK "${PROJECT_NAME}" CACHE STRING "CaPTk's common toolkit for use throughout the project" )
