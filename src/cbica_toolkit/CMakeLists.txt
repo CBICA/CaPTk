@@ -19,7 +19,8 @@ INCLUDE_DIRECTORIES(
   ${CaPTk_SOURCE_DIR}/src/thirdparty/yaml-cpp/include/ 
 )
   
-SET( LIBNAME_CBICATK "${PROJECT_NAME}" )
+SET( LIBNAME_CBICATK "${PROJECT_NAME}" CACHE STRING "CaPTk's common toolkit for use throughout the project" )
+MARK_AS_ADVANCED( ${LIBNAME_CBICATK} )
 IF(NOT (TARGET ${LIBNAME_CBICATK}))
   
   ADD_LIBRARY(
