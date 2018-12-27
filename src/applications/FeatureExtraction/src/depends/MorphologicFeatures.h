@@ -70,12 +70,18 @@ public:
 
       auto numberOfLabelObjects = labelMap->GetNumberOfLabelObjects();
 
+      if (numberOfLabelObjects > 1)
+      {
+        std::cerr << "Number of connected components are more than 1, cannot compute morphologic features.\n";
+        return;
+      }
+
       for (unsigned int i = 0; i < numberOfLabelObjects; i++)
       {
         auto labelObject = labelMap->GetNthLabelObject(i);
 
         std::string labelString = "";
-        if (labelMap->GetNumberOfLabelObjects() > 1)
+        if (numberOfLabelObjects > 1)
         {
           labelString = "-Label-" + std::to_string(i);
         }
