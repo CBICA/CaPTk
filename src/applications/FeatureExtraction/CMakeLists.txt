@@ -101,11 +101,13 @@ CAPTK_ADD_EXECUTABLE(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/FeatureExtraction
 
 ADD_DEPENDENCIES( ${PROJECT_NAME} ${LIBNAME_CBICATK} )
 
-## Link the libraries to be used
-#TARGET_LINK_LIBRARIES(
-#  ${PROJECT_NAME}
-#  ${LIBNAME_CBICATK}
-#)
+# Link the libraries to be used
+TARGET_LINK_LIBRARIES(
+  ${PROJECT_NAME}
+  ${LIBNAME_CBICATK}
+  ${ITK_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
 
 OPTION( BUILD_REFERENCES "Build reference executables from CBICA pipeline" OFF )
 
