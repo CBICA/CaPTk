@@ -89,10 +89,10 @@ CMAKE_CMD
 
 # Make install/strip
 echo "[:] Building depends..."
-make
+make -j
 
 echo "[:] Running cmake command to configure CaPTk..."
 CMAKE_CMD
 
 echo "[:] Building CaPTk..."
-make
+make -j
