@@ -962,7 +962,7 @@ namespace cbica
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
   \param resizeFactor The resize factor; can be greater than 100 (which causes an expanded image to be written) but can never be less than zero
-  \param interpolator The type of interpolator to use; can be Linear, BSplie or NearestNeighbor
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
@@ -1020,7 +1020,13 @@ namespace cbica
   }
 
   /**
-  \brief Resample an image to an isotropic resolution using the specified output spacing
+  \brief Resample an image to an isotropic resolution using the specified output spacing without changing the size
+
+  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
+  \param inputImage The input image to process
+  \param outputSpacing The output spacing, always isotropic
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
   typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const float outputSpacing = 1.0, const std::string interpolator = "Linear")
@@ -1058,6 +1064,11 @@ namespace cbica
     if (interpolator_wrap == "bspline")
     {
       auto interpolatorFunc = typename itk::BSplineInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else if (interpolator_wrap.find("nearest") != std::string::npos)
+    {
+      auto interpolatorFunc = typename itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
     else 
