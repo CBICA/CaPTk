@@ -226,7 +226,7 @@ public:
   void SetRequestedFeatures(std::map< std::string, std::vector< std::map<std::string, std::string> > >  featuresFromUI, std::map<std::string, bool> selected_features);
 
   /**
-  \brief This function is used to write a single feature family to file
+  \brief This function is used to populate the variables throughout the Update() step which are then used to write to a file
 
   Writes in the format: SubID,Modality,ROI,FeatureFamily,Feature,Value,Parameters
 
