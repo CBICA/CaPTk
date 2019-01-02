@@ -2226,7 +2226,7 @@ void FeatureExtraction< TImage >::Update()
                   {
                     auto tempT1 = std::chrono::high_resolution_clock::now();
 
-                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
 
                     /* this dimensionality reduction applies only to shape and Volumetric features */
@@ -2278,7 +2278,7 @@ void FeatureExtraction< TImage >::Update()
                   {
                     auto tempT1 = std::chrono::high_resolution_clock::now();
 
-                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
 
                     /* this dimensionality reduction applies only to shape and Volumetric features */
