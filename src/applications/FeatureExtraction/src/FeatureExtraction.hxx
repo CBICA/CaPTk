@@ -8,14 +8,15 @@
 #pragma once
 
 //#include "FeatureExtraction.h"
-#include "itkDOMNodeXMLReader.h"
-#include "itkDOMNodeXMLWriter.h"
-#include "itkLabelStatisticsImageFilter.h"
-#include "itkLabelGeometryImageFilter.h"
-#include "itkBinaryImageToLabelMapFilter.h"
+//#include "itkDOMNodeXMLReader.h"
+//#include "itkDOMNodeXMLWriter.h"
+//#include "itkLabelStatisticsImageFilter.h"
+//#include "itkLabelGeometryImageFilter.h"
+//#include "itkBinaryImageToLabelMapFilter.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkMaskedImageToHistogramFilter.h"
-#include "itkRegionOfInterestImageFilter.h"
+//#include "itkRegionOfInterestImageFilter.h"
+#include "itkRoundImageFilter.h"
 
 #include "itkEnhancedHistogramToRunLengthFeaturesFilter.h"
 #include "itkEnhancedScalarImageToRunLengthFeaturesFilter.h"
@@ -1383,7 +1384,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         }
         else if (outer_key == ParamsString[ResamplingInterpolator])
         {
-        m_resamplingInterpolator = currentValue;
+          m_resamplingInterpolator = currentValue;
         }
         else if (outer_key == ParamsString[LBPStyle])
         {
@@ -1998,7 +1999,11 @@ void FeatureExtraction< TImage >::Update()
         {
           m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator);
         }
-        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator);        
+        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator);
+        auto roundingFilter = itk::RoundImageFilter< TImage, TImage >::New();
+        roundingFilter->SetInput(m_Mask);
+        roundingFilter->Update();
+        m_Mask = roundingFilter->GetOutput();
       }
 
       if (m_debug)

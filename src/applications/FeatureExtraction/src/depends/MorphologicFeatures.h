@@ -59,7 +59,7 @@ public:
       auto connected = itk::ConnectedComponentImageFilter < TShapeImageType, OutputImageType >::New();
       connected->SetInput(m_maskShape);
       connected->SetFullyConnected(true);
-      connected->SetBackgroundValue(itk::NumericTraits< LabelType >(0));
+      connected->SetBackgroundValue(0);
       connected->Update();
 
       /* TBD
