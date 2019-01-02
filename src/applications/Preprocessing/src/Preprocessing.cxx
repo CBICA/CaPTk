@@ -15,6 +15,7 @@ enum AvailableAlgorithms
   None,
   HistogramMatching,
   Resize,
+  Resample,
   SanityCheck,
   Information,
   Casting,
@@ -26,10 +27,11 @@ enum AvailableAlgorithms
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile;
+std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator;
 size_t resize = 100;
 int histoMatchQuantiles = 40, histoMatchBins = 100, testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0;
+float resamplingResolution = 1.0;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
@@ -37,12 +39,21 @@ bool uniqueValsSort = true, boundingBoxIsotropic = true;
 template< class TImageType >
 int algorithmsRunner()
 {
-  if ((requestedAlgorithm == Resize) && (resize != 100))
+  if (requestedAlgorithm == Resize)
   {
     auto outputImage = cbica::ResizeImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), resize);
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
     std::cout << "Resizing by a factor of " << resize << "% completed.\n";
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == Resample)
+  {
+    auto outputImage = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), resamplingResolution, resamplingInterpolator);
+    cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+
+    std::cout << "Resampled image to isotropic resolution of '" << resamplingResolution << "' using interpolator '" << resamplingInterpolator << "'.\n";
     return EXIT_SUCCESS;
   }
 
@@ -457,7 +468,9 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("i", "inputImage", cbica::Parameter::FILE, "NIfTI", "Input Image for processing");
   parser.addOptionalParameter("m", "maskImage", cbica::Parameter::FILE, "NIfTI", "Input Mask for processing");
   parser.addOptionalParameter("o", "outputImage", cbica::Parameter::FILE, "NIfTI", "Output Image for processing");
-  parser.addOptionalParameter("r", "resize", cbica::Parameter::INTEGER, "10-500", "Resize an image based on the resizing factor given", "Example: -r 150 resizes inputImage by 150%", "Defaults to 100, i.e., no resizing");
+  parser.addOptionalParameter("r", "resize", cbica::Parameter::INTEGER, "10-500", "Resize an image based on the resizing factor given", "Example: -r 150 resizes inputImage by 150%", "Defaults to 100, i.e., no resizing", "Resampling can be done on image with 100");
+  parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::FLOAT, "0-10", "[Resample] Isotropic resolution of the voxels/pixels to change to", "Resize value needs to be 100", "Defaults to 1.0");
+  parser.addOptionalParameter("ri", "resizeInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE", "[Resample] The interpolation type to use for resampling", "Resize value needs to be 100", "Defaults to LINEAR");
   parser.addOptionalParameter("s", "sanityCheck", cbica::Parameter::FILE, "NIfTI Reference", "Do sanity check of inputImage with the file provided in with this parameter", "Performs checks on size, origin & spacing",
     "Pass the target image after '-s'");
   parser.addOptionalParameter("inf", "information", cbica::Parameter::BOOLEAN, "true or false", "Output the information in inputImage");
@@ -515,7 +528,22 @@ int main(int argc, char** argv)
   if (parser.isPresent("r"))
   {
     parser.getParameterValue("r", resize);
-    requestedAlgorithm = Resize;
+    if (resize != 100)
+    {
+      requestedAlgorithm = Resize;
+    }
+    else
+    {
+      requestedAlgorithm = Resample;
+      if (parser.isPresent("ri"))
+      {
+        parser.getParameterValue("ri", resamplingInterpolator);
+      }
+      if (parser.isPresent("rr"))
+      {
+        parser.getParameterValue("rr", resamplingResolution);
+      }
+    }
   }
   if (parser.isPresent("s"))
   {
