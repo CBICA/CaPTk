@@ -57,6 +57,7 @@ public:
       using LabelType = short;
       using OutputImageType = itk::Image< LabelType, TShapeImageType::ImageDimension >;
       auto connected = itk::ConnectedComponentImageFilter < TShapeImageType, OutputImageType >::New();
+      // using this provides distance threshold https://itk.org/Doxygen/html/classitk_1_1ScalarConnectedComponentImageFilter.html
       connected->SetInput(m_maskShape);
       connected->Update();
 
