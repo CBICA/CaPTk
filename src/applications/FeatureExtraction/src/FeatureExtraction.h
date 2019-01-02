@@ -99,17 +99,18 @@ enum Params
 {
   Dimension, Axis, Radius, Neighborhood, Bins, Directions, Offset, Range,
   LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, LatticeFullImage,
-  GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, QuantizationType, LBPStyle, ParamMax
+  GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, QuantizationType, Resampling, ResamplingInterpolator, LBPStyle, ParamMax
 };
-static const char ParamsString[ParamMax + 1][20] =
+static const char ParamsString[ParamMax + 1][30] =
 {
   "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Directions", "Offset", "Range",
   "Window", "Step", "Boundary", "PatchBoundary", "Weight", "FullImage",
-  "FMax", "Gamma", "Level", "ETA", "Epsilon", "QuantizationType", "LBPStyle", "ParamMax"
+  "FMax", "Gamma", "Level", "ETA", "Epsilon", "QuantizationType", "Resampling", "ResamplingInterpolator", "LBPStyle", "ParamMax"
 };
 
 enum FeatureFamily
 {
+  Generic,
   Intensity,
   Histogram,
   Volumetric,
@@ -120,7 +121,6 @@ enum FeatureFamily
   NGTDM,
   LBP,
   Lattice,
-  Quantization,
   FractalDimension,
   Gabor,
   Laws,
@@ -130,8 +130,8 @@ enum FeatureFamily
 };
 
 static const char FeatureFamilyString[FeatureMax + 1][20] =
-{ "Intensity", "Histogram", "Volumetric", "Morphologic", "GLCM", "GLRLM", "GLSZM", "NGTDM", "LBP",
-"Lattice", "Quantization", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
+{ "Generic", "Intensity", "Histogram", "Volumetric", "Morphologic", "GLCM", "GLRLM", "GLSZM", "NGTDM", "LBP",
+"Lattice", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
 
 /**
 \brief FeatureExtraction Class -The main class structure enclosing all the feature calculations functions.
@@ -226,7 +226,7 @@ public:
   void SetRequestedFeatures(std::map< std::string, std::vector< std::map<std::string, std::string> > >  featuresFromUI, std::map<std::string, bool> selected_features);
 
   /**
-  \brief This function is used to write a single feature family to file
+  \brief This function is used to populate the variables throughout the Update() step which are then used to write to a file
 
   Writes in the format: SubID,Modality,ROI,FeatureFamily,Feature,Value,Parameters
 
@@ -468,8 +468,10 @@ private:
         auto tempCurrentOffset = cbica::stringSplit(m_offsetString[i], "x");
         if (tempCurrentOffset.size() != TImageType::ImageDimension)
         {
-          std::cerr << "Offset provided does not match input image/mask dimension.\n";
-          exit(EXIT_FAILURE);
+          std::cerr << "Offset provided does not match input image/mask dimension; SubjectID: '" << m_patientID << "'\n";
+          //exit(EXIT_FAILURE);
+          WriteErrorFile("Offset provided does not match input image/mask dimension");
+          return offsets;
         }
         else
         {
@@ -639,6 +641,16 @@ private:
   */
   typename TImageType::Pointer GetPatchedImage(const typename TImageType::Pointer inputImage);
 
+  /**
+  \brief Write the error file with some comments
+  */
+  void WriteErrorFile(const std::string &comments)
+  {
+    std::ofstream myfile(m_outputPath + "/" + m_patientID + ".error");
+    myfile << comments << "\n";
+    myfile.close();
+  }
+  
   // member variables
   cbica::Statistics< typename TImageType::PixelType > m_statistics_local; //! this is for the intensity features
   typename TImageType::PixelType m_minimumToConsider, m_maximumToConsider;
@@ -655,6 +667,7 @@ private:
   std::string  m_outputPath, //! this is the output directory and can be used to save intermediate files, if required
     m_outputIntermediatePath; //! store intermediate files (if any)
   bool m_outputVerticallyConcatenated = false; //! flag to check how to write the output file (whether in individual fields or vertically concatenated), defaults to horizontal-concatenation
+  std::string m_finalOutputToWrite; //! this gets populated with the feature values to write at the end, TBD: needs to change when YML format is incorporated
   bool m_cancel; //! unused right now but scope for extension in the future
   bool m_debug = false; //! extra debugging information
   bool m_writeIntermediateFiles = false; //! write intermediate files in feature extraction, done in m_outputPath/intermediate
@@ -694,6 +707,8 @@ private:
   float m_Radius_float = 0.0;
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
   std::string m_QuantizationType = "ROI"; //! type of quantization happening, either ROI-based or Image-based
+  float m_resamplingResolution = 1.0; //! resolution to resample the images and mask to before doing any kind of computation
+  std::string m_resamplingInterpolator = "Linear"; //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
 
   float m_gaborFMax = 0.25; //! TBD: what is the description of this?
   float m_gaborGamma = sqrtf(2); //! TBD: what is the description of this?

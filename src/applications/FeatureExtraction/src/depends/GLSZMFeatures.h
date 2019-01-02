@@ -657,8 +657,8 @@ private:
 
   unsigned int m_maxSize = 1;
   unsigned int m_bins = 10;
-  int m_minimum = 0;
-  int m_maximum = 0;
+  typename TImageType::PixelType m_minimum = 0;
+  typename TImageType::PixelType m_maximum = 0;
 
   int m_radius = -1;
   float m_radius_float = -1;

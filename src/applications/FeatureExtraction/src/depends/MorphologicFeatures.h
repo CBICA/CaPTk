@@ -58,7 +58,14 @@ public:
       using OutputImageType = itk::Image< LabelType, TShapeImageType::ImageDimension >;
       auto connected = itk::ConnectedComponentImageFilter < TShapeImageType, OutputImageType >::New();
       connected->SetInput(m_maskShape);
+      connected->SetFullyConnected(true);
+      connected->SetBackgroundValue(0);
       connected->Update();
+
+      /* TBD
+      // using this provides distance threshold https://itk.org/Doxygen/html/classitk_1_1NeighborhoodConnectedImageFilter.html
+      // this filter needs an initial seed to be placed in the mask and then the region growing to happen
+      */
 
       auto i2l = itk::LabelImageToShapeLabelMapFilter < OutputImageType, itk::LabelMap< itk::ShapeLabelObject< LabelType, TShapeImageType::ImageDimension > > >::New();
       i2l->SetInput(connected->GetOutput());
@@ -70,12 +77,18 @@ public:
 
       auto numberOfLabelObjects = labelMap->GetNumberOfLabelObjects();
 
+      if (numberOfLabelObjects > 1)
+      {
+        std::cerr << "Number of connected components are more than 1, cannot compute morphologic features.\n";
+        return;
+      }
+
       for (unsigned int i = 0; i < numberOfLabelObjects; i++)
       {
         auto labelObject = labelMap->GetNthLabelObject(i);
 
         std::string labelString = "";
-        if (labelMap->GetNumberOfLabelObjects() > 1)
+        if (numberOfLabelObjects > 1)
         {
           labelString = "-Label-" + std::to_string(i);
         }

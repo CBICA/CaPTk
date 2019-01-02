@@ -188,7 +188,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
       IF( CAPTK_SUPERBUILD )
         PROJECT(${PROJECT_NAME}_Depends)
-        INCLUDE( cmake_modules/Superbuild.cmake )
+        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
         return()
       ENDIF()
 
@@ -196,13 +196,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF()
     
   IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-    
-    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/qt/5.11.2/lib/cmake/Qt5")
-    LIST(APPEND CMAKE_PROGRAM_PATH  "${QT_EXTRACTED_DIR}/5.11.2/bin")
-    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build")
-    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/OpenCV-build")
-    
-    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${PROJECT_BINARY_DIR}/ITK-build;${PROJECT_BINARY_DIR}/OpenCV-build" )
+    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build;${PROJECT_BINARY_DIR}/OpenCV-build" )
   ENDIF()
 
   FIND_PACKAGE( ITK REQUIRED )
@@ -876,37 +870,37 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDFOREACH()
 
 
-  # For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
-  SET( FeatureDefinitions "" )
-  FILE( GLOB allFeatureDefinitionFiles "${DATA_DIR}/features/*.csv" )
-  FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
-
-    GET_FILENAME_COMPONENT( CURRENT_DEF_FILE ${featureDefinitionFile} NAME_WE )
-
-    IF (NOT APPLE)
-      INSTALL(
-        FILES "${featureDefinitionFile}"
-        DESTINATION data/features
-      )
-    ENDIF()
-
-    SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
-  ENDFOREACH()
-
-  IF (APPLE)
-    SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
-
-    SET( BATCHMODE "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" )
-    SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
-
-    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
-
-  ELSE()
-    INSTALL( FILES "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
-  ENDIF()
-
-  SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
-  ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
+  ## For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
+  #SET( FeatureDefinitions "" )
+  #FILE( GLOB allFeatureDefinitionFiles "${DATA_DIR}/features/*.csv" )
+  #FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
+  #
+  #  GET_FILENAME_COMPONENT( CURRENT_DEF_FILE ${featureDefinitionFile} NAME_WE )
+  #
+  #  IF (NOT APPLE)
+  #    INSTALL(
+  #      FILES "${featureDefinitionFile}"
+  #      DESTINATION data/features
+  #    )
+  #  ENDIF()
+  #
+  #  SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
+  #ENDFOREACH()
+  #
+  #IF (APPLE)
+  #  SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
+  #
+  #  SET( BATCHMODE "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" )
+  #  SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
+  #
+  #  SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
+  #
+  #ELSE()
+  #  INSTALL( FILES "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
+  #ENDIF()
+  #
+  #SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
+  #ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
 
   IF( WIN32 )
     INSTALL(DIRECTORY "${DATA_DIR}/GnuWin32" DESTINATION data PATTERN ".svn" EXCLUDE)

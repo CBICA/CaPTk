@@ -46,28 +46,33 @@ void algorithmRunner()
 
   if (!cbica::isFile(maskfilename))
   {
-    std::cerr << "Mask file is needed [use parameter '-m' on command line for single subject or the header 'ROIFile' in batch file].\n";
-    exit(EXIT_FAILURE);
+    std::cerr << "Mask file is needed [use parameter '-m' on command line for single subject or the header 'ROIFile' in batch file]; SubjectID: '" << patient_id << "'\n";
+    //exit(EXIT_FAILURE);
+    return;
   }
   if (image_paths.empty())
   {
-    std::cerr << "Input images are needed [use parameter '-i' on command line for single subject or the header 'Images' in batch file].\n";
-    exit(EXIT_FAILURE);
+    std::cerr << "Input images are needed [use parameter '-i' on command line for single subject or the header 'Images' in batch file]; SubjectID: '" << patient_id << "'\n";
+    //exit(EXIT_FAILURE);
+    return;
   }
   if (modality_names.empty())
   {
-    std::cerr << "Modality name(s) is needed [use parameter '-t' on command line for single subject or the header 'Modalities' in batch file].\n";
-    exit(EXIT_FAILURE);
+    std::cerr << "Modality name(s) is needed [use parameter '-t' on command line for single subject or the header 'Modalities' in batch file]; SubjectID: '" << patient_id << "'\n";
+    //exit(EXIT_FAILURE);
+    return;
   }
   if (image_paths.size() != modality_names.size())
   {
-    std::cerr << "Number of images and modalities should be the same.\n";
-    exit(EXIT_FAILURE);
+    std::cerr << "Number of images and modalities should be the same; SubjectID: '" << patient_id << "'\n";
+    //exit(EXIT_FAILURE);
+    return;
   }
   if (patient_id.empty())
   {
-    std::cerr << "Patient name or ID is needed [use parameter '-n' on command line for single subject or the header 'PATIENT_ID' in batch file].\n";
-    exit(EXIT_FAILURE);
+    std::cerr << "Patient name or ID is needed [use parameter '-n' on command line for single subject or the header 'PATIENT_ID' in batch file]; SubjectID: '" << patient_id << "'\n";
+    //exit(EXIT_FAILURE);
+    return;
   }
   if (selected_roi.empty())
   {
@@ -87,12 +92,15 @@ void algorithmRunner()
   {
     if (cbica::isDir(imageNames[i]))
     {
-      std::cerr << "Images cannot have directory input. Please use absolute paths.\n";
-      exit(EXIT_FAILURE);
+      std::cerr << "Images cannot have directory input. Please use absolute paths; SubjectID: '" << patient_id << "'\n";
+      //exit(EXIT_FAILURE);
+      return;
     }
     if (!cbica::ImageSanityCheck(imageNames[i], maskfilename))
     {
-      exit(EXIT_FAILURE);
+      std::cerr << "The input images and mask are not defined in the same physical space; SubjectID: '" << patient_id << "'\n";
+      //exit(EXIT_FAILURE);
+      return; 
     }
     inputimages.push_back(cbica::ReadImage< TImageType >(imageNames[i]));
   }
@@ -139,7 +147,8 @@ void algorithmRunner()
         if (imageIterator.IsAtEnd())
         {
           std::cout << "The ROI for calculation, '" << std::to_string(selectedROIs[x]) << "' does not exist in the mask, '" << maskfilename << "'.\n";
-          exit(EXIT_FAILURE);
+          //exit(EXIT_FAILURE);
+          return;
         }
       }
     }
