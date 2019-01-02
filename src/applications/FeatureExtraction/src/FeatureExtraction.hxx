@@ -1592,7 +1592,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
 {
   if (m_outputFile.empty())
   {
-    m_outputFile = cbica::createTmpDir() + "/" + m_patientID "_FEOutput.csv";
+    m_outputFile = cbica::createTmpDir() + "/" + m_patientID + "_FEOutput.csv";
     m_logger.WriteError("Output file has not been initialized; saving in '" + m_outputFile + "'");
     SetOutputFilename(m_outputFile);
   }
@@ -2818,7 +2818,23 @@ void FeatureExtraction< TImage >::Update()
       } // end of lattice features loop
 
       // write the features for training
-      if (!m_outputVerticallyConcatenated)
+      if (m_outputVerticallyConcatenated)
+      {
+        std::ofstream myfile;
+        myfile.open(m_outputFile, std::ios_base::app);
+        // check for locks in a cluster environment
+        while (!myfile.is_open())
+        {
+          cbica::sleep(100);
+          myfile.open(m_outputFile, std::ios_base::app);
+        }
+        myfile << m_finalOutputToWrite;
+#ifndef WIN32
+        myfile.flush();
+#endif
+        myfile.close();
+      }
+      else
       {
         m_trainingFile_featureNames.pop_back(); // since the last character is always a ","
         m_trainingFile_features.pop_back(); // since the last character is always a ","
