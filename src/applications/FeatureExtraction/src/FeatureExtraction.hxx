@@ -1592,7 +1592,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
 {
   if (m_outputFile.empty())
   {
-    m_outputFile = cbica::createTmpDir() + "featureExtractionOutput.csv";
+    m_outputFile = cbica::createTmpDir() + "/" + m_patientID "_FEOutput.csv";
     m_logger.WriteError("Output file has not been initialized; saving in '" + m_outputFile + "'");
     SetOutputFilename(m_outputFile);
   }
@@ -1662,35 +1662,38 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
       {
         if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
         {
-          myfile.open(m_outputFile, std::ios_base::app);
-          // check for locks in a cluster environment
-          while (!myfile.is_open())
-          {
-            cbica::sleep(100);
-            myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
-          }
-          myfile << "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
-#ifndef WIN32
-          myfile.flush();
-#endif
-          myfile.close();
+          //myfile.open(m_outputFile, std::ios_base::app);
+          //// check for locks in a cluster environment
+          //while (!myfile.is_open())
+          //{
+          //  cbica::sleep(100);
+          //  myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
+          //}
+          //myfile << "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
+          m_finalOutputToWrite += "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
+//#ifndef WIN32
+//          myfile.flush();
+//#endif
+//          myfile.close();
         }
         //else // otherwise, append
         {
-          myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
-          // check for locks in a cluster environment
-          while (!myfile.is_open())
-          {
-            cbica::sleep(100);
-            myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
-          }
-          myfile << m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
+          //myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
+          //// check for locks in a cluster environment
+          //while (!myfile.is_open())
+          //{
+          //  cbica::sleep(100);
+          //  myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
+          //}
+          //myfile << m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
+          //  "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
+          m_finalOutputToWrite += m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
             "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
         }
-#ifndef WIN32
-        myfile.flush();
-#endif
-        myfile.close();
+//#ifndef WIN32
+//        myfile.flush();
+//#endif
+//        myfile.close();
       }
 
       // for training file, populate these 2 member variables
