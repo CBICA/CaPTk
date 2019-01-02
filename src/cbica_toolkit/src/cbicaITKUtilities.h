@@ -34,15 +34,15 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkResampleImageFilter.h"
 #include "itkIdentityTransform.h"
 
-#include "itkMultiResolutionPDEDeformableRegistration.h"
-#include "itkDemonsRegistrationFilter.h"
+//#include "itkMultiResolutionPDEDeformableRegistration.h"
+//#include "itkDemonsRegistrationFilter.h"
 //#include "itkDiffeomorphicDemonsRegistrationFilter.h"
 //#include "itkFastSymmetricForcesDemonsRegistrationFilter.h"
-#include "itkSymmetricForcesDemonsRegistrationFilter.h"
+//#include "itkSymmetricForcesDemonsRegistrationFilter.h"
 
 #include "itkLinearInterpolateImageFunction.h"
 #include "itkBSplineInterpolateImageFunction.h"
-//#include "itkNearestNeighborInterpolateImageFunction.h"
+#include "itkNearestNeighborInterpolateImageFunction.h"
 #include "itkTestingComparisonImageFilter.h"
 
 #include "itkStripTsImageFilter.h"
@@ -962,10 +962,11 @@ namespace cbica
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
   \param resizeFactor The resize factor; can be greater than 100 (which causes an expanded image to be written) but can never be less than zero
+  \param interpolator The type of interpolator to use; can be Linear, BSplie or NearestNeighbor
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResizeImage(const typename TImageType::Pointer inputImage, const size_t resizeFactor)
+  typename TImageType::Pointer ResizeImage(const typename TImageType::Pointer inputImage, const size_t resizeFactor, const std::string &interpolator = "Linear")
   {
     const float factor = static_cast<float>(resizeFactor) / 100;
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
@@ -987,6 +988,9 @@ namespace cbica
       }
     }
 
+    std::string interpolator_wrap = interpolator;
+    std::transform(interpolator_wrap.begin(), interpolator_wrap.end(), interpolator_wrap.begin(), ::tolower);
+
     auto resampler = itk::ResampleImageFilter< TImageType, TImageType >::New();
     resampler->SetInput(inputImage);
     resampler->SetSize(outputSize);
@@ -995,6 +999,21 @@ namespace cbica
     resampler->SetOutputDirection(inputImage->GetDirection());
     resampler->SetOutputStartIndex(inputImage->GetLargestPossibleRegion().GetIndex());
     resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
+    if (interpolator_wrap == "bspline")
+    {
+      auto interpolatorFunc = typename itk::BSplineInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else if (interpolator_wrap.find("nearest") != std::string::npos)
+    {
+      auto interpolatorFunc = typename itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else
+    {
+      auto interpolatorFunc = typename itk::LinearInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
     resampler->UpdateLargestPossibleRegion();
 
     return resampler->GetOutput();

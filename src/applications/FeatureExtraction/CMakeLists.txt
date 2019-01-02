@@ -19,7 +19,8 @@ INCLUDE_DIRECTORIES(
 FIND_PACKAGE( ITK REQUIRED )
 INCLUDE( ${ITK_USE_FILE} )
 
-INCLUDE( ${PROJECT_SOURCE_DIR}/../../../cmake_modules/CaPTk_macros.cmake )
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/../../../cmake_modules/)
+INCLUDE( CaPTk_macros )
 
 if(APPLE)
 #  set(CMAKE_C_COMPILER "/usr/local/Cellar/llvm/6.0.1/bin/clang")
@@ -100,11 +101,13 @@ CAPTK_ADD_EXECUTABLE(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/FeatureExtraction
 
 ADD_DEPENDENCIES( ${PROJECT_NAME} ${LIBNAME_CBICATK} )
 
-## Link the libraries to be used
-#TARGET_LINK_LIBRARIES(
-#  ${PROJECT_NAME}
-#  ${LIBNAME_CBICATK}
-#)
+# Link the libraries to be used
+TARGET_LINK_LIBRARIES(
+  ${PROJECT_NAME}
+  ${LIBNAME_CBICATK}
+  ${ITK_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
 
 OPTION( BUILD_REFERENCES "Build reference executables from CBICA pipeline" OFF )
 
