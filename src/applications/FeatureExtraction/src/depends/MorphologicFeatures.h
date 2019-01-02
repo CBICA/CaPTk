@@ -57,9 +57,15 @@ public:
       using LabelType = short;
       using OutputImageType = itk::Image< LabelType, TShapeImageType::ImageDimension >;
       auto connected = itk::ConnectedComponentImageFilter < TShapeImageType, OutputImageType >::New();
-      // using this provides distance threshold https://itk.org/Doxygen/html/classitk_1_1ScalarConnectedComponentImageFilter.html
       connected->SetInput(m_maskShape);
+      connected->SetFullyConnected(true);
+      connected->SetBackgroundValue(itk::NumericTraits< LabelType >(0));
       connected->Update();
+
+      /* TBD
+      // using this provides distance threshold https://itk.org/Doxygen/html/classitk_1_1NeighborhoodConnectedImageFilter.html
+      // this filter needs an initial seed to be placed in the mask and then the region growing to happen
+      */
 
       auto i2l = itk::LabelImageToShapeLabelMapFilter < OutputImageType, itk::LabelMap< itk::ShapeLabelObject< LabelType, TShapeImageType::ImageDimension > > >::New();
       i2l->SetInput(connected->GetOutput());
