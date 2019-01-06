@@ -597,6 +597,8 @@ namespace cbica
   private:
     //! Executable name
     std::string m_exeName;
+    //! Executable path
+    std::string m_exePath;
     //! Version
     std::string m_version;
     //! Example of how to use the executable in question
