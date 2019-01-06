@@ -45,7 +45,6 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkShapeLabelObject.h"
 #include "itkConnectedComponentImageFilter.h"
 #include "itkMinimumMaximumImageCalculator.h"
-#include "itkMinimumMaximumImageCalculator.h"
 #include "itkImageDuplicator.h"
 #include "itkExtractImageFilter.h"
 
