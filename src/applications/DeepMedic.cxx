@@ -130,7 +130,7 @@ void algorithmRunner()
 
 int main(int argc, char **argv)
 {
-  cbica::CmdParser parser(argc, argv);
+  cbica::CmdParser parser(argc, argv, "DeepMedic");
 
   parser.addRequiredParameter("t1c", "T1CE", cbica::Parameter::FILE, "", "The input T1CE or T1Gd image file.");
   parser.addRequiredParameter("t1", "T1", cbica::Parameter::FILE, "", "The input T1 image file.");
