@@ -12,7 +12,6 @@ matrix:
     - os: osx
 
 before_install:
-
   ### LINUX
   # Linux install step
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
@@ -29,17 +28,17 @@ before_install:
   # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install qt make git-lfs doxygen llvm ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt make git-lfs doxygen llvm ; fi
 
-  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install; fi
 
   # Git LFS
-  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
 
 install:
   # extend build time
-  travis_wait 60
+  - travis_wait 60
   - brew install ccache
   - export PATH="/usr/local/opt/ccache/libexec:$PATH"
-  
+
 script:
   ### LINUX
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/test-build.sh; fi
