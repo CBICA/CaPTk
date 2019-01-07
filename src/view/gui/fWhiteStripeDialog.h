@@ -21,7 +21,7 @@
 #include "ui_fWhiteStripeDialog.h"
 
 #include "QWidget"
-#include "QVTKWidget.h"
+#include "QVTKOpenGLWidget.h"
 #include "vtkSmartPointer.h"
 #include "vtkChartXY.h"
 #include "vtkTable.h"
@@ -43,7 +43,7 @@ class HistWidget : public QWidget
 {
   Q_OBJECT
 private:
-  QVTKWidget * widget;
+  QVTKOpenGLWidget * widget;
   vtkSmartPointer<vtkContextView> m_view;
   vtkSmartPointer<vtkTable> m_table;
   vtkSmartPointer<vtkFloatArray> m_arrX;
@@ -53,7 +53,7 @@ public:
   explicit HistWidget(QWidget *parent) : QWidget(parent, Qt::Window)
   {
 
-    widget = new QVTKWidget (this);
+    widget = new QVTKOpenGLWidget(this);
     widget->setMinimumSize(QSize(256, 256));
     m_view = vtkSmartPointer<vtkContextView>::New();
     m_view->SetInteractor(widget->GetInteractor());

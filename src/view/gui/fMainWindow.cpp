@@ -185,9 +185,21 @@ fMainWindow::fMainWindow()
   menuPreprocessing = new QMenu("Preprocessing");
   menuHelp = new QMenu("Help");
 
-  SaggitalViewWidget = new QVTKWidget(SaggitalWidget);
-  AxialViewWidget = new QVTKWidget(AxialWidget);
-  CoronalViewWidget = new QVTKWidget(CoronalWidget);
+  //SaggitalViewWidget = new QVTKWidget(SaggitalWidget);
+  //AxialViewWidget = new QVTKWidget(AxialWidget);
+  //CoronalViewWidget = new QVTKWidget(CoronalWidget);
+
+  SaggitalViewWidget = new QVTKOpenGLWidget(SaggitalWidget);
+  AxialViewWidget = new QVTKOpenGLWidget(AxialWidget);
+  CoronalViewWidget = new QVTKOpenGLWidget(CoronalWidget);
+
+  SaggitalRenWin = vtkSmartPointer< vtkGenericOpenGLRenderWindow>::New();
+  AxialRenWin = vtkSmartPointer< vtkGenericOpenGLRenderWindow>::New();
+  CoronalRenWin = vtkSmartPointer< vtkGenericOpenGLRenderWindow>::New();
+
+  SaggitalViewWidget->SetRenderWindow(SaggitalRenWin);
+  AxialViewWidget->SetRenderWindow(AxialRenWin);
+  CoronalViewWidget->SetRenderWindow(CoronalRenWin);
 
   SaggitalViewWidget->setMouseTracking(true);
   AxialViewWidget->setMouseTracking(true);
