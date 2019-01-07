@@ -31,10 +31,9 @@ before_install:
   # Git LFS
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
 
-install:
-  - travis_wait 60
-  - brew install ccache
-  - export PATH="/usr/local/opt/ccache/libexec:$PATH"
+install: travis_wait 60
+  # - brew install ccache
+  # - export PATH="/usr/local/opt/ccache/libexec:$PATH"
 
 script:
   ### LINUX
