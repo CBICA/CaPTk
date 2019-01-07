@@ -8,14 +8,15 @@
 #pragma once
 
 //#include "FeatureExtraction.h"
-#include "itkDOMNodeXMLReader.h"
-#include "itkDOMNodeXMLWriter.h"
-#include "itkLabelStatisticsImageFilter.h"
-#include "itkLabelGeometryImageFilter.h"
-#include "itkBinaryImageToLabelMapFilter.h"
+//#include "itkDOMNodeXMLReader.h"
+//#include "itkDOMNodeXMLWriter.h"
+//#include "itkLabelStatisticsImageFilter.h"
+//#include "itkLabelGeometryImageFilter.h"
+//#include "itkBinaryImageToLabelMapFilter.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkMaskedImageToHistogramFilter.h"
-#include "itkRegionOfInterestImageFilter.h"
+//#include "itkRegionOfInterestImageFilter.h"
+#include "itkRoundImageFilter.h"
 
 #include "itkEnhancedHistogramToRunLengthFeaturesFilter.h"
 #include "itkEnhancedScalarImageToRunLengthFeaturesFilter.h"
@@ -1383,7 +1384,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         }
         else if (outer_key == ParamsString[ResamplingInterpolator])
         {
-        m_resamplingInterpolator = currentValue;
+          m_resamplingInterpolator = currentValue;
         }
         else if (outer_key == ParamsString[LBPStyle])
         {
@@ -1592,7 +1593,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
 {
   if (m_outputFile.empty())
   {
-    m_outputFile = cbica::createTmpDir() + "featureExtractionOutput.csv";
+    m_outputFile = cbica::createTmpDir() + "/" + m_patientID + "_FEOutput.csv";
     m_logger.WriteError("Output file has not been initialized; saving in '" + m_outputFile + "'");
     SetOutputFilename(m_outputFile);
   }
@@ -1662,35 +1663,38 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
       {
         if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
         {
-          myfile.open(m_outputFile, std::ios_base::app);
-          // check for locks in a cluster environment
-          while (!myfile.is_open())
-          {
-            cbica::sleep(100);
-            myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
-          }
-          myfile << "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
-#ifndef WIN32
-          myfile.flush();
-#endif
-          myfile.close();
+          //myfile.open(m_outputFile, std::ios_base::app);
+          //// check for locks in a cluster environment
+          //while (!myfile.is_open())
+          //{
+          //  cbica::sleep(100);
+          //  myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
+          //}
+          //myfile << "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
+          m_finalOutputToWrite += "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
+//#ifndef WIN32
+//          myfile.flush();
+//#endif
+//          myfile.close();
         }
         //else // otherwise, append
         {
-          myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
-          // check for locks in a cluster environment
-          while (!myfile.is_open())
-          {
-            cbica::sleep(100);
-            myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
-          }
-          myfile << m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
+          //myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
+          //// check for locks in a cluster environment
+          //while (!myfile.is_open())
+          //{
+          //  cbica::sleep(100);
+          //  myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
+          //}
+          //myfile << m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
+          //  "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
+          m_finalOutputToWrite += m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
             "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
         }
-#ifndef WIN32
-        myfile.flush();
-#endif
-        myfile.close();
+//#ifndef WIN32
+//        myfile.flush();
+//#endif
+//        myfile.close();
       }
 
       // for training file, populate these 2 member variables
@@ -1995,7 +1999,11 @@ void FeatureExtraction< TImage >::Update()
         {
           m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator);
         }
-        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator);        
+        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator);
+        auto roundingFilter = itk::RoundImageFilter< TImage, TImage >::New();
+        roundingFilter->SetInput(m_Mask);
+        roundingFilter->Update();
+        m_Mask = roundingFilter->GetOutput();
       }
 
       if (m_debug)
@@ -2815,7 +2823,23 @@ void FeatureExtraction< TImage >::Update()
       } // end of lattice features loop
 
       // write the features for training
-      if (!m_outputVerticallyConcatenated)
+      if (m_outputVerticallyConcatenated)
+      {
+        std::ofstream myfile;
+        myfile.open(m_outputFile, std::ios_base::app);
+        // check for locks in a cluster environment
+        while (!myfile.is_open())
+        {
+          cbica::sleep(100);
+          myfile.open(m_outputFile, std::ios_base::app);
+        }
+        myfile << m_finalOutputToWrite;
+#ifndef WIN32
+        myfile.flush();
+#endif
+        myfile.close();
+      }
+      else
       {
         m_trainingFile_featureNames.pop_back(); // since the last character is always a ","
         m_trainingFile_features.pop_back(); // since the last character is always a ","

@@ -49,33 +49,33 @@ ENDMACRO()
 MACRO(CWL_INSTALL APPLICATION)
 
   # Post build cwl generation
-  add_custom_command(TARGET ${APPLICATION}
-    POST_BUILD
-    COMMAND ${APPLICATION} -cwl
-    COMMENT "Generating cwl for ${APPLICATION}..."
-    VERBATIM
-  )
+  #add_custom_command(TARGET ${APPLICATION}
+  #  POST_BUILD
+  #  COMMAND ${APPLICATION} -cwl
+  #  COMMENT "Generating cwl for ${APPLICATION}..."
+  #  VERBATIM
+  #)
+  #
+  #IF (APPLE) 
+  #  # list (APPEND STANDALONE_APPS_LIST ${APPLICATION})
+  #  INSTALL( 
+  #    FILES ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl
+  #    DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+  #  ) 
+  #
+  #ELSEIF(WIN32)
+  #  INSTALL( 
+  #    FILES ${PROJECT_BINARY_DIR}/$<CONFIGURATION>/${APPLICATION}.cwl
+  #    DESTINATION bin
+  #  )
+  #
+  #ELSE()
+  #  INSTALL( 
+  #    FILES ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl
+  #    DESTINATION bin
+  #  )
 
-  IF (APPLE) 
-    # list (APPEND STANDALONE_APPS_LIST ${APPLICATION})
-    INSTALL( 
-      FILES ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl
-      DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-    ) 
-  
-  ELSEIF(WIN32)
-    INSTALL( 
-      FILES ${PROJECT_BINARY_DIR}/$<CONFIGURATION>/${APPLICATION}.cwl
-      DESTINATION bin
-    )
-
-  ELSE()
-    INSTALL( 
-      FILES ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl
-      DESTINATION bin
-    )
-
-  ENDIF()
+  #ENDIF()
 
 ENDMACRO()
 
