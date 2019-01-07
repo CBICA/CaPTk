@@ -35,7 +35,7 @@ before_install:
 
 install:
   # extend build time
-  - travis_wait 60
+  # - travis_wait 60
   - brew install ccache
   - export PATH="/usr/local/opt/ccache/libexec:$PATH"
 
