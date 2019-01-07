@@ -1,9 +1,8 @@
 language: cpp
 cache: ccache
 
-install:
-  - brew install ccache
-  - export PATH="/usr/local/opt/ccache/libexec:$PATH"
+# install:
+ 
   
 matrix:
   include:
@@ -16,6 +15,9 @@ matrix:
     - os: osx
 
 before_install:
+  # extend build time
+  travis_wait 60
+
   ### LINUX
   # Linux install step
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
@@ -28,6 +30,8 @@ before_install:
 
   ### OSX
   # OSX install step
+  # - brew install ccache
+  # - export PATH="/usr/local/opt/ccache/libexec:$PATH"
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex; fi
   # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install qt make git-lfs doxygen llvm ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt make git-lfs doxygen llvm ; fi
