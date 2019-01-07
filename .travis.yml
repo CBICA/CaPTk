@@ -1,5 +1,5 @@
 language: cpp
-cache: ccache
+# cache: ccache
   
 matrix:
   include:
@@ -33,11 +33,11 @@ before_install:
   # Git LFS
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
 
-install:
+# install:
   # extend build time
   # - travis_wait 60
-  - brew install ccache
-  - export PATH="/usr/local/opt/ccache/libexec:$PATH"
+  # - brew install ccache
+  # - export PATH="/usr/local/opt/ccache/libexec:$PATH"
 
 script:
   ### LINUX
