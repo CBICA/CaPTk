@@ -21,7 +21,7 @@ export PATH="$PATH:/usr/local/opt/llvm/bin:/usr/local/Cellar/qt/5.12.0/bin:/usr/
 
 if test -d /usr/local/Cellar/qt/5.12.0/lib/cmake/Qt5; then echo "EXIST"; fi
 
-# export CMAKE_PREFIX_PATH=/Library/TeX/texbin
+export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
 make -j 8

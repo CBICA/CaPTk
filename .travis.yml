@@ -28,14 +28,11 @@ before_install:
 
   ### OSX
   # OSX install step
-  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; fi
-  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex; fi
   # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install qt make git-lfs doxygen llvm ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew qt install make git-lfs doxygen llvm ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt make git-lfs doxygen llvm ; fi
 
-  # caskroom/cask/mactex
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install; fi
 
   # Git LFS
   # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
