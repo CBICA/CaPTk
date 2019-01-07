@@ -53,7 +53,7 @@ public:
 
     //TBD
     //if (std::floor((intensity - m_MinimumRange) / m_Stepsize) < -1) {
-    if ( intensity < -833.653 ) {
+    if (intensity < -833.653) {
       std::cout << "\n[DEBUG] GLSZMFeatures.h - GreyLevelSizeZoneMatrixHolder::IntensityToIndex(" << intensity << ") - Note that with the correct iterator and selection of intensity, the value of intensity thrown into this function should not be less tha m_MinimumRange. If it is, then you are choosing some intensity OUTSIDE of the region where you calculated your ROI." << std::endl;
       std::cout << "\n[DEBUG] GLSZMFeatures.h - GreyLevelSizeZoneMatrixHolder::IntensityToIndex(" << intensity << ") - std::floor((intensity - m_MinimumRange) / m_Stepsize) = " << std::floor((intensity - m_MinimumRange) / m_Stepsize) << " < 0" << std::endl;
       std::cout << "\n[DEBUG] GLSZMFeatures.h - GreyLevelSizeZoneMatrixHolder::IntensityToIndex(" << intensity << ") - intensity = " << intensity << std::endl;
@@ -190,7 +190,7 @@ public:
   /**
   \brief Set the minimum
   */
-  void SetMinimum(int minimumInput)
+  void SetMinimum(typename TImageType::PixelType minimumInput)
   {
     m_minimum = minimumInput;
   }
@@ -198,7 +198,7 @@ public:
   /**
   \brief Set the maximum
   */
-  void SetMaximum(int maximumInput)
+  void SetMaximum(typename TImageType::PixelType maximumInput)
   {
     m_maximum = maximumInput;
   }
@@ -242,32 +242,32 @@ public:
         }
       }
 
-    //TBD - Get the min max of the output of maskFilter
-    auto maskFilter2 = itk::MaskImageFilter< TImageType, TImageType, TImageType >::New();
-    maskFilter2->SetInput(this->m_inputImage);
-    maskFilter2->SetMaskImage(this->m_Mask);
-    maskFilter2->SetOutsideValue(0);
-    maskFilter2->Update();
+      //TBD - Get the min max of the output of maskFilter
+      auto maskFilter2 = itk::MaskImageFilter< TImageType, TImageType, TImageType >::New();
+      maskFilter2->SetInput(this->m_inputImage);
+      maskFilter2->SetMaskImage(this->m_Mask);
+      maskFilter2->SetOutsideValue(0);
+      maskFilter2->Update();
 
-    auto minMaxCalculatorFilter = itk::MinimumMaximumImageCalculator< TImageType >::New();
-    minMaxCalculatorFilter->SetImage(maskFilter2->GetOutput());
-    minMaxCalculatorFilter->Compute();
-    double maskFilterOutputMin = minMaxCalculatorFilter->GetMinimum();
-    double maskFilterOutputMax = minMaxCalculatorFilter->GetMaximum();
+      auto minMaxCalculatorFilter = itk::MinimumMaximumImageCalculator< TImageType >::New();
+      minMaxCalculatorFilter->SetImage(maskFilter2->GetOutput());
+      minMaxCalculatorFilter->Compute();
+      double maskFilterOutputMin = minMaxCalculatorFilter->GetMinimum();
+      double maskFilterOutputMax = minMaxCalculatorFilter->GetMaximum();
 
-    std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - maskFilterOutputMin = " << maskFilterOutputMin << std::endl;
-    std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - maskFilterOutputMax = " << maskFilterOutputMax << std::endl;
-    //TBD - Get the min max of the output of maskFilter
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - maskFilterOutputMin = " << maskFilterOutputMin << std::endl;
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - maskFilterOutputMax = " << maskFilterOutputMax << std::endl;
+      //TBD - Get the min max of the output of maskFilter
 
-    //TBD - Get the min max of the output of premasking
-    minMaxCalculatorFilter->SetImage(this->m_inputImage);
-    minMaxCalculatorFilter->Compute();
-    double preMaskFilterOutputMin = minMaxCalculatorFilter->GetMinimum();
-    double preMaskFilterOutputMax = minMaxCalculatorFilter->GetMaximum();
+      //TBD - Get the min max of the output of premasking
+      minMaxCalculatorFilter->SetImage(this->m_inputImage);
+      minMaxCalculatorFilter->Compute();
+      double preMaskFilterOutputMin = minMaxCalculatorFilter->GetMinimum();
+      double preMaskFilterOutputMax = minMaxCalculatorFilter->GetMaximum();
 
-    std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - preMaskFilterOutputMin = " << preMaskFilterOutputMin << std::endl;
-    std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - preMaskFilterOutputMax = " << preMaskFilterOutputMax << std::endl;
-    //TBD - Get the min max of the output of maskFilter
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - preMaskFilterOutputMin = " << preMaskFilterOutputMin << std::endl;
+      std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - preMaskFilterOutputMax = " << preMaskFilterOutputMax << std::endl;
+      //TBD - Get the min max of the output of maskFilter
 
 
       std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
