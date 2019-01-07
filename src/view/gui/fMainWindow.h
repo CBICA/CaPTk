@@ -62,7 +62,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fSBRTAnalysisDialog.h"
 
 #include "QVTKOpenGLWidget.h"
-#include "QVTKWidget.h"
+#include <QScopedPointer>
 #include "vtkGenericOpenGLRenderWindow.h"
 #include "fBottomImageInfoTip.h"
 class SlicerManager;
@@ -300,16 +300,16 @@ private:
 
   std::map< std::string, std::string > m_allNonNativeApps;
 
-  //QVTKWidget  *SaggitalViewWidget;
-  //QVTKWidget  *AxialViewWidget;
-  //QVTKWidget  *CoronalViewWidget;
+  //! QVTK OpenGL Widgets
+  QScopedPointer<QVTKOpenGLWidget> SaggitalViewWidget;
+  QScopedPointer<QVTKOpenGLWidget> AxialViewWidget;
+  QScopedPointer<QVTKOpenGLWidget> CoronalViewWidget;
 
-  QVTKOpenGLWidget *SaggitalViewWidget;
-  QVTKOpenGLWidget *AxialViewWidget;
-  QVTKOpenGLWidget *CoronalViewWidget;
+  //! renderwindows
   vtkSmartPointer< vtkGenericOpenGLRenderWindow> SaggitalRenWin;
   vtkSmartPointer< vtkGenericOpenGLRenderWindow> AxialRenWin;
   vtkSmartPointer< vtkGenericOpenGLRenderWindow> CoronalRenWin;
+
   QHBoxLayout* bottomLayout;
 
   /**
