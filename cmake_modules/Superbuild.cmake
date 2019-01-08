@@ -94,6 +94,8 @@ INCLUDE( ExternalProject )
 #MESSAGE( STATUS "Adding YAML-CPP 0.6.2 ...")
 #INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-yaml-cpp.cmake )
 
+INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Qt5Config.cmake )
+
 MESSAGE( STATUS "Adding EIGEN-3.3.4 ...")
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
 
