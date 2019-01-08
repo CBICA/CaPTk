@@ -1,5 +1,8 @@
 language: cpp
 
+# Make sure to install ccache locally as well
+cache: ccache
+
 matrix:
   include:
     - os: linux
