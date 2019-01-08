@@ -112,8 +112,8 @@ public:
     m_cmbFeatureType->addItem("Custom");
     m_cmbFeatureType->addItem("Custom_Lattice_2D");
     m_cmbFeatureType->addItem("SBRT_Lung");
-    m_featureFiles = cbica::stringSplit(std::string(FeatureDefinitions), " ");
-    m_featureFiles.erase(m_featureFiles.begin()); // because an empty string always gets appended first
+    //m_featureFiles = cbica::stringSplit(std::string(FeatureDefinitions), " ");
+    //m_featureFiles.erase(m_featureFiles.begin()); // because an empty string always gets appended first
     //for (size_t i = 0; i < m_featureFiles.size(); i++)
     //{
     //  if (m_featureFiles[i].find("1_params") != std::string::npos)
