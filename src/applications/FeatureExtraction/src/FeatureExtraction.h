@@ -706,7 +706,7 @@ private:
   float m_Radius_float = 0.0;
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
   std::string m_QuantizationType = "ROI"; //! type of quantization happening, either ROI-based or Image-based
-  float m_resamplingResolution = 1.0; //! resolution to resample the images and mask to before doing any kind of computation
+  float m_resamplingResolution = 0.0; //! resolution to resample the images and mask to before doing any kind of computation
   std::string m_resamplingInterpolator = "Linear"; //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
 
   float m_gaborFMax = 0.25; //! TBD: what is the description of this?
