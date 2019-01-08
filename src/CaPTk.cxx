@@ -59,6 +59,8 @@ int main(int argc, char** argv)
 {
 #endif
 
+  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
+
   #if __APPLE__
   // this->
   QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
