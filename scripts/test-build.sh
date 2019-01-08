@@ -87,6 +87,8 @@ mv linux.zip qt.zip
 echo "[:] Running cmake command to configure superbuild..."
 CMAKE_CMD
 
+ls -a
+
 # Make install/strip
 echo "[:] Building depends..."
 make
