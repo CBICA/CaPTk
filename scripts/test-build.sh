@@ -91,7 +91,7 @@ ls -a
 
 # Make install/strip
 echo "[:] Building depends..."
-make
+make -j2
 
 echo "[:] Running cmake command to configure CaPTk..."
 CMAKE_CMD
