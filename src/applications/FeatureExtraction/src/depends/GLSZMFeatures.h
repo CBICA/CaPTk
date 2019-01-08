@@ -50,17 +50,13 @@ public:
 
   int IntensityToIndex(double intensity)
   {
+    auto temp = std::floor((intensity - m_MinimumRange) / m_Stepsize);
 
     //TBD
-    //if (std::floor((intensity - m_MinimumRange) / m_Stepsize) < -1) {
-    if (intensity < -833.653) {
-      std::cout << "\n[DEBUG] GLSZMFeatures.h - GreyLevelSizeZoneMatrixHolder::IntensityToIndex(" << intensity << ") - Note that with the correct iterator and selection of intensity, the value of intensity thrown into this function should not be less tha m_MinimumRange. If it is, then you are choosing some intensity OUTSIDE of the region where you calculated your ROI." << std::endl;
-      std::cout << "\n[DEBUG] GLSZMFeatures.h - GreyLevelSizeZoneMatrixHolder::IntensityToIndex(" << intensity << ") - std::floor((intensity - m_MinimumRange) / m_Stepsize) = " << std::floor((intensity - m_MinimumRange) / m_Stepsize) << " < 0" << std::endl;
-      std::cout << "\n[DEBUG] GLSZMFeatures.h - GreyLevelSizeZoneMatrixHolder::IntensityToIndex(" << intensity << ") - intensity = " << intensity << std::endl;
-      std::cout << "\n[DEBUG] GLSZMFeatures.h - GreyLevelSizeZoneMatrixHolder::IntensityToIndex(" << intensity << ") - m_MinimumRange = " << m_MinimumRange << std::endl;
-      std::cout << "\n[DEBUG] GLSZMFeatures.h - GreyLevelSizeZoneMatrixHolder::IntensityToIndex(" << intensity << ") - m_MaximumRange = " << m_MaximumRange << std::endl;
-      std::cout << "\n[DEBUG] GLSZMFeatures.h - GreyLevelSizeZoneMatrixHolder::IntensityToIndex(" << intensity << ") - m_Stepsize = " << m_Stepsize << std::endl;
-    }
+    //if (std::floor((intensity - m_MinimumRange) / m_Stepsize) < -1) 
+    //{
+    //  auto blah = 1;
+    //}
     //TBD
 
     return std::floor((intensity - m_MinimumRange) / m_Stepsize);
@@ -494,28 +490,20 @@ private:
 
   int CalculateGlSZMatrix(bool estimateLargestRegion, GreyLevelSizeZoneMatrixHolder &holder)
   {
-    typedef typename TImageType::IndexType IndexType;
+    using TIndexType = typename TImageType::IndexType;
 
-    typedef itk::ImageRegionConstIteratorWithIndex<TImageType> ConstIterType;
-    typedef itk::ImageRegionConstIteratorWithIndex<TImageType> ConstMaskIterType;
 
     std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - [bool]estimateLargestRegion = " << estimateLargestRegion << std::endl;
 
+    auto visitedImage = cbica::CreateImage< TImageType >(this->m_Mask);
     auto region = this->m_Mask->GetLargestPossibleRegion();
-    typename TImageType::RegionType newRegion;
-    newRegion.SetSize(region.GetSize());
-    newRegion.SetIndex(region.GetIndex());
 
-    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - region.GetSize = " << region.GetSize() << std::endl;
-    std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - region.GetIndex = " << region.GetIndex() << std::endl;
+    //std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - region.GetSize = " << region.GetSize() << std::endl;
+    //std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - region.GetIndex = " << region.GetIndex() << std::endl;
 
-    ConstIterType imageIter(this->m_inputImage, this->m_inputImage->GetLargestPossibleRegion());
-    ConstMaskIterType maskIter(this->m_Mask, this->m_Mask->GetLargestPossibleRegion());
-
-    typename TImageType::Pointer visitedImage = TImageType::New();
-    visitedImage->SetRegions(newRegion);
-    visitedImage->Allocate();
-    visitedImage->FillBuffer(0);
+    TConstIteratorType imageIter(this->m_inputImage, this->m_inputImage->GetBufferedRegion()),
+      maskIter(this->m_Mask, this->m_Mask->GetBufferedRegion());
+    TIteratorType visitedImageIterator(visitedImage, visitedImage->GetBufferedRegion());
 
     int largestRegion = 0;
 
@@ -524,7 +512,7 @@ private:
       if (maskIter.Get() > 0)
       {
         imageIter.SetIndex(maskIter.GetIndex());
-        auto startIntensityIndex = holder.IntensityToIndex(imageIter.Get());
+        auto startIntensityIndex = holder.IntensityToIndex(static_cast<double>(imageIter.Get()));
 
         //TBD
         if (startIntensityIndex < 0 && estimateLargestRegion == 0) {
@@ -539,7 +527,7 @@ private:
         }
         //TBD
 
-        std::vector<IndexType> indices;
+        std::vector< TIndexType > indices;
         indices.push_back(maskIter.GetIndex());
         unsigned int steps = 0;
 
@@ -553,23 +541,28 @@ private:
             continue;
           }
 
-          auto wasVisited = visitedImage->GetPixel(currentIndex);
-          auto newIntensityIndex = holder.IntensityToIndex(this->m_inputImage->GetPixel(currentIndex));
+          imageIter.SetIndex(currentIndex);
+          visitedImageIterator.SetIndex(currentIndex);
+          auto wasVisited = visitedImageIterator.Get();
           auto isInMask = this->m_Mask->GetPixel(currentIndex);
-
-          if ((isInMask > 0) &&
-            (newIntensityIndex == startIntensityIndex) &&
-            (wasVisited < 1))
+          
+          if (isInMask > 0)
           {
-            ++steps;
+            auto newIntensityIndex = holder.IntensityToIndex(static_cast<double>(imageIter.Get()));
 
-            visitedImage->SetPixel(currentIndex, 1);
-            for (size_t i = 0; i < m_offsets->size(); i++)
+            if ((newIntensityIndex == startIntensityIndex) && (wasVisited < 1))
             {
-              auto newIndex = currentIndex + m_offsets->at(i);
-              indices.push_back(newIndex);
-              newIndex = currentIndex - m_offsets->at(i);
-              indices.push_back(newIndex);
+              ++steps;
+
+              visitedImageIterator.Set(1);
+              //visitedImage->SetPixel(currentIndex, 1);
+              for (size_t i = 0; i < m_offsets->size(); i++)
+              {
+                auto newIndex = currentIndex + m_offsets->at(i);
+                indices.push_back(newIndex);
+                newIndex = currentIndex - m_offsets->at(i);
+                indices.push_back(newIndex);
+              }
             }
           }
         }
