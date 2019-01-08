@@ -74,9 +74,6 @@ rm -rf data
 rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
-# Update $PATH
-export PATH=./cmake_modules:$PATH
-
 # Create binary directory
 echo "[:] Creating binary directory..."
 mkdir bin

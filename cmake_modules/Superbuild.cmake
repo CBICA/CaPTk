@@ -48,14 +48,19 @@ IF( EXISTS "${FILE_TO_EXTRACT}" )
   LIST(APPEND CMAKE_PREFIX_PATH "${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5")
   LIST(APPEND CMAKE_PROGRAM_PATH  "${QT_EXTRACTED_DIR}/5.11.2/bin")
   
+  #SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
+  
+  SET(ENV{CMAKE_PREFIX_PATH} "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/" )
+  SET(ENV{CMAKE_PROGRAM_PATH} "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/bin" )
+  
   FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore)
 
 ENDIF()
   
 LINK_DIRECTORIES(${QT_LIBRARY_DIR})
 SET( Qt5_DIR ${Qt5_DIR} CACHE STRING "Qt5_DIR Path for use in other builds" FORCE )
+SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
 LIST(APPEND CMAKE_PREFIX_PATH "${Qt5_DIR}")
-LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
 #LIST(APPEND CMAKE_PROGRAM_PATH  "c:/MyProject/Tools/mingw/bin/" ...)
 
@@ -93,8 +98,6 @@ INCLUDE( ExternalProject )
 
 #MESSAGE( STATUS "Adding YAML-CPP 0.6.2 ...")
 #INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-yaml-cpp.cmake )
-
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Qt5Config.cmake )
 
 MESSAGE( STATUS "Adding EIGEN-3.3.4 ...")
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
