@@ -74,13 +74,16 @@ rm -rf data
 rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
+# Update $PATH
+export PATH=./cmake_modules:$PATH
+
 # Create binary directory
 echo "[:] Creating binary directory..."
 mkdir bin
 cd bin
 
 # FTP override
-wget ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.11.2/linux.zip
+wget -t inf ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.11.2/linux.zip
 mv linux.zip qt.zip
 
 # Cmake
