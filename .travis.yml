@@ -24,15 +24,10 @@ before_install:
 
   ### OSX
   # OSX install step
-#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; fi
-#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt make git-lfs doxygen llvm ; fi
-  # caskroom/cask/mactex
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install; fi
-
-  # Git LFS
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs fetch --all; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo chown -R $(whoami):admin /usr/local && cd /usr/local && git fetch && git reset --hard origin/master && cd /Users/travis/build/PhucNgo1711/CaPTk; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex && brew install qt make git-lfs doxygen llvm; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
 
 # install: travis_wait 60
   # - brew install ccache
