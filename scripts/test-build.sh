@@ -95,6 +95,10 @@ make -j2
 
 ls -a
 
+pwd
+
 cd ..
+
+ls -a
 
 ./scripts/captk-pkg
