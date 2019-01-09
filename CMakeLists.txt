@@ -764,9 +764,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF()
 
   ## symlink creation for UNIX machines - currently only works for DEB or RPM
-  #IF (UNIX OR APPLE)
-    #INSTALL(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_INSTALL_PREFIX}/bin/${EXE_NAME} ${CMAKE_INSTALL_PREFIX}/bin/captk)")
-  #ENDIF()
+  # IF (UNIX OR APPLE)
+  #   INSTALL(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_INSTALL_PREFIX}/bin/${EXE_NAME} ${CMAKE_INSTALL_PREFIX}/bin/captk)")
+  # ENDIF()
 
   SET(META_FILES_TO_INCLUDE "") # used for Apple package
   #IF( BUILD_DOCUMENTATION )
@@ -1236,6 +1236,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     #    ENDIF()
     #  #ENDIF()
     #ENDIF()
+
+    # Execute a post install step. Make sure this is the last install command ran!
+    INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/PostInstall.cmake )
 
   ENDIF(CAPTK_PACKAGE_PROJECT)
 
