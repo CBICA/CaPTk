@@ -99,8 +99,8 @@ cd
 
 tree -d ./
 
-# echo "[:] Running cmake command to configure CaPTk..."
-# CMAKE_CMD
+echo "[:] Running cmake command to configure CaPTk..."
+CMAKE_CMD
 
-# echo "[:] Building CaPTk..."
-# make
+echo "[:] Building CaPTk..."
+make -j2
