@@ -26,7 +26,8 @@ before_install:
   # OSX install step
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew upgrade travis; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install caskroom/cask/mactex && HOMEBREW_NO_AUTO_UPDATE=1 brew install qt make git-lfs doxygen llvm; fi
+#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install caskroom/cask/mactex && HOMEBREW_NO_AUTO_UPDATE=1 brew install qt make git-lfs doxygen llvm; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install qt make git-lfs doxygen llvm; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
 
 # install: travis_wait 60
