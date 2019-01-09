@@ -185,17 +185,25 @@ fMainWindow::fMainWindow()
   menuPreprocessing = new QMenu("Preprocessing");
   menuHelp = new QMenu("Help");
 
-  SaggitalViewWidget = new QVTKWidget(SaggitalWidget);
-  AxialViewWidget = new QVTKWidget(AxialWidget);
-  CoronalViewWidget = new QVTKWidget(CoronalWidget);
+  SaggitalViewWidget.reset(new QVTKOpenGLWidget(SaggitalWidget));
+  AxialViewWidget.reset(new QVTKOpenGLWidget(AxialWidget));
+  CoronalViewWidget.reset(new QVTKOpenGLWidget(CoronalWidget));
+
+  SaggitalRenWin = vtkSmartPointer< vtkGenericOpenGLRenderWindow>::New();
+  AxialRenWin = vtkSmartPointer< vtkGenericOpenGLRenderWindow>::New();
+  CoronalRenWin = vtkSmartPointer< vtkGenericOpenGLRenderWindow>::New();
+
+  SaggitalViewWidget->SetRenderWindow(SaggitalRenWin);
+  AxialViewWidget->SetRenderWindow(AxialRenWin);
+  CoronalViewWidget->SetRenderWindow(CoronalRenWin);
 
   SaggitalViewWidget->setMouseTracking(true);
   AxialViewWidget->setMouseTracking(true);
   CoronalViewWidget->setMouseTracking(true);
 
-  SaggitalWidgetGridLayout->addWidget(SaggitalViewWidget, 0, 0, 1, 1);
-  AxialWidgetGridLayout->addWidget(AxialViewWidget, 0, 0, 1, 1);
-  CoronalWidgetGridLayout->addWidget(CoronalViewWidget, 0, 0, 1, 1);
+  SaggitalWidgetGridLayout->addWidget(SaggitalViewWidget.data(), 0, 0, 1, 1);
+  AxialWidgetGridLayout->addWidget(AxialViewWidget.data(), 0, 0, 1, 1);
+  CoronalWidgetGridLayout->addWidget(CoronalViewWidget.data(), 0, 0, 1, 1);
 
   QSizePolicy sizePolicy5(QSizePolicy::Preferred, QSizePolicy::Expanding);
   sizePolicy5.setHorizontalStretch(0);
