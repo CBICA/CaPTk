@@ -93,6 +93,12 @@ ls -a
 echo "[:] Building depends..."
 make -j2
 
+ls -a
+
+cd
+
+tree -d ./
+
 # echo "[:] Running cmake command to configure CaPTk..."
 # CMAKE_CMD
 
