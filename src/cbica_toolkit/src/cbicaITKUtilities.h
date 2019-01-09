@@ -1001,17 +1001,17 @@ namespace cbica
     resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
     if (interpolator_wrap == "bspline")
     {
-      auto interpolatorFunc = typename itk::BSplineInterpolateImageFunction< TImageType, double >::New();
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
     else if (interpolator_wrap.find("nearest") != std::string::npos)
     {
-      auto interpolatorFunc = typename itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
+      auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
     else
     {
-      auto interpolatorFunc = typename itk::LinearInterpolateImageFunction< TImageType, double >::New();
+      auto interpolatorFunc = itk::LinearInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
     resampler->UpdateLargestPossibleRegion();
@@ -1057,12 +1057,12 @@ namespace cbica
     resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
     if (interpolator_wrap == "bspline")
     {
-      auto interpolatorFunc = typename itk::BSplineInterpolateImageFunction< TImageType, double >::New();
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
     else 
     {
-      auto interpolatorFunc = typename itk::LinearInterpolateImageFunction< TImageType, double >::New();
+      auto interpolatorFunc = itk::LinearInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
     resampler->UpdateLargestPossibleRegion();
