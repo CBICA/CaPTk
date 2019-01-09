@@ -20,11 +20,11 @@ cd /Users/travis/build/PhucNgo1711/CaPTk/bin
 # export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
-make -j 8
+make -j 12
 
 export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
 cmake ../
-make -j 8
+make -j 12
 
 # export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build
 }
