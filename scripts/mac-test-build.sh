@@ -20,7 +20,7 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 export PATH="$PATH:/usr/local/opt/llvm/bin:/usr/local/Cellar/qt/5.11.1/bin:/usr/local/Cellar/qt/5.11.1/lib/cmake/Qt5"
 
 echo "going to QT5"
-cd /usr/local/Cellar/qt/5.12.0/lib/cmake/Qt5
+cd /usr/local/Cellar/qt/5.11.1/lib/cmake/Qt5
 echo "going back"
 cd /Users/travis/build/PhucNgo1711/CaPTk/bin
 
