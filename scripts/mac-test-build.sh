@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# Set up environment variables
-# ENV_CMD() {
-# export PATH="$PATH:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/lib/cmake/Qt5:/Users/travis/build/PhucNgo1711/CaPTk/binaries/qt5.11.2_macos/bin"
-# export PATH="$PATH:/usr/local/Cellar/qt/5.12.0/lib/cmake/Qt5:/usr/local/Cellar/qt/5.12.0/bin"
-# echo $PATH
-# }
-
 # CaPTk Packager
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
