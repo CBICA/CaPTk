@@ -97,10 +97,4 @@ ls -a
 
 cd ..
 
-ls -a
-
-echo "[:] Running cmake command to configure CaPTk..."
-CMAKE_CMD
-
-echo "[:] Building CaPTk..."
-make -j2
+./scripts/captk-pkg
