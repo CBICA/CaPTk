@@ -25,8 +25,8 @@ before_install:
   ### OSX
   # OSX install step
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd /usr/local && git reset --hard origin/master && cd /Users/travis/build/PhucNgo1711/CaPTk; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex && brew install qt make git-lfs doxygen llvm; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo brew install caskroom/cask/mactex && brew install qt make git-lfs doxygen llvm; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
 
 # install: travis_wait 60
