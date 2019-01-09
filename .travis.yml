@@ -38,4 +38,4 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/test-build.sh; fi
 
   ### OSX
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 60 ./scripts/mac-test-build.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/mac-test-build.sh; fi
