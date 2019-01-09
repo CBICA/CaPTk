@@ -95,9 +95,9 @@ make -j2
 
 ls -a
 
-cd
+cd ..
 
-tree -d ./
+ls -a
 
 echo "[:] Running cmake command to configure CaPTk..."
 CMAKE_CMD
