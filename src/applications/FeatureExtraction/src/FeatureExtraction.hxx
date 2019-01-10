@@ -922,7 +922,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   }
 
   // this defaults to the full dynamic range of double according to ITK's documentation
-  //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TOCHECK - why is this only between 0-4? P
+  matrix_generator->SetDistanceValueMinMax(m_minimumToConsider, m_maximumToConsider); // TBD: TOCHECK - how is this affecting the computation?
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
 
   typename  RunLengthFeatures::Pointer runLengthFeaturesCalculator = RunLengthFeatures::New();
