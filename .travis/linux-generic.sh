@@ -56,11 +56,11 @@ rm -rf binaries
 cd bin
 
 # Extract externalApps
-unzip externalApps.zip
+unzip externalApps.zip &> /dev/null
 
 # Cmake
 echo "[:] Running cmake command to configure superbuild..."
-CMAKE_CMD
+CMAKE_CMD &> /dev/null
 
 # Make install/strip
 echo "[:] Building depends..."
