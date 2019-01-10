@@ -12,44 +12,6 @@ CMAKE_CMD () {
   cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF ..
 }
 
-# Process files for linux
-
-PROCESS_CMD () {
-  INSTALL_DIR=`pwd`
-  # Needs to be marked as executable for LIBRA
-  cd ./libexec/MCR/v84/bin/glnxa64
-  chmod +x matlab_helper
-  # Go back up to /bin
-  cd ${INSTALL_DIR}/bin
-  # dos2unix stage
-  dos2unix libra
-  chmod +x libra
-  dos2unix ConfettiGUI.py
-  chmod +x ConfettiGUI.py
-  cd ../libexec
-  dos2unix ConfettiCore.py
-  chmod +x ConfettiCore.py
-  chmod +x libra
-  # Up to install
-  cd ${INSTALL_DIR}
-}
-
-# linuxdeployqt command
-LINDEPQT_CMD () {
-  APP_DIR=`pwd`
-  cd ./appdir/usr/
-  cp /usr/lib/x86_64-linux-gnu/nss/* ./lib
-  echo "[:] Processing files for linux..."
-  PROCESS_CMD
-  cd ${APP_DIR}
-  # Download linuxdeployqt and run it
-  echo "[:] Downloading linuxdeployqt..."
-  wget https://github.com/probonopd/linuxdeployqt/releases/download/5/linuxdeployqt-5-x86_64.AppImage
-  chmod +x linuxdeployqt-5-x86_64.AppImage
-  ./linuxdeployqt-5-x86_64.AppImage ./appdir/usr/share/applications/*.desktop -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**} -appimage
-  mv ./CaPTk*.AppImage ../../CaPTk.bin
-  cd ../../
-}
 echo "[!] Warn: This script is intended for CI use. Only use it if you know what you are doing."
 
 echo "[:] Starting CaPTk packaging process..."
