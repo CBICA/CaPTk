@@ -68,6 +68,8 @@ else
   exit -1
 fi
 
+wc -c < ./binaries/qt5.11.2_linux.zip
+
 # Nuclear option
 rm -rf binaries
 rm -rf data
