@@ -68,8 +68,6 @@ else
   exit -1
 fi
 
-wc -c < ./binaries/qt5.11.2_linux.zip
-
 # Nuclear option
 # rm -rf binaries
 rm -rf data
@@ -80,13 +78,22 @@ rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 echo "[:] Creating binary directory..."
 mkdir bin
 
+# Move OS specific qt lib in
 mv ./binaries/qt5.11.2_linux.zip ./bin/qt.zip
+
+# Move externalApps into bin to trick CMake
+mv ./binaries/externalApps.zip ./bin/
+
+# Remove all other blobs
+rm -rf binaries
 
 # FTP override
 # wget -t inf ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.11.2/linux.zip
 # mv linux.zip qt.zip
 
 cd bin
+
+# Extract externalApps
 
 # Cmake
 echo "[:] Running cmake command to configure superbuild..."
