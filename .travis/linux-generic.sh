@@ -58,6 +58,9 @@ cd bin
 # Extract externalApps
 unzip externalApps.zip &> /dev/null
 
+# Create test data dir to skip ftp download
+mkdir ./testing/TestData
+
 # Cmake
 echo "[:] Running cmake command to configure superbuild... [stdout omitted]"
 CMAKE_CMD &> /dev/null
