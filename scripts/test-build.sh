@@ -94,6 +94,7 @@ rm -rf binaries
 cd bin
 
 # Extract externalApps
+unzip externalApps.zip
 
 # Cmake
 echo "[:] Running cmake command to configure superbuild..."
