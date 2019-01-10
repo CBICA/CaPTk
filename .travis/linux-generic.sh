@@ -103,3 +103,7 @@ CMAKE_CMD
 # Make install/strip
 echo "[:] Building depends..."
 make -j2
+
+# Build a fast installation
+cd ..
+./scripts/linux-build-fast
