@@ -72,4 +72,4 @@ make -j2 &> /dev/null
 
 # Build a fast installation
 cd ..
-./scripts/linux-build-fast
+# ./scripts/linux-build-fast
