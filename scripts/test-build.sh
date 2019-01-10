@@ -71,7 +71,7 @@ fi
 wc -c < ./binaries/qt5.11.2_linux.zip
 
 # Nuclear option
-rm -rf binaries
+# rm -rf binaries
 rm -rf data
 rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
@@ -79,11 +79,14 @@ rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 # Create binary directory
 echo "[:] Creating binary directory..."
 mkdir bin
-cd bin
+
+mv ./binaries/qt5.11.2_linux.zip ./bin/qt.zip
 
 # FTP override
-wget -t inf ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.11.2/linux.zip
-mv linux.zip qt.zip
+# wget -t inf ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.11.2/linux.zip
+# mv linux.zip qt.zip
+
+cd bin
 
 # Cmake
 echo "[:] Running cmake command to configure superbuild..."
