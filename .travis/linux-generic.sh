@@ -59,6 +59,7 @@ cd bin
 unzip externalApps.zip &> /dev/null
 
 # Create test data dir to skip ftp download
+mkdir testing
 mkdir ./testing/TestData
 
 # Cmake
