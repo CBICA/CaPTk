@@ -918,13 +918,14 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
         maxStep = m_latticeSizeImage[d];
       }
     }
-    matrix_generator->SetDistanceValueMinMax(0, std::sqrt(2) * (maxStep - 1));
+    matrix_generator->SetDistanceValueMinMax(0, std::sqrt(2) * (maxStep - 1)); 
   }
-  //removed SetDistanceValueMinMax
+
+  // this defaults to the full dynamic range of double according to ITK's documentation
   //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TOCHECK - why is this only between 0-4? P
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
 
-  typename  RunLengthFeatures::Pointer runLengthMatrixCalculator = RunLengthFeatures::New();
+  typename  RunLengthFeatures::Pointer runLengthFeaturesCalculator = RunLengthFeatures::New();
 
   typename  OffsetVector::ConstIterator offsetIt;
   size_t offsetNum = 0;
@@ -946,48 +947,48 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       matrix_generator->SetOffset(offsetIt.Value());
       matrix_generator->Update();
 
-      runLengthMatrixCalculator->SetInput(matrix_generator->GetOutput());
-      runLengthMatrixCalculator->Update();
+      runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
+      runLengthFeaturesCalculator->Update();
 
       if (m_offsetSelect == "Average")
       {
-        sre += runLengthMatrixCalculator->GetShortRunEmphasis();
-        lre += runLengthMatrixCalculator->GetLongRunEmphasis();
-        gln += runLengthMatrixCalculator->GetGreyLevelNonuniformity();
-        rln += runLengthMatrixCalculator->GetRunLengthNonuniformity();
-        lglre += runLengthMatrixCalculator->GetLowGreyLevelRunEmphasis();
-        hglre += runLengthMatrixCalculator->GetHighGreyLevelRunEmphasis();
-        srlgle += runLengthMatrixCalculator->GetShortRunLowGreyLevelEmphasis();
-        srhgle += runLengthMatrixCalculator->GetShortRunHighGreyLevelEmphasis();
-        lrlgle += runLengthMatrixCalculator->GetLongRunLowGreyLevelEmphasis();
-        lrhgle += runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis();
-        runs += runLengthMatrixCalculator->GetTotalNumberOfRuns();
-        rp += static_cast<double>(runLengthMatrixCalculator->GetTotalNumberOfRuns()) / static_cast<double>(m_currentNonZeroImageValues.size());
-        glnn += runLengthMatrixCalculator->GetGreyLevelNonuniformityNormalized();
-        rlnn += runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
-        glv += runLengthMatrixCalculator->GetGreyLevelVariance();
-        rlv += runLengthMatrixCalculator->GetRunLengthVariance();
-        re += runLengthMatrixCalculator->GetRunEntropy();
+        sre += runLengthFeaturesCalculator->GetShortRunEmphasis();
+        lre += runLengthFeaturesCalculator->GetLongRunEmphasis();
+        gln += runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+        rln += runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+        lglre += runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
+        hglre += runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
+        srlgle += runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
+        srhgle += runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
+        lrlgle += runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+        lrhgle += runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+        runs += runLengthFeaturesCalculator->GetTotalNumberOfRuns();
+        rp += static_cast<double>(runLengthFeaturesCalculator->GetTotalNumberOfRuns()) / static_cast<double>(m_currentNonZeroImageValues.size());
+        glnn += runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+        rlnn += runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+        glv += runLengthFeaturesCalculator->GetGreyLevelVariance();
+        rlv += runLengthFeaturesCalculator->GetRunLengthVariance();
+        re += runLengthFeaturesCalculator->GetRunEntropy();
       }
       else // individual
       {
-        featurevec["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetShortRunEmphasis();
-        featurevec["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetLongRunEmphasis();
-        featurevec["GreyLevelNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetGreyLevelNonuniformity();
-        featurevec["RunLengthNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunLengthNonuniformity();
-        featurevec["LowGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetLowGreyLevelRunEmphasis();
-        featurevec["HighGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetHighGreyLevelRunEmphasis();
-        featurevec["ShortRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetShortRunLowGreyLevelEmphasis();
-        featurevec["ShortRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetShortRunHighGreyLevelEmphasis();
-        featurevec["LongRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetLongRunLowGreyLevelEmphasis();
-        featurevec["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis();
-        featurevec["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetTotalNumberOfRuns();
+        featurevec["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunEmphasis();
+        featurevec["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunEmphasis();
+        featurevec["GreyLevelNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+        featurevec["RunLengthNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+        featurevec["LowGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
+        featurevec["HighGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
+        featurevec["ShortRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
+        featurevec["ShortRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
+        featurevec["LongRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+        featurevec["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+        featurevec["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
         featurevec["RunPercentage_Offset_" + std::to_string(offsetNum)] = featurevec["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(m_currentNonZeroImageValues.size());
-        featurevec["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetGreyLevelNonuniformityNormalized();
-        featurevec["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
-        featurevec["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetGreyLevelVariance();
-        featurevec["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunLengthVariance();
-        featurevec["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunEntropy();
+        featurevec["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+        featurevec["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+        featurevec["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelVariance();
+        featurevec["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthVariance();
+        featurevec["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunEntropy();
       }
     }
     if (m_offsetSelect == "Average")
@@ -1036,32 +1037,31 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
 
     auto temp = matrix_generator->GetOutput();
 
-    runLengthMatrixCalculator->SetInput(matrix_generator->GetOutput());
-    runLengthMatrixCalculator->Update();
+    runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
+    runLengthFeaturesCalculator->Update();
 
-    featurevec["ShortRunEmphasis"] = runLengthMatrixCalculator->GetShortRunEmphasis();
-    featurevec["LongRunEmphasis"] = runLengthMatrixCalculator->GetLongRunEmphasis();
-    featurevec["GreyLevelNonuniformity"] = runLengthMatrixCalculator->GetGreyLevelNonuniformity();
-    featurevec["RunLengthNonuniformity"] = runLengthMatrixCalculator->GetRunLengthNonuniformity();
-    featurevec["LowGreyLevelRunEmphasis"] = runLengthMatrixCalculator->GetLowGreyLevelRunEmphasis();
-    featurevec["HighGreyLevelRunEmphasis"] = runLengthMatrixCalculator->GetHighGreyLevelRunEmphasis();
-    featurevec["ShortRunLowGreyLevelEmphasis"] = runLengthMatrixCalculator->GetShortRunLowGreyLevelEmphasis();
-    featurevec["ShortRunHighGreyLevelEmphasis"] = runLengthMatrixCalculator->GetShortRunHighGreyLevelEmphasis();
-    featurevec["LongRunLowGreyLevelEmphasis"] = runLengthMatrixCalculator->GetLongRunLowGreyLevelEmphasis();
-    featurevec["LongRunHighGreyLevelEmphasis"] = runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis();
-    featurevec["TotalRuns"] = runLengthMatrixCalculator->GetTotalNumberOfRuns();
+    featurevec["ShortRunEmphasis"] = runLengthFeaturesCalculator->GetShortRunEmphasis();
+    featurevec["LongRunEmphasis"] = runLengthFeaturesCalculator->GetLongRunEmphasis();
+    featurevec["GreyLevelNonuniformity"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+    featurevec["RunLengthNonuniformity"] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+    featurevec["LowGreyLevelRunEmphasis"] = runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
+    featurevec["HighGreyLevelRunEmphasis"] = runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
+    featurevec["ShortRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
+    featurevec["ShortRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
+    featurevec["LongRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+    featurevec["LongRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+    featurevec["TotalRuns"] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
     featurevec["RunPercentage"] = featurevec["TotalRuns"] / static_cast<double>(offset->size() * m_currentNonZeroImageValues.size());
-    featurevec["GreyLevelNonuniformityNormalized"] = runLengthMatrixCalculator->GetGreyLevelNonuniformityNormalized();
-    featurevec["RunLengthNonuniformityNormalized"] = runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
-    featurevec["GreyLevelVariance"] = runLengthMatrixCalculator->GetGreyLevelVariance();
-    featurevec["RunLengthVariance"] = runLengthMatrixCalculator->GetRunLengthVariance();
-    featurevec["RunEntropy"] = runLengthMatrixCalculator->GetRunEntropy();
+    featurevec["GreyLevelNonuniformityNormalized"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+    featurevec["RunLengthNonuniformityNormalized"] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+    featurevec["GreyLevelVariance"] = runLengthFeaturesCalculator->GetGreyLevelVariance();
+    featurevec["RunLengthVariance"] = runLengthFeaturesCalculator->GetRunLengthVariance();
+    featurevec["RunEntropy"] = runLengthFeaturesCalculator->GetRunEntropy();
   }
   else
   {
     // not defined, so don't do anything to featurevec
   }
-
 }
 
 
