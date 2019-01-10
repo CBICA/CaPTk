@@ -67,5 +67,5 @@ echo "[:] Building depends... [stdout omitted]"
 make -j2 &> /dev/null
 
 # Build a fast installation
-# cd ..
+cd ..
 ./scripts/linux-build-fast
