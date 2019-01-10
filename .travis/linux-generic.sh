@@ -105,5 +105,5 @@ echo "[:] Building depends..."
 make -j2
 
 # Build a fast installation
-cd ..
-./scripts/linux-build-fast
+# cd ..
+# ./scripts/linux-build-fast
