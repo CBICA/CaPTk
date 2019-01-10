@@ -8,10 +8,14 @@ matrix:
     - os: linux
       dist: xenial
       sudo: required
+    - os: linux
+      dist: trusty
+      sudo: required
   fast_finish: true
   # Temporary, used for testing
   allow_failures:
     - os: linux
+      dist: trusty
 
 before_install:
   # Linux install step
@@ -24,4 +28,4 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
   
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/test-build.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
