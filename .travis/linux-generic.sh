@@ -59,12 +59,12 @@ cd bin
 unzip externalApps.zip &> /dev/null
 
 # Cmake
-echo "[:] Running cmake command to configure superbuild..."
+echo "[:] Running cmake command to configure superbuild... [stdout omitted]"
 CMAKE_CMD &> /dev/null
 
 # Make install/strip
-echo "[:] Building depends..."
-make -j2
+echo "[:] Building depends... [stdout omitted]"
+make -j2 &> /dev/null
 
 # Build a fast installation
 # cd ..
