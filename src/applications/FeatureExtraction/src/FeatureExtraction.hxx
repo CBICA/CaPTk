@@ -963,8 +963,8 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
         lrhgle += runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis();
         runs += runLengthMatrixCalculator->GetTotalNumberOfRuns();
         rp += static_cast<double>(runLengthMatrixCalculator->GetTotalNumberOfRuns()) / static_cast<double>(m_currentNonZeroImageValues.size());
-        rlnn += runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
         glnn += runLengthMatrixCalculator->GetGreyLevelNonuniformityNormalized();
+        rlnn += runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
         glv += runLengthMatrixCalculator->GetGreyLevelVariance();
         rlv += runLengthMatrixCalculator->GetRunLengthVariance();
         re += runLengthMatrixCalculator->GetRunEntropy();
@@ -983,8 +983,8 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
         featurevec["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis();
         featurevec["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetTotalNumberOfRuns();
         featurevec["RunPercentage_Offset_" + std::to_string(offsetNum)] = featurevec["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(m_currentNonZeroImageValues.size());
-        featurevec["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
         featurevec["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetGreyLevelNonuniformityNormalized();
+        featurevec["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
         featurevec["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetGreyLevelVariance();
         featurevec["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunLengthVariance();
         featurevec["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunEntropy();
@@ -1051,8 +1051,8 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     featurevec["LongRunHighGreyLevelEmphasis"] = runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis();
     featurevec["TotalRuns"] = runLengthMatrixCalculator->GetTotalNumberOfRuns();
     featurevec["RunPercentage"] = featurevec["TotalRuns"] / static_cast<double>(offset->size() * m_currentNonZeroImageValues.size());
-    featurevec["RunLengthNonuniformityNormalized"] = runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
     featurevec["GreyLevelNonuniformityNormalized"] = runLengthMatrixCalculator->GetGreyLevelNonuniformityNormalized();
+    featurevec["RunLengthNonuniformityNormalized"] = runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
     featurevec["GreyLevelVariance"] = runLengthMatrixCalculator->GetGreyLevelVariance();
     featurevec["RunLengthVariance"] = runLengthMatrixCalculator->GetRunLengthVariance();
     featurevec["RunEntropy"] = runLengthMatrixCalculator->GetRunEntropy();
@@ -1671,7 +1671,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
           //  myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
           //}
           //myfile << "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
-          m_finalOutputToWrite += "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
+          //m_finalOutputToWrite += "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
 //#ifndef WIN32
 //          myfile.flush();
 //#endif
@@ -2825,6 +2825,10 @@ void FeatureExtraction< TImage >::Update()
       // write the features for training
       if (m_outputVerticallyConcatenated)
       {
+        if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
+        {
+          m_finalOutputToWrite = "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n" + m_finalOutputToWrite;
+        }
         std::ofstream myfile;
         myfile.open(m_outputFile, std::ios_base::app);
         // check for locks in a cluster environment
