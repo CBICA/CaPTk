@@ -101,24 +101,7 @@ int main(int argc, char** argv)
   parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
 
   std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
-
-  // Handle CWL
-
-  // Check argv[1] to determine if we need to bypass typical CaPTk things
-  if (argc > 1) {
-    for (auto & file : cbica::getCWLFilesInApplicationDir()) {
-      if (argv[1] == file.substr(0, file.size() - 4)) {
-        std::string argv_complete;
-        for (size_t i = 1; i < argc; i++)
-        {
-          argv_complete = argv_complete + " " + std::string(argv[i]);
-        }
-        return std::system((getApplicationPath(argv[1]) + argv_complete).c_str());
-      }
-    }
-  }
-
-
+  
   if (parser.isPresent("i"))
   {
     parser.getParameterValue("i", cmd_inputs);
@@ -136,6 +119,22 @@ int main(int argc, char** argv)
     parser.getParameterValue("ts", cmd_tissue);
   }
 
+  // check for CWL command coming in through the command line after "CaPTk"
+  if (cmd_inputs.empty() && (argc > 1))
+  {
+    for (auto & file : cbica::getCWLFilesInApplicationDir()) 
+    {
+      if (argv[1] == file.substr(0, file.size() - 4)) 
+      {
+        std::string argv_complete;
+        for (size_t i = 1; i < argc; i++)
+        {
+          argv_complete = argv_complete + " " + std::string(argv[i]);
+        }
+        return std::system((getApplicationPath(argv[1]) + argv_complete).c_str());
+      }
+    }
+  }
 
   ///// debug
   //HANDLE hLogFile;
