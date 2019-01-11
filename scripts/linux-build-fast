@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# This build script is a copy of captk-pkg with stripped back features.
+# For relevant documentation/requirements please refer to that file.
+# The intention of this script is to provide a very simple configuration/compilation
+# without the long packaging step of captk-pkg for testing purposes
+
+
+# Set -e causes any subsequent commands which fail will cause the shell script to exit immediately.
+# This is here because typically, bash just plows through errors, and that's an awful thing.
+# When interacting with users, or helping them with this script, they may not know what error is important.
+# With this, they'll see the first error and the script will terminate.
+set -e
+
+# Store the root dir this is being run from
+SRC_DIR=`pwd`
+
+# Linuxdeployqt requires a very special directory structure to use with it, therefore we should configure cmake
+# to inherently install CaPTk to that directory structure.
+CMAKE_CMD () {
+  cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+}
+
+echo "[!] Warn: This script is intended for developer use only, please use the other linux scrips availible for packaging/building"
+
+echo "[:] Starting CaPTk packaging process..."
+
+echo "[?] Checking if you are in trunk..."
+# Test to see if the user is in trunk
+# First see if CMakeLists.txt exists
+if [[ -e CMakeLists.txt ]] ; then
+  # See if it contains PROJECT( CaPTk )
+  if [[ -z  `cat CMakeLists.txt | grep "PROJECT( CaPTk )"`  ]] ; then
+    echo "[!] Error: You do not appear to be within trunk of CaPTk (Project is not CaPTk)"
+    exit -1
+  fi
+else
+  echo "[!] Error: You do not appear to be in trunk (CMakeLists.txt not found)"
+  exit -1
+fi
+
+# Enter binary directory
+echo "[:] Entering binary directory..."
+cd bin
+
+# Cmake
+echo "[:] Running cmake command..."
+CMAKE_CMD
+
+# Make
+echo "[:] Building CaPTk..."
+make -j2
+
+echo "[:] Done. Project has been built"
