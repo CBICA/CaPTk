@@ -27,7 +27,6 @@ matrix:
   allow_failures:
     - os: linux
       dist: trusty
-    - os: osx
 
 before_install:
   ### LINUX
@@ -51,4 +50,3 @@ before_install:
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/mac-test-build.sh; fi
-
