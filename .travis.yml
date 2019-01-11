@@ -10,7 +10,10 @@ cache:
   - ccache
   - directories:
     - /Users/travis/build/PhucNgo1711/CaPTk/bin
-    - $HOME/Library/Caches/Homebrew
+    - /usr/local/Cellar/llvm
+    - /usr/local/opt/llvm
+    - /usr/local/Cellar/make
+    - /usr/local/opt/make
 
 env:
   global:
@@ -51,7 +54,7 @@ before_install:
   # OSX install step
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install caskroom/cask/mactex && HOMEBREW_NO_AUTO_UPDATE=1 brew install qt make git-lfs doxygen llvm; fi
-#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install make llvm; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install make llvm; fi
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
