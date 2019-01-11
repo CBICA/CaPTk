@@ -501,6 +501,8 @@ private:
     //std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - region.GetSize = " << region.GetSize() << std::endl;
     //std::cout << "\n[DEBUG] GLSZMFeatures.h - CalculateGLSZMatrix() - region.GetIndex = " << region.GetIndex() << std::endl;
 
+    using TConstIteratorType = itk::ImageRegionConstIterator< TImageType >;
+    using TIteratorType = itk::ImageIteratorWithIndex< TImageType >;
     TConstIteratorType imageIter(this->m_inputImage, this->m_inputImage->GetBufferedRegion()),
       maskIter(this->m_Mask, this->m_Mask->GetBufferedRegion());
     TIteratorType visitedImageIterator(visitedImage, visitedImage->GetBufferedRegion());
