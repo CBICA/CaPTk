@@ -463,7 +463,7 @@ int algorithmsRunner()
 
 int main(int argc, char** argv)
 {
-  cbica::CmdParser parser(argc, argv);
+  cbica::CmdParser parser(argc, argv, "Preprocessing");
 
   parser.addOptionalParameter("i", "inputImage", cbica::Parameter::FILE, "NIfTI", "Input Image for processing");
   parser.addOptionalParameter("m", "maskImage", cbica::Parameter::FILE, "NIfTI", "Input Mask for processing");

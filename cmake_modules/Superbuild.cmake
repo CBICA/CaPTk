@@ -51,6 +51,7 @@ IF( EXISTS "${FILE_TO_EXTRACT}" )
   #SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
   
   SET(ENV{CMAKE_PREFIX_PATH} "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/" )
+  SET(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/" )
   SET(ENV{CMAKE_PROGRAM_PATH} "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/bin" )
   
   FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore)
@@ -105,8 +106,8 @@ INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
 MESSAGE( STATUS "Adding OpenCV-3.4.1 ...")
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
 
-MESSAGE( STATUS "Adding VTK-8.1.0 ...")
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
+#MESSAGE( STATUS "Adding VTK-8.1.0 ...")
+#INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
 
-MESSAGE( STATUS "Adding ITK-4.13.0 ...")
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
+# MESSAGE( STATUS "Adding ITK-4.13.0 ...")
+# INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
