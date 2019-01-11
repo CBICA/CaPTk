@@ -12,27 +12,27 @@ cache: ccache
 # Build matrix to run jobs in parallel
 matrix:
   include:
-    - os: linux
-      dist: xenial
-      sudo: required
-      env:
-        - LINUX_DIST=xenial
-    - os: linux
-      dist: trusty
-      sudo: required
-      env:
-        - LINUX_DIST=trusty
+    # - os: linux
+    #   dist: xenial
+    #   sudo: required
+    #   env:
+    #     - LINUX_DIST=xenial
+    # - os: linux
+    #   dist: trusty
+    #   sudo: required
+    #   env:
+    #     - LINUX_DIST=trusty
     - os: osx
   fast_finish: true
   allow_failures:
-    - os: linux
-      dist: trusty
+    # - os: linux
+    #   dist: trusty
 
 before_install:
   ### LINUX
   # Linux install step
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy; fi
   
   # Update step
   # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
@@ -48,5 +48,5 @@ before_install:
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/mac-test-build.sh; fi
