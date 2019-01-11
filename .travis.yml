@@ -8,7 +8,7 @@ language: cpp
 # After that, also make sure the script terminates afterwards immediately so travis can pack and upload the cache
 cache: ccache
   directories:
-  — /Users/travis/build/PhucNgo1711/CaPTk/bin
+  - /Users/travis/build/PhucNgo1711/CaPTk/bin
 
 env:
   global:
