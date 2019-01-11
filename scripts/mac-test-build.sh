@@ -20,7 +20,7 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 # export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
-make -j 2
+make -j 4
 
 export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
 cmake ../
