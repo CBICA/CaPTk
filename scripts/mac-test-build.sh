@@ -20,7 +20,7 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 # export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
-( cmdpid=$BASHPID; (sleep 2400; kill $cmdpid) & exec make )
+(cmdpid=$BASHPID; (sleep 2400; kill $cmdpid) & exec make)
 
 export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
 cmake ../
