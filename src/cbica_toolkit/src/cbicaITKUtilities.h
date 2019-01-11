@@ -1038,7 +1038,7 @@ namespace cbica
       outputSpacingVector.Fill(outputSpacing);
       for (size_t i = 0; i < TImageType::ImageDimension; i++)
       {
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing[i];
+        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
       }
     }
     else // preserve all time points of a time series image
@@ -1046,7 +1046,7 @@ namespace cbica
       for (size_t i = 0; i < 3; i++)
       {
         outputSpacingVector[i] = outputSpacing;
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing[i];
+        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
       }
     }
 
