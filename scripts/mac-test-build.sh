@@ -10,7 +10,7 @@ export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-export PATH="$PATH:/usr/local/opt/llvm/bin:/usr/local/Cellar/qt/5.11.1/bin:/usr/local/Cellar/qt/5.11.1/lib/cmake/Qt5"
+# export PATH="$PATH:/usr/local/opt/llvm/bin:/usr/local/Cellar/qt/5.11.1/bin:/usr/local/Cellar/qt/5.11.1/lib/cmake/Qt5"
 
 # echo "going to QT5"
 # cd /usr/local/Cellar/qt/5.11.1/lib/cmake/Qt5
@@ -48,13 +48,33 @@ echo "[!] Error: You do not appear to be in trunk (CMakeLists.txt not found)"
 exit -1
 fi
 
-# echo "[:] Set up env..."
-# ENV_CMD
+# Nuclear option
+# rm -rf binaries
+rm -rf data
+rm -rf history
+rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
 # Create binary directory
 echo "[:] Creating binary directory..."
 mkdir bin
+
+# Move OS specific qt lib in
+mv ./binaries/qt5.11.2_mac.zip ./bin/qt.zip
+
+# Move externalApps into bin to trick CMake
+mv ./binaries/externalApps.zip ./bin/
+
+# Remove all other blobs
+rm -rf binaries
+
 cd bin
+
+# Extract externalApps
+unzip externalApps.zip &> /dev/null
+
+# Create test data dir to skip ftp download
+mkdir testing
+mkdir ./testing/TestData
 
 # Cmake
 echo "[:] Running cmake command and build CaPTk..."
