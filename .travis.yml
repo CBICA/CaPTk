@@ -9,6 +9,10 @@ cache: ccache
 # After that, also make sure the script terminates afterwards immediately so travis can pack and upload the cache
 cache: ccache
 
+env:
+  global:
+    - MAKEFLAGS="-j 2"
+
 # Build matrix to run jobs in parallel
 matrix:
   include:
