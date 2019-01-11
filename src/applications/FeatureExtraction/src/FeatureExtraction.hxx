@@ -992,8 +992,9 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
 
 
       std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM[Individual = " << offsetIt.Value() << "] - Matrix = \n" << std::endl;
+      std::cout << "\tindex\t|\t[min, max]\t|\tfrenquency"<<std::endl;
       for (int bin_count = 0; bin_count < m_Bins; bin_count++) {
-        std::cout << "\t" << bin_count << "\t|\t" << matrix_generator->GetOutput()->GetFrequency(bin_count) << std::endl;
+        std::cout << "\t" << bin_count << "\t|\t[" << matrix_generator->GetOutput()->GetHistogramMinFromIndex(bin_count) << ", " << matrix_generator->GetOutput()->GetHistogramMaxFromIndex(bin_count) << "]\t|\t" << matrix_generator->GetOutput()->GetFrequency(bin_count) << std::endl;
       }
 
       //TBD
