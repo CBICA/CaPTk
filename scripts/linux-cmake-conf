@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# 
+# linux-cmake-conf
+#
+# Linux scripts can use this to configure cmake for the specific requirements of linux and it's deployment.
+#
+
+# Linuxdeployqt requires a very special directory structure to use with it, therefore we should configure cmake
+# to inherently install CaPTk to that directory structure.
+cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..

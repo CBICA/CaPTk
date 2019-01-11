@@ -72,4 +72,33 @@ make -j2 #&> /dev/null
 
 # Build a fast installation
 cd ..
-./scripts/linux-build-fast
+
+echo "[:] Starting CaPTk building process..."
+
+echo "[?] Checking if you are in trunk..."
+# Test to see if the user is in trunk
+# First see if CMakeLists.txt exists
+if [[ -e CMakeLists.txt ]] ; then
+  # See if it contains PROJECT( CaPTk )
+  if [[ -z  `cat CMakeLists.txt | grep "PROJECT( CaPTk )"`  ]] ; then
+    echo "[!] Error: You do not appear to be within trunk of CaPTk (Project is not CaPTk)"
+    exit -1
+  fi
+else
+  echo "[!] Error: You do not appear to be in trunk (CMakeLists.txt not found)"
+  exit -1
+fi
+
+# Enter binary directory
+echo "[:] Entering binary directory..."
+cd bin
+
+# Cmake
+echo "[:] Running cmake command..."
+bash ../scripts/linux-cmake-conf
+
+# Make
+echo "[:] Building CaPTk..."
+make -j2
+
+echo "[:] Done. Project has been built"
