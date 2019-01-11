@@ -24,6 +24,10 @@ fFeaturePanel::fFeaturePanel(QWidget * parent) : QWidget(parent)
   m_listener = NULL;
   m_featureDialog = NULL;
   setupUi(this);
+
+  m_featureFiles = cbica::stringSplit(std::string(FeatureDefinitions), " ");
+  m_featureFiles.erase(m_featureFiles.begin()); // because an empty string always gets appended first
+
   connect(m_btnCompute, SIGNAL(clicked()), this, SLOT(onComputeButtonClicked()));
   connect(m_btnAdvanced, SIGNAL(clicked()), this, SLOT(advancedButtonClicked()));
   connect(m_btnBrowseSaveFile, SIGNAL(clicked()), this, SLOT(browseOutputFileName()));

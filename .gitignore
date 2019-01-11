@@ -22,3 +22,4 @@ src/applications/FeatureExtraction/data/output
 /src/applications/FeatureExtraction/data/params_test.csv
 /src/applications/FeatureExtraction/data/PAT1_ConfigD_181221
 /src/applications/FeatureExtraction/data/3_params_default_IBSI.csv
+ibsi_phantom

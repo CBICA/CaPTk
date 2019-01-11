@@ -22,6 +22,7 @@
 
 #include "QWidget"
 #include "QVTKOpenGLWidget.h"
+#include <QScopedPointer>
 #include "vtkSmartPointer.h"
 #include "vtkChartXY.h"
 #include "vtkTable.h"
@@ -43,7 +44,7 @@ class HistWidget : public QWidget
 {
   Q_OBJECT
 private:
-  QVTKOpenGLWidget * widget;
+  QScopedPointer<QVTKOpenGLWidget> widget;
   vtkSmartPointer<vtkContextView> m_view;
   vtkSmartPointer<vtkTable> m_table;
   vtkSmartPointer<vtkFloatArray> m_arrX;
@@ -52,8 +53,7 @@ private:
 public:
   explicit HistWidget(QWidget *parent) : QWidget(parent, Qt::Window)
   {
-
-    widget = new QVTKOpenGLWidget(this);
+    widget.reset(new QVTKOpenGLWidget(this));
     widget->setMinimumSize(QSize(256, 256));
     m_view = vtkSmartPointer<vtkContextView>::New();
     m_view->SetInteractor(widget->GetInteractor());
@@ -61,7 +61,7 @@ public:
     m_view->GetRenderer()->SetBackground(0.3, 0.3, 0.3);
     m_view->GetInteractor()->Initialize();
     QHBoxLayout *mainLayout = new QHBoxLayout;
-    mainLayout->addWidget(widget);
+    mainLayout->addWidget(widget.data());
     setLayout(mainLayout);
     setWindowTitle("Histogram visualization");
     m_table = vtkSmartPointer<vtkTable>::New();

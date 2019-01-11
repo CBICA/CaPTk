@@ -58,7 +58,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCmdLin
 int main(int argc, char** argv)
 {
 #endif
-  
+
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
 
   #if __APPLE__
