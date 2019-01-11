@@ -15,8 +15,6 @@ cache:
 env:
   global:
     - MAKEFLAGS="-j 2"
-    - HOMEBREW_LOGS=~/homebrew-logs
-    - HOMEBREW_TEMP=~/homebrew-temp
 
 # Build matrix to run jobs in parallel
 matrix:
