@@ -10,12 +10,12 @@ export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-export PATH="$PATH:/usr/local/opt/llvm/bin:/usr/local/Cellar/qt/5.11.1/bin:/usr/local/Cellar/qt/5.11.1/lib/cmake/Qt5"
+export PATH="$PATH:/usr/local/opt/llvm/bin:/usr/local/Cellar/qt/5.12.0/bin:/usr/local/Cellar/qt/5.12.0/lib/cmake/Qt5"
 
-echo "going to QT5"
-cd /usr/local/Cellar/qt/5.11.1/lib/cmake/Qt5
-echo "going back"
-cd /Users/travis/build/PhucNgo1711/CaPTk/bin
+# echo "going to QT5"
+# cd /usr/local/Cellar/qt/5.11.1/lib/cmake/Qt5
+# echo "going back"
+# cd /Users/travis/build/PhucNgo1711/CaPTk/bin
 
 # export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
