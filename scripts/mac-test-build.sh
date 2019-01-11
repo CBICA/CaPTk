@@ -55,8 +55,8 @@ rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
 # Create binary directory
-echo "[:] Creating binary directory..."
-mkdir bin
+# echo "[:] Creating binary directory..."
+# mkdir -p bin
 
 # Move OS specific qt lib in
 mv ./binaries/qt5.11.2_mac.zip ./bin/qt.zip
