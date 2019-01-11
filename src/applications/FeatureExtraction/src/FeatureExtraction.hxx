@@ -902,6 +902,14 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   using RunLengthMatrixGenerator = typename RunLengthFilterType::RunLengthMatrixFilterType;
   using RunLengthFeatures = typename RunLengthFilterType::RunLengthFeaturesFilterType;
 
+  //TBD
+  typename RunLengthFilterType::Pointer wrapper_generator = RunLengthFilterType::New();
+  wrapper_generator->SetInput(image);
+  wrapper_generator->SetMaskImage(mask);
+  wrapper_generator->SetInsidePixelValue(1);
+  wrapper_generator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
+  //TBD
+
   typename  RunLengthMatrixGenerator::Pointer matrix_generator = RunLengthMatrixGenerator::New();
   matrix_generator->SetInput(image);
   matrix_generator->SetMaskImage(mask);
@@ -924,6 +932,33 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TOCHECK - why is this only between 0-4? P
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
 
+  //TBD
+  wrapper_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
+  //TBD
+
+  //TBD
+  typename RunLengthFilterType::FeatureNameVectorPointer requestedFeatures = RunLengthFilterType::FeatureNameVector::New();
+  typedef typename RunLengthFilterType::RunLengthFeaturesFilterType TextureFilterType;
+  requestedFeatures->push_back(TextureFilterType::ShortRunEmphasis);
+  requestedFeatures->push_back(TextureFilterType::LongRunEmphasis);
+  requestedFeatures->push_back(TextureFilterType::GreyLevelNonuniformity);
+  requestedFeatures->push_back(TextureFilterType::GreyLevelNonuniformityNormalized);
+  requestedFeatures->push_back(TextureFilterType::RunLengthNonuniformity);
+  requestedFeatures->push_back(TextureFilterType::RunLengthNonuniformityNormalized);
+  requestedFeatures->push_back(TextureFilterType::LowGreyLevelRunEmphasis);
+  requestedFeatures->push_back(TextureFilterType::HighGreyLevelRunEmphasis);
+  requestedFeatures->push_back(TextureFilterType::ShortRunLowGreyLevelEmphasis);
+  requestedFeatures->push_back(TextureFilterType::ShortRunHighGreyLevelEmphasis);
+  requestedFeatures->push_back(TextureFilterType::LongRunLowGreyLevelEmphasis);
+  requestedFeatures->push_back(TextureFilterType::LongRunHighGreyLevelEmphasis);
+  requestedFeatures->push_back(TextureFilterType::RunPercentage);
+  requestedFeatures->push_back(TextureFilterType::NumberOfRuns);
+  requestedFeatures->push_back(TextureFilterType::GreyLevelVariance);
+  requestedFeatures->push_back(TextureFilterType::RunLengthVariance);
+  requestedFeatures->push_back(TextureFilterType::RunEntropy);
+  wrapper_generator->SetRequestedFeatures(requestedFeatures);
+  //TBD
+
   typename  RunLengthFeatures::Pointer runLengthMatrixCalculator = RunLengthFeatures::New();
 
   typename  OffsetVector::ConstIterator offsetIt;
@@ -936,10 +971,15 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     size_total *= size[d];
   }
 
+
   if ((m_offsetSelect == "Average") || (m_offsetSelect == "Individual"))
   {
     double sre = 0, lre = 0, gln = 0, glnn = 0, rln = 0, rlnn = 0, rp = 0, lglre = 0, hglre = 0, srlgle = 0, srhgle = 0, lrlgle = 0, lrhgle = 0,
       runs = 0, glv = 0, rlv = 0, re = 0;
+
+    //TBD
+    int count_offset = 0;
+    //TBD
 
     for (offsetIt = offset->Begin(); offsetIt != offset->End(); offsetIt++, offsetNum++)
     {
@@ -949,8 +989,19 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       runLengthMatrixCalculator->SetInput(matrix_generator->GetOutput());
       runLengthMatrixCalculator->Update();
 
+
+      std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM[Individual = " << offsetIt.Value() << "] - Matrix = \n" << std::endl;
+      for (int bin_count = 0; bin_count < m_Bins; bin_count++) {
+        std::cout << "\t" << bin_count << "\t|\t" << matrix_generator->GetOutput()->GetFrequency(bin_count) << std::endl;
+      }
+
+      //TBD
+      count_offset = count_offset + 1;
+      //TBD
+
       if (m_offsetSelect == "Average")
       {
+
         sre += runLengthMatrixCalculator->GetShortRunEmphasis();
         lre += runLengthMatrixCalculator->GetLongRunEmphasis();
         gln += runLengthMatrixCalculator->GetGreyLevelNonuniformity();
@@ -968,9 +1019,11 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
         glv += runLengthMatrixCalculator->GetGreyLevelVariance();
         rlv += runLengthMatrixCalculator->GetRunLengthVariance();
         re += runLengthMatrixCalculator->GetRunEntropy();
+
       }
       else // individual
       {
+
         featurevec["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetShortRunEmphasis();
         featurevec["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetLongRunEmphasis();
         featurevec["GreyLevelNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetGreyLevelNonuniformity();
@@ -988,8 +1041,89 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
         featurevec["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetGreyLevelVariance();
         featurevec["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunLengthVariance();
         featurevec["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunEntropy();
+
+
+
+        //TBD
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM[Individual = " << offsetIt.Value() << "] - ShortRunEmphasis = " << runLengthMatrixCalculator->GetShortRunEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM[Individual = " << offsetIt.Value() << "] - HighGreyLevelRunEmphasis = " << runLengthMatrixCalculator->GetHighGreyLevelRunEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM[Individual = " << offsetIt.Value() << "] - LongRunHighGreyLevelEmphasis = " << runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM[Individual = " << offsetIt.Value() << "] - ShortRunHighGreyLevelEmphasis = " << runLengthMatrixCalculator->GetShortRunHighGreyLevelEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM[Individual = " << offsetIt.Value() << "] - LongRunLowGreyLevelEmphasis = " << runLengthMatrixCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM[Individual = " << offsetIt.Value() << "] - LowGreyLevelRunEmphasis = " << runLengthMatrixCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM[Individual = " << offsetIt.Value() << "] - ShortRunLowGreyLevelEmphasis = " << runLengthMatrixCalculator->GetShortRunLowGreyLevelEmphasis() << std::endl;
+        //TBD
+
+        ////TBD
+        //wrapper_generator->SetOffsets(offsetIt);
+
+        //wrapper_generator->Update();
+        //auto featureMeans = wrapper_generator->GetFeatureMeans();
+        //auto featureStd = wrapper_generator->GetFeatureStandardDeviations();
+
+        //for (std::size_t i = 0; i < featureMeans->size(); ++i)
+        //{
+        //  switch (i)
+        //  {
+        //  case TextureFilterType::ShortRunEmphasis:
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetShortRunEmphasis() << std::endl;
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        //    break;
+        //  case TextureFilterType::LongRunEmphasis:
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLongRunEmphasis() << std::endl;
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        //    break;
+        //  case TextureFilterType::GreyLevelNonuniformity:
+        //    break;
+        //  case TextureFilterType::GreyLevelNonuniformityNormalized:
+        //    break;
+        //  case TextureFilterType::RunLengthNonuniformity:
+        //    break;
+        //  case TextureFilterType::RunLengthNonuniformityNormalized:
+        //    break;
+        //  case TextureFilterType::LowGreyLevelRunEmphasis:
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LowGreyLevelRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LowGreyLevelRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        //    break;
+        //  case TextureFilterType::HighGreyLevelRunEmphasis:
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - HighGreyLevelRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetHighGreyLevelRunEmphasis() << std::endl;
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - HighGreyLevelRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        //    break;
+        //  case TextureFilterType::ShortRunLowGreyLevelEmphasis:
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunLowGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetShortRunLowGreyLevelEmphasis()  << std::endl;
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunLowGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        //    break;
+        //  case TextureFilterType::ShortRunHighGreyLevelEmphasis:
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunHighGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetShortRunHighGreyLevelEmphasis() << std::endl;
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunHighGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        //    break;
+        //  case TextureFilterType::LongRunLowGreyLevelEmphasis:
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunLowGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunLowGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        //    break;
+        //  case TextureFilterType::LongRunHighGreyLevelEmphasis:
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunHighGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
+        //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunHighGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        //    break;
+        //  case TextureFilterType::RunPercentage:
+        //    break;
+        //  case TextureFilterType::NumberOfRuns:
+        //    break;
+        //  case TextureFilterType::GreyLevelVariance:
+        //    break;
+        //  case TextureFilterType::RunLengthVariance:
+        //    break;
+        //  case TextureFilterType::RunEntropy:
+        //    break;
+        //  default:
+        //    break;
+        //  }
+        //}
+        ////TBD
       }
     }
+
+
     if (m_offsetSelect == "Average")
     {
       sre /= offset->size();
@@ -1028,6 +1162,78 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       featurevec["RunLengthVariance_Offset"] = rlv;
       featurevec["RunEntropy"] = re;
     }
+
+    //TBD
+    if (m_offsetSelect == "Average") {
+      std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - count_offset = " << count_offset << std::endl;
+
+      wrapper_generator->SetOffsets(offset);
+
+      wrapper_generator->Update();
+      auto featureMeans = wrapper_generator->GetFeatureMeans();
+      auto featureStd = wrapper_generator->GetFeatureStandardDeviations();
+
+      for (std::size_t i = 0; i < featureMeans->size(); ++i)
+      {
+        switch (i)
+        {
+        case TextureFilterType::ShortRunEmphasis:
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunEmphasis: runLengthMatrixCalculator = " << sre << std::endl;
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+          break;
+        case TextureFilterType::LongRunEmphasis:
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunEmphasis: runLengthMatrixCalculator = " << lre << std::endl;
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+          break;
+        case TextureFilterType::GreyLevelNonuniformity:
+          break;
+        case TextureFilterType::GreyLevelNonuniformityNormalized:
+          break;
+        case TextureFilterType::RunLengthNonuniformity:
+          break;
+        case TextureFilterType::RunLengthNonuniformityNormalized:
+          break;
+        case TextureFilterType::LowGreyLevelRunEmphasis:
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LowGreyLevelRunEmphasis: runLengthMatrixCalculator = " << lglre << std::endl;
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LowGreyLevelRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+          break;
+        case TextureFilterType::HighGreyLevelRunEmphasis:
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - HighGreyLevelRunEmphasis: runLengthMatrixCalculator = " << hglre << std::endl;
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - HighGreyLevelRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+          break;
+        case TextureFilterType::ShortRunLowGreyLevelEmphasis:
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunLowGreyLevelEmphasis: runLengthMatrixCalculator = " << srlgle << std::endl;
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunLowGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+          break;
+        case TextureFilterType::ShortRunHighGreyLevelEmphasis:
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunHighGreyLevelEmphasis: runLengthMatrixCalculator = " << srhgle << std::endl;
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunHighGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+          break;
+        case TextureFilterType::LongRunLowGreyLevelEmphasis:
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunLowGreyLevelEmphasis: runLengthMatrixCalculator = " << lrlgle << std::endl;
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunLowGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+          break;
+        case TextureFilterType::LongRunHighGreyLevelEmphasis:
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunHighGreyLevelEmphasis: runLengthMatrixCalculator = " << lrhgle << std::endl;
+          std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunHighGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+          break;
+        case TextureFilterType::RunPercentage:
+          break;
+        case TextureFilterType::NumberOfRuns:
+          break;
+        case TextureFilterType::GreyLevelVariance:
+          break;
+        case TextureFilterType::RunLengthVariance:
+          break;
+        case TextureFilterType::RunEntropy:
+          break;
+        default:
+          break;
+        }
+      }
+    }
+    //TBD
+
   }
   else if ((m_offsetSelect == "ITKDefault") || (m_offsetSelect == "Combined"))
   {
@@ -1056,6 +1262,74 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     featurevec["GreyLevelVariance"] = runLengthMatrixCalculator->GetGreyLevelVariance();
     featurevec["RunLengthVariance"] = runLengthMatrixCalculator->GetRunLengthVariance();
     featurevec["RunEntropy"] = runLengthMatrixCalculator->GetRunEntropy();
+
+    //TBD
+    wrapper_generator->SetOffsets(offset);
+    wrapper_generator->CombinedFeatureCalculationOn(); //function not available according to VS2017. Error Code C2039
+
+    wrapper_generator->Update();
+    auto featureMeans = wrapper_generator->GetFeatureMeans();
+    auto featureStd = wrapper_generator->GetFeatureStandardDeviations();
+
+    for (std::size_t i = 0; i < featureMeans->size(); ++i)
+    {
+      switch (i)
+      {
+      case TextureFilterType::ShortRunEmphasis:
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetShortRunEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        break;
+      case TextureFilterType::LongRunEmphasis:
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLongRunEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        break;
+      case TextureFilterType::GreyLevelNonuniformity:
+        break;
+      case TextureFilterType::GreyLevelNonuniformityNormalized:
+        break;
+      case TextureFilterType::RunLengthNonuniformity:
+        break;
+      case TextureFilterType::RunLengthNonuniformityNormalized:
+        break;
+      case TextureFilterType::LowGreyLevelRunEmphasis:
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LowGreyLevelRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LowGreyLevelRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        break;
+      case TextureFilterType::HighGreyLevelRunEmphasis:
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - HighGreyLevelRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetHighGreyLevelRunEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - HighGreyLevelRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        break;
+      case TextureFilterType::ShortRunLowGreyLevelEmphasis:
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunLowGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetShortRunLowGreyLevelEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunLowGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        break;
+      case TextureFilterType::ShortRunHighGreyLevelEmphasis:
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunHighGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetShortRunHighGreyLevelEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunHighGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        break;
+      case TextureFilterType::LongRunLowGreyLevelEmphasis:
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunLowGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunLowGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        break;
+      case TextureFilterType::LongRunHighGreyLevelEmphasis:
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunHighGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
+        std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunHighGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
+        break;
+      case TextureFilterType::RunPercentage:
+        break;
+      case TextureFilterType::NumberOfRuns:
+        break;
+      case TextureFilterType::GreyLevelVariance:
+        break;
+      case TextureFilterType::RunLengthVariance:
+        break;
+      case TextureFilterType::RunEntropy:
+        break;
+      default:
+        break;
+      }
+    }
+    //TBD
   }
   else
   {
@@ -1672,10 +1946,10 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
           //}
           //myfile << "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
           m_finalOutputToWrite += "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
-//#ifndef WIN32
-//          myfile.flush();
-//#endif
-//          myfile.close();
+          //#ifndef WIN32
+          //          myfile.flush();
+          //#endif
+          //          myfile.close();
         }
         //else // otherwise, append
         {
@@ -1691,10 +1965,10 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
           m_finalOutputToWrite += m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
             "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
         }
-//#ifndef WIN32
-//        myfile.flush();
-//#endif
-//        myfile.close();
+        //#ifndef WIN32
+        //        myfile.flush();
+        //#endif
+        //        myfile.close();
       }
 
       // for training file, populate these 2 member variables
