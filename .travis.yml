@@ -7,9 +7,10 @@ language: cpp
 # To do this, go into the superbuild cmake and simply comment out the packages so that opencv only builds, then vtk and opencv, etc
 # After that, also make sure the script terminates afterwards immediately so travis can pack and upload the cache
 cache: 
-  directories:
-  - /Users/travis/build/PhucNgo1711/CaPTk/bin
-  - $HOME/Library/Caches/Homebrew
+  - ccache
+  - directories:
+    - /Users/travis/build/PhucNgo1711/CaPTk/bin
+    - $HOME/Library/Caches/Homebrew
 
 env:
   global:
@@ -50,9 +51,9 @@ before_install:
 
   ### OSX
   # OSX install step
-  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install caskroom/cask/mactex && HOMEBREW_NO_AUTO_UPDATE=1 brew install qt make git-lfs doxygen llvm; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make llvm; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install make llvm; fi
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
