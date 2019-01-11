@@ -55,8 +55,8 @@ before_install:
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install caskroom/cask/mactex && HOMEBREW_NO_AUTO_UPDATE=1 brew install qt make git-lfs doxygen llvm; fi
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install make llvm; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/make/lib  || { rmdir /usr/local/opt/make; HOMEBREW_NO_AUTO_UPDATE=1 brew install make; }
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/llvm/lib  || { rmdir /usr/local/opt/llvm; HOMEBREW_NO_AUTO_UPDATE=1 brew install llvm; }
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/make/lib  || { rmdir /usr/local/opt/make; HOMEBREW_NO_AUTO_UPDATE=1 brew install make; }; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/llvm/lib  || { rmdir /usr/local/opt/llvm; HOMEBREW_NO_AUTO_UPDATE=1 brew install llvm; }; fi
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
