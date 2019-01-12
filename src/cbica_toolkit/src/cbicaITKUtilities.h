@@ -1068,7 +1068,7 @@ namespace cbica
     }
     else if (interpolator_wrap.find("nearest") != std::string::npos)
     {
-      auto interpolatorFunc = typename itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
+      auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
     else
@@ -1130,7 +1130,7 @@ namespace cbica
     }
     else if (interpolator_wrap.find("nearest") != std::string::npos)
     {
-      auto interpolatorFunc = typename itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
+      auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
     else
