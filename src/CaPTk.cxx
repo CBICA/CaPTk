@@ -136,7 +136,7 @@ int main(int argc, char** argv)
         std::string argv_complete;        
         for (size_t i = 1; i < argc; i++)
         {
-          argv_complete = argv_complete + " " + std::string(argv[i]);
+          argv_complete += " " + std::string(argv[i]);
         }
         // Pass them in
         return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
