@@ -22,12 +22,13 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 cmake ../
 echo "Run Dependency Manager"
 # (cmdpid=$BASHPID; (sleep 10; kill $cmdpid) & exec make)
-make & sleep 2400; kill $!
+# make & sleep 2400; kill $!
+make
 
 echo "Run CaPTk Build"
-# export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
-# cmake ../
-# make
+export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
+cmake ../
+make
 
 # export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build
 }
