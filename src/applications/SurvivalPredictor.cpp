@@ -1,5 +1,5 @@
 #include "SurvivalPredictor.h"
-#include "itkCSVNumericObjectFileWriter.h""
+#include "itkCSVNumericObjectFileWriter.h"
 #include "CaPTkGUIUtils.h"
 #include "CaPTkClassifierUtils.h"
 

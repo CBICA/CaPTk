@@ -13,6 +13,7 @@
 
 #include "cbicaCmdParser.h"
 #include "cbicaUtilities.h"
+#include "yaml-cpp/yaml.h"
 
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
@@ -124,14 +125,21 @@ int main(int argc, char** argv)
   {
     for (auto & file : cbica::getCWLFilesInApplicationDir()) 
     {
+      // Check for filename without cwl extension
       if (argv[1] == file.substr(0, file.size() - 4)) 
       {
-        std::string argv_complete;
+        // Get base command
+        std::ofstream selected_file;
+        selected_file.open(file.c_str());
+        YAML::Node config = YAML::LoadFile(file);
+        // Get all args passed to application
+        std::string argv_complete;        
         for (size_t i = 1; i < argc; i++)
         {
           argv_complete = argv_complete + " " + std::string(argv[i]);
         }
-        return std::system((getApplicationPath(argv[1]) + argv_complete).c_str());
+        // Pass them in
+        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
       }
     }
   }

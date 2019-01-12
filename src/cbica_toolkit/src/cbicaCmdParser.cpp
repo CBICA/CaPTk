@@ -1173,7 +1173,7 @@ namespace cbica
     m_exampleOfUsage = cbica::stringReplace(m_exampleOfUsage, "./" + m_exeName, "");
   }
 
-  void CmdParser::writeCWLFile(const std::string &dirName, bool overwriteFile = false) 
+  void CmdParser::writeCWLFile(const std::string &dirName, bool overwriteFile = true) 
   {
     if (!checkMaxLen)
     {
@@ -1207,7 +1207,11 @@ namespace cbica
       config["cwlVersion"] = "v1.0";
       config["class"] = "CommandLineTool";
       config["version"] = m_version;
-      config["baseCommand"] = m_exeName;
+#ifdef WIN32
+      config["baseCommand"] = (m_exeName + ".exe");
+#else
+      config["baseCommand"] = (m_exeName);
+#endif
       
       YAML::Node inputs = config["inputs"];
       

@@ -15,12 +15,6 @@ set -e
 # Store the root dir this is being run from
 SRC_DIR=`pwd`
 
-# Linuxdeployqt requires a very special directory structure to use with it, therefore we should configure cmake
-# to inherently install CaPTk to that directory structure.
-CMAKE_CMD () {
-  cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-}
-
 # Run the fixes for linux
 FIX_CMD () {
   # Save the install dir for later
@@ -150,7 +144,7 @@ fi
 
 # Cmake
 echo "[:] Running cmake command..."
-CMAKE_CMD
+bash ../scripts/linux-cmake-conf
 
 # Make install/strip
 echo "[:] Building CaPTk..."
