@@ -13,16 +13,17 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 */
 
+#include "FeatureExtraction.h"
+
 #include "cbicaCmdParser.h"
 #include "cbicaLogging.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaUtilities.h"
-#include "itkImageFileReader.h"
-#include "itkImageFileWriter.h"
-#include "FeatureExtraction.h"
-#include "itkDOMNodeXMLReader.h"
-#include "itkDOMNodeXMLWriter.h"
-#include "itkDOMNode.h"
+//#include "itkImageFileReader.h"
+//#include "itkImageFileWriter.h"
+//#include "itkDOMNodeXMLReader.h"
+//#include "itkDOMNodeXMLWriter.h"
+//#include "itkDOMNode.h"
 
 //#include "cbicaITKImageInfo.h"
 
