@@ -15,9 +15,9 @@ cache:
     - /usr/local/Cellar/make
     - /usr/local/opt/make
 
-env:
-  global:
-    - MAKEFLAGS="-j 2"
+# env:
+#   global:
+#     - MAKEFLAGS="-j 2"
 
 # Build matrix to run jobs in parallel
 matrix:
