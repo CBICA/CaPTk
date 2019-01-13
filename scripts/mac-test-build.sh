@@ -25,10 +25,10 @@ echo "Run Dependency Manager"
 make & sleep 1900; kill $!
 # make
 
-echo "Run CaPTk Build"
-export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
-cmake ../
-make
+# echo "Run CaPTk Build"
+# export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
+# cmake ../
+# make
 
 # export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build
 }
