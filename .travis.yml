@@ -9,7 +9,7 @@ language: cpp
 cache: 
   - ccache
   - directories:
-    # - /Users/travis/build/PhucNgo1711/CaPTk/bin
+    - /Users/travis/build/PhucNgo1711/CaPTk/bin
     - /usr/local/Cellar/llvm
     - /usr/local/opt/llvm
     - /usr/local/Cellar/make
