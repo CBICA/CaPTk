@@ -14,6 +14,7 @@ cache:
     - /usr/local/opt/llvm
     - /usr/local/Cellar/make
     - /usr/local/opt/make
+  - timeout: 1000
 
 # env:
 #   global:
