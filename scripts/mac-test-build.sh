@@ -23,7 +23,7 @@ cmake ../
 echo "Run Dependency Manager"
 # (cmdpid=$BASHPID; (sleep 10; kill $cmdpid) & exec make)
 # make & sleep 1900; kill $!
-make
+make 
 
 # echo "Run CaPTk Build"
 # export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
