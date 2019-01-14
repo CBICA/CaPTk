@@ -99,6 +99,6 @@ bash ../scripts/linux-cmake-conf
 
 # Make
 echo "[:] Building CaPTk..."
-# make -j2
+make -j2
 
 echo "[:] Done. Project has been built"
