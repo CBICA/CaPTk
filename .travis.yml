@@ -16,9 +16,9 @@ cache:
     - /usr/local/opt/make
   - timeout: 1000
 
-# env:
-#   global:
-#     - MAKEFLAGS="-j 2"
+env:
+  global:
+    - MAKEFLAGS="-j 2"
 
 # Build matrix to run jobs in parallel
 matrix:
