@@ -9,11 +9,9 @@ export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-# export CMAKE_PREFIX_PATH=/Library/TeX/texbin
+export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
-pwd
 cmake ../
-ls
 echo "Run Dependency Manager"
 make & sleep 2100; kill $!
 # make
