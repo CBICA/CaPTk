@@ -37,14 +37,14 @@ matrix:
 
 before_install:
   ### LINUX
-  Linux install step
+  # Linux install step
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy; fi
   
-  Update step
+  # Update step
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
 
-  Git LFS
+  # Git LFS
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
 
   ### OSX
