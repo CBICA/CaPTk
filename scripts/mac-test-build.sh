@@ -4,7 +4,7 @@
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
-# cmake -DBUILD_DOCUMENTATION=OFF ..
+export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
 export CC=/usr/local/opt/llvm/bin/clang
 export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
