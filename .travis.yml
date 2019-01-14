@@ -38,6 +38,7 @@ matrix:
   allow_failures:
     - os: linux
       dist: trusty
+    - os: linux
       dist: xenial
 
 before_install:
