@@ -987,7 +987,13 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       matrix_generator->SetOffset(offsetIt.Value());
       matrix_generator->Update();
 
-      auto temp = matrix_generator->GetOutput();
+      //std::cout << "[DEBUG] GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
+      //auto temp = matrix_generator->GetOutput();
+      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
+      //{
+      //  std::cout << "\tMeasurement vectors = " << iter.GetMeasurementVector()
+      //    << "; Frequency = " << iter.GetFrequency() << std::endl;
+      //}
 
       //std::cout << "[DEBUG] GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
       //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
@@ -1161,6 +1167,20 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
       glcmGenerator->Update();
       featureCalc->SetInput(glcmGenerator->GetOutput());
       featureCalc->Update();
+
+      //auto temp = glcmGenerator->GetOutput();
+      //std::cout << "[DEBUG] GLCM Matrix: Offset: " << offset->at(i) << "\n";
+      //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
+      ////for (int bin_count = 0; bin_count < m_Bins; bin_count++)
+      ////{
+      ////  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
+      ////}
+      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
+      //{
+      //  std::cout << "\tMeasurement vectors = " << iter.GetMeasurementVector()
+      //    << "; Frequency = " << iter.GetFrequency() << std::endl;
+      //}
+
 
       contrast += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Inertia));
       correl += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Correlation));

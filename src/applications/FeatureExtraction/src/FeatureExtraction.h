@@ -428,7 +428,7 @@ private:
       typename OffsetVector::Pointer offsets = OffsetVector::New();
       auto centerIndex = neighborhood.GetCenterNeighborhoodIndex();
 
-      for (int d = 0; d < directionsToCompute; d++)
+      for (int d = directionsToCompute - 1; d >= 0; d--)
       {
         if (d != static_cast<int>(centerIndex))
         {
