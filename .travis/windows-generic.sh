@@ -2,6 +2,14 @@
 
 # This is a Travis CI script intended to be ran in window's git bash shell
 
+# Nuclear option
+# rm -rf binaries
+rm -rf data
+rm -rf history
+rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+
+mv ./binaries/qt5.11.2_windows.zip ./bin/qt.zip
+
 mkdir bin
 cd bin
 
