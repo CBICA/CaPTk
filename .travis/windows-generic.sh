@@ -15,4 +15,5 @@ mv ./binaries/qt5.11.2_windows.zip ./bin/qt.zip
 cd bin
 
 cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF ..
+ls
 msbuild
