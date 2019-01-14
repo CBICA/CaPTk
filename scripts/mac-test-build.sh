@@ -4,24 +4,17 @@
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
-export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
 export CC=/usr/local/opt/llvm/bin/clang
 export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-# export PATH="$PATH:/usr/local/opt/llvm/bin:/usr/local/Cellar/qt/5.11.1/bin:/usr/local/Cellar/qt/5.11.1/lib/cmake/Qt5"
-
-# echo "going to QT5"
-# cd /usr/local/Cellar/qt/5.11.1/lib/cmake/Qt5
-# echo "going back"
-# cd /Users/travis/build/PhucNgo1711/CaPTk/bin
-
 # export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
+pwd
 cmake ../
+ls
 echo "Run Dependency Manager"
-# (cmdpid=$BASHPID; (sleep 10; kill $cmdpid) & exec make)
 make & sleep 1900; kill $!
 # make
 
@@ -63,7 +56,7 @@ rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 # mkdir -p bin
 
 # Move OS specific qt lib in
-mv ./binaries/qt5.11.2_mac.zip ./bin/qt.zip
+mv ./binaries/qt*_mac.zip ./bin/qt.zip
 
 # Move externalApps into bin to trick CMake
 mv ./binaries/externalApps.zip ./bin/
