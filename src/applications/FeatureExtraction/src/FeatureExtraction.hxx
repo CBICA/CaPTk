@@ -930,7 +930,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   }
 
   // this defaults to the full dynamic range of double according to ITK's documentation
-  matrix_generator->SetDistanceValueMinMax(0, m_Radius); // TBD: TOCHECK - how is this affecting the computation?
+  matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
 
   //TBD
@@ -987,17 +987,23 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       matrix_generator->SetOffset(offsetIt.Value());
       matrix_generator->Update();
 
+      auto temp = matrix_generator->GetOutput();
+
+      //std::cout << "[DEBUG] GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
+      //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
+      //for (int bin_count = 0; bin_count < m_Bins; bin_count++)
+      //{
+      //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
+      //}
+
       runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
       runLengthFeaturesCalculator->Update();
 
-
-      std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM[Individual = " << offsetIt.Value() << "] - Matrix = \n" << std::endl;
-      for (int bin_count = 0; bin_count < m_Bins; bin_count++) {
-        std::cout << "\t" << bin_count << "\t|\t" << matrix_generator->GetOutput()->GetFrequency(bin_count) << std::endl;
-      }
+      //std::cout << "\tShort: " << runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis() << "\n";
+      //std::cout << "\tLong: " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << "\n";
 
       //TBD
-      count_offset = count_offset + 1;
+      count_offset++;
       //TBD
 
       if (m_offsetSelect == "Average")
@@ -1043,7 +1049,6 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       }
     }
 
-
     if (m_offsetSelect == "Average")
     {
       sre /= offset->size();
@@ -1088,7 +1093,12 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     matrix_generator->SetOffsets(offset);
     matrix_generator->Update();
 
-    auto temp = matrix_generator->GetOutput();
+    //auto temp = matrix_generator->GetOutput();
+    //std::cout << "GLRLM Matrix:\n";
+    //for (int bin_count = 0; bin_count < m_Bins; bin_count++) 
+    //{
+    //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
+    //}
 
     runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
     runLengthFeaturesCalculator->Update();
