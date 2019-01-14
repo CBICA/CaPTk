@@ -21,10 +21,12 @@ matrix:
       sudo: required
       env:
         - LINUX_DIST=trusty
+    - os: windows
   fast_finish: true
   allow_failures:
     - os: linux
       dist: trusty
+    - os: windows
 
 before_install:
   # Linux install step
