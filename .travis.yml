@@ -41,4 +41,4 @@ before_install:
   
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then cmake .; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./.travis/windows-generic.sh; fi
