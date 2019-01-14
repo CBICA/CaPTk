@@ -8,9 +8,10 @@ rm -rf data
 rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
+mkdir bin
+
 mv ./binaries/qt5.11.2_windows.zip ./bin/qt.zip
 
-mkdir bin
 cd bin
 
 cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF ..
