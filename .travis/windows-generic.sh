@@ -6,3 +6,4 @@ mkdir bin
 cd bin
 
 cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF ..
+make
