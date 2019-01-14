@@ -22,6 +22,8 @@ matrix:
       env:
         - LINUX_DIST=trusty
     - os: windows
+      env:
+        - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
   fast_finish: true
   allow_failures:
     - os: linux
@@ -41,4 +43,5 @@ before_install:
   
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export PATH=$MSBUILD_PATH:$PATH; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./.travis/windows-generic.sh; fi
