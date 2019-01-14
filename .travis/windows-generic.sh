@@ -15,4 +15,4 @@ mv ./binaries/qt5.11.2_windows.zip ./bin/qt.zip
 cd bin
 
 cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF ..
-msbuild.exe CaPTk_Depends.sln
+C:/Program Files (x86)/Microsoft Visual Studio/2017/Enterprise(community)/MSBuild/bin/msbuild.exe CaPTk_Depends.sln
