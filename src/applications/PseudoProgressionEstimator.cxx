@@ -1,7 +1,7 @@
 #include "PseudoProgressionEstimator.h"
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
-#include "CaPTkEnums.h"
+#include "CapTkEnums.h"
 
 //------------------Survival Prediction on existing model-----------------------
 
@@ -20,10 +20,10 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
     std::string t1FilePath = "";
     std::string t2FilePath = "";
     std::string t2FlairFilePath = "";
-    
+
     //std::string t1t1ceFilePath    = "";
     //std::string t2t2FlairFilePath = "";
-    
+
     std::string axFilePath = "";
     std::string faFilePath = "";
     std::string radFilePath = "";
@@ -121,144 +121,157 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
     }
     if (cbica::fileExists(subjectPath + "/features.csv"))
       featuresFilePath = subjectPath + "/features.csv";
-    
+
     if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
       continue;
 
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]        = t1FilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]        = t2FilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]      = t1ceFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]   = t2FlairFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2] = t2FilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE] = t1ceFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR] = t2FlairFilePath;
     //OneQualifiedSubject[IMAGE_TYPE_T1T1CE]    = t1t1ceFilePath; 
     //OneQualifiedSubject[IMAGE_TYPE_T2FL]      = t2t2FlairFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX]        = axFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA]        = faFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD]       = radFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR]        = trFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH]        = phFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR]       = psrFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV]      = rcbvFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX] = axFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA] = faFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD] = radFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR] = trFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH] = phFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR] = psrFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV] = rcbvFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION] = perfFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES]  = featuresFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]       = labelPath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]    = subjectNames[sid];
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES] = featuresFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG] = labelPath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID] = subjectNames[sid];
     QualifiedSubjects.push_back(OneQualifiedSubject);
+
+    std::cout << subjectNames[sid] << std::endl;
   }
   return QualifiedSubjects;
 }
 int SurvivalPredictionOnExistingModel(const std::string modeldirectory,
-	const std::string inputdirectory,
-	const std::string outputdirectory)
+  const std::string inputdirectory,
+  const std::string outputdirectory)
 {
-	std::cout << "Module loaded: Pseudoprogression Estimation on Existing Model:" << std::endl;
-	std::vector<double> finalresult;
-	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(CAPTK::MachineLearningApplicationSubtype::TESTING, inputdirectory, true, true, true, true);
-	std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() <<std::endl;
-	PseudoProgressionEstimator objPseudoProgressionEstimator;
-  bool data = objPseudoProgressionEstimator.PseudoProgressionEstimateOnExistingModel(QualifiedSubjects, modeldirectory, inputdirectory, outputdirectory,true,true,true,true);
-	//for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
-	//{
-	//	std::map<ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
-	//	//std::cout << static_cast<std::string>(onesubject[IMAGE_TYPE_SUDOID]) << ": " << result[subjectID] << std::endl;
-	//}
-	return EXIT_SUCCESS;
+  std::cout << "Module loaded: Pseudoprogression Estimation on Existing Model:" << std::endl;
+  std::vector<double> finalresult;
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(CAPTK::MachineLearningApplicationSubtype::TESTING, inputdirectory, true, true, true, true);
+  std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
+  PseudoProgressionEstimator objPseudoProgressionEstimator;
+  bool data = objPseudoProgressionEstimator.PseudoProgressionEstimateOnExistingModel(QualifiedSubjects, modeldirectory, inputdirectory, outputdirectory, true, true, true, true);
+  //for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
+  //{
+  //	std::map<ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
+  //	//std::cout << static_cast<std::string>(onesubject[IMAGE_TYPE_SUDOID]) << ": " << result[subjectID] << std::endl;
+  //}
+  return EXIT_SUCCESS;
 }
-int PrepareNewSurvivalPredictionModel(const std::string inputdirectory,const std::string outputdirectory)
+int PrepareNewSurvivalPredictionModel(const std::string inputdirectory, const std::string outputdirectory)
 {
-	std::cout << "Module loaded: Prepare Pseudoprogression Prediction Model." << std::endl;
-	std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(CAPTK::MachineLearningApplicationSubtype::TRAINING,inputdirectory,true,true,true,true);
-	PseudoProgressionEstimator objPseudoProgressionEstimator;
-	std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
-	if (QualifiedSubjects.size() == 0)
-		std::cout << "No subject found with required input. Exiting...." << std::endl;
-	else
-		objPseudoProgressionEstimator.TrainNewModelOnGivenData( QualifiedSubjects, outputdirectory,true,true,true,true);
-	return EXIT_SUCCESS;
+  std::cout << "Module loaded: Prepare Pseudoprogression Prediction Model." << std::endl;
+  std::vector<double> finalresult;
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(CAPTK::MachineLearningApplicationSubtype::TRAINING, inputdirectory, true, true, true, true);
+  PseudoProgressionEstimator objPseudoProgressionEstimator;
+  std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
+  if (QualifiedSubjects.size() == 0)
+    std::cout << "No subject found with required input. Exiting...." << std::endl;
+  else
+    objPseudoProgressionEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, true, true, true, true);
+  return EXIT_SUCCESS;
 }
 int main(int argc, char **argv)
 {
-	cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PseudoProgressionEstimator");
-	parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
-	parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory having test subjects");
-	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
-	parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
-	parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  parser.exampleUsage("PseudoProgressionEstimator -t 0 -i <input dir> -o <output dir>");
+  cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PseudoProgressionEstimator");
+  parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
+  parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory having test subjects");
+  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
+  parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
+  parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
 
-	// parameters to get from the command line
-	cbica::Logging logger;
-	std::string loggerFile;
-	bool loggerRequested = false;
-
-	int tempPosition;
-	std::string inputDirectoryName, modelDirectoryName, outputDirectoryName, toWrite;
-	int applicationType;
-	if (parser.compareParameter("L", tempPosition))
-	{
-		loggerFile = argv[tempPosition + 1];
-		loggerRequested = true;
-		logger.UseNewFile(loggerFile);
-	}
-	if (parser.compareParameter("i", tempPosition))
-	{
-		inputDirectoryName = argv[tempPosition + 1];
-	}
-
-	if (parser.compareParameter("m", tempPosition))
-	{
-		modelDirectoryName = argv[tempPosition + 1];
-	}
-
-	if (parser.compareParameter("o", tempPosition))
-	{
-		outputDirectoryName = argv[tempPosition + 1];
-	}
-	if (parser.compareParameter("t", tempPosition))
-	{
-		applicationType = atoi(argv[tempPosition + 1]);
-	}
-	if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING && modelDirectoryName=="")
-	{
-		std::cout << "Please specify a directory having model file."<<std::endl;
-		return EXIT_FAILURE;
-	}
-	std::cout << "Input directory name:" << inputDirectoryName<<std::endl;
-	std::cout << "Output directory name:" << outputDirectoryName << std::endl;
+  // parameters to get from the command line
+  cbica::Logging logger;
+  std::string loggerFile;
+  bool loggerRequested = false;
 
 
-	if (!cbica::directoryExists(inputDirectoryName))
-	{
-		std::cout << "The input directory does not exist:" << inputDirectoryName << std::endl;
-		return EXIT_FAILURE;
-	}
-	if (!cbica::directoryExists(outputDirectoryName))
-	{
-		if (!cbica::createDirectory(outputDirectoryName))
-		{
-			std::cout << "The output directory can not be created:" << outputDirectoryName << std::endl;
-			return EXIT_FAILURE;
-		}
-	}
-	if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
-	{
-		std::cout << "Model directory name:" << modelDirectoryName << std::endl;
-		if (!cbica::directoryExists(modelDirectoryName))
-		{
-			std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
-			return EXIT_FAILURE;
-		}
-		SurvivalPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
-	}
-	else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
-		PrepareNewSurvivalPredictionModel(inputDirectoryName, outputDirectoryName);
-	else
-	{
-		parser.echoVersion();
-		return EXIT_SUCCESS;
-	}
 
-	std::cout << "Finished successfully\n";
+  int tempPosition;
+  std::string inputDirectoryName, modelDirectoryName, outputDirectoryName, toWrite;
+  int applicationType;
 
-	return EXIT_SUCCESS;
+  //inputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/TestingDataNew";
+  //outputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/Output";
+  //modelDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/Output/model";
+  //applicationType = 0;
+  ////PrepareNewSurvivalPredictionModel(inputDirectoryName, outputDirectoryName);
+  //SurvivalPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
+
+  if (parser.compareParameter("L", tempPosition))
+  {
+    loggerFile = argv[tempPosition + 1];
+    loggerRequested = true;
+    logger.UseNewFile(loggerFile);
+  }
+  if (parser.compareParameter("i", tempPosition))
+  {
+    inputDirectoryName = argv[tempPosition + 1];
+    //inputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/TrainingData";
+  }
+
+  if (parser.compareParameter("m", tempPosition))
+  {
+    modelDirectoryName = argv[tempPosition + 1];
+  }
+
+  if (parser.compareParameter("o", tempPosition))
+  {
+    outputDirectoryName = argv[tempPosition + 1];
+    //outputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/Output";
+  }
+  if (parser.compareParameter("t", tempPosition))
+  {
+    applicationType = atoi(argv[tempPosition + 1]);
+  }
+  if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING && modelDirectoryName == "")
+  {
+    std::cout << "Please specify a directory having model file." << std::endl;
+    return EXIT_FAILURE;
+  }
+  std::cout << "Input directory name:" << inputDirectoryName << std::endl;
+  std::cout << "Output directory name:" << outputDirectoryName << std::endl;
+
+
+  if (!cbica::directoryExists(inputDirectoryName))
+  {
+    std::cout << "The input directory does not exist:" << inputDirectoryName << std::endl;
+    return EXIT_FAILURE;
+  }
+  if (!cbica::directoryExists(outputDirectoryName))
+  {
+    if (!cbica::createDirectory(outputDirectoryName))
+    {
+      std::cout << "The output directory can not be created:" << outputDirectoryName << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+  if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
+  {
+    std::cout << "Model directory name:" << modelDirectoryName << std::endl;
+    if (!cbica::directoryExists(modelDirectoryName))
+    {
+      std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
+      return EXIT_FAILURE;
+    }
+    SurvivalPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
+  }
+  else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
+    PrepareNewSurvivalPredictionModel(inputDirectoryName, outputDirectoryName);
+  else
+  {
+    parser.echoVersion();
+    return EXIT_SUCCESS;
+  }
+
+  std::cout << "Finished successfully\n";
+
+  return EXIT_SUCCESS;
 }
