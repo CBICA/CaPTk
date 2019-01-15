@@ -16,4 +16,4 @@ cd bin
 
 cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF ..
 ls
-cmake --build .
+cmake --build . --target ALL_BUILD --config Release

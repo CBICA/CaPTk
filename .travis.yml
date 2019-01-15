@@ -16,6 +16,7 @@ matrix:
       sudo: required
       env:
         - LINUX_DIST=xenial
+    # Dbus versions might mean that this build can never complete, therefore it should be on allowed_failures
     - os: linux
       dist: trusty
       sudo: required
