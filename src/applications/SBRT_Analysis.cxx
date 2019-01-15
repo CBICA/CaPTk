@@ -12,7 +12,7 @@ int main( int argc, char** argv )
 	const int imageDimension = 3;	// image dimension, now support 3D only
 
 	// 
-	cbica::CmdParser parser(argc, argv);
+	cbica::CmdParser parser(argc, argv, "SBRT_Analysis");
 	parser.addRequiredParameter("i", "inputImage", cbica::Parameter::FILE, "none", "Absolute path of PET image", "For example pet.nii.gz");	
 	parser.addRequiredParameter("m", "maskImage", cbica::Parameter::FILE, "none", "Absolute path of mask image", "For example mask.nii.gz");
 	parser.addRequiredParameter("l", "label", cbica::Parameter::INTEGER, "none", "Label value of the ROI", "For example 2");	

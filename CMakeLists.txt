@@ -188,7 +188,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
       IF( CAPTK_SUPERBUILD )
         PROJECT(${PROJECT_NAME}_Depends)
-        INCLUDE( cmake_modules/Superbuild.cmake )
+        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
         return()
       ENDIF()
 
@@ -196,13 +196,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF()
     
   IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-    
-    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/qt/5.11.2/lib/cmake/Qt5")
-    LIST(APPEND CMAKE_PROGRAM_PATH  "${QT_EXTRACTED_DIR}/5.11.2/bin")
-    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build")
-    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/OpenCV-build")
-    
-    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${PROJECT_BINARY_DIR}/ITK-build;${PROJECT_BINARY_DIR}/OpenCV-build" )
+    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build;${PROJECT_BINARY_DIR}/OpenCV-build" )
   ENDIF()
 
   FIND_PACKAGE( ITK REQUIRED )
@@ -529,8 +523,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/dtiUtils.h
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/multinomialModel.h)
 
+      #CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} "${ConfettiSrcs} ${ConfettiHeaders}" "${OpenCV_LIBS} ${ITK_LIBRARIES}")
+      
       ADD_EXECUTABLE(Confetti ${ConfettiSrcs} ${ConfettiHeaders})
-
       TARGET_LINK_LIBRARIES(Confetti ${OpenCV_LIBS} ${ITK_LIBRARIES})
       SET_TARGET_PROPERTIES( Confetti PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
@@ -540,7 +535,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/multinomialModel.h
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/dtiUtils.h
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/confettiApi.cpp
-        )
+      )
       TARGET_LINK_LIBRARIES(ConfettiCore ${OpenCV_LIBS} ${ITK_LIBRARIES})
 
       # install all targets and scripts
@@ -715,6 +710,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
   SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  
+  SET( CAPTK_LIBRARIES ${LIBNAME_CBICATK} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} )
 
   # find stand-alone CMD applications
   FILE( GLOB STANDALONE_APPS
@@ -733,11 +730,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     
       IF( (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") AND WIN32 ) 
 
-        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} )
+        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} ${PROJECT_SOURCE_DIR}/src/applications/${STANDALONE_APP_NAME}.cxx "${CAPTK_LIBRARIES}" )
 
       ELSEIF(NOT (${STANDALONE_APP_NAME} STREQUAL "DeepMedic") )
       
-        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} )
+        CAPTK_ADD_EXECUTABLE(${STANDALONE_APP_NAME} ${PROJECT_SOURCE_DIR}/src/applications/${STANDALONE_APP_NAME}.cxx "${CAPTK_LIBRARIES}" )
       
       ENDIF()
     
@@ -759,42 +756,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF( BUILD_TESTING )
   #ENDIF()
 
-  # generates the utilities
-  ADD_EXECUTABLE( CaPTk_Utilities
-    ${PROJECT_SOURCE_DIR}/src/CaPTk_Utilities.cxx
-    #${CBICA-TK_SOURCES}
-    #${YAMLCPP_Headers}
-    #${YAMLCPP_Sources}
-  )
-
-  TARGET_LINK_LIBRARIES( CaPTk_Utilities ${DEPENDENT_LIBS} ${LIBNAME_CBICATK} )
-
-  SET_TARGET_PROPERTIES( CaPTk_Utilities PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-
   # installation
   IF (UNIX)
     IF(NOT LIBEXEC_INSTALL_DIR)
       SET(LIBEXEC_INSTALL_DIR "./libexec")
     ENDIF()
-  ENDIF()
-
-  IF (APPLE) 
-    INSTALL( TARGETS CaPTk_Utilities
-    BUNDLE DESTINATION .
-    RUNTIME DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-    LIBRARY DESTINATION ${EXE_NAME}.app/Contents/Resources/lib
-    CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    )
-
-  ELSE()
-    INSTALL( TARGETS CaPTk_Utilities
-      BUNDLE DESTINATION .
-      RUNTIME DESTINATION bin
-      LIBRARY DESTINATION lib
-      CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    )
   ENDIF()
 
   ## symlink creation for UNIX machines - currently only works for DEB or RPM
@@ -904,37 +870,37 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDFOREACH()
 
 
-  # For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
-  SET( FeatureDefinitions "" )
-  FILE( GLOB allFeatureDefinitionFiles "${DATA_DIR}/features/*.csv" )
-  FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
-
-    GET_FILENAME_COMPONENT( CURRENT_DEF_FILE ${featureDefinitionFile} NAME_WE )
-
-    IF (NOT APPLE)
-      INSTALL(
-        FILES "${featureDefinitionFile}"
-        DESTINATION data/features
-      )
-    ENDIF()
-
-    SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
-  ENDFOREACH()
-
-  IF (APPLE)
-    SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
-
-    SET( BATCHMODE "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" )
-    SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
-
-    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
-
-  ELSE()
-    INSTALL( FILES "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
-  ENDIF()
-
-  SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
-  ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
+  ## For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
+  #SET( FeatureDefinitions "" )
+  #FILE( GLOB allFeatureDefinitionFiles "${DATA_DIR}/features/*.csv" )
+  #FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
+  #
+  #  GET_FILENAME_COMPONENT( CURRENT_DEF_FILE ${featureDefinitionFile} NAME_WE )
+  #
+  #  IF (NOT APPLE)
+  #    INSTALL(
+  #      FILES "${featureDefinitionFile}"
+  #      DESTINATION data/features
+  #    )
+  #  ENDIF()
+  #
+  #  SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
+  #ENDFOREACH()
+  #
+  #IF (APPLE)
+  #  SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
+  #
+  #  SET( BATCHMODE "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" )
+  #  SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
+  #
+  #  SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
+  #
+  #ELSE()
+  #  INSTALL( FILES "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
+  #ENDIF()
+  #
+  #SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
+  #ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
 
   IF( WIN32 )
     INSTALL(DIRECTORY "${DATA_DIR}/GnuWin32" DESTINATION data PATTERN ".svn" EXCLUDE)

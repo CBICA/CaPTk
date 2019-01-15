@@ -20,7 +20,7 @@ int main( int argc,char**argv )
 		return EXIT_FAILURE;
 	}
 
-	cbica::CmdParser parser(argc, argv);
+	cbica::CmdParser parser(argc, argv, "SBRT_LungField");
 	parser.addRequiredParameter("p", "petImage", cbica::Parameter::STRING, "none", "Absolute path of PET image", "For example /data/.../pet.nii.gz");	
 	parser.addRequiredParameter("c", "ctImage", cbica::Parameter::STRING, "none", "Absolute path of CT image", "For example /data/.../ct.nii.gz");
 	parser.addRequiredParameter("o", "outputImage", cbica::Parameter::STRING, "none", "Absolute path and basename of output file (without extension)", "For example /output/.../label");

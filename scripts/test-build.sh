@@ -68,22 +68,31 @@ else
   exit -1
 fi
 
-# Extract Qt5
-
-# Set up exports
-
+# Nuclear option
+rm -rf binaries
+rm -rf data
+rm -rf history
+rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
 # Create binary directory
 echo "[:] Creating binary directory..."
 mkdir bin
 cd bin
 
+# FTP override
+wget ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.11.2/linux.zip
+mv linux.zip qt.zip
+
 # Cmake
-echo "[:] Running cmake command..."
+echo "[:] Running cmake command to configure superbuild..."
 CMAKE_CMD
 
 # Make install/strip
-echo "[:] Building CaPTk..."
+echo "[:] Building depends..."
 make
 
-echo "[:] Done. Built test target"
+echo "[:] Running cmake command to configure CaPTk..."
+CMAKE_CMD
+
+echo "[:] Building CaPTk..."
+make

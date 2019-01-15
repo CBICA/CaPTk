@@ -36,7 +36,7 @@ void algorithmRunner()
 
 int main(int argc, char **argv)
 {
-  cbica::CmdParser parser(argc, argv);
+  cbica::CmdParser parser(argc, argv, "DeepMedicNormalizer");
 
   parser.addRequiredParameter("i", "input", cbica::Parameter::FILE, "", "The input image file.");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "", "The Optional input mask file.");

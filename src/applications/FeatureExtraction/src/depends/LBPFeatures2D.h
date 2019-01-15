@@ -155,7 +155,7 @@ void LBPFeatures::calculateLBP(typename TImageType::Pointer inputImage, typename
 
 					float t = w1*slice.at<float>(0, i + fy, j + fx) + w2*slice.at<float>(0, i + fy, j + cx) + w3*slice.at<float>(0, i + cy, j + fx) + w4*slice.at<float>(0, i + cy, j + cx);
 
-					temp.at<float>(0, i - radius, j - radius) += ((t > slice.at<float>(0, i, j)) && (abs(t - slice.at<float>(0, i, j)) > std::numeric_limits<float>::epsilon())) << n;
+					temp.at<float>(0, i - radius, j - radius) += ((t > slice.at<float>(0, i, j)) && (std::abs(t - slice.at<float>(0, i, j)) > std::numeric_limits<float>::epsilon())) << n;
 				//	std::cout << temp.at<float>(0, i - radius, j - radius);
 				}
 			}
@@ -230,7 +230,7 @@ void LBPFeatures::calculateLBP(typename TImageType::Pointer inputImage, typename
 
 					float t = w1*slice.at<float>(i + fy, 0, j + fx) + w2*slice.at<float>(i + fy, 0, j + cx) + w3*slice.at<float>(i + cy, 0, j + fx) + w4*slice.at<float>(i + cy, 0, j + cx);
 
-					temp.at<float>(i - radius, 0, j - radius) += ((t > slice.at<float>(i, 0, j)) && (abs(t - slice.at<float>(i, 0, j)) > std::numeric_limits<float>::epsilon())) << n;
+					temp.at<float>(i - radius, 0, j - radius) += ((t > slice.at<float>(i, 0, j)) && (std::abs(t - slice.at<float>(i, 0, j)) > std::numeric_limits<float>::epsilon())) << n;
 				//	std::cout << temp.at<float>(i - radius, 0, j - radius);
 				}
 			}
@@ -312,7 +312,7 @@ void LBPFeatures::calculateLBP(typename TImageType::Pointer inputImage, typename
 
 					float t = w1*slice.at<float>(i + fy, j + fx, 0) + w2*slice.at<float>(i + fy, j + cx, 0) + w3*slice.at<float>(i + cy, j + fx, 0) + w4*slice.at<float>(i + cy, j + cx, 0);
 
-					temp.at<float>(i - radius, j - radius, 0) += ((t > slice.at<float>(i, j, 0)) && (abs(t - slice.at<float>(i, j, 0)) > std::numeric_limits<float>::epsilon())) << n;
+					temp.at<float>(i - radius, j - radius, 0) += ((t > slice.at<float>(i, j, 0)) && (std::abs(t - slice.at<float>(i, j, 0)) > std::numeric_limits<float>::epsilon())) << n;
 				//	std::cout << temp.at<float>(i - radius, j - radius, 0);
 				}
 			}
