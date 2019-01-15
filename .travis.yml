@@ -22,39 +22,13 @@ cache: ccache
 # Build matrix to run jobs in parallel
 matrix:
   include:
-    - os: linux
-      dist: xenial
-      sudo: required
-      env:
-        - LINUX_DIST=xenial
-    - os: linux
-      dist: trusty
-      sudo: required
-      env:
-        - LINUX_DIST=trusty
     - os: osx
   fast_finish: true
-  allow_failures:
-    - os: linux
-      dist: trusty
-    - os: linux
-      dist: xenial
 
 before_install:
-  ### LINUX
-  # Linux install step
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy; fi
-  
-  # Update step
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
-
-  # Git LFS
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
-
   ### OSX
   # OSX install step
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make git-lfs doxygen llvm && export PATH="/usr/local/opt/make/libexec/gnubin:$PATH" ; fi
   # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/make/lib  || { rmdir /usr/local/opt/make; HOMEBREW_NO_AUTO_UPDATE=1 brew install make; }; fi
@@ -62,5 +36,4 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/mac-test-build.sh; fi
