@@ -13,8 +13,8 @@ export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
 echo "Run Dependency Manager"
-make & sleep 1800; kill $! 
-# make
+# make & sleep 1800; kill $! 
+make
 
 # echo "Run CaPTk Build"
 # export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
