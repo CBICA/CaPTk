@@ -62,7 +62,7 @@ mv ./binaries/externalApps.zip ./bin/
 # Remove all other blobs
 rm -rf binaries
 
-mkdir bin
+mkdir -p bin
 cd bin
 
 # Extract externalApps
