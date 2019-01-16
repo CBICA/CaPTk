@@ -90,8 +90,8 @@ int algorithmsRunner()
 
   if (requestedAlgorithm == CreateMask)
   {
-    auto thresholder = itk::BinaryThresholdImageFilter< ImageType, ImageType >::New();
-    thresholder->SetInput(cbica::ReadImage< ImageType >(inputImageFile));
+    auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
     thresholder->SetLowerThreshold(lowerThreshold);
     thresholder->SetUpperThreshold(upperThreshold);
     thresholder->SetOutsideValue(0);
