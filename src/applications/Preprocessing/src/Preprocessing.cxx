@@ -24,7 +24,8 @@ enum AvailableAlgorithms
   TestComparison,
   BoundingBox,
   ZScoreNormalize,
-  CreateMask
+  CreateMask,
+  ChangeValue
 };
 
 int requestedAlgorithm = 0;
@@ -33,6 +34,7 @@ std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, res
 size_t resize = 100;
 int histoMatchQuantiles = 40, histoMatchBins = 100, testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<double>::max();
+float changeOldValue = 3, changeNewValue = 4;
 float resamplingResolution = 1.0;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95;
 
@@ -99,6 +101,27 @@ int algorithmsRunner()
     thresholder->Update();
 
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    std::cout << "Create Mask completed.\n";
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == ChangeValue)
+  {
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
+    auto outputImage = cbica::CreateImage< TImageType >(inputImage);
+    itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetBufferedRegion());
+
+    for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator)
+    {
+      if (iterator.Get() == changeOldValue)
+      {
+        outputIterator.SetIndex(iterator.GetIndex());
+        outputIterator.Set(changeNewValue);
+      }
+    }
+
+    cbica::WriteImage< TImageType >(outputImage, outputImageFile);
     std::cout << "Create Mask completed.\n";
     return EXIT_SUCCESS;
   }
@@ -505,7 +528,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization");
   parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: 5,95");
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
-  parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
+  parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
+  parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue,newValue", "Defaults to 3,4");
 
   /// unit testing
   if (parser.isPresent("utB"))
@@ -655,6 +679,25 @@ int main(int argc, char** argv)
     }
 
     requestedAlgorithm = CreateMask;
+  }
+
+  if (parser.isPresent("cv"))
+  {
+    std::string temp;
+    parser.getParameterValue("cv", temp);
+    if (!temp.empty())
+    {
+      auto temp2 = cbica::stringSplit(temp, ",");
+      if (temp2.size() != 2)
+      {
+        std::cerr << "Change value needs 2 values in the format '-cv oldValue,newValue' to work.\n";
+        return EXIT_FAILURE;
+      }
+      changeOldValue = std::atof(temp2[0].c_str());
+      changeNewValue = std::atof(temp2[1].c_str());
+    }
+
+    requestedAlgorithm = ChangeValue;
   }
 
   // this doesn't need any template initialization
