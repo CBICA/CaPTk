@@ -125,9 +125,9 @@ int algorithmsRunner()
     {
       for (size_t i = 0; i < oldValues.size(); i++)
       {
-        if (iterator.Get() == oldValues[i])
+        if (iterator.Get() == std::atof(oldValues[i].c_str()))
         {
-          outputIterator.Set(newValues[i]);
+          outputIterator.Set(std::atof(newValues[i].c_str()));
         }
       }
     }
@@ -532,7 +532,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("tb", "testBase", cbica::Parameter::FILE, "NIfTI Reference", "Baseline image to compare inputImage with");
   parser.addOptionalParameter("tr", "testRadius", cbica::Parameter::INTEGER, "0-10", "Maximum distance away to look for a matching pixel", "Defaults to 0");
   parser.addOptionalParameter("tt", "testThresh", cbica::Parameter::FLOAT, "0-5", "Minimum threshold for pixels to be different", "Defaults to 0.0");
-  parser.addOptionalParameter("hi", "histoMatch", cbica::Parameter::FILE, "NIfTI Target", "Match inputImage with the file provided in with this parameter", "Pass the target image after '-h'");
+  parser.addOptionalParameter("hi", "histoMatch", cbica::Parameter::FILE, "NIfTI Target", "Match inputImage with the file provided in with this parameter", "Pass the target image after '-hi'");
   parser.addOptionalParameter("hb", "hMatchBins", cbica::Parameter::INTEGER, "1-1000", "Number of histogram bins for histogram matching", "Only used for histoMatching", "Defaults to 100");
   parser.addOptionalParameter("hq", "hMatchQnts", cbica::Parameter::INTEGER, "1-1000", "Number of quantile values to match for histogram matching", "Only used for histoMatching", "Defaults to 40");
   parser.addOptionalParameter("utB", "unitTestBuffer", cbica::Parameter::STRING, "N.A.", "Buffer test of application");
