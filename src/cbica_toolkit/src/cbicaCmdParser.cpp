@@ -619,6 +619,10 @@ namespace cbica
       {
         spaces_verb.append(" ");
       }
+      if (inputParameters[i].laconic.length() == 1)
+      {
+        spaces_verb.append(" ");
+      }
 
       if (spaces_lac.empty() && !spaces_verb.empty())
       {
@@ -630,7 +634,7 @@ namespace cbica
 
       std::cout << "[" << spaces_lac << "-" << inputParameters[i].laconic << ", --" <<
         inputParameters[i].verbose << "]" << spaces_verb <<
-        inputParameters[i].descriptionLine1 << "\n";
+        inputParameters[i].descriptionLine1 << " " << inputParameters[i].laconic.length() << " " << spaces_verb.size() << " \n";
 
       if (inputParameters[i].descriptionLine2 != "")
       {
