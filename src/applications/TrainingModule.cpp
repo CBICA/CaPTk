@@ -1,7 +1,7 @@
 /**
 \file  TrainingSimulator.cpp
 
-\brief The source file containing the TrainingModule class, used to build machine learning models
+\brief The source file containing the SurvivaPredictor class, used to find Survival Prediction Index
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
 
@@ -758,7 +758,7 @@ VectorDouble TrainingModule::testOpenCVSVM(const VariableSizeMatrixType &testing
 
 bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory, const int classifiertype, const int foldtype, const int confType)
 {
-  std::cout << "Training Module" << std::endl<<"---------------"<<std::endl << std::endl;
+  std::cout << "Training module" << std::endl;
   //reading features and labels from the input data
   VariableSizeMatrixType FeaturesOfAllSubjects;
   VariableLengthVectorType LabelsOfAllSubjects;
@@ -806,13 +806,6 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     return false;
   }
 
-  std::string errorMessage = CheckDataQuality(FeaturesOfAllSubjects, LabelsOfAllSubjects);
-  if (errorMessage != "")
-  {
-    std::cout << errorMessage << std::endl;
-    return false;
-  }
-
   std::cout << "Data loaded." << std::endl;
   //scaling of input features and saving corresponding mean and standard deviation in the output directory
   FeatureScalingClass mFeaturesScaling;
@@ -855,18 +848,10 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
   else
     FinalResult = mTrainingSimulator.SplitTrainTest(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype);
 
-  std::cout << std::endl<< "Classification Performance:" << std::endl;
-  std::cout << "---------------------------" << std::endl;
   std::cout << "Accuray=" << FinalResult[0] << std::endl;
   std::cout << "Sensitivity=" << FinalResult[1] << std::endl;
   std::cout << "Specificity=" << FinalResult[2] << std::endl;
-  std::cout << "Balanced Accuracy=" << FinalResult[3] << std::endl<<std::endl;
-
-  std::cout << std::endl << "Results written in the following files:" << std::endl;
-  std::cout << "Z-Score mean: " << outputdirectory + "/zscore_std.csv" << std::endl;
-  std::cout << "Z-Score standard deviation: " << outputdirectory + "/zscore_std.csv" << std::endl;
-  std::cout << "Predicted scores: " << outputdirectory + "/predicted_distances.csv" << std::endl;
-  std::cout << "Performance: " << outputdirectory + "/performance.csv" << std::endl << std::endl;
+  std::cout << "Balanced Accuracy=" << FinalResult[3] << std::endl;
 
   //cbica::Logging(loggerFile, "Accuracy=" + std::to_string(FinalResult[0]) + "\n");
   //cbica::Logging(loggerFile, "Sensitivity=" + std::to_string(FinalResult[1]) + "\n");
@@ -914,7 +899,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   for (unsigned int index = training_size; index < inputLabels.Size(); index++)
     testingindices.push_back(index);
 
-  //std::cout << "testigindices" << testingindices.size() << std::endl;
+  std::cout << "testigindices" << testingindices.size() << std::endl;
 
   VariableSizeMatrixType trainingfeatures;
   VariableSizeMatrixType testingfeatures;
@@ -938,7 +923,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble> new_tuple(trainingindices, traininglabels, trainingfeatures, testingindices, testinglabels, testingfeatures, predictedlabels);
   FoldingDataMap[0] = new_tuple;
 
-  //std::cout << "Folding map populated" << std::endl;
+  std::cout << "Folding map populated" << std::endl;
 
   //feature selection mechanism
   //---------------------------
@@ -951,10 +936,10 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   std::vector<size_t> indices = sort_indexes(EffectSize);
 
   std::ofstream myfile;
-  //myfile.open(outputfolder + "/effctsizes.csv");
-  //for (unsigned int index1 = 0; index1 < EffectSize.size(); index1++)
-  //  myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
-  //myfile.close();
+  myfile.open(outputfolder + "/effctsizes.csv");
+  for (unsigned int index1 = 0; index1 < EffectSize.size(); index1++)
+    myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
+  myfile.close();
 
   VariableSizeMatrixType CrossValidatedPerformances;
   CrossValidatedPerformances.SetSize(std::get<2>(FoldingDataMap[0]).Cols(), 8);
@@ -964,7 +949,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
   for (int featureNo = 15; featureNo < std::get<2>(FoldingDataMap[0]).Cols(); featureNo++)
   {
-    //std::cout << featureNo << std::endl;
+    std::cout << featureNo << std::endl;
     VariableSizeMatrixType reducedFeatureSet;
     reducedFeatureSet.SetSize(std::get<1>(FoldingDataMap[0]).size(), featureNo + 1);
 
@@ -977,7 +962,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
     VectorDouble performance = InternalCrossValidation(reducedFeatureSet, traininglabels, 1, 0.01, 1);
     CrossValidatedPerformances(featureNo, 3) = performance[3];
   }
-  std::cout << "Feature Selection Finished." << std::endl;
+  std::cout << "Feature Selection Done!!!" << std::endl;
 
   for (unsigned int performanceNo = 17; performanceNo < CrossValidatedPerformances.Rows() - 2; performanceNo++)
   {
@@ -997,8 +982,8 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
       maxFeatureNumber = performanceNo;
     }
   }
-  //std::cout << "maxFeatureNumber" << maxFeatureNumber << std::endl;
-  //std::cout << "maxAveagePerformance:" << maxAveagePerformance << std::endl;
+  std::cout << "maxFeatureNumber" << maxFeatureNumber << std::endl;
+  std::cout << "maxAveagePerformance:" << maxAveagePerformance << std::endl;
 
   //std::ofstream myfile;
   //myfile.open("E:/Projects/PSU/CrossValidationTrainingData.csv");
@@ -1019,23 +1004,31 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   //Testing of the replicaiton cohort
 
   int featureNo = maxFeatureNumber;
+  std::cout << "No. of selected features:" << featureNo << std::endl;
   VariableSizeMatrixType reducedFeatureSet;
   reducedFeatureSet.SetSize(std::get<1>(FoldingDataMap[0]).size(), featureNo + 1);
 
   //copy the already selected features to the reduced feature set
   for (int j = 0; j < reducedFeatureSet.Rows(); j++)
     for (int k = 0; k < reducedFeatureSet.Cols(); k++)
+    {
       reducedFeatureSet(j, k) = std::get<2>(FoldingDataMap[0])(j, indices[k]);
+    }
 
   double bestCV = 0;
   double bestC = 1;
   for (double cValue = 1; cValue <= 5; cValue = cValue + 2)
   {
     VectorDouble result = InternalCrossValidation(reducedFeatureSet, traininglabels, pow(2, cValue), 0.01, classifiertype);
-    if (result[0] > bestCV)
+    float value = (int)(result[0] * 10 + .5);
+    double currentcv = (float)value / 100;
+
+    if (currentcv > bestCV)
     {
       bestC = pow(2, cValue);
-      bestCV = result[0];
+      bestCV = currentcv;
+      std::cout << "best c: " << bestC << std::endl;
+      std::cout << "best cv: " << currentcv << std::endl;
     }
   }
 
@@ -1057,6 +1050,31 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
     for (int copyDataCounter2 = 0; copyDataCounter2 < testingData.cols; copyDataCounter2++)
       testingData.ptr< float >(copyDataCounter)[copyDataCounter2] = std::get<5>(FoldingDataMap[0])(copyDataCounter, indices[copyDataCounter2]);
   }
+  ////--------------------just to write in files
+  //VariableSizeMatrixType datatowrite;
+  //datatowrite.SetSize(testingData.rows, testingData.cols);
+  //for (int copyDataCounter = 0; copyDataCounter < testingData.rows; copyDataCounter++)
+  //{
+  //  for (int copyDataCounter2 = 0; copyDataCounter2 < testingData.cols; copyDataCounter2++)
+  //  {
+  //    datatowrite[copyDataCounter][copyDataCounter2] = std::get<5>(FoldingDataMap[0])(copyDataCounter, indices[copyDataCounter2]);
+  //    //std::cout<<"Selected feature index: "<<indices[copyDataCounter2]<<std::endl;
+  //  }
+  //}
+  //myfile.open("E:/Projects/PSU/ScaledTestingData.csv");
+  //for(int index1=0;index1<datatowrite.Rows();index1++)
+  //{
+  //  for (int index2=0;index2<datatowrite.Cols();index2++)
+  //  {
+  //    if (index2 == 0)
+  //      myfile << std::to_string(datatowrite[index1][index2]);
+  //    else
+  //      myfile << "," << std::to_string(datatowrite[index1][index2]);
+  //  }
+  //  myfile << "\n";
+  //}
+  //myfile.close();
+  //------------------------------------------
 
   trainingLabels.convertTo(trainingLabels, CV_32SC1);
   auto svm = cv::ml::SVM::create();
@@ -1071,6 +1089,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   try
   {
     res = svm->train(trainingData, cv::ml::ROW_SAMPLE, trainingLabels);
+    svm->save(outputfolder + "/SVM_Model.xml");
   }
   catch (cv::Exception ex)
   {
@@ -1095,41 +1114,14 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   CrossValidatedPerformances(featureNo, 5) = FinalPerformance[1];
   CrossValidatedPerformances(featureNo, 6) = FinalPerformance[2];
   CrossValidatedPerformances(featureNo, 7) = FinalPerformance[3];
-  //std::cout << "predicted balanced" << FinalPerformance[3] << std::endl;
+  std::cout << "predicted balanced" << FinalPerformance[3] << std::endl;
 
 
-  myfile.open(outputfolder + "/predicted_distances.csv");
+
+  myfile.open(outputfolder + "/predicted_distances222.csv");
   for (unsigned int index1 = 0; index1 < predictedDistances.size(); index1++)
     myfile << std::to_string(predictedDistances[index1]) + "," + std::to_string(std::get<4>(FoldingDataMap[0])[index1]) + "\n";
   myfile.close();
 
-  myfile.open(outputfolder + "/performance.csv");
-  myfile << "Accuracy,Sensitivity,Specificity,BalancedAccuracy \n";
-  myfile << std::to_string(FinalPerformance[0]) + "," + std::to_string(FinalPerformance[1]) + "," + std::to_string(FinalPerformance[2]) + "," + std::to_string(FinalPerformance[3]) + "\n";
-  myfile.close();
-
   return FinalPerformance;
-}
-
-std::string TrainingModule::CheckDataQuality(const VariableSizeMatrixType & FeaturesOfAllSubjects, const VariableLengthVectorType & LabelsOfAllSubjects)
-{
-  std::string message = "";
-  int positiveLabels = 0;
-  int negativeLabels = 0;
-  for (unsigned int labelNo = 0; labelNo < LabelsOfAllSubjects.Size(); labelNo++)
-  {
-    if (LabelsOfAllSubjects[labelNo] == 1)
-      positiveLabels++;
-    if (LabelsOfAllSubjects[labelNo] == -1)
-      negativeLabels++;
-  }
-  if (positiveLabels == 0 || negativeLabels == 0)
-    message = "Labels should be +1 and -1. ";
-  if (positiveLabels < 5 || negativeLabels < 5)
-    message = message + "There should be atleast 5 +1 labels and 5 -1 labels for algorithm to generate sufficient results. ";
-  if (FeaturesOfAllSubjects.Cols()<20)
-    message = message + "There should be atleast 20 features for algorithm to generate sufficient results. ";
-  if(FeaturesOfAllSubjects.Rows() !=LabelsOfAllSubjects.Size())
-    message = message + "The number of subjects in feature file and label file do not match. ";
-  return message;
 }

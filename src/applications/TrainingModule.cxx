@@ -66,14 +66,16 @@ int main(int argc, char *argv[])
   if (parser.compareParameter("f", tempPosition))
   {
     inputFeaturesFile = argv[tempPosition + 1];
+    std::cout << "Input Features File:"<<inputFeaturesFile << std::endl;
     //inputFeaturesFile = "W:/Projects/PSU/PSU_Selected_Features_WithoutScaling.csv";
     //inputFeaturesFile = "W:/Projects/PSU/REC_Selected_Features_NewSheet_WithoutScaling.csv";
   }
   if (parser.compareParameter("l", tempPosition))
   {
     inputLabelsFile = argv[tempPosition + 1];
+    std::cout << "Input Labels File:" << inputLabelsFile << std::endl;
     //inputLabelsFile = "W:/Projects/PSU/labels_pseudoprogression.csv";
-    ////inputLabelsFile = "W:/Projects/PSU/labels_recurrence.csv";
+    //inputLabelsFile = "W:/Projects/PSU/labels_recurrence.csv";
   }
   if (parser.compareParameter("o", tempPosition))
   {

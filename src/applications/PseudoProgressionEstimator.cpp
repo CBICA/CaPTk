@@ -748,10 +748,10 @@ VariableLengthVectorType PseudoProgressionEstimator::DistanceFunction(const Vari
 VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingData(const std::vector<std::map<CAPTK::ImageModalityType, std::string>> &testingsubjects, std::vector<double> &testinglabels, std::string outputdirectory, std::string modeldirectory)
 {
   VariableSizeMatrixType FeaturesOfAllSubjects;
-  FeaturesOfAllSubjects.SetSize(testingsubjects.size(), 1046);
+  FeaturesOfAllSubjects.SetSize(testingsubjects.size(), 1040);
 
   VariableSizeMatrixType otherFeatures;
-  otherFeatures.SetSize(testingsubjects.size(), 816);
+  otherFeatures.SetSize(testingsubjects.size(), 810);
 
   VectorVectorDouble perfusionFeatures;
 
@@ -923,16 +923,18 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
     reader->Parse();
     dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
 
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-    {
-      neuroScores.push_back(dataMatrix(i, 0));
-      neuroScores.push_back(dataMatrix(i, 1));
-      neuroScores.push_back(dataMatrix(i, 2));
-      neuroScores.push_back(dataMatrix(i, 3));
-      neuroScores.push_back(dataMatrix(i, 4));
-      neuroScores.push_back(dataMatrix(i, 5));
-      testinglabels.push_back(dataMatrix(i, 6));
-    }
+    //for (unsigned int i = 0; i < dataMatrix.rows(); i++)
+    //{
+    //  neuroScores.push_back(dataMatrix(i, 0));
+    //  neuroScores.push_back(dataMatrix(i, 1));
+    //  neuroScores.push_back(dataMatrix(i, 2));
+    //  neuroScores.push_back(dataMatrix(i, 3));
+    //  neuroScores.push_back(dataMatrix(i, 4));
+    //  neuroScores.push_back(dataMatrix(i, 5));
+    //  testinglabels.push_back(dataMatrix(i, 6));
+    //}
+
+    testinglabels.push_back(0);
     ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
 
     ImageType::Pointer OriginalT1CEImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]));
@@ -991,11 +993,11 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 
 
     int counter = 0;
-    for (int i = 0; i < neuroScores.size(); i++)
-    {
-      otherFeatures[sid][counter] = neuroScores[i];
-      counter++;
-    }
+    //for (int i = 0; i < neuroScores.size(); i++)
+    //{
+    //  otherFeatures[sid][counter] = neuroScores[i];
+    //  counter++;
+    //}
     for (int i = 0; i < ShapeFeatures.size(); i++)
     {
       otherFeatures[sid][counter] = ShapeFeatures[i];
@@ -1003,7 +1005,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
     }
 
 
-    std::cout << "Shape adn neuro features calcualted." << std::endl;
+    std::cout << "Shape and neuro features calculated." << std::endl;
     //10 histogram, 7 intensity, 8 GLCM, 10 GLRLM
     //22 modalities * (10+7+18) = 770
     //770+5 shape features+6 neuro features = 781
@@ -1038,7 +1040,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
       }
       std::cout << "Counter Size" << counter << std::endl;
     }
-    std::cout << "Basci features copied in the OtherFeatures map." << std::endl;
+    std::cout << "Basic features copied in the OtherFeatures map." << std::endl;
 
 
     T1IntensityHistogram.push_back(std::get<4>(OtherFeaturesInMap["C0"]));
@@ -1190,10 +1192,10 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTrainingData(const std::vector<std::map<CAPTK::ImageModalityType, std::string>> &trainingsubjects, std::vector<double> &traininglabels, std::string outputdirectory)
 {
   VariableSizeMatrixType FeaturesOfAllSubjects;
-  FeaturesOfAllSubjects.SetSize(trainingsubjects.size(), 1046);
+  FeaturesOfAllSubjects.SetSize(trainingsubjects.size(), 1040);
 
   VariableSizeMatrixType otherFeatures;
-  otherFeatures.SetSize(trainingsubjects.size(), 816);
+  otherFeatures.SetSize(trainingsubjects.size(), 810);
 
   VectorVectorDouble perfusionFeatures;
 
@@ -1341,8 +1343,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
 
   for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
   {
-    std::cout << "Loading Remianing Features: " << sid << std::endl;
-    VectorDouble neuroScores;
+    std::cout << "Loading Remaining Features: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
 
     CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
@@ -1353,17 +1354,8 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
     reader->HasRowHeadersOff();
     reader->Parse();
     dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+    traininglabels.push_back(dataMatrix(0, 0));
 
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-    {
-      neuroScores.push_back(dataMatrix(i, 0));
-      neuroScores.push_back(dataMatrix(i, 1));
-      neuroScores.push_back(dataMatrix(i, 2));
-      neuroScores.push_back(dataMatrix(i, 3));
-      neuroScores.push_back(dataMatrix(i, 4));
-      neuroScores.push_back(dataMatrix(i, 5));
-      traininglabels.push_back(dataMatrix(i, 6));
-    }
     ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
 
     ImageType::Pointer OriginalT1CEImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]));
@@ -1420,11 +1412,11 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
 
 
     int counter = 0;
-    for (int i = 0; i < neuroScores.size(); i++)
-    {
-      otherFeatures[sid][counter] = neuroScores[i];
-      counter++;
-    }
+    //for (int i = 0; i < neuroScores.size(); i++)
+    //{
+    //  otherFeatures[sid][counter] = neuroScores[i];
+    //  counter++;
+    //}
     for (int i = 0; i < ShapeFeatures.size(); i++)
     {
       otherFeatures[sid][counter] = ShapeFeatures[i];
@@ -1796,148 +1788,229 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
 
   vtkSmartPointer<vtkTable> T1ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T1IntensityHistogram, PCA_T1, Mean_T1);
   std::cout << "T1" << std::endl;
-  //  WriteCSVFiles(T1ReducedIntensityHistogram, outputdirectory +"/T1_Reduced.csv");
-  WriteCSVFiles(PCA_T1, outputdirectory + "/PCA_T1.csv");
-  WriteCSVFiles(Mean_T1, outputdirectory + "/Mean_T1.csv");
 
   vtkSmartPointer<vtkTable> TCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(TCIntensityHistogram, PCA_T1CE, Mean_T1CE);
   std::cout << "TC" << std::endl;
-  //WriteCSVFiles(TCReducedIntensityHistogram, outputdirectory +"/TC_Reduced.csv");
-  WriteCSVFiles(PCA_T1CE, outputdirectory + "/PCA_T1CE.csv");
-  WriteCSVFiles(Mean_T1CE, outputdirectory + "/Mean_T1CE.csv");
-
 
   vtkSmartPointer<vtkTable>  T2ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T2IntensityHistogram, PCA_T2, Mean_T2);
   std::cout << "T2" << std::endl;
-  //WriteCSVFiles(T2ReducedIntensityHistogram, outputdirectory +"/T2_Reduced.csv");
-  WriteCSVFiles(PCA_T2, outputdirectory + "/PCA_T2.csv");
-  WriteCSVFiles(Mean_T2, outputdirectory + "/Mean_T2.csv");
 
   vtkSmartPointer<vtkTable> T1TCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T1TCIntensityHistogram, PCA_T1T1CE, Mean_T1T1CE);
   std::cout << "T1TC" << std::endl;
-  //WriteCSVFiles(T1TCReducedIntensityHistogram, outputdirectory +"/T1T1CE_Reduced.csv");
-  WriteCSVFiles(PCA_T1T1CE, outputdirectory + "/PCA_T1T1CE.csv");
-  WriteCSVFiles(Mean_T1T1CE, outputdirectory + "/Mean_T1T1CE.csv");
 
   vtkSmartPointer<vtkTable> FLReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(FLIntensityHistogram, PCA_FL, Mean_FL);
   std::cout << "FL" << std::endl;
-  //WriteCSVFiles(FLReducedIntensityHistogram, outputdirectory +"/FL_Reduced.csv");
-  WriteCSVFiles(PCA_FL, outputdirectory + "/PCA_FLAIR.csv");
-  WriteCSVFiles(Mean_FL, outputdirectory + "/Mean_FLAIR.csv");
 
   vtkSmartPointer<vtkTable> T2FLReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T2FLIntensityHistogram, PCA_T2FL, Mean_T2FL);
   std::cout << "T2FL" << std::endl;
-  //WriteCSVFiles(T2FLReducedIntensityHistogram, outputdirectory +"/T2FL_Reduced.csv");
-  WriteCSVFiles(PCA_T2FL, outputdirectory + "/PCA_T2FLAIR.csv");
-  WriteCSVFiles(Mean_T2FL, outputdirectory + "/Mean_T2FLAIR.csv");
 
   vtkSmartPointer<vtkTable>  AXReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(AXIntensityHistogram, PCA_AX, Mean_AX);
   std::cout << "AX" << std::endl;
-  //WriteCSVFiles(AXReducedIntensityHistogram, outputdirectory +"/AX_Reduced.csv");
-  WriteCSVFiles(PCA_AX, outputdirectory + "/PCA_AX.csv");
-  WriteCSVFiles(Mean_AX, outputdirectory + "/Mean_AX.csv");
 
   vtkSmartPointer<vtkTable> FAReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(FAIntensityHistogram, PCA_FA, Mean_FA);
   std::cout << "FA" << std::endl;
-  //WriteCSVFiles(FAReducedIntensityHistogram, outputdirectory +"/FA_Reduced.csv");
-  WriteCSVFiles(PCA_FA, outputdirectory + "/PCA_FA.csv");
-  WriteCSVFiles(Mean_FA, outputdirectory + "/Mean_FA.csv");
 
   vtkSmartPointer<vtkTable> RDReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(RDIntensityHistogram, PCA_RAD, Mean_RAD);
   std::cout << "RD" << std::endl;
-  //WriteCSVFiles(RDReducedIntensityHistogram, outputdirectory +"/RAD_Reduced.csv");
-  WriteCSVFiles(PCA_RAD, outputdirectory + "/PCA_RAD.csv");
-  WriteCSVFiles(Mean_RAD, outputdirectory + "/Mean_RAD.csv");
-
 
   vtkSmartPointer<vtkTable> TRReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(TRIntensityHistogram, PCA_TR, Mean_TR);
   std::cout << "TR" << std::endl;
-  //WriteCSVFiles(TRReducedIntensityHistogram, outputdirectory +"/TR_Reduced.csv");
-  WriteCSVFiles(PCA_TR, outputdirectory + "/PCA_TR.csv");
-  WriteCSVFiles(Mean_TR, outputdirectory + "/Mean_TR.csv");
-
-
 
   vtkSmartPointer<vtkTable> PHReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PHIntensityHistogram, PCA_PH, Mean_PH);
   std::cout << "PH" << std::endl;
-  //WriteCSVFiles(PHReducedIntensityHistogram, outputdirectory +"/PH_Reduced.csv");
-  WriteCSVFiles(PCA_PH, outputdirectory + "/PCA_PH.csv");
-  WriteCSVFiles(Mean_PH, outputdirectory + "/Mean_PH.csv");
 
   vtkSmartPointer<vtkTable> PSReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PSIntensityHistogram, PCA_PSR, Mean_PSR);
   std::cout << "PS" << std::endl;
-  //WriteCSVFiles(PSReducedIntensityHistogram, outputdirectory +"/PSR_Reduced.csv");
-  WriteCSVFiles(PCA_PSR, outputdirectory + "/PCA_PSR.csv");
-  WriteCSVFiles(Mean_PSR, outputdirectory + "/Mean_PSR.csv");
-
 
   vtkSmartPointer<vtkTable> RCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(RCIntensityHistogram, PCA_RCBV, Mean_RCBV);
   std::cout << "RC" << std::endl;
-  //WriteCSVFiles(RCReducedIntensityHistogram, outputdirectory +"/RCBV_Reduced.csv");
-  WriteCSVFiles(PCA_RCBV, outputdirectory + "/PCA_RCBV.csv");
-  WriteCSVFiles(Mean_RCBV, outputdirectory + "/Mean_RCBV.csv");
 
   std::cout << "basic modalities perfusion components extracted" << std::endl;
 
   vtkSmartPointer<vtkTable> PC1ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA1IntensityHistogram, PCA_PC1, Mean_PC1);
   std::cout << "PC1" << std::endl;
-  //WriteCSVFiles(PC1ReducedIntensityHistogram, outputdirectory +"/PC1_Reduced.csv");
-  WriteCSVFiles(PCA_PC1, outputdirectory + "/PCA_PC1.csv");
-  WriteCSVFiles(Mean_PC1, outputdirectory + "/Mean_PC1.csv");
 
   vtkSmartPointer<vtkTable> PC2ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA2IntensityHistogram, PCA_PC2, Mean_PC2);
   std::cout << "PC2" << std::endl;
-  //WriteCSVFiles(PC2ReducedIntensityHistogram, outputdirectory +"/PC2_Reduced.csv");
-  WriteCSVFiles(PCA_PC2, outputdirectory + "/PCA_PC2.csv");
-  WriteCSVFiles(Mean_PC2, outputdirectory + "/Mean_PC2.csv");
 
   vtkSmartPointer<vtkTable> PC3ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA3IntensityHistogram, PCA_PC3, Mean_PC3);
   std::cout << "PC3" << std::endl;
-  //WriteCSVFiles(PC3ReducedIntensityHistogram, outputdirectory +"/PC3_Reduced.csv");
-  WriteCSVFiles(PCA_PC3, outputdirectory + "/PCA_PC3.csv");
-  WriteCSVFiles(Mean_PC3, outputdirectory + "/Mean_PC3.csv");
 
   vtkSmartPointer<vtkTable> PC4ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA4IntensityHistogram, PCA_PC4, Mean_PC4);
   std::cout << "PC4" << std::endl;
-  //WriteCSVFiles(PC4ReducedIntensityHistogram, outputdirectory +"/PC4_Reduced.csv");
-  WriteCSVFiles(PCA_PC4, outputdirectory + "/PCA_PC4.csv");
-  WriteCSVFiles(Mean_PC4, outputdirectory + "/Mean_PC4.csv");
 
   vtkSmartPointer<vtkTable> PC5ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA5IntensityHistogram, PCA_PC5, Mean_PC5);
   std::cout << "PC5" << std::endl;
-  //WriteCSVFiles(PC5ReducedIntensityHistogram, outputdirectory +"/PC5_Reduced.csv");
-  WriteCSVFiles(PCA_PC5, outputdirectory + "/PCA_PC5.csv");
-  WriteCSVFiles(Mean_PC5, outputdirectory + "/Mean_PC5.csv");
 
   vtkSmartPointer<vtkTable> PC6ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA6IntensityHistogram, PCA_PC6, Mean_PC6);
   std::cout << "PC6" << std::endl;
-  //WriteCSVFiles(PC6ReducedIntensityHistogram, outputdirectory +"/PC6_Reduced.csv");
-  WriteCSVFiles(PCA_PC6, outputdirectory + "/PCA_PC6.csv");
-  WriteCSVFiles(Mean_PC6, outputdirectory + "/Mean_PC6.csv");
 
   vtkSmartPointer<vtkTable> PC7ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA7IntensityHistogram, PCA_PC7, Mean_PC7);
   std::cout << "PC7" << std::endl;
-  //WriteCSVFiles(PC7ReducedIntensityHistogram, outputdirectory +"/PC7_Reduced.csv");
-  WriteCSVFiles(PCA_PC7, outputdirectory + "/PCA_PC7.csv");
-  WriteCSVFiles(Mean_PC7, outputdirectory + "/Mean_PC7.csv");
 
   vtkSmartPointer<vtkTable> PC8ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA8IntensityHistogram, PCA_PC8, Mean_PC8);
   std::cout << "PC8" << std::endl;
-  //WriteCSVFiles(PC8ReducedIntensityHistogram, outputdirectory +"/PC8_Reduced.csv");
-  WriteCSVFiles(PCA_PC8, outputdirectory + "/PCA_PC8.csv");
-  WriteCSVFiles(Mean_PC8, outputdirectory + "/Mean_PC8.csv");
 
   vtkSmartPointer<vtkTable> PC9ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA9IntensityHistogram, PCA_PC9, Mean_PC9);
   std::cout << "PC9" << std::endl;
-  //WriteCSVFiles(PC9ReducedIntensityHistogram, outputdirectory +"/PC9_Reduced.csv");
-  WriteCSVFiles(PCA_PC9, outputdirectory + "/PCA_PC9.csv");
-  WriteCSVFiles(Mean_PC9, outputdirectory + "/Mean_PC9.csv");
 
   vtkSmartPointer<vtkTable> PC10ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA10IntensityHistogram, PCA_PC10, Mean_PC10);
   std::cout << "PC10" << std::endl;
-  //WriteCSVFiles(PC10ReducedIntensityHistogram, outputdirectory +"/PC10_Reduced.csv");
-  WriteCSVFiles(PCA_PC10, outputdirectory + "/PCA_PC10.csv");
-  WriteCSVFiles(Mean_PC10, outputdirectory + "/Mean_PC10.csv");
+
+
+
+
+  VariableSizeMatrixType AllPCAs;
+  VariableSizeMatrixType AllMeans;
+  AllPCAs.SetSize(23 * 255, 255);
+  AllMeans.SetSize(23, 255);
+
+  int start_counter = 0;
+  for (unsigned int i = 0; i <PCA_T1.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_T1.Cols(); j++)
+      AllPCAs(i+start_counter, j) = PCA_T1(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_T1CE.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_T1CE.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_T1CE(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_T2.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_T2.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_T2(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_FL.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_FL.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_FL(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_T1T1CE.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_T1T1CE.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_T1T1CE(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_T2FL.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_T2FL.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_T2FL(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_AX.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_AX.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_AX(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_FA.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_FA.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_FA(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_RAD.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_RAD.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_RAD(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_TR.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_TR.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_TR(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PH.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PH.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PH(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PSR.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PSR.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PSR(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_RCBV.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_RCBV.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_RCBV(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PC1.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PC1.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PC1(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PC2.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PC2.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PC2(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PC3.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PC3.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PC3(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PC4.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PC4.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PC4(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PC5.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PC5.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PC5(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PC6.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PC6.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PC6(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PC7.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PC7.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PC7(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PC8.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PC8.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PC8(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PC9.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PC9.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PC9(i, j);
+
+  start_counter = start_counter + 255;
+  for (unsigned int i = 0; i <PCA_PC10.Rows(); i++)
+    for (unsigned int j = 0; j < PCA_PC10.Cols(); j++)
+      AllPCAs(i + start_counter, j) = PCA_PC10(i, j);
+
+
+
+  for (unsigned int i = 0; i < Mean_T1.Size(); i++)
+  {
+    AllMeans(0,i) = Mean_T1[i];
+    AllMeans(1, i) = Mean_T1CE[i];
+    AllMeans(2, i) = Mean_T2[i];
+    AllMeans(3, i) = Mean_FL[i];
+    AllMeans(4, i) = Mean_T1T1CE[i];
+    AllMeans(5, i) = Mean_T2FL[i];
+    AllMeans(6, i) = Mean_AX[i];
+    AllMeans(7, i) = Mean_FA[i];
+    AllMeans(8, i) = Mean_RAD[i];
+    AllMeans(9, i) = Mean_TR[i];
+    AllMeans(10, i) = Mean_PH[i];
+    AllMeans(11, i) = Mean_PSR[i];
+    AllMeans(12, i) = Mean_RCBV[i];
+    AllMeans(13, i) = Mean_PC1[i];
+    AllMeans(14, i) = Mean_PC2[i];
+    AllMeans(15, i) = Mean_PC3[i];
+    AllMeans(16, i) = Mean_PC4[i];
+    AllMeans(17, i) = Mean_PC5[i];
+    AllMeans(18, i) = Mean_PC6[i];
+    AllMeans(19, i) = Mean_PC7[i];
+    AllMeans(20, i) = Mean_PC8[i];
+    AllMeans(21, i) = Mean_PC9[i];
+    AllMeans(22, i) = Mean_PC10[i];
+  }
+
+  WriteCSVFiles(AllPCAs, outputdirectory + "/PCA_Others.csv");
+  WriteCSVFiles(AllMeans, outputdirectory + "/Mean_Others.csv");
 
   std::cout << "pca modalities perfusion components extracted" << std::endl;
 
@@ -2313,388 +2386,253 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
   CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
   MatrixType dataMatrix;
   VariableLengthVectorType meanMatrix;
-  try
+  reader->SetFieldDelimiterCharacter(',');
+  reader->HasColumnHeadersOff();
+  reader->HasRowHeadersOff();
+
+
+  //-------------perfusion related data reading------------------
+  reader->SetFileName(modeldirectory + "/PCA_PERF.csv");
+  reader->Parse();
+  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+  PCA_PERF.SetSize(dataMatrix.rows(), dataMatrix.cols());
+  for (unsigned int i = 0; i < dataMatrix.rows(); i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PERF(i, j) = dataMatrix(i, j);
+
+
+  reader->SetFileName(modeldirectory + "/Mean_PERF.csv");
+  reader->Parse();
+  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+  Mean_PERF.SetSize(dataMatrix.size());
+  for (unsigned int i = 0; i < dataMatrix.size(); i++)
+    Mean_PERF[i] = dataMatrix(0, i);
+
+
+
+
+
+  //-------------others related data reading------------------
+  int PCA_Others_Size = 255;
+  reader->SetFileName(modeldirectory + "/PCA_Others.csv");
+  reader->Parse();
+  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+
+  PCA_T1.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_T1CE.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_T2.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_FL.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_T1T1CE.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_T2FL.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_AX.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_FA.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_RAD.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_TR.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PH.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PSR.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_RCBV.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PC1.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PC2.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PC3.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PC4.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PC5.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PC6.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PC7.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PC8.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PC9.SetSize(PCA_Others_Size, PCA_Others_Size);
+  PCA_PC10.SetSize(PCA_Others_Size, PCA_Others_Size);
+
+  Mean_T1.SetSize(PCA_Others_Size);
+  Mean_T1CE.SetSize(PCA_Others_Size);
+  Mean_T2.SetSize(PCA_Others_Size);
+  Mean_FL.SetSize(PCA_Others_Size);
+  Mean_T1T1CE.SetSize(PCA_Others_Size);
+  Mean_T2FL.SetSize(PCA_Others_Size);
+  Mean_AX.SetSize(PCA_Others_Size);
+  Mean_FA.SetSize(PCA_Others_Size);
+  Mean_RAD.SetSize(PCA_Others_Size);
+  Mean_TR.SetSize(PCA_Others_Size);
+  Mean_PH.SetSize(PCA_Others_Size);
+  Mean_PSR.SetSize(PCA_Others_Size);
+  Mean_RCBV.SetSize(PCA_Others_Size);
+  Mean_PC1.SetSize(PCA_Others_Size);
+  Mean_PC2.SetSize(PCA_Others_Size);
+  Mean_PC3.SetSize(PCA_Others_Size);
+  Mean_PC4.SetSize(PCA_Others_Size);
+  Mean_PC5.SetSize(PCA_Others_Size);
+  Mean_PC6.SetSize(PCA_Others_Size);
+  Mean_PC7.SetSize(PCA_Others_Size);
+  Mean_PC8.SetSize(PCA_Others_Size);
+  Mean_PC9.SetSize(PCA_Others_Size);
+  Mean_PC10.SetSize(PCA_Others_Size);
+
+  int start_counter = 0;
+  int end_counter = 254;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_T1(i, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_T1CE(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_T2(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_FL(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_T1T1CE(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_T2FL(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_AX(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_FA(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_RAD(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_TR(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PH(i - start_counter, j) = dataMatrix(i, j);
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PSR(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_RCBV(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PC1(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PC2(i - start_counter, j) = dataMatrix(i, j);
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PC3(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PC4(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PC5(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PC6(i - start_counter, j) = dataMatrix(i, j);
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PC7(i - start_counter, j) = dataMatrix(i, j);
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PC8(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PC9(i - start_counter, j) = dataMatrix(i, j);
+
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
+  for (unsigned int i = start_counter; i <= end_counter; i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      PCA_PC10(i - start_counter, j) = dataMatrix(i, j);
+
+
+
+  reader->SetFileName(modeldirectory + "/Mean_Others.csv");
+  reader->Parse();
+  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+
+  for (unsigned int i = 0; i < dataMatrix.cols(); i++)
   {
-    reader->SetFieldDelimiterCharacter(',');
-    reader->HasColumnHeadersOff();
-    reader->HasRowHeadersOff();
-
-    reader->SetFileName(modeldirectory + "/PCA_PERF.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PERF.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PERF(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_T1.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_T1.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_T1(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_T1CE.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_T1CE.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_T1CE(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_T1T1CE.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_T1T1CE.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_T1T1CE(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_T2.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_T2.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_T2(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_FLAIR.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_FL.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_FL(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_T2FLAIR.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_T2FL.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_T2FL(i, j) = dataMatrix(i, j);
-
-
-    reader->SetFileName(modeldirectory + "/PCA_AX.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_AX.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_AX(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_FA.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_FA.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_FA(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_RAD.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_RAD.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_RAD(i, j) = dataMatrix(i, j);
-
-
-    reader->SetFileName(modeldirectory + "/PCA_TR.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_TR.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_TR(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PH.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PH.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PH(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PSR.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PSR.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PSR(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_RCBV.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_RCBV.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_RCBV(i, j) = dataMatrix(i, j);
-
-
-    reader->SetFileName(modeldirectory + "/PCA_PC1.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PC1.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PC1(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PC2.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PC2.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PC2(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PC3.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PC3.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PC3(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PC4.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PC4.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PC4(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PC5.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PC5.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PC5(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PC6.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PC6.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PC6(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PC7.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PC7.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PC7(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PC8.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PC8.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PC8(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PC9.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PC9.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PC9(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/PCA_PC10.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    PCA_PC10.SetSize(dataMatrix.rows(), dataMatrix.cols());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        PCA_PC10(i, j) = dataMatrix(i, j);
-
-    reader->SetFileName(modeldirectory + "/Mean_PERF.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PERF.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PERF[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_T1.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_T1.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_T1[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_T1CE.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_T1CE.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_T1CE[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_T1T1CE.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_T1T1CE.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_T1T1CE[i] = dataMatrix(0, i);
-
-
-    reader->SetFileName(modeldirectory + "/Mean_T2.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_T2.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_T2[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_FLAIR.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_FL.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_FL[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_T2FLAIR.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_T2FL.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_T2FL[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_AX.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_AX.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_AX[i] = dataMatrix(0, i);
-
-
-    reader->SetFileName(modeldirectory + "/Mean_FA.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_FA.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_FA[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_RAD.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_RAD.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_RAD[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_TR.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_TR.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_TR[i] = dataMatrix(0, i);
-
-
-    reader->SetFileName(modeldirectory + "/Mean_PH.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PH.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PH[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_PSR.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PSR.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PSR[i] = dataMatrix(0, i);
-
-
-    reader->SetFileName(modeldirectory + "/Mean_RCBV.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_RCBV.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_RCBV[i] = dataMatrix(0, i);
-
-
-    reader->SetFileName(modeldirectory + "/Mean_PC1.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PC1.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PC1[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_PC2.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PC2.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PC2[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_PC3.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PC3.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PC3[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_PC4.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PC4.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PC4[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_PC5.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PC5.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PC5[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_PC6.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PC6.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PC6[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_PC7.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PC7.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PC7[i] = dataMatrix(0, i);
-
-
-    reader->SetFileName(modeldirectory + "/Mean_PC8.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PC8.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PC8[i] = dataMatrix(0, i);
-
-
-    reader->SetFileName(modeldirectory + "/Mean_PC9.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PC9.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PC9[i] = dataMatrix(0, i);
-
-    reader->SetFileName(modeldirectory + "/Mean_PC10.csv");
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-    Mean_PC10.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      Mean_PC10[i] = dataMatrix(0, i);
+    Mean_T1[i] = dataMatrix(0, i);
+    Mean_T1CE[i] = dataMatrix(1, i);
+    Mean_T2[i] = dataMatrix(2, i);
+    Mean_FL[i] = dataMatrix(3, i);
+    Mean_T1T1CE[i] = dataMatrix(4, i);
+    Mean_T2FL[i] = dataMatrix(5, i);
+    Mean_AX[i] = dataMatrix(6, i);
+    Mean_FA[i] = dataMatrix(7, i);
+    Mean_RAD[i] = dataMatrix(8, i);
+    Mean_TR[i] = dataMatrix(9, i);
+    Mean_PH[i] = dataMatrix(10, i);
+    Mean_PSR[i] = dataMatrix(11, i);
+    Mean_RCBV[i] = dataMatrix(12, i);
+    Mean_PC1[i] = dataMatrix(13, i);
+    Mean_PC2[i] = dataMatrix(14, i);
+    Mean_PC3[i] = dataMatrix(15, i);
+    Mean_PC4[i] = dataMatrix(16, i);
+    Mean_PC5[i] = dataMatrix(17, i);
+    Mean_PC6[i] = dataMatrix(18, i);
+    Mean_PC7[i] = dataMatrix(19, i);
+    Mean_PC8[i] = dataMatrix(20, i);
+    Mean_PC9[i] = dataMatrix(21, i);
+    Mean_PC10[i] = dataMatrix(22, i);
   }
-  catch (const std::exception& e1)
-  {
-    logger.WriteError("Error in reading the file: " + modeldirectory + "/PSU_ZScore_Mean.csv. Error code : " + std::string(e1.what()));
-    //return results;
-  }
-
+  int a = 0;
 }
 
 
