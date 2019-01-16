@@ -8,6 +8,7 @@
 
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
+#include "itkBinaryThresholdImageFilter.h"
 
 //! Detail the available algorithms to make it easier to initialize
 enum AvailableAlgorithms
@@ -22,7 +23,8 @@ enum AvailableAlgorithms
   UniqueValues,
   TestComparison,
   BoundingBox,
-  ZScoreNormalize
+  ZScoreNormalize,
+  CreateMask
 };
 
 int requestedAlgorithm = 0;
@@ -30,7 +32,7 @@ int requestedAlgorithm = 0;
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator;
 size_t resize = 100;
 int histoMatchQuantiles = 40, histoMatchBins = 100, testRadius = 0, testNumber = 0;
-float testThresh = 0.0, testAvgDiff = 0.0;
+float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<double>::max();
 float resamplingResolution = 1.0;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95;
 
@@ -83,6 +85,21 @@ int algorithmsRunner()
       cbica::GetHistogramMatchedImage< TImageType >(
         cbica::ReadImage< TImageType >(inputImageFile), cbica::ReadImage< TImageType >(targetImageFile), histoMatchQuantiles, histoMatchBins), outputImageFile);
     std::cout << "Histogram matching completed.\n";
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == CreateMask)
+  {
+    auto thresholder = itk::BinaryThresholdImageFilter< ImageType, ImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< ImageType >(inputImageFile));
+    thresholder->SetLowerThreshold(lowerThreshold);
+    thresholder->SetUpperThreshold(upperThreshold);
+    thresholder->SetOutsideValue(0);
+    thresholder->SetInsideValue(1);
+    thresholder->Update();
+
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    std::cout << "Create Mask completed.\n";
     return EXIT_SUCCESS;
   }
 
@@ -488,6 +505,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization");
   parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: 5,95");
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
+  parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
 
   /// unit testing
   if (parser.isPresent("utB"))
@@ -620,6 +638,23 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("bi", boundingBoxIsotropic);
     }
+  }
+
+  if (parser.isPresent("cm"))
+  {
+    std::string temp;
+    parser.getParameterValue("cm", temp);
+    if (!temp.empty())
+    {
+      auto temp2 = cbica::stringSplit(temp, ",");
+      lowerThreshold = std::atof(temp2[0].c_str());
+      if (temp2.size() == 2)
+      {
+        upperThreshold = std::atof(temp2[1].c_str());
+      }
+    }
+
+    requestedAlgorithm = CreateMask;
   }
 
   // this doesn't need any template initialization
