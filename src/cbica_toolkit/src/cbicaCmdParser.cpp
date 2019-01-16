@@ -615,7 +615,7 @@ namespace cbica
         spaces_lac.append(" ");
       }
 
-      for (size_t n = 0; n < m_maxLength - inputParameters[i].verbose.length() - spaces_lac.length() - 2; n++)
+      for (size_t n = 0; n < m_maxLength - inputParameters[i].verbose.length() - spaces_lac.length() - 3; n++)
       {
         spaces_verb.append(" ");
       }
