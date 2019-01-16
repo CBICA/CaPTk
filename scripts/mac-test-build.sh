@@ -13,8 +13,8 @@ export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
 echo "Run Dependency Manager"
-# make & sleep 1800; kill $! 
-make
+make & sleep 1800; kill $! 
+# make
 
 # echo "Run CaPTk Build"
 # export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
@@ -54,7 +54,7 @@ rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 # mkdir -p bin
 
 # Move OS specific qt lib in
-mv ./binaries/qt5.11.2_mac.zip ./bin/qt.zip
+mv ./binaries/qt5.11.2_macos.zip ./bin/qt.zip
 
 # Move externalApps into bin to trick CMake
 mv ./binaries/externalApps.zip ./bin/
