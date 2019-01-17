@@ -57,7 +57,7 @@ inline void ShowErrorMessage(const std::string &message, QWidget *boxParent = NU
   \param message The message to be displayed in the message box
   \param windowTitle The title of the message box, defaults to "Output Results"
   */
-inline void ShowMessage(const std::string &message, const std::string &windowTitle = "Output Results", QWidget *boxParent = NULL)
+inline void ShowMessage(const std::string &message, QWidget *boxParent = NULL, const std::string &windowTitle = "Output Results")
   {
     if (boxParent == NULL)
     {

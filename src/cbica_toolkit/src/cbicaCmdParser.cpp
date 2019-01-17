@@ -615,7 +615,11 @@ namespace cbica
         spaces_lac.append(" ");
       }
 
-      for (size_t n = 0; n < m_maxLength - inputParameters[i].verbose.length() - spaces_lac.length() - 2; n++)
+      for (size_t n = 0; n < m_maxLength - inputParameters[i].verbose.length() - spaces_lac.length() - 3; n++)
+      {
+        spaces_verb.append(" ");
+      }
+      if (inputParameters[i].laconic.length() == 1)
       {
         spaces_verb.append(" ");
       }
@@ -630,7 +634,7 @@ namespace cbica
 
       std::cout << "[" << spaces_lac << "-" << inputParameters[i].laconic << ", --" <<
         inputParameters[i].verbose << "]" << spaces_verb <<
-        inputParameters[i].descriptionLine1 << "\n";
+        inputParameters[i].descriptionLine1 << " " << inputParameters[i].laconic.length() << " " << spaces_verb.size() << " \n";
 
       if (inputParameters[i].descriptionLine2 != "")
       {
@@ -1173,7 +1177,7 @@ namespace cbica
     m_exampleOfUsage = cbica::stringReplace(m_exampleOfUsage, "./" + m_exeName, "");
   }
 
-  void CmdParser::writeCWLFile(const std::string &dirName, bool overwriteFile = false) 
+  void CmdParser::writeCWLFile(const std::string &dirName, bool overwriteFile = true) 
   {
     if (!checkMaxLen)
     {
@@ -1207,7 +1211,7 @@ namespace cbica
       config["cwlVersion"] = "v1.0";
       config["class"] = "CommandLineTool";
       config["version"] = m_version;
-      config["baseCommand"] = m_exeName;
+      config["baseCommand"] = (m_exeName);
       
       YAML::Node inputs = config["inputs"];
       

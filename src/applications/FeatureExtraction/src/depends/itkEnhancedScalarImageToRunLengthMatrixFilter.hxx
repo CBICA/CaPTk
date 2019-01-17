@@ -275,7 +275,10 @@ namespace itk
           if (runLengthSegmentAlreadyVisited)
           {
             //MITK_INFO << "Already visited 1 " << index;
+<<<<<<< HEAD
             std::cout << "Already visited 1 " << index << std::endl;
+=======
+>>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
             continue;
           }
           IndexType lastGoodIndex2 = lastGoodIndex;
@@ -313,7 +316,10 @@ namespace itk
           if (runLengthSegmentAlreadyVisited)
           {
             //MITK_INFO << "Already visited 2 " << index;
+<<<<<<< HEAD
             std::cout << "Already visited 2 " << index << std::endl;
+=======
+>>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
             continue;
           }
           PointType centerPoint;

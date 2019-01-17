@@ -8,6 +8,7 @@
 
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
+#include "itkBinaryThresholdImageFilter.h"
 
 //! Detail the available algorithms to make it easier to initialize
 enum AvailableAlgorithms
@@ -22,7 +23,9 @@ enum AvailableAlgorithms
   UniqueValues,
   TestComparison,
   BoundingBox,
-  ZScoreNormalize
+  ZScoreNormalize,
+  CreateMask,
+  ChangeValue
 };
 
 int requestedAlgorithm = 0;
@@ -30,7 +33,8 @@ int requestedAlgorithm = 0;
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator;
 size_t resize = 100;
 int histoMatchQuantiles = 40, histoMatchBins = 100, testRadius = 0, testNumber = 0;
-float testThresh = 0.0, testAvgDiff = 0.0;
+float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<double>::max();
+std::string changeOldValues, changeNewValues;
 float resamplingResolution = 1.0;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95;
 
@@ -83,6 +87,53 @@ int algorithmsRunner()
       cbica::GetHistogramMatchedImage< TImageType >(
         cbica::ReadImage< TImageType >(inputImageFile), cbica::ReadImage< TImageType >(targetImageFile), histoMatchQuantiles, histoMatchBins), outputImageFile);
     std::cout << "Histogram matching completed.\n";
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == CreateMask)
+  {
+    auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+    thresholder->SetLowerThreshold(lowerThreshold);
+    thresholder->SetUpperThreshold(upperThreshold);
+    thresholder->SetOutsideValue(0);
+    thresholder->SetInsideValue(1);
+    thresholder->Update();
+
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    std::cout << "Create Mask completed.\n";
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == ChangeValue)
+  {
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
+    auto outputImage = cbica::CreateImage< TImageType >(inputImage);
+    itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetBufferedRegion());
+
+    auto oldValues = cbica::stringSplit(changeOldValues, "x");
+    auto newValues = cbica::stringSplit(changeNewValues, "x");
+    if (oldValues.size() != newValues.size())
+    {
+      std::cerr << "Change values needs the old and new values to be of same size, for example '-cv 1x2,2x3.\n";
+      return EXIT_FAILURE;
+    }
+
+    outputIterator.GoToBegin();
+    for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++outputIterator)
+    {
+      for (size_t i = 0; i < oldValues.size(); i++)
+      {
+        if (iterator.Get() == std::atof(oldValues[i].c_str()))
+        {
+          outputIterator.Set(std::atof(newValues[i].c_str()));
+        }
+      }
+    }
+
+    cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+    std::cout << "Create Mask completed.\n";
     return EXIT_SUCCESS;
   }
 
@@ -463,7 +514,7 @@ int algorithmsRunner()
 
 int main(int argc, char** argv)
 {
-  cbica::CmdParser parser(argc, argv);
+  cbica::CmdParser parser(argc, argv, "Preprocessing");
 
   parser.addOptionalParameter("i", "inputImage", cbica::Parameter::FILE, "NIfTI", "Input Image for processing");
   parser.addOptionalParameter("m", "maskImage", cbica::Parameter::FILE, "NIfTI", "Input Mask for processing");
@@ -481,13 +532,15 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("tb", "testBase", cbica::Parameter::FILE, "NIfTI Reference", "Baseline image to compare inputImage with");
   parser.addOptionalParameter("tr", "testRadius", cbica::Parameter::INTEGER, "0-10", "Maximum distance away to look for a matching pixel", "Defaults to 0");
   parser.addOptionalParameter("tt", "testThresh", cbica::Parameter::FLOAT, "0-5", "Minimum threshold for pixels to be different", "Defaults to 0.0");
-  parser.addOptionalParameter("hi", "histoMatch", cbica::Parameter::FILE, "NIfTI Target", "Match inputImage with the file provided in with this parameter", "Pass the target image after '-h'");
+  parser.addOptionalParameter("hi", "histoMatch", cbica::Parameter::FILE, "NIfTI Target", "Match inputImage with the file provided in with this parameter", "Pass the target image after '-hi'");
   parser.addOptionalParameter("hb", "hMatchBins", cbica::Parameter::INTEGER, "1-1000", "Number of histogram bins for histogram matching", "Only used for histoMatching", "Defaults to 100");
   parser.addOptionalParameter("hq", "hMatchQnts", cbica::Parameter::INTEGER, "1-1000", "Number of quantile values to match for histogram matching", "Only used for histoMatching", "Defaults to 40");
   parser.addOptionalParameter("utB", "unitTestBuffer", cbica::Parameter::STRING, "N.A.", "Buffer test of application");
   parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization");
   parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: 5,95");
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
+  parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
+  parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
 
   /// unit testing
   if (parser.isPresent("utB"))
@@ -620,6 +673,42 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("bi", boundingBoxIsotropic);
     }
+  }
+
+  if (parser.isPresent("cm"))
+  {
+    std::string temp;
+    parser.getParameterValue("cm", temp);
+    if (!temp.empty())
+    {
+      auto temp2 = cbica::stringSplit(temp, ",");
+      lowerThreshold = std::atof(temp2[0].c_str());
+      if (temp2.size() == 2)
+      {
+        upperThreshold = std::atof(temp2[1].c_str());
+      }
+    }
+
+    requestedAlgorithm = CreateMask;
+  }
+
+  if (parser.isPresent("cv"))
+  {
+    std::string temp;
+    parser.getParameterValue("cv", temp);
+    if (!temp.empty())
+    {
+      auto temp2 = cbica::stringSplit(temp, ",");
+      if (temp2.size() != 2)
+      {
+        std::cerr << "Change value needs 2 values in the format '-cv oldValue,newValue' to work.\n";
+        return EXIT_FAILURE;
+      }
+      changeOldValues = temp2[0];
+      changeNewValues = temp2[1];
+    }
+
+    requestedAlgorithm = ChangeValue;
   }
 
   // this doesn't need any template initialization

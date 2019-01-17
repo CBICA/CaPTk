@@ -228,7 +228,7 @@ void fEGFRvIIIPredictor::CheckForDisclaimer()
     else
     {
       std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
-      ShowMessage(dataMessage, "Saved", this);
+      ShowMessage(dataMessage, this);
       return;
     }
   }
