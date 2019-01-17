@@ -11,6 +11,8 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
+ls $HOME
+
 cmake ../
 echo "Run Dependency Manager"
 make & sleep 1700; kill $!

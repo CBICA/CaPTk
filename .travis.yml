@@ -9,11 +9,19 @@ language: cpp
 cache: 
   # - ccache
   - directories:
-    - /Users/travis/build/PhucNgo1711/CaPTk/bin
-    # - /usr/local/Cellar/llvm
-    # - /usr/local/opt/llvm
-    # - /usr/local/Cellar/make
-    # - /usr/local/opt/make
+    - /Users/travis/build/PhucNgo1711/CaPTk/bin/Eigen*
+    - /Users/travis/build/PhucNgo1711/CaPTk/bin/Open*
+    - /Users/travis/build/PhucNgo1711/CaPTk/bin/VTK*
+    - /Users/travis/build/PhucNgo1711/CaPTk/bin/ITK*
+    - /Library/TeX/texbin
+    - /usr/local/Cellar/llvm
+    - /usr/local/opt/llvm
+    - /usr/local/Cellar/make
+    - /usr/local/opt/make
+    - /usr/local/Cellar/git-lfs
+    - /usr/local/opt/git-lfs
+    - /usr/local/Cellar/doxygen
+    - /usr/local/opt/doxygen
   - timeout: 1000
 
 # env:
@@ -31,9 +39,11 @@ before_install:
   # OSX install step
   # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make git-lfs doxygen llvm && export PATH="/usr/local/opt/make/libexec/gnubin:$PATH" ; fi
-  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/make/lib  || { rmdir /usr/local/opt/make; HOMEBREW_NO_AUTO_UPDATE=1 brew install make; }; fi
-  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/llvm/lib  || { rmdir /usr/local/opt/llvm; HOMEBREW_NO_AUTO_UPDATE=1 brew install llvm; }; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make git-lfs doxygen llvm && export PATH="/usr/local/opt/make/libexec/gnubin:$PATH" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/make/lib  || { rmdir /usr/local/opt/make; brew install make; }; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/llvm/lib  || { rmdir /usr/local/opt/llvm; brew install llvm; }; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/git-lfs/lib  || { rmdir /usr/local/opt/git-lfs; brew install git-lfs; }; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -d /usr/local/opt/doxygen/lib  || { rmdir /usr/local/opt/doxygen; brew install doxygen; }; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
