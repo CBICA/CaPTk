@@ -861,7 +861,7 @@ signals:
     else
     {
       std::string dataMessage = "Data has been saved to: " + captk_SampleDataFolder;
-      ShowMessage(dataMessage, "Saved");
+      ShowMessage(dataMessage, this);
       return;
     }
   }
