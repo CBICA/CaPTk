@@ -32,7 +32,7 @@ matrix:
   include:
     - os: osx
   fast_finish: true
-/Library/TeX/texbin
+
 before_install:
   ### OSX
   # OSX install step
