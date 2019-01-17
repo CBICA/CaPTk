@@ -15,7 +15,7 @@ ls $HOME
 
 cmake ../
 echo "Run Dependency Manager"
-make & sleep 1700; kill $!
+make & sleep 1400; kill $!
 # make
 
 # echo "Run CaPTk Build"
