@@ -937,8 +937,12 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   }
 
   // this defaults to the full dynamic range of double according to ITK's documentation
+<<<<<<< HEAD
   std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - [m_minimumToConsider, m_maximumToConsider] = [" << m_minimumToConsider << ", " << m_maximumToConsider << "]" << std::endl;
   //matrix_generator->SetDistanceValueMinMax(m_minimumToConsider, m_maximumToConsider); // TBD: TOCHECK - how is this affecting the computation?
+=======
+  matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
+>>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
 
   //TBD
@@ -968,7 +972,10 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   wrapper_generator->SetRequestedFeatures(requestedFeatures);
   //TBD
 
+<<<<<<< HEAD
   typename  RunLengthFeatures::Pointer runLengthMatrixCalculator = RunLengthFeatures::New();
+=======
+>>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
   typename  RunLengthFeatures::Pointer runLengthFeaturesCalculator = RunLengthFeatures::New();
 
   typename  OffsetVector::ConstIterator offsetIt;
@@ -996,9 +1003,25 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       matrix_generator->SetOffset(offsetIt.Value());
       matrix_generator->Update();
 
+      //std::cout << "[DEBUG] GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
+      //auto temp = matrix_generator->GetOutput();
+      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
+      //{
+      //  std::cout << "\tMeasurement vectors = " << iter.GetMeasurementVector()
+      //    << "; Frequency = " << iter.GetFrequency() << std::endl;
+      //}
+
+      //std::cout << "[DEBUG] GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
+      //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
+      //for (int bin_count = 0; bin_count < m_Bins; bin_count++)
+      //{
+      //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
+      //}
+
       runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
       runLengthFeaturesCalculator->Update();
 
+<<<<<<< HEAD
 
       //TBD - print out matrix
       std::cout << "\n\n\n";
@@ -1026,9 +1049,13 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       std::cout << "\tLongRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
       std::cout << "\tLongRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
       //TBD - print out matrix
+=======
+      //std::cout << "\tShort: " << runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis() << "\n";
+      //std::cout << "\tLong: " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << "\n";
+>>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
 
       //TBD
-      count_offset = count_offset + 1;
+      count_offset++;
       //TBD
 
       if (m_offsetSelect == "Average")
@@ -1122,6 +1149,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       //TBD
 
     }
+<<<<<<< HEAD
 
     //TBD
     if (m_offsetSelect == "Average") {
@@ -1194,13 +1222,20 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     }
     //TBD
 
+=======
+>>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
   }
   else if ((m_offsetSelect == "ITKDefault") || (m_offsetSelect == "Combined"))
   {
     matrix_generator->SetOffsets(offset);
     matrix_generator->Update();
 
-    auto temp = matrix_generator->GetOutput();
+    //auto temp = matrix_generator->GetOutput();
+    //std::cout << "GLRLM Matrix:\n";
+    //for (int bin_count = 0; bin_count < m_Bins; bin_count++) 
+    //{
+    //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
+    //}
 
     runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
     runLengthFeaturesCalculator->Update();
@@ -1215,6 +1250,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     featurevec["ShortRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
     featurevec["LongRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
     featurevec["LongRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+<<<<<<< HEAD
     //featurevec["TotalRuns"] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
     //featurevec["RunPercentage"] = featurevec["TotalRuns"] / static_cast<double>(offset->size() * m_currentNonZeroImageValues.size());
     //featurevec["GreyLevelNonuniformityNormalized"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
@@ -1291,6 +1327,15 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       }
     }
     //TBD
+=======
+    featurevec["TotalRuns"] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
+    featurevec["RunPercentage"] = featurevec["TotalRuns"] / static_cast<double>(offset->size() * m_currentNonZeroImageValues.size());
+    featurevec["GreyLevelNonuniformityNormalized"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+    featurevec["RunLengthNonuniformityNormalized"] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+    featurevec["GreyLevelVariance"] = runLengthFeaturesCalculator->GetGreyLevelVariance();
+    featurevec["RunLengthVariance"] = runLengthFeaturesCalculator->GetRunLengthVariance();
+    featurevec["RunEntropy"] = runLengthFeaturesCalculator->GetRunEntropy();
+>>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
   }
   else
   {
@@ -1332,6 +1377,20 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
       glcmGenerator->Update();
       featureCalc->SetInput(glcmGenerator->GetOutput());
       featureCalc->Update();
+
+      //auto temp = glcmGenerator->GetOutput();
+      //std::cout << "[DEBUG] GLCM Matrix: Offset: " << offset->at(i) << "\n";
+      //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
+      ////for (int bin_count = 0; bin_count < m_Bins; bin_count++)
+      ////{
+      ////  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
+      ////}
+      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
+      //{
+      //  std::cout << "\tMeasurement vectors = " << iter.GetMeasurementVector()
+      //    << "; Frequency = " << iter.GetFrequency() << std::endl;
+      //}
+
 
       contrast += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Inertia));
       correl += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Correlation));

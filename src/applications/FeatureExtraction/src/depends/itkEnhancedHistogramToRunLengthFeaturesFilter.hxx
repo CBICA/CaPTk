@@ -164,6 +164,10 @@ namespace itk {
         IndexType index = hit.GetIndex();
         //      inputHistogram->GetIndex( hit.GetInstanceIdentifier() );
 
+        if (index[1] != 0)
+        {
+          int blah = 1;
+        }
         double i = index[0] + 1;
         double j = index[1] + 1;
         double i2 = i * i;
