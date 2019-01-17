@@ -55,7 +55,7 @@ public slots:
   void SelectOutputImage();
 
 signals:
-  void RunTrainingSimulation(const std::string inputImageFile, const std::string inputMaskFile, const std::string outputFolder,int classifier,int folds);
+  void RunTrainingSimulation(const std::string inputImageFile, const std::string inputMaskFile, const std::string outputFolder,int classifier,int configuration,int folds);
 };
 
 
