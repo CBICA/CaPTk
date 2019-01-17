@@ -735,7 +735,7 @@ signals:
   void CallPCACalculation(const int, const std::string outputFolder);
   void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
   void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
-  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder,int,int);
+  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int, int, int);
 
   /**
   \brief Call DCM2NII for DICOM conversion and load the image into CaPTk
