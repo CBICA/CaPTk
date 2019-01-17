@@ -768,7 +768,7 @@ fMainWindow::fMainWindow()
   connect(&deepMedicNormPanel, SIGNAL(RunDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)), this, SLOT(CallImageDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)));
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
   connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string)));
-  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string,int,int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string,int,int)));
+  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -2638,31 +2638,31 @@ void fMainWindow::SaveDrawing()
 
   auto imageToWrite_wrap = imageToWrite;
   imageToWrite->DisconnectPipeline();
-  if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-  {
-    ImageTypeMask::DirectionType originalDirection;
-    originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
-    originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
-    originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
-    originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
-    originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
-    originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
-    originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
-    originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
-    originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
+  //if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+  //{
+  //  ImageTypeMask::DirectionType originalDirection;
+  //  originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
+  //  originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
+  //  originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
+  //  originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
+  //  originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
+  //  originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
+  //  originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
+  //  originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
+  //  originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
 
-    ImageTypeMask::PointType originalOrigin;
-    originalOrigin = mSlicerManagers[index]->mOrigin;
+  //  ImageTypeMask::PointType originalOrigin;
+  //  originalOrigin = mSlicerManagers[index]->mOrigin;
 
-    auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
-    infoChanger->SetInput(imageToWrite);
-    infoChanger->ChangeDirectionOn();
-    infoChanger->ChangeOriginOn();
-    infoChanger->SetOutputDirection(originalDirection);
-    infoChanger->SetOutputOrigin(originalOrigin);
-    infoChanger->Update();
-    imageToWrite_wrap = infoChanger->GetOutput();
-  }
+  //  auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
+  //  infoChanger->SetInput(imageToWrite);
+  //  infoChanger->ChangeDirectionOn();
+  //  infoChanger->ChangeOriginOn();
+  //  infoChanger->SetOutputDirection(originalDirection);
+  //  infoChanger->SetOutputOrigin(originalOrigin);
+  //  infoChanger->Update();
+  //  imageToWrite_wrap = infoChanger->GetOutput();
+  //}
 
   QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "mask.nii.gz");
   if (!saveFileName.isEmpty())
@@ -2692,7 +2692,6 @@ void fMainWindow::SaveSeedDrawing()
   if (!saveFileName.isEmpty())
   {
     std::string filename = saveFileName.toStdString();
-
 
     ImageTypeShort3D::Pointer img = convertVtkToItk<ImageTypeShort3D::PixelType, ImageTypeShort3D::ImageDimension>(mSlicerManagers[0]->mMask);
     std::vector<ImageTypeShort3D::IndexType> seedIndices;
@@ -4032,17 +4031,15 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
     }
   }
 
-
-
   std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForRecurrence(CAPTK::MachineLearningApplicationSubtype::TESTING, inputdirectory, useConventionalData, useDTIData, usePerfData, useDistData);
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(CAPTK::MachineLearningApplicationSubtype::TESTING, inputdirectory, useConventionalData, useDTIData, usePerfData, useDistData);
   if (QualifiedSubjects.size() == 0)
   {
     ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.");
     help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-  if (mRecurrenceEstimator.RecurrenceEstimateOnExistingModel(QualifiedSubjects, modeldirectory, inputdirectory, outputdirectory, useConventionalData, useDTIData, usePerfData, useDistData))
+  if (mPseudoEstimator.PseudoProgressionEstimateOnExistingModel(QualifiedSubjects, modeldirectory, inputdirectory, outputdirectory, useConventionalData, useDTIData, usePerfData, useDistData))
     ShowMessage("Output has been saved at the specified location.");
   else
   {
@@ -7005,10 +7002,10 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   }
 }
 
-void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder,int classifier,int folds)
+void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder, int classifier, int conf, int folds)
 {
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder,classifier,folds))
+  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
@@ -7665,7 +7662,12 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
 {
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
-  std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+  std::vector<std::string> subjectNames;
+  //= cbica::subdirectoriesInDirectory(directoryname);
+  subjectNames.push_back("ABEM");
+  subjectNames.push_back("ABFC");
+  subjectNames.push_back("ABFD");
+
   std::sort(subjectNames.begin(), subjectNames.end());
 
   for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
@@ -7676,62 +7678,39 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
     std::string t1FilePath = "";
     std::string t2FilePath = "";
     std::string t2FlairFilePath = "";
-    
+
+    //std::string t1t1ceFilePath    = "";
+    //std::string t2t2FlairFilePath = "";
+
     std::string axFilePath = "";
     std::string faFilePath = "";
     std::string radFilePath = "";
     std::string trFilePath = "";
-    
-    std::string rcbvFilePath = "";
-    std::string psrFilePath = "";
     std::string phFilePath = "";
-    std::string perfFilePath = ""; 
-    
+    std::string psrFilePath = "";
+    std::string rcbvFilePath = "";
+    std::string perfFilePath = "";
+    std::string featuresFilePath = "";
+
     std::string labelPath = "";
-    std::string featureFilePath = "";
+    std::string atlasPath = "";
 
     std::vector<std::string> files;
+
 
     if (cbica::directoryExists(subjectPath + "/SEGMENTATION"))
     {
       files = cbica::filesInDirectory(subjectPath + "/SEGMENTATION", false);
-      if (files.size() == 1)
-      {
-        labelPath = subjectPath + "/SEGMENTATION" + "/" + files[0];
-      }
-      else
-      {
-        for (unsigned int i = 0; i < files.size(); i++)
-        {
-          std::string filePath = subjectPath + "/SEGMENTATION" + "/" + files[i], filePath_lower;
-          std::string extension = cbica::getFilenameExtension(filePath, false);
-          filePath_lower = filePath;
-          std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-          if ((filePath_lower.find("label") != std::string::npos) && (extension == HDR_EXT || extension== NII_EXT || extension == NII_GZ_EXT))
-            labelPath = subjectPath + "/SEGMENTATION" + "/" + files[i];
-        }
-      }
-    }
-
-    if (cbica::directoryExists(subjectPath + "/CONVENTIONAL"))
-    {
-      files = cbica::filesInDirectory(subjectPath + "/CONVENTIONAL", false);
       for (unsigned int i = 0; i < files.size(); i++)
       {
-        std::string filePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
+        std::string filePath = subjectPath + "/SEGMENTATION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-
-        if ((files[i].find("t1ce") != std::string::npos || files[i].find("T1CE") != std::string::npos || files[i].find("T1ce") != std::string::npos || files[i].find("T1-gd") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          t1ceFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("t1") != std::string::npos || files[i].find("T1") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          t1FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("t2") != std::string::npos || files[i].find("T2") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          t2FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("flair") != std::string::npos || files[i].find("FLAIR") != std::string::npos || files[i].find("Flair") != std::string::npos || files[i].find("T2-Flair") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          t2FlairFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
+        if ((files[i].find("label-map") != std::string::npos || files[i].find("label") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          labelPath = subjectPath + "/SEGMENTATION/" + files[i];
+        else if ((files[i].find("atlas") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          atlasPath = subjectPath + "/SEGMENTATION/" + files[i];
       }
     }
-
     if (cbica::directoryExists(subjectPath + "/PERFUSION"))
     {
       files = cbica::filesInDirectory(subjectPath + "/PERFUSION", false);
@@ -7741,61 +7720,89 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string extension = cbica::getFilenameExtension(filePath, false);
         filePath_lower = filePath;
         std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-        if ((filePath_lower.find("rcbv") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((filePath_lower.find("rcbv") != std::string::npos)
+          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           rcbvFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("psr") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((filePath_lower.find("psr") != std::string::npos)
+          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           psrFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("ph") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((filePath_lower.find("ph") != std::string::npos)
+          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("perf") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((filePath_lower.find("perf") != std::string::npos)
+          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           perfFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
     }
+    if (useConventionalData && cbica::directoryExists(subjectPath + "/CONVENTIONAL"))
+    {
+      files = cbica::filesInDirectory(subjectPath + "/CONVENTIONAL", false);
+      for (unsigned int i = 0; i < files.size(); i++)
+      {
+        std::string filePath = subjectPath + "/CONVENTIONAL/" + files[i];
+        std::string extension = cbica::getFilenameExtension(filePath, false);
 
-    if (cbica::directoryExists(subjectPath + "/DTI"))
+        //if ((files[i].find("t1t1ce") != std::string::npos || files[i].find("T1T1CE") != std::string::npos || files[i].find("T1T1ce") != std::string::npos || files[i].find("T1-T1-gd") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        //  t1t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
+        //else if ((files[i].find("t2t2flair") != std::string::npos || files[i].find("T2T2FLAIR") != std::string::npos || files[i].find("T2T2Flair") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        //  t2t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
+        //else
+        if ((files[i].find("t1ce") != std::string::npos || files[i].find("T1CE") != std::string::npos || files[i].find("T1ce") != std::string::npos || files[i].find("T1-gd") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
+        else if ((files[i].find("t1") != std::string::npos || files[i].find("T1") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          t1FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
+        else if ((files[i].find("t2") != std::string::npos || files[i].find("T2") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          t2FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
+        else if ((files[i].find("flair") != std::string::npos || files[i].find("FLAIR") != std::string::npos || files[i].find("Flair") != std::string::npos || files[i].find("T2-Flair") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
+      }
+    }
+
+
+    if (useDTIData && cbica::directoryExists(subjectPath + "/DTI"))
     {
       files = cbica::filesInDirectory(subjectPath + "/DTI", false);
       for (unsigned int i = 0; i < files.size(); i++)
       {
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((files[i].find("AX") != std::string::npos || files[i].find("axial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+
+        if ((files[i].find("Axial") != std::string::npos || files[i].find("axial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("FA") != std::string::npos || files[i].find("fractional") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((files[i].find("Fractional") != std::string::npos || files[i].find("fractional") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("RAD") != std::string::npos || files[i].find("radial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((files[i].find("Radial") != std::string::npos || files[i].find("radial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("TR") != std::string::npos || files[i].find("trace") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((files[i].find("Trace") != std::string::npos || files[i].find("trace") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
     if (cbica::fileExists(subjectPath + "/features.csv"))
-      featureFilePath = subjectPath + "/features.csv";
+      featuresFilePath = subjectPath + "/features.csv";
 
-    if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath
-      == "" || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty() || perfFilePath.empty() || featureFilePath.empty())
+    if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
       continue;
 
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2] = t2FilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE] = t1ceFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR] = t2FlairFilePath;
-
+    //OneQualifiedSubject[IMAGE_TYPE_T1T1CE]    = t1t1ceFilePath; 
+    //OneQualifiedSubject[IMAGE_TYPE_T2FL]      = t2t2FlairFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX] = axFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA] = faFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD] = radFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR] = trFilePath;
-
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR] = psrFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH] = phFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR] = psrFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV] = rcbvFilePath;
-
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG] = labelPath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION] = perfFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES] = featureFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES] = featuresFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG] = labelPath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID] = subjectNames[sid];
-
     QualifiedSubjects.push_back(OneQualifiedSubject);
+
+    std::cout << subjectNames[sid] << std::endl;
   }
   return QualifiedSubjects;
 }
