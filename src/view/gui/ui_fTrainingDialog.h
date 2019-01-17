@@ -55,12 +55,13 @@ public:
   QPushButton *inputMaskButton;
 
 
-  QLabel		*inputFoldsLabel;
-  QLineEdit	*inputFoldsName;
-  
-  
   QGroupBox	*outputGroupBox;
   QGridLayout *outputGridLayout;
+
+  QGroupBox	*confirmGroupBox;
+  QGridLayout *confirmGridLayout;
+
+
   QLineEdit	*outputImageName;
   QLabel		*outputImageLabel;
   QPushButton *outputImageButton;
@@ -70,11 +71,22 @@ public:
 
   QRadioButton *mLinearKernel;
   QRadioButton *mRBFKernel;
-
+  QRadioButton *mCrossValidation;
+  QRadioButton *mSplitTrainTest;
   
   QHBoxLayout * horizontalLayout;
 
   QLabel *longRunningWarning;
+  QFrame *classifierFrame;
+  QFrame *configurationFrame;
+
+  QGroupBox	*classifierGroupBox;
+  QGroupBox	*configurationGroupBox;
+  QGridLayout *classifierGridLayout;
+  QGridLayout *configurationGridLayout;
+
+  QLineEdit	*cvValue;
+  QLineEdit	*ttValue;
 
   void setupUi(QDialog *fTrainingSimulator)
   {
@@ -119,32 +131,55 @@ public:
     sizePolicy.setHeightForWidth(inputMaskLabel->sizePolicy().hasHeightForWidth());
     inputMaskLabel->setSizePolicy(sizePolicy);
 
-    inputFoldsLabel = new QLabel(inputGroupBox);
-    inputFoldsLabel->setSizePolicy(sizePolicy);
-
     inputMaskName = new QLineEdit("");
     inputMaskName->setObjectName(QString::fromUtf8("inputMaskName"));
     sizePolicy.setHeightForWidth(inputMaskName->sizePolicy().hasHeightForWidth());
     inputMaskName->setSizePolicy(sizePolicy);
     inputMaskName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-    inputFoldsName = new QLineEdit("");
-    inputFoldsName->setObjectName(QString::fromUtf8("inputFoldsName"));
-    sizePolicy.setHeightForWidth(inputFoldsName->sizePolicy().hasHeightForWidth());
-    inputFoldsName->setSizePolicy(sizePolicy);
-    inputFoldsName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
-
-
     inputMaskButton = new QPushButton(inputGroupBox);
     inputMaskButton->setObjectName(QString::fromUtf8("inputMaskButton"));
     inputMaskButton->setText(QString("Browse"));
 
+    //inputGridLayout->addWidget(classifierGroup(), 0, 0);
+    //inputGridLayout->addWidget(configurationGroup(), 1, 0);
+
+    // output
+    classifierGroupBox = new QGroupBox(fTrainingSimulator);
+    classifierGroupBox->setTitle(QString::fromStdString("SVM Classification kernel"));
+    classifierGridLayout = new QGridLayout(classifierGroupBox);
+    classifierGridLayout->setObjectName(QString::fromUtf8("classifierGridLayout"));
     mLinearKernel = new QRadioButton("SVM: Linear");
     mLinearKernel->setEnabled(true);
     mRBFKernel = new QRadioButton("SVM: RBF");
     mRBFKernel->setEnabled(true);
+    classifierGridLayout->addWidget(mLinearKernel, 0, 0, 1, 1);
+    classifierGridLayout->addWidget(mRBFKernel, 0, 1, 1, 1);
 
 
+    configurationGroupBox = new QGroupBox(fTrainingSimulator);
+    configurationGroupBox->setTitle(QString::fromStdString("Configuration"));
+    configurationGridLayout = new QGridLayout(configurationGroupBox);
+    configurationGridLayout->setObjectName(QString::fromUtf8("configurationGridLayout"));
+    mCrossValidation = new QRadioButton("CrossValidation");
+    mCrossValidation->setEnabled(true);
+    mSplitTrainTest = new QRadioButton("Split TrainTest");
+    mSplitTrainTest->setEnabled(true);
+    cvValue = new QLineEdit("");
+    cvValue->setObjectName(QString::fromUtf8("cvValue"));
+    sizePolicy.setHeightForWidth(cvValue->sizePolicy().hasHeightForWidth());
+    cvValue->setSizePolicy(sizePolicy);
+    cvValue->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    ttValue = new QLineEdit("");
+    ttValue->setObjectName(QString::fromUtf8("ttValue"));
+    sizePolicy.setHeightForWidth(ttValue->sizePolicy().hasHeightForWidth());
+    ttValue->setSizePolicy(sizePolicy);
+    ttValue->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    configurationGridLayout->addWidget(mCrossValidation, 0, 0, 1, 1);
+    configurationGridLayout->addWidget(cvValue, 0, 1, 1, 1);
+    configurationGridLayout->addWidget(mSplitTrainTest, 0, 2, 1, 1);
+    configurationGridLayout->addWidget(ttValue, 0, 3, 1, 1);
 
     inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
     inputGridLayout->addWidget(inputImageName, 0, 1, 1, 1);
@@ -155,17 +190,9 @@ public:
     inputGridLayout->addWidget(inputMaskButton, 1, 2, 1, 1);
 
 
-    inputGridLayout->addWidget(inputFoldsLabel, 2, 0, 1, 1);
-    inputGridLayout->addWidget(inputFoldsName, 2, 1, 1, 1);
-
-    inputGridLayout->addWidget(mLinearKernel, 3, 0, 1, 1);
-    inputGridLayout->addWidget(mRBFKernel, 3, 1, 1, 1);
-
-
     // output
     outputGroupBox = new QGroupBox(fTrainingSimulator);
     outputGroupBox->setTitle(QString::fromStdString("Output"));
-
     outputGridLayout = new QGridLayout(outputGroupBox);
     outputGridLayout->setObjectName(QString::fromUtf8("outputGridLayout"));
 
@@ -194,23 +221,25 @@ public:
     outputGridLayout->addWidget(outputImageButton, 0, 1, 1, 1);
     outputGridLayout->addWidget(longRunningWarning, 1, 0, 1, 2);
 
-    // put the layout in perspective
-    gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);
-    gridLayout->addWidget(outputGroupBox, 2, 0, 1, 2);
+    confirmGroupBox = new QGroupBox(fTrainingSimulator);
+    confirmGroupBox->setTitle(QString::fromStdString(""));
+    confirmGridLayout = new QGridLayout(confirmGroupBox);
+    confirmGridLayout->setObjectName(QString::fromUtf8("confirmGridLayout"));
 
-
-    confirmButton = new QPushButton(fTrainingSimulator);
+    confirmButton = new QPushButton(confirmGroupBox);
     confirmButton->setObjectName(QString::fromUtf8("confirm"));
-    //confirmButton->setIcon(ButtonIcon);
-    //confirmButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent
-
-    cancelButton = new QPushButton(fTrainingSimulator);
+    cancelButton = new QPushButton(confirmGroupBox);
     cancelButton->setObjectName(QString::fromUtf8("Cancel"));
-    //cancelButton->setIcon(ButtonIcon);
-    //cancelButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent
+    
+    confirmGridLayout->addWidget(confirmButton, 0, 0, 1, 1);
+    confirmGridLayout->addWidget(cancelButton, 0, 1, 1, 1);
 
-    gridLayout->addWidget(confirmButton, 3, 0, 1, 1);
-    gridLayout->addWidget(cancelButton, 3, 1, 1, 1);
+
+    gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);
+    gridLayout->addWidget(classifierGroupBox, 2, 0, 1, 2);
+    gridLayout->addWidget(configurationGroupBox, 3, 0, 1, 2);
+    gridLayout->addWidget(outputGroupBox, 4, 0, 1, 2);
+    gridLayout->addWidget(confirmGroupBox, 5, 0, 1, 2);
 
     retranslateUi(fTrainingSimulator);
 
@@ -225,7 +254,6 @@ public:
     cancelButton->setText(QApplication::translate("fTrainingSimulator", "Cancel", 0));
     inputImageLabel->setText(QApplication::translate("fTrainingSimulator", "Features File:", 0));
     inputMaskLabel->setText(QApplication::translate("fTrainingSimulator", "Target File:", 0));
-    inputFoldsLabel->setText(QApplication::translate("fTrainingSimulator", "No. of folds:", 0));
   } // retranslateUi
 };
 
