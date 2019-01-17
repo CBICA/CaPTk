@@ -669,7 +669,7 @@ void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer 
 template< class TImage >
 void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Pointer image, const typename TImage::Pointer mask, std::map< std::string, double > &featurevec, bool latticePatch)
 {
-  /// histogram calculation from ITK -- for texture feature pipeline
+  /// histogram calculation from ITK -- for texture feature pipeline 
   typename TImage::PixelType min, max;
 
   if (m_QuantizationType == "Image")
@@ -937,17 +937,10 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   }
 
   // this defaults to the full dynamic range of double according to ITK's documentation
-<<<<<<< HEAD
   std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - [m_minimumToConsider, m_maximumToConsider] = [" << m_minimumToConsider << ", " << m_maximumToConsider << "]" << std::endl;
   //matrix_generator->SetDistanceValueMinMax(m_minimumToConsider, m_maximumToConsider); // TBD: TOCHECK - how is this affecting the computation?
-=======
   matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
->>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
-
-  //TBD
-  wrapper_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
-  //TBD
 
   //TBD
   typename RunLengthFilterType::FeatureNameVectorPointer requestedFeatures = RunLengthFilterType::FeatureNameVector::New();
@@ -972,10 +965,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   wrapper_generator->SetRequestedFeatures(requestedFeatures);
   //TBD
 
-<<<<<<< HEAD
   typename  RunLengthFeatures::Pointer runLengthMatrixCalculator = RunLengthFeatures::New();
-=======
->>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
   typename  RunLengthFeatures::Pointer runLengthFeaturesCalculator = RunLengthFeatures::New();
 
   typename  OffsetVector::ConstIterator offsetIt;
@@ -1021,8 +1011,6 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
       runLengthFeaturesCalculator->Update();
 
-<<<<<<< HEAD
-
       //TBD - print out matrix
       std::cout << "\n\n\n";
       std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetNumberOfBinsPerAxis() = " << matrix_generator->GetNumberOfBinsPerAxis() << std::endl;
@@ -1049,10 +1037,6 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       std::cout << "\tLongRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
       std::cout << "\tLongRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
       //TBD - print out matrix
-=======
-      //std::cout << "\tShort: " << runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis() << "\n";
-      //std::cout << "\tLong: " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << "\n";
->>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
 
       //TBD
       count_offset++;
@@ -1149,7 +1133,6 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       //TBD
 
     }
-<<<<<<< HEAD
 
     //TBD
     if (m_offsetSelect == "Average") {
@@ -1222,8 +1205,6 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     }
     //TBD
 
-=======
->>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
   }
   else if ((m_offsetSelect == "ITKDefault") || (m_offsetSelect == "Combined"))
   {
@@ -1250,15 +1231,6 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     featurevec["ShortRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
     featurevec["LongRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
     featurevec["LongRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
-<<<<<<< HEAD
-    //featurevec["TotalRuns"] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
-    //featurevec["RunPercentage"] = featurevec["TotalRuns"] / static_cast<double>(offset->size() * m_currentNonZeroImageValues.size());
-    //featurevec["GreyLevelNonuniformityNormalized"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
-    //featurevec["RunLengthNonuniformityNormalized"] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
-    //featurevec["GreyLevelVariance"] = runLengthFeaturesCalculator->GetGreyLevelVariance();
-    //featurevec["RunLengthVariance"] = runLengthFeaturesCalculator->GetRunLengthVariance();
-    //featurevec["RunEntropy"] = runLengthFeaturesCalculator->GetRunEntropy();
-
 
     //TBD
     wrapper_generator->SetOffsets(offset);
@@ -1327,15 +1299,6 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       }
     }
     //TBD
-=======
-    featurevec["TotalRuns"] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
-    featurevec["RunPercentage"] = featurevec["TotalRuns"] / static_cast<double>(offset->size() * m_currentNonZeroImageValues.size());
-    featurevec["GreyLevelNonuniformityNormalized"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
-    featurevec["RunLengthNonuniformityNormalized"] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
-    featurevec["GreyLevelVariance"] = runLengthFeaturesCalculator->GetGreyLevelVariance();
-    featurevec["RunLengthVariance"] = runLengthFeaturesCalculator->GetRunLengthVariance();
-    featurevec["RunEntropy"] = runLengthFeaturesCalculator->GetRunEntropy();
->>>>>>> e49d26ce04c5cee30ed4896d124a1c2ffbe6dd15
   }
   else
   {
