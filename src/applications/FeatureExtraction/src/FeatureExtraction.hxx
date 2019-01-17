@@ -1008,6 +1008,15 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
       //}
 
+      auto temp = matrix_generator->GetOutput();
+      std::cout << "[DEBUG] GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
+      std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
+      for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
+      {
+        std::cout << "\tGLRLM Measurement vectors = " << iter.GetMeasurementVector()
+          << "; Frequency = " << iter.GetFrequency() << std::endl;
+      }
+
       runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
       runLengthFeaturesCalculator->Update();
 
@@ -1351,7 +1360,7 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
       //}
       for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
       {
-        std::cout << "\tMeasurement vectors = " << iter.GetMeasurementVector()
+        std::cout << "\tGLCM Measurement vectors = " << iter.GetMeasurementVector()
           << "; Frequency = " << iter.GetFrequency() << std::endl;
       }
       //TBD - to debug and compare vs GLRLM
