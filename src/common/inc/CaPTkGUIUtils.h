@@ -292,7 +292,7 @@ inline QString getExistingDirectory(QWidget *parent, const QString inputPath)
   }
 
   //! opens the link using Qt's desktop services
-  bool openLink(const std::string &link)
+  inline bool openLink(const std::string &link)
   {
     return QDesktopServices::openUrl(QUrl(link.c_str()));
   }
