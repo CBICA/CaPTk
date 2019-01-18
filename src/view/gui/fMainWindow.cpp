@@ -883,8 +883,8 @@ fMainWindow::~fMainWindow()
     file.close();
   }
 
-  // call the close() function explicitly during mainWindow closure
-  mHelpDlg->close();
+  if (mHelpDlg)
+    delete mHelpDlg;
 
 }
 
@@ -7352,6 +7352,10 @@ void fMainWindow::closeEvent(QCloseEvent* event)
         file << "User doesn't want close confirmation.\n";
         file.close();
       }
+
+      //! close the help dialog forcefully as we are about to exit the application
+      bool closed = mHelpDlg->close();
+
       event->accept();
     }
     else
@@ -7361,9 +7365,12 @@ void fMainWindow::closeEvent(QCloseEvent* event)
   }
   else
   {
+    //! close the help dialog forcefully as we are about to exit the application
+    bool closed = mHelpDlg->close();
+
     event->accept();
   }
-};
+}
 
 void fMainWindow::updateProgress(int progress, std::string message, int max)
 {
