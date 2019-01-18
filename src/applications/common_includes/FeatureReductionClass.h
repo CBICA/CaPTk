@@ -42,17 +42,17 @@ public:
   \brief Finds the first few discerning principal components in perfusion data
   \param intensities Input perfusion data
   */
-  vtkSmartPointer< vtkTable >  GetDiscerningPerfusionTimePointsFullPCA(VectorVectorDouble &intensities);
+  vtkSmartPointer< vtkTable >  GetDiscerningPerfusionTimePointsFullPCA(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
 
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities);
   vtkSmartPointer< vtkTable >  GetDiscerningPerfusionTimePoints(vnl_matrix<double> &intensities);
-
+  vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
   /**
   \brief Applies the exsiting PCA model (developed on training data) on test data
   \param intensities Test data
   */
   VectorVectorDouble ApplyPCAOnTestData(VectorVectorDouble &intensities);
-
+  VectorVectorDouble  ApplyPCAOnTestDataWithGivenTransformations(VectorVectorDouble &intensities, VariableSizeMatrixType & TransformationMatrix, VariableLengthVectorType & MeanVector);
   /**
   \brief Calculates the transpose of an input matrix
   \param inputmatrix Input matrix
