@@ -9,6 +9,7 @@
 //#include "CAPTk.h"
 
 #include "vtkFileOutputWindow.h"
+#include "itkFileOutputWindow.h"
 //#include "vtkOutputWindow"
 
 #include "cbicaCmdParser.h"
@@ -296,6 +297,13 @@ int main(int argc, char** argv)
   auto fileOutputWindow = vtkSmartPointer< vtkFileOutputWindow >::New();
   fileOutputWindow->SetFileName((loggerFolderBase + "vtk_errors.txt").c_str());
   vtkOutputWindow::SetInstance(fileOutputWindow);
+
+  //! redirect the itk output window contents to file
+  typedef itk::FileOutputWindow myFileOutputWindow;
+  myFileOutputWindow::Pointer itkOutputWindow = myFileOutputWindow::New();
+  itkOutputWindow->SetFileName((loggerFolderBase + "itk_errors.txt").c_str());
+  itkOutputWindow->FlushOn();
+  itk::OutputWindow::SetInstance(itkOutputWindow);
 
   fMainWindow window; // initialize main app
   if (parser.isPresent("a"))
