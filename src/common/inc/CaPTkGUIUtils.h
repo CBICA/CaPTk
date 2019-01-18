@@ -282,8 +282,12 @@ inline QString getExistingDirectory(QWidget *parent, const QString inputPath)
         captk_dataDir = captk_currentApplicationPath + "../Resources/data/";
         if (!cbica::exists(captk_dataDir))
         {
-          ShowErrorMessage("Data Directory not found. Please re-install");
-          return "";
+          captk_dataDir = std::string(PROJECT_SOURCE_DIR) + "data/";
+          if (!cbica::exists(captk_dataDir))
+          {
+            ShowErrorMessage("Data Directory not found. Please re-install");
+            return "";
+          }
         }
       }
     }
