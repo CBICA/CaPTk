@@ -70,6 +70,7 @@ int main(int argc, char** argv)
   //! Support for High DPI monitors..works on windows but still some menu issues are seen
   //! Needs to be tested on Linux and Mac
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
   QApplication app(argc, argv);
 
