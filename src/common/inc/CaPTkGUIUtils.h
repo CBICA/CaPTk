@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QComboBox>
 #include <QCoreApplication>
+#include "qdesktopservices.h"
 
 static QString IMAGES_EXTENSIONS = "Images (*.nii.gz *.nii *.dcm)";
 
@@ -288,4 +289,10 @@ inline QString getExistingDirectory(QWidget *parent, const QString inputPath)
     }
 
     return captk_dataDir;
+  }
+
+  //! opens the link using Qt's desktop services
+  bool openLink(const std::string &link)
+  {
+    return QDesktopServices::openUrl(QUrl(link.c_str()));
   }

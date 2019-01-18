@@ -840,22 +840,23 @@ signals:
   {
     auto currentApp = action->text().toStdString();
     std::string path = getCaPTkDataDir();
+    auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
     std::string link =
 #ifdef _WIN32
       path + "/GnuWin32/bin/wget.exe"
 #else
       "wget"
 #endif
-      + std::string(" ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/") + currentApp + ".zip" +
+      + currentLink +
       " -O " + captk_SampleDataFolder + "/" + currentApp + ".zip";
 
     cbica::Logging(loggerFile, link);
 
     ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    if (std::system((link).c_str()) != 0)
+    if /*(std::system((link).c_str()) != 0)*/(!openLink(currentLink))
     {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.");
+      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
       return;
     }
     else
