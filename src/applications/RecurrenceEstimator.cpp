@@ -292,7 +292,8 @@ bool RecurrenceEstimator::TrainNewModelOnGivenData(const std::vector<std::map<CA
 		return false;
 	}
 	mFeatureReductionLocalPtr.ResetParameters();
-	mFeatureScalingLocalPtr.ResetParameters();
+  mFeatureScalingLocalPtr.ResetParameters(); 
+  return true;
 }
 
 int RecurrenceEstimator::GetFeatureVectorSize(bool &useConventionalData, bool &useDTIData, bool &usePerfData, bool &useDistData)
