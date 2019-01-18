@@ -51,8 +51,8 @@ rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
 # Create binary directory
-# echo "[:] Creating binary directory..."
-# mkdir -p bin
+echo "[:] Creating binary directory..."
+mkdir -p bin
 
 # Move OS specific qt lib in
 mv ./binaries/*_macos.zip ./bin/qt.zip
@@ -63,7 +63,6 @@ mv ./binaries/externalApps.zip ./bin/
 # Remove all other blobs
 rm -rf binaries
 
-mkdir -p bin
 cd bin
 
 # Extract externalApps
