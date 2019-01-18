@@ -14,7 +14,7 @@ export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 ls
 cmake ../
 echo "Run Dependency Manager"
-make & sleep 1200; kill $! 
+make & sleep 180; kill $!
 # make
 
 # echo "Run CaPTk Build"
