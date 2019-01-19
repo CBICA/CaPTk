@@ -12,15 +12,15 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 ls
-cmake ../
-echo "Run Dependency Manager"
-# make & sleep 2000; kill $! 
-make
-
-# echo "Run CaPTk Build"
-# export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
 # cmake ../
+# echo "Run Dependency Manager"
+# make & sleep 2000; kill $! 
 # make
+
+echo "Run CaPTk Build"
+export CMAKE_PREFIX_PATH=/Users/travis/build/PhucNgo1711/CaPTk/bin/ITK
+cmake ../
+make
 
 # export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/Users/travis/build/PhucNgo1711/dependency_manager/bin/ITK-build
 }
@@ -46,7 +46,7 @@ fi
 
 # Nuclear option
 # rm -rf binaries
-rm -rf data
+# rm -rf data
 rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
@@ -55,7 +55,7 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 
 # Move OS specific qt lib in
-mv ./binaries/*_macos.zip ./bin/qt.zip
+mv ./binaries/qt5.11.2_macos.zip ./bin/qt.zip
 
 # Move externalApps into bin to trick CMake
 mv ./binaries/externalApps.zip ./bin/
