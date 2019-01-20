@@ -30,7 +30,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkScalarImageToRunLengthFeaturesFilter.h"
 #include "itkCSVArray2DFileReader.h"
 #include "itkConnectedComponentImageFilter.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 #include "CaPTkClassifierUtils.h"
 #include "cbicaLogging.h"
 
