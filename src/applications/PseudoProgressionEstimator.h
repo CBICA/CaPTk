@@ -31,7 +31,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkCSVArray2DFileReader.h"
 #include "itkConnectedComponentImageFilter.h"
 #include "CapTkEnums.h"
-#include "CapTkClassifierUtils.h"
+#include "CaPTkClassifierUtils.h"
 #include "cbicaLogging.h"
 
 #define RECURRENCE_MODEL_G 0.5
