@@ -12,9 +12,9 @@ cache:
     - /Users/travis/build/PhucNgo1711/CaPTk/bin/
   - timeout: 1200
 
-# env:
-#   global:
-#     - MAKEFLAGS="-j 2"
+env:
+  global:
+    - MAKEFLAGS="-j 2"
 
 # Build matrix to run jobs in parallel
 matrix:
