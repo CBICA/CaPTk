@@ -41,8 +41,6 @@ void fTrainingSimulator::ConfirmButtonPressed()
     ShowErrorMessage("Please select the target file.", this);
     return;
   }
-
-
   if (!cbica::isFile(inputImageName->text().toStdString()))
   {
     ShowErrorMessage("The specified feature file does not exist.", this);
@@ -53,17 +51,9 @@ void fTrainingSimulator::ConfirmButtonPressed()
     ShowErrorMessage("The specified target file does not exist.", this);
     return;
   }
-
-
   if (outputImageName->text().isEmpty())
   {
     ShowErrorMessage("Please specify the output directory.", this);
-    return;
-  }
-
-  if (inputFoldsName->text().isEmpty())
-  {
-    ShowErrorMessage("Please specify the number of folds.", this);
     return;
   }
   if (mLinearKernel->isChecked() == false && mRBFKernel->isChecked() == false)
@@ -71,13 +61,42 @@ void fTrainingSimulator::ConfirmButtonPressed()
     ShowErrorMessage("Please select at least one of the given two options: Linear, RBF.");
     return;
   }
-  if(mLinearKernel->isChecked())
-    emit RunTrainingSimulation(mInputPathName.toStdString(), mInputMaskName.toStdString(), mOutputPathName.toStdString(),1, inputFoldsName->text().toInt());
+  if (mCrossValidation->isChecked() == false && mSplitTrainTest->isChecked() == false)
+  {
+    ShowErrorMessage("Please select at least one of the given two options: CrossValidation, TrainTest.");
+    return;
+  }
+  if (mCrossValidation->isChecked() == true && cvValue->text().isEmpty())
+  {
+    ShowErrorMessage("Please select the # of folds.");
+    return;
+  }
+  if (mSplitTrainTest->isChecked() == true && ttValue->text().isEmpty())
+  {
+    ShowErrorMessage("Please select the size of training dataset.");
+    return;
+  }
 
-  if (mRBFKernel->isChecked())
-    emit RunTrainingSimulation(mInputPathName.toStdString(), mInputMaskName.toStdString(), mOutputPathName.toStdString(), 2, inputFoldsName->text().toInt());
 
+  int classifier = 0;
+  int configuration = 0;
+  int folds = 0;
 
+  if (mLinearKernel->isChecked())
+    classifier = 1;
+  else
+    classifier = 2;
+  if (mCrossValidation->isChecked())
+  {
+    configuration = 1;
+    folds = cvValue->text().toInt();
+  }
+  else
+  {
+    configuration = 2;
+    folds = ttValue->text().toInt();
+  }
+  emit RunTrainingSimulation(mInputPathName.toStdString(), mInputMaskName.toStdString(), mOutputPathName.toStdString(),classifier, configuration, folds);
   this->close();
 }
 
