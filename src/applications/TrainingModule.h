@@ -20,7 +20,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkExtractImageFilter.h"
 #include "itkCSVArray2DFileReader.h"
 #include "FeatureScalingClass.h"
-#include "CapTkDefines.h"
+#include "CaPTkDefines.h"
 #include "cbicaLogging.h"
 
 
