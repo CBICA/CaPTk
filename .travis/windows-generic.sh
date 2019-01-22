@@ -13,7 +13,9 @@ mkdir -p bin
 mv ./binaries/qt5.11.2_windows.zip ./bin/qt.zip
 
 cd bin
+echo "one"
 ls
+echo "two"
 
 pwd
 exit 0
