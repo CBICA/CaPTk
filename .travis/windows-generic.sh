@@ -13,12 +13,6 @@ mkdir -p bin
 mv ./binaries/qt5.11.2_windows.zip ./bin/qt.zip
 
 cd bin
-echo "one"
-ls
-echo "two"
-
-pwd
-exit 0
 cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF ..
-ls
 cmake --build . --target ALL_BUILD --config Release
+ls

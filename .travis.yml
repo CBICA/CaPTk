@@ -9,7 +9,7 @@ language: cpp
 cache: 
   ccache: true
   directories:
-    - ${TRAVIS_BUILD_DIR}/bin
+    - ${TRAVIS_BUILD_DIR}/bin/**
 
 # Build matrix to run jobs in parallel
 matrix:
