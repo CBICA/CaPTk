@@ -852,17 +852,11 @@ signals:
 
     cbica::Logging(loggerFile, link);
 
-    ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
+    //ShowMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
     if /*(std::system((link).c_str()) != 0)*/(!openLink(currentLink))
     {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
-      return;
-    }
-    else
-    {
-      std::string dataMessage = "Data has been saved to: " + captk_SampleDataFolder;
-      ShowMessage(dataMessage, this);
       return;
     }
   }
