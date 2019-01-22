@@ -79,8 +79,8 @@ int main(int argc, char** argv)
   cbica::setEnvironmentVariable("QT_OPENGL", "software");
   
   // parse the command line
-  auto parser = cbica::CmdParser(argc, argv);
-  parser.ignoreArgc1();
+  auto parser = cbica::CmdParser(argc, argv, "CaPTk");
+  //parser.ignoreArgc1();
 
   parser.addOptionalParameter("i", "images", cbica::Parameter::FILE, "NIfTI or DICOM", "Input coregistered image(s) to load into CaPTk", "Multiple images are delineated using ','");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "NIfTI or DICOM", "Input mask [coregistered with image(s)] to load into CaPTk", "Accepts only one file");
