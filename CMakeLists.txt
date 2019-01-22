@@ -966,7 +966,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${EXE_SOURCES}
         #${YAMLCPP_Headers}
         #${YAMLCPP_Sources}
-        ${DATA_DIR}/icons/captk.rc
+        ${DATA_DIR}/icons/application/windows/captk.rc
       )
     ELSEIF(APPLE)
       SET (ICON_FILE "${DATA_DIR}/icons/application/apple/CaPTk.icns")
@@ -1108,7 +1108,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     IF( WIN32 )
       INSTALL(FILES "${DATA_DIR}/icons/application/windows/captk.ico" DESTINATION share/icons)
-      INSTALL(FILES "${DATA_DIR}/icons/captk.rc" DESTINATION data/icons)
+      INSTALL(FILES "${DATA_DIR}/icons/application/windows/captk.rc" DESTINATION data/icons)
     ELSEIF (APPLE)
       
     ELSE()
