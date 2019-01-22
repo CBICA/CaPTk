@@ -7,6 +7,10 @@ cache: ccache
 # ccache can fix this if you compile the dependency manager one at a time since VTK takes 50 minutes to compile on travis
 # To do this, go into the superbuild cmake and simply comment out the packages so that opencv only builds, then vtk and opencv, etc
 # After that, also make sure the script terminates afterwards immediately so travis can pack and upload the cache
+cache: 
+  ccache: true
+  directories:
+    - ${TRAVIS_BUILD_DIR}/bin/**
 
 # Build matrix to run jobs in parallel
 matrix:
@@ -16,15 +20,20 @@ matrix:
       sudo: required
       env:
         - LINUX_DIST=xenial
+    # Dbus versions might mean that this build can never complete, therefore it should be on allowed_failures
     - os: linux
       dist: trusty
       sudo: required
       env:
         - LINUX_DIST=trusty
+    - os: windows
+      env:
+        - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
   fast_finish: true
   allow_failures:
     - os: linux
       dist: trusty
+    - os: windows
 
 before_install:
   # Linux install step
@@ -39,3 +48,5 @@ before_install:
   
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export PATH=$MSBUILD_PATH:$PATH; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./.travis/windows-generic.sh; fi

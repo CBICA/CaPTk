@@ -38,7 +38,7 @@ rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
 # Create binary directory
 echo "[:] Creating binary directory..."
-mkdir bin
+mkdir -p bin
 
 # Move OS specific qt lib in
 mv ./binaries/qt5.11.2_linux.zip ./bin/qt.zip
@@ -59,8 +59,8 @@ cd bin
 unzip externalApps.zip &> /dev/null
 
 # Create test data dir to skip ftp download
-mkdir testing
-mkdir ./testing/TestData
+mkdir -p testing
+mkdir -p ./testing/TestData
 
 # Cmake
 echo "[:] Running cmake command to configure superbuild... [stdout omitted]"
