@@ -256,6 +256,10 @@ inline QString getExistingDirectory(QWidget *parent, const QString inputPath)
     return cbica::normPath(captk_currentApplicationPath + "../Resources/bin/" + appName_wrap);
 #endif  
 #else
+    if (cbica::isFile(captk_currentApplicationPath + appName_wrap + winExt))
+    {
+      return captk_currentApplicationPath + appName_wrap + winExt;
+    }
     auto individualAppDir = cbica::normPath(captk_currentApplicationPath + "../../src/applications/individualApps/" + appName + "/");
     if (appName_wrap.find("itksnap") != std::string::npos)
     {
