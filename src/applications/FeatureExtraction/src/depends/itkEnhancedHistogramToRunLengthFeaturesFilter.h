@@ -1,17 +1,12 @@
 /*===================================================================
-
 The Medical Imaging Interaction Toolkit (MITK)
-
 Copyright (c) German Cancer Research Center,
 Division of Medical and Biological Informatics.
 All rights reserved.
-
 This software is distributed WITHOUT ANY WARRANTY; without
 even the implied warranty of MERCHANTABILITY or FITNESS FOR
 A PARTICULAR PURPOSE.
-
 See LICENSE.txt or http://www.mitk.org for details.
-
 ===================================================================*/
 
 /*=========================================================================
@@ -89,10 +84,10 @@ namespace itk {
       typedef SmartPointer<const Self>               ConstPointer;
 
       /** Run-time type information (and related methods). */
-      itkTypeMacro( EnhancedHistogramToRunLengthFeaturesFilter, ProcessObject );
+      itkTypeMacro(EnhancedHistogramToRunLengthFeaturesFilter, ProcessObject);
 
       /** standard New() method support */
-      itkNewMacro( Self );
+      itkNewMacro(Self);
 
       typedef THistogram                                      HistogramType;
       typedef typename HistogramType::Pointer                 HistogramPointer;
@@ -105,7 +100,7 @@ namespace itk {
 
       /** Method to Set/Get the input Histogram */
       using Superclass::SetInput;
-      void SetInput ( const HistogramType * histogram );
+      void SetInput(const HistogramType * histogram);
       const HistogramType * GetInput() const;
 
       /** Smart Pointer type to a DataObject. */
@@ -182,7 +177,7 @@ namespace itk {
       MeasurementType GetRunEntropy() const;
       const MeasurementObjectType* GetRunEntropyOutput() const;
 
-      itkGetMacro( TotalNumberOfRuns, unsigned long );
+      itkGetMacro(TotalNumberOfRuns, unsigned long);
 
       itkGetConstMacro(NumberOfVoxels, unsigned long);
       itkSetMacro(NumberOfVoxels, unsigned long);
@@ -210,7 +205,7 @@ namespace itk {
       }  RunLengthFeatureName;
 
       /** convenience method to access the run length values */
-      MeasurementType GetFeature( RunLengthFeatureName name );
+      MeasurementType GetFeature(RunLengthFeatureName name);
 
     protected:
       EnhancedHistogramToRunLengthFeaturesFilter();
@@ -220,7 +215,7 @@ namespace itk {
       /** Make a DataObject to be used for output output. */
       typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
       using Superclass::MakeOutput;
-      DataObjectPointer MakeOutput( DataObjectPointerArraySizeType ) ITK_OVERRIDE;
+      DataObjectPointer MakeOutput(DataObjectPointerArraySizeType) ITK_OVERRIDE;
 
       void GenerateData() ITK_OVERRIDE;
 
