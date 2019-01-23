@@ -9,7 +9,7 @@ language: cpp
 cache: 
   # - ccache
   - directories:
-    - /Users/travis/build/PhucNgo1711/CaPTk/bin/
+    - ${TRAVIS_BUILD_DIR}/bin/
   - timeout: 1200
 
 # env:
