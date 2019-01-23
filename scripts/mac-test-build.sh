@@ -11,8 +11,7 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
-ls $HOME
-pwd
+ls ${TRAVIS_BUILD_DIR}
 cmake ../
 echo "Run Dependency Manager"
 # make & sleep 2000; kill $! 
