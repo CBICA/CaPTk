@@ -904,15 +904,15 @@ template< class TImage >
 void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer image, const typename TImage::Pointer mask, OffsetVector *offset, std::map<std::string, double> &featurevec, bool latticePatch)
 {
   using HistogramFrequencyContainerType = itk::Statistics::DenseFrequencyContainer2;
-  //using RunLengthFilterType = itk::Statistics::EnhancedScalarImageToRunLengthFeaturesFilter< TImage, HistogramFrequencyContainerType >;
-  using RunLengthFilterType = itk::Statistics::ScalarImageToRunLengthFeaturesFilter< TImage, HistogramFrequencyContainerType >;
+  using RunLengthFilterType = itk::Statistics::EnhancedScalarImageToRunLengthFeaturesFilter< TImage, HistogramFrequencyContainerType >;
+  //using RunLengthFilterType = itk::Statistics::ScalarImageToRunLengthFeaturesFilter< TImage, HistogramFrequencyContainerType >;
   using RunLengthMatrixGenerator = typename RunLengthFilterType::RunLengthMatrixFilterType;
   using RunLengthFeatures = typename RunLengthFilterType::RunLengthFeaturesFilterType;
 
 
   //TBD
-  m_minimumToConsider = m_minimumToConsider - 0.5;
-  m_maximumToConsider = m_maximumToConsider + 0.5;
+  //m_minimumToConsider = m_minimumToConsider - 0.5;
+  //m_maximumToConsider = m_maximumToConsider + 0.5;
   //TBD
 
   //TBD
@@ -948,7 +948,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - SetDistanceValueMinMax(0, " << m_Range << ")" << std::endl;
   
 
-  matrix_generator->SetDistanceValueMinMax(-0.5, m_Range); // TBD: TOCHECK - how is this affecting the computation?
+  matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
 
   //TBD
@@ -1044,10 +1044,10 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
 
       //TBD - print out matrix
       std::cout << "\n\n\n";
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetNumberOfBinsPerAxis() = " << matrix_generator->GetNumberOfBinsPerAxis() << std::endl;
+ /*     std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetNumberOfBinsPerAxis() = " << matrix_generator->GetNumberOfBinsPerAxis() << std::endl;
       std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetMinDistance() = " << matrix_generator->GetMinDistance() << std::endl;
       std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetMaxDistance() = " << matrix_generator->GetMaxDistance() << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetOffsets() = " << matrix_generator->GetOffsets() << std::endl;
+      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetOffsets() = " << matrix_generator->GetOffsets() << std::endl;*/
 
       //TBD - Only prints out first set, may not be complete - std cout codes above for full matrix
       //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Individual -> " << offsetIt.Value() << " - Matrix = \n" << std::endl;
@@ -1065,7 +1065,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
 
       std::cout << "\tLowGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
       std::cout << "\tHighGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis() << std::endl;
-      std::cout << "\tLowGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
+      //std::cout << "\tShortRunLowGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetShortRunLowGreyLevelRunEmphasis() << std::endl;
       std::cout << "\tShortRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis() << std::endl;
       std::cout << "\tLongRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
       std::cout << "\tLongRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
