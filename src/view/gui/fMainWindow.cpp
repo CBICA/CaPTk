@@ -6980,12 +6980,13 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   }
   else
   {
-    if (rcbv == true)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputFolder + "/ap-RCBV.nii.gz");
     if (psr == true)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputFolder + "/PSR.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputFolder + "/PSR.nii.gz");
     if (ph == true)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[2], outputFolder + "/PH.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputFolder + "/PH.nii.gz"); 
+    if (rcbv == true)
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[2], outputFolder + "/ap-RCBV.nii.gz");
+
 
     QString msg;
     msg = "Perfusion derivatives have been saved at the specified locations.";
