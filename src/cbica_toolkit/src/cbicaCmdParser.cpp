@@ -759,8 +759,7 @@ namespace cbica
     {
       input_string = "rt";
     }
-    else if ((input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl")
-      || (input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl"))
+    else if ((input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl"))
     {
       input_string = "cwl";
     }
