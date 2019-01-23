@@ -1316,7 +1316,7 @@ namespace cbica
   return allFiles;
   }
 
-  std::vector<std::string> subdirectoriesInDirectory(const std::string &dirName, bool recursiveSearch)
+  std::vector<std::string> subdirectoriesInDirectory(const std::string &dirName, bool recursiveSearch, bool returnFullPath)
   {
     if (!cbica::directoryExists(dirName))
     {
@@ -1340,7 +1340,14 @@ namespace cbica
       {
         if ((fd.dwFileAttributes | FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY && (fd.cFileName[0] != '.'))
         {
-          allDirectories.push_back(dirName + "/" + std::string(fd.cFileName));
+          if (returnFullPath)
+          {
+            allDirectories.push_back(dirName + "/" + std::string(fd.cFileName));
+          }
+          else
+          {
+            allDirectories.push_back(std::string(fd.cFileName));
+          }
           if (recursiveSearch)
           {
             std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true);
@@ -1372,6 +1379,14 @@ namespace cbica
       if (dirp->d_type == DT_DIR)
       {
         allDirectories.push_back(dirName + "/" + dirp->d_name);
+        if (returnFullPath)
+        {
+          allDirectories.push_back(dirName + "/" + dirp->d_name);
+        }
+        else
+        {
+          allDirectories.push_back(dirp->d_name);
+        }
       }
     }
     closedir(dp);
