@@ -80,7 +80,7 @@ int main(int argc, char** argv)
   
   // parse the command line
   auto parser = cbica::CmdParser(argc, argv, "CaPTk");
-  //parser.ignoreArgc1();
+  parser.ignoreArgc1();
 
   parser.addOptionalParameter("i", "images", cbica::Parameter::FILE, "NIfTI or DICOM", "Input coregistered image(s) to load into CaPTk", "Multiple images are delineated using ','");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "NIfTI or DICOM", "Input mask [coregistered with image(s)] to load into CaPTk", "Accepts only one file");
@@ -125,18 +125,19 @@ int main(int argc, char** argv)
   // check for CWL command coming in through the command line after "CaPTk"
   if (cmd_inputs.empty() && (argc > 1))
   {
-    for (auto & file : cbica::getCWLFilesInApplicationDir()) 
+    auto cwlFiles = cbica::getCWLFilesInApplicationDir();
+    for (auto & file : cwlFiles)
     {
       // Check for filename without cwl extension
-      if (argv[1] == file.substr(0, file.size() - 4)) 
+      if (cbica::getFilenameBase(file).find(std::string(argv[1])) != std::string::npos) 
       {
         // Get base command
-        std::ofstream selected_file;
-        selected_file.open(file.c_str());
-        YAML::Node config = YAML::LoadFile(file);
+        //std::ofstream selected_file;
+        //selected_file.open(file.c_str());
+        auto config = YAML::LoadFile(file);
         // Get all args passed to application
         std::string argv_complete;        
-        for (size_t i = 1; i < argc; i++)
+        for (size_t i = 2; i < argc; i++) // 2 because the argv[1] is always the "application"
         {
           argv_complete += " " + std::string(argv[i]);
         }
