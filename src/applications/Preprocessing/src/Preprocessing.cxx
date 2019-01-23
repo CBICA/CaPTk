@@ -349,9 +349,9 @@ int algorithmsRunner()
     {
       for (size_t x = minFromCenter[0]; x < maxFromCenter[0]; x++)
       {
-        for (size_t y = minFromCenter[1]; x < maxFromCenter[1]; x++)
+        for (size_t y = minFromCenter[1]; y < maxFromCenter[1]; y++)
         {
-          for (size_t z = minFromCenter[2]; z < maxFromCenter[2]; x++)
+          for (size_t z = minFromCenter[2]; z < maxFromCenter[2]; z++)
           {
             typename TImageType::IndexType currentIndex;
             currentIndex[0] = x;

@@ -1338,7 +1338,7 @@ namespace cbica
     {
       do
       {
-        if ((fd.dwFileAttributes | FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY && (fd.cFileName[0] != '.') && (fd.cFileName != ".svn"))
+        if ((fd.dwFileAttributes | FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY && (fd.cFileName[0] != '.'))
         {
           allDirectories.push_back(dirName + "/" + std::string(fd.cFileName));
           if (recursiveSearch)
@@ -1484,7 +1484,7 @@ namespace cbica
     int threads = omp_get_max_threads(); // obtain maximum number of threads available on machine
     // if the total number of rows in CSV file are less than the available number of threads on machine (happens for testing),
     // use only the number of rows where meaningful data is present - this avoids extra thread overhead
-    threads > static_cast<int>(numberOfRows) ? threads = static_cast<int>(numberOfRows - 1) : threads = threads;
+    //threads > static_cast<int>(numberOfRows) ? threads = static_cast<int>(numberOfRows - 1) : threads = threads;
     //#pragma omp parallel for num_threads(threads)
 #endif
     for (int rowCounter = 1; rowCounter < static_cast<int>(allRows.size()); rowCounter++)
@@ -1527,16 +1527,16 @@ namespace cbica
           }
         }
 
-        for (size_t j = 0; j < inputLabelIndeces.size(); j++)
+        if (!inputLabelIndeces.empty())
         {
-          if (inputLabelIndeces.size() != 0)
+          for (size_t j = 0; j < inputLabelIndeces.size(); j++)
           {
             return_CSVDict[rowCounter - 1].inputLabels[j] = std::atof(allRows[rowCounter][inputLabelIndeces[j]].c_str());
           }
-          else
-          {
-            return_CSVDict[rowCounter - 1].inputLabels[j] = 1;
-          }
+        }
+        else
+        {
+          return_CSVDict[rowCounter - 1].inputLabels[j] = 1;
         }
       }
 
