@@ -24,3 +24,8 @@ src/applications/FeatureExtraction/data/output
 /src/applications/FeatureExtraction/data/3_params_default_IBSI.csv
 ibsi_phantom
 /src/applications/FeatureExtraction/runner.ps1
+deepmedic
+itksnap
+libra
+confetti
+dcm2nii
