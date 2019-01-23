@@ -12,13 +12,14 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
-ls ${TRAVIS_BUILD_DIR}/binaries
+ls ${TRAVIS_BUILD_DIR}
 cmake ../
 echo "Run Dependency Manager"
-make & sleep 6000; kill $! 
+make & sleep 5800; kill $! 
 # make
 
-echo "Run CaPTk Build"
+# echo "Run CaPTk Build"
+# cmake ../
 # cmake ../
 # make
 
@@ -54,10 +55,10 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 
 # Move OS specific qt lib in
-mv ${TRAVIS_BUILD_DIR}/binaries/qt5.11.2_macos.zip ./bin/qt.zip
+# mv ${TRAVIS_BUILD_DIR}/binaries/qt5.11.2_macos.zip ./bin/qt.zip
 
 # Move externalApps into bin to trick CMake
-mv ${TRAVIS_BUILD_DIR}/binaries/externalApps.zip ./bin/
+# mv ${TRAVIS_BUILD_DIR}/binaries/externalApps.zip ./bin/
 
 # Remove all other blobs
 rm -rf ${TRAVIS_BUILD_DIR}/binaries
