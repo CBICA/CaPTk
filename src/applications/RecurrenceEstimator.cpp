@@ -629,15 +629,16 @@ bool RecurrenceEstimator::RecurrenceEstimateOnExistingModel(std::vector<std::map
 		for (unsigned int index = 0; index < result_modified.size(); index++)
 			RecProbabilityMap->SetPixel(testindices[index], result_revised[index] * 1);
 
-		//averaging filter
-		typedef itk::MeanImageFilter<ImageType, ImageType > FilterType;
-		FilterType::Pointer meanFilter = FilterType::New();
-		FilterType::InputSizeType radius;
-		radius.Fill(1);
-		meanFilter->SetRadius(radius);
-		meanFilter->SetInput(RecProbabilityMap);
-		ImageType::Pointer RevisedRecurrenceMap = meanFilter->GetOutput();
+		////averaging filter
+		//typedef itk::MeanImageFilter<ImageType, ImageType > FilterType;
+		//FilterType::Pointer meanFilter = FilterType::New();
+		//FilterType::InputSizeType radius;
+		//radius.Fill(1);
+		//meanFilter->SetRadius(radius);
+		//meanFilter->SetInput(RecProbabilityMap);
+		//ImageType::Pointer RevisedRecurrenceMap = meanFilter->GetOutput();
 	
+    ImageType::Pointer RevisedRecurrenceMap = RecurrenceMapPostprocessingForBackground<ImageType>(RecProbabilityMap, dilatedEdema);
 		if (imagetype == CAPTK::ImageExtension::NIfTI)
 			mOutputLocalPtr.WriteRecurrenceOutputInNifti<ImageType>(RevisedRecurrenceMap, outputdirectory + "/" + static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
 		else
