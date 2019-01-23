@@ -1536,7 +1536,7 @@ namespace cbica
         }
         else
         {
-          return_CSVDict[rowCounter - 1].inputLabels[j] = 1;
+          return_CSVDict[rowCounter - 1].inputLabels[0] = 1;
         }
       }
 
