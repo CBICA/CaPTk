@@ -962,7 +962,7 @@ namespace cbica
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
   \param resizeFactor The resize factor; can be greater than 100 (which causes an expanded image to be written) but can never be less than zero
-  \param interpolator The type of interpolator to use; can be Linear, BSplie or NearestNeighbor
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
@@ -1021,26 +1021,32 @@ namespace cbica
 
   /**
   \brief Resample an image to an isotropic resolution using the specified output spacing
+
+  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
+  \param inputImage The input image to process
+  \param outputSpacing The output spacing, always isotropic
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
   typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const float outputSpacing = 1.0, const std::string interpolator = "Linear")
   {
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
-    auto outputSpacingVector = inputImage->GetSpacing();
+    itk::Vector< double, TImageType::ImageDimension > outputSpacingVector;
     if (TImageType::ImageDimension != 4)
     {
+      outputSpacingVector.Fill(outputSpacing);
       for (size_t i = 0; i < TImageType::ImageDimension; i++)
       {
         outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
-        outputSpacingVector[i] = outputSpacing;
       }
     }
     else // preserve all time points of a time series image
     {
       for (size_t i = 0; i < 3; i++)
       {
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
         outputSpacingVector[i] = outputSpacing;
+        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
       }
     }
 
@@ -1060,7 +1066,74 @@ namespace cbica
       auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
-    else 
+    else if (interpolator_wrap.find("nearest") != std::string::npos)
+    {
+      auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else
+    {
+      auto interpolatorFunc = itk::LinearInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    resampler->UpdateLargestPossibleRegion();
+
+    return resampler->GetOutput();
+    //return ResampleImage< TImageType >(inputImage, outputSpacingVector, interpolator); // this does not work on gcc travis
+
+  }
+
+  /**
+  \brief Resample an image to an isotropic resolution using the specified output spacing vector
+
+  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
+  \param inputImage The input image to process
+  \param outputSpacing The output spacing, always isotropic
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \return The resized image
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > &outputSpacing, const std::string interpolator = "Linear")
+  {
+    auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
+    auto outputSpacingVector = outputSpacing;
+    if (TImageType::ImageDimension != 4)
+    {
+      for (size_t i = 0; i < TImageType::ImageDimension; i++)
+      {
+        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing[i];
+      }
+    }
+    else // preserve all time points of a time series image
+    {
+      for (size_t i = 0; i < 3; i++)
+      {
+        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing[i];
+      }
+    }
+
+    std::string interpolator_wrap = interpolator;
+    std::transform(interpolator_wrap.begin(), interpolator_wrap.end(), interpolator_wrap.begin(), ::tolower);
+
+    auto resampler = itk::ResampleImageFilter< TImageType, TImageType >::New();
+    resampler->SetInput(inputImage);
+    resampler->SetSize(outputSize);
+    resampler->SetOutputSpacing(outputSpacingVector);
+    resampler->SetOutputOrigin(inputImage->GetOrigin());
+    resampler->SetOutputDirection(inputImage->GetDirection());
+    resampler->SetOutputStartIndex(inputImage->GetLargestPossibleRegion().GetIndex());
+    resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
+    if (interpolator_wrap == "bspline")
+    {
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else if (interpolator_wrap.find("nearest") != std::string::npos)
+    {
+      auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else
     {
       auto interpolatorFunc = itk::LinearInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);

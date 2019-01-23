@@ -27,7 +27,8 @@
 
 fHelpDialog::~fHelpDialog()
 {
-
+  if (m_webView)
+    delete m_webView;
 }
 fHelpDialog::fHelpDialog()
 {

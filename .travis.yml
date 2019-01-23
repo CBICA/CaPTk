@@ -9,18 +9,36 @@ language: cpp
 cache: 
   # - ccache
   - directories:
-    - /Users/travis/build/PhucNgo1711/CaPTk/bin/
+    - ${TRAVIS_BUILD_DIR}/bin/**
   - timeout: 1200
 
-# env:
-#   global:
-#     - MAKEFLAGS="-j 2"
+env:
+  global:
+    - MAKEFLAGS="-j 2"
 
 # Build matrix to run jobs in parallel
 matrix:
   include:
     - os: osx
+    - os: linux
+      dist: xenial
+      sudo: required
+      env:
+        - LINUX_DIST=xenial
+    # Dbus versions might mean that this build can never complete, therefore it should be on allowed_failures
+    - os: linux
+      dist: trusty
+      sudo: required
+      env:
+        - LINUX_DIST=trusty
+    - os: windows
+      env:
+        - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
   fast_finish: true
+  allow_failures:
+    - os: linux
+      dist: trusty
+    - os: windows
 
 before_install:
   ### OSX
@@ -32,3 +50,6 @@ before_install:
   
 script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/mac-test-build.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export PATH=$MSBUILD_PATH:$PATH; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./.travis/windows-generic.sh; fi

@@ -1,17 +1,12 @@
 /*===================================================================
-
 The Medical Imaging Interaction Toolkit (MITK)
-
 Copyright (c) German Cancer Research Center,
 Division of Medical and Biological Informatics.
 All rights reserved.
-
 This software is distributed WITHOUT ANY WARRANTY; without
 even the implied warranty of MERCHANTABILITY or FITNESS FOR
 A PARTICULAR PURPOSE.
-
 See LICENSE.txt or http://www.mitk.org for details.
-
 ===================================================================*/
 
 /*=========================================================================
@@ -36,7 +31,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include "itkEnhancedScalarImageToRunLengthFeaturesFilter.h"
 #include "itkNeighborhood.h"
-#include "itkImageRegionConstIterator.h"
+#include <itkImageRegionConstIterator.h>
 #include "vnl/vnl_math.h"
 
 namespace itk
@@ -45,14 +40,15 @@ namespace itk
   {
     template<typename TImage, typename THistogramFrequencyContainer>
     EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
-      ::EnhancedScalarImageToRunLengthFeaturesFilter()
+      ::EnhancedScalarImageToRunLengthFeaturesFilter() :
+      m_CombinedFeatureCalculation(false)
     {
-      this->SetNumberOfRequiredInputs( 1 );
-      this->SetNumberOfRequiredOutputs( 1 );
+      this->SetNumberOfRequiredInputs(1);
+      this->SetNumberOfRequiredOutputs(1);
 
-      for( int i = 0; i < 2; ++i )
+      for (int i = 0; i < 2; ++i)
       {
-        this->ProcessObject::SetNthOutput( i, this->MakeOutput( i ) );
+        this->ProcessObject::SetNthOutput(i, this->MakeOutput(i));
       }
 
       this->m_RunLengthMatrixGenerator = RunLengthMatrixFilterType::New();
@@ -65,19 +61,21 @@ namespace itk
       FeatureNameVectorPointer requestedFeatures = FeatureNameVector::New();
       // can't directly set this->m_RequestedFeatures since it is const!
 
-      requestedFeatures->push_back( RunLengthFeaturesFilterType::ShortRunEmphasis );
-      requestedFeatures->push_back( RunLengthFeaturesFilterType::LongRunEmphasis );
-      requestedFeatures->push_back( RunLengthFeaturesFilterType::GreyLevelNonuniformity );
-      requestedFeatures->push_back( RunLengthFeaturesFilterType::RunLengthNonuniformity );
-      requestedFeatures->push_back( RunLengthFeaturesFilterType::LowGreyLevelRunEmphasis );
-      requestedFeatures->push_back( RunLengthFeaturesFilterType::HighGreyLevelRunEmphasis );
-      requestedFeatures->push_back( RunLengthFeaturesFilterType::ShortRunLowGreyLevelEmphasis );
-      requestedFeatures->push_back( RunLengthFeaturesFilterType::ShortRunHighGreyLevelEmphasis );
-      requestedFeatures->push_back( RunLengthFeaturesFilterType::LongRunLowGreyLevelEmphasis );
-      requestedFeatures->push_back( RunLengthFeaturesFilterType::LongRunHighGreyLevelEmphasis );
-      requestedFeatures->push_back( 20 );
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::ShortRunEmphasis);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::LongRunEmphasis);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::GreyLevelNonuniformity);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::GreyLevelNonuniformityNormalized);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::RunLengthNonuniformity);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::RunLengthNonuniformityNormalized);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::LowGreyLevelRunEmphasis);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::HighGreyLevelRunEmphasis);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::ShortRunLowGreyLevelEmphasis);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::ShortRunHighGreyLevelEmphasis);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::LongRunLowGreyLevelEmphasis);
+      requestedFeatures->push_back(RunLengthFeaturesFilterType::LongRunHighGreyLevelEmphasis);
+      requestedFeatures->push_back(20);
 
-      this->SetRequestedFeatures( requestedFeatures );
+      this->SetRequestedFeatures(requestedFeatures);
 
       // Set the offset directions to their defaults: half of all the possible
       // directions 1 pixel away. (The other half is included by symmetry.)
@@ -85,18 +83,18 @@ namespace itk
       typedef Neighborhood<typename ImageType::PixelType,
         ImageType::ImageDimension> NeighborhoodType;
       NeighborhoodType hood;
-      hood.SetRadius( 1 );
+      hood.SetRadius(1);
 
       // select all "previous" neighbors that are face+edge+vertex
       // connected to the current pixel. do not include the center pixel.
       unsigned int centerIndex = hood.GetCenterNeighborhoodIndex();
       OffsetVectorPointer offsets = OffsetVector::New();
-      for( unsigned int d = 0; d < centerIndex; d++ )
+      for (unsigned int d = 0; d < centerIndex; d++)
       {
-        OffsetType offset = hood.GetOffset( d );
-        offsets->push_back( offset );
+        OffsetType offset = hood.GetOffset(d);
+        offsets->push_back(offset);
       }
-      this->SetOffsets( offsets );
+      this->SetOffsets(offsets);
       this->m_FastCalculations = false;
     }
 
@@ -105,7 +103,7 @@ namespace itk
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
       ::DataObjectPointer
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
-      ::MakeOutput( DataObjectPointerArraySizeType itkNotUsed(idx) )
+      ::MakeOutput(DataObjectPointerArraySizeType itkNotUsed(idx))
     {
       return FeatureValueVectorDataObjectType::New().GetPointer();
     }
@@ -115,7 +113,7 @@ namespace itk
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
       ::GenerateData(void)
     {
-      if ( this->m_FastCalculations )
+      if (this->m_FastCalculations)
       {
         this->FastCompute();
       }
@@ -131,18 +129,22 @@ namespace itk
       ::FullCompute()
     {
       int numOffsets = this->m_Offsets->size();
+      if (m_CombinedFeatureCalculation)
+      {
+        numOffsets = 1;
+      }
       int numFeatures = this->m_RequestedFeatures->size();
       double **features;
 
       features = new double *[numOffsets];
-      for( int i = 0; i < numOffsets; i++ )
+      for (int i = 0; i < numOffsets; i++)
       {
         features[i] = new double[numFeatures];
       }
 
       unsigned long numberOfVoxels = 0;
-      ImageRegionConstIterator<TImage> voxelCountIter(this->GetMaskImage(),this->GetMaskImage()->GetLargestPossibleRegion());
-      while ( ! voxelCountIter.IsAtEnd() )
+      ImageRegionConstIterator<TImage> voxelCountIter(this->GetMaskImage(), this->GetMaskImage()->GetLargestPossibleRegion());
+      while (!voxelCountIter.IsAtEnd())
       {
         if (voxelCountIter.Get() > 0)
           ++numberOfVoxels;
@@ -155,24 +157,42 @@ namespace itk
       typedef typename RunLengthFeaturesFilterType::RunLengthFeatureName
         InternalRunLengthFeatureName;
 
-      for( offsetIt = this->m_Offsets->Begin(), offsetNum = 0;
-        offsetIt != this->m_Offsets->End(); offsetIt++, offsetNum++ )
+      OffsetVectorPointer offsets = OffsetVector::New();
+      if (m_CombinedFeatureCalculation)
       {
-        this->m_RunLengthMatrixGenerator->SetOffset( offsetIt.Value() );
+        for (int i = 0; i < this->m_Offsets->Size(); ++i)
+        {
+          offsets->push_back(m_Offsets->ElementAt(i));
+        }
+      }
+
+
+      for (offsetIt = this->m_Offsets->Begin(), offsetNum = 0;
+        offsetIt != this->m_Offsets->End(); offsetIt++, offsetNum++)
+      {
+        this->m_RunLengthMatrixGenerator->SetOffset(offsetIt.Value());
+        if (m_CombinedFeatureCalculation)
+        {
+          this->m_RunLengthMatrixGenerator->SetOffsets(offsets);
+        }
         this->m_RunLengthMatrixGenerator->Update();
         typename RunLengthFeaturesFilterType::Pointer runLengthMatrixCalculator =
           RunLengthFeaturesFilterType::New();
         runLengthMatrixCalculator->SetInput(
-          this->m_RunLengthMatrixGenerator->GetOutput() );
+          this->m_RunLengthMatrixGenerator->GetOutput());
         runLengthMatrixCalculator->SetNumberOfVoxels(numberOfVoxels);
         runLengthMatrixCalculator->Update();
 
         typename FeatureNameVector::ConstIterator fnameIt;
-        for( fnameIt = this->m_RequestedFeatures->Begin(), featureNum = 0;
-          fnameIt != this->m_RequestedFeatures->End(); fnameIt++, featureNum++ )
+        for (fnameIt = this->m_RequestedFeatures->Begin(), featureNum = 0;
+          fnameIt != this->m_RequestedFeatures->End(); fnameIt++, featureNum++)
         {
           features[offsetNum][featureNum] = runLengthMatrixCalculator->GetFeature(
-            ( InternalRunLengthFeatureName )fnameIt.Value() );
+            (InternalRunLengthFeatureName)fnameIt.Value());
+        }
+        if (m_CombinedFeatureCalculation)
+        {
+          break;
         }
       }
 
@@ -193,48 +213,48 @@ namespace itk
       */
 
       // Set up the initial conditions (k = 1)
-      for( featureNum = 0; featureNum < numFeatures; featureNum++ )
+      for (featureNum = 0; featureNum < numFeatures; featureNum++)
       {
         tempFeatureMeans[featureNum] = features[0][featureNum];
         tempFeatureDevs[featureNum] = 0;
       }
       // Run through the recurrence (k = 2 ... N)
-      for( offsetNum = 1; offsetNum < numOffsets; offsetNum++ )
+      for (offsetNum = 1; offsetNum < numOffsets; offsetNum++)
       {
         int k = offsetNum + 1;
-        for( featureNum = 0; featureNum < numFeatures; featureNum++ )
+        for (featureNum = 0; featureNum < numFeatures; featureNum++)
         {
           double M_k_minus_1 = tempFeatureMeans[featureNum];
           double S_k_minus_1 = tempFeatureDevs[featureNum];
           double x_k = features[offsetNum][featureNum];
 
-          double M_k = M_k_minus_1 + ( x_k - M_k_minus_1 ) / k;
-          double S_k = S_k_minus_1 + ( x_k - M_k_minus_1 ) * ( x_k - M_k );
+          double M_k = M_k_minus_1 + (x_k - M_k_minus_1) / k;
+          double S_k = S_k_minus_1 + (x_k - M_k_minus_1) * (x_k - M_k);
 
           tempFeatureMeans[featureNum] = M_k;
           tempFeatureDevs[featureNum] = S_k;
         }
       }
-      for( featureNum = 0; featureNum < numFeatures; featureNum++ )
+      for (featureNum = 0; featureNum < numFeatures; featureNum++)
       {
-        tempFeatureDevs[featureNum] = std::sqrt( tempFeatureDevs[featureNum] /
-          numOffsets );
+        tempFeatureDevs[featureNum] = std::sqrt(tempFeatureDevs[featureNum] /
+          numOffsets);
 
-        this->m_FeatureMeans->push_back( tempFeatureMeans[featureNum] );
-        this->m_FeatureStandardDeviations->push_back( tempFeatureDevs[featureNum] );
+        this->m_FeatureMeans->push_back(tempFeatureMeans[featureNum]);
+        this->m_FeatureStandardDeviations->push_back(tempFeatureDevs[featureNum]);
       }
 
       FeatureValueVectorDataObjectType *meanOutputObject =
-        itkDynamicCastInDebugMode<FeatureValueVectorDataObjectType *>( this->ProcessObject::GetOutput( 0 ) );
-      meanOutputObject->Set( this->m_FeatureMeans );
+        itkDynamicCastInDebugMode<FeatureValueVectorDataObjectType *>(this->ProcessObject::GetOutput(0));
+      meanOutputObject->Set(this->m_FeatureMeans);
 
       FeatureValueVectorDataObjectType *standardDeviationOutputObject =
-        itkDynamicCastInDebugMode<FeatureValueVectorDataObjectType *>( this->ProcessObject::GetOutput( 1 ) );
-      standardDeviationOutputObject->Set( this->m_FeatureStandardDeviations );
+        itkDynamicCastInDebugMode<FeatureValueVectorDataObjectType *>(this->ProcessObject::GetOutput(1));
+      standardDeviationOutputObject->Set(this->m_FeatureStandardDeviations);
 
       delete[] tempFeatureMeans;
       delete[] tempFeatureDevs;
-      for( int i = 0; i < numOffsets; i++ )
+      for (int i = 0; i < numOffsets; i++)
       {
         delete[] features[i];
       }
@@ -248,13 +268,13 @@ namespace itk
     {
       // Compute the feature for the first offset
       typename OffsetVector::ConstIterator offsetIt = this->m_Offsets->Begin();
-      this->m_RunLengthMatrixGenerator->SetOffset( offsetIt.Value() );
+      this->m_RunLengthMatrixGenerator->SetOffset(offsetIt.Value());
 
       this->m_RunLengthMatrixGenerator->Update();
       typename RunLengthFeaturesFilterType::Pointer runLengthMatrixCalculator =
         RunLengthFeaturesFilterType::New();
       runLengthMatrixCalculator->SetInput(
-        this->m_RunLengthMatrixGenerator->GetOutput() );
+        this->m_RunLengthMatrixGenerator->GetOutput());
       runLengthMatrixCalculator->Update();
 
       typedef typename RunLengthFeaturesFilterType::RunLengthFeatureName
@@ -262,75 +282,75 @@ namespace itk
       this->m_FeatureMeans->clear();
       this->m_FeatureStandardDeviations->clear();
       typename FeatureNameVector::ConstIterator fnameIt;
-      for( fnameIt = this->m_RequestedFeatures->Begin();
-        fnameIt != this->m_RequestedFeatures->End(); fnameIt++ )
+      for (fnameIt = this->m_RequestedFeatures->Begin();
+        fnameIt != this->m_RequestedFeatures->End(); fnameIt++)
       {
-        this->m_FeatureMeans->push_back( runLengthMatrixCalculator->GetFeature(
-          ( InternalRunLengthFeatureName )fnameIt.Value() ) );
-        this->m_FeatureStandardDeviations->push_back( 0.0 );
+        this->m_FeatureMeans->push_back(runLengthMatrixCalculator->GetFeature(
+          (InternalRunLengthFeatureName)fnameIt.Value()));
+        this->m_FeatureStandardDeviations->push_back(0.0);
       }
 
       FeatureValueVectorDataObjectType *meanOutputObject =
-        itkDynamicCastInDebugMode<FeatureValueVectorDataObjectType *>( this->ProcessObject::GetOutput( 0 ) );
-      meanOutputObject->Set( this->m_FeatureMeans );
+        itkDynamicCastInDebugMode<FeatureValueVectorDataObjectType *>(this->ProcessObject::GetOutput(0));
+      meanOutputObject->Set(this->m_FeatureMeans);
 
       FeatureValueVectorDataObjectType *standardDeviationOutputObject =
-        itkDynamicCastInDebugMode<FeatureValueVectorDataObjectType *>( this->ProcessObject::GetOutput( 1 ) );
-      standardDeviationOutputObject->Set( this->m_FeatureStandardDeviations );
+        itkDynamicCastInDebugMode<FeatureValueVectorDataObjectType *>(this->ProcessObject::GetOutput(1));
+      standardDeviationOutputObject->Set(this->m_FeatureStandardDeviations);
     }
 
     template<typename TImage, typename THistogramFrequencyContainer>
     void
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
-      ::SetInput( const ImageType *image )
+      ::SetInput(const ImageType *image)
     {
       // Process object is not const-correct so the const_cast is required here
-      this->ProcessObject::SetNthInput( 0,
-        const_cast<ImageType *>( image ) );
+      this->ProcessObject::SetNthInput(0,
+        const_cast<ImageType *>(image));
 
-      this->m_RunLengthMatrixGenerator->SetInput( image );
+      this->m_RunLengthMatrixGenerator->SetInput(image);
     }
 
     template<typename TImage, typename THistogramFrequencyContainer>
     void
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
-      ::SetNumberOfBinsPerAxis( unsigned int numberOfBins )
+      ::SetNumberOfBinsPerAxis(unsigned int numberOfBins)
     {
-      itkDebugMacro( "setting NumberOfBinsPerAxis to " << numberOfBins );
-      this->m_RunLengthMatrixGenerator->SetNumberOfBinsPerAxis( numberOfBins );
+      itkDebugMacro("setting NumberOfBinsPerAxis to " << numberOfBins);
+      this->m_RunLengthMatrixGenerator->SetNumberOfBinsPerAxis(numberOfBins);
       this->Modified();
     }
 
     template<typename TImage, typename THistogramFrequencyContainer>
     void
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
-      ::SetPixelValueMinMax( PixelType min, PixelType max )
+      ::SetPixelValueMinMax(PixelType min, PixelType max)
     {
-      itkDebugMacro( "setting Min to " << min << "and Max to " << max );
-      this->m_RunLengthMatrixGenerator->SetPixelValueMinMax( min, max );
+      itkDebugMacro("setting Min to " << min << "and Max to " << max);
+      this->m_RunLengthMatrixGenerator->SetPixelValueMinMax(min, max);
       this->Modified();
     }
 
     template<typename TImage, typename THistogramFrequencyContainer>
     void
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
-      ::SetDistanceValueMinMax( double min, double max )
+      ::SetDistanceValueMinMax(double min, double max)
     {
-      itkDebugMacro( "setting Min to " << min << "and Max to " << max );
-      this->m_RunLengthMatrixGenerator->SetDistanceValueMinMax( min, max );
+      itkDebugMacro("setting Min to " << min << "and Max to " << max);
+      this->m_RunLengthMatrixGenerator->SetDistanceValueMinMax(min, max);
       this->Modified();
     }
 
     template<typename TImage, typename THistogramFrequencyContainer>
     void
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
-      ::SetMaskImage( const ImageType *image )
+      ::SetMaskImage(const ImageType *image)
     {
       // Process object is not const-correct so the const_cast is required here
-      this->ProcessObject::SetNthInput( 1,
-        const_cast< ImageType * >( image ) );
+      this->ProcessObject::SetNthInput(1,
+        const_cast<ImageType *>(image));
 
-      this->m_RunLengthMatrixGenerator->SetMaskImage( image );
+      this->m_RunLengthMatrixGenerator->SetMaskImage(image);
     }
 
     template<typename TImage, typename THistogramFrequencyContainer>
@@ -338,11 +358,11 @@ namespace itk
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
       ::GetInput() const
     {
-      if ( this->GetNumberOfInputs() < 1 )
+      if (this->GetNumberOfInputs() < 1)
       {
         return ITK_NULLPTR;
       }
-      return static_cast<const ImageType *>( this->ProcessObject::GetInput( 0 ) );
+      return static_cast<const ImageType *>(this->ProcessObject::GetInput(0));
     }
 
     template<typename TImage, typename THistogramFrequencyContainer>
@@ -353,7 +373,7 @@ namespace itk
       ::GetFeatureMeansOutput() const
     {
       return itkDynamicCastInDebugMode<const FeatureValueVectorDataObjectType *>
-        (this->ProcessObject::GetOutput( 0 ) );
+        (this->ProcessObject::GetOutput(0));
     }
 
     template<typename TImage, typename THistogramFrequencyContainer>
@@ -364,7 +384,7 @@ namespace itk
       ::GetFeatureStandardDeviationsOutput() const
     {
       return itkDynamicCastInDebugMode< const FeatureValueVectorDataObjectType * >
-        ( this->ProcessObject::GetOutput( 1 ) );
+        (this->ProcessObject::GetOutput(1));
     }
 
     template<typename TImage, typename THistogramFrequencyContainer>
@@ -372,20 +392,20 @@ namespace itk
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
       ::GetMaskImage() const
     {
-      if ( this->GetNumberOfInputs() < 2 )
+      if (this->GetNumberOfInputs() < 2)
       {
         return ITK_NULLPTR;
       }
-      return static_cast< const ImageType *>( this->ProcessObject::GetInput( 1 ) );
+      return static_cast<const ImageType *>(this->ProcessObject::GetInput(1));
     }
 
     template<typename TImage, typename THistogramFrequencyContainer>
     void
       EnhancedScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>
-      ::SetInsidePixelValue( PixelType insidePixelValue )
+      ::SetInsidePixelValue(PixelType insidePixelValue)
     {
-      itkDebugMacro( "setting InsidePixelValue to " << insidePixelValue );
-      this->m_RunLengthMatrixGenerator->SetInsidePixelValue( insidePixelValue );
+      itkDebugMacro("setting InsidePixelValue to " << insidePixelValue);
+      this->m_RunLengthMatrixGenerator->SetInsidePixelValue(insidePixelValue);
       this->Modified();
     }
 
