@@ -55,10 +55,10 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 
 # Move OS specific qt lib in
-# mv ${TRAVIS_BUILD_DIR}/binaries/qt5.11.2_macos.zip ./bin/qt.zip
+mv ${TRAVIS_BUILD_DIR}/binaries/qt5.11.2_macos.zip ./bin/qt.zip
 
 # Move externalApps into bin to trick CMake
-# mv ${TRAVIS_BUILD_DIR}/binaries/externalApps.zip ./bin/
+mv ${TRAVIS_BUILD_DIR}/binaries/externalApps.zip ./bin/
 
 # Remove all other blobs
 rm -rf ${TRAVIS_BUILD_DIR}/binaries
