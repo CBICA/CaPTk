@@ -434,7 +434,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   #)
   ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
   SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
-
+  
+  SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
   # include dependencies
   # add source code include directories
