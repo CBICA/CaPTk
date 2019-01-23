@@ -308,8 +308,7 @@ int main(int argc, char** argv)
   vtkOutputWindow::SetInstance(fileOutputWindow);
 
   //! redirect the itk output window contents to file
-  typedef itk::FileOutputWindow myFileOutputWindow;
-  myFileOutputWindow::Pointer itkOutputWindow = myFileOutputWindow::New();
+  auto itkOutputWindow = itk::FileOutputWindow::New();
   itkOutputWindow->SetFileName((loggerFolderBase + "itk_errors.txt").c_str());
   itkOutputWindow->FlushOn();
   itk::OutputWindow::SetInstance(itkOutputWindow);
