@@ -933,7 +933,6 @@ namespace cbica
             m_requiredParameters[i].descriptionLine3 + " " + m_requiredParameters[i].descriptionLine4 + " " +
             m_requiredParameters[i].descriptionLine5;
         }
-        noMoreChecks = 1;
       }
       i++;
     }
