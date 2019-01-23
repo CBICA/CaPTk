@@ -11,16 +11,18 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
-ls ${TRAVIS_BUILD_DIR}/binaries
+ls ${TRAVIS_BUILD_DIR}
+ls ./ITK-build
+
 cmake ../
 echo "Run Dependency Manager"
-make & sleep 6000; kill $! 
-# make
+# make & sleep 2000; kill $! 
+make -j 2
 
 echo "Run CaPTk Build"
-export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
-# cmake ../
-# make
+export CMAKE_PREFIX_PATH="./ITK-build:$CMAKE_PREFIX_PATH"
+cmake ../
+make -j 2
 
 }
 
@@ -46,30 +48,30 @@ fi
 # Nuclear option
 # rm -rf binaries
 # rm -rf data
-rm -rf history
-rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+# rm -rf history
+# rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
 # Create binary directory
 echo "[:] Creating binary directory..."
 mkdir -p bin
 
-# Move OS specific qt lib in
-mv ${TRAVIS_BUILD_DIR}/binaries/qt5.11.2_macos.zip ./bin/qt.zip
+# # Move OS specific qt lib in
+# mv ./binaries/qt5.11.2_macos.zip ./bin/qt.zip
 
-# Move externalApps into bin to trick CMake
-mv ${TRAVIS_BUILD_DIR}/binaries/externalApps.zip ./bin/
+# # Move externalApps into bin to trick CMake
+# mv ./binaries/externalApps.zip ./bin/
 
-# Remove all other blobs
-rm -rf ${TRAVIS_BUILD_DIR}/binaries
+# # Remove all other blobs
+# rm -rf binaries
 
 cd bin
 
 # Extract externalApps
-unzip externalApps.zip &> /dev/null
+# unzip externalApps.zip &> /dev/null
 
 # Create test data dir to skip ftp download
-mkdir testing
-mkdir ./testing/TestData
+# mkdir testing
+# mkdir ./testing/TestData
 
 # Cmake
 echo "[:] Running cmake command and build CaPTk..."
