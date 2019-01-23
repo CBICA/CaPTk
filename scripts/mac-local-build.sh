@@ -10,20 +10,19 @@ export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
-
-ls ${TRAVIS_BUILD_DIR}
-ls ./ITK-build
+export CMAKE_PREFIX_PATH="./ITK-build:$CMAKE_PREFIX_PATH"
 
 cmake ../
 echo "Run Dependency Manager"
 # make & sleep 2000; kill $! 
 make -j 2
 
+# ls ./ITK-build
+
 echo "Run CaPTk Build"
-export CMAKE_PREFIX_PATH="./ITK-build:$CMAKE_PREFIX_PATH"
+cmake ../
 cmake ../
 make -j 2
-
 }
 
 ###########################
