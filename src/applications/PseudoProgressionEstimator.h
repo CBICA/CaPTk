@@ -1599,7 +1599,7 @@ std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble>
   return new_tuple;
 }
 
-template< class TImageTypeShape >
+template< typename TImageTypeShape >
 VectorDouble PseudoProgressionEstimator::GetShapeFeatures(typename TImageTypeShape::Pointer mask)
 {
   std::vector<double> features;
