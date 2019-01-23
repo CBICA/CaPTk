@@ -197,17 +197,17 @@ namespace itk {
         longRunHighGreyLevelEmphasis += (frequency * i2 * j2);
 
         //TBD
-        std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - i2 = (index[0] + 1)^2 = (" << index[0] << " + " << 1 << ")^2 = (" << i << ")^2 = " << i2 << std::endl;
-        std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - j2 = (index[1] + 1)^2 = (" << index[1] << " + " << 1 << ")^2 = (" << j << ")^2 = " << j2 << std::endl;
-        std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - frequency = " << frequency << std::endl;
+        //std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - i2 = (index[0] + 1)^2 = (" << index[0] << " + " << 1 << ")^2 = (" << i << ")^2 = " << i2 << std::endl;
+        //std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - j2 = (index[1] + 1)^2 = (" << index[1] << " + " << 1 << ")^2 = (" << j << ")^2 = " << j2 << std::endl;
+        //std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - frequency = " << frequency << std::endl;
 
-        std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - lowGreyLevelRunEmphasis += (frequency / i2) = " << (frequency / i2) << std::endl;
-        std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - highGreyLevelRunEmphasis += (frequency * i2) = " << (frequency * i2) << std::endl;
+        //std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - lowGreyLevelRunEmphasis += (frequency / i2) = " << (frequency / i2) << std::endl;
+        //std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - highGreyLevelRunEmphasis += (frequency * i2) = " << (frequency * i2) << std::endl;
 
-        std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - shortRunLowGreyLevelEmphasis += (frequency / (i2 * j2)) = " << (frequency / (i2 * j2)) << " = " << shortRunLowGreyLevelEmphasis << std::endl;
-        std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - shortRunHighGreyLevelEmphasis += (frequency * i2 / j2) = " << (frequency * i2 / j2) << " = " << shortRunHighGreyLevelEmphasis << std::endl;
-        std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - longRunLowGreyLevelEmphasis += (frequency * j2 / i2) = " << (frequency * j2 / i2) << " = " << longRunLowGreyLevelEmphasis << std::endl;
-        std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - longRunHighGreyLevelEmphasis += (frequency * i2 * j2) = " << (frequency * i2 * j2) << " = " << longRunHighGreyLevelEmphasis << std::endl;
+        //std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - shortRunLowGreyLevelEmphasis += (frequency / (i2 * j2)) = " << (frequency / (i2 * j2)) << " = " << shortRunLowGreyLevelEmphasis << std::endl;
+        //std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - shortRunHighGreyLevelEmphasis += (frequency * i2 / j2) = " << (frequency * i2 / j2) << " = " << shortRunHighGreyLevelEmphasis << std::endl;
+        //std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - longRunLowGreyLevelEmphasis += (frequency * j2 / i2) = " << (frequency * j2 / i2) << " = " << longRunLowGreyLevelEmphasis << std::endl;
+        //std::cout << "[DEBUG] - itkEnhancedHistogramToRunLengthFeaturesFilter.hxx - GenerateData - longRunHighGreyLevelEmphasis += (frequency * i2 * j2) = " << (frequency * i2 * j2) << " = " << longRunHighGreyLevelEmphasis << std::endl;
         //TBD
 
       }
