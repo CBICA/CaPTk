@@ -2,6 +2,8 @@
 
 ## Command Line Usage
 
+The examples given are with the assumption that the user is running the application on Windows. Remove the *.exe* at the end for Linux/macOS.
+
 ### Example for Single Subject Computation
 
 ```
@@ -17,14 +19,14 @@ FeatureExtraction.exe \
 -o C:/test/captk/output.csv # the output file
 ```
 
-### Windows PowerShell / CMD:
+### Primary Help
 ```
-FeatureExtraction.exe –o C:\path\to\output\csv –b C:\path\to\batch\csv –p C:\path\to\parameters\csv [– d 1] [– vc 1]
+FeatureExtraction.exe –u 
 ```
 
-### Linux/macOS Terminal:
+### Detailed Help
 ```
-FeatureExtraction –o /path/to/output/csv –b /path/to/batch/csv –p /path/to/parameters/csv [– d 1] [– vc 1]
+FeatureExtraction.exe –h
 ```
 
 ## Locating the executable
