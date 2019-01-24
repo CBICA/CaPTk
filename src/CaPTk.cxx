@@ -130,8 +130,11 @@ int main(int argc, char** argv)
     {
       auto cwlFileBase = cbica::getFilenameBase(file);
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
+      auto argv_1 = std::string(argv[1]);
+      std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
+
       // Check for filename without cwl extension
-      if (cwlFileBase.find(std::string(argv[1])) != std::string::npos)
+      if (cwlFileBase.find(argv_1) != std::string::npos)
       {
         // Get base command
         //std::ofstream selected_file;
