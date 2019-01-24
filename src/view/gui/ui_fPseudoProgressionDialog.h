@@ -42,6 +42,8 @@ public:
   QLineEdit * testSubjectsDirectoryName;
   QPushButton * testSubjectsDirectoryButton;
 
+  QLabel *longRunningWarning;
+
 
   QLineEdit   * existingMaskDirectoryName;
   QPushButton * existingMasksButton;
@@ -292,6 +294,12 @@ public:
     outputGroupBox = new QGroupBox(fPseudoProgressionDialog);
     outputGroupBox->setTitle(QString::fromStdString("Output Directory"));
 
+    longRunningWarning = new QLabel(outputGroupBox);
+    sizePolicy.setHeightForWidth(longRunningWarning->sizePolicy().hasHeightForWidth());
+    longRunningWarning->setSizePolicy(sizePolicy);
+    longRunningWarning->setAlignment(Qt::AlignRight);
+    longRunningWarning->setText("NOTE: CaPTk will not let you interact with the UI while this application runs.");
+
     outputGridLayout = new QGridLayout(outputGroupBox);
     outputGridLayout->setObjectName(QString::fromUtf8("outputGridLayout"));
 
@@ -318,6 +326,7 @@ public:
     outputGridLayout->addWidget(outputDirectoryLabel, 0, 0, 1, 1);
     outputGridLayout->addWidget(outputDirectoryName, 0, 1, 1, 4);
     outputGridLayout->addWidget(outputDirectoryButton, 0, 5, 1, 1);
+    outputGridLayout->addWidget(longRunningWarning, 1, 0, 1, 2);
 
     gridLayout_3->addWidget(classificationGroupBox, 0, 0, 1, 2);
     gridLayout_3->addWidget(outputGroupBox, 1, 0, 1, 2);
