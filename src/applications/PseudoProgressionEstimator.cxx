@@ -9,7 +9,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
 {
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
-  std::vector<std::string> subjectNames= cbica::subdirectoriesInDirectory(directoryname);
+  std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
 
   std::sort(subjectNames.begin(), subjectNames.end());
 
@@ -175,6 +175,8 @@ int PrepareNewSurvivalPredictionModel(const std::string inputdirectory, const st
   std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
   if (QualifiedSubjects.size() == 0)
     std::cout << "No subject found with required input. Exiting...." << std::endl;
+  else if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
+    std::cout << "There should be atleast 20 patients to build reliable pseudo-progression model. Exiting...." << std::endl;
   else
     objPseudoProgressionEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, true, true, true, true);
   return EXIT_SUCCESS;
@@ -199,12 +201,7 @@ int main(int argc, char **argv)
   std::string inputDirectoryName, modelDirectoryName, outputDirectoryName, toWrite;
   int applicationType;
 
-  //inputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/TestingDataNew";
-  //outputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/Output";
-  //modelDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/Output/model";
-  //applicationType = 0;
-  ////PrepareNewSurvivalPredictionModel(inputDirectoryName, outputDirectoryName);
-  //SurvivalPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
+  applicationType = 0;
 
   if (parser.compareParameter("L", tempPosition))
   {
@@ -226,7 +223,6 @@ int main(int argc, char **argv)
   if (parser.compareParameter("o", tempPosition))
   {
     outputDirectoryName = argv[tempPosition + 1];
-    //outputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/Output";
   }
   if (parser.compareParameter("t", tempPosition))
   {

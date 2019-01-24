@@ -4590,7 +4590,11 @@ void fMainWindow::TrainNewPseudoprogressionModelOnGivenData(const std::string &i
     help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-
+  if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
+  {
+    ShowErrorMessage("There should be atleast 20 patients to build reliable pseudo-progression model.");
+    return;
+  }
   if (mPseudoEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, useConvData, useDTIData, usePerfData, useDistData))
     ShowMessage("Trained pseudoprogression model has been saved at the specified location.", this);
   else
@@ -7661,11 +7665,15 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
 {
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
-  std::vector<std::string> subjectNames;
-  //= cbica::subdirectoriesInDirectory(directoryname);
+  std::vector<std::string> subjectNames= cbica::subdirectoriesInDirectory(directoryname);
+
+  subjectNames.clear();
+  subjectNames.push_back("AAMA");
+  subjectNames.push_back("AAMG");
+  subjectNames.push_back("AAMJ");
+  subjectNames.push_back("AAMP");
+  subjectNames.push_back("AAMQ");
   subjectNames.push_back("ABEM");
-  subjectNames.push_back("ABFC");
-  subjectNames.push_back("ABFD");
 
   std::sort(subjectNames.begin(), subjectNames.end());
 
