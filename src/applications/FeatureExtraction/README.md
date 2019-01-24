@@ -25,3 +25,17 @@ The macOS package is an [Bundle](https://en.wikipedia.org/wiki/Bundle_(macOS)#ma
 ### Linux
 
 The Linux package is an [AppImage](https://appimage.org/) and the FeatureExtraction executable can be access using the following [cwl](https://www.commonwl.org/)-enabled command (assuming you have the CaPTk AppImage in your PATH): ```captk featureextraction $your_command_goes_here```
+
+## The Parameter File
+
+Controls which features to calculate its respective parameters.
+
+Sample: ```$CaPTk_Install_Directory/data/features/1_params_default.csv```
+
+### Making your own parameter file
+
+1. Copy the sample parameter file
+2. Remove the rows of features that you don't need (Except intensity in row 2, which is always calculated)
+3. Column C, Type, denotes what type of value it expects for the parameter
+4. Column D, Range, lists of possible values for the parameter
+5. Change the value in Column E with the value you want
