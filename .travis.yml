@@ -44,7 +44,6 @@ before_install:
   # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
   
 script:
-  - "travis_wait 30 sleep 1800 &"
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then travis_wait ./.travis/linux-generic.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export PATH=$MSBUILD_PATH:$PATH; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./.travis/windows-generic.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then travis_wait ./.travis/windows-generic.sh; fi
