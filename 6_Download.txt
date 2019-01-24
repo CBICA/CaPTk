@@ -61,6 +61,12 @@ The incorporated packages include but are not limited to:
 --------------------------------------------------------------------
 ## Changelog (Release notes)
 
+### 1.6.1
+- Generic bug fixes in several applications 
+- Feature Extraction fixes on par with IBSI
+- OpenGL rendering added to better handle scaling issues
+- New "Preprocessing" executable added which has a bunch of generic functionality
+
 ### 1.6.0
 - New applications have been added: Lung Cancer Segmentation/Analysis, Pseudo-Progression, EGFRvIII-SVM, Training Module, DeepMedic Segmentation, Greedy Registration
 - Updates to Feature Extraction Panel (Lattice-based computation, new feature families)
