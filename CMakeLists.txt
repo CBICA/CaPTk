@@ -34,7 +34,7 @@ PROJECT( CaPTk )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
 SET (PROJECT_VERSION_MAJOR 1 )
 SET (PROJECT_VERSION_MINOR 6 )
-SET (PROJECT_VERSION_PATCH 1 )
+SET (PROJECT_VERSION_PATCH 1.Alpha )
 #SET (SVN_REVISION "${SVN_REVISION}")
 
 IF (APPLE)
@@ -344,7 +344,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_ITKSNAP ON CACHE BOOL "Do you want to connect ITK-SNAP to CaPTk Console?" )
   SET( BUILD_LIBRASINGLE ON CACHE BOOL "Do you want to connect LIBRA to CaPTk Console (needs MATLAB runtime)?" )
   SET( BUILD_LIBRABATCH ON CACHE BOOL "Do you want to connect LIBRA to CaPTk Console (needs MATLAB runtime)?" )
-  SET( BUILD_CONFETTI ON CACHE BOOL "Do you want to connect Confetti to CaPTk Console (needs Python 2.7 and other dependencies)?" )
+  SET( BUILD_CONFETTI OFF CACHE BOOL "Do you want to connect Confetti to CaPTk Console (needs Python 2.7 and other dependencies)?" )
   SET( BUILD_FETALBRAIN OFF CACHE BOOL "Do you want to build FetalBrain?" )
   IF(WIN32)
     SET( BUILD_DEEPMEDIC ON CACHE BOOL "Do you want to package DeepMedic?" )
@@ -434,7 +434,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   #)
   ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
   SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
-
+  
+  SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
   # include dependencies
   # add source code include directories
@@ -966,7 +967,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${EXE_SOURCES}
         #${YAMLCPP_Headers}
         #${YAMLCPP_Sources}
-        ${DATA_DIR}/icons/captk.rc
+        ${DATA_DIR}/icons/application/windows/captk.rc
       )
     ELSEIF(APPLE)
       SET (ICON_FILE "${DATA_DIR}/icons/application/apple/CaPTk.icns")
@@ -1108,7 +1109,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     IF( WIN32 )
       INSTALL(FILES "${DATA_DIR}/icons/application/windows/captk.ico" DESTINATION share/icons)
-      INSTALL(FILES "${DATA_DIR}/icons/captk.rc" DESTINATION data/icons)
+      INSTALL(FILES "${DATA_DIR}/icons/application/windows/captk.rc" DESTINATION data/icons)
     ELSEIF (APPLE)
       
     ELSE()

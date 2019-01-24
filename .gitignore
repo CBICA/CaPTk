@@ -15,8 +15,15 @@ src/applications/individualApps/libra/MCRInstaller.zip
 # Misc
 .vs
 .vscode/
+.DS_Store
 
 # Linux Testing. Will be removed or implemented better
 src/applications/individualApps/libra/MCR
 src/applications/FeatureExtraction/data/output
 /src/applications/FeatureExtraction/data/params_test.csv
+/src/applications/FeatureExtraction/data/PAT1_ConfigD_181221
+/src/applications/FeatureExtraction/data/3_params_default_IBSI.csv
+ibsi_phantom
+/src/applications/FeatureExtraction/runner.ps1
+
+.travis/mac-local-build.sh
