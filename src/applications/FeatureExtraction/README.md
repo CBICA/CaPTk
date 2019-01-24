@@ -13,8 +13,8 @@ FeatureExtraction.exe \
 -m C:/test/captk/roi.nii.gz \ # the annotated mask coregistered with the input image(s)
 -r 1 \ # the values in the annotated mask on which feature extraction is to occure -  multiple can be passed with ',' used as delimiter
 -l TT \ # the labels of the selected ROIs (used in the output csv) - multiple can be passed with ',' used as delimiter
--vc 1 \
--o C:/test/captk/output.csv
+-vc 1 \ # vertically concatenate the output; if this is not passed, the output is horizontally concatenated to make it easier to read as a feature vector
+-o C:/test/captk/output.csv # the output file
 ```
 
 ### Windows PowerShell / CMD:
