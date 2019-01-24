@@ -61,7 +61,7 @@ mkdir -p bin
 mv ${TRAVIS_BUILD_DIR}/binaries/externalApps.zip ./bin/
 
 # Remove all other blobs
-rm -rf ${TRAVIS_BUILD_DIR}/binaries
+# rm -rf ${TRAVIS_BUILD_DIR}/binaries
 
 cd bin
 
