@@ -2,8 +2,20 @@
 
 ## Command Line Usage
 
-### The Interface
+### Example for Single Subject Computation
 
+```
+FeatureExtraction.exe \
+-p C:/test/captk/params_test.csv \ # the parameter file which defines the features to extract and the related parameters
+-n SubjectID \ # the subject ID of the current patient - used in the output csv
+-i C:/test/captk/image.nii.gz \ # the input image(s) - multiple can be passed with ',' used as delimiter but need to be co-registered
+-t FL \ # the modality of the input images (used in the output csv) - multiple can be passed with ',' used as delimiter
+-m C:/test/captk/roi.nii.gz \ # the annotated mask coregistered with the input image(s)
+-r 1 \ # the values in the annotated mask on which feature extraction is to occure -  multiple can be passed with ',' used as delimiter
+-l TT \ # the labels of the selected ROIs (used in the output csv) - multiple can be passed with ',' used as delimiter
+-vc 1 \
+-o C:/test/captk/output.csv
+```
 
 ### Windows PowerShell / CMD:
 ```
