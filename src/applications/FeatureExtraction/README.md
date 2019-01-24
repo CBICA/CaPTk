@@ -20,10 +20,8 @@ Under the CaPTk installation tree, you will see the folder */bin/*; the FeatureE
 
 ### macOS
 
-Under the *Applications* folder, ```cd``` into ```CaPTk.app/Contents/Resources/bin``` and the FeatureExtraction will be there.
+The macOS package is an [Bundle](https://en.wikipedia.org/wiki/Bundle_(macOS)#macOS_application_bundles) and the FeatureExtraction executable can be access using the following [cwl](https://www.commonwl.org/)-enabled command (assuming you have the CaPTk AppImage in your PATH): ```CaPTk.app featureextraction $your_command_goes_here```
 
 ### Linux
 
-The Linux package is an [AppImage](https://appimage.org/) and the FeatureExtraction executable can be access using the following [cwl](https://www.commonwl.org/)-enabled command (assuming you have the CaPTk AppImage in your PATH):
-
-```captk featureextraction $your_command_goes_here```
+The Linux package is an [AppImage](https://appimage.org/) and the FeatureExtraction executable can be access using the following [cwl](https://www.commonwl.org/)-enabled command (assuming you have the CaPTk AppImage in your PATH): ```captk featureextraction $your_command_goes_here```
