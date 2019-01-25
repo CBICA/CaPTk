@@ -23,6 +23,10 @@ cp -r ${TRAVIS_BUILD_DIR}/bin/qt /usr/local/Cellar/qt
 export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 echo 'export PATH="/usr/local/opt/make/libexec/gnubin:/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile
 brew link --force qt
+
+brew install opencv --enable-static
+brew install vtk --enable-static
+
 echo "Run Dependency Manager"
 make & sleep 5800; kill $! 
 # make
