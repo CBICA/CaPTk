@@ -173,7 +173,7 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
 
   for (unsigned int i = 0; i < scaledFeatureSet.Rows(); i++)
     for (unsigned int j = 0; j < scaledFeatureSet.Cols(); j++)
-      if (isnan(scaledFeatureSet(i, j)))
+      if (std::isnan(scaledFeatureSet(i, j)))
         scaledFeatureSet(i, j) = 0;
 
 
@@ -537,7 +537,7 @@ VectorDouble MolecularSubtypePredictor::MolecularSubtypePredictionOnExistingMode
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
   for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
     for (unsigned int j = 0; j < ScaledTestingData.Cols(); j++)
-      if (isnan(ScaledTestingData(i, j)))
+      if (std::isnan(ScaledTestingData(i, j)))
         ScaledTestingData(i, j) = 0;
 
   VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;

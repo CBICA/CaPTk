@@ -1,0 +1,1 @@
+This directory contains all the third party include libraries that are used by CaPTk and its associated sub-projects.

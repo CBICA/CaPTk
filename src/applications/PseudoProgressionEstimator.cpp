@@ -2,7 +2,7 @@
 #include "PseudoProgressionEstimator.h"
 #include "fMainWindow.h"
 #include "cbicaStatistics.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 #include "vtkDoubleArray.h"
 
 typedef itk::Image< float, 3 > ImageType;
@@ -1178,11 +1178,11 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 
   //std::cout << "Final PCA calculation features finished." << std::endl;
 
-  for (int i = 0; i < FeaturesOfAllSubjects.Rows(); i++)
+  for (uint i = 0; i < FeaturesOfAllSubjects.Rows(); i++)
   {
-    for (int j = 0; j < otherFeatures.Cols(); j++)
+    for (uint j = 0; j < otherFeatures.Cols(); j++)
       FeaturesOfAllSubjects(i, j) = otherFeatures[i][j];
-    for (int j = 0; j < PC_Features[i].size(); j++)
+    for (uint j = 0; j < PC_Features[i].size(); j++)
       FeaturesOfAllSubjects(i, j + otherFeatures.Cols()) = PC_Features[i][j];
   }
   std::cout << "FeaturesOfAllSubjects populated." << std::endl;
@@ -1505,11 +1505,11 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
 
   std::cout << "Final PCA calculation features finished." << std::endl;
 
-  for (int i = 0; i < FeaturesOfAllSubjects.Rows(); i++)
+  for (uint i = 0; i < FeaturesOfAllSubjects.Rows(); i++)
   {
-    for (int j = 0; j < otherFeatures.Cols(); j++)
+    for (uint j = 0; j < otherFeatures.Cols(); j++)
       FeaturesOfAllSubjects(i, j) = otherFeatures[i][j];
-    for (int j = 0; j < PC_Features[i].size(); j++)
+    for (uint j = 0; j < PC_Features[i].size(); j++)
       FeaturesOfAllSubjects(i, j + otherFeatures.Cols()) = PC_Features[i][j];
   }
   std::cout << "FeaturesOfAllSubjects populated." << std::endl;
@@ -1547,7 +1547,7 @@ PerfusionMapType PseudoProgressionEstimator::CombineAndCalculatePerfusionPCA(Per
     if (index != 0)
       start = start + sizes[index - 1];
 
-    for (unsigned int i = start; i < start + sizes[index]; i++)
+    for (int i = start; i < start + sizes[index]; i++)
       for (unsigned int j = 0; j < 10; j++)
         OnePatietnPerfusionData(i - start, j) = ReducedPCAs->GetValue(i, j).ToDouble();
 
@@ -1589,7 +1589,7 @@ PerfusionMapType PseudoProgressionEstimator::CombineAndCalculatePerfusionPCAForT
     if (index != 0)
       start = start + sizes[index - 1];
 
-    for (unsigned int i = start; i < start + sizes[index]; i++)
+    for (int i = start; i < start + sizes[index]; i++)
       for (unsigned int j = 0; j < 10; j++)
         OnePatietnPerfusionData(i - start, j) = ReducedPCAs[i][j];
 
@@ -2682,135 +2682,135 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
 
   int start_counter = 0;
   int end_counter = 254;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1(i, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1CE(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T2(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_FL(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1T1CE(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T2FL(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_AX(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_FA(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_RAD(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_TR(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PH(i - start_counter, j) = dataMatrix(i, j);
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PSR(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_RCBV(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC1(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC2(i - start_counter, j) = dataMatrix(i, j);
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC3(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC4(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC5(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC6(i - start_counter, j) = dataMatrix(i, j);
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC7(i - start_counter, j) = dataMatrix(i, j);
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC8(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC9(i - start_counter, j) = dataMatrix(i, j);
 
   start_counter = start_counter + 255;
   end_counter = end_counter + 255;
-  for (unsigned int i = start_counter; i <= end_counter; i++)
+  for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC10(i - start_counter, j) = dataMatrix(i, j);
 

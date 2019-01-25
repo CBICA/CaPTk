@@ -1,7 +1,7 @@
 #include "PseudoProgressionEstimator.h"
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 //------------------Survival Prediction on existing model-----------------------
 

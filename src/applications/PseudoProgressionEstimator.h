@@ -30,8 +30,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkScalarImageToRunLengthFeaturesFilter.h"
 #include "itkCSVArray2DFileReader.h"
 #include "itkConnectedComponentImageFilter.h"
-#include "CapTkEnums.h"
-#include "CapTkClassifierUtils.h"
+#include "CaPTkEnums.h"
+#include "CaPTkClassifierUtils.h"
 #include "cbicaLogging.h"
 
 #define RECURRENCE_MODEL_G 0.5
@@ -1601,7 +1601,7 @@ std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble>
   return new_tuple;
 }
 
-template< class TImageTypeShape = TImageType >
+template< typename TImageTypeShape >
 VectorDouble PseudoProgressionEstimator::GetShapeFeatures(typename TImageTypeShape::Pointer mask)
 {
   std::vector<double> features;
