@@ -1114,7 +1114,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       
     ELSE()
       INSTALL( DIRECTORY "${DATA_DIR}/icons/application/linux/hicolor" DESTINATION share/icons)
-      INSTALL(FILES "${DATA_DIR}/icons/captk.rc" DESTINATION data/icons)
+      # Not in data dir on linux for some reason
+      # INSTALL(FILES "${DATA_DIR}/icons/captk.rc" DESTINATION data/icons)
     ENDIF()
 
     # CPack settings
