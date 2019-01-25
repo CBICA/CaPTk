@@ -1012,7 +1012,7 @@ void RecurrenceEstimator::RecurrenceEstimateOnGivenSubjectUsingExistingModel(typ
 	//meanFilter->SetInput(RecProbabilityMap);
 	//typename ImageType::Pointer RevisedRecurrenceMap = meanFilter->GetOutput();
 
-  ImageType::Pointer RevisedRecurrenceMap = RecurrenceMapPostprocessingForBackground<ImageType>(RecProbabilityMap, edemaMask);
+  typename ImageType::Pointer RevisedRecurrenceMap = RecurrenceMapPostprocessingForBackground<ImageType>(RecProbabilityMap, edemaMask);
 	//------------------------------------------Writing final output--------------------------------------------------
 	mRecurrenceMapFileName = "RecurrenceMap.nii.gz";
 	mOutputLocalPtr.WriteRecurrenceOutput<ImageType>(RevisedRecurrenceMap, t1cebasefilename, mRecurrenceMapFileName);
