@@ -4,7 +4,7 @@
 
 SET( ITK_DEPENDENCIES )
 
-# SET( ITK_DEPENDS VTK OpenCV )
+SET( ITK_DEPENDS VTK OpenCV )
 
 IF( MSVC )
   #SET( EXTRA_WINDOWS_OPTIONS -DModule_SCIFIO:BOOL=ON )
@@ -52,9 +52,9 @@ ExternalProject_Add(
     ${EXTRA_WINDOWS_OPTIONS}
     #-DITK_LEGACY_REMOVE:BOOL=ON 
     -DModule_ITKVideoBridgeOpenCV:BOOL=ON # [OPENCV] dependency
-    # -DOpenCV_DIR:PATH=${OpenCV_DIR} # [OPENCV] dependency
+    -DOpenCV_DIR:PATH=${OpenCV_DIR} # [OPENCV] dependency
     -DModule_ITKVtkGlue:BOOL=ON # [VTK] dependency
-    # -DVTK_DIR:PATH=${VTK_DIR} # [VTK] dependency
+    -DVTK_DIR:PATH=${VTK_DIR} # [VTK] dependency
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE} # toggle for type of build if something different that 
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/install
 )
