@@ -1071,7 +1071,8 @@ Reference:
 This application extracts various measurements from a Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan. The exact measurements comprise i) an automatically-extracted proxy to relative Cerebral Blood Volume (ap-rCBV), ii) peak height (PH), iii) percent signal recovery (PSR). Note that the ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.
 
 <b> REQUIREMENTS:</b>
-A single DSC-MRI scan.
+	-# A single DSC-MRI scan.
+	-# The Echo Time corresponding to the given DSC-MRI scan
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Derivatives".
