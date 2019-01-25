@@ -9,12 +9,10 @@ export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-export CMAKE_PREFIX_PATH=/Library/TeX/texbin
-export CMAKE_PREFIX_PATH="./ITK-build:$CMAKE_PREFIX_PATH"
+export CMAKE_PREFIX_PATH="./ITK-build:/Library/TeX/texbin:$CMAKE_PREFIX_PATH"
 
 cmake ../
 echo "Run Dependency Manager"
-# make & sleep 2000; kill $! 
 make -j 2
 
 # ls ./ITK-build

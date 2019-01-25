@@ -15,13 +15,13 @@ export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 ls ${TRAVIS_BUILD_DIR}
 cmake ../
 echo "Run Dependency Manager"
-make & sleep 5800; kill $! 
-# make
+# make & sleep 5800; kill $! 
+make
 
 # echo "Run CaPTk Build"
-# cmake ../
-# cmake ../
-# make
+cmake ../
+cmake ../
+make
 
 }
 
