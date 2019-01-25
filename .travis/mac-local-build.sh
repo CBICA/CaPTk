@@ -9,18 +9,24 @@ export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-export CMAKE_PREFIX_PATH="./ITK-build:/Library/TeX/texbin:$CMAKE_PREFIX_PATH"
+export CMAKE_PREFIX_PATH="/Users/phucngo/Desktop/CaPTk/bin/ITK-build:/Users/phucngo/Desktop/CaPTk/bin/OpenCV-build:/Library/TeX/texbin:$CMAKE_PREFIX_PATH"
 
-cmake ../
-echo "Run Dependency Manager"
-make -j 2
+### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
+# cmake ../
+# echo "Run Dependency Manager"
+# make -j 2
 
-# ls ./ITK-build
+rm -rf /usr/local/opt/qt
+rm -rf /usr/local/Cellar/qt
+cp -r qt/5.11.2 /usr/local/opt/qt
+cp -r qt /usr/local/Cellar/qt
+export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 
 echo "Run CaPTk Build"
+rm CMakeCache.txt
 cmake ../
 cmake ../
-make -j 2
+make 
 }
 
 ###########################
