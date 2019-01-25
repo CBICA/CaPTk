@@ -7667,13 +7667,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
   std::vector<std::string> subjectNames= cbica::subdirectoriesInDirectory(directoryname);
 
-  subjectNames.clear();
-  subjectNames.push_back("AAMA");
-  subjectNames.push_back("AAMG");
-  subjectNames.push_back("AAMJ");
-  subjectNames.push_back("AAMP");
-  subjectNames.push_back("AAMQ");
-  subjectNames.push_back("ABEM");
+  //subjectNames.clear();
+  //subjectNames.push_back("AAMA");
+  //subjectNames.push_back("AAMG");
+  //subjectNames.push_back("AAMJ");
+  //subjectNames.push_back("AAMP");
+  //subjectNames.push_back("AAMQ");
+  //subjectNames.push_back("ABEM");
 
   std::sort(subjectNames.begin(), subjectNames.end());
 

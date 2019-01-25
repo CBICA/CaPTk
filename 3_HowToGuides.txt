@@ -749,12 +749,6 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Subject_IDn
 
 <b>USAGE:</b>
-- Pseudoprogression assessment on loaded subject.
-	-# Load the required images in CaPTk and correctly assign the modality label in the drop-down menu. 
-	-# Load the segmentation labels of the region of interest from a single NIfTI (.nii.gz) file. 
-	-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/pseudoprogression.zip
-	-# Select the "Output Directory" and click on "Confirm".
-	-# The result is saved in the output folder in a .csv file and also displayed on the screen (within ~2 minutes).
 
 - Pseudoprogression assessment on a batch of subjects.
 	- "Train a new model": 
