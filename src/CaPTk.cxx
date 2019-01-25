@@ -71,6 +71,7 @@ int main(int argc, char** argv)
   //! Support for High DPI monitors..works on windows but still some menu issues are seen
   //! Needs to be tested on Linux and Mac
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
   QApplication app(argc, argv);
 
@@ -78,7 +79,7 @@ int main(int argc, char** argv)
   cbica::setEnvironmentVariable("QT_OPENGL", "software");
   
   // parse the command line
-  auto parser = cbica::CmdParser(argc, argv);
+  auto parser = cbica::CmdParser(argc, argv, "CaPTk");
   parser.ignoreArgc1();
 
   parser.addOptionalParameter("i", "images", cbica::Parameter::FILE, "NIfTI or DICOM", "Input coregistered image(s) to load into CaPTk", "Multiple images are delineated using ','");
@@ -124,20 +125,26 @@ int main(int argc, char** argv)
   // check for CWL command coming in through the command line after "CaPTk"
   if (cmd_inputs.empty() && (argc > 1))
   {
-    for (auto & file : cbica::getCWLFilesInApplicationDir()) 
+    auto cwlFiles = cbica::getCWLFilesInApplicationDir();
+    for (auto & file : cwlFiles)
     {
+      auto cwlFileBase = cbica::getFilenameBase(file);
+      std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
+      auto argv_1 = std::string(argv[1]);
+      std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
+
       // Check for filename without cwl extension
-      if (argv[1] == file.substr(0, file.size() - 4)) 
+      if (cwlFileBase.find(argv_1) != std::string::npos)
       {
         // Get base command
-        std::ofstream selected_file;
-        selected_file.open(file.c_str());
-        YAML::Node config = YAML::LoadFile(file);
+        //std::ofstream selected_file;
+        //selected_file.open(file.c_str());
+        auto config = YAML::LoadFile(file);
         // Get all args passed to application
         std::string argv_complete;        
-        for (size_t i = 1; i < argc; i++)
+        for (size_t i = 2; i < argc; i++) // 2 because the argv[1] is always the "application"
         {
-          argv_complete = argv_complete + " " + std::string(argv[i]);
+          argv_complete += " " + std::string(argv[i]);
         }
         // Pass them in
         return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
@@ -306,8 +313,7 @@ int main(int argc, char** argv)
   vtkOutputWindow::SetInstance(fileOutputWindow);
 
   //! redirect the itk output window contents to file
-  typedef itk::FileOutputWindow myFileOutputWindow;
-  myFileOutputWindow::Pointer itkOutputWindow = myFileOutputWindow::New();
+  auto itkOutputWindow = itk::FileOutputWindow::New();
   itkOutputWindow->SetFileName((loggerFolderBase + "itk_errors.txt").c_str());
   itkOutputWindow->FlushOn();
   itk::OutputWindow::SetInstance(itkOutputWindow);

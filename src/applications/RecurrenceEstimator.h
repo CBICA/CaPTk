@@ -135,6 +135,12 @@ public:
 	template<class ImageType>
 	VectorDouble RecurrenceMapPostprocessing(VectorDouble result, std::vector<typename ImageType::IndexType> indices, typename ImageType::Pointer RecurrenceProbabilityMap, typename ImageType::Pointer edemaMap);
 
+  /**
+
+  \ Postprocessing of background of recurrence map
+  */
+  template<class ImageType>
+  typename ImageType::Pointer RecurrenceMapPostprocessingForBackground(typename ImageType::Pointer RecurrenceProbabilityMap, typename ImageType::Pointer edemaMap);
 
 
 	/**
@@ -984,7 +990,7 @@ void RecurrenceEstimator::RecurrenceEstimateOnGivenSubjectUsingExistingModel(typ
 			result = testOpenCVSVM(ScaledTestingData, modeldirectory + "/" + mTrainedModelNameXML);
 			for (unsigned int index = 0; index < result.size(); index++)
 				RecProbabilityMap->SetPixel(testindices[index], result[index] * 1);
-			result_modified = result;
+//			result_modified = result;
 		}
 	}
 	catch (itk::ExceptionObject & excp)
@@ -993,19 +999,20 @@ void RecurrenceEstimator::RecurrenceEstimateOnGivenSubjectUsingExistingModel(typ
 		exit(EXIT_FAILURE);
 	}
 
-	VectorDouble result_revised = RecurrenceMapPostprocessing<ImageType>(result_modified, testindices, RecProbabilityMap, edemaMask);
-	for (unsigned int index = 0; index < result_modified.size(); index++)
-		RecProbabilityMap->SetPixel(testindices[index], result_revised[index] * 1);
+	//VectorDouble result_revised = RecurrenceMapPostprocessing<ImageType>(result_modified, testindices, RecProbabilityMap, edemaMask);
+	//for (unsigned int index = 0; index < result_modified.size(); index++)
+	//	RecProbabilityMap->SetPixel(testindices[index], result_revised[index] * 1);
 
-	//averaging filter
-	typedef itk::MeanImageFilter<ImageType, ImageType > FilterType;
-	typename FilterType::Pointer meanFilter = FilterType::New();
-	typename FilterType::InputSizeType radius;
-	radius.Fill(1);
-	meanFilter->SetRadius(radius);
-	meanFilter->SetInput(RecProbabilityMap);
-	typename ImageType::Pointer RevisedRecurrenceMap = meanFilter->GetOutput();
+	////averaging filter
+	//typedef itk::MeanImageFilter<ImageType, ImageType > FilterType;
+	//typename FilterType::Pointer meanFilter = FilterType::New();
+	//typename FilterType::InputSizeType radius;
+	//radius.Fill(1);
+	//meanFilter->SetRadius(radius);
+	//meanFilter->SetInput(RecProbabilityMap);
+	//typename ImageType::Pointer RevisedRecurrenceMap = meanFilter->GetOutput();
 
+  typename ImageType::Pointer RevisedRecurrenceMap = RecurrenceMapPostprocessingForBackground<ImageType>(RecProbabilityMap, edemaMask);
 	//------------------------------------------Writing final output--------------------------------------------------
 	mRecurrenceMapFileName = "RecurrenceMap.nii.gz";
 	mOutputLocalPtr.WriteRecurrenceOutput<ImageType>(RevisedRecurrenceMap, t1cebasefilename, mRecurrenceMapFileName);
@@ -1202,6 +1209,50 @@ typename ImageType::Pointer RecurrenceEstimator::ReadNiftiImage(const std::strin
 
 
 	return reader->GetOutput();
+}
+
+template<class ImageType>
+typename ImageType::Pointer RecurrenceEstimator::RecurrenceMapPostprocessingForBackground(typename ImageType::Pointer RecurrenceProbabilityMap, typename ImageType::Pointer edemaMap)
+{
+  	const typename ImageType::RegionType region = RecurrenceProbabilityMap->GetLargestPossibleRegion();
+  	typename ImageType::Pointer RevisedRecurrenceProbabilityMap = ImageType::New();
+    RevisedRecurrenceProbabilityMap->SetRegions(region);
+    RevisedRecurrenceProbabilityMap->Allocate();
+    RevisedRecurrenceProbabilityMap->SetSpacing(RecurrenceProbabilityMap->GetSpacing());
+    RevisedRecurrenceProbabilityMap->SetOrigin(RecurrenceProbabilityMap->GetOrigin());
+    RevisedRecurrenceProbabilityMap->SetDirection(RecurrenceProbabilityMap->GetDirection());
+
+    double minVal=0;
+    typedef itk::ImageRegionIteratorWithIndex< TImageType > IteratorType;
+    IteratorType mapIt(RecurrenceProbabilityMap, RecurrenceProbabilityMap->GetLargestPossibleRegion());
+    mapIt.GoToBegin();
+
+    while (!mapIt.IsAtEnd())
+    {
+      if (mapIt.Get() < minVal)
+        minVal = mapIt.Get();
+      ++mapIt;
+    }
+
+
+    IteratorType revMapIt(RevisedRecurrenceProbabilityMap, RevisedRecurrenceProbabilityMap->GetLargestPossibleRegion());
+    IteratorType edemaIt(edemaMap, edemaMap->GetLargestPossibleRegion());
+    edemaIt.GoToBegin();
+    revMapIt.GoToBegin();
+    mapIt.GoToBegin();
+
+    while (!mapIt.IsAtEnd())
+    {
+      if (edemaIt.Get() == 1)
+        revMapIt.Set(mapIt.Get());
+      else
+        revMapIt.Set(minVal);
+
+      ++edemaIt;
+      ++mapIt;
+      ++revMapIt;
+    }
+    return RevisedRecurrenceProbabilityMap;
 }
 
 template<class ImageType>

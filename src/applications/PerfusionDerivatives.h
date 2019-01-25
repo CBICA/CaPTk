@@ -89,7 +89,7 @@ public:
   typename ImageType::Pointer CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti, const double TE);
 
   template< class ImageType, class PerfusionImageType>
-  typename ImageType::Pointer CalculatePSR(typename PerfusionImageType::Pointer perfImagePointerNifti);
+  typename ImageType::Pointer CalculateSignalRecovery(typename PerfusionImageType::Pointer perfImagePointerNifti);
 
   template< class ImageType, class PerfusionImageType>
   typename ImageType::Pointer GetOneImageVolume(typename PerfusionImageType::Pointer perfImagePointerNifti, int index);
@@ -98,39 +98,49 @@ public:
 template< class ImageType, class PerfusionImageType >
 std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string perfusionFile, bool rcbv, bool psr, bool ph, const double TE)
 {
-	std::vector<typename ImageType::Pointer> perfusionDerivatives;
-	typename PerfusionImageType::Pointer perfImagePointerNifti;
-	try
-	{
-		perfImagePointerNifti = mNiftiLocalPtr.Read4DNiftiImage(perfusionFile);
-	}
-	catch (const std::exception& e1)
-	{
-		logger.WriteError("Unable to open the given DSC-MRI file. Error code : " + std::string(e1.what()));
-		return perfusionDerivatives;
-	}
-	try
-	{
-		if (rcbv == true)
-			perfusionDerivatives.push_back(this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti, TE));
-		else
-			perfusionDerivatives.push_back(NULL);
+  std::vector<typename ImageType::Pointer> perfusionDerivatives;
+  perfusionDerivatives.push_back(NULL);
+  perfusionDerivatives.push_back(NULL);
+  perfusionDerivatives.push_back(NULL);
 
-		if (psr == true)
-			perfusionDerivatives.push_back(this->CalculatePSR<ImageType, PerfusionImageType>(perfImagePointerNifti));
-		else
-			perfusionDerivatives.push_back(NULL);
+  typename PerfusionImageType::Pointer perfImagePointerNifti;
+  try
+  {
+    perfImagePointerNifti = mNiftiLocalPtr.Read4DNiftiImage(perfusionFile);
+  }
+  catch (const std::exception& e1)
+  {
+    logger.WriteError("Unable to open the given DSC-MRI file. Error code : " + std::string(e1.what()));
+    return perfusionDerivatives;
+  }
 
-		if (ph == true)
-			perfusionDerivatives.push_back(this->CalculatePH<ImageType, PerfusionImageType>(perfImagePointerNifti));
-		else
-			perfusionDerivatives.push_back(NULL);
-	}
-	catch (const std::exception& e1)
-	{
-		logger.WriteError("Unable to calculate perfusion derivatives. Error code : " + std::string(e1.what()));
-		return perfusionDerivatives;
-	}
+  typedef itk::ImageDuplicator< PerfusionImageType > DuplicatorType;
+  DuplicatorType::Pointer duplicator = DuplicatorType::New();
+  duplicator->SetInputImage(perfImagePointerNifti);
+  duplicator->Update();
+  PerfusionImageType::Pointer FirstCopyImage = duplicator->GetOutput();
+
+  DuplicatorType::Pointer duplicator1 = DuplicatorType::New();
+  duplicator1->SetInputImage(perfImagePointerNifti);
+  duplicator1->Update();
+  PerfusionImageType::Pointer SecondCopyImage = duplicator1->GetOutput();
+
+  try
+  {
+    if (psr == true)
+      perfusionDerivatives[0] = this->CalculateSignalRecovery<ImageType, PerfusionImageType>(FirstCopyImage);
+
+    if (ph == true)
+      perfusionDerivatives[1] = this->CalculatePH<ImageType, PerfusionImageType>(SecondCopyImage);
+
+    if (rcbv == true)
+      perfusionDerivatives[2] = this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti, TE);
+  }
+  catch (const std::exception& e1)
+  {
+    logger.WriteError("Unable to calculate perfusion derivatives. Error code : " + std::string(e1.what()));
+    return perfusionDerivatives;
+  }
   return perfusionDerivatives;
 }
 template< class ImageType, class PerfusionImageType>
@@ -159,8 +169,8 @@ typename ImageType::Pointer PerfusionDerivatives::GetOneImageVolume(typename Per
   return filter->GetOutput();
 }
 
-template< class ImageType, class PerfusionImageType>
-typename ImageType::Pointer PerfusionDerivatives::CalculatePSR(typename PerfusionImageType::Pointer perfImagePointerNifti)
+template< class ImageType, class PerfusionImageType >
+typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typename PerfusionImageType::Pointer perfImagePointerNifti)
 {
   //---------------------------------------mean from 1-10------------------------------------
   typename ImageType::Pointer A = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
@@ -187,6 +197,14 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePSR(typename Perfusio
           index4D[3] = k;
           sum = sum + perfImagePointerNifti->GetPixel(index4D);
         }
+        //if (x == 75 && y == 149 && z == 94)
+        //{
+        //  for (unsigned int k = 0; k <= 9; k++)
+        //  {
+        //    index4D[3] = k;
+        //    std::cout << perfImagePointerNifti->GetPixel(index4D) << std::endl;
+        //  }
+        //}
         A.GetPointer()->SetPixel(index3D, sum / 10);
         //---------------------------------------minimum vector------------------------------------
         std::vector<double> local_measures;
@@ -197,6 +215,8 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePSR(typename Perfusio
         }
         double min_value = *std::min_element(std::begin(local_measures), std::end(local_measures));
         B.GetPointer()->SetPixel(index3D, min_value);
+        //if(min_value>0)
+        //  std::cout << min_value << std::endl;
         //---------------------------------------mean from 30-40------------------------------------
         sum = 0;
         for (unsigned int k = 29; k <= 39; k++)
@@ -206,7 +226,6 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePSR(typename Perfusio
         }
         C.GetPointer()->SetPixel(index3D, sum / 11);
       }
-  //---------------------------------------------------------------------------------------------------
 
   typename ImageType::Pointer PSR = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 6);
   typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
@@ -223,8 +242,8 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePSR(typename Perfusio
   while (!aIt.IsAtEnd())
   {
     double val = 0;
-    if ((cIt.Get() - bIt.Get()) != 0)
-      val = ((aIt.Get() - bIt.Get())/(cIt.Get() - bIt.Get())) * 255;
+    if ((aIt.Get() - bIt.Get()) != 0)
+      val = ((cIt.Get() - bIt.Get()) / (aIt.Get() - bIt.Get())) * 255;
 
     psrIt.Set(val);
     ++aIt;
@@ -232,8 +251,68 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePSR(typename Perfusio
     ++cIt;
     ++psrIt;
   }
-  return PSR;
+  //typedef itk::ImageFileWriter< ImageType > WriterType;
+  //typename WriterType::Pointer writer1 = WriterType::New();
+  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionDerivativesRelatedMaterial/PSR_Image_BeforeScaling.nii.gz");
+  //writer1->SetInput(PSR);
+  //writer1->Update();
+
+  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionDerivativesRelatedMaterial/A.nii.gz");
+  //writer1->SetInput(A);
+  //writer1->Update();
+
+  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionDerivativesRelatedMaterial/B.nii.gz");
+  //writer1->SetInput(B);
+  //writer1->Update();
+
+  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionDerivativesRelatedMaterial/C.nii.gz");
+  //writer1->SetInput(C);
+  //writer1->Update();
+
+
+  //scaling the image between 0-255
+  psrIt.GoToBegin();
+  double min_val = psrIt.Get();
+  double max_val = psrIt.Get();
+  while (!psrIt.IsAtEnd())
+  {
+    if (psrIt.Get() > max_val)
+      max_val = psrIt.Get();
+    if (psrIt.Get() < min_val)
+      min_val = psrIt.Get();
+    ++psrIt;
+  }
+  std::cout << "Min:" << min_val << std::endl;
+  std::cout << "Max:" << max_val << std::endl;
+
+  typename ImageType::Pointer ScaledPSR = ImageType::New();
+  ScaledPSR->CopyInformation(PSR);
+  ScaledPSR->SetRequestedRegion(PSR->GetLargestPossibleRegion());
+  ScaledPSR->SetBufferedRegion(PSR->GetBufferedRegion());
+  ScaledPSR->Allocate();
+  ScaledPSR->FillBuffer(0);
+  IteratorType scaledpsrIt(ScaledPSR, ScaledPSR->GetLargestPossibleRegion());
+  psrIt.GoToBegin();
+  scaledpsrIt.GoToBegin();
+
+  while (!psrIt.IsAtEnd())
+  {
+    if (psrIt.Get() <= 255)
+      scaledpsrIt.Set(std::round(psrIt.Get()));
+    else
+      scaledpsrIt.Set(255);
+
+    ++psrIt;
+    ++scaledpsrIt;
+  }
+
+  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionDerivativesRelatedMaterial/PSR_Image_AfterScaling.nii.gz");
+  //writer1->SetInput(ScaledPSR);
+  //writer1->Update();
+
+  return ScaledPSR;
 }
+
 
 
 template< class ImageType, class PerfusionImageType >

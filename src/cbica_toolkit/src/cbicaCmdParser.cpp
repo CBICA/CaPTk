@@ -615,7 +615,11 @@ namespace cbica
         spaces_lac.append(" ");
       }
 
-      for (size_t n = 0; n < m_maxLength - inputParameters[i].verbose.length() - spaces_lac.length() - 2; n++)
+      for (size_t n = 0; n < m_maxLength - inputParameters[i].verbose.length() - spaces_lac.length() - 3; n++)
+      {
+        spaces_verb.append(" ");
+      }
+      if (inputParameters[i].laconic.length() == 1)
       {
         spaces_verb.append(" ");
       }
@@ -630,7 +634,7 @@ namespace cbica
 
       std::cout << "[" << spaces_lac << "-" << inputParameters[i].laconic << ", --" <<
         inputParameters[i].verbose << "]" << spaces_verb <<
-        inputParameters[i].descriptionLine1 << "\n";
+        inputParameters[i].descriptionLine1 << " " << inputParameters[i].laconic.length() << " " << spaces_verb.size() << " \n";
 
       if (inputParameters[i].descriptionLine2 != "")
       {
@@ -755,8 +759,7 @@ namespace cbica
     {
       input_string = "rt";
     }
-    else if ((input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl")
-      || (input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl"))
+    else if ((input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl"))
     {
       input_string = "cwl";
     }
@@ -853,6 +856,7 @@ namespace cbica
       {
         helpRequested = true;
         position = i;
+        //std::cout << "[DEBUG] m_exePath: "<< m_exePath << "\n";
         writeCWLFile(m_exePath, false);
         exit(EXIT_SUCCESS);
         //return true;
@@ -929,7 +933,6 @@ namespace cbica
             m_requiredParameters[i].descriptionLine3 + " " + m_requiredParameters[i].descriptionLine4 + " " +
             m_requiredParameters[i].descriptionLine5;
         }
-        noMoreChecks = 1;
       }
       i++;
     }
@@ -1192,9 +1195,9 @@ namespace cbica
 
     std::string cwlfileName = dirName_wrap + m_exeName + ".cwl";
 
-    // std::cout << "[DEBUG]dirName_wrap: " << dirName_wrap << std::endl;
-    // std::cout << "[DEBUG]m_exeName: " << m_exeName << std::endl;
-    // std::cout << "[DEBUG]cwlfileName: " << cwlfileName << std::endl;
+    //std::cout << "[DEBUG]dirName_wrap: " << dirName_wrap << std::endl;
+    //std::cout << "[DEBUG]m_exeName: " << m_exeName << std::endl;
+    //std::cout << "[DEBUG]cwlfileName: " << cwlfileName << std::endl;
     
     std::ofstream file;
     if (!cbica::fileExists(cwlfileName) || overwriteFile)
@@ -1206,11 +1209,7 @@ namespace cbica
       config["cwlVersion"] = "v1.0";
       config["class"] = "CommandLineTool";
       config["version"] = m_version;
-#ifdef WIN32
-      config["baseCommand"] = (m_exeName + ".exe");
-#else
       config["baseCommand"] = (m_exeName);
-#endif
       
       YAML::Node inputs = config["inputs"];
       

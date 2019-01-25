@@ -13,7 +13,6 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
   for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
   {
     std::string subjectPath = directoryname + "/" + subjectNames[sid];
-
     std::string t1ceFilePath = "";
     std::string t1FilePath = "";
     std::string t2FilePath = "";

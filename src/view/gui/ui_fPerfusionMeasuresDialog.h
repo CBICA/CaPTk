@@ -55,6 +55,7 @@ public:
   QGridLayout *outputGridLayout;
   QLineEdit *outputImageName;
   QLabel *outputImageLabel;
+  QLabel *longRunningWarning;
   QPushButton *outputImageButton;
   QPushButton *inputImageButton;
 
@@ -95,9 +96,9 @@ public:
     sizePolicy.setHeightForWidth(inputImageLabel->sizePolicy().hasHeightForWidth());
     inputImageLabel->setSizePolicy(sizePolicy);
 
-	inputEchoLabel = new QLabel(inputGroupBox);
-	sizePolicy.setHeightForWidth(inputEchoLabel->sizePolicy().hasHeightForWidth());
-	inputEchoLabel->setSizePolicy(sizePolicy);
+    inputEchoLabel = new QLabel(inputGroupBox);
+    sizePolicy.setHeightForWidth(inputEchoLabel->sizePolicy().hasHeightForWidth());
+    inputEchoLabel->setSizePolicy(sizePolicy);
 
 
     inputImageName = new QLineEdit(" ");
@@ -106,11 +107,11 @@ public:
     inputImageName->setSizePolicy(sizePolicy);
     inputImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-	inputEchoName = new QLineEdit("");
-	inputEchoName->setObjectName(QString::fromUtf8("inputEchoName"));
-	sizePolicy.setHeightForWidth(inputEchoName->sizePolicy().hasHeightForWidth());
-	inputEchoName->setSizePolicy(sizePolicy);
-	inputEchoName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputEchoName = new QLineEdit("");
+    inputEchoName->setObjectName(QString::fromUtf8("inputEchoName"));
+    sizePolicy.setHeightForWidth(inputEchoName->sizePolicy().hasHeightForWidth());
+    inputEchoName->setSizePolicy(sizePolicy);
+    inputEchoName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
 
     inputImageButton = new QPushButton(inputGroupBox);
@@ -126,10 +127,10 @@ public:
 
     inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
     inputGridLayout->addWidget(inputImageName, 0, 1, 1, 1);
-	inputGridLayout->addWidget(inputImageButton, 0, 2, 1, 1);
+    inputGridLayout->addWidget(inputImageButton, 0, 2, 1, 1);
 
-	inputGridLayout->addWidget(inputEchoLabel, 1, 0, 1, 1);
-	inputGridLayout->addWidget(inputEchoName, 1, 1, 1, 1);
+    inputGridLayout->addWidget(inputEchoLabel, 1, 0, 1, 1);
+    inputGridLayout->addWidget(inputEchoName, 1, 1, 1, 1);
 
     inputGridLayout->addWidget(m_rcbv, 3, 0, 1, 1);
     inputGridLayout->addWidget(m_ph, 4, 0, 1, 1);
@@ -158,9 +159,16 @@ public:
     //outputImageButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent
     outputImageButton->setText(QString("Browse"));
 
+    longRunningWarning = new QLabel(outputGroupBox);
+    sizePolicy.setHeightForWidth(longRunningWarning->sizePolicy().hasHeightForWidth());
+    longRunningWarning->setSizePolicy(sizePolicy);
+    longRunningWarning->setAlignment(Qt::AlignRight);
+    longRunningWarning->setText("NOTE: CaPTk will not let you interact with the UI while this application runs.");
+
     //outputGridLayout->addWidget(outputImageLabel, 0, 0, 1, 1);
     outputGridLayout->addWidget(outputImageName, 0, 0, 1, 1);
     outputGridLayout->addWidget(outputImageButton, 0, 1, 1, 1);
+    outputGridLayout->addWidget(longRunningWarning, 1, 0, 1, 2);
 
     // put the layout in perspective
     gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);
@@ -196,7 +204,7 @@ public:
     // NEW CHANGES
     fPerfusionEstimator->setWindowTitle(QApplication::translate("fPerfusionEstimator", "Perfusion Derivatives", 0));
     inputEchoLabel->setText(QApplication::translate("fPerfusionEstimator", "Echo Time", 0));
-	inputImageLabel->setText(QApplication::translate("fPerfusionEstimator", "DSC-MRI Image", 0));
+    inputImageLabel->setText(QApplication::translate("fPerfusionEstimator", "DSC-MRI Image", 0));
 
     confirmButton->setText(QApplication::translate("fPerfusionEstimator", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fPerfusionEstimator", "Cancel", 0));

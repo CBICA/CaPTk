@@ -20,3 +20,13 @@ src/applications/individualApps/libra/MCRInstaller.zip
 src/applications/individualApps/libra/MCR
 src/applications/FeatureExtraction/data/output
 /src/applications/FeatureExtraction/data/params_test.csv
+/src/applications/FeatureExtraction/data/PAT1_ConfigD_181221
+/src/applications/FeatureExtraction/data/3_params_default_IBSI.csv
+ibsi_phantom
+/src/applications/FeatureExtraction/runner.ps1
+deepmedic
+itksnap
+libra
+confetti
+dcm2nii
+theia

@@ -1,4 +1,5 @@
 language: cpp
+cache: ccache
 
 # Make sure to install ccache locally as well
 
