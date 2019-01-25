@@ -49,7 +49,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make git-lfs doxygen llvm && export PATH="/usr/local/opt/make/libexec/gnubin:$PATH" ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install opencv ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install opencv --enable-static ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install vtk --enable-static ; fi
   
 script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./.travis/mac-generic.sh; fi
