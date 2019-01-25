@@ -14,7 +14,7 @@ export CMAKE_PREFIX_PATH="$HOME/Desktop/CaPTk/bin/ITK-build:/Library/TeX/texbin:
 ### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
 # cmake ../
 # echo "Run Dependency Manager"
-# make -j 2
+# make -j 2 > /dev/null
 
 rm -rf /usr/local/opt/qt
 rm -rf /usr/local/Cellar/qt
@@ -32,7 +32,7 @@ echo "Run CaPTk Build"
 rm CMakeCache.txt
 cmake ../
 cmake ../
-make 
+make > /dev/null
 }
 
 ###########################
