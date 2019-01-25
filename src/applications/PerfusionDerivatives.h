@@ -115,15 +115,15 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
   }
 
   typedef itk::ImageDuplicator< PerfusionImageType > DuplicatorType;
-  DuplicatorType::Pointer duplicator = DuplicatorType::New();
+  typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
   duplicator->SetInputImage(perfImagePointerNifti);
   duplicator->Update();
-  PerfusionImageType::Pointer FirstCopyImage = duplicator->GetOutput();
+  typename PerfusionImageType::Pointer FirstCopyImage = duplicator->GetOutput();
 
-  DuplicatorType::Pointer duplicator1 = DuplicatorType::New();
+  typename DuplicatorType::Pointer duplicator1 = DuplicatorType::New();
   duplicator1->SetInputImage(perfImagePointerNifti);
   duplicator1->Update();
-  PerfusionImageType::Pointer SecondCopyImage = duplicator1->GetOutput();
+  typename PerfusionImageType::Pointer SecondCopyImage = duplicator1->GetOutput();
 
   try
   {
