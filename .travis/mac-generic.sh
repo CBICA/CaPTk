@@ -12,17 +12,19 @@ export CPPFLAGS="-L/usr/local/opt/llvm/include"
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
-rm -rf /usr/local/opt/qt
-rm -rf /usr/local/Cellar/qt
-cp -r qt/5.11.2 /usr/local/opt/qt
-cp -r qt /usr/local/Cellar/qt
-export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
-
-ls /usr/local/opt/qt/
+ls ${TRAVIS_BUILD_DIR}/bin/
 
 cmake ../
-echo "Run Dependency Manager"
-make & sleep 5800; kill $! 
+ls ${TRAVIS_BUILD_DIR}/bin/
+
+rm -rf /usr/local/opt/qt
+rm -rf /usr/local/Cellar/qt
+cp -r ${TRAVIS_BUILD_DIR}/bin/qt/5.11.2 /usr/local/opt/qt
+cp -r ${TRAVIS_BUILD_DIR}/bin/qt /usr/local/Cellar/qt
+export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
+brew link --overwrite qt
+# echo "Run Dependency Manager"
+# make & sleep 5800; kill $! 
 # make
 
 # echo "Run CaPTk Build"
