@@ -772,6 +772,11 @@ PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/Pseudo
 PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionOutput -m C:/PseudoprogressionModel
 \endverbatim
 
+<b> RESULT INTERPRETATION: </b>
+
+- 1st column: distance to hyperplane that classifies pseudo-progression versus the rest
+- 2nd column: distance to hyperplane that classifies true-progression versus the rest
+
 <br>
 		
 --------
