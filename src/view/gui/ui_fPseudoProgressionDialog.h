@@ -93,7 +93,7 @@ public:
     //--------------------------------------------------------------------
 
     classificationGroupBox = new QGroupBox(fPseudoProgressionDialog);
-    classificationGroupBox->setTitle(QString::fromStdString("Pseudo-Progression estimation modeling"));
+    classificationGroupBox->setTitle(QString::fromStdString("Pseudo-Progression Estimation Modeling"));
     classificationGridLayout = new QGridLayout(classificationGroupBox);
     classificationGridLayout->setObjectName(QString::fromUtf8("imagestabgridLayout3"));
 
