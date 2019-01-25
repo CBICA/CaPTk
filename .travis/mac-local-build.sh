@@ -23,6 +23,7 @@ cp -r qt /usr/local/Cellar/qt
 
 rm -rf /usr/local/Cellar/opencv
 cp -r OpenCV-build/* /usr/local/Cellar/opencv/3.4.1/
+
 export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 
 echo "Run CaPTk Build"

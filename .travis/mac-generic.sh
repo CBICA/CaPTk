@@ -18,6 +18,8 @@ cp -r qt/5.11.2 /usr/local/opt/qt
 cp -r qt /usr/local/Cellar/qt
 export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 
+ls /usr/local/opt/qt/
+
 cmake ../
 echo "Run Dependency Manager"
 make & sleep 5800; kill $! 
