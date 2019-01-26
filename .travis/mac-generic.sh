@@ -15,17 +15,14 @@ export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
 cmake ../
 
-rm -rf /usr/local/opt/qt
-rm -rf /usr/local/Cellar/qt
-cp -r ${TRAVIS_BUILD_DIR}/bin/qt/5.11.2 /usr/local/opt/qt
-cp -r ${TRAVIS_BUILD_DIR}/bin/qt /usr/local/Cellar/qt
+# rm -rf /usr/local/opt/qt
+# rm -rf /usr/local/Cellar/qt
+# cp -r ${TRAVIS_BUILD_DIR}/bin/qt/5.11.2 /usr/local/opt/qt
+# cp -r ${TRAVIS_BUILD_DIR}/bin/qt /usr/local/Cellar/qt
 
 export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 echo 'export PATH="/usr/local/opt/make/libexec/gnubin:/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile
-brew link --force qt
-
-brew install opencv --enable-static
-brew install vtk --enable-static
+# brew link --force qt
 
 echo "Run Dependency Manager"
 make & sleep 5800; kill $! 
