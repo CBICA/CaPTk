@@ -102,6 +102,7 @@ public:
   void FlipYOrientationInBVecFile(std::string inputfilename, std::string outputfilename);
   char* readline(FILE *input);
   void FlipAndShiftNiftiFile(std::string inputfilename, std::string outputfilename);
+  void FlipAndShiftNiftiMask(std::string inputfilename, std::string outputfilename);
 
   void GetImageInfo(std::string fName, itk::ImageIOBase::IOPixelType *pixelType, itk::ImageIOBase::IOComponentType *componentType);
 };
@@ -237,6 +238,69 @@ void DiffusionDerivatives::FlipYOrientationInBVecFile(std::string inputfilename,
 	fclose(fp);
 }
 
+void DiffusionDerivatives::FlipAndShiftNiftiMask(std::string inputfilename, std::string outputfilename)
+{
+ /* typedef short                      InputPixelType;
+  typedef short                       MiddlePixelType;
+  typedef short                       OutputPixelType;
+  typedef itk::Image< InputPixelType, 3 >    InputImageType;
+  typedef itk::Image< MiddlePixelType, 3 >    MiddleImageType;
+  typedef itk::Image< OutputPixelType, 3 >    OutputImageType;
+
+  typedef itk::FlipImageFilter< InputImageType> FlipType;
+  FlipType::Pointer flip = FlipType::New();
+
+  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
+  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+
+  ReaderType::Pointer reader = ReaderType::New();
+  WriterType::Pointer writer = WriterType::New();
+
+  reader->SetFileName(inputfilename);
+  writer->SetFileName(outputfilename);
+
+  FlipType::FlipAxesArrayType flipAxesSet;
+  flipAxesSet[0] = 0;
+  flipAxesSet[1] = -1;
+  flipAxesSet[2] = 0;
+  flip->SetFlipAxes(flipAxesSet);
+  flip->FlipAboutOriginOff();
+  flip->SetInput(reader->GetOutput());
+  flip->Update();
+
+  itk::NiftiImageIO::Pointer nifti_io = itk::NiftiImageIO::New();
+  OutputImageType::Pointer image = OutputImageType::New();
+  image = flip->GetOutput();
+  image->SetOrigin(reader->GetOutput()->GetOrigin());
+  writer->SetInput(image);
+  writer->SetImageIO(nifti_io);
+  try
+  {
+    writer->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+    std::cerr << "ExceptionObject caught !" << std::endl;
+    std::cerr << err << std::endl;
+    m_LastError = err.GetDescription();
+  }*/
+  //itk::AnalyzeImageIO::Pointer io = itk::AnalyzeImageIO::New();
+  //ImageReaderType::Pointer fileReader = ImageReaderType::New();
+  //fileReader->SetImageIO(io);
+  //fileReader->SetFileName(path);
+  //fileReader->Update();
+  //ImageType::Pointer rval = fileReader->GetOutput();
+  //itk::OrientImageFilter<ImageType, ImageType>::Pointer orienter =
+  //  itk::OrientImageFilter<ImageType, ImageType>::New();
+  //orienter->UseImageDirectionOn();
+  //orienter->SetDesiredCoordinateOrientation(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP);
+  //orienter->SetInput(rval);
+  //orienter->Update();
+  //rval = orienter->GetOutput();
+  //return rval;
+}
+
+
 void DiffusionDerivatives::FlipAndShiftNiftiFile(std::string inputfilename, std::string outputfilename)
 {
 
@@ -297,8 +361,10 @@ std::vector<itk::Image<float, 3>::Pointer> DiffusionDerivatives::Run(std::string
 {
 	std::string dwiFileNmae = cbica::getFilenameBase(dwiFile) + cbica::getFilenameExtension(dwiFile);
 	std::string gradFileNmae = cbica::getFilenameBase(gradFile) + cbica::getFilenameExtension(gradFile);
-	this->FlipYOrientationInBVecFile(gradFile, outputDir + "/"+gradFileNmae);
-	this->FlipAndShiftNiftiFile(dwiFile, outputDir + "/lps_" + dwiFileNmae);
+  std::string maskFileName = cbica::getFilenameBase(maskFile) + cbica::getFilenameExtension(maskFile);
+	//this->FlipYOrientationInBVecFile(gradFile, outputDir + "/"+gradFileNmae);
+	//this->FlipAndShiftNiftiFile(dwiFile, outputDir + "/lps_" + dwiFileNmae);
+ // this->FlipAndShiftNiftiMask(maskFile, outputDir + "/lps_" + maskFileName);
 
 
 
@@ -333,12 +399,13 @@ std::vector<itk::Image<float, 3>::Pointer> DiffusionDerivatives::Run(std::string
   {
   case itk::ImageIOBase::UCHAR:
   {
-	  vectorOfDTIScalars = runOverMaskType<unsigned char>(outputDir + "/lps_" + dwiFileNmae, outputDir + "/" + gradFileNmae, bvalFile, outputBasename, maskFile, true);
+	  vectorOfDTIScalars = runOverMaskType<unsigned char>(outputDir + "/lps_" + dwiFileNmae, outputDir + "/" + gradFileNmae, bvalFile, outputBasename, outputDir + "/lps_" + maskFileName, true);
     break;
   }
   case itk::ImageIOBase::SHORT:
   {
-	  vectorOfDTIScalars = runOverMaskType<short>(outputDir + "/lps_" + dwiFileNmae, outputDir + "/" + gradFileNmae, bvalFile, outputBasename, maskFile, true);
+	  //vectorOfDTIScalars = runOverMaskType<short>(outputDir + "/" + dwiFileNmae, outputDir + "/" + gradFileNmae, bvalFile, outputBasename, outputDir + "/" + maskFileName, true);
+    vectorOfDTIScalars = runOverMaskType<short>(dwiFile, gradFile, bvalFile, outputBasename, maskFile, true);
     break;
   }
   default:

@@ -1,17 +1,12 @@
 /*===================================================================
-
 The Medical Imaging Interaction Toolkit (MITK)
-
 Copyright (c) German Cancer Research Center,
 Division of Medical and Biological Informatics.
 All rights reserved.
-
 This software is distributed WITHOUT ANY WARRANTY; without
 even the implied warranty of MERCHANTABILITY or FITNESS FOR
 A PARTICULAR PURPOSE.
-
 See LICENSE.txt or http://www.mitk.org for details.
-
 ===================================================================*/
 
 /*=========================================================================
@@ -118,7 +113,7 @@ namespace itk
 
     template<typename TImageType, typename THistogramFrequencyContainer =
       DenseFrequencyContainer2>
-    class EnhancedScalarImageToRunLengthMatrixFilter : public ProcessObject
+      class EnhancedScalarImageToRunLengthMatrixFilter : public ProcessObject
     {
     public:
       /** Standard typedefs */
@@ -128,10 +123,10 @@ namespace itk
       typedef SmartPointer<const Self>            ConstPointer;
 
       /** Run-time type information (and related methods). */
-      itkTypeMacro( EnhancedScalarImageToRunLengthMatrixFilter, ProcessObject );
+      itkTypeMacro(EnhancedScalarImageToRunLengthMatrixFilter, ProcessObject);
 
       /** standard New() method support */
-      itkNewMacro( Self );
+      itkNewMacro(Self);
 
       typedef TImageType                                      ImageType;
       typedef typename ImageType::Pointer                     ImagePointer;
@@ -155,11 +150,11 @@ namespace itk
       typedef typename HistogramType::MeasurementVectorType   MeasurementVectorType;
 
       /** ImageDimension constants */
-      itkStaticConstMacro( ImageDimension, unsigned int,
-        TImageType::ImageDimension );
+      itkStaticConstMacro(ImageDimension, unsigned int,
+        TImageType::ImageDimension);
 
       /** Specify the default number of bins per axis */
-      itkStaticConstMacro( DefaultBinsPerAxis, unsigned int, 256 );
+      itkStaticConstMacro(DefaultBinsPerAxis, unsigned int, 256);
 
       /**
       * Set the offsets over which the intensity/distance pairs will be computed.
@@ -170,7 +165,7 @@ namespace itk
       * of (-1, 0). This is required from the iterating order of pixel iterator.
       *
       */
-      itkSetObjectMacro( Offsets, OffsetVector );
+      itkSetObjectMacro(Offsets, OffsetVector);
 
       /**
       * Set offset over which the intensity/distance pairs will be computed.
@@ -181,56 +176,56 @@ namespace itk
       * of (-1, 0). This is required from the iterating order of pixel iterator.
       *
       */
-      void SetOffset( const OffsetType offset );
+      void SetOffset(const OffsetType offset);
 
       /**
       * Get the current offset(s).
       */
-      itkGetModifiableObjectMacro(Offsets, OffsetVector );
+      itkGetModifiableObjectMacro(Offsets, OffsetVector);
 
       /** Set number of histogram bins along each axis */
-      itkSetMacro( NumberOfBinsPerAxis, unsigned int );
+      itkSetMacro(NumberOfBinsPerAxis, unsigned int);
 
       /** Get number of histogram bins along each axis */
-      itkGetConstMacro( NumberOfBinsPerAxis, unsigned int );
+      itkGetConstMacro(NumberOfBinsPerAxis, unsigned int);
 
       /**
       * Set the min and max (inclusive) pixel value that will be used in
       * generating the histogram.
       */
-      void SetPixelValueMinMax( PixelType min, PixelType max );
+      void SetPixelValueMinMax(PixelType min, PixelType max);
 
       /** Get the min pixel value defining one dimension of the joint histogram. */
-      itkGetConstMacro( Min, PixelType );
+      itkGetConstMacro(Min, PixelType);
 
       /** Get the max pixel value defining one dimension of the joint histogram. */
-      itkGetConstMacro( Max, PixelType );
+      itkGetConstMacro(Max, PixelType);
 
       /**
       * Set the min and max (inclusive) pixel value that will be used in
       * generating the histogram.
       */
-      void SetDistanceValueMinMax( RealType min, RealType max );
+      void SetDistanceValueMinMax(RealType min, RealType max);
 
       /**
       * Get the min distance value defining one dimension of the joint histogram.
       */
-      itkGetConstMacro( MinDistance, RealType );
+      itkGetConstMacro(MinDistance, RealType);
 
       /**
       * Get the max distance value defining one dimension of the joint histogram.
       */
-      itkGetConstMacro( MaxDistance, RealType );
+      itkGetConstMacro(MaxDistance, RealType);
 
       /** Method to set the input image */
       using Superclass::SetInput;
-      void SetInput( const ImageType *image );
+      void SetInput(const ImageType *image);
 
       /** Method to get the input image */
       const ImageType * GetInput() const;
 
       /** Method to set the mask image */
-      void SetMaskImage( const ImageType *image );
+      void SetMaskImage(const ImageType *image);
 
       /** Method to get the mask image */
       const ImageType * GetMaskImage() const;
@@ -242,20 +237,20 @@ namespace itk
       * Set the pixel value of the mask that should be considered "inside" the
       * object. Defaults to 1.
       */
-      itkSetMacro( InsidePixelValue, PixelType );
-      itkGetConstMacro( InsidePixelValue, PixelType );
+      itkSetMacro(InsidePixelValue, PixelType);
+      itkGetConstMacro(InsidePixelValue, PixelType);
 
     protected:
       EnhancedScalarImageToRunLengthMatrixFilter();
       ~EnhancedScalarImageToRunLengthMatrixFilter() override {};
-      void PrintSelf( std::ostream& os, Indent indent ) const ITK_OVERRIDE;
+      void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
       /** Standard itk::ProcessObject subclass method. */
       typedef DataObject::Pointer DataObjectPointer;
 
       typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
       using Superclass::MakeOutput;
-      DataObjectPointer MakeOutput( DataObjectPointerArraySizeType idx ) ITK_OVERRIDE;
+      DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
       /** This method causes the filter to generate its output. */
       void GenerateData() ITK_OVERRIDE;

@@ -171,16 +171,12 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
   VariableLengthVectorType stdVector;
   mFeatureScalingLocalPtr.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
 
-  //
-  //  for (int i = 0; i < 105; i++)
-  //    for (int j = 0; j < 166; j++)
-  //      data(i, j) = scaledFeatureSet(i, j);
-  //  writer->SetFileName("scaled_train_features.csv");
-  //  writer->SetInput(&data);
-  //  writer->Write();
-  //
-  //
-  //
+  for (unsigned int i = 0; i < scaledFeatureSet.Rows(); i++)
+    for (unsigned int j = 0; j < scaledFeatureSet.Cols(); j++)
+      if (std::isnan(scaledFeatureSet(i, j)))
+        scaledFeatureSet(i, j) = 0;
+
+
   //VariableSizeMatrixType ScaledFeatureSetAfterAddingAge;
   //ScaledFeatureSetAfterAddingAge.SetSize(scaledFeatureSet.Rows(), scaledFeatureSet.Cols() + 1);
   //for (unsigned int i = 0; i < scaledFeatureSet.Rows(); i++)
@@ -233,10 +229,10 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
 
   try
   {
-	  data.set_size(166, 1); // TOCHECK - are these hard coded sizes fine?
+	  data.set_size(161, 1); // TOCHECK - are these hard coded sizes fine?
 	  for (unsigned int i = 0; i < meanVector.Size(); i++)
 		  data(i, 0) = meanVector[i];
-	  typedef itk::CSVNumericObjectFileWriter<double, 166, 1> WriterTypeVector;
+	  typedef itk::CSVNumericObjectFileWriter<double, 161, 1> WriterTypeVector;
 	  WriterTypeVector::Pointer writerv = WriterTypeVector::New();
 	  writerv->SetFileName(outputdirectory + "/Molecular_ZScore_Mean.csv");
 	  writerv->SetInput(&data);
@@ -539,6 +535,11 @@ VectorDouble MolecularSubtypePredictor::MolecularSubtypePredictionOnExistingMode
 
 
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
+  for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
+    for (unsigned int j = 0; j < ScaledTestingData.Cols(); j++)
+      if (std::isnan(ScaledTestingData(i, j)))
+        ScaledTestingData(i, j) = 0;
+
   VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
   ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
   for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)

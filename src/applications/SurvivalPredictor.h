@@ -279,6 +279,7 @@ public:
 	template<class ImageType>
 	typename ImageType::Pointer RescaleImageIntensity(const typename ImageType::Pointer &image);
 
+  void WriteCSVFiles(VariableSizeMatrixType inputdata, std::string filepath);
 
 	void Run()
 	{

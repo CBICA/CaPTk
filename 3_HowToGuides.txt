@@ -749,12 +749,6 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Subject_IDn
 
 <b>USAGE:</b>
-- Pseudoprogression assessment on loaded subject.
-	-# Load the required images in CaPTk and correctly assign the modality label in the drop-down menu. 
-	-# Load the segmentation labels of the region of interest from a single NIfTI (.nii.gz) file. 
-	-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/pseudoprogression.zip
-	-# Select the "Output Directory" and click on "Confirm".
-	-# The result is saved in the output folder in a .csv file and also displayed on the screen (within ~2 minutes).
 
 - Pseudoprogression assessment on a batch of subjects.
 	- "Train a new model": 
@@ -763,6 +757,7 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
 		-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
+    -# NOTE: in the sample data, we are providing multiple duplicates of 5 unique subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results.
 \verbatim
 PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionModel
 \endverbatim
@@ -777,6 +772,11 @@ PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/Pseudo
 \verbatim
 PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionOutput -m C:/PseudoprogressionModel
 \endverbatim
+
+<b> RESULT INTERPRETATION: </b>
+
+- 1st column: distance to hyperplane that classifies pseudo-progression versus the rest
+- 2nd column: distance to hyperplane that classifies true-progression versus the rest
 
 <br>
 		
@@ -1071,7 +1071,7 @@ Reference:
 This application extracts various measurements from a Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan. The exact measurements comprise i) an automatically-extracted proxy to relative Cerebral Blood Volume (ap-rCBV), ii) peak height (PH), iii) percent signal recovery (PSR). Note that the ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.
 
 <b> REQUIREMENTS:</b>
-	-# A single DSC-MRI scan.
+	-# A single DSC-MRI scan. 
 	-# The Echo Time corresponding to the given DSC-MRI scan
 
 <b> USAGE:</b>

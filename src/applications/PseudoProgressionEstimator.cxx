@@ -1,7 +1,7 @@
 #include "PseudoProgressionEstimator.h"
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
-#include "CapTkEnums.h"
+#include "CaPTkEnums.h"
 
 //------------------Survival Prediction on existing model-----------------------
 
@@ -9,74 +9,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
 {
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
-  std::vector<std::string> subjectNames;
-  //= cbica::subdirectoriesInDirectory(directoryname);
-  subjectNames.push_back("ABEM");
-  subjectNames.push_back("ABFC");
-  subjectNames.push_back("ABFD");
-  /*  subjectNames.push_back("AAMG");
-      subjectNames.push_back("AAMJ");
-        subjectNames.push_back("AAMP");
-          subjectNames.push_back("AAMQ");
-            subjectNames.push_back("AAMY");
-              subjectNames.push_back("AAOQ");
-                subjectNames.push_back("AAOS");
-                  subjectNames.push_back("AAOZ");
-                    subjectNames.push_back("AAPM");
-                      subjectNames.push_back("AAPP");
-                        subjectNames.push_back("AAQZ");
-                          subjectNames.push_back("AARO");
-                            subjectNames.push_back("AARP");
-                              subjectNames.push_back("AARQ");
-                                subjectNames.push_back("AARU");
-                                  subjectNames.push_back("AARV");
-                                    subjectNames.push_back("AARW");
-                                      subjectNames.push_back("AASH");
-                                        subjectNames.push_back("AASK");
-                                          subjectNames.push_back("AASQ");
-                                            subjectNames.push_back("AASV");
-                                              subjectNames.push_back("AASX");
-                                                subjectNames.push_back("AASY");
-                                                  subjectNames.push_back("AATH");
-                                                    subjectNames.push_back("AATL");
-                                                      subjectNames.push_back("AAUH");
-                                                        subjectNames.push_back("AAUX");
-                                                          subjectNames.push_back("AAVX");
-                                                            subjectNames.push_back("AAYL");
-                                                              subjectNames.push_back("ABAC");
-                                                                subjectNames.push_back("ABAP");
-                                                                  subjectNames.push_back("ABBI");
-                                                                    subjectNames.push_back("ABBW");
-                                                                      subjectNames.push_back("ABBZ");
-                                                                        subjectNames.push_back("ABCF");
-                                                                          subjectNames.push_back("ABCL");
-                                                                            subjectNames.push_back("ABCQ");
-                                                                              subjectNames.push_back("ABDA");
-                                                                                subjectNames.push_back("ABDP");
-                                                                                  subjectNames.push_back("ABEM");
-                                                                                    subjectNames.push_back("ABFC");
-                                                                                      subjectNames.push_back("ABFD");
-                                                                                        subjectNames.push_back("ABFE");
-                                                                                          subjectNames.push_back("ABFG");
-                                                                                            subjectNames.push_back("ABFH");
-                                                                                              subjectNames.push_back("ABFI");
-                                                                                                subjectNames.push_back("ABFJ");
-                                                                                                  subjectNames.push_back("ABFK");
-                                                                                                    subjectNames.push_back("ABFL");
-                                                                                                      subjectNames.push_back("ABFM");
-                                                                                                        subjectNames.push_back("ABFN");
-                                                                                                          subjectNames.push_back("ABFO");
-                                                                                                            subjectNames.push_back("ABFQ");
-                                                                                                              subjectNames.push_back("ABFR");
-                                                                                                                subjectNames.push_back("ABFS");
-                                                                                                                  subjectNames.push_back("ABFT");
-                                                                                                                    subjectNames.push_back("ABFU");
-                                                                                                                      subjectNames.push_back("ABFV");
-                                                                                                                        subjectNames.push_back("ABFW");
-                                                                                                                          subjectNames.push_back("ABGC");
-                                                                                                                            subjectNames.push_back("ABLV");
-                                                                                                                              subjectNames.push_back("ABLW");
-*/
+  std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
 
   std::sort(subjectNames.begin(), subjectNames.end());
 
@@ -242,6 +175,8 @@ int PrepareNewSurvivalPredictionModel(const std::string inputdirectory, const st
   std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
   if (QualifiedSubjects.size() == 0)
     std::cout << "No subject found with required input. Exiting...." << std::endl;
+  else if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
+    std::cout << "There should be atleast 20 patients to build reliable pseudo-progression model. Exiting...." << std::endl;
   else
     objPseudoProgressionEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, true, true, true, true);
   return EXIT_SUCCESS;
@@ -266,12 +201,7 @@ int main(int argc, char **argv)
   std::string inputDirectoryName, modelDirectoryName, outputDirectoryName, toWrite;
   int applicationType;
 
-  //inputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/TestingDataNew";
-  //outputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/Output";
-  //modelDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/Output/model";
-  //applicationType = 0;
-  ////PrepareNewSurvivalPredictionModel(inputDirectoryName, outputDirectoryName);
-  //SurvivalPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
+  applicationType = 0;
 
   if (parser.compareParameter("L", tempPosition))
   {
@@ -293,7 +223,6 @@ int main(int argc, char **argv)
   if (parser.compareParameter("o", tempPosition))
   {
     outputDirectoryName = argv[tempPosition + 1];
-    //outputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/Output";
   }
   if (parser.compareParameter("t", tempPosition))
   {

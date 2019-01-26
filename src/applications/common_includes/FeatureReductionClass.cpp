@@ -25,7 +25,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "vtkTable.h"
 #include "vtkDoubleArray.h"
 #include "vtkPCAStatistics.h"
-#include "vtkStatisticsAlgorithm.h""
+#include "vtkStatisticsAlgorithm.h"
 #include "CaPTkDefines.h"
 
 FeatureReductionClass::FeatureReductionClass()
@@ -2440,26 +2440,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   transposePCAMatrix.SetSize(NumberOfFeatures, NumberOfFeatures);
 
 
-  vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
-  pcaStatistics->GetEigenvectors(eigenvectors);
-  std::cout << "eigen vectors retrieved" << std::endl;
-
-
-  for (vtkIdType i = 0; i < static_cast<vtkIdType>(NumberOfFeatures); i++)
-  {
-    double* evec = new double[eigenvectors->GetNumberOfComponents()];
-    eigenvectors->GetTuple(i, evec);
-    for (vtkIdType j = 0; j < eigenvectors->GetNumberOfComponents(); j++)
-      transposePCAMatrix[i][j] = evec[j];
-    delete evec;
-  }
-
-  std::cout << "eigen vectors retrieved" << std::endl;
-
-  PCATransformationMatrix = this->MatrixTranspose(transposePCAMatrix);
-  std::cout << "Transpose done" << std::endl;
-
-
   vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
   for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
   {
@@ -2470,25 +2450,54 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   }
   std::cout << "projected table created" << std::endl;
 
-  for (size_t i = 0; i < NumberOfSamples; i++)
+  try
   {
-    for (size_t j = 0; j < NumberOfFeatures; j++)
-    {
-      double sum = 0;
-      for (size_t k = 0; k < NumberOfFeatures; k++)
-        sum = sum + datasetTable->GetValue(i, k).ToDouble()*PCATransformationMatrix[k][j];
-      projectedDatasetTable->SetValue(i, j, vtkVariant(sum));
-    }
-  }
-  std::cout << "projected table populated" << std::endl;
-  VariableLengthVectorType mMeanVector = this->ComputeMeanOfGivenFeatureVectors(projectedDatasetTable);
-  for (size_t c = 0; c < NumberOfFeatures; c++)
-    for (size_t r = 0; r < NumberOfSamples; r++)
-      projectedDatasetTable->SetValue(r, c, projectedDatasetTable->GetValue(r, c).ToDouble() - mMeanVector[c]);
-  std::cout << "projected table revised" << std::endl;
 
-  TransformationMatrix = PCATransformationMatrix;
-  MeanVector = mPMeanvector;
+    vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
+    pcaStatistics->GetEigenvectors(eigenvectors);
+    std::cout << "eigen vectors retrieved" << std::endl;
+
+
+    for (vtkIdType i = 0; i < static_cast<vtkIdType>(NumberOfFeatures); i++)
+    {
+      std::cout << eigenvectors->GetNumberOfComponents() << std::endl;
+      double* evec = new double[eigenvectors->GetNumberOfComponents()];
+      eigenvectors->GetTuple(i, evec);
+      std::cout << eigenvectors->GetNumberOfComponents() << std::endl;
+      for (vtkIdType j = 0; j < eigenvectors->GetNumberOfComponents(); j++)
+      {
+         transposePCAMatrix[i][j] = evec[j];
+      }
+      delete evec;
+    }
+    std::cout << "eigen vectors retrieved" << std::endl;
+
+    PCATransformationMatrix = this->MatrixTranspose(transposePCAMatrix);
+    std::cout << "Transpose done" << std::endl;
+
+    for (size_t i = 0; i < NumberOfSamples; i++)
+    {
+      for (size_t j = 0; j < NumberOfFeatures; j++)
+      {
+        double sum = 0;
+        for (size_t k = 0; k < NumberOfFeatures; k++)
+          sum = sum + datasetTable->GetValue(i, k).ToDouble()*PCATransformationMatrix[k][j];
+        projectedDatasetTable->SetValue(i, j, vtkVariant(sum));
+      }
+    }
+    std::cout << "projected table populated" << std::endl;
+    VariableLengthVectorType mMeanVector = this->ComputeMeanOfGivenFeatureVectors(projectedDatasetTable);
+    for (size_t c = 0; c < NumberOfFeatures; c++)
+      for (size_t r = 0; r < NumberOfSamples; r++)
+        projectedDatasetTable->SetValue(r, c, projectedDatasetTable->GetValue(r, c).ToDouble() - mMeanVector[c]);
+    std::cout << "projected table revised" << std::endl;
+
+    TransformationMatrix = PCATransformationMatrix;
+    MeanVector = mPMeanvector;
+  }
+  catch (const std::exception& e1)
+  {
+  }
 
   return projectedDatasetTable;
 }
@@ -2832,17 +2841,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
   pcaStatistics->GetEigenvectors(eigenvectors);
 
-  for (vtkIdType i = 0; i < static_cast<vtkIdType>(NumberOfFeatures); i++)
-  {
-    double* evec = new double[eigenvectors->GetNumberOfComponents()];
-    eigenvectors->GetTuple(i, evec);
-    for (vtkIdType j = 0; j < eigenvectors->GetNumberOfComponents(); j++)
-      transposePCAMatrix[i][j] = evec[j];
-    delete evec;
-  }
-
-  PCATransformationMatrix = this->MatrixTranspose(transposePCAMatrix);
-
   vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
   for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
   {
@@ -2852,23 +2850,39 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
     projectedDatasetTable->AddColumn(col);
   }
 
-  for (size_t i = 0; i < NumberOfSamples; i++)
+  try
   {
-    for (size_t j = 0; j < NumberOfFeatures; j++)
+    for (vtkIdType i = 0; i < static_cast<vtkIdType>(NumberOfFeatures); i++)
     {
-      double sum = 0;
-      for (size_t k = 0; k < NumberOfFeatures; k++)
-        sum = sum + datasetTable->GetValue(i, k).ToDouble()*PCATransformationMatrix[k][j];
-      projectedDatasetTable->SetValue(i, j, vtkVariant(sum));
+      double* evec = new double[eigenvectors->GetNumberOfComponents()];
+      eigenvectors->GetTuple(i, evec);
+      for (vtkIdType j = 0; j < eigenvectors->GetNumberOfComponents(); j++)
+        transposePCAMatrix[i][j] = evec[j];
+      delete evec;
     }
-  }
-  VariableLengthVectorType mMeanVector = this->ComputeMeanOfGivenFeatureVectors(projectedDatasetTable);
-  for (size_t c = 0; c < NumberOfFeatures; c++)
-    for (size_t r = 0; r < NumberOfSamples; r++)
-      projectedDatasetTable->SetValue(r, c, projectedDatasetTable->GetValue(r, c).ToDouble() - mMeanVector[c]);
 
-  TransformationMatrix = PCATransformationMatrix;
-  MeanVector = mPMeanvector;
+    PCATransformationMatrix = this->MatrixTranspose(transposePCAMatrix);
+    for (size_t i = 0; i < NumberOfSamples; i++)
+    {
+      for (size_t j = 0; j < NumberOfFeatures; j++)
+      {
+        double sum = 0;
+        for (size_t k = 0; k < NumberOfFeatures; k++)
+          sum = sum + datasetTable->GetValue(i, k).ToDouble()*PCATransformationMatrix[k][j];
+        projectedDatasetTable->SetValue(i, j, vtkVariant(sum));
+      }
+    }
+    VariableLengthVectorType mMeanVector = this->ComputeMeanOfGivenFeatureVectors(projectedDatasetTable);
+    for (size_t c = 0; c < NumberOfFeatures; c++)
+      for (size_t r = 0; r < NumberOfSamples; r++)
+        projectedDatasetTable->SetValue(r, c, projectedDatasetTable->GetValue(r, c).ToDouble() - mMeanVector[c]);
+
+    TransformationMatrix = PCATransformationMatrix;
+    MeanVector = mPMeanvector;
+  }
+  catch (const std::exception& e1)
+  {
+  }
 
   return projectedDatasetTable;
 }
