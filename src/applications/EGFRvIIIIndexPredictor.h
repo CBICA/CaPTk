@@ -1171,7 +1171,7 @@ VectorDouble EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForFixedNumberOfR
   //find number of voxels in pre-defined number of ROIs
   VectorDouble location;
   int tumorSize = 0;
-  for (unsigned int i = 0; i < numberofregions; i++)
+  for (int i = 0; i < numberofregions; i++)
   {
     int counter = 0;
     localizeIt.GoToBegin();
@@ -1187,7 +1187,7 @@ VectorDouble EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForFixedNumberOfR
     location.push_back(counter);
   }
   //find percentages in predefined number of ROIs
-  for (unsigned int i = 0; i < numberofregions; i++)
+  for (int i = 0; i < numberofregions; i++)
     location[i] = (location[i] * 100) / tumorSize;
 
   return location;
