@@ -30,7 +30,6 @@ echo "Run Dependency Manager"
 
 echo "Run CaPTk Build"
 cmake ../
-cmake ../
 make -w
 
 }
