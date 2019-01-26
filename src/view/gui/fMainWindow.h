@@ -62,6 +62,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fSBRTAnalysisDialog.h"
 
 #include "QVTKOpenGLWidget.h"
+#include <QScopedPointer>
 #include "vtkGenericOpenGLRenderWindow.h"
 #include "fBottomImageInfoTip.h"
 class SlicerManager;
@@ -299,9 +300,16 @@ private:
 
   std::map< std::string, std::string > m_allNonNativeApps;
 
-  QVTKWidget *SaggitalViewWidget;
-  QVTKWidget *AxialViewWidget;
-  QVTKWidget *CoronalViewWidget;
+  //! QVTK OpenGL Widgets
+  QScopedPointer<QVTKOpenGLWidget> SaggitalViewWidget;
+  QScopedPointer<QVTKOpenGLWidget> AxialViewWidget;
+  QScopedPointer<QVTKOpenGLWidget> CoronalViewWidget;
+
+  //! renderwindows
+  vtkSmartPointer< vtkGenericOpenGLRenderWindow> SaggitalRenWin;
+  vtkSmartPointer< vtkGenericOpenGLRenderWindow> AxialRenWin;
+  vtkSmartPointer< vtkGenericOpenGLRenderWindow> CoronalRenWin;
+
   QHBoxLayout* bottomLayout;
 
   /**
@@ -727,7 +735,7 @@ signals:
   void CallPCACalculation(const int, const std::string outputFolder);
   void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
   void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
-  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder,int,int);
+  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int, int, int);
 
   /**
   \brief Call DCM2NII for DICOM conversion and load the image into CaPTk
@@ -832,28 +840,23 @@ signals:
   {
     auto currentApp = action->text().toStdString();
     std::string path = getCaPTkDataDir();
+    auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
     std::string link =
 #ifdef _WIN32
       path + "/GnuWin32/bin/wget.exe"
 #else
       "wget"
 #endif
-      + std::string(" ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/") + currentApp + ".zip" +
+      + currentLink +
       " -O " + captk_SampleDataFolder + "/" + currentApp + ".zip";
 
     cbica::Logging(loggerFile, link);
 
-    ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
+    //ShowMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    if (std::system((link).c_str()) != 0)
+    if /*(std::system((link).c_str()) != 0)*/(!openLink(currentLink))
     {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.");
-      return;
-    }
-    else
-    {
-      std::string dataMessage = "Data has been saved to: " + captk_SampleDataFolder;
-      ShowMessage(dataMessage, "Saved");
+      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
       return;
     }
   }

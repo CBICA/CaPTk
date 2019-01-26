@@ -196,7 +196,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF()
     
   IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build;${PROJECT_BINARY_DIR}/OpenCV-build" )
+    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build/;${PROJECT_BINARY_DIR}/OpenCV-build/" )
+    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build/")
+    SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
   ENDIF()
 
   FIND_PACKAGE( ITK REQUIRED )
@@ -432,7 +434,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   #)
   ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
   SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
-
+  
+  SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
   # include dependencies
   # add source code include directories
@@ -764,9 +767,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF()
 
   ## symlink creation for UNIX machines - currently only works for DEB or RPM
-  #IF (UNIX OR APPLE)
-    #INSTALL(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_INSTALL_PREFIX}/bin/${EXE_NAME} ${CMAKE_INSTALL_PREFIX}/bin/captk)")
-  #ENDIF()
+  # IF (UNIX OR APPLE)
+  #   INSTALL(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_INSTALL_PREFIX}/bin/${EXE_NAME} ${CMAKE_INSTALL_PREFIX}/bin/captk)")
+  # ENDIF()
 
   SET(META_FILES_TO_INCLUDE "") # used for Apple package
   #IF( BUILD_DOCUMENTATION )
@@ -964,7 +967,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${EXE_SOURCES}
         #${YAMLCPP_Headers}
         #${YAMLCPP_Sources}
-        ${DATA_DIR}/icons/captk.rc
+        ${DATA_DIR}/icons/application/windows/captk.rc
       )
     ELSEIF(APPLE)
       SET (ICON_FILE "${DATA_DIR}/icons/application/apple/CaPTk.icns")
@@ -1106,12 +1109,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     IF( WIN32 )
       INSTALL(FILES "${DATA_DIR}/icons/application/windows/captk.ico" DESTINATION share/icons)
-      INSTALL(FILES "${DATA_DIR}/icons/captk.rc" DESTINATION data/icons)
+      INSTALL(FILES "${DATA_DIR}/icons/application/windows/captk.rc" DESTINATION data/icons)
     ELSEIF (APPLE)
       
     ELSE()
       INSTALL( DIRECTORY "${DATA_DIR}/icons/application/linux/hicolor" DESTINATION share/icons)
-      INSTALL(FILES "${DATA_DIR}/icons/captk.rc" DESTINATION data/icons)
+      # Not in data dir on linux for some reason
+      # INSTALL(FILES "${DATA_DIR}/icons/captk.rc" DESTINATION data/icons)
     ENDIF()
 
     # CPack settings
@@ -1236,6 +1240,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     #    ENDIF()
     #  #ENDIF()
     #ENDIF()
+
+    # Execute a post install step. Make sure this is the last install command ran!
+    INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/PostInstall.cmake )
 
   ENDIF(CAPTK_PACKAGE_PROJECT)
 

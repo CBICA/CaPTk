@@ -76,7 +76,7 @@ organization={RSNA Radiology}
 */
 class PseudoProgressionEstimator
 #ifdef APP_BASE_CAPTK_H
-  : public ApplicationBase
+  public ApplicationBase
 #endif
 {
 public:
@@ -98,6 +98,16 @@ public:
   std::string mPseudoTrainedFile;
   std::string mRecurrenceTrainedFile;
   cbica::Logging logger;
+
+  void WriteCSVFiles(VariableSizeMatrixType inputdata, std::string filepath);
+  void WriteCSVFiles(vtkSmartPointer<vtkTable> inputdata, std::string filepath);
+  void WriteCSVFiles(VectorVectorDouble inputdata, std::string filepath);
+  void WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath);
+  void WriteCSVFiles(std::vector<double> inputdata, std::string filepath);
+
+
+  VariableSizeMatrixType GetModelSelectedFeatures(VariableSizeMatrixType & ScaledFeatureSetAfterAddingLabel, VariableLengthVectorType & psuSelectedFeatures);
+  void WritePCAOutputs(std::string suffix, std::string outputdirectory, const VariableLengthVectorType mean, const VariableSizeMatrixType coefs);
 
   VectorVectorDouble CombineAllThePerfusionFeaures(VectorVectorDouble T1IntensityHistogram,
     VectorVectorDouble TCIntensityHistogram,
@@ -121,11 +131,15 @@ public:
     VectorVectorDouble PCA7IntensityHistogram,
     VectorVectorDouble PCA8IntensityHistogram,
     VectorVectorDouble PCA9IntensityHistogram,
-    VectorVectorDouble PCA10IntensityHistogram);
+    VectorVectorDouble PCA10IntensityHistogram,
+    std::string output);
+
+  vtkSmartPointer<vtkTable> MakePCAMatrix(int NumberOfFeatures, int NumberOfSamples);
 
   VariableSizeMatrixType ColumnWiseScaling(VariableSizeMatrixType PerfusionData);
 
-  PerfusionMapType CombineAndCalculatePerfusionPCA(PerfusionMapType PerfusionDataMap, std::string outputdirectory);
+  PerfusionMapType CombineAndCalculatePerfusionPCA(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
+  PerfusionMapType CombineAndCalculatePerfusionPCAForTestData(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
 
   template<class PerfusionImageType, class ImageType>
   VariableSizeMatrixType LoadPerfusionData(typename ImageType::Pointer maskImagePointerNifti, typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector< typename ImageType::IndexType> &indices);
@@ -146,15 +160,67 @@ public:
 
   template<class ImageType>
   std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble> GetAllFeaturesPerImagePerROI(typename ImageType::Pointer image, typename ImageType::Pointer mask, std::string modality);
-    
-    
-    /**
+
+  PerfusionMapType CombinePerfusionDataAndApplyExistingPerfusionModel(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType TransformationMatrix, VariableLengthVectorType MeanVector);
+
+  void ReadAllTheModelParameters(std::string modeldirectory,
+    VariableSizeMatrixType &PCA_PERF,
+    VariableSizeMatrixType &PCA_T1,
+    VariableSizeMatrixType &PCA_T1CE,
+    VariableSizeMatrixType &PCA_T2,
+    VariableSizeMatrixType &PCA_FL,
+    VariableSizeMatrixType &PCA_T1T1CE,
+    VariableSizeMatrixType &PCA_T2FL,
+    VariableSizeMatrixType &PCA_AX,
+    VariableSizeMatrixType &PCA_FA,
+    VariableSizeMatrixType &PCA_RAD,
+    VariableSizeMatrixType &PCA_TR,
+    VariableSizeMatrixType &PCA_PH,
+    VariableSizeMatrixType &PCA_PSR,
+    VariableSizeMatrixType &PCA_RCBV,
+    VariableSizeMatrixType &PCA_PC1,
+    VariableSizeMatrixType &PCA_PC2,
+    VariableSizeMatrixType &PCA_PC3,
+    VariableSizeMatrixType &PCA_PC4,
+    VariableSizeMatrixType &PCA_PC5,
+    VariableSizeMatrixType &PCA_PC6,
+    VariableSizeMatrixType &PCA_PC7,
+    VariableSizeMatrixType &PCA_PC8,
+    VariableSizeMatrixType &PCA_PC9,
+    VariableSizeMatrixType &PCA_PC10,
+    VariableLengthVectorType &Mean_PERF,
+    VariableLengthVectorType &Mean_T1,
+    VariableLengthVectorType &Mean_T1CE,
+    VariableLengthVectorType &Mean_T2,
+    VariableLengthVectorType &Mean_FL,
+    VariableLengthVectorType &Mean_T1T1CE,
+    VariableLengthVectorType &Mean_T2FL,
+    VariableLengthVectorType &Mean_AX,
+    VariableLengthVectorType &Mean_FA,
+    VariableLengthVectorType &Mean_RAD,
+    VariableLengthVectorType &Mean_TR,
+    VariableLengthVectorType &Mean_PH,
+    VariableLengthVectorType &Mean_PSR,
+    VariableLengthVectorType &Mean_RCBV,
+    VariableLengthVectorType &Mean_PC1,
+    VariableLengthVectorType &Mean_PC2,
+    VariableLengthVectorType &Mean_PC3,
+    VariableLengthVectorType &Mean_PC4,
+    VariableLengthVectorType &Mean_PC5,
+    VariableLengthVectorType &Mean_PC6,
+    VariableLengthVectorType &Mean_PC7,
+    VariableLengthVectorType &Mean_PC8,
+    VariableLengthVectorType &Mean_PC9,
+    VariableLengthVectorType &Mean_PC10);
+
+  /**
   \brief Train a new model based on the inputs
   */
   bool TrainNewModelOnGivenData(const std::vector<std::map<CAPTK::ImageModalityType, std::string>> qualifiedsubjects, const std::string &outputdirectory, bool useConventioalData, bool useDTIData, bool usePerfData, bool useDistData);
 
-  VariableSizeMatrixType LoadPseudoProgressionFeaturesData(const std::vector<std::map<CAPTK::ImageModalityType, std::string>> &trainingsubjects, std::vector<double> &traininglabels, std::string outputdirectory);
+  VariableSizeMatrixType LoadPseudoProgressionTrainingData(const std::vector<std::map<CAPTK::ImageModalityType, std::string>> &trainingsubjects, std::vector<double> &traininglabels, std::string outputdirectory);
 
+  VariableSizeMatrixType LoadPseudoProgressionTestingData(const std::vector<std::map<CAPTK::ImageModalityType, std::string>> &trainingsubjects, std::vector<double> &traininglabels, std::string outputdirectory, std::string modeldirectory);
   /**
   \brief Recurrence Estimation using existing model
   */
@@ -699,8 +765,8 @@ void PseudoProgressionEstimator::PseudoProgressionEstimateOnGivenSubjectUsingExi
   //check for the presence of model file
   if (!cbica::fileExists(modeldirectory + "/" + mPseudoTrainedFile) || !cbica::fileExists(modeldirectory + "/" + mRecurrenceTrainedFile))
   {
-      mLastEncounteredError = "SVM model file is not present in the directory: " + modeldirectory;
-      return;
+    mLastEncounteredError = "SVM model file is not present in the directory: " + modeldirectory;
+    return;
   }
 
   //check for the file having number of modalities
@@ -1500,11 +1566,42 @@ std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble>
   VectorDouble GLCMFeatures = GetGLCMFeatures<ImageType>(image, mask);
   VectorDouble GLRLMFeatures = GetRunLengthFeatures<ImageType>(image, mask);
 
+  //VectorDouble IntensityFeatures;
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+
+  /* VectorDouble GLCMFeatures;
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+
+  VectorDouble GLRLMFeatures;
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);*/
+
   std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble> new_tuple(HistogramFeatures, IntensityFeatures, GLCMFeatures, GLRLMFeatures, HistogramFeatures1);
   return new_tuple;
 }
 
-template< class TImageTypeShape >
+template< typename TImageTypeShape >
 VectorDouble PseudoProgressionEstimator::GetShapeFeatures(typename TImageTypeShape::Pointer mask)
 {
   std::vector<double> features;
@@ -1520,7 +1617,7 @@ VectorDouble PseudoProgressionEstimator::GetShapeFeatures(typename TImageTypeSha
   connected->SetInput(mask);
   connected->Update();
 
-  auto i2l = I2LType::New();
+  typename I2LType::Pointer i2l = I2LType::New();
   i2l->SetInput(connected->GetOutput());
   i2l->SetComputePerimeter(true);
   i2l->Update();
@@ -1765,8 +1862,8 @@ typename ImageType::Pointer PseudoProgressionEstimator::MakeAdditionalModality(t
 
   typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
   IteratorType subIt(SubtractedImage, SubtractedImage->GetLargestPossibleRegion());
-  IteratorType im1It(SubtractedImage, SubtractedImage->GetLargestPossibleRegion());
-  IteratorType im2It(SubtractedImage, SubtractedImage->GetLargestPossibleRegion());
+  IteratorType im1It(image1, image1->GetLargestPossibleRegion());
+  IteratorType im2It(image2, image2->GetLargestPossibleRegion());
 
 
   im1It.GoToBegin();

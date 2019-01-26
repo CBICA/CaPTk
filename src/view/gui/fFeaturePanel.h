@@ -76,6 +76,7 @@ private:
   FeatureDialogTree* m_featureDialog;
   std::vector< std::map< std::string, std::vector< std::map< std::string, std::string> > > > m_FeatureMaps;// TBD typedef the map value so the code doenst look ugly 
   void* m_listener;//TBD this is a bad design (because of time pressure): needs to be changed RK
+  std::vector< std::string > m_featureFiles;
 private:
   void loadFeatureFiles() // TBD move to cpp 
   {
@@ -91,11 +92,11 @@ private:
     }
 
     auto filesInDir = cbica::filesInDirectory(dataFeatureDir);
-    if (filesInDir.size() != m_featureFiles.size())
-    {
-      cbica::Logging(loggerFile, "Feature file number mismatch");
-      return;
-    }
+    //if (filesInDir.size() != m_featureFiles.size())
+    //{
+    //  cbica::Logging(loggerFile, "Feature file number mismatch");
+    //  return;
+    //}
     for (size_t i = 0; i < filesInDir.size(); i++)
     {
       auto featureMap = FeatureParser(filesInDir[i]).getFeatureMap();

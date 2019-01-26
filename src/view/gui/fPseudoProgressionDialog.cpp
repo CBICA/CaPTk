@@ -51,7 +51,7 @@ fPseudoProgressionDialog::fPseudoProgressionDialog()
 
   rdLoadedClassification->hide();
   modelDirectoryLabel1->hide();
-  modelDirectoryLabel2->hide();
+  //modelDirectoryLabel2->hide();
   svmModelFileName1->hide();
   svmModelButton1->hide();
 }
@@ -80,19 +80,28 @@ void fPseudoProgressionDialog::ConfirmButtonPressed()
   //------------------------loaded sbject checks------------------------------------------
   if (rdLoadedClassification->isChecked())
   {
-    if (svmModelFileName1->text().isEmpty())
-    {
-      ShowErrorMessage("Please specify the directory of SVM model.");
-      return;
-    }
-    if (cbica::isFile(svmModelFileName1->text().toStdString() + "/PseudoProgression_COEF.csv") && cbica::isFile(svmModelFileName1->text().toStdString() + "/PseudoProgression_MR.csv") && cbica::isFile(svmModelFileName1->text().toStdString() + "/PseudoProgression_SVM_Model.csv") && cbica::isFile(svmModelFileName1->text().toStdString() + "/PseudoProgression_ZScore_Mean.csv") && cbica::isFile(svmModelFileName1->text().toStdString() + "/PseudoProgression_ZScore_Std.csv"))
-      emit SubjectBasedExistingPseudoprogressionEstimate(outputDirectoryName->text().toStdString(), svmModelFileName1->text().toStdString(), true, true, true, true);
-    else
-    {
-      ShowErrorMessage("The specified directory does not have model files.");
-      return;
-    }
-    this->close();
+    //if (svmModelFileName1->text().isEmpty())
+    //{
+    //  ShowErrorMessage("Please specify the directory of SVM model.");
+    //  return;
+    //}
+    //if (cbica::isFile(svmModelFileName1->text().toStdString() + "/REC_SVM_Model.xml") && 
+    //  cbica::isFile(svmModelFileName1->text().toStdString() + "/PSU_SVM_Model.xml") && 
+    //  cbica::isFile(svmModelFileName1->text().toStdString() + "/PSU_ZScore_Mean.csv") && 
+    //  cbica::isFile(svmModelFileName1->text().toStdString() + "/PSU_ZScore_Std.csv") &&
+    //  cbica::isFile(svmModelFileName1->text().toStdString() + "/PSU_SelectedFeatures.csv") &&
+    //  cbica::isFile(svmModelFileName1->text().toStdString() + "/REC_SelectedFeatures.csv") &&
+    //  cbica::isFile(svmModelFileName1->text().toStdString() + "/Mean_Others.csv") && 
+    //  cbica::isFile(svmModelFileName1->text().toStdString() + "/Mean_PERF.csv") && 
+    //  cbica::isFile(svmModelFileName1->text().toStdString() + "/PCA_Others.csv") && 
+    //  cbica::isFile(svmModelFileName1->text().toStdString() + "/PCA_PERF.csv"))
+    //  emit SubjectBasedExistingPseudoprogressionEstimate(outputDirectoryName->text().toStdString(), svmModelFileName1->text().toStdString(), true, true, true, true);
+    //else
+    //{
+    //  ShowErrorMessage("The specified directory does not have model files.");
+    //  return;
+    //}
+    //this->close();
   }
   else if (rdExistingClassification->isChecked())
   {
@@ -106,7 +115,16 @@ void fPseudoProgressionDialog::ConfirmButtonPressed()
       ShowErrorMessage("Please specify the directory of SVM model.");
       return;
     }
-    if (cbica::isFile(svmModelFileName2->text().toStdString() + "/PseudoProgression_COEF.csv") && cbica::isFile(svmModelFileName2->text().toStdString() + "/PseudoProgression_MR.csv") && cbica::isFile(svmModelFileName2->text().toStdString() + "/PseudoProgression_SVM_Model.csv") && cbica::isFile(svmModelFileName2->text().toStdString() + "/PseudoProgression_ZScore_Mean.csv") && cbica::isFile(svmModelFileName2->text().toStdString() + "/PseudoProgression_ZScore_Std.csv"))
+    if (cbica::isFile(svmModelFileName2->text().toStdString() + "/REC_SVM_Model.xml") && 
+      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_SVM_Model.xml") && 
+      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_ZScore_Mean.csv") && 
+      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_ZScore_Std.csv") &&
+      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_SelectedFeatures.csv") &&
+      cbica::isFile(svmModelFileName2->text().toStdString() + "/REC_SelectedFeatures.csv") &&
+      cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_Others.csv") && 
+      cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_PERF.csv") && 
+      cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_Others.csv") && 
+      cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_PERF.csv"))
       emit ExistingModelBasedPseudoprogressionEstimate(svmModelFileName2->text().toStdString(), testSubjectsDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString(), true, true, true, true);
     else
     {
@@ -261,15 +279,15 @@ void fPseudoProgressionDialog::CheckForDisclaimer()
 
     ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    if (std::system((link).c_str()) != 0)
+    if /*(std::system((link).c_str()) != 0)*/ (!openLink("ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PseudoProgressionEstimator_PretrainedModel.zip"))
     {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified model.");
+      ShowErrorMessage("CaPTk couldn't open the browser to download specified model.", this);
       return;
     }
     else
     {
       std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
-      ShowMessage(dataMessage, "Saved", this);
+      ShowMessage(dataMessage, this, "Saved");
       return;
     }
   }

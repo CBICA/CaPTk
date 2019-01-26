@@ -8,14 +8,15 @@
 #pragma once
 
 //#include "FeatureExtraction.h"
-#include "itkDOMNodeXMLReader.h"
-#include "itkDOMNodeXMLWriter.h"
-#include "itkLabelStatisticsImageFilter.h"
-#include "itkLabelGeometryImageFilter.h"
-#include "itkBinaryImageToLabelMapFilter.h"
+//#include "itkDOMNodeXMLReader.h"
+//#include "itkDOMNodeXMLWriter.h"
+//#include "itkLabelStatisticsImageFilter.h"
+//#include "itkLabelGeometryImageFilter.h"
+//#include "itkBinaryImageToLabelMapFilter.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkMaskedImageToHistogramFilter.h"
-#include "itkRegionOfInterestImageFilter.h"
+//#include "itkRegionOfInterestImageFilter.h"
+#include "itkRoundImageFilter.h"
 
 #include "itkEnhancedHistogramToRunLengthFeaturesFilter.h"
 #include "itkEnhancedScalarImageToRunLengthFeaturesFilter.h"
@@ -901,6 +902,14 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   using RunLengthMatrixGenerator = typename RunLengthFilterType::RunLengthMatrixFilterType;
   using RunLengthFeatures = typename RunLengthFilterType::RunLengthFeaturesFilterType;
 
+  //TBD
+  typename RunLengthFilterType::Pointer wrapper_generator = RunLengthFilterType::New();
+  wrapper_generator->SetInput(image);
+  wrapper_generator->SetMaskImage(mask);
+  wrapper_generator->SetInsidePixelValue(1);
+  wrapper_generator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
+  //TBD
+
   typename  RunLengthMatrixGenerator::Pointer matrix_generator = RunLengthMatrixGenerator::New();
   matrix_generator->SetInput(image);
   matrix_generator->SetMaskImage(mask);
@@ -917,13 +926,41 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
         maxStep = m_latticeSizeImage[d];
       }
     }
-    matrix_generator->SetDistanceValueMinMax(0, std::sqrt(2) * (maxStep - 1));
+    matrix_generator->SetDistanceValueMinMax(0, std::sqrt(2) * (maxStep - 1)); 
   }
-  //removed SetDistanceValueMinMax
-  //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TOCHECK - why is this only between 0-4? P
+
+  // this defaults to the full dynamic range of double according to ITK's documentation
+  matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
 
-  typename  RunLengthFeatures::Pointer runLengthMatrixCalculator = RunLengthFeatures::New();
+  //TBD
+  wrapper_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
+  //TBD
+
+  //TBD
+  typename RunLengthFilterType::FeatureNameVectorPointer requestedFeatures = RunLengthFilterType::FeatureNameVector::New();
+  typedef typename RunLengthFilterType::RunLengthFeaturesFilterType TextureFilterType;
+  requestedFeatures->push_back(TextureFilterType::ShortRunEmphasis);
+  requestedFeatures->push_back(TextureFilterType::LongRunEmphasis);
+  requestedFeatures->push_back(TextureFilterType::GreyLevelNonuniformity);
+  requestedFeatures->push_back(TextureFilterType::GreyLevelNonuniformityNormalized);
+  requestedFeatures->push_back(TextureFilterType::RunLengthNonuniformity);
+  requestedFeatures->push_back(TextureFilterType::RunLengthNonuniformityNormalized);
+  requestedFeatures->push_back(TextureFilterType::LowGreyLevelRunEmphasis);
+  requestedFeatures->push_back(TextureFilterType::HighGreyLevelRunEmphasis);
+  requestedFeatures->push_back(TextureFilterType::ShortRunLowGreyLevelEmphasis);
+  requestedFeatures->push_back(TextureFilterType::ShortRunHighGreyLevelEmphasis);
+  requestedFeatures->push_back(TextureFilterType::LongRunLowGreyLevelEmphasis);
+  requestedFeatures->push_back(TextureFilterType::LongRunHighGreyLevelEmphasis);
+  requestedFeatures->push_back(TextureFilterType::RunPercentage);
+  requestedFeatures->push_back(TextureFilterType::NumberOfRuns);
+  requestedFeatures->push_back(TextureFilterType::GreyLevelVariance);
+  requestedFeatures->push_back(TextureFilterType::RunLengthVariance);
+  requestedFeatures->push_back(TextureFilterType::RunEntropy);
+  wrapper_generator->SetRequestedFeatures(requestedFeatures);
+  //TBD
+
+  typename  RunLengthFeatures::Pointer runLengthFeaturesCalculator = RunLengthFeatures::New();
 
   typename  OffsetVector::ConstIterator offsetIt;
   size_t offsetNum = 0;
@@ -935,60 +972,89 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     size_total *= size[d];
   }
 
+
   if ((m_offsetSelect == "Average") || (m_offsetSelect == "Individual"))
   {
     double sre = 0, lre = 0, gln = 0, glnn = 0, rln = 0, rlnn = 0, rp = 0, lglre = 0, hglre = 0, srlgle = 0, srhgle = 0, lrlgle = 0, lrhgle = 0,
       runs = 0, glv = 0, rlv = 0, re = 0;
+
+    //TBD
+    int count_offset = 0;
+    //TBD
 
     for (offsetIt = offset->Begin(); offsetIt != offset->End(); offsetIt++, offsetNum++)
     {
       matrix_generator->SetOffset(offsetIt.Value());
       matrix_generator->Update();
 
-      runLengthMatrixCalculator->SetInput(matrix_generator->GetOutput());
-      runLengthMatrixCalculator->Update();
+      //std::cout << "[DEBUG] GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
+      //auto temp = matrix_generator->GetOutput();
+      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
+      //{
+      //  std::cout << "\tMeasurement vectors = " << iter.GetMeasurementVector()
+      //    << "; Frequency = " << iter.GetFrequency() << std::endl;
+      //}
+
+      //std::cout << "[DEBUG] GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
+      //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
+      //for (int bin_count = 0; bin_count < m_Bins; bin_count++)
+      //{
+      //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
+      //}
+
+      runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
+      runLengthFeaturesCalculator->Update();
+
+      //std::cout << "\tShort: " << runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis() << "\n";
+      //std::cout << "\tLong: " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << "\n";
+
+      //TBD
+      count_offset++;
+      //TBD
 
       if (m_offsetSelect == "Average")
       {
-        sre += runLengthMatrixCalculator->GetShortRunEmphasis();
-        lre += runLengthMatrixCalculator->GetLongRunEmphasis();
-        gln += runLengthMatrixCalculator->GetGreyLevelNonuniformity();
-        rln += runLengthMatrixCalculator->GetRunLengthNonuniformity();
-        lglre += runLengthMatrixCalculator->GetLowGreyLevelRunEmphasis();
-        hglre += runLengthMatrixCalculator->GetHighGreyLevelRunEmphasis();
-        srlgle += runLengthMatrixCalculator->GetShortRunLowGreyLevelEmphasis();
-        srhgle += runLengthMatrixCalculator->GetShortRunHighGreyLevelEmphasis();
-        lrlgle += runLengthMatrixCalculator->GetLongRunLowGreyLevelEmphasis();
-        lrhgle += runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis();
-        runs += runLengthMatrixCalculator->GetTotalNumberOfRuns();
-        rp += static_cast<double>(runLengthMatrixCalculator->GetTotalNumberOfRuns()) / static_cast<double>(m_currentNonZeroImageValues.size());
-        rlnn += runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
-        glnn += runLengthMatrixCalculator->GetGreyLevelNonuniformityNormalized();
-        glv += runLengthMatrixCalculator->GetGreyLevelVariance();
-        rlv += runLengthMatrixCalculator->GetRunLengthVariance();
-        re += runLengthMatrixCalculator->GetRunEntropy();
+        sre += runLengthFeaturesCalculator->GetShortRunEmphasis();
+        lre += runLengthFeaturesCalculator->GetLongRunEmphasis();
+        gln += runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+        rln += runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+        lglre += runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
+        hglre += runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
+        srlgle += runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
+        srhgle += runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
+        lrlgle += runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+        lrhgle += runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+        runs += runLengthFeaturesCalculator->GetTotalNumberOfRuns();
+        rp += static_cast<double>(runLengthFeaturesCalculator->GetTotalNumberOfRuns()) / static_cast<double>(m_currentNonZeroImageValues.size());
+        glnn += runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+        rlnn += runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+        glv += runLengthFeaturesCalculator->GetGreyLevelVariance();
+        rlv += runLengthFeaturesCalculator->GetRunLengthVariance();
+        re += runLengthFeaturesCalculator->GetRunEntropy();
       }
       else // individual
       {
-        featurevec["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetShortRunEmphasis();
-        featurevec["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetLongRunEmphasis();
-        featurevec["GreyLevelNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetGreyLevelNonuniformity();
-        featurevec["RunLengthNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunLengthNonuniformity();
-        featurevec["LowGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetLowGreyLevelRunEmphasis();
-        featurevec["HighGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetHighGreyLevelRunEmphasis();
-        featurevec["ShortRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetShortRunLowGreyLevelEmphasis();
-        featurevec["ShortRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetShortRunHighGreyLevelEmphasis();
-        featurevec["LongRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetLongRunLowGreyLevelEmphasis();
-        featurevec["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis();
-        featurevec["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetTotalNumberOfRuns();
+        featurevec["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunEmphasis();
+        featurevec["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunEmphasis();
+        featurevec["GreyLevelNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+        featurevec["RunLengthNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+        featurevec["LowGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
+        featurevec["HighGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
+        featurevec["ShortRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
+        featurevec["ShortRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
+        featurevec["LongRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+        featurevec["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+        featurevec["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
         featurevec["RunPercentage_Offset_" + std::to_string(offsetNum)] = featurevec["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(m_currentNonZeroImageValues.size());
-        featurevec["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
-        featurevec["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetGreyLevelNonuniformityNormalized();
-        featurevec["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetGreyLevelVariance();
-        featurevec["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunLengthVariance();
-        featurevec["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthMatrixCalculator->GetRunEntropy();
+        featurevec["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+        featurevec["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+        featurevec["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelVariance();
+        featurevec["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthVariance();
+        featurevec["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunEntropy();
+
       }
     }
+
     if (m_offsetSelect == "Average")
     {
       sre /= offset->size();
@@ -1033,34 +1099,38 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     matrix_generator->SetOffsets(offset);
     matrix_generator->Update();
 
-    auto temp = matrix_generator->GetOutput();
+    //auto temp = matrix_generator->GetOutput();
+    //std::cout << "GLRLM Matrix:\n";
+    //for (int bin_count = 0; bin_count < m_Bins; bin_count++) 
+    //{
+    //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
+    //}
 
-    runLengthMatrixCalculator->SetInput(matrix_generator->GetOutput());
-    runLengthMatrixCalculator->Update();
+    runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
+    runLengthFeaturesCalculator->Update();
 
-    featurevec["ShortRunEmphasis"] = runLengthMatrixCalculator->GetShortRunEmphasis();
-    featurevec["LongRunEmphasis"] = runLengthMatrixCalculator->GetLongRunEmphasis();
-    featurevec["GreyLevelNonuniformity"] = runLengthMatrixCalculator->GetGreyLevelNonuniformity();
-    featurevec["RunLengthNonuniformity"] = runLengthMatrixCalculator->GetRunLengthNonuniformity();
-    featurevec["LowGreyLevelRunEmphasis"] = runLengthMatrixCalculator->GetLowGreyLevelRunEmphasis();
-    featurevec["HighGreyLevelRunEmphasis"] = runLengthMatrixCalculator->GetHighGreyLevelRunEmphasis();
-    featurevec["ShortRunLowGreyLevelEmphasis"] = runLengthMatrixCalculator->GetShortRunLowGreyLevelEmphasis();
-    featurevec["ShortRunHighGreyLevelEmphasis"] = runLengthMatrixCalculator->GetShortRunHighGreyLevelEmphasis();
-    featurevec["LongRunLowGreyLevelEmphasis"] = runLengthMatrixCalculator->GetLongRunLowGreyLevelEmphasis();
-    featurevec["LongRunHighGreyLevelEmphasis"] = runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis();
-    featurevec["TotalRuns"] = runLengthMatrixCalculator->GetTotalNumberOfRuns();
+    featurevec["ShortRunEmphasis"] = runLengthFeaturesCalculator->GetShortRunEmphasis();
+    featurevec["LongRunEmphasis"] = runLengthFeaturesCalculator->GetLongRunEmphasis();
+    featurevec["GreyLevelNonuniformity"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+    featurevec["RunLengthNonuniformity"] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+    featurevec["LowGreyLevelRunEmphasis"] = runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
+    featurevec["HighGreyLevelRunEmphasis"] = runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
+    featurevec["ShortRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
+    featurevec["ShortRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
+    featurevec["LongRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+    featurevec["LongRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+    featurevec["TotalRuns"] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
     featurevec["RunPercentage"] = featurevec["TotalRuns"] / static_cast<double>(offset->size() * m_currentNonZeroImageValues.size());
-    featurevec["RunLengthNonuniformityNormalized"] = runLengthMatrixCalculator->GetRunLengthNonuniformityNormalized();
-    featurevec["GreyLevelNonuniformityNormalized"] = runLengthMatrixCalculator->GetGreyLevelNonuniformityNormalized();
-    featurevec["GreyLevelVariance"] = runLengthMatrixCalculator->GetGreyLevelVariance();
-    featurevec["RunLengthVariance"] = runLengthMatrixCalculator->GetRunLengthVariance();
-    featurevec["RunEntropy"] = runLengthMatrixCalculator->GetRunEntropy();
+    featurevec["GreyLevelNonuniformityNormalized"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+    featurevec["RunLengthNonuniformityNormalized"] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+    featurevec["GreyLevelVariance"] = runLengthFeaturesCalculator->GetGreyLevelVariance();
+    featurevec["RunLengthVariance"] = runLengthFeaturesCalculator->GetRunLengthVariance();
+    featurevec["RunEntropy"] = runLengthFeaturesCalculator->GetRunEntropy();
   }
   else
   {
     // not defined, so don't do anything to featurevec
   }
-
 }
 
 
@@ -1097,6 +1167,20 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
       glcmGenerator->Update();
       featureCalc->SetInput(glcmGenerator->GetOutput());
       featureCalc->Update();
+
+      //auto temp = glcmGenerator->GetOutput();
+      //std::cout << "[DEBUG] GLCM Matrix: Offset: " << offset->at(i) << "\n";
+      //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
+      ////for (int bin_count = 0; bin_count < m_Bins; bin_count++)
+      ////{
+      ////  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
+      ////}
+      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
+      //{
+      //  std::cout << "\tMeasurement vectors = " << iter.GetMeasurementVector()
+      //    << "; Frequency = " << iter.GetFrequency() << std::endl;
+      //}
+
 
       contrast += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Inertia));
       correl += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Correlation));
@@ -1383,7 +1467,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         }
         else if (outer_key == ParamsString[ResamplingInterpolator])
         {
-        m_resamplingInterpolator = currentValue;
+          m_resamplingInterpolator = currentValue;
         }
         else if (outer_key == ParamsString[LBPStyle])
         {
@@ -1592,7 +1676,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
 {
   if (m_outputFile.empty())
   {
-    m_outputFile = cbica::createTmpDir() + "featureExtractionOutput.csv";
+    m_outputFile = cbica::createTmpDir() + "/" + m_patientID + "_FEOutput.csv";
     m_logger.WriteError("Output file has not been initialized; saving in '" + m_outputFile + "'");
     SetOutputFilename(m_outputFile);
   }
@@ -1662,35 +1746,39 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
       {
         if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
         {
-          myfile.open(m_outputFile, std::ios_base::app);
-          // check for locks in a cluster environment
-          while (!myfile.is_open())
-          {
-            cbica::sleep(100);
-            myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
-          }
-          myfile << "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
-#ifndef WIN32
-          myfile.flush();
-#endif
-          myfile.close();
+          //myfile.open(m_outputFile, std::ios_base::app);
+          //// check for locks in a cluster environment
+          //while (!myfile.is_open())
+          //{
+          //  cbica::sleep(100);
+          //  myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
+          //}
+          //myfile << "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
+          //m_finalOutputToWrite += "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n";
+//#ifndef WIN32
+//          myfile.flush();
+//#endif
+//          myfile.close();
+
         }
         //else // otherwise, append
         {
-          myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
-          // check for locks in a cluster environment
-          while (!myfile.is_open())
-          {
-            cbica::sleep(100);
-            myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
-          }
-          myfile << m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
+          //myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
+          //// check for locks in a cluster environment
+          //while (!myfile.is_open())
+          //{
+          //  cbica::sleep(100);
+          //  myfile.open(m_outputFile, std::ios_base::out | std::ios_base::app);
+          //}
+          //myfile << m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
+          //  "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
+          m_finalOutputToWrite += m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
             "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
         }
-#ifndef WIN32
-        myfile.flush();
-#endif
-        myfile.close();
+        //#ifndef WIN32
+        //        myfile.flush();
+        //#endif
+        //        myfile.close();
       }
 
       // for training file, populate these 2 member variables
@@ -1995,7 +2083,11 @@ void FeatureExtraction< TImage >::Update()
         {
           m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator);
         }
-        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator);        
+        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator);
+        auto roundingFilter = itk::RoundImageFilter< TImage, TImage >::New();
+        roundingFilter->SetInput(m_Mask);
+        roundingFilter->Update();
+        m_Mask = roundingFilter->GetOutput();
       }
 
       if (m_debug)
@@ -2226,7 +2318,7 @@ void FeatureExtraction< TImage >::Update()
                   {
                     auto tempT1 = std::chrono::high_resolution_clock::now();
 
-                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
 
                     /* this dimensionality reduction applies only to shape and Volumetric features */
@@ -2278,7 +2370,7 @@ void FeatureExtraction< TImage >::Update()
                   {
                     auto tempT1 = std::chrono::high_resolution_clock::now();
 
-                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
 
                     /* this dimensionality reduction applies only to shape and Volumetric features */
@@ -2815,7 +2907,27 @@ void FeatureExtraction< TImage >::Update()
       } // end of lattice features loop
 
       // write the features for training
-      if (!m_outputVerticallyConcatenated)
+      if (m_outputVerticallyConcatenated)
+      {
+        if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
+        {
+          m_finalOutputToWrite = "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n" + m_finalOutputToWrite;
+        }
+        std::ofstream myfile;
+        myfile.open(m_outputFile, std::ios_base::app);
+        // check for locks in a cluster environment
+        while (!myfile.is_open())
+        {
+          cbica::sleep(100);
+          myfile.open(m_outputFile, std::ios_base::app);
+        }
+        myfile << m_finalOutputToWrite;
+#ifndef WIN32
+        myfile.flush();
+#endif
+        myfile.close();
+      }
+      else
       {
         m_trainingFile_featureNames.pop_back(); // since the last character is always a ","
         m_trainingFile_features.pop_back(); // since the last character is always a ","

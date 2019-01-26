@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # NOTE: This is NOT a script intended to be run as a part of the linux build or configuration process!
-# It is meant to be bundled within makerun to install the binaries to the correct directories.
+# It is meant to be bundled within makeself to install the binaries to the correct directories.
 
 install_captk () {
   # Prep stage
@@ -90,8 +90,13 @@ install_captk () {
   echo "Installing CWL"
   mv ./*.cwl ~/CaPTk/${ver}/ 2>/dev/null
 
+  # Creating a symbolic link
+  echo "Creating symbolic link 'captk'"
+  cd ~/CaPTk/${ver}/
+  ln -s ./CaPTk_${ver}.bin captk
+
   echo "Done."
-  echo "Run the binary by navigating to the ~/CaPTk/${ver}/ directory and running './CaPTk_${ver}.bin' in the console"
+  echo "Run the binary by navigating to the ~/CaPTk/${ver}/ directory and running './captk' in the console"
   
 }
 
