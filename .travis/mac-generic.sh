@@ -25,8 +25,8 @@ echo 'export PATH="/usr/local/opt/make/libexec/gnubin:/usr/local/opt/qt/lib/cmak
 # brew link --force qt
 
 echo "Run Dependency Manager"
-make & sleep 5800; kill $! 
-# make
+# make & sleep 5800; kill $! 
+make
 
 # echo "Run CaPTk Build"
 # cmake ../
