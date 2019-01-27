@@ -1034,7 +1034,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
         auto temp_index = iter.GetIndex();
         auto temp_min_vector = temp->GetHistogramMinFromIndex(temp_index);
         auto temp_max_vector = temp->GetHistogramMaxFromIndex(temp_index);
-        std::cout << " \tGLRLM Measurement Vectors -> Intensity[" << temp_min_vector[0] << ", " << temp_max_vector[0] << "]\t|\tRun[" << temp_min_vector[1] << ", " << temp_max_vector[1] << "] = [" << temp->GetMeasurementVector(temp_index) << "]\t|\tFrequency = " << temp->GetFrequency(temp_index) << std::endl;
+        //std::cout << " \tGLRLM Measurement Vectors -> Intensity[" << temp_min_vector[0] << ", " << temp_max_vector[0] << "]\t|\tRun[" << temp_min_vector[1] << ", " << temp_max_vector[1] << "] = [" << temp->GetMeasurementVector(temp_index) << "]\t|\tFrequency = " << temp->GetFrequency(temp_index) << std::endl;
         //std::cout << "\tGLRLM Measurement vectors = " << iter.GetMeasurementVector()
           //<< "; Frequency = " << iter.GetFrequency() << std::endl;
       }
