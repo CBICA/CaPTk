@@ -265,7 +265,7 @@ namespace itk
               lastGoodIndex = index;
               index += offset;
               steps++;
-              std::cout << "\n[DEBUG] - itkEnhancedScalarImageToRunLengthMatrixFilter.hxx - GenerateData() - pixelIntensity (" << pixelIntensity << ") : within Range [" << centerBinMin << ", " << centerBinMax << "] ( this->GetMaskImage()->GetPixel(" << index << ") = [" << this->GetMaskImage()->GetPixel(index) << "] - steps = " << steps << std::endl;
+              //std::cout << "\n[DEBUG] - itkEnhancedScalarImageToRunLengthMatrixFilter.hxx - GenerateData() - pixelIntensity (" << pixelIntensity << ") : within Range [" << centerBinMin << ", " << centerBinMax << "] ( this->GetMaskImage()->GetPixel(" << index << ") = [" << this->GetMaskImage()->GetPixel(index) << "] - steps = " << steps << std::endl;
             }
             else
             {
