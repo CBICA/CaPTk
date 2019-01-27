@@ -1375,15 +1375,16 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
       featureCalc->Update();
 
       //TBD - to debug and compare vs GLRLM
-      auto temp = glcmGenerator->GetOutput();
       std::cout << "[DEBUG] GLCM Matrix: Offset: " << offset->at(i) << "\n";
-      std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
 
+      //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
+      //auto temp = glcmGenerator->GetOutput();
       //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
       //{
       //  std::cout << "\tGLCM Measurement vectors = " << iter.GetMeasurementVector()
       //    << "; Frequency = " << iter.GetFrequency() << std::endl;
       //}
+
       //TBD - to debug and compare vs GLRLM
 
       contrast += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Inertia));
