@@ -50,7 +50,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make git-lfs doxygen llvm ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install opencv ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install vtk ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew uninstall python && brew install python; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
