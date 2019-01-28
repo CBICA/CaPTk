@@ -88,7 +88,7 @@ namespace cbica
     // start data processing
     // made parallel for efficiency
     int threads = omp_get_max_threads(); // obtain maximum number of threads available on machine  
-    threads > inputModalitiesAndImages.size() ? threads = inputModalitiesAndImages.size() : threads = threads;
+    //threads > inputModalitiesAndImages.size() ? threads = inputModalitiesAndImages.size() : threads = threads;
     //#pragma omp parallel for num_threads(threads)
     for (int i = 0; i < inputModalitiesAndImages.size(); i++)
     {
@@ -156,7 +156,7 @@ namespace cbica
 
     // made parallel for efficiency
     int threads = omp_get_max_threads(); // obtain maximum number of threads available on machine  
-    threads > returnVector.size() ? threads = returnVector.size() : threads = threads;
+    //threads > returnVector.size() ? threads = returnVector.size() : threads = threads;
     //#pragma omp parallel for num_threads(threads)
     for (int i = 0; i < returnVector.size(); i++)
     {

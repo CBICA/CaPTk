@@ -763,8 +763,7 @@ namespace cbica
     {
       input_string = "rt";
     }
-    else if ((input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl")
-      || (input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl"))
+    else if ((input_string_lower == "cwl") || (input_string_lower == "-cwl") || (input_string_lower == "--cwl"))
     {
       input_string = "cwl";
     }
@@ -938,7 +937,6 @@ namespace cbica
             m_requiredParameters[i].descriptionLine3 + " " + m_requiredParameters[i].descriptionLine4 + " " +
             m_requiredParameters[i].descriptionLine5;
         }
-        noMoreChecks = 1;
       }
       i++;
     }

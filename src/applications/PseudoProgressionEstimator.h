@@ -134,6 +134,8 @@ public:
     VectorVectorDouble PCA10IntensityHistogram,
     std::string output);
 
+  vtkSmartPointer<vtkTable> MakePCAMatrix(int NumberOfFeatures, int NumberOfSamples);
+
   VariableSizeMatrixType ColumnWiseScaling(VariableSizeMatrixType PerfusionData);
 
   PerfusionMapType CombineAndCalculatePerfusionPCA(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);

@@ -1,6 +1,4 @@
 language: cpp
- 
- # Make sure to install ccache locally as well
 
 # You may find that on your travis CI or on the master branch that for some reason travis is timing out,
 # ccache can fix this if you compile the dependency manager one at a time since VTK takes 50 minutes to compile on travis

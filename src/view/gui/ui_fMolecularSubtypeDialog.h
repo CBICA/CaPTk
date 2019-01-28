@@ -78,6 +78,10 @@ public:
 
   QHBoxLayout * horizontalLayout;
 
+
+  QLabel *longRunningWarning;
+
+
   void setupUi(QDialog *fMolecularSubtypeDialog)
   {
 
@@ -262,8 +266,14 @@ public:
 
 
 
+    longRunningWarning = new QLabel(outputGroupBox);
+    sizePolicy.setHeightForWidth(longRunningWarning->sizePolicy().hasHeightForWidth());
+    longRunningWarning->setSizePolicy(sizePolicy);
+    longRunningWarning->setAlignment(Qt::AlignRight);
+    longRunningWarning->setText("NOTE: CaPTk will not let you interact with the UI while this application runs.");
 
-	outputDirectoryName = new QLineEdit(outputGroupBox);
+
+    outputDirectoryName = new QLineEdit(outputGroupBox);
     outputDirectoryName->setObjectName(QString::fromUtf8("outputDirectoryName"));
     sizePolicy13.setHeightForWidth(outputDirectoryName->sizePolicy().hasHeightForWidth());
     outputDirectoryName->setSizePolicy(sizePolicy13);
@@ -278,6 +288,7 @@ public:
     outputGridLayout->addWidget(outputDirectoryLabel, 0, 0, 1, 1);
     outputGridLayout->addWidget(outputDirectoryName, 0, 1, 1, 4);
     outputGridLayout->addWidget(outputDirectoryButton, 0, 5, 1, 1);
+    outputGridLayout->addWidget(longRunningWarning, 1, 0, 1, 2);
 
     gridLayout_3->addWidget(classificationGroupBox, 0, 0, 1, 2);
     gridLayout_3->addWidget(outputGroupBox, 1, 0, 1, 2);

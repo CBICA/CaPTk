@@ -543,7 +543,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfGBMApps[i].name.find("PseudoProgression") != std::string::npos)
     {
-      vectorOfGBMApps[i].action->setText("  PseudoProgression Infiltration Index"); // TBD set at source
+      vectorOfGBMApps[i].action->setText("  Glioblastoma PseudoProgression Infiltration Index"); // TBD set at source
       connect(vectorOfGBMApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPseudoProgression()));
     }
     else if (vectorOfGBMApps[i].name.find("Survival") != std::string::npos)
@@ -4590,7 +4590,11 @@ void fMainWindow::TrainNewPseudoprogressionModelOnGivenData(const std::string &i
     help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-
+  if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
+  {
+    ShowErrorMessage("There should be atleast 20 patients to build reliable pseudo-progression model.");
+    return;
+  }
   if (mPseudoEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, useConvData, useDTIData, usePerfData, useDistData))
     ShowMessage("Trained pseudoprogression model has been saved at the specified location.", this);
   else
@@ -6980,12 +6984,13 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   }
   else
   {
-    if (rcbv == true)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputFolder + "/ap-RCBV.nii.gz");
     if (psr == true)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputFolder + "/PSR.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputFolder + "/PSR.nii.gz");
     if (ph == true)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[2], outputFolder + "/PH.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputFolder + "/PH.nii.gz"); 
+    if (rcbv == true)
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[2], outputFolder + "/ap-RCBV.nii.gz");
+
 
     QString msg;
     msg = "Perfusion derivatives have been saved at the specified locations.";
@@ -7660,11 +7665,15 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
 {
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
-  std::vector<std::string> subjectNames;
-  //= cbica::subdirectoriesInDirectory(directoryname);
-  subjectNames.push_back("ABEM");
-  subjectNames.push_back("ABFC");
-  subjectNames.push_back("ABFD");
+  std::vector<std::string> subjectNames= cbica::subdirectoriesInDirectory(directoryname);
+
+  //subjectNames.clear();
+  //subjectNames.push_back("AAMA");
+  //subjectNames.push_back("AAMG");
+  //subjectNames.push_back("AAMJ");
+  //subjectNames.push_back("AAMP");
+  //subjectNames.push_back("AAMQ");
+  //subjectNames.push_back("ABEM");
 
   std::sort(subjectNames.begin(), subjectNames.end());
 

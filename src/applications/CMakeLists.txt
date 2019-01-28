@@ -199,19 +199,19 @@ SET( DOWNLOAD_URL "" )
 SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/externalApps )
 SET( SOURCE_APPLICATIONS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/individualApps )
 
+IF(WIN32)
+  SET( FILENAME_TO_EXTRACT "binaries_windows")
+  SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_windows.zip")
+ELSEIF(APPLE)
+  SET( FILENAME_TO_EXTRACT "binaries_mac")
+  SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_mac.zip")
+ELSE()
+  SET( FILENAME_TO_EXTRACT "binaries_linux")
+  SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_linux.zip")
+ENDIF()
+
 # putting this condition so that the extraction doesn't happen every single time
 IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
-
-  IF(WIN32)
-    SET( FILENAME_TO_EXTRACT "binaries_windows")
-    SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_windows.zip")
-  ELSEIF(APPLE)
-    SET( FILENAME_TO_EXTRACT "binaries_mac")
-    SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_mac.zip")
-  ELSE()
-    SET( FILENAME_TO_EXTRACT "binaries_linux")
-    SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_linux.zip")
-  ENDIF()
 
   SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
 
@@ -238,21 +238,25 @@ IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
       MESSAGE( WARNING "Extracting the pre-compiled applications failed" )
     ENDIF()
 
-    SUBDIRLIST(EXTERNAL_APPS ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT})
-
-    # copy the prepared app into the appropriate folder
-    FOREACH(external_app ${EXTERNAL_APPS})
-
-      FILE(MAKE_DIRECTORY ${SOURCE_APPLICATIONS_PATH}/${external_app})
-
-      EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT}/${external_app} ${SOURCE_APPLICATIONS_PATH}/${external_app}
-      )
-
-    ENDFOREACH()
-
   ENDIF()
 ENDIF()
+
+SUBDIRLIST(EXTERNAL_APPS ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT}/)
+
+# copy the prepared app into the appropriate folder
+FOREACH(external_app ${EXTERNAL_APPS})
+
+  IF( NOT EXISTS "${SOURCE_APPLICATIONS_PATH}/${external_app}" )
+
+    FILE(MAKE_DIRECTORY ${SOURCE_APPLICATIONS_PATH}/${external_app})
+    
+    EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy_directory
+      ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT}/${external_app} ${SOURCE_APPLICATIONS_PATH}/${external_app}
+    )
+  
+  ENDIF()
+
+ENDFOREACH()
 
 SUBDIRLIST(SUBDIRECTORIES ${SOURCE_APPLICATIONS_PATH})
 INCLUDE(${CMAKE_ROOT}/Modules/ExternalProject.cmake)

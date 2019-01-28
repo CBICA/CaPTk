@@ -3,7 +3,7 @@
 #include "fMainWindow.h"
 #include "cbicaStatistics.h"
 #include "CaPTkEnums.h"
-
+#include "vtkDoubleArray.h"
 
 typedef itk::Image< float, 3 > ImageType;
 
@@ -1315,7 +1315,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
         CurrentTimePoint.GetPointer()->SetPixel(indices[j], revisedPerfData(j, i));
 
       OnePatientperfusionImages.push_back(CurrentTimePoint);
-      cbica::WriteImage<ImageType>(CurrentTimePoint, outputdirectory + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
+      //cbica::WriteImage<ImageType>(CurrentTimePoint, outputdirectory + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
     }
     RevisedPerfusionImagesOfAllPatients.push_back(OnePatientperfusionImages);
   }
@@ -1756,106 +1756,320 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   std::string outputdirectory)
 {
   //writing of all the modalities perfusion data finished
-  //WriteCSVFiles(T1IntensityHistogram, outputdirectory+ "/t1.csv");
-  //WriteCSVFiles(TCIntensityHistogram, outputdirectory+ "/t1ce.csv");
-  //WriteCSVFiles(T2IntensityHistogram, outputdirectory + "/t2.csv");
-  //WriteCSVFiles(FLIntensityHistogram, outputdirectory + "/flair.csv");
-  //WriteCSVFiles(T1TCIntensityHistogram, outputdirectory + "/t1t1ce.csv");
-  //WriteCSVFiles(T2FLIntensityHistogram, outputdirectory + "/t2flair.csv");
-  //WriteCSVFiles(AXIntensityHistogram, outputdirectory + "/AX.csv");
-  //WriteCSVFiles(FAIntensityHistogram, outputdirectory + "/FA.csv");
-  //WriteCSVFiles(RDIntensityHistogram, outputdirectory + "/RAD.csv");
-  //WriteCSVFiles(TRIntensityHistogram, outputdirectory + "/TR.csv");
-  //WriteCSVFiles(PHIntensityHistogram, outputdirectory + "/PH.csv");
-  //WriteCSVFiles(PSIntensityHistogram, outputdirectory + "/PSR.csv");
-  //WriteCSVFiles(RCIntensityHistogram, outputdirectory + "/RCBV.csv");
-  //WriteCSVFiles(PCA1IntensityHistogram, outputdirectory + "/PCA1.csv");
-  //WriteCSVFiles(PCA2IntensityHistogram, outputdirectory +"/PCA2.csv");
-  //WriteCSVFiles(PCA3IntensityHistogram, outputdirectory +"/PCA3.csv");
-  //WriteCSVFiles(PCA4IntensityHistogram, outputdirectory +"/PCA4.csv");
-  //WriteCSVFiles(PCA5IntensityHistogram, outputdirectory +"/PCA5.csv");
-  //WriteCSVFiles(PCA6IntensityHistogram, outputdirectory +"/PCA6.csv");
-  //WriteCSVFiles(PCA7IntensityHistogram, outputdirectory +"/PCA7.csv");
-  //WriteCSVFiles(PCA8IntensityHistogram, outputdirectory +"/PCA8.csv");
-  //WriteCSVFiles(PCA9IntensityHistogram, outputdirectory +"/PCA9.csv");
-  //WriteCSVFiles(PCA10IntensityHistogram, outputdirectory +"/PCA10.csv");
+  WriteCSVFiles(T1IntensityHistogram, outputdirectory+ "/t1.csv");
+  WriteCSVFiles(TCIntensityHistogram, outputdirectory+ "/t1ce.csv");
+  WriteCSVFiles(T2IntensityHistogram, outputdirectory + "/t2.csv");
+  WriteCSVFiles(FLIntensityHistogram, outputdirectory + "/flair.csv");
+  WriteCSVFiles(T1TCIntensityHistogram, outputdirectory + "/t1t1ce.csv");
+  WriteCSVFiles(T2FLIntensityHistogram, outputdirectory + "/t2flair.csv");
+  WriteCSVFiles(AXIntensityHistogram, outputdirectory + "/AX.csv");
+  WriteCSVFiles(FAIntensityHistogram, outputdirectory + "/FA.csv");
+  WriteCSVFiles(RDIntensityHistogram, outputdirectory + "/RAD.csv");
+  WriteCSVFiles(TRIntensityHistogram, outputdirectory + "/TR.csv");
+  WriteCSVFiles(PHIntensityHistogram, outputdirectory + "/PH.csv");
+  WriteCSVFiles(PSIntensityHistogram, outputdirectory + "/PSR.csv");
+  WriteCSVFiles(RCIntensityHistogram, outputdirectory + "/RCBV.csv");
+  WriteCSVFiles(PCA1IntensityHistogram, outputdirectory + "/PCA1.csv");
+  WriteCSVFiles(PCA2IntensityHistogram, outputdirectory +"/PCA2.csv");
+  WriteCSVFiles(PCA3IntensityHistogram, outputdirectory +"/PCA3.csv");
+  WriteCSVFiles(PCA4IntensityHistogram, outputdirectory +"/PCA4.csv");
+  WriteCSVFiles(PCA5IntensityHistogram, outputdirectory +"/PCA5.csv");
+  WriteCSVFiles(PCA6IntensityHistogram, outputdirectory +"/PCA6.csv");
+  WriteCSVFiles(PCA7IntensityHistogram, outputdirectory +"/PCA7.csv");
+  WriteCSVFiles(PCA8IntensityHistogram, outputdirectory +"/PCA8.csv");
+  WriteCSVFiles(PCA9IntensityHistogram, outputdirectory +"/PCA9.csv");
+  WriteCSVFiles(PCA10IntensityHistogram, outputdirectory +"/PCA10.csv");
 
 
   FeatureReductionClass m_featureReduction;
   VariableSizeMatrixType PCA_T1, PCA_T1CE, PCA_T2, PCA_FL, PCA_T2FL, PCA_T1T1CE, PCA_AX, PCA_FA, PCA_RAD, PCA_TR, PCA_PC1, PCA_PC2, PCA_PC3, PCA_PC4, PCA_PC5, PCA_PC6, PCA_PC7, PCA_PC8, PCA_PC9, PCA_PC10, PCA_PH, PCA_PSR, PCA_RCBV;
   VariableLengthVectorType Mean_T1, Mean_T1CE, Mean_T2, Mean_FL, Mean_T2FL, Mean_T1T1CE, Mean_AX, Mean_FA, Mean_RAD, Mean_TR, Mean_PC1, Mean_PC2, Mean_PC3, Mean_PC4, Mean_PC5, Mean_PC6, Mean_PC7, Mean_PC8, Mean_PC9, Mean_PC10, Mean_PH, Mean_PSR, Mean_RCBV;
 
+  int NumberOfFeatures = T1IntensityHistogram[0].size();
+  int NumberOfSamples = T1IntensityHistogram.size();
+  vtkSmartPointer<vtkTable> T1ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> TCReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> T2ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> FLReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> T1TCReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> T2FLReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> AXReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> FAReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> RDReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> TRReducedIntensityHistogram;
+  
+  vtkSmartPointer<vtkTable> PHReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> PSReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> RCReducedIntensityHistogram;
 
-  vtkSmartPointer<vtkTable> T1ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T1IntensityHistogram, PCA_T1, Mean_T1);
-  std::cout << "T1" << std::endl;
+  vtkSmartPointer<vtkTable> PC1ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> PC2ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> PC3ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> PC4ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> PC5ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> PC6ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> PC7ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> PC8ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> PC9ReducedIntensityHistogram;
+  vtkSmartPointer<vtkTable> PC10ReducedIntensityHistogram;
 
-  vtkSmartPointer<vtkTable> TCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(TCIntensityHistogram, PCA_T1CE, Mean_T1CE);
-  std::cout << "TC" << std::endl;
 
-  vtkSmartPointer<vtkTable>  T2ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T2IntensityHistogram, PCA_T2, Mean_T2);
-  std::cout << "T2" << std::endl;
+  try
+  {
+    T1ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T1IntensityHistogram, PCA_T1, Mean_T1);
+    std::cout << "T1" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    T1ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples); 
+    logger.WriteError("Error in writing T1 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> T1TCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T1TCIntensityHistogram, PCA_T1T1CE, Mean_T1T1CE);
-  std::cout << "T1TC" << std::endl;
+  try
+  {
+    TCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(TCIntensityHistogram, PCA_T1CE, Mean_T1CE);
+    std::cout << "TC" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    TCReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing TC reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> FLReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(FLIntensityHistogram, PCA_FL, Mean_FL);
+  try
+  {
+    T2ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T2IntensityHistogram, PCA_T2, Mean_T2);
+  }
+  catch (const std::exception& e1)
+  {
+    T2ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing T2 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
+  
+  try
+  {
+    vtkSmartPointer<vtkTable> T1TCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T1TCIntensityHistogram, PCA_T1T1CE, Mean_T1T1CE);
+    std::cout << "T1TC" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    T1TCReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing T1TC reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
+
+  try
+  {
+  FLReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(FLIntensityHistogram, PCA_FL, Mean_FL);
   std::cout << "FL" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    FLReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing FL reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> T2FLReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T2FLIntensityHistogram, PCA_T2FL, Mean_T2FL);
+
+  try
+  {
+  T2FLReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T2FLIntensityHistogram, PCA_T2FL, Mean_T2FL);
   std::cout << "T2FL" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    T2FLReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing T2FL reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable>  AXReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(AXIntensityHistogram, PCA_AX, Mean_AX);
-  std::cout << "AX" << std::endl;
+  try
+  {
+    AXReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(AXIntensityHistogram, PCA_AX, Mean_AX);
+    std::cout << "AX" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    AXReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing AX reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> FAReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(FAIntensityHistogram, PCA_FA, Mean_FA);
-  std::cout << "FA" << std::endl;
+  try
+  {
+    FAReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(FAIntensityHistogram, PCA_FA, Mean_FA);
+    std::cout << "FA" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    FAReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing FA reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> RDReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(RDIntensityHistogram, PCA_RAD, Mean_RAD);
+  try
+  {
+  RDReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(RDIntensityHistogram, PCA_RAD, Mean_RAD);
   std::cout << "RD" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    RDReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing RD reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> TRReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(TRIntensityHistogram, PCA_TR, Mean_TR);
-  std::cout << "TR" << std::endl;
+  try
+  {
+    TRReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(TRIntensityHistogram, PCA_TR, Mean_TR);
+    std::cout << "TR" << std::endl;
+  }
+    catch (const std::exception& e1)
+    {
+      TRReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+      logger.WriteError("Error in writing TR reduced intensity histogram. Error code : " + std::string(e1.what()));
+    }
 
-  vtkSmartPointer<vtkTable> PHReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PHIntensityHistogram, PCA_PH, Mean_PH);
+
+    try
+    {
+  PHReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PHIntensityHistogram, PCA_PH, Mean_PH);
   std::cout << "PH" << std::endl;
+    }
+    catch (const std::exception& e1)
+    {
+      PHReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+      logger.WriteError("Error in writing PH reduced intensity histogram. Error code : " + std::string(e1.what()));
+    }
 
-  vtkSmartPointer<vtkTable> PSReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PSIntensityHistogram, PCA_PSR, Mean_PSR);
+    try
+    {
+  PSReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PSIntensityHistogram, PCA_PSR, Mean_PSR);
   std::cout << "PS" << std::endl;
+    }
+    catch (const std::exception& e1)
+    {
+      PSReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+      logger.WriteError("Error in writing PS reduced intensity histogram. Error code : " + std::string(e1.what()));
+    }
 
-  vtkSmartPointer<vtkTable> RCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(RCIntensityHistogram, PCA_RCBV, Mean_RCBV);
+
+    try
+    {
+  RCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(RCIntensityHistogram, PCA_RCBV, Mean_RCBV);
   std::cout << "RC" << std::endl;
+    }
+    catch (const std::exception& e1)
+    {
+      RCReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+      logger.WriteError("Error in writing RC reduced intensity histogram. Error code : " + std::string(e1.what()));
+    }
 
   std::cout << "basic modalities perfusion components extracted" << std::endl;
 
-  vtkSmartPointer<vtkTable> PC1ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA1IntensityHistogram, PCA_PC1, Mean_PC1);
+  try
+  {
+    PC1ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA1IntensityHistogram, PCA_PC1, Mean_PC1);
   std::cout << "PC1" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    PC1ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PC1 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> PC2ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA2IntensityHistogram, PCA_PC2, Mean_PC2);
+
+  try
+  {
+    PC2ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA2IntensityHistogram, PCA_PC2, Mean_PC2);
   std::cout << "PC2" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    PC2ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PC2 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> PC3ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA3IntensityHistogram, PCA_PC3, Mean_PC3);
+  try
+  {
+  PC3ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA3IntensityHistogram, PCA_PC3, Mean_PC3);
   std::cout << "PC3" << std::endl;
-
-  vtkSmartPointer<vtkTable> PC4ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA4IntensityHistogram, PCA_PC4, Mean_PC4);
+  }
+  catch (const std::exception& e1)
+  {
+    PC3ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PC3 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
+  try
+  {
+    PC4ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA4IntensityHistogram, PCA_PC4, Mean_PC4);
   std::cout << "PC4" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    PC4ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PC4 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> PC5ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA5IntensityHistogram, PCA_PC5, Mean_PC5);
+  try
+  {
+    PC5ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA5IntensityHistogram, PCA_PC5, Mean_PC5);
   std::cout << "PC5" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    PC5ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PC5 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> PC6ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA6IntensityHistogram, PCA_PC6, Mean_PC6);
+  try
+  {
+    PC6ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA6IntensityHistogram, PCA_PC6, Mean_PC6);
   std::cout << "PC6" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    PC6ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PC6 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> PC7ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA7IntensityHistogram, PCA_PC7, Mean_PC7);
+  try
+  {
+    PC7ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA7IntensityHistogram, PCA_PC7, Mean_PC7);
   std::cout << "PC7" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    PC7ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PC7 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> PC8ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA8IntensityHistogram, PCA_PC8, Mean_PC8);
+  try
+  {
+    PC8ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA8IntensityHistogram, PCA_PC8, Mean_PC8);
   std::cout << "PC8" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    PC8ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PC8 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> PC9ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA9IntensityHistogram, PCA_PC9, Mean_PC9);
-  std::cout << "PC9" << std::endl;
+  try
+  {
+    PC9ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA9IntensityHistogram, PCA_PC9, Mean_PC9);
+    std::cout << "PC9" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    PC9ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PC9 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-  vtkSmartPointer<vtkTable> PC10ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA10IntensityHistogram, PCA_PC10, Mean_PC10);
-  std::cout << "PC10" << std::endl;
+  try
+  {
+    PC10ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA10IntensityHistogram, PCA_PC10, Mean_PC10);
+    std::cout << "PC10" << std::endl;
+  }
+  catch (const std::exception& e1)
+  {
+    PC10ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PC10 reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
 
 
@@ -2719,4 +2933,18 @@ VariableSizeMatrixType PseudoProgressionEstimator::GetModelSelectedFeatures(Vari
     ModelSelectedFeatures(j, counter) = ScaledFeatureSetAfterAddingLabel(j, ScaledFeatureSetAfterAddingLabel.Cols() - 1);
 
   return ModelSelectedFeatures;
+}
+
+
+vtkSmartPointer<vtkTable> PseudoProgressionEstimator::MakePCAMatrix(int NumberOfFeatures, int NumberOfSamples)
+{
+  vtkSmartPointer<vtkTable> T1ReducedIntensityHistogram = vtkSmartPointer<vtkTable>::New();
+  for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
+  {
+    vtkSmartPointer<vtkDoubleArray> col = vtkSmartPointer<vtkDoubleArray>::New();
+    for (vtkIdType c = 0; c < static_cast<vtkIdType>(NumberOfSamples); c++)
+      col->InsertNextValue(0);
+    T1ReducedIntensityHistogram->AddColumn(col);
+  }
+  return T1ReducedIntensityHistogram;
 }

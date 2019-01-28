@@ -27,3 +27,9 @@ ibsi_phantom
 /src/applications/FeatureExtraction/runner.ps1
 
 .travis/mac-local-build.sh
+deepmedic
+itksnap
+libra
+confetti
+dcm2nii
+theia
