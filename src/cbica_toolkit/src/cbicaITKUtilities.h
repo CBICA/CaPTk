@@ -1001,12 +1001,12 @@ namespace cbica
     resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
     if (interpolator_wrap == "bspline")
     {
-      auto interpolatorFunc = typename itk::BSplineInterpolateImageFunction< TImageType >::New();
+      auto interpolatorFunc = /*typename*/ itk::BSplineInterpolateImageFunction< TImageType >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
     else if (interpolator_wrap.find("bicubic") != std::string::npos)
     {
-      auto interpolatorFunc = typename itk::BSplineInterpolateImageFunction< TImageType >::New();
+      auto interpolatorFunc = /*typename*/ itk::BSplineInterpolateImageFunction< TImageType >::New();
       interpolatorFunc->SetSplineOrder(3);
       resampler->SetInterpolator(interpolatorFunc);
     }
