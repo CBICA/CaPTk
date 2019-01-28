@@ -13,10 +13,10 @@ export CMAKE_PREFIX_PATH="$HOME/Desktop/CaPTk/bin/ITK-build:/Library/TeX/texbin:
 
 ### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
 # cmake ../
-rm -rf /usr/local/opt/qt
-rm -rf /usr/local/Cellar/qt
-cp -r qt/5.11.2 /usr/local/opt/qt
-cp -r qt /usr/local/Cellar/qt
+# rm -rf /usr/local/opt/qt
+# rm -rf /usr/local/Cellar/qt
+# cp -r qt/5.11.2 /usr/local/opt/qt
+# cp -r qt /usr/local/Cellar/qt
 # echo "Run Dependency Manager"
 # make -j 2 > /dev/null
 
