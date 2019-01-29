@@ -4,12 +4,12 @@
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
-export CC=/usr/local/opt/llvm/bin/clang
-export CXX=/usr/local/opt/llvm/bin/clang++
-export LDFLAGS="-L/usr/local/opt/llvm/lib"
-export CPPFLAGS="-L/usr/local/opt/llvm/include"
+# export CC=/usr/local/opt/llvm/bin/clang
+# export CXX=/usr/local/opt/llvm/bin/clang++
+# export LDFLAGS="-L/usr/local/opt/llvm/lib"
+# export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-export CMAKE_PREFIX_PATH="$HOME/Desktop/CaPTk/bin/ITK-build:/Library/TeX/texbin:$CMAKE_PREFIX_PATH"
+export CMAKE_PREFIX_PATH="$HOME/Desktop/dependency_manager/bin/ITK-build:/Library/TeX/texbin:$CMAKE_PREFIX_PATH"
 
 ### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
 # cmake ../
@@ -31,7 +31,7 @@ echo "Run CaPTk Build"
 rm CMakeCache.txt
 cmake ../
 cmake ../
-make > /dev/null
+make -j 2
 }
 
 ###########################

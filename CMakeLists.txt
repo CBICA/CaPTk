@@ -7,6 +7,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2)
 #  CMAKE_POLICY(SET CMP0020 NEW)
 #  CMAKE_POLICY(SET CMP0010 NEW)
 CMAKE_POLICY(SET CMP0048 NEW) # only with CMake 3
+CMAKE_POLICY(SET CMP0025 NEW) # only with CMake 3
 #ENDIF(COMMAND cmake_policy)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES)
@@ -1199,8 +1200,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       #   ENDIF()
       # ENDFOREACH()
 
-      chmodFile(${EXE_NAME} dcm2nii)
-      chmodFile(${EXE_NAME} ITK-SNAP)
+      # chmodFile(${EXE_NAME} dcm2nii)
+      # chmodFile(${EXE_NAME} ITK-SNAP)
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
