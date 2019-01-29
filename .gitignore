@@ -26,7 +26,7 @@ src/applications/FeatureExtraction/data/output
 ibsi_phantom
 /src/applications/FeatureExtraction/runner.ps1
 
-.travis/mac-local-build.sh
+./.travis/mac-local-build.sh
 deepmedic
 itksnap
 libra

@@ -24,8 +24,8 @@ cmake ../
 # brew link --force qt
 
 echo "Run Dependency Manager"
-# make & sleep 5600; kill $! 
-make
+make & sleep 5600; kill $! 
+# make
 
 # echo "Run CaPTk Build"
 # cmake ../
