@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QComboBox>
 #include <QCoreApplication>
+#include "qdesktopservices.h"
 
 static QString IMAGES_EXTENSIONS = "Images (*.nii.gz *.nii *.dcm)";
 
@@ -57,7 +58,7 @@ inline void ShowErrorMessage(const std::string &message, QWidget *boxParent = NU
   \param message The message to be displayed in the message box
   \param windowTitle The title of the message box, defaults to "Output Results"
   */
-inline void ShowMessage(const std::string &message, const std::string &windowTitle = "Output Results", QWidget *boxParent = NULL)
+inline void ShowMessage(const std::string &message, QWidget *boxParent = NULL, const std::string &windowTitle = "Output Results")
   {
     if (boxParent == NULL)
     {
@@ -255,6 +256,10 @@ inline QString getExistingDirectory(QWidget *parent, const QString inputPath)
     return cbica::normPath(captk_currentApplicationPath + "../Resources/bin/" + appName_wrap);
 #endif  
 #else
+    if (cbica::isFile(captk_currentApplicationPath + appName_wrap + winExt))
+    {
+      return captk_currentApplicationPath + appName_wrap + winExt;
+    }
     auto individualAppDir = cbica::normPath(captk_currentApplicationPath + "../../src/applications/individualApps/" + appName + "/");
     if (appName_wrap.find("itksnap") != std::string::npos)
     {
@@ -281,11 +286,21 @@ inline QString getExistingDirectory(QWidget *parent, const QString inputPath)
         captk_dataDir = captk_currentApplicationPath + "../Resources/data/";
         if (!cbica::exists(captk_dataDir))
         {
-          ShowErrorMessage("Data Directory not found. Please re-install");
-          return "";
+          captk_dataDir = std::string(PROJECT_SOURCE_DIR) + "data/";
+          if (!cbica::exists(captk_dataDir))
+          {
+            ShowErrorMessage("Data Directory not found. Please re-install");
+            return "";
+          }
         }
       }
     }
 
     return captk_dataDir;
+  }
+
+  //! opens the link using Qt's desktop services
+  inline bool openLink(const std::string &link)
+  {
+    return QDesktopServices::openUrl(QUrl(link.c_str()));
   }

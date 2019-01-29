@@ -62,12 +62,6 @@ set -e
 # Store the root dir this is being run from
 SRC_DIR=`pwd`
 
-# Linuxdeployqt requires a very special directory structure to use with it, therefore we should configure cmake
-# to inherently install CaPTk to that directory structure.
-CMAKE_CMD () {
-  cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-}
-
 # Run the fixes for linux
 FIX_CMD () {
   # Save the install dir for later
@@ -215,9 +209,9 @@ else
   export PATH=${ITK_PATH}:$PATH
 fi
 
-# Cmake
+# Configure cmake
 echo "[:] Running cmake command..."
-CMAKE_CMD
+bash ../scripts/linux-cmake-conf
 
 # Make install/strip
 echo "[:] Building CaPTk..."
@@ -256,8 +250,8 @@ mkdir pkg
 mv CaPTk.bin ./pkg/
 mv ./bin/install/appdir/usr/bin/*.cwl ./pkg/
 cp ./licenses/Combined.txt ./pkg/
-cp ./scripts/linux-installer ./pkg/
-chmod +x ./pkg/linux-installer
+cp ./scripts/linux-makeself ./pkg/
+chmod +x ./pkg/linux-makeself
 
 # Step 3: Wrap it all upp
 

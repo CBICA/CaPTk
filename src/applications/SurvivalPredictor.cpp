@@ -1,5 +1,5 @@
 #include "SurvivalPredictor.h"
-#include "itkCSVNumericObjectFileWriter.h""
+#include "itkCSVNumericObjectFileWriter.h"
 #include "CaPTkGUIUtils.h"
 #include "CaPTkClassifierUtils.h"
 
@@ -171,7 +171,11 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
   VariableLengthVectorType stdVector;
   mFeatureScalingLocalPtr.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
 
-//
+  for (unsigned int i = 0; i < scaledFeatureSet.Rows(); i++)
+    for (unsigned int j = 0; j < scaledFeatureSet.Cols(); j++)
+      if (std::isnan(scaledFeatureSet(i, j)))
+        scaledFeatureSet(i, j) = 0;
+    //
 //  for (int i = 0; i < 105; i++)
 //    for (int j = 0; j < 166; j++)
 //      data(i, j) = scaledFeatureSet(i, j);
@@ -211,30 +215,18 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
 ////-----------------------writing in files to compare results------------------------------
   typedef vnl_matrix<double> MatrixType;
   MatrixType data;
-//  //data.set_size(105, 169);
-//  //for (unsigned int i = 0; i < scaledFeatureSet.Rows(); i++)
-//  //{
-//  //  for (unsigned int j = 0; j < scaledFeatureSet.Cols(); j++)
-//  //  {
-//  //    data(i, j) = scaledFeatureSet(i, j);
-//  //  }
-//  //}
-//  //typedef itk::CSVNumericObjectFileWriter<double, 105, 169> WriterTypeMatrix;
-//  //WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();
-//  //writermatrix->SetFileName(outputdirectory + "/scaledfeatures.csv");
-//  //writermatrix->SetInput(&data);
-//  //writermatrix->Write();  
-//  
+  
+
   VariableSizeMatrixType SixModelFeatures;
   VariableSizeMatrixType EighteenModelFeatures;
   mFeatureExtractionLocalPtr.FormulateSurvivalTrainingData(scaledFeatureSet, AllSurvival, SixModelFeatures, EighteenModelFeatures);
 
   try
   {
-	  data.set_size(166, 1); // TOCHECK - are these hard coded sizes fine?
+	  data.set_size(161, 1); // TOCHECK - are these hard coded sizes fine?
 	  for (unsigned int i = 0; i < meanVector.Size(); i++)
 		  data(i, 0) = meanVector[i];
-	  typedef itk::CSVNumericObjectFileWriter<double, 166, 1> WriterTypeVector;
+	  typedef itk::CSVNumericObjectFileWriter<double, 161, 1> WriterTypeVector;
 	  WriterTypeVector::Pointer writerv = WriterTypeVector::New();
 	  writerv->SetFileName(outputdirectory + "/Survival_ZScore_Mean.csv");
 	  writerv->SetInput(&data);
@@ -255,70 +247,18 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
 //  //---------------------------------------------------------------------------
   VariableSizeMatrixType SixModelSelectedFeatures = SelectSixMonthsModelFeatures(SixModelFeatures);
   VariableSizeMatrixType EighteenModelSelectedFeatures = SelectEighteenMonthsModelFeatures(EighteenModelFeatures);
-  //MatrixType data;
-  // data.set_size(30, 21);
-  // for (unsigned int i = 0; i < SixModelSelectedFeatures.Rows(); i++)
-  // {
-  //   for (unsigned int j = 0; j < SixModelSelectedFeatures.Cols(); j++)
-  //   {
-  //     data(i, j) = SixModelSelectedFeatures(i, j);
-  //   }
-  // }
-  // typedef itk::CSVNumericObjectFileWriter<double, 30,21> WriterTypeMatrix;
-  // WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();
-  // writermatrix->SetFileName(outputdirectory + "/sixmodel.csv");
-  // writermatrix->SetInput(&data);
-  // writermatrix->Write();
 
-
-  // for (unsigned int i = 0; i < EighteenModelSelectedFeatures.Rows(); i++)
-  // {
-  //   for (unsigned int j = 0; j < EighteenModelSelectedFeatures.Cols(); j++)
-  //   {
-  //     data(i, j) = EighteenModelSelectedFeatures(i, j);
-  //   }
-  // }
-  // typedef itk::CSVNumericObjectFileWriter<double, 30,21> WriterTypeMatrix2;
-  // WriterTypeMatrix2::Pointer writermatrix2 = WriterTypeMatrix2::New();
-  // writermatrix2->SetFileName(outputdirectory + "/eighteenmodel.csv");
-  // writermatrix2->SetInput(&data);
-  // writermatrix2->Write();
-//
-//   //--------------------------------------read whole new data for training---------------------------------
-   //VariableSizeMatrixType SixModelDataFromMatlab;
-   //VariableSizeMatrixType EighteenModelDataFromMatlab;
-
-   //readerMean->SetFileName("E:/CapTKApplications/Survival/newmatlabwork/SixModelData.csv");
-   //readerMean->SetFieldDelimiterCharacter(',');
-   //readerMean->HasColumnHeadersOff();
-   //readerMean->HasRowHeadersOff();
-   //readerMean->Parse();
-   ////typedef vnl_matrix<double> MatrixType;
-   //dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-   //SixModelDataFromMatlab.SetSize(dataMatrix.rows(), dataMatrix.cols());
-
-   //for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-   //{
-   //  for (int j = 0; j < dataMatrix.cols(); j++)
-   //    SixModelDataFromMatlab(i, j) = dataMatrix(i, j);
-   //}
-
-   //readerMean->SetFileName("E:/CapTKApplications/Survival/newmatlabwork/EighteenModelData.csv");
-   //readerMean->SetFieldDelimiterCharacter(',');
-   //readerMean->HasColumnHeadersOff();
-   //readerMean->HasRowHeadersOff();
-   //readerMean->Parse();
-   ////typedef vnl_matrix<double> MatrixType;
-   //dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-   //EighteenModelDataFromMatlab.SetSize(dataMatrix.rows(), dataMatrix.cols());
-   //for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-   //  for (int j = 0; j < dataMatrix.cols(); j++)
-   //    EighteenModelDataFromMatlab(i, j) = dataMatrix(i, j);
+  //WriteCSVFiles(FeaturesOfAllSubjects, outputdirectory + "/FeaturesOfAllSubjects.csv");
+  //WriteCSVFiles(scaledFeatureSet, outputdirectory + "/scaledFeatureSet.csv");
+  //WriteCSVFiles(SixModelFeatures, outputdirectory + "/SixModelFeatures.csv");
+  //WriteCSVFiles(EighteenModelFeatures, outputdirectory + "/EighteenModelFeatures.csv");
+  //WriteCSVFiles(SixModelSelectedFeatures, outputdirectory + "/SixModelSelectedFeatures.csv");
+  //WriteCSVFiles(EighteenModelSelectedFeatures, outputdirectory + "/EighteenModelSelectedFeatures.csv");
 
    try
    {
-	   trainOpenCVSVM(SixModelFeatures, outputdirectory + "/" + mSixTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
-	   trainOpenCVSVM(EighteenModelFeatures, outputdirectory + "/" + mEighteenTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
+	   trainOpenCVSVM(SixModelSelectedFeatures, outputdirectory + "/" + mSixTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
+	   trainOpenCVSVM(EighteenModelSelectedFeatures, outputdirectory + "/" + mEighteenTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
    }
    catch (const std::exception& e1)
    {
@@ -328,6 +268,24 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
    std::cout << std::endl << "Model saved to the output directory." << std::endl;
    return true;
 }
+void SurvivalPredictor::WriteCSVFiles(VariableSizeMatrixType inputdata, std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  for (unsigned int index1 = 0; index1 < inputdata.Rows(); index1++)
+  {
+    for (unsigned int index2 = 0; index2 < inputdata.Cols(); index2++)
+    {
+      if (index2 == 0)
+        myfile << std::to_string(inputdata[index1][index2]);
+      else
+        myfile << "," << std::to_string(inputdata[index1][index2]);
+    }
+    myfile << "\n";
+  }
+}
+
+
 
 VariableLengthVectorType SurvivalPredictor::DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename, const double &rho, const double &bestg)
 {
@@ -633,10 +591,12 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 			return results;
 		}
 	}
-
-
-	
 	VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
+  for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
+    for (unsigned int j = 0; j < ScaledTestingData.Cols(); j++)
+      if (std::isnan(ScaledTestingData(i, j)))
+        ScaledTestingData(i, j) = 0;
+
 	VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
 	ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
 	for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
@@ -647,11 +607,12 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 		ScaledFeatureSetAfterAddingLabel(i, j) = 0;
 	}
 
-
 	VariableSizeMatrixType SixModelSelectedFeatures = SelectSixMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
 	VariableSizeMatrixType EighteenModelSelectedFeatures = SelectEighteenMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
 	
-	
+  //WriteCSVFiles(ScaledFeatureSetAfterAddingLabel, outputdirectory + "/ScaledFeatureSetAfterAddingLabel.csv");
+  //WriteCSVFiles(SixModelSelectedFeatures, outputdirectory + "/SixModelSelectedFeatures.csv");
+  //WriteCSVFiles(EighteenModelSelectedFeatures, outputdirectory + "/EighteenModelSelectedFeatures.csv");
 	//------------------------------------------------------------------------------------------------------------------
 	//typedef itk::CSVNumericObjectFileWriter<double, 2, 161> WriterTypeMatrix;
 	//WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();

@@ -304,6 +304,8 @@ public:
 
     auto tHeader = tTableWidget->horizontalHeader();
     tHeader->setSectionResizeMode(QHeaderView::Stretch);
+    QTableWidgetItem *___qtablewidgetitem17 = tTableWidget->horizontalHeaderItem(0);
+    ___qtablewidgetitem17->setText(QApplication::translate("fTumorPanel", "    Type     ", 0));
     QTableWidgetItem *___qtablewidgetitem14 = tTableWidget->horizontalHeaderItem(1);
     ___qtablewidgetitem14->setText(QApplication::translate("fTumorPanel", "      x      ", 0));
     QTableWidgetItem *___qtablewidgetitem15 = tTableWidget->horizontalHeaderItem(2);

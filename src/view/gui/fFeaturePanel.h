@@ -92,11 +92,11 @@ private:
     }
 
     auto filesInDir = cbica::filesInDirectory(dataFeatureDir);
-    if (filesInDir.size() != m_featureFiles.size())
-    {
-      cbica::Logging(loggerFile, "Feature file number mismatch");
-      return;
-    }
+    //if (filesInDir.size() != m_featureFiles.size())
+    //{
+    //  cbica::Logging(loggerFile, "Feature file number mismatch");
+    //  return;
+    //}
     for (size_t i = 0; i < filesInDir.size(); i++)
     {
       auto featureMap = FeatureParser(filesInDir[i]).getFeatureMap();
