@@ -4,6 +4,5 @@ Though some functionality does exist on the graphical interface, this executable
 
 ## Functionality offered
 
-1. Resizing: done has a percentage of the original image with options for different interpolations
-2. Histogram Matching: needs a reference image and the number of bins and quantiles to match
-3. Z-Score Normalization
+1. Histogram Matching: needs a reference image and the number of bins and quantiles to match
+2. Z-Score Normalization
