@@ -157,6 +157,7 @@ fMainWindow::fMainWindow()
   help_download = new QAction(this);
   actionLoad_Recurrence_Images = new QAction(this);
   actionLoad_Nifti_Images = new QAction(this);
+  actionLoad_Dicom_Images = new QAction(this);
   actionLoad_Nifti_ROI = new QAction(this);
   actionSave_Nifti_Images = new QAction(this);
   actionSave_Dicom_Images = new QAction(this);
@@ -273,6 +274,7 @@ fMainWindow::fMainWindow()
 
   menuLoadFile->addAction(actionLoad_Nifti_Images);
   menuLoadFile->addAction(actionLoad_Nifti_ROI);
+  menuLoadFile->addAction(actionLoad_Dicom_Images);
 
   menuSaveFile->addAction(actionSave_Nifti_Images);
   menuSaveFile->addAction(actionSave_ROI_Images);
@@ -503,6 +505,7 @@ fMainWindow::fMainWindow()
 
   connect(actionLoad_Recurrence_Images, SIGNAL(triggered()), this, SLOT(openImages()));
   connect(actionLoad_Nifti_Images, SIGNAL(triggered()), this, SLOT(openImages()));
+  connect(actionLoad_Dicom_Images, SIGNAL(triggered()), this, SLOT(openDicomImages()));
 
   connect(actionSave_ROI_Images, SIGNAL(triggered()), this, SLOT(SaveDrawing()));
   connect(actionSave_ROI_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomDrawing()));
@@ -829,6 +832,7 @@ fMainWindow::fMainWindow()
   //
   actionLoad_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image(s)", 0));
   actionLoad_Nifti_ROI->setText(QApplication::translate("fMainWindow", "ROI", 0));
+  actionLoad_Dicom_Images->setText(QApplication::translate("fMainWindow", "Dicom", 0));
 
   actionSave_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image (NIfTI)", 0));
   actionSave_Dicom_Images->setText(QApplication::translate("fMainWindow", "Image (DICOM)", 0));
@@ -4933,6 +4937,11 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
 
   }
   updateProgress(0, "Loading complete", 100);
+}
+
+void fMainWindow::openDicomImages()
+{
+
 }
 
 void fMainWindow::ApplicationLIBRABatch()
