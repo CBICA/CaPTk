@@ -4,37 +4,38 @@
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
-# export CC=/usr/local/opt/llvm/bin/clang
-# export CXX=/usr/local/opt/llvm/bin/clang++
-export CPPFLAGS="-L/usr/local/opt/llvm/include"
+export CC=/usr/bin/gcc
+export CXX=/usr/bin/g++
 
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 export CMAKE_PREFIX_PATH="$HOME/Desktop/CaPTk/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
 export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 
-# export CMAKE_PREFIX_PATH="$HOME/Desktop/dependency_manager/bin/ITK-build:/Library/TeX/texbin:$CMAKE_PREFIX_PATH"
 git lfs install && git lfs fetch --all
 
 ### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
-cmake ../
-# rm -rf /usr/local/opt/qt
-# rm -rf /usr/local/Cellar/qt
-# cp -r qt/5.11.2 /usr/local/opt/qt
-# cp -r qt /usr/local/Cellar/qt
 echo "Run Dependency Manager"
-make
+echo $CC
+cmake ../
+rm -rf /usr/local/opt/qt
+rm -rf /usr/local/Cellar/qt
+cp -r qt/5.11.2 /usr/local/opt/qt
+cp -r qt /usr/local/Cellar/qt
+make -j 2
 
-# rm -rf /usr/local/Cellar/opencv/3.4.1
-# cp -r OpenCV-build /usr/local/Cellar/opencv/3.4.1
-# brew link --overwrite opencv
-# brew unlink opencv
+export CC=/usr/local/opt/llvm/bin/clang
+export CXX=/usr/local/opt/llvm/bin/clang++
+export LDFLAGS="-L/usr/local/opt/llvm/lib"
+export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
+export CMAKE_PREFIX_PATH="$HOME/Desktop/CaPTk/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
 echo "Run CaPTk Build"
+echo $CC
 cmake ../
 cmake ../
-make
+make -j 2
 }
 
 ###########################
