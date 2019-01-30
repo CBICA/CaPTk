@@ -33,7 +33,7 @@ ExternalProject_Add(
     -DBUILD_opencv_python_bindings_generator:BOOL=OFF
     -DWITH_CUDA:BOOL=OFF
     -DBUILD_DOCS:BOOL=OFF
-    -DWITH_OPENCL_SVM:BOOL=ON
+    -DWITH_OPENCL_SVM:BOOL=OFF
     #-DWITH_QT:BOOL=TRUE # [QT] dependency, enables better GUI
     -DWITH_EIGEN:BOOL=TRUE # [Eigen] dependency, enables better matrix operations 
     -DWITH_OPENMP:BOOL=ON
