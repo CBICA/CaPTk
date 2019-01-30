@@ -13,7 +13,6 @@ export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
 export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
-echo 'export PATH="/usr/local/opt/make/libexec/gnubin:/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile
 
 cmake ../
 
@@ -24,8 +23,8 @@ cmake ../
 # brew link --force qt
 
 echo "Run Dependency Manager"
-# make & sleep 5600; kill $! 
-make
+make & sleep 5800; kill $! 
+# make
 
 # echo "Run CaPTk Build"
 # cmake ../

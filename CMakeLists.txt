@@ -228,8 +228,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ### third party library processing
 
   IF(APPLE)
-    set(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../bin")
-    set(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../../include")
+    set(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../bin")
+    set(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../include")
+
+    MESSAGE ("${CMAKE_C_COMPILER}")
 
     SET(OpenMP_C "${CMAKE_C_COMPILER}")
     SET(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
