@@ -93,12 +93,12 @@ fi
 echo "[:] Entering binary directory..."
 cd bin
 
-# # Cmake
-# echo "[:] Running cmake command..."
-# bash ../scripts/linux-cmake-conf
+# Cmake
+echo "[:] Running cmake command..."
+bash ../scripts/linux-cmake-conf
 
-# # Make
-# echo "[:] Building CaPTk..."
-# make -j2
+# Make
+echo "[:] Building CaPTk..."
+make -j2
 
 echo "[:] Done. Project has been built"
