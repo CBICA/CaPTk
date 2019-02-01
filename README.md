@@ -22,9 +22,9 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 
 ## Download Latest Release (1.6.0)
 
-- Windows: https://www.nitrc.org/frs/downloadlink.php/10911
-- Linux: https://www.nitrc.org/frs/downloadlink.php/11012
-- macOS: https://www.nitrc.org/frs/downloadlink.php/11037
+- Windows: https://www.nitrc.org/frs/downloadlink.php/11129
+- Linux: https://www.nitrc.org/frs/downloadlink.php/11131
+- macOS (1.6.0): https://www.nitrc.org/frs/downloadlink.php/11037
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a> .
