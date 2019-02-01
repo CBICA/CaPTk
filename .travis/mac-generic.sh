@@ -12,8 +12,8 @@ export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:
 cmake ../
 
 echo "Run Dependency Manager"
-make & sleep 5600; kill $! 
-# make
+# make & sleep 5600; kill $! 
+make
 
 # export CC=/usr/local/opt/llvm/bin/clang
 # export CXX=/usr/local/opt/llvm/bin/clang++

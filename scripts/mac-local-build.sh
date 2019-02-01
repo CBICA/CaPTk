@@ -4,22 +4,32 @@
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
+export CMAKE_PREFIX_PATH=/Library/TeX/texbin
+export CMAKE_PREFIX_PATH="$HOME/Desktop/CaPTk/bin/ITK-build:$CMAKE_PREFIX_PATH"
+
+export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
+
+git lfs install && git lfs fetch --all
+
+### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
+echo "Run Dependency Manager"
+echo $CC
+cmake ../
+rm -rf /usr/local/opt/qt
+rm -rf /usr/local/Cellar/qt
+cp -r qt/5.11.2 /usr/local/opt/qt
+cp -r qt /usr/local/Cellar/qt
+make -j 2
+
 export CC=/usr/local/opt/llvm/bin/clang
 export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-export CMAKE_PREFIX_PATH=/Library/TeX/texbin
-export CMAKE_PREFIX_PATH="./ITK-build:$CMAKE_PREFIX_PATH"
-
-cmake ../
-echo "Run Dependency Manager"
-# make & sleep 2000; kill $! 
-make -j 2
-
-# ls ./ITK-build
+export CMAKE_PREFIX_PATH="$HOME/Desktop/CaPTk/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
 echo "Run CaPTk Build"
+echo $CC
 cmake ../
 cmake ../
 make -j 2
