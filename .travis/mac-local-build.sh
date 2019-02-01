@@ -4,9 +4,6 @@
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
-export CC=/usr/bin/gcc
-export CXX=/usr/bin/g++
-
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 export CMAKE_PREFIX_PATH="$HOME/Desktop/CaPTk/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
