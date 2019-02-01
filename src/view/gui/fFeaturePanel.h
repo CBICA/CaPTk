@@ -82,12 +82,17 @@ private:
   {
     //auto names = FeatureExtraction::getFeatureMapFiles();
 
-    std::string dataFeatureDir = cbica::normPath(getCaPTkDataDir() + "/features");
+    std::string dataFeatureDir = cbica::normPath(getCaPTkDataDir() + "/survival");
 
     //std::string defaultFeatureFile = dataFeatureDir + "/1_params_default.csv";
     if (!cbica::isFile(dataFeatureDir + "/1_params_default.csv"))
     {
-      dataFeatureDir = cbica::normPath(captk_currentApplicationPath + "/../../data/features/");
+      dataFeatureDir = cbica::normPath(captk_currentApplicationPath + "/../../data/survival/");
+
+      #ifdef __APPLE__
+          dataFeatureDir = cbica::normPath(captk_currentApplicationPath + "/../Resources/data/survival/");
+      #endif 
+
       //defaultFeatureFile = dataFeatureDir + "/1_params_default.csv";
     }
 

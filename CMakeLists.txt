@@ -1202,8 +1202,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       #   ENDIF()
       # ENDFOREACH()
 
-      # chmodFile(${EXE_NAME} dcm2nii)
-      # chmodFile(${EXE_NAME} ITK-SNAP)
+      chmodFile(${EXE_NAME} dcm2nii)
+      chmodFile(${EXE_NAME} ITK-SNAP)
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})

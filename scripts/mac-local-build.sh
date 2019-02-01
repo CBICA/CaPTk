@@ -15,10 +15,12 @@ git lfs install && git lfs fetch --all
 echo "Run Dependency Manager"
 echo $CC
 cmake ../
+
 rm -rf /usr/local/opt/qt
 rm -rf /usr/local/Cellar/qt
-cp -r qt/5.11.2 /usr/local/opt/qt
 cp -r qt /usr/local/Cellar/qt
+brew link --force qt
+
 make -j 2
 
 export CC=/usr/local/opt/llvm/bin/clang

@@ -334,7 +334,7 @@ fMainWindow::fMainWindow()
   auto brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator SurvivalPredictor MolecularSubtypePredictor PopulationAtlases WhiteStripe confetti";
   std::string breastAppList = "";
 
-#ifndef APPLE
+#ifndef __APPLE__
   breastAppList = " librasingle librabatch";
 #endif
 
