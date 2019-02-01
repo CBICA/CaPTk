@@ -105,7 +105,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF()
 
     if(APPLE)
-      list(APPEND CMAKE_CXX_FLAGS "-std=c++11 -Wno-narrowing -mmacosx-version-min=10.9 ${CMAKE_CXX_FLAGS}")
+      list(APPEND CMAKE_CXX_FLAGS "-std=c++11 -Wno-narrowing -Wall ${CMAKE_CXX_FLAGS}")
 
       SET (CAPTK_MACOSX_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${PROJECT}" )
@@ -228,8 +228,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ### third party library processing
 
   IF(APPLE)
-    set(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../bin")
-    set(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../include")
+    set(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../lib")
+    set(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../../include")
 
     MESSAGE ("${CMAKE_C_COMPILER}")
 
