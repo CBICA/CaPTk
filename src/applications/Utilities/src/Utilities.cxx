@@ -28,11 +28,10 @@ int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator;
 size_t resize = 100;
-int histoMatchQuantiles = 40, histoMatchBins = 100, testRadius = 0, testNumber = 0;
+int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<double>::max();
 std::string changeOldValues, changeNewValues;
 float resamplingResolution = 1.0;
-float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
 
@@ -74,15 +73,6 @@ int algorithmsRunner()
         std::cout << cbica::to_string_precision(uniqueValues[i]) << "\n";
       }
     }
-    return EXIT_SUCCESS;
-  }
-
-  if (requestedAlgorithm == HistogramMatching)
-  {
-    cbica::WriteImage< TImageType >(
-      cbica::GetHistogramMatchedImage< TImageType >(
-        cbica::ReadImage< TImageType >(inputImageFile), cbica::ReadImage< TImageType >(targetImageFile), histoMatchQuantiles, histoMatchBins), outputImageFile);
-    std::cout << "Histogram matching completed.\n";
     return EXIT_SUCCESS;
   }
 
@@ -368,142 +358,8 @@ int algorithmsRunner()
     }
 
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
-
   }
   
-  if (requestedAlgorithm == ZScoreNormalize)
-  {
-    ZScoreNormalizer< TImageType > normalizer;
-    normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
-    if (!inputMaskFile.empty())
-    {
-      normalizer.SetInputMask(cbica::ReadImage< TImageType >(inputMaskFile));
-    }
-    normalizer.SetCutoffs(zNormCutLow, zNormCutHigh);
-    normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
-    normalizer.Update();
-    cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
-
-    //auto currentDataDir = cbica::normalizePath(inputImageFile); // this is a data directory for now and will be changed
-    //auto outputDir = cbica::normalizePath(outputImageFile);// this is a data directory for now and will be changed
-    //cbica::createDir(outputDir);
-    //std::string hggFL_file = outputDir + "/hgg_fl.cfg", hggT1C_file = outputDir + "/hgg_t1c.cfg", hggT1_file = outputDir + "/hgg_t1.cfg", hggT2_file = outputDir + "/hgg_t2.cfg",
-    //  lggFL_file = outputDir + "/lgg_fl.cfg", lggT1C_file = outputDir + "/lgg_t1c.cfg", lggT1_file = outputDir + "/lgg_t1.cfg", lggT2_file = outputDir + "/lgg_t2.cfg",
-    //  hggMask_file = outputDir + "/hgg_brainMask.cfg", lggMask_file = outputDir + "/lgg_brainMask.cfg",
-    //  hggGt_file = outputDir + "/hgg_Gt.cfg", lggGt_file = outputDir + "/lgg_Gt.cfg";
-
-    //auto output_HGG = outputDir + "/HGG";
-    //auto output_LGG = outputDir + "/LGG";
-    //cbica::createDir(output_HGG);
-    //cbica::createDir(output_LGG);
-    //auto allFolders = cbica::subdirectoriesInDirectory(currentDataDir, true);
-
-    //for (size_t i = 0; i < allFolders.size(); i++)
-    //{
-    //  auto filesInFolder = cbica::filesInDirectory(allFolders[i]);
-    //  for (size_t j = 0; j < filesInFolder.size(); j++)
-    //  {
-    //    std::ofstream file_hggFL(hggFL_file, std::ofstream::out | std::ofstream::app), file_hggT1C(hggT1C_file, std::ofstream::out | std::ofstream::app), file_hggT1(hggT1_file, std::ofstream::out | std::ofstream::app), file_hggT2(hggT2_file, std::ofstream::out | std::ofstream::app),
-    //      file_lggFL(lggFL_file, std::ofstream::out | std::ofstream::app), file_lggT1C(lggT1C_file, std::ofstream::out | std::ofstream::app), file_lggT1(lggT1_file, std::ofstream::out | std::ofstream::app), file_lggT2(lggT2_file, std::ofstream::out | std::ofstream::app),
-    //      file_hggBM(hggMask_file, std::ofstream::out | std::ofstream::app), file_lggBM(lggMask_file, std::ofstream::out | std::ofstream::app),
-    //      file_hggGT(hggGt_file, std::ofstream::out | std::ofstream::app), file_lggGT(lggGt_file, std::ofstream::out | std::ofstream::app);
-    //    std::string inputBase, inputExt, inputPath;
-    //    cbica::splitFileName(filesInFolder[j], inputPath, inputBase, inputExt);
-    //    if (filesInFolder[j].find("_seg.nii.gz") == std::string::npos)
-    //    {
-    //      if (inputExt == ".nii.gz")
-    //      {
-    //        auto inputImage = cbica::ReadImage< TImageType >(filesInFolder[j]);
-    //        ZScoreNormalizer< TImageType > normalizer;
-    //        normalizer.SetInputImage(inputImage);
-    //        normalizer.SetCutoffs(zNormCutLow, zNormCutHigh);
-    //        normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
-    //        normalizer.Update();
-    //        auto outputImage = normalizer.GetOutput();
-
-    //        if (allFolders[i].find("HGG") != std::string::npos)
-    //        {
-    //          cbica::WriteImage< TImageType >(outputImage, output_HGG + "/" + inputBase + inputExt);
-    //          if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
-    //          {
-    //            file_hggT1C << output_HGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
-    //          {
-    //            file_hggT1 << output_HGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
-    //          {
-    //            file_hggFL << output_HGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
-    //          {
-    //            file_hggT2 << output_HGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //        }
-    //        else
-    //        {
-    //          cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + inputExt);
-    //          if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
-    //          {
-    //            file_lggT1C << output_LGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
-    //          {
-    //            file_lggT1 << output_LGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
-    //          {
-    //            file_lggFL << output_LGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
-    //          {
-    //            file_lggT2 << output_LGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //        }
-    //      }
-    //    }
-    //    else
-    //    {
-    //      auto currentFile = cbica::replaceString(filesInFolder[j], "_seg.nii.gz", "_t1ce.nii.gz");
-
-    //      auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
-    //      thresholder->SetInput(cbica::ReadImage< TImageType >(currentFile));
-    //      thresholder->SetLowerThreshold(1);
-    //      thresholder->SetUpperThreshold(std::numeric_limits<float>::max());
-    //      thresholder->SetOutsideValue(0);
-    //      thresholder->SetInsideValue(1);
-    //      thresholder->Update();
-
-    //      if (allFolders[i].find("HGG") != std::string::npos)
-    //      {
-    //        file_hggGT << filesInFolder[j] << "\n";
-    //        cbica::WriteImage< TImageType >(thresholder->GetOutput(), output_HGG + "/brainMask_" + inputBase + inputExt);
-    //        file_hggBM << output_HGG + "/brainMask_" + inputBase + inputExt << "\n";
-    //      }
-    //      else
-    //      {
-    //        file_lggGT << filesInFolder[j] << "\n";
-    //        cbica::WriteImage< TImageType >(thresholder->GetOutput(), output_LGG + "/brainMask_" + inputBase + inputExt);
-    //        file_lggBM << output_LGG + "/brainMask_" + inputBase + inputExt << "\n";
-    //      }
-    //    }
-    //    file_lggGT.close();
-    //    file_hggGT.close();
-    //    file_hggT1C.close();
-    //    file_hggT1.close();
-    //    file_hggT2.close();
-    //    file_hggFL.close();
-    //    file_lggT1C.close();
-    //    file_lggT1.close();
-    //    file_lggT2.close();
-    //    file_lggFL.close();
-    //    file_hggBM.close();
-    //    file_lggBM.close();
-    //  }
-    //}
-  }
-
   return EXIT_SUCCESS;
 }
 
@@ -528,12 +384,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("tb", "testBase", cbica::Parameter::FILE, "NIfTI Reference", "Baseline image to compare inputImage with");
   parser.addOptionalParameter("tr", "testRadius", cbica::Parameter::INTEGER, "0-10", "Maximum distance away to look for a matching pixel", "Defaults to 0");
   parser.addOptionalParameter("tt", "testThresh", cbica::Parameter::FLOAT, "0-5", "Minimum threshold for pixels to be different", "Defaults to 0.0");
-  parser.addOptionalParameter("hi", "histoMatch", cbica::Parameter::FILE, "NIfTI Target", "Match inputImage with the file provided in with this parameter", "Pass the target image after '-hi'");
-  parser.addOptionalParameter("hb", "hMatchBins", cbica::Parameter::INTEGER, "1-1000", "Number of histogram bins for histogram matching", "Only used for histoMatching", "Defaults to 100");
-  parser.addOptionalParameter("hq", "hMatchQnts", cbica::Parameter::INTEGER, "1-1000", "Number of quantile values to match for histogram matching", "Only used for histoMatching", "Defaults to 40");
   parser.addOptionalParameter("utB", "unitTestBuffer", cbica::Parameter::STRING, "N.A.", "Buffer test of application");
-  parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization");
-  parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: 5,95");
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
   parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
@@ -560,19 +411,6 @@ int main(int argc, char** argv)
   if (parser.isPresent("o"))
   {
     parser.getParameterValue("o", outputImageFile);
-  }
-  if (parser.isPresent("hi"))
-  {
-    parser.getParameterValue("hi", targetImageFile);
-    requestedAlgorithm = HistogramMatching;
-    if (parser.isPresent("hb"))
-    {
-      parser.getParameterValue("hb", histoMatchBins);
-    }
-    if (parser.isPresent("hq"))
-    {
-      parser.getParameterValue("hq", histoMatchQuantiles);
-    }
   }
   if (parser.isPresent("r"))
   {
@@ -612,41 +450,6 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("un", uniqueValsSort);
     requestedAlgorithm = UniqueValues;
-  }
-  if (parser.isPresent("zn"))
-  {
-    requestedAlgorithm = ZScoreNormalize;
-    std::string tempCutOff, tempQuant;
-    if (parser.isPresent("zc"))
-    {
-      parser.getParameterValue("zc", tempCutOff);
-      auto temp = cbica::stringSplit(tempCutOff, ",");
-      if (temp.size() == 2)
-      {
-        zNormCutLow = std::atof(temp[0].c_str());
-        zNormCutHigh = std::atof(temp[1].c_str());
-
-        if (zNormCutHigh < zNormCutLow)
-        {
-          std::swap(zNormCutHigh, zNormCutLow);
-        }
-      }
-    }
-    if (parser.isPresent("zq"))
-    {
-      parser.getParameterValue("zq", tempCutOff);
-      auto temp = cbica::stringSplit(tempCutOff, ",");
-      if (temp.size() == 2)
-      {
-        zNormQuantLow = std::atof(temp[0].c_str());
-        zNormQuantHigh = std::atof(temp[1].c_str());
-
-        if (zNormQuantHigh < zNormQuantLow)
-        {
-          std::swap(zNormQuantHigh, zNormQuantLow);
-        }
-      }
-    }
   }
   if (parser.isPresent("tb"))
   {
@@ -721,13 +524,6 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
   }
-  if (requestedAlgorithm == ZScoreNormalize)
-  {
-    using ImageType = itk::Image< float, 3 >;
-    return algorithmsRunner< ImageType >();
-    return EXIT_SUCCESS;
-  }
-
   auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
   if (requestedAlgorithm == Information)
