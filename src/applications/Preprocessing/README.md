@@ -6,3 +6,11 @@ Though some functionality does exist on the graphical interface, this executable
 
 1. Histogram Matching: needs a reference image and the number of bins and quantiles to match
 2. Z-Score Normalization
+
+## To Do
+
+- Bias Correction (N3 and N4)
+- Smoothing
+- Skull Stripping
+
+For new features, please put a pull or feature request via github.com/CBICA/CaPTk.

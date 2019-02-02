@@ -14,3 +14,9 @@ Though some functionality does exist on the graphical interface, this executable
 8. BoundingBox: Extracts the smallest bounding box around the mask file (optionally, can be isotropic)
 9. CreateMask: Create a binary mask out of a provided (float) thresholds
 10. ChangeValue: Change the specified pixel/voxel value
+
+## To Do
+
+- Extend image information with S/Q Form matrix information and Direction cosine of image
+
+For new features, please put a pull or feature request via github.com/CBICA/CaPTk
