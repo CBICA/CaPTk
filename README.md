@@ -1,6 +1,13 @@
 # CaPTk:  Cancer Imaging Phenomics Toolkit 
 
-[![Build Status](https://travis-ci.org/CBICA/CaPTk.svg?branch=master)](https://travis-ci.org/CBICA/CaPTk)
+<p align="center">
+    <img src="https://www.med.upenn.edu/cbica/assets/user-content/images/captk/baseScreenshot.png"/>
+    <br></br>
+    <a href="https://travis-ci.org/CBICA/CaPTk" alt="Build Status">
+        <img src="https://travis-ci.org/CBICA/CaPTk.svg?branch=master" /></a>
+    <a href="#" alt="Language">
+        <img src="https://img.shields.io/badge/language-c%2B%2B-blue.svg" /></a>
+</p>
 
 CaPTk is a software platform, written in C++, for analysis of radiographic images of cancer, currently focusing on brain, breast, and lung cancer. CaPTk integrates advanced, validated tools performing various aspects of medical image analysis, that have been developed in the context of active clinical research studies and collaborations toward addressing real clinical needs. With emphasis given in its use as a very lightweight and efficient viewer, and with no prerequisites for substantial computational background, CaPTk aims to facilitate the swift translation of advanced computational algorithms into routine clinical quantification, analysis, decision making, and reporting workflow.
 
