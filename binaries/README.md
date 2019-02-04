@@ -1,3 +1,7 @@
-# NOTE
+# Binaries
+
+Contains the binaries used by CI/the superbuild. These are automatically handled for you by cmake, no need to touch them.
+
+## NOTE
 
 By downloading these binaries, you are assuming acceptance of the specific licenses being described in ../licenses/Combined.txt
