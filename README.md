@@ -20,6 +20,12 @@ For project documentation and how-to guides, please visit http://captk.projects.
 
 For issues, please visit https://github.com/cbica/captk/issues
 
+## Download Latest Release (1.6.0)
+
+- Windows: https://www.nitrc.org/frs/downloadlink.php/11129
+- Linux: https://www.nitrc.org/frs/downloadlink.php/11131
+- macOS (1.6.0): https://www.nitrc.org/frs/downloadlink.php/11037
+
 ## Supporting Grant
 This work is in part supported by the grant U24-CA189523, awarded by the National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research (NIH/NCI/ITCR).
 
@@ -27,12 +33,6 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 - The software has been designed for research purposes only and has neither been reviewed nor approved for clinical use by the Food and Drug Administration (FDA) or by any other federal/state agency.
 - This code (excluding dependent libraries) is governed by the license provided in http://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
 - The minimum recommended resolution is 1024x768. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
-
-## Download Latest Release (1.6.0)
-
-- Windows: https://www.nitrc.org/frs/downloadlink.php/11129
-- Linux: https://www.nitrc.org/frs/downloadlink.php/11131
-- macOS (1.6.0): https://www.nitrc.org/frs/downloadlink.php/11037
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a> .
