@@ -20,7 +20,7 @@ For project documentation and how-to guides, please visit http://captk.projects.
 
 For issues, please visit https://github.com/cbica/captk/issues
 
-## Download Latest Release (1.6.0)
+## Download Latest Release (1.6.1)
 
 - Windows: https://www.nitrc.org/frs/downloadlink.php/11129
 - Linux: https://www.nitrc.org/frs/downloadlink.php/11131
