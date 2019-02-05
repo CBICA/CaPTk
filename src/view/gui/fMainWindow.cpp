@@ -56,6 +56,8 @@
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkLookupTable.h"
 
+#include "DicomSeriesReader.h"
+
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
@@ -4941,7 +4943,9 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
 
 void fMainWindow::openDicomImages()
 {
-
+  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+    QDir::currentPath(),
+    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 }
 
 void fMainWindow::ApplicationLIBRABatch()
