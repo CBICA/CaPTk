@@ -8,7 +8,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED YES)
 ExternalProject_Add( 
   OpenCV
   DEPENDS Eigen
-  URL https://github.com/opencv/opencv/archive/3.4.1.zip
+  URL https://github.com/opencv/opencv/archive/3.4.5.zip
   #GIT_REPOSITORY ${git_protocol}://github.com/opencv/opencv.git
   #GIT_TAG 3.4.1
   SOURCE_DIR OpenCV-source
@@ -45,6 +45,7 @@ ExternalProject_Add(
     -DEIGEN_INCLUDE_PATH:STRING=${EIGEN_INCLUDE_DIR}
     #-DVTK_DIR:STRING=${VTK_DIR}
     -DOpenCV_USE_GUISUPPORT:BOOL=FALSE
+    #-DOPENCV_EXTRA_MODULES_PATH:STRING=${OPENCV_CONTRIB_PATH}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/install
 )

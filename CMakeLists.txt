@@ -865,8 +865,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   FOREACH(dependent_lib ${ALL_DEPENDENT_LIBS})
     IF (APPLE)
-      # SET_SOURCE_FILES_PROPERTIES(${dependent_lib} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
-      # SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${dependent_lib})
+      SET_SOURCE_FILES_PROPERTIES(${dependent_lib} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${dependent_lib})
 
       INSTALL(FILES "${dependent_lib}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
 
@@ -893,17 +893,17 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   #  SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
   #ENDFOREACH()
   #
-  #IF (APPLE)
-  #  SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
-  #
-  #  SET( BATCHMODE "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" )
-  #  SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
-  #
-  #  SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
-  #
-  #ELSE()
+  IF (APPLE)
+   SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
+  
+   SET( BATCHMODE "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" )
+   SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
+  
+   SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
+  
+  # ELSE()
   #  INSTALL( FILES "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
-  #ENDIF()
+  ENDIF()
   #
   #SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
   #ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
@@ -1019,6 +1019,12 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
       #   SET_SOURCE_FILES_PROPERTIES(CaPTk_Utilities PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
       #   SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} CaPTk_Utilities)
+
+      # MESSAGE("FEATURES: " ${FEATURE_EXTRACTION_META_FILES_TO_INCLUDE})
+      # MESSAGE("INDIV: " ${CAPTK_MACOSX_BUNDLE_FILES_INSTALL_TARGETS})
+      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FEATURE_EXTRACTION_META_FILES_TO_INCLUDE})
+
+      # MESSAGE("META: " ${META_FILES_TO_INCLUDE})
 
       # Identify MacOS bundle
       SET(MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
@@ -1202,8 +1208,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       #   ENDIF()
       # ENDFOREACH()
 
-      chmodFile(${EXE_NAME} dcm2nii)
-      chmodFile(${EXE_NAME} ITK-SNAP)
+      # chmodFile(${EXE_NAME} dcm2nii)
+      # chmodFile(${EXE_NAME} ITK-SNAP)
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
