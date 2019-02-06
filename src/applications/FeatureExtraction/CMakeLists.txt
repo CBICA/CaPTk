@@ -131,7 +131,7 @@ ENDIF()
 
 # For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
 SET( FeatureDefinitions "" )
-SET( META_FILES_TO_INCLUDE "")
+SET( FT_META_FILES_TO_INCLUDE "")
 FILE( GLOB allFeatureDefinitionFiles "${PROJECT_SOURCE_DIR}/data/*.csv" )
 FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
 
@@ -150,12 +150,14 @@ FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
 ENDFOREACH()
 
 IF (APPLE)
+  MESSAGE("FEATURE: " ${allFeatureDefinitionFiles})
+  
   SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
 
-  SET( BATCHMODE "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureExtraction.csv" )
+  SET( BATCHMODE "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureextraction.csv" )
   SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
 
-  SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
+  SET(FT_META_FILES_TO_INCLUDE ${FT_META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
 
 ELSE()
   INSTALL( FILES "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureExtraction.csv" DESTINATION share/featureExtractionBatch )
@@ -164,5 +166,5 @@ ENDIF()
 SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
 ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
 
-SET( FEATURE_EXTRACTION_META_FILES_TO_INCLUDE "${META_FILES_TO_INCLUDE}" CACHE STRING "macOS features extraction" FORCE)
+SET( FEATURE_EXTRACTION_META_FILES_TO_INCLUDE "${FT_META_FILES_TO_INCLUDE}" CACHE STRING "macOS features extraction" FORCE)
 

@@ -112,5 +112,5 @@ INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
 MESSAGE( STATUS "Adding VTK-8.1.0 ...")
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
 
-MESSAGE( STATUS "Adding ITK-4.13.0 ...")
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
+# MESSAGE( STATUS "Adding ITK-4.13.0 ...")
+# INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
