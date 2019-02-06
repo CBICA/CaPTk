@@ -9,21 +9,26 @@ export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
 export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 
-# cmake ../
+cmake ../
 
-# echo "Run Dependency Manager"
-# make & sleep 5600; kill $! 
+rm -rf /usr/local/opt/qt
+rm -rf /usr/local/Cellar/qt
+cp -r qt /usr/local/Cellar/qt
+brew link --force qt
+
+echo "Run Dependency Manager"
+make & sleep 5600; kill $! 
 # make
 
-export CC=/usr/local/opt/llvm/bin/clang
-export CXX=/usr/local/opt/llvm/bin/clang++
-export LDFLAGS="-L/usr/local/opt/llvm/lib"
-export CPPFLAGS="-L/usr/local/opt/llvm/include"
+# export CC=/usr/local/opt/llvm/bin/clang
+# export CXX=/usr/local/opt/llvm/bin/clang++
+# export LDFLAGS="-L/usr/local/opt/llvm/lib"
+# export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-echo "Run CaPTk Build"
-cmake ../
-cmake ../
-make 
+# echo "Run CaPTk Build"
+# cmake ../
+# cmake ../
+# make 
 
 }
 
