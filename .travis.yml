@@ -47,7 +47,6 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make git-lfs doxygen llvm ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
-  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CC=/usr/local/opt/llvm/bin/clang && export CXX=/usr/local/opt/llvm/bin/clang++ && export LDFLAGS="-L/usr/local/opt/llvm/lib" && export CPPFLAGS="-L/usr/local/opt/llvm/include" && export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH" ; fi
   
 script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./.travis/mac-generic.sh; fi
