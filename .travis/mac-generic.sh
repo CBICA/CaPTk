@@ -35,7 +35,6 @@ make & sleep 5600; kill $!
 # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 # cmake ../
 # make 
-
 }
 
 ###########################
