@@ -6,12 +6,15 @@
 # cause the shell script to exit immediately
 set -e
 
+# Binary name
+BIN_NAME="CaPTk_1.6.1.bin"
+
 # Download the latest CaPTk release
 # NOTE: Please update this as the verions change!
-wget ftp://www.nitrc.org/home/groups/captk/downloads/CaPTk_1.6.1.bin
+curl ftp://www.nitrc.org/home/groups/captk/downloads/${BIN_NAME}--output ${BIN_NAME}
 
 # Spawn an instance of the installer
-spawn ./CaPTk_1.6.1.bin
+spawn ./${BIN_NAME}
 
 # Fake a license acceptance
 expect "#? "
