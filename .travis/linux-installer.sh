@@ -11,13 +11,17 @@ BIN_NAME="CaPTk_1.6.1.bin"
 
 # Download the latest CaPTk release
 # NOTE: Please update this as the verions change!
-wget --tries=inf ftp://www.nitrc.org/home/groups/captk/downloads/${BIN_NAME}
+# wget --tries=inf ftp://www.nitrc.org/home/groups/captk/downloads/${BIN_NAME}
 
-# Spawn an instance of the installer
-spawn ./${BIN_NAME}
+# Make bin executable
+chmod +x ${BIN_NAME}
 
-# Fake a license acceptance
-expect "#? "
-send "1"
+# Spawn an instance of the installer and fake an acceptance
+expect <<END
+    spawn ./${BIN_NAME}
+    expect "#? \r"
+    send -- "1\r"
+    expect eof
+END
 
 # Should now install, if problems arise, travis will catch them.
