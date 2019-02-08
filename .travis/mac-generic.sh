@@ -5,7 +5,7 @@
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
-export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
+# export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
 export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 
@@ -17,8 +17,8 @@ cp -r qt /usr/local/Cellar/qt
 brew link --force qt
 
 echo "Run Dependency Manager"
-# make & sleep 5600; kill $! 
-make
+make & sleep 5600; kill $! 
+# make
 
 # rm CMakeCache.txt
 
