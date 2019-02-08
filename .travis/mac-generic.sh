@@ -5,7 +5,6 @@
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
-# export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
 export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 
@@ -17,24 +16,26 @@ cp -r qt /usr/local/Cellar/qt
 brew link --force qt
 
 echo "Run Dependency Manager"
-# make & sleep 5600; kill $! 
+# # make & sleep 5600; kill $! 
 make
 
-# rm CMakeCache.txt
+rm CMakeCache.txt
 
-# export CC=/usr/local/opt/llvm/bin/clang
-# export CXX=/usr/local/opt/llvm/bin/clang++
-# export LDFLAGS="-L/usr/local/opt/llvm/lib"
-# export CPPFLAGS="-L/usr/local/opt/llvm/include"
+export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 
-# echo $CC
+export CC=/usr/local/opt/llvm/bin/clang
+export CXX=/usr/local/opt/llvm/bin/clang++
+export LDFLAGS="-L/usr/local/opt/llvm/lib"
+export CPPFLAGS="-L/usr/local/opt/llvm/include"
+
+echo $CC
 
 # echo "Run CaPTk Build"
 # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
-# cmake ../
-# export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
-# cmake ../
-# make 
+cmake ../
+export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
+cmake ../
+make 
 }
 
 ###########################
