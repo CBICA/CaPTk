@@ -21,19 +21,19 @@ matrix:
       env:
         - LINUX_DIST=trusty
     # Test the installer on xenial
-    - os: linux
-      dist: xenial
-      sudo: required
-      env:
-        - LINUX_DIST=xenial
-        - INSTALL_TEST=true
+    # - os: linux
+    #   dist: xenial
+    #   sudo: required
+    #   env:
+    #     - LINUX_DIST=xenial
+    #     - INSTALL_TEST=true
     # Test the installer on trusty
-    - os: linux
-      dist: trusty
-      sudo: required
-      env:
-        - LINUX_DIST=xenial
-        - INSTALL_TEST=true
+    # - os: linux
+    #   dist: trusty
+    #   sudo: required
+    #   env:
+    #     - LINUX_DIST=trusty
+    #     - INSTALL_TEST=true
     - os: windows
       env:
         - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
