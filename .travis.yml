@@ -24,6 +24,13 @@ matrix:
       sudo: required
       env:
         - LINUX_DIST=trusty
+    # Test the installer
+    - os: xenial
+      dist: trusty
+      sudo: required
+      env:
+        - LINUX_DIST=xenial
+        - INSTALL_TEST=true
     - os: windows
       env:
         - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
@@ -46,5 +53,6 @@ before_install:
   
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
+  - if [[ "$INSTALL_TEST" == "true" ]]; then ./.travis/linux-installer.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export PATH=$MSBUILD_PATH:$PATH; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./.travis/windows-generic.sh; fi

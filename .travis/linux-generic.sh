@@ -1,10 +1,10 @@
 #!/bin/bash
 
+# Build CaPTk on a Travis environment
+
 # Any subsequent(*) commands which fail will 
 # cause the shell script to exit immediately
 set -e
-
-# CaPTk Packager
 
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
