@@ -11,7 +11,7 @@ BIN_NAME="CaPTk_1.6.1.bin"
 
 # Download the latest CaPTk release
 # NOTE: Please update this as the verions change!
-curl ftp://www.nitrc.org/home/groups/captk/downloads/${BIN_NAME}--output ${BIN_NAME}
+curl ftp://www.nitrc.org/home/groups/captk/downloads/${BIN_NAME} --output ${BIN_NAME}
 
 # Spawn an instance of the installer
 spawn ./${BIN_NAME}
