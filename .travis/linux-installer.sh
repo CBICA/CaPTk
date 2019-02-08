@@ -11,7 +11,7 @@ BIN_NAME="CaPTk_1.6.1.bin"
 
 # Download the latest CaPTk release
 # NOTE: Please update this as the verions change!
-# wget --tries=inf ftp://www.nitrc.org/home/groups/captk/downloads/${BIN_NAME}
+wget --tries=inf ftp://www.nitrc.org/home/groups/captk/downloads/${BIN_NAME}
 
 # Make bin executable
 chmod +x ${BIN_NAME}
