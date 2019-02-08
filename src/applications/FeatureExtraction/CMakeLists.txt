@@ -149,9 +149,7 @@ FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
   SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
 ENDFOREACH()
 
-IF (APPLE)
-  MESSAGE("FEATURE: " ${allFeatureDefinitionFiles})
-  
+IF (APPLE)  
   SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
 
   SET( BATCHMODE "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureextraction.csv" )

@@ -17,8 +17,8 @@ cp -r qt /usr/local/Cellar/qt
 brew link --force qt
 
 echo "Run Dependency Manager"
-make & sleep 5600; kill $! 
-# make
+# make & sleep 5600; kill $! 
+make
 
 # rm CMakeCache.txt
 
