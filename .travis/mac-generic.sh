@@ -8,12 +8,12 @@ export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 
-cmake ../
-
 rm -rf /usr/local/opt/qt
 rm -rf /usr/local/Cellar/qt
 cp -r qt /usr/local/Cellar/qt
 brew link --force qt
+
+cmake ../
 
 echo "Run Dependency Manager"
 # # make & sleep 5600; kill $! 
