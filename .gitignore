@@ -2,7 +2,6 @@
 
 bin_debug
 bin
-bin2
 CaPTk.bin
 *Installer.bin
 makeself-*.run*
@@ -27,7 +26,7 @@ src/applications/FeatureExtraction/data/output
 ibsi_phantom
 /src/applications/FeatureExtraction/runner.ps1
 
-scripts/mac-local-build.sh
+mac-local-build.sh
 deepmedic
 itksnap
 libra
