@@ -451,6 +451,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${PROJECT_SOURCE_DIR}/src/view/gui/
     ${APPLICATION_INCLUDES}
   )
+  
+  INCLUDE_DIRECTORIES( 
+    ${GEODESIC_TRAINING_INCLUDE_DIRS}
+  )
 
   # set stand-alone applications directory
   SET( StandAloneCLIAppsFolder "CaPTk_CLIApps")
@@ -714,7 +718,12 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
   SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   
-  SET( CAPTK_LIBRARIES ${LIBNAME_CBICATK} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} )
+  SET( CAPTK_LIBRARIES 
+    ${LIBNAME_CBICATK} 
+    ${LIBNAME_Applications} 
+    ${LIBNAME_FeatureExtractor} 
+    ${GeodesicTrainingCaPTk}
+  )
 
   # find stand-alone CMD applications
   FILE( GLOB STANDALONE_APPS

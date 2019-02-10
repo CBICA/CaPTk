@@ -1,0 +1,269 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+
+SET( PROJECT_NAME GeodesicTrainingCaPTk )
+
+# This cmake file is here because there were problems
+# adding the GeodesicTraining cmake file directly
+
+# Set project name 
+PROJECT( ${PROJECT_NAME} )
+SET( PROJECT_VERSION "0.12")
+ADD_DEFINITIONS(-DPROJECT_VERSION="${PROJECT_VERSION}" )
+ 
+# For ITK
+FIND_PACKAGE( ITK REQUIRED )
+SET(ITK_NO_IO_FACTORY_REGISTER_MANAGER "OFF")
+INCLUDE( ${ITK_USE_FILE} )
+
+# For OpenCV
+FIND_PACKAGE( OpenCV REQUIRED )
+#INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+
+# For OpenMP
+FIND_PACKAGE(OpenMP REQUIRED)
+SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
+SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
+
+# For C++11
+SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
+
+# Setting the files
+
+FILE( GLOB_RECURSE AGD_HEADERS 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/AdaptiveGeodesicDistance/include/AdaptiveGeodesicDistance/*.h" 
+)
+FILE( GLOB_RECURSE AGD_SOURCES 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/AdaptiveGeodesicDistance/src/*.cpp" 
+)
+FILE( GLOB_RECURSE RF_HEADERS 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/RandomForestSuite/include/RandomForestSuite/*.h" 
+)
+FILE( GLOB_RECURSE RF_SOURCES 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/RandomForestSuite/src/*.cpp" 
+)
+FILE( GLOB_RECURSE SVM_HEADERS 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/SvmSuite/include/SvmSuite/*.h" 
+)
+FILE( GLOB_RECURSE SVM_SOURCES 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/SvmSuite/src/*.cpp" 
+)
+FILE( GLOB_RECURSE SVM_CONV_SOURCES 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/SvmSuite/src/convertions/*.cpp" 
+)
+FILE( GLOB_RECURSE GTS_HEADERS 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/include/GeodesicTrainingSegmentation/*.h" 
+)
+FILE( GLOB_RECURSE GTS_SOURCES 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/src/*.cpp" 
+)
+FILE( GLOB_RECURSE GT_SOURCES 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/src/*.*"
+)
+FILE( GLOB_RECURSE CBICA_TOOLKIT_HEADERS
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/src/cbica_toolkit/*.h"
+)
+FILE( GLOB_RECURSE CBICA_TOOLKIT_SOURCES
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/src/cbica_toolkit/*.cpp"
+)
+FILE( GLOB_RECURSE YAML_HEADERS
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/SvmSuite/thirdparty/yaml-cpp/include/yaml-cpp/*.*"
+)
+FILE( GLOB_RECURSE YAML_SOURCES
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/SvmSuite/thirdparty/yaml-cpp/src/*.*"
+)
+
+SET( AGD_HEADERS_DIR 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/AdaptiveGeodesicDistance/include/AdaptiveGeodesicDistance" 
+)
+SET( RF_HEADERS_DIR 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/RandomForestSuite/include/RandomForestSuite" 
+)
+SET( SVM_HEADERS_DIR 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/SvmSuite/include/SvmSuite" 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/SvmSuite/src/convertions"
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/SvmSuite/thirdparty/yaml-cpp/include"
+)
+SET( GTS_HEADERS_DIR 
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/GeodesicTrainingSegmentation/include/GeodesicTrainingSegmentation" 
+)
+SET( CBICA_TOOLKIT_HEADERS_DIR
+  "${PROJECT_SOURCE_DIR}/GeodesicTraining/src/cbica_toolkit"
+)
+
+SET( GEODESIC_TRAINING_SOURCES
+  ${AGD_SOURCES}
+  ${RF_SOURCES}
+  ${SVM_SOURCES}
+  ${SVM_CONV_SOURCES}
+  ${YAML_HEADERS}
+  ${YAML_SOURCES}
+  ${GTS_SOURCES}
+)
+
+# These are needed to include the headers in CaPTk
+SET( GEODESIC_TRAINING_HEADERS
+  ${AGD_HEADERS}
+  ${RF_HEADERS}
+  ${SVM_HEADERS}
+  ${GTS_HEADERS}
+)
+
+SET( GEODESIC_TRAINING_INCLUDE_DIRS 
+  ${AGD_HEADERS_DIR}
+  ${RF_HEADERS_DIR}
+  ${SVM_HEADERS_DIR}
+  ${GTS_HEADERS_DIR}
+  CACHE INTERNAL ""
+)
+
+# Creating the library
+ADD_LIBRARY(${PROJECT_NAME} STATIC 
+	${GEODESIC_TRAINING_SOURCES}
+)
+
+# Linking the dependencies of the library
+TARGET_LINK_LIBRARIES( ${PROJECT_NAME}
+    ${ITK_LIBRARIES}
+	${OpenCV_LIBRARIES}
+)
+
+# Include folders for the library
+TARGET_INCLUDE_DIRECTORIES( ${PROJECT_NAME} PRIVATE
+    ${GEODESIC_TRAINING_INCLUDE_DIRS}
+    ${CBICA_TOOLKIT_HEADERS_DIR}
+)
+
+# Add sources to executable
+ADD_EXECUTABLE( GeodesicTraining
+  ${GT_SOURCES} 
+  ${GEODESIC_TRAINING_SOURCES}
+  ${GEODESIC_TRAINING_HEADERS}
+  ${CBICA_TOOLKIT_HEADERS}
+  ${CBICA_TOOLKIT_SOURCES}
+  ${YAML_HEADERS}
+  ${YAML_SOURCES}
+)
+
+# Linking the dependencies of the executable
+TARGET_LINK_LIBRARIES( GeodesicTraining
+  ${ITK_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+
+# Include folders for the executable
+TARGET_INCLUDE_DIRECTORIES( GeodesicTraining PRIVATE 
+    ${GEODESIC_TRAINING_INCLUDE_DIRS}
+    ${CBICA_TOOLKIT_HEADERS_DIR}
+)
+
+#--------------------------------------------------------------------------------
+# Source file specification
+#--------------------------------------------------------------------------------
+
+INSTALL( TARGETS GeodesicTraining 
+  #DESTINATION bin  
+  BUNDLE DESTINATION .
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
+  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+)
+
+#INSTALL( FILES ${PROJECT_SOURCE_DIR}/data/1_params_default.csv DESTINATION data )
+
+## this is for packaging only
+SET( PROJECT_VENDOR "CBICA - UPenn" )
+#SET( LICENSE_FILE "${PROJECT_SOURCE_DIR}/licenses/Combined.txt" )
+SET( README_FILE  "${PROJECT_SOURCE_DIR}/README.txt" )
+SET( PROJECT_DOMAIN "http://www.med.upenn.edu/sbia/software/" )
+SET( PROJECT_CONTACT "software@cbica.upenn.edu" )
+ADD_DEFINITIONS(-DPROJECT_NAME="${PROJECT_NAME}" )
+ADD_DEFINITIONS(-DPROJECT_VERSION="${PROJECT_VERSION}" )
+ADD_DEFINITIONS(-DEXE_NAME="${EXE_NAME}")
+ADD_DEFINITIONS(-DCaPTk_Variant="${CaPTk_Variant}")
+ADD_DEFINITIONS(-DPROJECT_NAME_EXTENDED="${PROJECT_NAME_EXTENDED}")
+ADD_DEFINITIONS(-DCONTACT="${PROJECT_CONTACT}")
+ADD_DEFINITIONS(-DPROJECT_CONTACT="${PROJECT_CONTACT}")
+ADD_DEFINITIONS(-DPROJECT_DOMAIN="${PROJECT_DOMAIN}")
+#ADD_DEFINITIONS(-DPROJECT_LICENSE="${LICENSE_FILE}")
+#ADD_DEFINITIONS(-DLICENSE="${LICENSE_FILE}")
+ADD_DEFINITIONS(-DPROJECT_README="${README_FILE}")
+ADD_DEFINITIONS(-DREADME="${README_FILE}")
+ADD_DEFINITIONS(-DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}/")
+ADD_DEFINITIONS(-DPROJECT_VARIANT="${${PROJECT_NAME}_Variant}")
+
+# CPack settings
+IF(WIN32)
+  SET(CPACK_GENERATOR "NSIS")
+  SET(CPACK_SOURCE_GENERATOR "ZIP")
+  SET(CPACK_NSIS_DISPLAY_NAME "${PROJECT_NAME}") 
+  SET(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}") 
+  SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}_${${PROJECT_NAME}_Variant}\\\\${PROJECT_VERSION}")
+  SET(CPACK_NSIS_INSTALL_ROOT "C:")
+  SET(CPACK_NSIS_DEFINES "RequestExecutionLevel user")
+  SET(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON")
+  #SET(CPACK_NSIS_MUI_ICON "${DATA_DIR}/icons/application/windows/captk.ico")
+  SET(CPACK_NSIS_MUI_FINISHPAGE_RUN "${EXE_NAME}.exe")
+  #SET(CPACK_NSIS_INSTALLED_ICON_NAME "${PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}")
+  #SET(CPACK_NSIS_MUI_FINISHPAGE_RUN "${CPACK_NSIS_INSTALLED_ICON_NAME}")
+  SET(CPACK_NSIS_HELP_LINK "https:\\\\\\\\www.med.upenn.edu\\\\sbia\\\\software\\\\")
+  SET(CPACK_NSIS_CONTACT "${PROJECT_CONTACT}")
+  SET(CPACK_NSIS_URL_INFO_ABOUT "https:\\\\\\\\www.med.upenn.edu\\\\sbia\\\\software\\\\")
+  #SET(CPACK_NSIS_MODIFY_PATH "ON") # desktop shortcut doesn't work, for some reason
+  # create extra shortcuts and respective uninstall targets 
+  SET(CPACK_NSIS_CREATE_ICONS_EXTRA "CreateShortCut '\$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\${EXE_NAME}.lnk' '\$INSTDIR\\\\bin\\\\${EXE_NAME}.exe'")
+  #SET(CPACK_NSIS_CREATE_ICONS "CreateShortCut '$DESKTOP\\\\${EXE_NAME}.lnk' '$INSTDIR\\\\bin\\\\${EXE_NAME}.exe'")
+  #SET(CPACK_NSIS_CREATE_ICONS_EXTRA "  CreateShortCut '$INSTDIR\\\\${EXE_NAME}.lnk' '$INSTDIR\\\\bin\\\\${EXE_NAME}.exe'")
+  SET(CPACK_NSIS_CREATE_ICONS "CreateShortCut '\$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\README.lnk' '\$INSTDIR\\\\share\\\\doc\\\\index.html'")
+  #SET(CPACK_NSIS_DELETE_ICONS_EXTRA "  Delete '$SMPROGRAMS\\\\$START_MENU\\\\${EXE_NAME}.lnk'")
+  SET(CPACK_NSIS_DELETE_ICONS "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\${EXE_NAME}.lnk'")
+  #SET(CPACK_NSIS_DELETE_ICONS "Delete '$DESKTOP\\\\${EXE_NAME}.lnk'")
+  #SET(CPACK_NSIS_DELETE_ICONS_EXTRA "Delete '$INSTDIR\\\\${EXE_NAME}.lnk'")
+  SET(CPACK_NSIS_DELETE_ICONS "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\README.lnk'")
+  SET(CPACK_NSIS_INSTALLED_ICON_NAME "${EXE_NAME}") 
+  SET(CPACK_SYSTEM_NAME "Win64")
+ELSEIF(APPLE)
+  SET(CMAKE_INSTALL_PREFIX "/Applications")
+  SET(CPACK_GENERATOR "DragNDrop")
+  SET(CPACK_DMG_FORMAT "UDBZ")
+  SET(CPACK_DMG_VOLUME_NAME "${EXE_NAME}")
+  SET(CPACK_SYSTEM_NAME "OSX")
+  SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}_${${PROJECT_NAME}_Variant}/${PROJECT_VERSION}")
+  #SET(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
+  #SET(CPACK_DMG_DS_STORE "${ICONS_DIR}/DMGDSStore")
+  #SET(CPACK_DMG_BACKGROUND_IMAGE "${ICONS_DIR}/DMGBackground.png")
+ELSEIF(UNIX)
+  SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}_${${PROJECT_NAME}_Variant}/${PROJECT_VERSION}")
+  #SET(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
+  SET(CPACK_CMAKE_GENERATOR "Unix Makefiles")
+  SET(CPACK_GENERATOR "STGZ")
+  SET(CPACK_SOURCE_GENERATOR "TGZ")
+  SET(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+  SET(CPACK_SYSTEM_NAME "Linux-i686")
+  SET(CPACK_TOPLEVEL_TAG "Linux-i686")
+  SET(CPACK_STRIP_FILES "${EXE_NAME}")
+ENDIF()
+# common
+SET(CPACK_SOURCE_STRIP_FILES TRUE )
+SET(CPACK_PACKAGE_EXECUTABLES "${EXE_NAME}" "${EXE_NAME}")
+SET(CPACK_CREATE_DESKTOP_LINKS "${EXE_NAME}" ) 
+SET(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
+SET(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+SET(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+SET(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+SET(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+SET(CPACK_PACKAGE_VENDOR "${PROJECT_VENDOR}")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CaPTk is a collection of algorithms from CBICA")
+SET(CPACK_SOURCE_IGNORE_FILES "\\\\.svn/;^${PROJECT_SOURCE_DIR}/doc/")
+SET(CPACK_SOURCE_PACKAGE_FILE_NAME "captk-${SW_VER}-source" CACHE INTERNAL "tarball basename")
+#SET(CPACK_RESOURCE_FILE_README "${README_FILE}")
+#SET(CPACK_RESOURCE_FILE_LICENSE "${LICENSE_FILE}") 
+SET(CPACK_COMPONENT_LIBRARIES_INSTALL_TYPES Developer Full)
+SET(CPACK_COMPONENT_HEADERS_INSTALL_TYPES Developer Full)
+SET(CPACK_COMPONENT_APPLICATIONS_INSTALL_TYPES Full)
+SET(CPACK_ALL_INSTALL_TYPES Full Developer)
+set(CPACK_SOURCE_IGNORE_FILES "${CMAKE_SOURCE_DIR}/bin/;{CMAKE_SOURCE_DIR}/build/;${CMAKE_SOURCE_DIR}/.svn/")
+
+INCLUDE(InstallRequiredSystemLibraries)
+INCLUDE(CPack)
