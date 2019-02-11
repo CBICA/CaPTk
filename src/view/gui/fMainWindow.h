@@ -290,6 +290,7 @@ private:
   QAction *actionAppEGFR;
   QAction *actionAppRecurrence;
   QAction *actionAppGeodesic;
+  QAction *actionAppGeodesicTraining;
 
   // obtain list from CMake variables using populateStringListInMenu() function
   std::vector< std::string >
@@ -1268,6 +1269,9 @@ signals:
 #ifdef BUILD_GEODESIC
   void ApplicationGeodesic();
 #endif
+//#ifdef BUILD_GEODESIC_TRAINING
+  void ApplicationGeodesicTraining();
+//#endif
 #ifdef BUILD_GEODESICTRAIN
   void ApplicationGeoTrain();
 #endif

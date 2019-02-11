@@ -1051,6 +1051,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     TARGET_LINK_LIBRARIES( ${EXE_NAME}
       ${DEPENDENT_LIBS}
+      GeodesicTrainingCaPTk
       CaPTk_GUI
       CaPTk_Common
       ${LIBNAME_Applications}

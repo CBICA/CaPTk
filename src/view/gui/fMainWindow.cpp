@@ -17,6 +17,7 @@
 #include "EGFRvIIISurrogateIndex.h"
 #include "TrainingModule.h"
 #include "GeodesicSegmentation.h"
+#include "GeodesicTrainingSegmentation.h"
 #include "N3BiasCorrection.h"
 #include "SusanDenoising.h"
 #include "WhiteStripe.h"
@@ -166,6 +167,7 @@ fMainWindow::fMainWindow()
   actionAppEGFR = new QAction(this);
   actionAppRecurrence = new QAction(this);
   actionAppGeodesic = new QAction(this);
+  actionAppGeodesicTraining = new QAction(this);
   actionHelp_Interactions = new QAction(this);
   actionAbout = new QAction(this);
 
@@ -340,7 +342,7 @@ fMainWindow::fMainWindow()
 
   auto lungAppList = " LungField Nodule Analysis";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionDerivatives PerfusionPCA TrainingModule";
-  std::string segAppList = " itksnap GeodesicSegmentation";
+  std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation";
 #ifdef WIN32
   segAppList += " deepmedic";
 #endif
@@ -628,6 +630,11 @@ fMainWindow::fMainWindow()
       vectorOfSegmentationApps[i].action->setText("  Geodesic Segmentation"); // TBD set at source
       connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationGeodesic()));
     }
+    else if (vectorOfSegmentationApps[i].name.find("GeodesicTrainingSegmentation") != std::string::npos)
+    {
+      vectorOfSegmentationApps[i].action->setText("  Geodesic Training Segmentation"); // TBD set at source
+      connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationGeodesicTraining()));
+    }
     else if (vectorOfSegmentationApps[i].name.find("deepmedic") != std::string::npos)
     {
       vectorOfSegmentationApps[i].action->setText("  DeepMedic Segmentation (Brain)"); // TBD set at source
@@ -843,6 +850,7 @@ fMainWindow::fMainWindow()
   actionAbout->setText(QApplication::translate("fMainWindow", "About", 0));
   actionExit->setText(QApplication::translate("fMainWindow", "Exit", 0));
   actionAppGeodesic->setText(QApplication::translate("fMainWindow", "Geodesic segmentation", 0));
+  actionAppGeodesicTraining->setText(QApplication::translate("fMainWindow", "Geodesic Training Segmentation", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(tumorPanel), QApplication::translate("fMainWindow", "Seed Points", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(drawingPanel), QApplication::translate("fMainWindow", "Drawing", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(imagesPanel), QApplication::translate("fMainWindow", "Images", 0));
@@ -5843,6 +5851,100 @@ void fMainWindow::ApplicationGeoTrain()
 
 }
 #endif
+
+//#ifdef BUILD_GEODESIC_TRAINING
+void fMainWindow::ApplicationGeodesicTraining()
+{
+  updateProgress(0, "Geodesic Training Segmentation: Started");
+  //m_imgGeodesicOut = NULL;
+  // QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  // if (items.empty())
+  // {
+  //   ShowErrorMessage("Please specify an input image.", this);
+  //   return;
+  // }
+  // int index = GetSlicerIndexFromItem(items[0]);
+  // if (index < 0 || index >= (int)mSlicerManagers.size())
+  // {
+  //   ShowErrorMessage("Please specify an input image.", this);
+  //   return;
+  // }
+  // VectorVectorDouble tumorPoints = FormulateDrawingPointsForTumorSegmentation();
+  // if (tumorPoints.size() == 0)
+  // {
+  //   ShowErrorMessage("Please draw initial ROI using Label 1.", this);
+  //   m_tabWidget->setCurrentIndex(2);
+  //   return;
+  // }
+  typedef typename itk::Image<float, 3>::Pointer InputImagePointer;
+  typedef typename itk::Image<int, 3>::Pointer   LabelsImagePointer;
+
+  LabelsImagePointer mask = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
+
+  std::vector<InputImagePointer> inputImages;
+
+  for (SlicerManager* sm : mSlicerManagers)
+  {
+    //inputImages.push_back(convertVtkToItk<float, 3>(sm->mITKImage));
+    inputImages.push_back(sm->mITKImage);
+  }
+
+  GeodesicTrainingSegmentation::Coordinator<float, 3> geodesicTraining;
+
+  geodesicTraining.SetInputImages(inputImages);
+  geodesicTraining.SetLabels(mask);
+
+  auto executeResult = geodesicTraining.Execute();
+  
+  if (executeResult->ok) {
+    LabelsImagePointer labelsRenamedPtr = executeResult->labelsImage; // The result segmantation mask
+    typedef itk::CastImageFilter<itk::Image<int,3>, itk::Image<short, 3>> CastFilterType;
+    CastFilterType::Pointer castFilter = CastFilterType::New();
+    castFilter->SetInput(labelsRenamedPtr);
+    m_imgGeodesicOut = castFilter->GetOutput();
+    ApplicationGeodesicTreshold();
+    updateProgress(0, "Geodesic Training Segmentation: Finished");
+    presetComboBox->setCurrentIndex(PRESET_GEODESIC);
+  }
+  else {
+    updateProgress(0, "Geodesic Training Segmentation: Something went wrong");
+    //std::cerr << executeResult->errorMessage << "\n";
+  }
+
+  // updateProgress(5, "Running Geodesic Segmentation");
+  // typedef ImageTypeFloat3D ImageType;
+  // //typedef ImageTypeShort3D ImageTypeGeodesic;
+  // updateProgress(10, "Running Geodesic Segmentation");
+  // ImageTypeGeodesic::Pointer Inp = ImageTypeGeodesic::New();
+  // typedef itk::CastImageFilter<ImageType, ImageTypeGeodesic> CastFilterType;
+  // CastFilterType::Pointer castFilter = CastFilterType::New();
+  // castFilter->SetInput(/*convertVtkToItk<float, 3>*/(mSlicerManagers[index]->mITKImage));
+  // Inp = castFilter->GetOutput();
+  // auto filter = itk::RescaleIntensityImageFilter< ImageTypeGeodesic, ImageTypeGeodesic >::New();
+  // filter->SetInput(Inp);
+  // filter->SetOutputMinimum(0);
+  // filter->SetOutputMaximum(255);
+  // filter->Update();
+  // Inp = filter->GetOutput();
+  // updateProgress(15, "Running Geodesic Segmentation");
+
+  // GeodesicSegmentation< ImageTypeGeodesic > geodesicSegmentor;
+  // Inp = geodesicSegmentor.Run/*<ImageTypeGeodesic>*/(Inp, tumorPoints);
+
+  // updateProgress(85, "Running Geodesic Segmentation");
+  // filter->SetInput(Inp);
+  // filter->SetOutputMinimum(0);
+  // filter->SetOutputMaximum(255);
+  // filter->Update();
+  // Inp = filter->GetOutput();
+  // m_imgGeodesicOut = Inp;
+  // updateProgress(90, "Displaying Geodesic Segmentation");
+  // ApplicationGeodesicTreshold();
+  // updateProgress(0, "Geodesic Segmentation Finished!");
+  // presetComboBox->setCurrentIndex(PRESET_GEODESIC);
+
+}
+//#endif
 
 #ifdef BUILD_GEODESIC
 void fMainWindow::ApplicationGeodesic()
