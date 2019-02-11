@@ -68,8 +68,8 @@ inline typename TInputImage::Pointer DicomSeriesReader::ReadDicomSeries(bool &re
   readStatus = false;
   typedef itk::ImageSeriesReader< TInputImage>     DicomReaderType;
   auto reader = DicomReaderType::New();
-  ImageIOType::Pointer dicomIO = ImageIOType::New();
-  NamesGeneratorType::Pointer nameGenerator = NamesGeneratorType::New();
+  auto dicomIO = ImageIOType::New();
+  auto nameGenerator = NamesGeneratorType::New();
 
   nameGenerator->SetInputDirectory(this->m_dir);
   reader->SetImageIO(dicomIO);
