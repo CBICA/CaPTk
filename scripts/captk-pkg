@@ -259,7 +259,7 @@ chmod +x ./pkg/linux-makeself
 ver=`./pkg/CaPTk.bin -v | grep Version | awk '{print $2}'`
 
 # Create the installer
-./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./linux-makeself
+./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk-${ver}-Installer.bin "CaPTk Linux Installer" ./linux-makeself
 
 # Cleanup
 rm -rf ./pkg

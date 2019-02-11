@@ -62,8 +62,22 @@ install_captk () {
     exit 1
   fi
 
+  # Check for FUSE
+  echo "Checking for FUSE..."
+
+  # Redirect fusermount output          
+  fusermount -V 2> /dev/null
+
+  fusefail=0
+
+  if [ $? -ne 0 ]
+  then
+    fusefail=1
+    echo "WARNING: FUSE is not installed. See https://github.com/CBICA/CaPTk/wiki/GNU-Linux-Installer-Troubleshooting#dlopen-error-loading-libfuseso2-fuse-not-installed for further information. The AppImage will continue installation as normal."
+  fi
+
   # Move file but preserve pid
-  mv ./CaPTk.bin ~/CaPTk/${ver}/CaPTk_${ver}.bin 2>/dev/null &
+  mv ./CaPTk.bin ~/CaPTk/${ver}/CaPTk-${ver}.bin 2>/dev/null &
   pid=$!
     
   # The latest in bash spinner technology from npm
@@ -80,9 +94,9 @@ install_captk () {
   printf "\n"
 
   # Last case
-  chmod +x ~/CaPTk/${ver}/CaPTk_${ver}.bin
+  chmod +x ~/CaPTk/${ver}/CaPTk-${ver}.bin
   if [ $? -ne 0 ]; then
-    echo "Warning: It appears as if something is wrong with your installation. Please make sure there is enough room on your disk, and that CaPTk_${ver}.bin is present under ~/CaPTk"
+    echo "WARNING: It appears as if something is wrong with your installation. Please make sure there is enough room on your disk, and that CaPTk-${ver}.bin is present under ~/CaPTk"
     exit 1
   fi
 
@@ -93,10 +107,16 @@ install_captk () {
   # Creating a symbolic link
   echo "Creating symbolic link 'captk'"
   cd ~/CaPTk/${ver}/
-  ln -s ./CaPTk_${ver}.bin captk
+  ln -s ./CaPTk-${ver}.bin captk
+
+  # Display any warnings at the end
+  if [ ${fusefail} -eq 1 ]
+  then
+    echo "WARNING: You may have issues running the AppImage since FUSE was not detected on your filesystem."
+  fi
 
   echo "Done."
-  echo "Run the binary by navigating to the ~/CaPTk/${ver}/ directory and running './captk' in the console"
+  echo "To run CaPTk, enter the command \"~/CaPTk/1.6.1/captk\" in your console."
   
 }
 
