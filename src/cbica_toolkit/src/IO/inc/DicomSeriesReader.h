@@ -67,7 +67,7 @@ inline typename TInputImage::Pointer DicomSeriesReader::ReadDicomSeries(bool &re
 {
   readStatus = false;
   typedef itk::ImageSeriesReader< TInputImage>     DicomReaderType;
-  DicomReaderType::Pointer reader = DicomReaderType::New();
+  auto reader = DicomReaderType::New();
   ImageIOType::Pointer dicomIO = ImageIOType::New();
   NamesGeneratorType::Pointer nameGenerator = NamesGeneratorType::New();
 
@@ -97,7 +97,7 @@ template<class TInputImage>
 inline void DicomSeriesReader::WriteITKImage(typename TInputImage::Pointer image, std::string filename)
 {
   typedef  itk::ImageFileWriter< TInputImage  > WriterType;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(filename);
   writer->SetInput(image);
   writer->Update();
