@@ -119,19 +119,21 @@ SET( GEODESIC_TRAINING_INCLUDE_DIRS
 
 # Creating the library
 ADD_LIBRARY(${PROJECT_NAME} STATIC 
+  GeodesicTrainingCaPTkApp.cpp
 	${GEODESIC_TRAINING_SOURCES}
 )
 
 # Linking the dependencies of the library
 TARGET_LINK_LIBRARIES( ${PROJECT_NAME}
     ${ITK_LIBRARIES}
-	${OpenCV_LIBRARIES}
+    ${OpenCV_LIBRARIES}
 )
 
 # Include folders for the library
 TARGET_INCLUDE_DIRECTORIES( ${PROJECT_NAME} PRIVATE
-    ${GEODESIC_TRAINING_INCLUDE_DIRS}
-    ${CBICA_TOOLKIT_HEADERS_DIR}
+  ${PROJECT_SOURCE_DIR}
+  ${GEODESIC_TRAINING_INCLUDE_DIRS}
+  ${CBICA_TOOLKIT_HEADERS_DIR}
 )
 
 # Add sources to executable
@@ -153,8 +155,8 @@ TARGET_LINK_LIBRARIES( GeodesicTraining
 
 # Include folders for the executable
 TARGET_INCLUDE_DIRECTORIES( GeodesicTraining PRIVATE 
-    ${GEODESIC_TRAINING_INCLUDE_DIRS}
-    ${CBICA_TOOLKIT_HEADERS_DIR}
+  ${GEODESIC_TRAINING_INCLUDE_DIRS}
+  ${CBICA_TOOLKIT_HEADERS_DIR}
 )
 
 #--------------------------------------------------------------------------------

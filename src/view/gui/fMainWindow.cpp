@@ -5855,27 +5855,7 @@ void fMainWindow::ApplicationGeoTrain()
 //#ifdef BUILD_GEODESIC_TRAINING
 void fMainWindow::ApplicationGeodesicTraining()
 {
-  updateProgress(0, "Geodesic Training Segmentation: Started");
-  //m_imgGeodesicOut = NULL;
-  // QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
-  // if (items.empty())
-  // {
-  //   ShowErrorMessage("Please specify an input image.", this);
-  //   return;
-  // }
-  // int index = GetSlicerIndexFromItem(items[0]);
-  // if (index < 0 || index >= (int)mSlicerManagers.size())
-  // {
-  //   ShowErrorMessage("Please specify an input image.", this);
-  //   return;
-  // }
-  // VectorVectorDouble tumorPoints = FormulateDrawingPointsForTumorSegmentation();
-  // if (tumorPoints.size() == 0)
-  // {
-  //   ShowErrorMessage("Please draw initial ROI using Label 1.", this);
-  //   m_tabWidget->setCurrentIndex(2);
-  //   return;
-  // }
+  //updateProgress(0, "Geodesic Training Segmentation: Started");
   typedef typename itk::Image<float, 3>::Pointer InputImagePointer;
   typedef typename itk::Image<int, 3>::Pointer   LabelsImagePointer;
 
@@ -5885,64 +5865,19 @@ void fMainWindow::ApplicationGeodesicTraining()
 
   for (SlicerManager* sm : mSlicerManagers)
   {
-    //inputImages.push_back(convertVtkToItk<float, 3>(sm->mITKImage));
     inputImages.push_back(sm->mITKImage);
   }
 
-  GeodesicTrainingSegmentation::Coordinator<float, 3> geodesicTraining;
-
-  geodesicTraining.SetInputImages(inputImages);
-  geodesicTraining.SetLabels(mask);
-
-  auto executeResult = geodesicTraining.Execute();
+  m_GeodesicSegmentationCaPTkApp3D = GeodesicSegmentationCaPTkApp<3>(); // New instance each time
   
-  if (executeResult->ok) {
-    LabelsImagePointer labelsRenamedPtr = executeResult->labelsImage; // The result segmantation mask
-    typedef itk::CastImageFilter<itk::Image<int,3>, itk::Image<short, 3>> CastFilterType;
-    CastFilterType::Pointer castFilter = CastFilterType::New();
-    castFilter->SetInput(labelsRenamedPtr);
-    m_imgGeodesicOut = castFilter->GetOutput();
-    ApplicationGeodesicTreshold();
-    updateProgress(0, "Geodesic Training Segmentation: Finished");
-    presetComboBox->setCurrentIndex(PRESET_GEODESIC);
-  }
-  else {
-    updateProgress(0, "Geodesic Training Segmentation: Something went wrong");
-    //std::cerr << executeResult->errorMessage << "\n";
-  }
+  connect(&m_GeodesicSegmentationCaPTkApp3D, &GeodesicSegmentationCaPTkApp<3>::GeodesicTrainingFinished,
+                this, &fMainWindow::GeodesicTrainingSegmentationResultReady<3>
+  );
+  connect(&m_GeodesicSegmentationCaPTkApp3D, &GeodesicSegmentationCaPTkApp<3>::GeodesicTrainingFinishedWithError,
+                this, &fMainWindow::GeodesicTrainingSegmentationResultError
+  );
 
-  // updateProgress(5, "Running Geodesic Segmentation");
-  // typedef ImageTypeFloat3D ImageType;
-  // //typedef ImageTypeShort3D ImageTypeGeodesic;
-  // updateProgress(10, "Running Geodesic Segmentation");
-  // ImageTypeGeodesic::Pointer Inp = ImageTypeGeodesic::New();
-  // typedef itk::CastImageFilter<ImageType, ImageTypeGeodesic> CastFilterType;
-  // CastFilterType::Pointer castFilter = CastFilterType::New();
-  // castFilter->SetInput(/*convertVtkToItk<float, 3>*/(mSlicerManagers[index]->mITKImage));
-  // Inp = castFilter->GetOutput();
-  // auto filter = itk::RescaleIntensityImageFilter< ImageTypeGeodesic, ImageTypeGeodesic >::New();
-  // filter->SetInput(Inp);
-  // filter->SetOutputMinimum(0);
-  // filter->SetOutputMaximum(255);
-  // filter->Update();
-  // Inp = filter->GetOutput();
-  // updateProgress(15, "Running Geodesic Segmentation");
-
-  // GeodesicSegmentation< ImageTypeGeodesic > geodesicSegmentor;
-  // Inp = geodesicSegmentor.Run/*<ImageTypeGeodesic>*/(Inp, tumorPoints);
-
-  // updateProgress(85, "Running Geodesic Segmentation");
-  // filter->SetInput(Inp);
-  // filter->SetOutputMinimum(0);
-  // filter->SetOutputMaximum(255);
-  // filter->Update();
-  // Inp = filter->GetOutput();
-  // m_imgGeodesicOut = Inp;
-  // updateProgress(90, "Displaying Geodesic Segmentation");
-  // ApplicationGeodesicTreshold();
-  // updateProgress(0, "Geodesic Segmentation Finished!");
-  // presetComboBox->setCurrentIndex(PRESET_GEODESIC);
-
+  m_GeodesicSegmentationCaPTkApp3D.Run(inputImages, mask);
 }
 //#endif
 
@@ -7263,6 +7198,14 @@ std::vector<int> read_int_vector(std::string &nccRadii)
       arg.c_str());
 
   return vector;
+}
+
+void GeodesicTrainingSegmentationResultError(const QString message)
+{
+  QMessageBox msgBox("There was a problem executing Geodesic Training Segmentation");
+  msgBox.setWindowTitle();
+  msgBox.setText(message);
+  msgBox.exec();
 }
 
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
