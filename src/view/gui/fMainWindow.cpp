@@ -4975,6 +4975,9 @@ void fMainWindow::openDicomImages()
 
   imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
+  // make sure to delete the dicom series reader
+  delete dicomSeriesReader; 
+
   imageManager->SetMask(mMask);
   imageManager->setTempFolderLocation(m_tempFolderLocation);
   int rowIndex = (int)mSlicerManagers.size();
