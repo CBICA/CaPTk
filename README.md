@@ -20,7 +20,7 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 - This code (excluding dependent libraries) is governed by the license provided in http://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
 - The minimum recommended resolution is 1024x768. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
 
-## Download Latest Release (1.6.0)
+## Download Latest Release (1.6.1)
 
 - Windows: https://www.nitrc.org/frs/downloadlink.php/11129
 - Linux: https://www.nitrc.org/frs/downloadlink.php/11131
