@@ -123,7 +123,11 @@ install_captk () {
 # Print license with a reader
 cat ./Combined.txt | more
 
+echo ""
 echo "I accept the terms of the licenses above."
+
+# Modifies the select prompt
+PS3="# "
 
 select yn in "Yes" "No"; do
   case $yn in

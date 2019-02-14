@@ -249,7 +249,7 @@ mkdir pkg
 # We package the AppImage, the license, and a script to display the agreement and install the AppImage
 mv CaPTk.bin ./pkg/
 mv ./bin/install/appdir/usr/bin/*.cwl ./pkg/
-cp ./licenses/Combined.txt ./pkg/
+cp ./licenses/Linux-Combined.txt ./pkg/
 cp ./scripts/linux-makeself ./pkg/
 chmod +x ./pkg/linux-makeself
 
