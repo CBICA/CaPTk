@@ -1,0 +1,18 @@
+# Cmake_modules
+
+Contains all of the CMake files that are included via other CMakeLists.txt. If you are looking to add individual functions or macros, don't create an additional file here, please use `CaPTk_macros.cmake` and add them there.
+
+If you'd like to change what happens during the post install step of `make install`, add your changes to `PostInstall.cmake`
+
+## Linuxdeployqt?
+
+You may have noticed that there are `Macdeployqt.cmake` and `Windeployqt.cmake` but no `Linuxdeployqt.cmake`. Qt does not have a built in version of linuxdeployqt (as of 5.11) that works for this project. We instead perform this stage via `captk-pkg` utilizing [linuxdeployqt](https://github.com/probonopd/linuxdeployqt).
+
+## Superbuild
+
+This folder will contain the SuperBuilds (the files in links need to be updated):
+
+  Qt - https://github.com/OpenChemistry/tomviz-superbuild/blob/master/projects/qt.cmake
+  VTK - https://sbia-svn.uphs.upenn.edu//projects/CBICA_Toolkit/trunk/cmake/External-VTK.cmake
+  ITK - https://sbia-svn.uphs.upenn.edu//projects/CBICA_Toolkit/trunk/cmake/External-ITK.cmake
+  OpenCV
