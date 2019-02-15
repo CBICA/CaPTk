@@ -1,0 +1,225 @@
+Running tests...
+Test project /home/gray/CBICA/git/CaPTkgit/bin
+      Start  1: DeepMedicNormalizer_rt
+ 1/92 Test  #1: DeepMedicNormalizer_rt ..................   Passed    0.02 sec
+      Start  2: DiffusionDerivatives_rt
+ 2/92 Test  #2: DiffusionDerivatives_rt .................   Passed    0.02 sec
+      Start  3: DirectionalityEstimate_rt
+ 3/92 Test  #3: DirectionalityEstimate_rt ...............   Passed    0.02 sec
+      Start  4: EGFRvIIIIndexPredictor_rt
+ 4/92 Test  #4: EGFRvIIIIndexPredictor_rt ...............   Passed    0.06 sec
+      Start  5: EGFRvIIISurrogateIndex_rt
+ 5/92 Test  #5: EGFRvIIISurrogateIndex_rt ...............   Passed    0.02 sec
+      Start  6: GeodesicSegmentation_rt
+ 6/92 Test  #6: GeodesicSegmentation_rt .................   Passed    0.02 sec
+      Start  7: GreedyRegistration_rt
+ 7/92 Test  #7: GreedyRegistration_rt ...................   Passed    0.02 sec
+      Start  8: MolecularSubtypePredictor_rt
+ 8/92 Test  #8: MolecularSubtypePredictor_rt ............   Passed    0.06 sec
+      Start  9: PerfusionDerivatives_rt
+ 9/92 Test  #9: PerfusionDerivatives_rt .................   Passed    0.02 sec
+      Start 10: PerfusionPCA_rt
+10/92 Test #10: PerfusionPCA_rt .........................   Passed    0.02 sec
+      Start 11: PopulationAtlases_rt
+11/92 Test #11: PopulationAtlases_rt ....................   Passed    0.02 sec
+      Start 12: PseudoProgressionEstimator_rt
+12/92 Test #12: PseudoProgressionEstimator_rt ...........   Passed    0.04 sec
+      Start 13: RecurrenceEstimator_rt
+13/92 Test #13: RecurrenceEstimator_rt ..................   Passed    0.04 sec
+      Start 14: SBRT_Analysis_rt
+14/92 Test #14: SBRT_Analysis_rt ........................   Passed    0.02 sec
+      Start 15: SBRT_LungField_rt
+15/92 Test #15: SBRT_LungField_rt .......................   Passed    0.02 sec
+      Start 16: SBRT_Nodule_rt
+16/92 Test #16: SBRT_Nodule_rt ..........................   Passed    0.02 sec
+      Start 17: SurvivalPredictor_rt
+17/92 Test #17: SurvivalPredictor_rt ....................   Passed    0.05 sec
+      Start 18: TrainingModule_rt
+18/92 Test #18: TrainingModule_rt .......................   Passed    0.00 sec
+      Start 19: WhiteStripe_rt
+19/92 Test #19: WhiteStripe_rt ..........................   Passed    0.02 sec
+      Start 20: DiffusionDerivativesHelpTest
+20/92 Test #20: DiffusionDerivativesHelpTest ............   Passed    0.02 sec
+      Start 21: DiffusionDerivativesVersionTest
+21/92 Test #21: DiffusionDerivativesVersionTest .........   Passed    0.02 sec
+      Start 22: DirectionalityEstimateTest
+22/92 Test #22: DirectionalityEstimateTest ..............***Failed    0.02 sec
+      Start 23: DirectionalityEstimateHelpTest
+23/92 Test #23: DirectionalityEstimateHelpTest ..........   Passed    0.02 sec
+      Start 24: DirectionalityEstimateVersionTest
+24/92 Test #24: DirectionalityEstimateVersionTest .......   Passed    0.02 sec
+      Start 25: EGFRvIIIIndexPredictorNewModelTest
+25/92 Test #25: EGFRvIIIIndexPredictorNewModelTest ......***Failed    0.05 sec
+      Start 26: EGFRvIIIIndexPredictorHelpTest
+26/92 Test #26: EGFRvIIIIndexPredictorHelpTest ..........   Passed    0.05 sec
+      Start 27: EGFRvIIIIndexPredictorVersionTest
+27/92 Test #27: EGFRvIIIIndexPredictorVersionTest .......   Passed    0.06 sec
+      Start 28: EGFRvIIISurrogateDSCMRITest
+28/92 Test #28: EGFRvIIISurrogateDSCMRITest .............***Failed    0.02 sec
+      Start 29: EGFRvIIISurrogateT1GDTest
+29/92 Test #29: EGFRvIIISurrogateT1GDTest ...............***Failed    0.02 sec
+      Start 30: EGFRvIIISurrogateT2FlairTest
+30/92 Test #30: EGFRvIIISurrogateT2FlairTest ............***Failed    0.02 sec
+      Start 31: EGFRvIIISurrogateIndexHelpTest
+31/92 Test #31: EGFRvIIISurrogateIndexHelpTest ..........   Passed    0.02 sec
+      Start 32: EGFRvIIISurrogateIndexVersionTest
+32/92 Test #32: EGFRvIIISurrogateIndexVersionTest .......   Passed    0.02 sec
+      Start 33: FeatureExtractionParams1Test
+33/92 Test #33: FeatureExtractionParams1Test ............***Failed    0.02 sec
+      Start 34: FeatureExtractionParams2Test
+34/92 Test #34: FeatureExtractionParams2Test ............***Failed    0.02 sec
+      Start 35: FeatureExtractionVerticalConcTest
+35/92 Test #35: FeatureExtractionVerticalConcTest .......***Failed    0.02 sec
+      Start 36: FeatureExtractionFeatureMapsWriteTest
+36/92 Test #36: FeatureExtractionFeatureMapsWriteTest ...***Failed    0.02 sec
+      Start 37: FeatureExtractionHelpTest
+37/92 Test #37: FeatureExtractionHelpTest ...............   Passed    0.02 sec
+      Start 38: FeatureExtractionVersionTest
+38/92 Test #38: FeatureExtractionVersionTest ............   Passed    0.02 sec
+      Start 39: GeodesicSegmentationHelpTest
+39/92 Test #39: GeodesicSegmentationHelpTest ............   Passed    0.02 sec
+      Start 40: GeodesicSegmentationVersionTest
+40/92 Test #40: GeodesicSegmentationVersionTest .........   Passed    0.02 sec
+      Start 41: GreedyRegistrationHelpTest
+41/92 Test #41: GreedyRegistrationHelpTest ..............   Passed    0.02 sec
+      Start 42: GreedyRegistrationVersionTest
+42/92 Test #42: GreedyRegistrationVersionTest ...........   Passed    0.02 sec
+      Start 43: MolecularSubtypePredictorT0Test
+43/92 Test #43: MolecularSubtypePredictorT0Test .........***Failed    0.06 sec
+      Start 44: MolecularSubtypePredictorT1Test
+44/92 Test #44: MolecularSubtypePredictorT1Test .........***Failed    0.06 sec
+      Start 45: MolecularSubtypePredictorHelpTest
+45/92 Test #45: MolecularSubtypePredictorHelpTest .......   Passed    0.06 sec
+      Start 46: MolecularSubtypePredictorVersionTest
+46/92 Test #46: MolecularSubtypePredictorVersionTest ....   Passed    0.06 sec
+      Start 47: PerfusionDerivativesP1R1Test
+47/92 Test #47: PerfusionDerivativesP1R1Test ............***Failed    0.02 sec
+      Start 48: PerfusionDerivativesP0R0Test
+48/92 Test #48: PerfusionDerivativesP0R0Test ............***Failed    0.02 sec
+      Start 49: PerfusionDerivativesP1R0Test
+49/92 Test #49: PerfusionDerivativesP1R0Test ............***Failed    0.02 sec
+      Start 50: PerfusionDerivativesP0R1Test
+50/92 Test #50: PerfusionDerivativesP0R1Test ............***Failed    0.02 sec
+      Start 51: PerfusionDerivativesEcho5Test
+51/92 Test #51: PerfusionDerivativesEcho5Test ...........***Failed    0.02 sec
+      Start 52: PerfusionDerivativesEcho10Test
+52/92 Test #52: PerfusionDerivativesEcho10Test ..........***Failed    0.02 sec
+      Start 53: PerfusionDerivativesHelpTest
+53/92 Test #53: PerfusionDerivativesHelpTest ............   Passed    0.02 sec
+      Start 54: PerfusionDerivativesVersionTest
+54/92 Test #54: PerfusionDerivativesVersionTest .........   Passed    0.02 sec
+      Start 55: PerfusionPCAHelpTest
+55/92 Test #55: PerfusionPCAHelpTest ....................   Passed    0.02 sec
+      Start 56: PerfusionPCAVersionTest
+56/92 Test #56: PerfusionPCAVersionTest .................   Passed    0.02 sec
+      Start 57: PopulationAtlasesTest
+57/92 Test #57: PopulationAtlasesTest ...................***Failed    0.02 sec
+      Start 58: PopulationAtlasesHelpTest
+58/92 Test #58: PopulationAtlasesHelpTest ...............   Passed    0.02 sec
+      Start 59: PopulationAtlasesVersionTest
+59/92 Test #59: PopulationAtlasesVersionTest ............   Passed    0.02 sec
+      Start 60: PseudoProgressionEstimatorHelpTest
+60/92 Test #60: PseudoProgressionEstimatorHelpTest ......   Passed    0.04 sec
+      Start 61: PseudoProgressionEstimatorVersionTest
+61/92 Test #61: PseudoProgressionEstimatorVersionTest ...   Passed    0.04 sec
+      Start 62: RecurrenceEstimatorType0Test
+62/92 Test #62: RecurrenceEstimatorType0Test ............***Failed    0.04 sec
+      Start 63: RecurrenceEstimatorType1Test
+63/92 Test #63: RecurrenceEstimatorType1Test ............***Failed    0.04 sec
+      Start 64: RecurrenceEstimatorHelpTest
+64/92 Test #64: RecurrenceEstimatorHelpTest .............   Passed    0.04 sec
+      Start 65: RecurrenceEstimatorVersionTest
+65/92 Test #65: RecurrenceEstimatorVersionTest ..........   Passed    0.04 sec
+      Start 66: SBRT_AnalysisTest
+66/92 Test #66: SBRT_AnalysisTest .......................***Exception: Child aborted  0.02 sec
+      Start 67: SBRT_AnalysisOutputTest
+67/92 Test #67: SBRT_AnalysisOutputTest .................***Exception: Child aborted  0.02 sec
+      Start 68: SBRT_AnalysisHelpTest
+68/92 Test #68: SBRT_AnalysisHelpTest ...................   Passed    0.02 sec
+      Start 69: SBRT_AnalysisVersionTest
+69/92 Test #69: SBRT_AnalysisVersionTest ................   Passed    0.02 sec
+      Start 70: SBRT_LungFieldTest
+70/92 Test #70: SBRT_LungFieldTest ......................***Exception: SegFault  0.02 sec
+      Start 71: SBRT_LungFieldMaskTest
+71/92 Test #71: SBRT_LungFieldMaskTest ..................***Exception: Child aborted  0.02 sec
+      Start 72: SBRT_LungFieldHelpTest
+72/92 Test #72: SBRT_LungFieldHelpTest ..................   Passed    0.02 sec
+      Start 73: SBRT_LungFieldVersionTest
+73/92 Test #73: SBRT_LungFieldVersionTest ...............   Passed    0.02 sec
+      Start 74: SBRT_NoduleTest
+74/92 Test #74: SBRT_NoduleTest .........................***Exception: Child aborted  0.02 sec
+      Start 75: SBRT_NoduleLabelTest
+75/92 Test #75: SBRT_NoduleLabelTest ....................***Exception: Child aborted  0.02 sec
+      Start 76: SBRT_NoduleHelpTest
+76/92 Test #76: SBRT_NoduleHelpTest .....................   Passed    0.02 sec
+      Start 77: SBRT_NoduleVersionTest
+77/92 Test #77: SBRT_NoduleVersionTest ..................   Passed    0.02 sec
+      Start 78: SurvivalPredictorT0Test
+78/92 Test #78: SurvivalPredictorT0Test .................***Failed    0.05 sec
+      Start 79: SurvivalPredictorT1Test
+79/92 Test #79: SurvivalPredictorT1Test .................***Failed    0.05 sec
+      Start 80: SurvivalPredictorHelpTest
+80/92 Test #80: SurvivalPredictorHelpTest ...............   Passed    0.05 sec
+      Start 81: SurvivalPredictorVersionTest
+81/92 Test #81: SurvivalPredictorVersionTest ............   Passed    0.05 sec
+      Start 82: TrainingModuleTest5Folds
+82/92 Test #82: TrainingModuleTest5Folds ................***Failed    0.00 sec
+      Start 83: TrainingModuleTest10Folds
+83/92 Test #83: TrainingModuleTest10Folds ...............***Failed    0.00 sec
+      Start 84: TrainingModuleHelpTest
+84/92 Test #84: TrainingModuleHelpTest ..................   Passed    0.00 sec
+      Start 85: TrainingModuleVersionTest
+85/92 Test #85: TrainingModuleVersionTest ...............   Passed    0.00 sec
+      Start 86: WhiteStripeTest
+86/92 Test #86: WhiteStripeTest .........................   Passed    0.02 sec
+      Start 87: WhiteStripeT1Test
+87/92 Test #87: WhiteStripeT1Test .......................   Passed    0.02 sec
+      Start 88: WhiteStripeHelpTest
+88/92 Test #88: WhiteStripeHelpTest .....................   Passed    0.02 sec
+      Start 89: WhiteStripeVersionTest
+89/92 Test #89: WhiteStripeVersionTest ..................   Passed    0.02 sec
+      Start 90: BufferTest
+90/92 Test #90: BufferTest ..............................   Passed    0.41 sec
+      Start 91: GeodesicTest
+91/92 Test #91: GeodesicTest ............................***Failed    1.06 sec
+      Start 92: EGFRvIIITest
+92/92 Test #92: EGFRvIIITest ............................***Failed    0.90 sec
+
+65% tests passed, 32 tests failed out of 92
+
+Total Test time (real) =   4.89 sec
+
+The following tests FAILED:
+	 22 - DirectionalityEstimateTest (Failed)
+	 25 - EGFRvIIIIndexPredictorNewModelTest (Failed)
+	 28 - EGFRvIIISurrogateDSCMRITest (Failed)
+	 29 - EGFRvIIISurrogateT1GDTest (Failed)
+	 30 - EGFRvIIISurrogateT2FlairTest (Failed)
+	 33 - FeatureExtractionParams1Test (Failed)
+	 34 - FeatureExtractionParams2Test (Failed)
+	 35 - FeatureExtractionVerticalConcTest (Failed)
+	 36 - FeatureExtractionFeatureMapsWriteTest (Failed)
+	 43 - MolecularSubtypePredictorT0Test (Failed)
+	 44 - MolecularSubtypePredictorT1Test (Failed)
+	 47 - PerfusionDerivativesP1R1Test (Failed)
+	 48 - PerfusionDerivativesP0R0Test (Failed)
+	 49 - PerfusionDerivativesP1R0Test (Failed)
+	 50 - PerfusionDerivativesP0R1Test (Failed)
+	 51 - PerfusionDerivativesEcho5Test (Failed)
+	 52 - PerfusionDerivativesEcho10Test (Failed)
+	 57 - PopulationAtlasesTest (Failed)
+	 62 - RecurrenceEstimatorType0Test (Failed)
+	 63 - RecurrenceEstimatorType1Test (Failed)
+	 66 - SBRT_AnalysisTest (Child aborted)
+	 67 - SBRT_AnalysisOutputTest (Child aborted)
+	 70 - SBRT_LungFieldTest (SEGFAULT)
+	 71 - SBRT_LungFieldMaskTest (Child aborted)
+	 74 - SBRT_NoduleTest (Child aborted)
+	 75 - SBRT_NoduleLabelTest (Child aborted)
+	 78 - SurvivalPredictorT0Test (Failed)
+	 79 - SurvivalPredictorT1Test (Failed)
+	 82 - TrainingModuleTest5Folds (Failed)
+	 83 - TrainingModuleTest10Folds (Failed)
+	 91 - GeodesicTest (Failed)
+	 92 - EGFRvIIITest (Failed)
+Makefile:107: recipe for target 'test' failed
