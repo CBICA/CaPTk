@@ -56,6 +56,8 @@
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkLookupTable.h"
 
+#include "DicomSeriesReader.h"
+
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
@@ -157,6 +159,7 @@ fMainWindow::fMainWindow()
   help_download = new QAction(this);
   actionLoad_Recurrence_Images = new QAction(this);
   actionLoad_Nifti_Images = new QAction(this);
+  actionLoad_Dicom_Images = new QAction(this);
   actionLoad_Nifti_ROI = new QAction(this);
   actionSave_Nifti_Images = new QAction(this);
   actionSave_Dicom_Images = new QAction(this);
@@ -273,6 +276,7 @@ fMainWindow::fMainWindow()
 
   menuLoadFile->addAction(actionLoad_Nifti_Images);
   menuLoadFile->addAction(actionLoad_Nifti_ROI);
+  menuLoadFile->addAction(actionLoad_Dicom_Images);
 
   menuSaveFile->addAction(actionSave_Nifti_Images);
   menuSaveFile->addAction(actionSave_ROI_Images);
@@ -503,6 +507,7 @@ fMainWindow::fMainWindow()
 
   connect(actionLoad_Recurrence_Images, SIGNAL(triggered()), this, SLOT(openImages()));
   connect(actionLoad_Nifti_Images, SIGNAL(triggered()), this, SLOT(openImages()));
+  connect(actionLoad_Dicom_Images, SIGNAL(triggered()), this, SLOT(openDicomImages()));
 
   connect(actionSave_ROI_Images, SIGNAL(triggered()), this, SLOT(SaveDrawing()));
   connect(actionSave_ROI_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomDrawing()));
@@ -829,6 +834,7 @@ fMainWindow::fMainWindow()
   //
   actionLoad_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image(s)", 0));
   actionLoad_Nifti_ROI->setText(QApplication::translate("fMainWindow", "ROI", 0));
+  actionLoad_Dicom_Images->setText(QApplication::translate("fMainWindow", "Dicom", 0));
 
   actionSave_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image (NIfTI)", 0));
   actionSave_Dicom_Images->setText(QApplication::translate("fMainWindow", "Image (DICOM)", 0));
@@ -4933,6 +4939,161 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
 
   }
   updateProgress(0, "Loading complete", 100);
+}
+
+void fMainWindow::openDicomImages()
+{
+  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+    QDir::currentPath(),
+    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+  if (dir.isNull())
+  {
+    ShowErrorMessage("Please open a directory containing Dicom images.");
+    return;
+  }
+
+  DicomSeriesReader *dicomSeriesReader = new DicomSeriesReader();
+  dicomSeriesReader->SetDirectoryPath(dir.toStdString());
+  bool loadstatus = dicomSeriesReader->LoadDicom();
+  if (!loadstatus)
+  {
+    QMessageBox::critical(this, "Dicom Loading", "Dicom Load Failed");
+    return;
+  }
+
+  SlicerManager* imageManager = new SlicerManager(3, mLandmarks, mSeedPoints, mTissuePoints);
+  imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
+
+  bool bFirstLoad = false;
+  if (mSlicerManagers.size() == 0)
+  {
+    bFirstLoad = true;
+  }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  imageManager->SetImage(dicomSeriesReader->GetITKImage());
+
+  imageManager->SetMask(mMask);
+  imageManager->setTempFolderLocation(m_tempFolderLocation);
+  int rowIndex = (int)mSlicerManagers.size();
+
+  m_imagesTable->setRowCount(rowIndex + 1);
+  mSlicerManagers.push_back(imageManager);
+
+
+  QFileInfo fileinfo(imageManager->GetFileName().c_str());
+  std::string seriesDescLabel, seriesDescValue;
+  QString id = seriesDescValue.c_str() + QString::number(mSlicerManagers.size() - 1);
+  //
+  std::string strImageType = " IMAGE ";
+
+  QTableWidgetItem *item = new QTableWidgetItem(seriesDescValue.c_str());
+  item->setData(Qt::UserRole, id.toStdString().c_str());
+  item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+
+  QTablePushButton* cButton = new QTablePushButton;
+  cButton->setItem(item);
+  cButton->setText(QString("X"));
+  connect(cButton, SIGNAL(clickedInto(QTableWidgetItem*)), this, SLOT(CloseImage(QTableWidgetItem*)));
+
+  QLabel * label = new QLabel;
+  label->setText(QString::fromStdString(strImageType));
+  m_imagesTable->setCellWidget(rowIndex, TAB_IMAGES_COLUMN_CLOSE, cButton);
+  m_imagesTable->setCellWidget(rowIndex, TAB_IMAGES_COLUMN_TYPE, label);
+  m_imagesTable->setItem(rowIndex, TAB_IMAGES_COLUMN_NAME, item);
+ 
+  imagesPanel->NewImageLoaded(id, imageManager->GetBaseFileName(), rowIndex, strImageType, imageManager->mImageSubType, this);
+
+  mSlicerManagers.back()->SetId(id.toStdString());
+  connect(mSlicerManagers.back(), SIGNAL(LeftButtonReleaseSignal(int)), this, SLOT(propogateSlicerPosition(int)));
+  connect(mSlicerManagers.back(), SIGNAL(currentImageChanged(std::string &)), this, SLOT(CurrentImageChanged(std::string &)));
+  connect(mSlicerManagers.back(), SIGNAL(currentPickedImageChanged(std::string)), this, SLOT(CurrentPickedImageChanged(std::string)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdatePosition(int, double, double, double, double, double, double, double)), this, SLOT(MousePositionChanged(int, double, double, double, double, double, double, double)));
+  connect(mSlicerManagers.back(), SIGNAL(WindowLevelChanged()), this, SLOT(WindowLevelChanged()));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateSlice(int, int)), this, SLOT(UpdateSlice(int, int)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateSliceRange(int, int, int)), this, SLOT(UpdateSliceRange(int, int, int)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateLinkManager(std::string, int, double, double, double)), this, SLOT(UpdateLinkManager(std::string, int, double, double, double)));
+  connect(mSlicerManagers.back(), SIGNAL(ChangeImageWithOrder(SlicerManager*, int)), this, SLOT(ChangeImageWithOrder(SlicerManager*, int)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateBorderWidgetInMain(double, double, double, double)), this, SLOT(UpdateBorderWidget(double, double, double, double)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateBorderWidgetInMain(double, double)), this, SLOT(UpdateBorderWidget(double, double)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateActionInMain(const QVariantList&)), this, SLOT(UpdateActionQ(const QVariantList&)));
+
+  connect(mSlicerManagers.back(), SIGNAL(SeedPointsAdded()), tumorPanel, SLOT(sAddPoint()));
+  connect(mSlicerManagers.back(), SIGNAL(SeedPointsAdded(int, bool)), tumorPanel, SLOT(sAddPoint(int, bool)));
+  connect(mSlicerManagers.back(), SIGNAL(TissuePointsAdded(int)), tumorPanel, SLOT(tAddPoint(int)));
+  connect(m_tabWidget, SIGNAL(currentChanged(int)), tumorPanel, SLOT(tabSelected()));
+  InitSlicers();
+
+  if (bFirstLoad)
+  {
+    InitMask(mSlicerManagers.back()->mImage);
+  }
+  for (int j = 0; j < (int)mSlicerManagers.back()->mSlicers.size(); j++)
+  {
+    mSlicerManagers.back()->mSlicers[j]->SetMask(mSlicerManagers.back()->GetMask());
+  }
+
+  if (mSlicerManagers.size() > 0)
+  {
+    if (mSlicerManagers.back()->mMask->GetDimensions()[2] != 1)
+    {
+      CoronalViewWidget->show();
+      SaggitalViewWidget->show();
+    }
+    AxialViewWidget->show();
+    infoPanel->show();
+
+    windowLabel->setEnabled(true);
+    windowSpinBox->setEnabled(true);
+    levelLabel->setEnabled(true);
+    levelSpinBox->setEnabled(true);
+    presetLabel->setEnabled(true);
+    presetComboBox->setEnabled(true);
+
+    if (bFirstLoad)
+    {
+      for (int i = 0; i < 3; i++)
+      {
+        mSlicerManagers.back()->GetSlicer(i)->SetInitPosition();
+      }
+      QTableWidgetItem* item = NULL;
+      item = GetItemFromSlicerManager(mSlicerManagers[0]);
+      DisplayChanged(item);
+    }
+    else
+    {
+      QTableWidgetItem* item = NULL;
+      for (int i = 0; i < (int)mSlicerManagers.size(); i++)
+      {
+        item = GetItemFromSlicerManager(mSlicerManagers[i]);
+        if (!item->isSelected())
+        {
+          item->setSelected(true);
+        }
+      }
+      DisplayChanged(item);
+    }
+
+    if (mSlicerManagers.size() > 1)
+    {
+      for (int i = 0; i < (int)mSlicerManagers.size(); i++)
+      {
+        for (int j = i + 1; j < (int)mSlicerManagers.size(); j++)
+        {
+          AddLink(/*QString::fromStdString*/(mSlicerManagers[i]->GetId().c_str()), /*QString::fromStdString*/(mSlicerManagers[j]->GetId().c_str()));
+        }
+      }
+    }
+    QTableWidgetItem* item = GetItemFromSlicerManager(mSlicerManagers.back());
+    item->setSelected(true);
+    InitDisplay();
+  }
+  propogateSlicerPosition();
+  updateProgress(0);
+  QApplication::restoreOverrideCursor();
+
 }
 
 void fMainWindow::ApplicationLIBRABatch()

@@ -29,10 +29,26 @@ matrix:
       sudo: required
       env:
         - LINUX_DIST=trusty
+    # Test the installer on xenial
+    # - os: linux
+    #   dist: xenial
+    #   sudo: required
+    #   env:
+    #     - LINUX_DIST=xenial
+    #     - INSTALL_TEST=true
+    # Test the installer on trusty
+    # - os: linux
+    #   dist: trusty
+    #   sudo: required
+    #   env:
+    #     - LINUX_DIST=trusty
+    #     - INSTALL_TEST=true
     - os: windows
       env:
         - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
+  # If the non-allowed failure builds complete, marked job as done
   fast_finish: true
+  # Allow failures for specific platforms
   allow_failures:
     - os: linux
       dist: trusty
@@ -41,6 +57,22 @@ matrix:
     - os: windows
 
 before_install:
+  # chmod all travis scripts
+  - chmod +x ./.travis/*
+
+  # Linux install step
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy; fi
+  
+  # Install expect for install testers
+  - if [[ "$INSTALL_TEST" == "true" ]]; then sudo apt-get install -qq expect; fi
+
+  # Update step
+  # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
+
+  # Git LFS
+  # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
+
   ### OSX
   # OSX install step
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
@@ -49,7 +81,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
+  # Launch either the install linux script or compilation linux script
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./.travis/mac-generic.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then if [[ "$INSTALL_TEST" == "true" ]]; then ./.travis/linux-installer.sh; else ./.travis/linux-generic.sh; fi; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export PATH=$MSBUILD_PATH:$PATH; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./.travis/windows-generic.sh; fi

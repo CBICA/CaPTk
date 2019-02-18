@@ -2,7 +2,7 @@
 
 bin_debug
 bin
-CaPTk.bin
+CaPTk*.bin
 *Installer.bin
 makeself-*.run*
 archive
