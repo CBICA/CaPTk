@@ -5,6 +5,7 @@ bin
 CaPTk.bin
 *Installer.bin
 makeself-*.run*
+archive
 
 # Linux specific paths that get pulled in
 src/applications/individualApps/dcm2nii
