@@ -5,10 +5,6 @@ language: cpp
 # To do this, go into the superbuild cmake and simply comment out the packages so that opencv only builds, then vtk and opencv, etc
 # After that, also make sure the script terminates afterwards immediately so travis can pack and upload the cache
 cache: ccache
-# cache: 
-  # - directories:
-  #   - ${TRAVIS_BUILD_DIR}/bin/
-  # - timeout: 1200
 
 env:
   global:
