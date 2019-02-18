@@ -61,7 +61,7 @@ void fSkullStripper::ConfirmButtonPressed()
 void fSkullStripper::OpenReferenceImage()
 {
   auto referenceAtlas = getExistingFile(this, mInputPathName);
-  if (referenceAtlas.isNull())
+  if (referenceAtlas.isNull() || referenceAtlas.isEmpty())
     return;
   else
     referenceImageName->setText(referenceAtlas);
@@ -72,7 +72,7 @@ void fSkullStripper::OpenReferenceImage()
 void fSkullStripper::OpenReferenceMaskImage()
 {
   auto referenceMask = getExistingFile(this, mInputPathName);
-  if (referenceMask.isNull())
+  if (referenceMask.isNull() || referenceMask.isEmpty())
     return;
   else
     referenceMaskName->setText(referenceMask);
@@ -83,7 +83,7 @@ void fSkullStripper::OpenReferenceMaskImage()
 void fSkullStripper::OpenInputImage()
 {
   auto inputImage = getExistingFile(this, mInputPathName);
-  if (inputImage.isNull())
+  if (inputImage.isNull() || inputImage.isEmpty())
     return;
   else
     inputImageName->setText(inputImage);
@@ -103,7 +103,7 @@ void fSkullStripper::SelectOutputImage()
     outputImage = getSaveFile(this, mInputPathName, mInputPathName + "skullStrip_Output.nii.gz");
   }
 
-  if (outputImage.isNull())
+  if (outputImage.isNull() || outputImage.isEmpty())
     return;
   else
     outputImageName->setText(outputImage);

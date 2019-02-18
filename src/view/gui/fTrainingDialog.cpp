@@ -106,7 +106,7 @@ void fTrainingSimulator::OpenInputImage()
 {
   QString extension_string = QString::fromStdString("CSV files: (*.csv)");
   auto inputImage = getExistingFile(this, mInputPathName,extension_string);
-  if (inputImage.isNull())
+  if (inputImage.isNull() || inputImage.isEmpty())
     return;
   else
     inputImageName->setText(inputImage);
@@ -118,7 +118,7 @@ void fTrainingSimulator::OpenInputMaskImage()
 {
   QString extension_string = QString::fromStdString("CSV files: (*.csv)");
   auto inputImage = getExistingFile(this, mInputPathName, extension_string);
-  if (inputImage.isNull())
+  if (inputImage.isNull() || inputImage.isEmpty())
     return;
   else
     inputMaskName->setText(inputImage);
