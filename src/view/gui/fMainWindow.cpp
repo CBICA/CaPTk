@@ -4762,6 +4762,10 @@ void fMainWindow::LoadDrawing()
   {
     auto filename = getExistingFile(this, mInputPathName);
 
+    if (filename.isNull() || filename.isEmpty())
+    {
+      return;
+    }
     std::string filename_string = filename.toStdString();
     auto reader = itk::ImageIOFactory::CreateImageIO(filename_string.c_str(), itk::ImageIOFactory::ReadMode);
     if (reader)
