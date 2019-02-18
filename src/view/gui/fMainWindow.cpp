@@ -6183,6 +6183,7 @@ void fMainWindow::ImageRegistration()
 void fMainWindow::ImageHistogramMatching()
 {
   // open a simple dialog box with reference image, input and output
+  histoMatchPanel.SetCurrentImagePath(mInputPathName);
   histoMatchPanel.exec();
 }
 
