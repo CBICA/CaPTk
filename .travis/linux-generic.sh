@@ -102,4 +102,9 @@ bash ../scripts/linux-cmake-conf
 echo "[:] Building CaPTk..."
 make -j2
 
+# Build package
+echo "[:] Building Package..."
+cd ..
+bash ./scripts/captk-pkg
+
 echo "[:] Done. Project has been built"
