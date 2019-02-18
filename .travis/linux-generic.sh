@@ -33,7 +33,7 @@ fi
 
 # Nuclear option
 # rm -rf binaries
-rm -rf data
+# rm -rf data
 rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
