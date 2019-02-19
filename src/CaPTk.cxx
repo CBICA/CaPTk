@@ -77,10 +77,8 @@ int main(int argc, char** argv)
 
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
   cbica::setEnvironmentVariable("QT_OPENGL", "software");
-  
-  // parse the command line
-  auto parser = cbica::CmdParser(argc, argv, "CaPTk");
-  parser.ignoreArgc1();
+
+  std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
 
   // check for CWL command coming in through the command line after "CaPTk"
   if (cmd_inputs.empty() && (argc > 1))
@@ -111,6 +109,10 @@ int main(int argc, char** argv)
       }
     }
   }
+  
+  // parse the command line
+  auto parser = cbica::CmdParser(argc, argv, "CaPTk");
+  parser.ignoreArgc1();
 
   parser.addOptionalParameter("i", "images", cbica::Parameter::FILE, "NIfTI or DICOM", "Input coregistered image(s) to load into CaPTk", "Multiple images are delineated using ','");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "NIfTI or DICOM", "Input mask [coregistered with image(s)] to load into CaPTk", "Accepts only one file");
@@ -132,8 +134,6 @@ int main(int argc, char** argv)
   // parser.addOptionalParameter("ws", "whites", cbica::Parameter::STRING, "", "Calls WhiteStripe CLI", "This needs to be passed first (before any images/masks)");
   
   parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
-
-  std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
   
   if (parser.isPresent("i"))
   {

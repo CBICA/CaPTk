@@ -121,7 +121,7 @@ install_captk () {
 }
 
 # Print license with a reader
-cat ./Combined.txt | more
+cat ./Linux-Combined.txt | more
 
 echo ""
 echo "I accept the terms of the licenses above."
