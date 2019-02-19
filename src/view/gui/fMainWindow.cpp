@@ -5772,24 +5772,37 @@ void fMainWindow::ApplicationGeodesicTraining()
   bool isRerun = (firstFileName == m_GeodesicTrainingFirstFileNameFromLastExec);
   m_GeodesicTrainingFirstFileNameFromLastExec = firstFileName;
 
+  if (!mSlicerManagers[0])
+  {
+	  QMessageBox Msgbox;
+	  Msgbox.setWindowTitle("Geodesic Training");
+	  Msgbox.setText("Please load some images");
+	  Msgbox.exec();
+	  return;
+  }
+  
+  if (mSlicerManagers[0] && mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1)
+  {
+	
+  }
+  int dimensions = (mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) ? 2 : 3;
+
   if (dimensions == 2)
   {
-	  //LabelsImagePointer2D mask = convertVtkToItk<int, 2>(mSlicerManagers[0]->mMask);
+	  //LabelsImagePointer2D mask;
 
-	  //std::vector<InputImagePointer2D> inputImages;
-
-	  //for (SlicerManager* sm : mSlicerManagers)
-	  //{
-		 // inputImages.push_back(sm->mITKImage);
-	  //}
-
-	  //// New instance each time
-	  //m_GeodesicTrainingCaPTkApp2D = GeodesicTrainingCaPTkApp<2>(this);
-
-	  //...
+	  //cbica::Logging(loggerFile, "2D Image detected, doing conversion and then passing into GeodesicTraining");
+	  //std::vector< InputImagePointer2D > images_2d(images.size());
   }
   else {
 	  LabelsImagePointer3D mask;
+
+	  std::vector<InputImagePointer3D> inputImages;
+
+	  for (SlicerManager* sm : mSlicerManagers)
+	  {
+		  inputImages.push_back(sm->mITKImage);
+	  }
 
 	  if (isRerun)
 	  {
@@ -5822,13 +5835,6 @@ void fMainWindow::ApplicationGeodesicTraining()
 		  cbica::createDir(m_tempFolderLocation + "/GeodesicTrainingOutput");
 	  }
 	  cbica::WriteImage<LabelsImageType3D>(mask, m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
-
-	  std::vector<InputImagePointer3D> inputImages;
-
-	  for (SlicerManager* sm : mSlicerManagers)
-	  {
-		  inputImages.push_back(sm->mITKImage);
-	  }
 
 	  m_GeodesicTrainingCaPTkApp3D = new GeodesicTrainingCaPTkApp<3>(this);
 
@@ -7170,10 +7176,6 @@ std::vector<int> read_int_vector(std::string &nccRadii)
 
 void fMainWindow::GeodesicTrainingFinishedHandler()
 {
-	QMessageBox Msgbox;
-	Msgbox.setText("GeodesicTraining finished!");
-	Msgbox.exec();
-
 	if (mSlicerManagers[0]->mFileName == m_GeodesicTrainingFirstFileNameFromLastExec)
 	{
 		readMaskFile(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");

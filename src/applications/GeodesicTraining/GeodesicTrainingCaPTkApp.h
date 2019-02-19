@@ -80,6 +80,7 @@ private:
             /*if (Dimensions == 3) { emit GeodesicTrainingFinished3D( executeResult->labelsImage ); }
             else {                 emit GeodesicTrainingFinished2D( executeResult->labelsImage ); }*/
         
+			emit GeodesicTrainingProgressUpdate(100, "Geodesic Training Segmentation: Finished!", 100);
 			emit GeodesicTrainingFinished();
 		}
         else {
