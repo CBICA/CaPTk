@@ -62,8 +62,6 @@ public:
 	void progressUpdate(std::string message, int progress) override
 	{
 		emit GeodesicTrainingProgressUpdate(progress, message, 100);
-		//messageUpdate(QString::fromStdString(message));
-		//progressUpdate(progress);
 	}
 
 private:

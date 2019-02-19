@@ -56,57 +56,76 @@
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkLookupTable.h"
 
-// this function calls an external application from CaPTk in the most generic way while waiting for output
+#include <thread>
+
+// this function calls an external application from CaPTk in the most generic way
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
-  cbica::Logging(loggerFile, application.toStdString() + " " + arguments.join(" ").toStdString());
-  return std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
+	cbica::Logging(loggerFile, application.toStdString() + " " + arguments.join(" ").toStdString());
+	return std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
+
+
 #ifdef _WIN32
-  //QProcess process;
-  //process.setStandardOutputFile((m_tempFolderLocation + "/process_" + application.toStdString() + ".log").c_str());
-  //if (arguments.isEmpty())
-  //{
-  //  if (QFileInfo(application).completeSuffix() == "py")
-  //  {
-  //    process.start("python.exe " + application + ".py");
-  //  }
-  //  else
-  //  {
-  //    process.start(application);
-  //  }
-  //}
-  //else
-  //{
-  //  if (QFileInfo(application).completeSuffix() == "py")
-  //  {
-  //    process.start("python.exe " + application + ".py", arguments);
-  //  }
-  //  else
-  //  {
-  //    process.start(application, arguments);
-  //  }
-  //}
-  //process.write("exit\n\r");
-  //process.waitForFinished(-1);
-  //process.close();
+	//QProcess process;
+	//process.setStandardOutputFile((m_tempFolderLocation + "/process_" + application.toStdString() + ".log").c_str());
+	//if (arguments.isEmpty())
+	//{
+	//  if (QFileInfo(application).completeSuffix() == "py")
+	//  {
+	//    process.start("python.exe " + application + ".py");
+	//  }
+	//  else
+	//  {
+	//    process.start(application);
+	//  }
+	//}
+	//else
+	//{
+	//  if (QFileInfo(application).completeSuffix() == "py")
+	//  {
+	//    process.start("python.exe " + application + ".py", arguments);
+	//  }
+	//  else
+	//  {
+	//    process.start(application, arguments);
+	//  }
+	//}
+	//process.write("exit\n\r");
+	//process.waitForFinished(-1);
+	//process.close();
 
-  //return process.exitCode();
+	//return process.exitCode();
 #else
-  //std::string args_string = ""/*arguments.join(" ")*/, app_string = application.toStdString();
-  //for (size_t i = 0; i < arguments.size(); i++)
-  //{
-  //  args_string += " " + arguments[i].toStdString();
-  //}
+	//std::string args_string = ""/*arguments.join(" ")*/, app_string = application.toStdString();
+	//for (size_t i = 0; i < arguments.size(); i++)
+	//{
+	//  args_string += " " + arguments[i].toStdString();
+	//}
 
-  ////if (cbica::getFilenameExtension(application.toStdString()) == ".py")
-  ////{
-  ////  app_string = "python " + application.toStdString();
-  ////}
+	////if (cbica::getFilenameExtension(application.toStdString()) == ".py")
+	////{
+	////  app_string = "python " + application.toStdString();
+	////}
 
-  //return std::system((app_string + args_string).c_str());
+	//return std::system((app_string + args_string).c_str());
 #endif
-
 }
+
+void fMainWindow::startBackgroundExternalProcess(const QString &application, const QStringList &arguments)
+{
+	m_ExternalProcessThread = std::thread(&fMainWindow::startBackgroundExternalProcessWorker, this,
+		std::ref(application), std::ref(arguments)
+	);
+}
+
+void fMainWindow::startBackgroundExternalProcessWorker(const QString &application, const QStringList &arguments)
+{
+	cbica::Logging(loggerFile, application.toStdString() + " " + arguments.join(" ").toStdString());
+	int returnVal = std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
+
+	// Probably do nothing with the return val
+}
+
 
 int GetNumberOfDimensions(vtkImageData* input)
 {
@@ -4948,7 +4967,7 @@ void fMainWindow::ApplicationLIBRABatch()
 
   if (cbica::fileExists(scriptToCall))
   {
-    startExternalProcess(scriptToCall.c_str(), QStringList());
+    startBackgroundExternalProcess(scriptToCall.c_str(), QStringList());
     return;
   }
   else
@@ -5763,8 +5782,6 @@ void fMainWindow::ApplicationGeodesicTraining()
   typedef          itk::Image<int,   3>            LabelsImageType3D;
   typedef typename itk::Image<float, 3>::Pointer   InputImagePointer3D;
   typedef typename itk::Image<int,   3>::Pointer   LabelsImagePointer3D;
-
-  unsigned int dimensions = 3; // TODO: Replace this with SlicerManager::GetDimension() or whatever
   
   std::string firstFileName = mSlicerManagers[0]->mFileName;
   std::string firstFilePath = mSlicerManagers[0]->mPathFileName; 
@@ -5780,15 +5797,14 @@ void fMainWindow::ApplicationGeodesicTraining()
 	  Msgbox.exec();
 	  return;
   }
+
+  updateProgress(0, "Geodesic Training segmentation started, please wait");
   
-  if (mSlicerManagers[0] && mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1)
-  {
-	
-  }
-  int dimensions = (mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) ? 2 : 3;
+  unsigned int dimensions = ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) ? 2 : 3);
 
   if (dimensions == 2)
   {
+	  ShowErrorMessage("Geodesic Training: 2D images are not supported yet");
 	  //LabelsImagePointer2D mask;
 
 	  //cbica::Logging(loggerFile, "2D Image detected, doing conversion and then passing into GeodesicTraining");
@@ -5844,7 +5860,7 @@ void fMainWindow::ApplicationGeodesicTraining()
 	  connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingFinishedWithError(QString)),
 		  this, SLOT(GeodesicTrainingSegmentationResultErrorHandler(QString))
 	  );
-	  connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingProgressUpdate(int,std::string,int)),
+	  auto test = connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingProgressUpdate(int,std::string,int)),
 		  this, SLOT(updateProgress(int,std::string,int))
 	  );
 
@@ -6130,7 +6146,7 @@ void fMainWindow::ApplicationTheia()
     QStringList args;
     args << "-i" << mSlicerManagers[index]->GetFileName().c_str() << "-m" << maskFile.c_str();
 
-    startExternalProcess(getApplicationPath("Theia").c_str(), args);
+    startBackgroundExternalProcess(getApplicationPath("Theia").c_str(), args);
   }
   else
   {
@@ -6285,14 +6301,13 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, 
 
   if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
   {
-    ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
-    return;
+	  ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
+	  return;
   }
   else
   {
-    ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
+	  ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
   }
-
 }
 
 void fMainWindow::CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask,
@@ -7180,14 +7195,14 @@ void fMainWindow::GeodesicTrainingFinishedHandler()
 	{
 		readMaskFile(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
 	}
+	ShowMessage(std::string("Geodesic Training Segmentation finished. If the output contains mistakes, just draw labels on the output ") +
+	            std::string("mask and run Geodesic Training Segmentation again.")
+	);
 }
 
 void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 {
-	QMessageBox msgBox(this);
-	msgBox.setWindowTitle(QString("There was a problem executing Geodesic Training Segmentation. Make sure you draw some mask points."));
-	msgBox.setText(errorMessage);
-	msgBox.exec();
+	ShowErrorMessage(errorMessage.toStdString(), this);
 }
 
 //void fMainWindow::GeodesicTrainingFinished3DHandler(typename itk::Image<int, 3>::Pointer result)
@@ -7239,117 +7254,126 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
 {
-  std::string configPathName;
-  std::string configFileName;
-  std::string extn = ".txt";
+	std::thread(&fMainWindow::RegistrationWorker, this,
+		fixedFileName, inputFileNames, outputFileNames, matrixFileNames, registrationMode, metrics, affineMode, radii, iterations
+	);
+}
 
-  std::vector<std::string> affineMatrix;
-  std::vector<std::string> outputImage;
+void fMainWindow::RegistrationWorker(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
+{
+	std::string configPathName;
+	std::string configFileName;
+	std::string extn = ".txt";
 
-  updateProgress(5, "Starting Registration");
+	std::vector<std::string> affineMatrix;
+	std::vector<std::string> outputImage;
 
-  auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
+	updateProgress(5, "Starting Registration");
 
-  if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
-  {
-    ShowErrorMessage("Number of input, matrix and output file names do not match");
-    return;
-  }
+	auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
 
-  configPathName = itksys::SystemTools::GetFilenamePath(matrixFileNames[0]).c_str();
-  configFileName = configPathName + "/" + itksys::SystemTools::GetFilenameWithoutExtension(matrixFileNames[0]).c_str() + extn;
+	if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
+	{
+		ShowErrorMessage("Number of input, matrix and output file names do not match");
+		return;
+	}
 
-  for (unsigned int i = 0; i < inputFileNames.size(); i++)
-  {
-    if (!cbica::isFile(inputFileNames[i]))
-    {
-      ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
-      return;
-    }
-    updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
+	configPathName = itksys::SystemTools::GetFilenamePath(matrixFileNames[0]).c_str();
+	configFileName = configPathName + "/" + itksys::SystemTools::GetFilenameWithoutExtension(matrixFileNames[0]).c_str() + extn;
 
-    std::string fixedFileCommand = "-f " + fixedFileName;
-    std::string movingFileCommand = " -i " + inputFileNames[i];
-    std::string affineMatrixCommand = " -t " + matrixFileNames[i];
-    std::string outputCommand = " -o " + outputFileNames[i];
-    std::string metricsCommand = " -m " + metrics;
-    std::string iterationsCommand = " -n " + iterations;
-    QStringList args;
-    args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
-      << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
-      << "-m" << metrics.c_str() << "-n" << iterations.c_str();
+	for (unsigned int i = 0; i < inputFileNames.size(); i++)
+	{
+		if (!cbica::isFile(inputFileNames[i]))
+		{
+			ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
+			return;
+		}
+		updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
 
-    if (metrics == "NCC")
-      args << "-ri" << radii.c_str();
-    if (affineMode)
-    {
-      args << "-a";
-    }
-    else
-    {
-      args << "-r";
-    }
-    std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
+		std::string fixedFileCommand = "-f " + fixedFileName;
+		std::string movingFileCommand = " -i " + inputFileNames[i];
+		std::string affineMatrixCommand = " -t " + matrixFileNames[i];
+		std::string outputCommand = " -o " + outputFileNames[i];
+		std::string metricsCommand = " -m " + metrics;
+		std::string iterationsCommand = " -n " + iterations;
+		QStringList args;
+		args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
+			<< "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
+			<< "-m" << metrics.c_str() << "-n" << iterations.c_str();
 
-    if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
-    {
-      ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
-      return;
-    }
-    else
-    {
-      affineMatrix.push_back(matrixFileNames[i] + ".mat");
-    }
+		if (metrics == "NCC")
+			args << "-ri" << radii.c_str();
+		if (affineMode)
+		{
+			args << "-a";
+		}
+		else
+		{
+			args << "-r";
+		}
+		std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
+
+		if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
+		{
+			ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
+			return;
+		}
+		else
+		{
+			affineMatrix.push_back(matrixFileNames[i] + ".mat");
+		}
 
 
-    if (matrixFileNames[i].find("remove") != std::string::npos) 
-    {
-      if (cbica::isFile(matrixFileNames[i]))
-      {
-        if (std::remove(matrixFileNames[i].c_str()) == 0) 
-        {
-          updateProgress(80, "Cleaning temporary files");
-        }
-      }
+		if (matrixFileNames[i].find("remove") != std::string::npos)
+		{
+			if (cbica::isFile(matrixFileNames[i]))
+			{
+				if (std::remove(matrixFileNames[i].c_str()) == 0)
+				{
+					updateProgress(80, "Cleaning temporary files");
+				}
+			}
 
-      updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
-    }
-  
-    updateProgress(100, "Registration Complete.");
+			updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
+		}
 
-    time_t t = std::time(0);
-    long int now = static_cast<long int> (t);
+		updateProgress(100, "Registration Complete.");
 
-    std::ofstream file;
-    file.open(configFileName.c_str());
+		time_t t = std::time(0);
+		long int now = static_cast<long int> (t);
 
-    std::string mode;
+		std::ofstream file;
+		file.open(configFileName.c_str());
 
-    if (affineMode == true)
-      mode = "Affine";
-    else
-      mode = "Rigid";
+		std::string mode;
 
-    if (file.is_open())
-    {
-      if (metrics != "NCC") {
-        file << fixedFileName << ","
-          << metrics << ","
-          << mode << ","
-          << iterations << ","
-          << now << "\n";
-      }
-      else {
-        file << fixedFileName << ","
-          << metrics << ","
-          << radii << ","
-          << mode << ","
-          << iterations << ","
-          << now << "\n";
-      }
-    }
-    file.close();
-  }
+		if (affineMode == true)
+			mode = "Affine";
+		else
+			mode = "Rigid";
+
+		if (file.is_open())
+		{
+			if (metrics != "NCC") {
+				file << fixedFileName << ","
+					<< metrics << ","
+					<< mode << ","
+					<< iterations << ","
+					<< now << "\n";
+			}
+			else {
+				file << fixedFileName << ","
+					<< metrics << ","
+					<< radii << ","
+					<< mode << ","
+					<< iterations << ","
+					<< now << "\n";
+			}
+		}
+		file.close();
+	}
+
+	std::terminate();
 }
 
 
