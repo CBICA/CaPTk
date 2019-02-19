@@ -190,6 +190,12 @@ bash ../scripts/linux-cmake-conf
 
 # Make
 echo "[:] Building CaPTk..."
+make -j2
+
+cp FeatureExtraction.cwl ./src/applications/FeatureExtraction/
+
+ls ./src/applications/FeatureExtraction/
+
 make -j2 install/strip
 
 # Fix
