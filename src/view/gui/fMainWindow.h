@@ -61,6 +61,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
 
+#include "GeodesicTrainingCaPTkApp.h"
+
 #include <QMessageBox>
 
 #include "itkJoinSeriesImageFilter.h"
@@ -1274,11 +1276,8 @@ signals:
 #ifdef BUILD_GEODESIC
   void ApplicationGeodesic();
 #endif
-//#ifdef BUILD_GEODESIC_TRAINING
+#ifdef BUILD_GEODESICTRAINING
   void ApplicationGeodesicTraining();
-//#endif
-#ifdef BUILD_GEODESICTRAIN
-  void ApplicationGeoTrain();
 #endif
   void ApplicationGeodesicTreshold();
 #ifdef BUILD_ITKSNAP
@@ -1302,46 +1301,12 @@ signals:
   void ApplicationDeepMedicSegmentation();
   void ApplicationTheia();
 
-  template <unsigned int Dimensions>
-  void GeodesicTrainingSegmentationResultReady(typename itk::Image<int, Dimensions>::Pointer resultSegmentation)
-  {
-    typename itk::Image<int, Dimensions>::Pointer resultSegmentation3D;
+  //void GeodesicTrainingFinished3DHandler(typename itk::Image<int, 3>::Pointer result);
 
-    // Convert 2D to 3D
-    if (Dimensions == 2)
-    {
-      typedef itk::JoinSeriesImageFilter<itk::Image<int, 2>, itk::Image<int, 3>> JoinSeriesFilterType;
-      JoinSeriesFilterType::Pointer joinSeries = JoinSeriesFilterType::New();
-      joinSeries->SetOrigin(resultSegmentation->GetOrigin());
-      joinSeries->SetSpacing(resultSegmentation->GetSpacing());
+  //void GeodesicTrainingFinished2DHandler(typename itk::Image<int, 2>::Pointer result);
 
-      //typedef itk::ExtractImageFilter<itk::Image<int, 3>, itk::Image<int, 2>> SlicerExtractorType;
-      //SlicerExtractorType::Pointer sliceImageExtractor = SlicerExtractorType::New();
-      //SlicerExtractorType::InputImageRegionType sliceSubRegion(inputVolume->GetLargestPossibleRegion());
-      //sliceSubRegion.SetSize(2, 0);
-      //sliceSubRegion.SetIndex(2, z);
-      //sliceImageExtractor->SetExtractionRegion(sliceSubRegion);
-      //sliceImageExtractor->SetInput(inputVolume);
-      //sliceImageExtractor->Update();
-      joinSeries->PushBackInput(resultSegmentation);
-      joinSeries->Update();
-
-      resultSegmentation3D = joinSeries->GetOutput();
-    }
-    else {
-      resultSegmentation3D = resultSegmentation;
-    }
-
-    typedef itk::CastImageFilter<itk::Image<int, Dimensions>, itk::Image<short, Dimensions>> CastFilterType;
-    CastFilterType::Pointer castFilter = CastFilterType::New();
-    castFilter->SetInput(resultSegmentation);
-    m_imgGeodesicOut = castFilter->GetOutput();
-    ApplicationGeodesicTreshold();
-    updateProgress(0, "Geodesic Training Segmentation: Finished");
-    presetComboBox->setCurrentIndex(PRESET_GEODESIC);
-  }
-
-  void GeodesicTrainingSegmentationResultError(const QString message);
+  void GeodesicTrainingFinishedHandler();
+  void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
   void Registration(std::string fixedfilename, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
 
@@ -1438,8 +1403,9 @@ public:
     std::map<std::string, float> m_fetalbrainfeatures;
     int m_fetalslice;
 
-    //GeodesicSegmentationCaPTkApp<2> m_GeodesicSegmentationCaPTkApp2D; 
-    GeodesicSegmentationCaPTkApp<3> m_GeodesicSegmentationCaPTkApp3D; // TODO: Make 2D/3D not separate 
+	GeodesicTrainingCaPTkApp<2>* m_GeodesicTrainingCaPTkApp2D;
+    GeodesicTrainingCaPTkApp<3>* m_GeodesicTrainingCaPTkApp3D;
+	std::string m_GeodesicTrainingFirstFileNameFromLastExec = "";
 
     struct DicomDictTagAndVal
     {

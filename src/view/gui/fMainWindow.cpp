@@ -17,7 +17,6 @@
 #include "EGFRvIIISurrogateIndex.h"
 #include "TrainingModule.h"
 #include "GeodesicSegmentation.h"
-#include "GeodesicTrainingSegmentation.h"
 #include "N3BiasCorrection.h"
 #include "SusanDenoising.h"
 #include "WhiteStripe.h"
@@ -625,7 +624,7 @@ fMainWindow::fMainWindow()
       vectorOfSegmentationApps[i].action->setText("  ITK-SNAP"); //TBD set at source
       connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationITKSNAP()));
     }
-    else if (vectorOfSegmentationApps[i].name.find("Geodesic") != std::string::npos)
+    else if (vectorOfSegmentationApps[i].name.find("GeodesicSegmentation") != std::string::npos)
     {
       vectorOfSegmentationApps[i].action->setText("  Geodesic Segmentation"); // TBD set at source
       connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationGeodesic()));
@@ -5750,136 +5749,105 @@ void fMainWindow::ApplicationITKSNAP()
 }
 #endif
 
-#ifdef BUILD_GEODESICTRAIN
-void fMainWindow::ApplicationGeoTrain()
-{
-  m_imgGeodesicOut = NULL;
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
-  if (items.empty())
-  {
-    ShowErrorMessage("Please specify an input image.");
-    return;
-  }
-  int index = GetSlicerIndexFromItem(items[0]);
-  if (index < 0 || index >= (int)mSlicerManagers.size())
-  {
-    ShowErrorMessage("Please specify an input image.");
-    return;
-  }
-  updateProgress(5, "Running Geodesic Training");
-  VectorVectorDouble tumorPoints = FormulateDrawingPointsForTumorSegmentation();
-  if (tumorPoints.size() == 0)
-  {
-    ShowErrorMessage("Please draw inner and outer seed points.");
-    return;
-  }
-
-  //if (cbica::directoryExists(m_tempFolderLocation))
-  //{
-  //  auto temp = cbica::stringSplit(cbica::getCurrentLocalTime(), ":");
-  //  m_tempFolderLocation += temp[0] + temp[1] + temp[2] + "/";
-  //}
-
-
-  QString extensions = IMAGES_EXTENSIONS;
-  extensions += ";;All Files (*)";
-  QString file;
-  typedef ImageTypeFloat3D ImageType;
-  typedef ImageTypeShort3D ImageTypeGeodesic;
-  updateProgress(10, "Running Geodesic Training");
-  std::vector<ImageType::Pointer> Inp;
-  for (size_t i = 0; i < mSlicerManagers.size(); i++)
-  {
-    Inp.push_back(mSlicerManagers[i]->mITKImage);
-  }
-  ImageTypeFloat3D::Pointer mask = convertVtkToItk<float, 3>(mSlicerManagers[0]->mMask);
-  updateProgress(15, "Running Geodesic Training");
-
-  itk::ImageRegionIterator<ImageTypeFloat3D> maskiter(mask, mask->GetLargestPossibleRegion());
-  maskiter.GoToBegin();
-
-  if (m_InputGeomasks.IsNotNull())
-  {
-    itk::ImageRegionIterator<ImageTypeFloat3D> previousmask(m_InputGeomasks, m_InputGeomasks->GetLargestPossibleRegion());
-    previousmask.GoToBegin();
-    while (!maskiter.IsAtEnd())
-    {
-      auto currentIndex = maskiter.GetIndex();
-      previousmask.SetIndex(currentIndex);
-      previousmask.Set(maskiter.Get());
-    }
-  }
-  else
-  {
-    m_InputGeomasks = mask;
-  }
-
-  Geotrain<ImageTypeFloat3D> geotraining;
-  geotraining.SetInputImage(Inp);
-  geotraining.SetMask(m_InputGeomasks);
-  geotraining.SetOutputpath(loggerFolder + "../GeodesicSVM");
-  geotraining.Update();
-
-
-  updateProgress(85, "Running Geodesic Training");
-  auto filter = itk::RescaleIntensityImageFilter< ImageTypeShort3D, ImageTypeShort3D >::New();
-
-  //for positve probablity
-  filter->SetInput(geotraining.m_geoOutputPos);
-  filter->SetOutputMinimum(0);
-  filter->SetOutputMaximum(255);
-  filter->Update();
-  //  Inp = filter->GetOutput();
-  m_imgGeodesicOutPositive = filter->GetOutput();
-  updateProgress(90, "Displaying Geodesic Segmentation");
-  ApplicationGeodesicTreshold();
-
-
-  //for negative probablity
-  filter->SetInput(geotraining.m_geoOutputNeg);
-  filter->SetOutputMinimum(0);
-  filter->SetOutputMaximum(255);
-  filter->Update();
-  //  Inp = filter->GetOutput();
-  m_imgGeodesicOutNegative = filter->GetOutput();
-  updateProgress(90, "Displaying Geodesic Segmentation");
-  ApplicationGeodesicTreshold();
-
-
-  updateProgress(0, "Geodesic Segmentation Finished!");
-  presetComboBox->setCurrentIndex(PRESET_GEODESIC);
-
-}
-#endif
-
-//#ifdef BUILD_GEODESIC_TRAINING
+#ifdef BUILD_GEODESICTRAINING
 void fMainWindow::ApplicationGeodesicTraining()
 {
-  //updateProgress(0, "Geodesic Training Segmentation: Started");
-  typedef typename itk::Image<float, 3>::Pointer InputImagePointer;
-  typedef typename itk::Image<int, 3>::Pointer   LabelsImagePointer;
-
-  LabelsImagePointer mask = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
-
-  std::vector<InputImagePointer> inputImages;
-
-  for (SlicerManager* sm : mSlicerManagers)
-  {
-    inputImages.push_back(sm->mITKImage);
-  }
-
-  m_GeodesicSegmentationCaPTkApp3D = GeodesicSegmentationCaPTkApp<3>(); // New instance each time
+  // 2D
+  typedef          itk::Image<float, 2>            InputImageType2D;
+  typedef          itk::Image<int,   2>            LabelsImageType2D;
+  typedef typename itk::Image<float, 2>::Pointer   InputImagePointer2D;
+  typedef typename itk::Image<int,   2>::Pointer   LabelsImagePointer2D;
   
-  connect(&m_GeodesicSegmentationCaPTkApp3D, &GeodesicSegmentationCaPTkApp<3>::GeodesicTrainingFinished,
-                this, &fMainWindow::GeodesicTrainingSegmentationResultReady<3>
-  );
-  connect(&m_GeodesicSegmentationCaPTkApp3D, &GeodesicSegmentationCaPTkApp<3>::GeodesicTrainingFinishedWithError,
-                this, &fMainWindow::GeodesicTrainingSegmentationResultError
-  );
+  // 3D
+  typedef          itk::Image<float, 3>            InputImageType3D;
+  typedef          itk::Image<int,   3>            LabelsImageType3D;
+  typedef typename itk::Image<float, 3>::Pointer   InputImagePointer3D;
+  typedef typename itk::Image<int,   3>::Pointer   LabelsImagePointer3D;
 
-  m_GeodesicSegmentationCaPTkApp3D.Run(inputImages, mask);
+  unsigned int dimensions = 3; // TODO: Replace this with SlicerManager::GetDimension() or whatever
+  
+  std::string firstFileName = mSlicerManagers[0]->mFileName;
+  std::string firstFilePath = mSlicerManagers[0]->mPathFileName; 
+
+  bool isRerun = (firstFileName == m_GeodesicTrainingFirstFileNameFromLastExec);
+  m_GeodesicTrainingFirstFileNameFromLastExec = firstFileName;
+
+  if (dimensions == 2)
+  {
+	  //LabelsImagePointer2D mask = convertVtkToItk<int, 2>(mSlicerManagers[0]->mMask);
+
+	  //std::vector<InputImagePointer2D> inputImages;
+
+	  //for (SlicerManager* sm : mSlicerManagers)
+	  //{
+		 // inputImages.push_back(sm->mITKImage);
+	  //}
+
+	  //// New instance each time
+	  //m_GeodesicTrainingCaPTkApp2D = GeodesicTrainingCaPTkApp<2>(this);
+
+	  //...
+  }
+  else {
+	  LabelsImagePointer3D mask;
+
+	  if (isRerun)
+	  {
+
+		  mask = cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
+		  LabelsImagePointer3D previousResult = cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
+		  LabelsImagePointer3D currentROI = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
+
+		  itk::ImageRegionIterator<LabelsImageType3D> iter_m(mask, mask->GetRequestedRegion());
+		  itk::ImageRegionIterator<LabelsImageType3D> iter_p(previousResult, previousResult->GetRequestedRegion());
+		  itk::ImageRegionIterator<LabelsImageType3D> iter_c(currentROI, currentROI->GetRequestedRegion());
+		  
+		  for (iter_m.GoToBegin(), iter_p.GoToBegin(), iter_c.GoToBegin(); !iter_m.IsAtEnd(); ++iter_m, ++iter_p, ++iter_c)
+		  {
+			  int p = iter_p.Get();
+			  int c = iter_c.Get();
+			  
+			  if (p != c)
+			  {
+				  iter_m.Set(c);
+			  }
+		  }
+	  }
+	  else {
+		mask = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
+	  }
+
+	  if (!cbica::isDir(m_tempFolderLocation + "/GeodesicTrainingOutput"))
+	  {
+		  cbica::createDir(m_tempFolderLocation + "/GeodesicTrainingOutput");
+	  }
+	  cbica::WriteImage<LabelsImageType3D>(mask, m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
+
+	  std::vector<InputImagePointer3D> inputImages;
+
+	  for (SlicerManager* sm : mSlicerManagers)
+	  {
+		  inputImages.push_back(sm->mITKImage);
+	  }
+
+	  m_GeodesicTrainingCaPTkApp3D = new GeodesicTrainingCaPTkApp<3>(this);
+
+	  connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingFinished()),
+		  this, SLOT(GeodesicTrainingFinishedHandler())
+	  );
+	  connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingFinishedWithError(QString)),
+		  this, SLOT(GeodesicTrainingSegmentationResultErrorHandler(QString))
+	  );
+	  connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingProgressUpdate(int,std::string,int)),
+		  this, SLOT(updateProgress(int,std::string,int))
+	  );
+
+	  m_GeodesicTrainingCaPTkApp3D->SetOutputPath(m_tempFolderLocation + "/GeodesicTrainingOutput");
+	  m_GeodesicTrainingCaPTkApp3D->Run(inputImages, mask);
+  }
+  
 }
-//#endif
+#endif
 
 #ifdef BUILD_GEODESIC
 void fMainWindow::ApplicationGeodesic()
@@ -7200,13 +7168,72 @@ std::vector<int> read_int_vector(std::string &nccRadii)
   return vector;
 }
 
-void GeodesicTrainingSegmentationResultError(const QString message)
+void fMainWindow::GeodesicTrainingFinishedHandler()
 {
-  QMessageBox msgBox("There was a problem executing Geodesic Training Segmentation");
-  msgBox.setWindowTitle();
-  msgBox.setText(message);
-  msgBox.exec();
+	QMessageBox Msgbox;
+	Msgbox.setText("GeodesicTraining finished!");
+	Msgbox.exec();
+
+	if (mSlicerManagers[0]->mFileName == m_GeodesicTrainingFirstFileNameFromLastExec)
+	{
+		readMaskFile(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
+	}
 }
+
+void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
+{
+	QMessageBox msgBox(this);
+	msgBox.setWindowTitle(QString("There was a problem executing Geodesic Training Segmentation. Make sure you draw some mask points."));
+	msgBox.setText(errorMessage);
+	msgBox.exec();
+}
+
+//void fMainWindow::GeodesicTrainingFinished3DHandler(typename itk::Image<int, 3>::Pointer result)
+//  {
+//    typedef itk::CastImageFilter<itk::Image<int, 3>, itk::Image<short, 3>> CastFilterType;
+//    CastFilterType::Pointer castFilter = CastFilterType::New();
+//    castFilter->SetInput(result);
+//    //readMaskFile(std::string)
+//	castFilter->GetOutput();
+//    ApplicationGeodesicTreshold();
+//    updateProgress(0, "Geodesic Training Segmentation: Finished");
+//    presetComboBox->setCurrentIndex(PRESET_GEODESIC);
+//  }
+//
+//
+//
+//void GeodesicTrainingFinished2DHandler(typename itk::Image<int, 2>::Pointer result);
+//  void fMainWindow::GeodesicTrainingSegmentationResultReady2D(typename itk::Image<int, 2>::Pointer result)
+//  {
+//    typename itk::Image<int, 2>::Pointer resultSegmentation3D;
+//
+//    // Convert 2D to 3D
+//    typedef itk::JoinSeriesImageFilter<itk::Image<int, 2>, itk::Image<int, 3>> JoinSeriesFilterType;
+//    JoinSeriesFilterType::Pointer joinSeries = JoinSeriesFilterType::New();
+//    joinSeries->SetOrigin(resultSegmentation->GetOrigin());
+//    joinSeries->SetSpacing(resultSegmentation->GetSpacing());
+//
+//    //typedef itk::ExtractImageFilter<itk::Image<int, 3>, itk::Image<int, 2>> SlicerExtractorType;
+//    //SlicerExtractorType::Pointer sliceImageExtractor = SlicerExtractorType::New();
+//    //SlicerExtractorType::InputImageRegionType sliceSubRegion(inputVolume->GetLargestPossibleRegion());
+//    //sliceSubRegion.SetSize(2, 0);
+//    //sliceSubRegion.SetIndex(2, z);
+//    //sliceImageExtractor->SetExtractionRegion(sliceSubRegion);
+//    //sliceImageExtractor->SetInput(inputVolume);
+//    //sliceImageExtractor->Update();
+//    joinSeries->PushBackInput(resultSegmentation);
+//    joinSeries->Update();
+//
+//    resultSegmentation3D = joinSeries->GetOutput();
+//      
+//    typedef itk::CastImageFilter<itk::Image<int, 2>, itk::Image<short, 2>> CastFilterType;
+//    CastFilterType::Pointer castFilter = CastFilterType::New();
+//    castFilter->SetInput(resultSegmentation);
+//    m_imgGeodesicOut = castFilter->GetOutput();
+//    ApplicationGeodesicTreshold();
+//    updateProgress(0, "Geodesic Training Segmentation: Finished");
+//    presetComboBox->setCurrentIndex(PRESET_GEODESIC);
+//  }
 
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
 {
