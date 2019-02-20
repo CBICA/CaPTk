@@ -128,7 +128,7 @@ void fRegistrationDialog::ShowMessage(std::string msg)
 void fRegistrationDialog::SelectFixedFile()
 {
   auto file = getExistingFile(this, mInputPathName);
-  if (file.isEmpty())
+  if (file.isEmpty() || file.isNull())
   {
     return;
   }
@@ -246,9 +246,10 @@ void fRegistrationDialog::populateFields(std::string &configfilePath, std::strin
 void fRegistrationDialog::SelectMovingFile1()
 {
   auto fixed = fixedFileName->text().toStdString();
-  if (fixed != "") {
+  if (fixed != "") 
+  {
     auto file = getExistingFile(this, mInputPathName);
-    if (file.isEmpty())
+    if (file.isEmpty() || file.isNull())
     {
       return;
     }
@@ -279,9 +280,10 @@ void fRegistrationDialog::SelectMovingFile1()
 void fRegistrationDialog::SelectMovingFile2()
 {
   auto fixed = fixedFileName->text().toStdString();
-  if (fixed != "") {
+  if (fixed != "") 
+  {
     auto file = getExistingFile(this, mInputPathName);
-    if (file.isEmpty())
+    if (file.isEmpty() || file.isNull())
     {
       return;
     }
@@ -314,9 +316,10 @@ void fRegistrationDialog::SelectMovingFile2()
 void fRegistrationDialog::SelectMovingFile3()
 {
   auto fixed = fixedFileName->text().toStdString();
-  if (fixed != "") {
+  if (fixed != "") 
+  {
     auto file = getExistingFile(this, mInputPathName);
-    if (file.isEmpty())
+    if (file.isEmpty() || file.isNull())
     {
       return;
     }
@@ -351,7 +354,7 @@ void fRegistrationDialog::SelectMovingFile4()
   if (fixed != "")
   {
     auto file = getExistingFile(this, mInputPathName);
-    if (file.isEmpty())
+    if (file.isEmpty() || file.isNull())
     {
       return;
     }
@@ -384,9 +387,10 @@ void fRegistrationDialog::SelectMovingFile4()
 void fRegistrationDialog::SelectMovingFile5()
 {
   auto fixed = fixedFileName->text().toStdString();
-  if (fixed != "") {
+  if (fixed != "") 
+  {
     auto file = getExistingFile(this, mInputPathName);
-    if (file.isEmpty())
+    if (file.isEmpty() || file.isNull())
     {
       return;
     }
