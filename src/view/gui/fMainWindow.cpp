@@ -56,6 +56,7 @@
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkLookupTable.h"
 
+#include <QtConcurrent>
 #include <thread>
 
 // this function calls an external application from CaPTk in the most generic way
@@ -110,22 +111,6 @@ int fMainWindow::startExternalProcess(const QString &application, const QStringL
 	//return std::system((app_string + args_string).c_str());
 #endif
 }
-
-void fMainWindow::startBackgroundExternalProcess(const QString &application, const QStringList &arguments)
-{
-	m_ExternalProcessThread = std::thread(&fMainWindow::startBackgroundExternalProcessWorker, this,
-		std::ref(application), std::ref(arguments)
-	);
-}
-
-void fMainWindow::startBackgroundExternalProcessWorker(const QString &application, const QStringList &arguments)
-{
-	cbica::Logging(loggerFile, application.toStdString() + " " + arguments.join(" ").toStdString());
-	int returnVal = std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
-
-	// Probably do nothing with the return val
-}
-
 
 int GetNumberOfDimensions(vtkImageData* input)
 {
@@ -4967,7 +4952,11 @@ void fMainWindow::ApplicationLIBRABatch()
 
   if (cbica::fileExists(scriptToCall))
   {
-    startBackgroundExternalProcess(scriptToCall.c_str(), QStringList());
+   	QtConcurrent::run(this, &fMainWindow::startExternalProcess,
+      scriptToCall.c_str(),
+      QStringList()
+	);
+    
     return;
   }
   else
@@ -6146,7 +6135,10 @@ void fMainWindow::ApplicationTheia()
     QStringList args;
     args << "-i" << mSlicerManagers[index]->GetFileName().c_str() << "-m" << maskFile.c_str();
 
-    startBackgroundExternalProcess(getApplicationPath("Theia").c_str(), args);
+	QtConcurrent::run(this, &fMainWindow::startExternalProcess,
+		getApplicationPath("Theia").c_str(),
+		args
+	);
   }
   else
   {
@@ -7205,62 +7197,43 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 	ShowErrorMessage(errorMessage.toStdString(), this);
 }
 
-//void fMainWindow::GeodesicTrainingFinished3DHandler(typename itk::Image<int, 3>::Pointer result)
-//  {
-//    typedef itk::CastImageFilter<itk::Image<int, 3>, itk::Image<short, 3>> CastFilterType;
-//    CastFilterType::Pointer castFilter = CastFilterType::New();
-//    castFilter->SetInput(result);
-//    //readMaskFile(std::string)
-//	castFilter->GetOutput();
-//    ApplicationGeodesicTreshold();
-//    updateProgress(0, "Geodesic Training Segmentation: Finished");
-//    presetComboBox->setCurrentIndex(PRESET_GEODESIC);
-//  }
-//
-//
-//
-//void GeodesicTrainingFinished2DHandler(typename itk::Image<int, 2>::Pointer result);
-//  void fMainWindow::GeodesicTrainingSegmentationResultReady2D(typename itk::Image<int, 2>::Pointer result)
-//  {
-//    typename itk::Image<int, 2>::Pointer resultSegmentation3D;
-//
-//    // Convert 2D to 3D
-//    typedef itk::JoinSeriesImageFilter<itk::Image<int, 2>, itk::Image<int, 3>> JoinSeriesFilterType;
-//    JoinSeriesFilterType::Pointer joinSeries = JoinSeriesFilterType::New();
-//    joinSeries->SetOrigin(resultSegmentation->GetOrigin());
-//    joinSeries->SetSpacing(resultSegmentation->GetSpacing());
-//
-//    //typedef itk::ExtractImageFilter<itk::Image<int, 3>, itk::Image<int, 2>> SlicerExtractorType;
-//    //SlicerExtractorType::Pointer sliceImageExtractor = SlicerExtractorType::New();
-//    //SlicerExtractorType::InputImageRegionType sliceSubRegion(inputVolume->GetLargestPossibleRegion());
-//    //sliceSubRegion.SetSize(2, 0);
-//    //sliceSubRegion.SetIndex(2, z);
-//    //sliceImageExtractor->SetExtractionRegion(sliceSubRegion);
-//    //sliceImageExtractor->SetInput(inputVolume);
-//    //sliceImageExtractor->Update();
-//    joinSeries->PushBackInput(resultSegmentation);
-//    joinSeries->Update();
-//
-//    resultSegmentation3D = joinSeries->GetOutput();
-//      
-//    typedef itk::CastImageFilter<itk::Image<int, 2>, itk::Image<short, 2>> CastFilterType;
-//    CastFilterType::Pointer castFilter = CastFilterType::New();
-//    castFilter->SetInput(resultSegmentation);
-//    m_imgGeodesicOut = castFilter->GetOutput();
-//    ApplicationGeodesicTreshold();
-//    updateProgress(0, "Geodesic Training Segmentation: Finished");
-//    presetComboBox->setCurrentIndex(PRESET_GEODESIC);
-//  }
-
-void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
+void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, 
+	std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
 {
-	std::thread(&fMainWindow::RegistrationWorker, this,
-		fixedFileName, inputFileNames, outputFileNames, matrixFileNames, registrationMode, metrics, affineMode, radii, iterations
+	// This happens because the qconcurrent doesn't allow more than 5 function parameters, without std::bind + not sure what else
+	std::vector<std::string> compVector = {
+		fixedFileName,
+		((registrationMode) ? "true" : "false"),
+		metrics,
+		((affineMode) ? "true" : "false"),
+		radii,
+		iterations
+	};
+
+	QtConcurrent::run(this, &fMainWindow::RegistrationWorker, 
+		compVector,
+		inputFileNames,
+		outputFileNames,
+		matrixFileNames
 	);
+	/*QFuture<void> r = QtConcurrent::run(std::bind(
+	  this, &fMainWindow::RegistrationWorker,
+	  fixedFileName, inputFileNames, outputFileNames, 
+	  matrixFileNames, registrationMode, metrics, affineMode, radii, iterations
+	));*/
 }
 
-void fMainWindow::RegistrationWorker(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
+void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::vector<std::string> inputFileNames, 
+	std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames)
 {
+	// "Unpacking" the variables
+	std::string fixedFileName = compVector[0];
+	bool registrationMode = (compVector[1] == "true");
+	std::string metrics = compVector[2];
+	bool affineMode = (compVector[3] == "true");
+	std::string radii = compVector[4];
+	std::string iterations = compVector[5];
+
 	std::string configPathName;
 	std::string configFileName;
 	std::string extn = ".txt";

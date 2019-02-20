@@ -1301,15 +1301,10 @@ signals:
   void ApplicationDeepMedicSegmentation();
   void ApplicationTheia();
 
-  //void GeodesicTrainingFinished3DHandler(typename itk::Image<int, 3>::Pointer result);
-
-  //void GeodesicTrainingFinished2DHandler(typename itk::Image<int, 2>::Pointer result);
-
   void GeodesicTrainingFinishedHandler();
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
   void Registration(std::string fixedfilename, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
-  void RegistrationWorker(std::string fixedfilename, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
 
   //confirm before exit
   void closeEvent(QCloseEvent * event);
@@ -1429,13 +1424,12 @@ private:
       }
     };
 
+	void RegistrationWorker(std::vector<std::string> compVector, std::vector<std::string> inputFileNames,
+		std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames);
+
     bool m_skipTutorialOnNextRun = false;
 
     int  startExternalProcess(const QString &application, const QStringList &arguments);
-	
-	/** the last argument is an optional function that will get called after it finishes. */
-	void startBackgroundExternalProcess(const QString &application, const QStringList &arguments);
-	void startBackgroundExternalProcessWorker(const QString &application, const QStringList &arguments);
 };
 #if __GNUC__
 #pragma GCC visibility pop
