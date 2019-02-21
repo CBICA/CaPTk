@@ -5,9 +5,11 @@ SET( VTK_DEPENDENCIES )
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
+MESSAGE( STATUS "Adding VTK-8.2.0 ...")
+
 ExternalProject_Add( 
   VTK
-  URL https://github.com/Kitware/VTK/archive/v8.1.0.zip
+  URL https://github.com/Kitware/VTK/archive/v8.2.0.zip
   #GIT_REPOSITORY ${git_protocol}://github.com/Kitware/VTK.git
   #GIT_TAG v8.1.0
   SOURCE_DIR VTK-source
