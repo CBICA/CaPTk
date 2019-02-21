@@ -61,6 +61,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
 
+#include <atomic>
+
 #include "GeodesicTrainingCaPTkApp.h"
 
 #include <QMessageBox>
@@ -1392,16 +1394,18 @@ public:
   int mSequenceNumber, mCustomImageToThreshold_min, mCustomImageToThreshold_max;
 
 private:
-    ImageTypeFloat3D::Pointer m_InputGeomasks;
-    ImageTypeShort3D::Pointer m_imgGeodesicOut;
-    ImageTypeShort3D::Pointer m_imgGeodesicOutPositive;
-    ImageTypeShort3D::Pointer m_imgGeodesicOutNegative;
-    std::map<std::string, float> m_fetalbrainfeatures;
-    int m_fetalslice;
+  ImageTypeFloat3D::Pointer m_InputGeomasks;
+  ImageTypeShort3D::Pointer m_imgGeodesicOut;
+  ImageTypeShort3D::Pointer m_imgGeodesicOutPositive;
+  ImageTypeShort3D::Pointer m_imgGeodesicOutNegative;
+  std::map<std::string, float> m_fetalbrainfeatures;
+  int m_fetalslice;
 
+  // GeodesicTraining private variables
 	GeodesicTrainingCaPTkApp<2>* m_GeodesicTrainingCaPTkApp2D;
-    GeodesicTrainingCaPTkApp<3>* m_GeodesicTrainingCaPTkApp3D;
+  GeodesicTrainingCaPTkApp<3>* m_GeodesicTrainingCaPTkApp3D;
 	std::string m_GeodesicTrainingFirstFileNameFromLastExec = "";
+  bool m_IsGeodesicTrainingRunning = false;
 
 	std::thread m_ExternalProcessThread;
 
@@ -1427,9 +1431,11 @@ private:
 	void RegistrationWorker(std::vector<std::string> compVector, std::vector<std::string> inputFileNames,
 		std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames);
 
-    bool m_skipTutorialOnNextRun = false;
+  bool m_skipTutorialOnNextRun = false;
 
-    int  startExternalProcess(const QString &application, const QStringList &arguments);
+  std::atomic<int> m_NumberOfUnfinishedExternalProcesses = 0;
+
+  int  startExternalProcess(const QString &application, const QStringList &arguments);
 };
 #if __GNUC__
 #pragma GCC visibility pop

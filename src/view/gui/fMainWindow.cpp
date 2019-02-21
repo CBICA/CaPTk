@@ -58,13 +58,16 @@
 
 #include <QtConcurrent>
 #include <thread>
+#include <unordered_map>
 
 // this function calls an external application from CaPTk in the most generic way
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
+  m_NumberOfUnfinishedExternalProcesses++;
 	cbica::Logging(loggerFile, application.toStdString() + " " + arguments.join(" ").toStdString());
-	return std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
-
+	int returnVal = std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
+  m_NumberOfUnfinishedExternalProcesses--;
+  return returnVal;
 
 #ifdef _WIN32
 	//QProcess process;
@@ -5771,90 +5774,123 @@ void fMainWindow::ApplicationGeodesicTraining()
   typedef          itk::Image<int,   3>            LabelsImageType3D;
   typedef typename itk::Image<float, 3>::Pointer   InputImagePointer3D;
   typedef typename itk::Image<int,   3>::Pointer   LabelsImagePointer3D;
-  
-  std::string firstFileName = mSlicerManagers[0]->mFileName;
-  std::string firstFilePath = mSlicerManagers[0]->mPathFileName; 
 
+  if (m_IsGeodesicTrainingRunning)
+  {
+    ShowErrorMessage("Please wait for the previous execution to finish", this);
+    return;
+  }
+
+  m_IsGeodesicTrainingRunning = true;
+
+  // Check if there are loaded images
+  if (mSlicerManagers[0] == nullptr)
+  {
+	  ShowErrorMessage("Please load some images.", this);
+    m_IsGeodesicTrainingRunning = false;
+    return;
+  }
+
+  // Check if mask has been instantiated (not sure if necessary)
+  if (mSlicerManagers[0]->mMask == nullptr)
+  {
+    ShowErrorMessage("Please draw a ROI image with at least 2 different labels.", this);
+    m_IsGeodesicTrainingRunning = false;
+    return;
+  }
+
+  // The algorithm needs to know if the images are 2D or 3D  
+  unsigned int dimensions = (
+    (mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) ? 2 : 3
+  );
+
+  // Different operations happen if the user reruns it on the same images
+  std::string firstFileName = mSlicerManagers[0]->mFileName;
   bool isRerun = (firstFileName == m_GeodesicTrainingFirstFileNameFromLastExec);
   m_GeodesicTrainingFirstFileNameFromLastExec = firstFileName;
 
-  if (!mSlicerManagers[0])
-  {
-	  QMessageBox Msgbox;
-	  Msgbox.setWindowTitle("Geodesic Training");
-	  Msgbox.setText("Please load some images");
-	  Msgbox.exec();
-	  return;
-  }
-
   updateProgress(0, "Geodesic Training segmentation started, please wait");
-  
-  unsigned int dimensions = ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) ? 2 : 3);
 
-  if (dimensions == 2)
+  if (dimensions == 3)
   {
-	  ShowErrorMessage("Geodesic Training: 2D images are not supported yet");
-	  //LabelsImagePointer2D mask;
+    // 3D
+    LabelsImagePointer3D currentROI = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
 
-	  //cbica::Logging(loggerFile, "2D Image detected, doing conversion and then passing into GeodesicTraining");
-	  //std::vector< InputImagePointer2D > images_2d(images.size());
+    // Check if there are at least two different labels in the image (function in UtilImageToCvMatGTS.h)
+    auto labelsMap = GeodesicTrainingSegmentation::ParserGTS::CountsOfEachLabel<LabelsImageType3D>(currentROI);
+    if (labelsMap.size() < 2)
+    {
+      ShowErrorMessage("Please draw using at least 2 different labels.", this);
+      m_IsGeodesicTrainingRunning = false;
+      return;
+    }
+
+    // The input that GeodesicTraining needs
+    std::vector<InputImagePointer3D> inputImages;
+    LabelsImagePointer3D mask;
+
+    // Find the input images
+    for (SlicerManager* sm : mSlicerManagers)
+    {
+      inputImages.push_back(sm->mITKImage);
+    }
+
+    if (!isRerun)
+    {
+      // The user runs the algorithm for the first time for this subject
+      mask = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
+    }
+    else {
+      // The user is doing a rerun for the same subject
+      // The new points that the user drew on the output segmentation are added
+      // to the old mask and the algorithm executes again.
+      mask = cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
+      LabelsImagePointer3D previousResult = 
+        cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
+      
+      itk::ImageRegionIterator<LabelsImageType3D> iter_m(mask, mask->GetRequestedRegion());
+      itk::ImageRegionIterator<LabelsImageType3D> iter_p(previousResult, previousResult->GetRequestedRegion());
+      itk::ImageRegionIterator<LabelsImageType3D> iter_c(currentROI, currentROI->GetRequestedRegion());
+      
+      for (iter_m.GoToBegin(), iter_p.GoToBegin(), iter_c.GoToBegin(); !iter_m.IsAtEnd(); ++iter_m, ++iter_p, ++iter_c)
+      {
+        int p = iter_p.Get();
+        int c = iter_c.Get();
+        
+        if (p != c)
+        {
+          iter_m.Set(c);
+        }
+      }
+    }
+
+    // Save the mask for potential reruns on the same subject
+    if (!cbica::isDir(m_tempFolderLocation + "/GeodesicTrainingOutput"))
+    {
+      cbica::createDir(m_tempFolderLocation + "/GeodesicTrainingOutput");
+    }
+    cbica::WriteImage<LabelsImageType3D>(mask, m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
+
+    m_GeodesicTrainingCaPTkApp3D = new GeodesicTrainingCaPTkApp<3>(this);
+
+    // Connect the signals/slots for progress updates and notifying that the algorithm is finished
+    connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingFinished()),
+      this, SLOT(GeodesicTrainingFinishedHandler())
+    );
+    connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingFinishedWithError(QString)),
+      this, SLOT(GeodesicTrainingSegmentationResultErrorHandler(QString))
+    );
+    auto test = connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingProgressUpdate(int,std::string,int)),
+      this, SLOT(updateProgress(int,std::string,int))
+    );
+
+    // Run the algorithm
+    m_GeodesicTrainingCaPTkApp3D->SetOutputPath(m_tempFolderLocation + "/GeodesicTrainingOutput");
+    m_GeodesicTrainingCaPTkApp3D->Run(inputImages, mask);
   }
   else {
-	  LabelsImagePointer3D mask;
-
-	  std::vector<InputImagePointer3D> inputImages;
-
-	  for (SlicerManager* sm : mSlicerManagers)
-	  {
-		  inputImages.push_back(sm->mITKImage);
-	  }
-
-	  if (isRerun)
-	  {
-
-		  mask = cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
-		  LabelsImagePointer3D previousResult = cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
-		  LabelsImagePointer3D currentROI = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
-
-		  itk::ImageRegionIterator<LabelsImageType3D> iter_m(mask, mask->GetRequestedRegion());
-		  itk::ImageRegionIterator<LabelsImageType3D> iter_p(previousResult, previousResult->GetRequestedRegion());
-		  itk::ImageRegionIterator<LabelsImageType3D> iter_c(currentROI, currentROI->GetRequestedRegion());
-		  
-		  for (iter_m.GoToBegin(), iter_p.GoToBegin(), iter_c.GoToBegin(); !iter_m.IsAtEnd(); ++iter_m, ++iter_p, ++iter_c)
-		  {
-			  int p = iter_p.Get();
-			  int c = iter_c.Get();
-			  
-			  if (p != c)
-			  {
-				  iter_m.Set(c);
-			  }
-		  }
-	  }
-	  else {
-		mask = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
-	  }
-
-	  if (!cbica::isDir(m_tempFolderLocation + "/GeodesicTrainingOutput"))
-	  {
-		  cbica::createDir(m_tempFolderLocation + "/GeodesicTrainingOutput");
-	  }
-	  cbica::WriteImage<LabelsImageType3D>(mask, m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
-
-	  m_GeodesicTrainingCaPTkApp3D = new GeodesicTrainingCaPTkApp<3>(this);
-
-	  connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingFinished()),
-		  this, SLOT(GeodesicTrainingFinishedHandler())
-	  );
-	  connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingFinishedWithError(QString)),
-		  this, SLOT(GeodesicTrainingSegmentationResultErrorHandler(QString))
-	  );
-	  auto test = connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingProgressUpdate(int,std::string,int)),
-		  this, SLOT(updateProgress(int,std::string,int))
-	  );
-
-	  m_GeodesicTrainingCaPTkApp3D->SetOutputPath(m_tempFolderLocation + "/GeodesicTrainingOutput");
-	  m_GeodesicTrainingCaPTkApp3D->Run(inputImages, mask);
+    // 2D
+    ShowErrorMessage("Geodesic Training: 2D images are not supported yet");
   }
   
 }
@@ -7183,18 +7219,23 @@ std::vector<int> read_int_vector(std::string &nccRadii)
 
 void fMainWindow::GeodesicTrainingFinishedHandler()
 {
+  // Load the output segmentation as a ROI
 	if (mSlicerManagers[0]->mFileName == m_GeodesicTrainingFirstFileNameFromLastExec)
 	{
 		readMaskFile(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
 	}
-	ShowMessage(std::string("Geodesic Training Segmentation finished. If the output contains mistakes, just draw labels on the output ") +
-	            std::string("mask and run Geodesic Training Segmentation again.")
+
+	ShowMessage(std::string("Geodesic Training Segmentation finished. If the output contains mistakes, ") +
+              std::string("just correct some of them on the output mask and ") +
+	            std::string("run Geodesic Training Segmentation again.")
 	);
+  m_IsGeodesicTrainingRunning = false;
 }
 
 void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 {
 	ShowErrorMessage(errorMessage.toStdString(), this);
+  m_IsGeodesicTrainingRunning = false;
 }
 
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, 
@@ -7398,6 +7439,20 @@ void fMainWindow::SetOpacity()
 
 void fMainWindow::closeEvent(QCloseEvent* event)
 {
+  if (m_NumberOfUnfinishedExternalProcesses > 0)
+  {
+    ShowErrorMessage("Please close all external applications before exiting.");
+    event->ignore();
+    return;    
+  }
+
+  if (m_IsGeodesicTrainingRunning)
+  {
+    ShowErrorMessage("Please wait for GeodesicTraining execution to finish.");
+    event->ignore();
+    return;
+  }
+
   if (!cbica::fileExists(closeConfirmation))
   {
     auto msgBox = new QMessageBox();
