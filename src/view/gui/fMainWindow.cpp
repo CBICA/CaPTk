@@ -7450,7 +7450,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
 
 	if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
 	{
-		ShowErrorMessage("Number of input, matrix and output file names do not match");
+		//ShowErrorMessage("Number of input, matrix and output file names do not match");
 		return;
 	}
 
@@ -7461,7 +7461,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
 	{
 		if (!cbica::isFile(inputFileNames[i]))
 		{
-			ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
+			//ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
 			return;
 		}
 		//updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
@@ -7491,7 +7491,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
 
 		if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
 		{
-			ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
+			//ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
 			return;
 		}
 		else
