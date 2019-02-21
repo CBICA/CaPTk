@@ -338,7 +338,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_MSUBTYPE ON CACHE BOOL "Do you want to build Molecular Subtype Estimation?" )
   SET( BUILD_ATLAS ON CACHE BOOL "Do you want to build Population Atlas?" )
   SET( BUILD_GEODESIC ON CACHE BOOL "Do you want to build Geodesic Segmentation?" )
-  SET( BUILD_GEODESICTRAIN OFF CACHE BOOL "Do you want to build Geodesic Segmentation Train?" )
+  SET( BUILD_GEODESICTRAINING OFF CACHE BOOL "Do you want to build Geodesic Training Segmentation?" )
   SET( BUILD_SBRT ON CACHE BOOL "Do you want to build SBRT Lung?" )
   SET( BUILD_WHITESTRIPE ON CACHE BOOL "Do you want to build WhiteStripe Normalization?" )
   SET( BUILD_ITKSNAP ON CACHE BOOL "Do you want to connect ITK-SNAP to CaPTk Console?" )
@@ -416,8 +416,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ADD_DEFINITIONS(-DBUILD_FETALBRAIN)
   ENDIF()
 
-  IF(BUILD_GEODESICTRAIN)
-    ADD_DEFINITIONS(-DBUILD_GEODESICTRAIN)
+  IF(BUILD_GEODESICTRAINING)
+    ADD_DEFINITIONS(-DBUILD_GEODESICTRAINING)
   ENDIF()
 
   ## add the CBICA-TK library before any of the applications get added  
@@ -437,6 +437,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   
   SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
+  SET_TARGET_PROPERTIES( GeodesicTraining      PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+  SET_TARGET_PROPERTIES( GeodesicTrainingCaPTk PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+
   # include dependencies
   # add source code include directories
   INCLUDE_DIRECTORIES(
@@ -450,6 +453,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${PROJECT_SOURCE_DIR}/src/common/inc/
     ${PROJECT_SOURCE_DIR}/src/view/gui/
     ${APPLICATION_INCLUDES}
+  )
+  
+  INCLUDE_DIRECTORIES( 
+    ${GEODESIC_TRAINING_INCLUDE_DIRS}
   )
 
   # set stand-alone applications directory
@@ -715,7 +722,12 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
   SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   
-  SET( CAPTK_LIBRARIES ${LIBNAME_CBICATK} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} )
+  SET( CAPTK_LIBRARIES 
+    ${LIBNAME_CBICATK} 
+    ${LIBNAME_Applications} 
+    ${LIBNAME_FeatureExtractor} 
+    ${GeodesicTrainingCaPTk}
+  )
 
   # find stand-alone CMD applications
   FILE( GLOB STANDALONE_APPS
@@ -1043,6 +1055,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     TARGET_LINK_LIBRARIES( ${EXE_NAME}
       ${DEPENDENT_LIBS}
+      GeodesicTrainingCaPTk
       CaPTk_GUI
       CaPTk_Common
       ${LIBNAME_Applications}
