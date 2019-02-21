@@ -8,7 +8,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DSC-MRI image.");
   parser.addRequiredParameter("e", "echo time", cbica::Parameter::STRING, "", "The echo time in seconds.");
   parser.addRequiredParameter("p", "PSR", cbica::Parameter::STRING, "", "The Percent Signal Recovery image (1=YES, 0=NO, 1 (Default))");
-  parser.addRequiredParameter("pH", "peekHeight", cbica::Parameter::STRING, "", "The Peak Height image (1=YES, 0=NO, 1 (Default))");
+  parser.addRequiredParameter("pH", "peakHeight", cbica::Parameter::STRING, "", "The Peak Height image (1=YES, 0=NO, 1 (Default))");
   parser.addRequiredParameter("r", "ap-RCBV", cbica::Parameter::STRING, "", "Automatially-extracted proxy to reletive cerebral volume image (1=YES, 0=NO, 1 (Default))");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
