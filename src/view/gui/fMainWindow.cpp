@@ -7282,7 +7282,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
 	std::vector<std::string> affineMatrix;
 	std::vector<std::string> outputImage;
 
-	updateProgress(5, "Starting Registration");
+	//updateProgress(5, "Starting Registration");
 
 	auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
 
@@ -7302,7 +7302,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
 			ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
 			return;
 		}
-		updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
+		//updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
 
 		std::string fixedFileCommand = "-f " + fixedFileName;
 		std::string movingFileCommand = " -i " + inputFileNames[i];
@@ -7344,14 +7344,14 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
 			{
 				if (std::remove(matrixFileNames[i].c_str()) == 0)
 				{
-					updateProgress(80, "Cleaning temporary files");
+					//updateProgress(80, "Cleaning temporary files");
 				}
 			}
 
-			updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
+			//updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
 		}
 
-		updateProgress(100, "Registration Complete.");
+		//updateProgress(100, "Registration Complete.");
 
 		time_t t = std::time(0);
 		long int now = static_cast<long int> (t);
@@ -7387,7 +7387,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
 		file.close();
 	}
 
-	std::terminate();
+	//std::terminate();
 }
 
 
