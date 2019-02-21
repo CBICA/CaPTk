@@ -5973,66 +5973,66 @@ void fMainWindow::ApplicationGeodesicTraining()
 
   updateProgress(0, "Geodesic Training segmentation started, please wait");
 
+  LabelsImagePointer3D currentROI = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
+
+  // Check if there are at least two different labels in the image (function in UtilImageToCvMatGTS.h)
+  auto labelsMap = GeodesicTrainingSegmentation::ParserGTS::CountsOfEachLabel<LabelsImageType3D>(currentROI);
+  if (labelsMap.size() < 2)
+  {
+	  ShowErrorMessage("Please draw using at least 2 different labels.", this);
+	  m_IsGeodesicTrainingRunning = false;
+	  return;
+  }
+
+  // The input that GeodesicTraining needs
+  std::vector<InputImagePointer3D> inputImages;
+  LabelsImagePointer3D mask;
+
+  // Find the input images
+  for (SlicerManager* sm : mSlicerManagers)
+  {
+	  inputImages.push_back(sm->mITKImage);
+  }
+
+  if (!isRerun)
+  {
+	  // The user runs the algorithm for the first time for this subject
+	  mask = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
+  }
+  else {
+	  // The user is doing a rerun for the same subject
+	  // The new points that the user drew on the output segmentation are added
+	  // to the old mask and the algorithm executes again.
+	  mask = cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
+	  LabelsImagePointer3D previousResult =
+		  cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
+
+	  itk::ImageRegionIterator<LabelsImageType3D> iter_m(mask, mask->GetRequestedRegion());
+	  itk::ImageRegionIterator<LabelsImageType3D> iter_p(previousResult, previousResult->GetRequestedRegion());
+	  itk::ImageRegionIterator<LabelsImageType3D> iter_c(currentROI, currentROI->GetRequestedRegion());
+
+	  for (iter_m.GoToBegin(), iter_p.GoToBegin(), iter_c.GoToBegin(); !iter_m.IsAtEnd(); ++iter_m, ++iter_p, ++iter_c)
+	  {
+		  int p = iter_p.Get();
+		  int c = iter_c.Get();
+
+		  if (p != c)
+		  {
+			  iter_m.Set(c);
+		  }
+	  }
+  }
+
+  // Save the mask for potential reruns on the same subject
+  if (!cbica::isDir(m_tempFolderLocation + "/GeodesicTrainingOutput"))
+  {
+	  cbica::createDir(m_tempFolderLocation + "/GeodesicTrainingOutput");
+  }
+  cbica::WriteImage<LabelsImageType3D>(mask, m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
+
   if (dimensions == 3)
   {
     // 3D
-    LabelsImagePointer3D currentROI = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
-
-    // Check if there are at least two different labels in the image (function in UtilImageToCvMatGTS.h)
-    auto labelsMap = GeodesicTrainingSegmentation::ParserGTS::CountsOfEachLabel<LabelsImageType3D>(currentROI);
-    if (labelsMap.size() < 2)
-    {
-      ShowErrorMessage("Please draw using at least 2 different labels.", this);
-      m_IsGeodesicTrainingRunning = false;
-      return;
-    }
-
-    // The input that GeodesicTraining needs
-    std::vector<InputImagePointer3D> inputImages;
-    LabelsImagePointer3D mask;
-
-    // Find the input images
-    for (SlicerManager* sm : mSlicerManagers)
-    {
-      inputImages.push_back(sm->mITKImage);
-    }
-
-    if (!isRerun)
-    {
-      // The user runs the algorithm for the first time for this subject
-      mask = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
-    }
-    else {
-      // The user is doing a rerun for the same subject
-      // The new points that the user drew on the output segmentation are added
-      // to the old mask and the algorithm executes again.
-      mask = cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
-      LabelsImagePointer3D previousResult = 
-        cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
-      
-      itk::ImageRegionIterator<LabelsImageType3D> iter_m(mask, mask->GetRequestedRegion());
-      itk::ImageRegionIterator<LabelsImageType3D> iter_p(previousResult, previousResult->GetRequestedRegion());
-      itk::ImageRegionIterator<LabelsImageType3D> iter_c(currentROI, currentROI->GetRequestedRegion());
-      
-      for (iter_m.GoToBegin(), iter_p.GoToBegin(), iter_c.GoToBegin(); !iter_m.IsAtEnd(); ++iter_m, ++iter_p, ++iter_c)
-      {
-        int p = iter_p.Get();
-        int c = iter_c.Get();
-        
-        if (p != c)
-        {
-          iter_m.Set(c);
-        }
-      }
-    }
-
-    // Save the mask for potential reruns on the same subject
-    if (!cbica::isDir(m_tempFolderLocation + "/GeodesicTrainingOutput"))
-    {
-      cbica::createDir(m_tempFolderLocation + "/GeodesicTrainingOutput");
-    }
-    cbica::WriteImage<LabelsImageType3D>(mask, m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
-
     m_GeodesicTrainingCaPTkApp3D = new GeodesicTrainingCaPTkApp<3>(this);
 
     // Connect the signals/slots for progress updates and notifying that the algorithm is finished
@@ -6051,8 +6051,57 @@ void fMainWindow::ApplicationGeodesicTraining()
     m_GeodesicTrainingCaPTkApp3D->Run(inputImages, mask);
   }
   else {
-    // 2D
-    ShowErrorMessage("Geodesic Training: 2D images are not supported yet");
+    // 2D (which has been loaded as a 3D image with a single slize in z-direction)
+	std::vector< InputImagePointer2D > inputImages2D(inputImages.size());
+	LabelsImagePointer2D               mask2D;
+
+	// Convert from 3D to 2D
+	cbica::Logging(loggerFile, "2D Image detected, doing conversion");
+	InputImageType3D::IndexType regionIndex;
+	regionIndex.Fill(0);
+	auto regionSize = inputImages[0]->GetLargestPossibleRegion().GetSize();
+	regionSize[2] = 0; // Only 2D image is needed
+
+	// Convert input images
+	for (size_t i = 0; i < inputImages.size(); i++)
+	{
+		auto extractor = itk::ExtractImageFilter< InputImageType3D, InputImageType2D >::New();
+		ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
+		extractor->SetExtractionRegion(desiredRegion);
+		extractor->SetInput(inputImages[i]);
+		extractor->SetDirectionCollapseToIdentity();
+		extractor->Update();
+		inputImages2D[i] = extractor->GetOutput();
+		inputImages2D[i]->DisconnectPipeline();
+	}
+
+	// Convert mask
+	auto extractor = itk::ExtractImageFilter< LabelsImageType3D, LabelsImageType2D >::New();
+	ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
+	extractor->SetExtractionRegion(desiredRegion);
+	extractor->SetInput(mask);
+	extractor->SetDirectionCollapseToIdentity();
+	extractor->Update();
+	mask2D = extractor->GetOutput();
+	mask2D->DisconnectPipeline();
+
+	// Same as 3D but in 2D form
+	m_GeodesicTrainingCaPTkApp2D = new GeodesicTrainingCaPTkApp<2>(this);
+
+	// Connect the signals/slots for progress updates and notifying that the algorithm is finished
+	connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingFinished()),
+		this, SLOT(GeodesicTrainingFinishedHandler())
+	);
+	connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingFinishedWithError(QString)),
+		this, SLOT(GeodesicTrainingSegmentationResultErrorHandler(QString))
+	);
+	auto test = connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingProgressUpdate(int, std::string, int)),
+		this, SLOT(updateProgress(int, std::string, int))
+	);
+
+	// Run the algorithm
+	m_GeodesicTrainingCaPTkApp2D->SetOutputPath(m_tempFolderLocation + "/GeodesicTrainingOutput");
+	m_GeodesicTrainingCaPTkApp2D->Run(inputImages2D, mask2D);
   }
   
 }
