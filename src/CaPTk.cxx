@@ -50,16 +50,16 @@ void setStyleSheet(const std::string &styleFileName = CAPTK_STYLESHEET_FILE)
   }
 }
 
-//#ifdef _WIN32
-//// ensures no console pops up when launching the program
-//int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCmdLine, int nShowCmd)
-//{
-//  int argc = __argc;
-//  char **argv = __argv;
-//#else
+#ifdef _WIN32
+// ensures no console pops up when launching the program
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCmdLine, int nShowCmd)
+{
+  int argc = __argc;
+  char **argv = __argv;
+#else
 int main(int argc, char** argv)
 {
-//#endif
+#endif
 
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
 
