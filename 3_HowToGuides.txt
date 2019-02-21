@@ -381,8 +381,6 @@ Contains the following applications:
 \page Glioblastoma_Molecular "Brain Cancer: Glioblastoma Molecular Subtype Prediction"
 This application provides the prediction of the molecular subtype of <i>de novo</i> glioblastoma patients using baseline pre-operative multi-parametric MRI analysis [1].
 
-A multivariate model trained on data from the Hospital of the University of Pennsylvania (as described in [1]) is provided with the CaPTk. This can be found in [CaPTk_Installation_Folder]/data/molecular. 
-
 <b>REQUIREMENTS:</b>
 -# Co-registered Multi-modal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV. 
 -# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)
@@ -606,8 +604,6 @@ References:
 \page Glioblastoma_Survival Brain Cancer: Glioblastoma Survival Prediction Index
 This application provides the survival prediction index (SPI) of <i>de novo</i> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].
 
-A multivariate model trained on data from the Hospital of the University of Pennsylvania (as described in the study of [1]) is provided with the CaPTk. This can be found in [CaPTk_Installation_Folder]/data/survival. 
-
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
 -# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)
@@ -674,8 +670,6 @@ Reference:
 /**
 \page Glioblastoma_EGFRvIII Brain Cancer: Glioblastoma EGFRvIII SVM Index
 This application provides the detection of EGFRvIII mutation status of <i>de novo</i> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].
-
-A multivariate model trained on data from the Hospital of the University of Pennsylvania (as described in the study of [1]) is provided with the CaPTk. This can be found in [CaPTk_Installation_Folder]/data/egfrv3. 
 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
