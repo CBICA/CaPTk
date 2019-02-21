@@ -284,6 +284,7 @@ private:
   QAction *actionLoad_Recurrence_Images;
   QAction *actionLoad_Nifti_Images;
   QAction *actionLoad_Nifti_ROI;
+  QAction *actionLoad_Dicom_Images;
 
 
   QAction *actionSave_Nifti_Images;
@@ -882,6 +883,11 @@ signals:
   \brief Open Nifti image functionality. Shows dialog to select nifti files
   */
   void openImages(QStringList files = QStringList(), bool callingFromCmd = false);
+
+  /**
+  \brief Open Dicom image functionality. Shows dialog to select Dicom files
+  */
+  void openDicomImages();
 
   /**
   \brief Function called when the sliders of axial view is changed

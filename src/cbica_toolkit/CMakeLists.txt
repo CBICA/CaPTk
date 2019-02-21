@@ -1,6 +1,7 @@
 # This CMakeLists file will add the source files in this directory for compilation
 
 # Add all the files in here (or the full path of the directory) into cache so that they can be added as include files for applications
+ADD_SUBDIRECTORY(src/IO)
 
 PROJECT( CaPTk_CBICATK )
 

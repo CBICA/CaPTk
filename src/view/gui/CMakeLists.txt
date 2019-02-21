@@ -135,6 +135,7 @@ INCLUDE_DIRECTORIES( ${CaPTk_SOURCE_DIR}/src
   ${CaPTk_SOURCE_DIR}/src/common/inc
   ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends
   ${GEODESIC_TRAINING_INCLUDE_DIRS}
+  ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
   #${CMAKE_CURRENT_SOURCE_DIR}/inc
   #${VTK_INCLUDE_DIRS} 
 )
@@ -152,4 +153,5 @@ TARGET_LINK_LIBRARIES(
   ${DEPENDENT_LIBS}
   ${LIBNAME_CBICATK}
   ${LIBNAME_FeatureExtractor}
+  CaPTk_IO
 )
