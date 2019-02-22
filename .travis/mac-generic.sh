@@ -10,8 +10,6 @@ export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
 
-ls "${TRAVIS_BUILD_DIR}/bin/qt/5.11.2/lib/cmake/Qt5"
-
 export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.11.2/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.11.2/bin:$CMAKE_PREFIX_PATH"
 
 rm -rf /usr/local/opt/qt

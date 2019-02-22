@@ -1439,7 +1439,7 @@ private:
 
   bool m_skipTutorialOnNextRun = false;
 
-  auto m_NumberOfUnfinishedExternalProcesses = std::atomic<int>(0);
+  std::atomic<int> m_NumberOfUnfinishedExternalProcesses = {0};
 
   int  startExternalProcess(const QString &application, const QStringList &arguments);
 };
