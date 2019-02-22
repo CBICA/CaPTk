@@ -36,6 +36,8 @@ cmake ../
 cmake ../
 make 
 
+make package
+
 }
 
 ###########################
