@@ -30,8 +30,6 @@ export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"
 export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-echo $CC
-
 echo "Run CaPTk Build"
 export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 cmake ../
