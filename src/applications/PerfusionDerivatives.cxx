@@ -46,7 +46,7 @@ int main(int argc, char **argv)
   {
 	  psrPresent = atoi(argv[tempPosition + 1]);
   }
-  if (parser.compareParameter("h", tempPosition))
+  if (parser.compareParameter("pH", tempPosition))
   {
 	  phPresent = atoi(argv[tempPosition + 1]);
   }
@@ -82,18 +82,25 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
   PerfusionDerivatives objPerfusion;
-  std::vector<typename ImageTypeFloat3D::Pointer> measures = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, rcbvPresent, psrPresent, phPresent, inputEchoName);
-  // std::cout << "Writing measures to the specified output directory.\n";
-  for (int i = 0; i < measures.size(); i++)
+  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, rcbvPresent, psrPresent, phPresent, inputEchoName);
+  std::cout << "Writing measures to the specified output directory.\n";
+
+  if (perfusionDerivatives.size() == 0)
   {
-    typedef itk::ImageFileWriter< ImageTypeFloat3D > WriterType;
-    WriterType::Pointer writer1 = WriterType::New();
-    writer1->SetFileName(outputDirectoryName + "/Atlas_" + std::to_string(i + 1) + ".nii.gz");
-    writer1->SetInput(measures[i]);
-    writer1->Update();
   }
-  // std::cout << "Finished successfully.\n";
-  // std::cout << "\nPress any key to continue............\n";
+  else
+  {
+    if (psrPresent == true)
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputDirectoryName + "/PSR.nii.gz");
+    if (phPresent == true)
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputDirectoryName + "/PH.nii.gz");
+    if (rcbvPresent == true)
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[2], outputDirectoryName + "/ap-RCBV.nii.gz");
+
+    std::cout << "Perfusion derivatives have been saved at the specified locations.\n";
+  }
+  std::cout << "Finished successfully.\n";
+  std::cout << "\nPress any key to continue............\n";
 
   return EXIT_SUCCESS;
 }
