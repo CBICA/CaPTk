@@ -13,54 +13,65 @@ DicomMetadataReader::~DicomMetadataReader()
 {
 }
 
-void DicomMetadataReader::SetDirectoryPath(std::string path)
+void DicomMetadataReader::SetFilePath(std::string path)
 {
-  m_nameGenerator->SetInputDirectory(path);
+  this->m_FilePath = path;
 }
 
-void DicomMetadataReader::ReadMetaData()
+bool DicomMetadataReader::ReadMetaData()
 {
+  bool status = false;
   m_tagvalueMap->Initialize(); //clear the map
-  m_fileNames = m_nameGenerator->GetInputFileNames();
-  m_reader->SetFileNames(m_fileNames);
-
-  try
+  if (this->m_FilePath.empty())
   {
-    m_reader->Update();
+    status = false;
   }
-  catch (itk::ExceptionObject &ex)
+  else
   {
-    //TBD: handle this
-    std::cout << ex << std::endl;
-  }
+    m_reader->SetFileName(this->m_FilePath);
 
-  m_dictionary = m_dicomIO->GetMetaDataDictionary();
-
-  DictionaryType::ConstIterator itr = m_dictionary.Begin();
-  DictionaryType::ConstIterator end = m_dictionary.End();
-
-  while (itr != end)
-  {
-    itk::MetaDataObjectBase::Pointer  entry = itr->second;
-
-    MetaDataStringType::Pointer entryvalue = dynamic_cast<MetaDataStringType *>(entry.GetPointer());
-
-    std::string label;
-    std::pair<std::string, std::string> labelValuePair;
-    if (entryvalue)
+    try
     {
-      std::string tagkey = itr->first;
-      std::string tagvalue = entryvalue->GetMetaDataObjectValue();
-      bool found = itk::GDCMImageIO::GetLabelFromTag(tagkey, label);
-      if (found)
-      {
-        labelValuePair.first = label;
-        labelValuePair.second = tagvalue;
-        m_tagvalueMap->InsertElement(tagkey, labelValuePair);
-      }
+      m_reader->Update();
     }
-    ++itr;
+    catch (itk::ExceptionObject &ex)
+    {
+      //TBD: handle this
+      std::cout << ex << std::endl;
+      status = false;
+      return status;
+    }
+
+    m_dictionary = m_dicomIO->GetMetaDataDictionary();
+
+    DictionaryType::ConstIterator itr = m_dictionary.Begin();
+    DictionaryType::ConstIterator end = m_dictionary.End();
+
+    while (itr != end)
+    {
+      itk::MetaDataObjectBase::Pointer  entry = itr->second;
+
+      MetaDataStringType::Pointer entryvalue = dynamic_cast<MetaDataStringType *>(entry.GetPointer());
+
+      std::string label;
+      std::pair<std::string, std::string> labelValuePair;
+      if (entryvalue)
+      {
+        std::string tagkey = itr->first;
+        std::string tagvalue = entryvalue->GetMetaDataObjectValue();
+        bool found = itk::GDCMImageIO::GetLabelFromTag(tagkey, label);
+        if (found)
+        {
+          labelValuePair.first = label;
+          labelValuePair.second = tagvalue;
+          m_tagvalueMap->InsertElement(tagkey, labelValuePair);
+        }
+      }
+      ++itr;
+    }
+    status = true; //need better check here
   }
+  return status;
 }
 
 void DicomMetadataReader::PrintMetaData()

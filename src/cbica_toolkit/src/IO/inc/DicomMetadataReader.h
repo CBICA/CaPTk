@@ -27,10 +27,10 @@ public:
 
   //! we may need to handle pixeltype in a template if we run into issues
   typedef signed short       PixelType;
-  const unsigned int         Dimension = 3;
-  typedef itk::Image< PixelType, 3 >      ImageType; 
+  const unsigned int         Dimension = 2;
+  typedef itk::Image< PixelType, 2 >      ImageType; 
 
-  typedef itk::ImageSeriesReader< ImageType >     ReaderType;
+  typedef itk::ImageFileReader< ImageType >     ReaderType;
   typedef itk::GDCMSeriesFileNames     NamesGeneratorType;
   typedef itk::GDCMImageIO       ImageIOType;
   typedef std::vector<std::string>    FileNamesContainer;
@@ -42,11 +42,11 @@ public:
   DicomMetadataReader();
   ~DicomMetadataReader();
 
-  //! Set the input directory containing dicom series
-  void SetDirectoryPath(std::string path);
+  //! Set the input file path to dicom image
+  void SetFilePath(std::string path);
 
   //! Read meta data
-  void ReadMetaData();
+  bool ReadMetaData();
 
   //! Get all metadata as a map <tag, <description, value> >
   std::map<std::string, std::pair<std::string, std::string>> GetMetaDataMap();
@@ -63,6 +63,7 @@ private:
   ImageIOType::Pointer m_dicomIO;
   MapContainerType::Pointer m_tagvalueMap;
   DictionaryType m_dictionary;
+  std::string m_FilePath;
 };
 
 #endif // DICOMMMETADATAREADER_H
