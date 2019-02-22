@@ -91,6 +91,7 @@ int main(int argc, char** argv)
   parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
 
   // check for CWL command coming in through the command line after "CaPTk"
+  if (argc > 1)
   {
     auto cwlFiles = cbica::getCWLFilesInApplicationDir();
     auto argv_1 = std::string(argv[1]);
