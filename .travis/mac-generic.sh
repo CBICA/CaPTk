@@ -37,6 +37,7 @@ export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 cmake ../
 cmake ../
 make 
+
 }
 
 ###########################
