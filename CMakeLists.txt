@@ -875,57 +875,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF()
   ENDFOREACH()
 
-
-  # # For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
-  # SET( FeatureDefinitions "" )
-  # SET( FeatureDefinitionsDir "${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/" )
-  # FILE( GLOB allFeatureDefinitionFiles "${FeatureDefinitionsDir}/*.csv" )
-  # FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
-
-    # GET_FILENAME_COMPONENT( CURRENT_DEF_FILE ${featureDefinitionFile} NAME_WE )
-
-    # IF (NOT APPLE)
-      # INSTALL(
-        # FILES "${featureDefinitionFile}"
-        # DESTINATION data/features
-      # )
-    # ENDIF()
-
-    # SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
-  # ENDFOREACH()
-
-  # IF (APPLE)
-    # SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
-
-    # SET( BATCHMODE "FeatureDefinitionsDir/batchMode/batch_featureextraction.csv" )
-    # SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
-
-    # SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
-
-  # ELSE()
-    # INSTALL( FILES "FeatureDefinitionsDir/batchMode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
-  # ENDIF()
-
-  # SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
-  # SET( FeatureDefinitionsDir ${FeatureDefinitionsDir} CACHE STRING "Feature Definitions Dir" FORCE)
-  # ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
-  # ADD_DEFINITIONS(-DFeatureDefinitionsDir="${FeatureDefinitionsDir}")
-
   IF( WIN32 )
     INSTALL(DIRECTORY "${DATA_DIR}/GnuWin32" DESTINATION data PATTERN ".svn" EXCLUDE)
   ENDIF()
-
-  ## [TBD] change this to a directory install, if possible
-  #FILE(GLOB_RECURSE ALL_DOC_FILES "${PROJECT_SOURCE_DIR}/docs/tutorial/*.*")
-  #FOREACH(docFiles ${ALL_DOC_FILES})
-  #  IF (APPLE)
-  #    SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
-  #    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
-  #
-  #  ELSE()
-  #    INSTALL(FILES "${docFiles}" DESTINATION share/doc)
-  #  ENDIF()
-  #ENDFOREACH()
 
   FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs/html/*.*")
   FOREACH(docFiles ${ALL_DOC_FILES_BASE})
@@ -937,29 +889,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INSTALL(FILES "${docFiles}" DESTINATION share/doc)
     ENDIF()
   ENDFOREACH()
-
-  #FILE(GLOB ALL_DOC_FILES_SEARCH "${PROJECT_BINARY_DIR}/docs/html/search/*.*")
-  #FOREACH(docFiles ${ALL_DOC_FILES_SEARCH})
-  #  IF (APPLE)
-  #      SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc/search)
-  #      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
-  #
-  #  ELSE()
-  #    INSTALL(FILES "${docFiles}" DESTINATION share/doc/search)
-  #  ENDIF()
-  #ENDFOREACH()
-
-  ## ensure all icons are in the package
-  #FILE( GLOB ALL_IMGS "${PROJECT_SOURCE_DIR}/docs/images/*.png" )
-  #FOREACH( img ${ALL_IMGS} )
-  #  IF (APPLE)
-  #      SET_SOURCE_FILES_PROPERTIES(${img} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
-  #      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${img})
-  #
-  #  ELSE()
-  #    INSTALL(FILES "${img}" DESTINATION share/doc )
-  #  ENDIF()
-  #ENDFOREACH()
 
   set(OS_BUNDLE MACOSX_BUNDLE)
 
