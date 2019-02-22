@@ -51,32 +51,33 @@ void fHistoMatcher::ConfirmButtonPressed()
 void fHistoMatcher::OpenReferenceImage()
 {
   QString referenceAtlas = getExistingFile(this, mInputPathName);
-  if (referenceAtlas.isNull())
+  if (referenceAtlas.isNull() || referenceAtlas.isEmpty())
     return;
   else
     referenceImageName->setText(referenceAtlas);
 
-  mInputPathName = cbica::getFilenameBase(referenceAtlas.toStdString(), false).c_str();
+  mInputPathName = cbica::getFilenamePath(referenceAtlas.toStdString(), false).c_str();
 }
 
 void fHistoMatcher::OpenInputImage()
 {
   QString inputImage = getExistingFile(this, mInputPathName);
-  if (inputImage.isNull())
+  if (inputImage.isNull() || inputImage.isEmpty())
     return;
   else
     inputImageName->setText(inputImage);
 
-  mInputPathName = cbica::getFilenameBase(inputImage.toStdString(), false).c_str();
+  mInputPathName = cbica::getFilenamePath(inputImage.toStdString(), false).c_str();
 }
 
 void fHistoMatcher::SelectOutputImage()
 {
   QString outputImage = getSaveFile(this, mInputPathName, mInputPathName + "histoMatch_output.nii.gz");
-  if (outputImage.isNull())
+  auto temp = outputImage.toStdString();
+  if (outputImage.isNull() || outputImage.isEmpty())
     return;
   else
     outputImageName->setText(outputImage);
 
-  mInputPathName = cbica::getFilenameBase(outputImage.toStdString(), false).c_str(); // overwrite previous default path with new output
+  mInputPathName = cbica::getFilenamePath(outputImage.toStdString(), false).c_str(); // overwrite previous default path with new output
 }

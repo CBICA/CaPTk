@@ -1,10 +1,10 @@
 #!/bin/bash
 
+# Build CaPTk on a Travis environment
+
 # Any subsequent(*) commands which fail will 
 # cause the shell script to exit immediately
 set -e
-
-# CaPTk Packager
 
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
@@ -13,6 +13,7 @@ CMAKE_CMD () {
 }
 
 echo "[!] Warn: This script is intended for CI use. Only use it if you know what you are doing."
+
 
 echo "[:] Starting CaPTk packaging process..."
 

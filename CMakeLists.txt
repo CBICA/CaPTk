@@ -34,7 +34,7 @@ PROJECT( CaPTk )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
 SET (PROJECT_VERSION_MAJOR 1 )
 SET (PROJECT_VERSION_MINOR 6 )
-SET (PROJECT_VERSION_PATCH 1 )
+SET (PROJECT_VERSION_PATCH 2.PreAlpha )
 #SET (SVN_REVISION "${SVN_REVISION}")
 
 IF (APPLE)
@@ -710,8 +710,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET_TARGET_PROPERTIES( ${LIBNAME_CBICATK} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( CaPTk_GUI PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( CaPTk_Common PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  SET_TARGET_PROPERTIES( CaPTk_IO PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+  SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+  SET_TARGET_PROPERTIES( Utilities PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
   SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   
   SET( CAPTK_LIBRARIES ${LIBNAME_CBICATK} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} )
@@ -835,11 +838,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     SET( FLAIR_TESTTUMOR_FILE "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz")
     SET_SOURCE_FILES_PROPERTIES( ${FLAIR_TESTTUMOR_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
 
-    FILE(GLOB survival_FILES "${DATA_DIR}/survival/*.*")
-    SET_SOURCE_FILES_PROPERTIES(${survival_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/survival)
+    #FILE(GLOB survival_FILES "${DATA_DIR}/survival/*.*")
+    #SET_SOURCE_FILES_PROPERTIES(${survival_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/survival)
 
-    FILE(GLOB egfrv3_FILES "${DATA_DIR}/egfrv3/*.*")
-    SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/egfrv3)
+    #FILE(GLOB egfrv3_FILES "${DATA_DIR}/egfrv3/*.*")
+    #SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/egfrv3)
 
     FILE(GLOB sri24_FILES "${DATA_DIR}/sri24/*.*")
     SET_SOURCE_FILES_PROPERTIES(${sri24_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
@@ -849,8 +852,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ELSE ()
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz" DESTINATION data)
-    INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
-    INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
+    #INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
+    #INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/sri24" DESTINATION data PATTERN ".svn" EXCLUDE)
   ENDIF()
 
@@ -872,54 +875,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF()
   ENDFOREACH()
 
-
-  ## For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
-  #SET( FeatureDefinitions "" )
-  #FILE( GLOB allFeatureDefinitionFiles "${DATA_DIR}/features/*.csv" )
-  #FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
-  #
-  #  GET_FILENAME_COMPONENT( CURRENT_DEF_FILE ${featureDefinitionFile} NAME_WE )
-  #
-  #  IF (NOT APPLE)
-  #    INSTALL(
-  #      FILES "${featureDefinitionFile}"
-  #      DESTINATION data/features
-  #    )
-  #  ENDIF()
-  #
-  #  SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
-  #ENDFOREACH()
-  #
-  #IF (APPLE)
-  #  SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
-  #
-  #  SET( BATCHMODE "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" )
-  #  SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
-  #
-  #  SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
-  #
-  #ELSE()
-  #  INSTALL( FILES "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
-  #ENDIF()
-  #
-  #SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
-  #ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
-
   IF( WIN32 )
     INSTALL(DIRECTORY "${DATA_DIR}/GnuWin32" DESTINATION data PATTERN ".svn" EXCLUDE)
   ENDIF()
-
-  ## [TBD] change this to a directory install, if possible
-  #FILE(GLOB_RECURSE ALL_DOC_FILES "${PROJECT_SOURCE_DIR}/docs/tutorial/*.*")
-  #FOREACH(docFiles ${ALL_DOC_FILES})
-  #  IF (APPLE)
-  #    SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
-  #    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
-  #
-  #  ELSE()
-  #    INSTALL(FILES "${docFiles}" DESTINATION share/doc)
-  #  ENDIF()
-  #ENDFOREACH()
 
   FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs/html/*.*")
   FOREACH(docFiles ${ALL_DOC_FILES_BASE})
@@ -931,29 +889,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INSTALL(FILES "${docFiles}" DESTINATION share/doc)
     ENDIF()
   ENDFOREACH()
-
-  #FILE(GLOB ALL_DOC_FILES_SEARCH "${PROJECT_BINARY_DIR}/docs/html/search/*.*")
-  #FOREACH(docFiles ${ALL_DOC_FILES_SEARCH})
-  #  IF (APPLE)
-  #      SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc/search)
-  #      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
-  #
-  #  ELSE()
-  #    INSTALL(FILES "${docFiles}" DESTINATION share/doc/search)
-  #  ENDIF()
-  #ENDFOREACH()
-
-  ## ensure all icons are in the package
-  #FILE( GLOB ALL_IMGS "${PROJECT_SOURCE_DIR}/docs/images/*.png" )
-  #FOREACH( img ${ALL_IMGS} )
-  #  IF (APPLE)
-  #      SET_SOURCE_FILES_PROPERTIES(${img} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
-  #      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${img})
-  #
-  #  ELSE()
-  #    INSTALL(FILES "${img}" DESTINATION share/doc )
-  #  ENDIF()
-  #ENDFOREACH()
 
   set(OS_BUNDLE MACOSX_BUNDLE)
 

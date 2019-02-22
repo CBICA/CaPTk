@@ -962,7 +962,7 @@ namespace cbica
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
   \param resizeFactor The resize factor; can be greater than 100 (which causes an expanded image to be written) but can never be less than zero
-  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \param interpolator The type of interpolator to use; can be Linear, BSpline, BiCubic or NearestNeighbor
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
@@ -1001,7 +1001,13 @@ namespace cbica
     resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
     if (interpolator_wrap == "bspline")
     {
-      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else if (interpolator_wrap.find("bicubic") != std::string::npos)
+    {
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType >::New();
+      interpolatorFunc->SetSplineOrder(3);
       resampler->SetInterpolator(interpolatorFunc);
     }
     else if (interpolator_wrap.find("nearest") != std::string::npos)

@@ -2,9 +2,11 @@
 
 SET( Eigen_DEPENDENCIES )
 
+MESSAGE( STATUS "Adding Eigen-3.3.7 ...")
+
 ExternalProject_Add( 
   Eigen
-  URL http://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2
+  URL http://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2
   SOURCE_DIR Eigen-source
   UPDATE_COMMAND ""
   PATCH_COMMAND ""

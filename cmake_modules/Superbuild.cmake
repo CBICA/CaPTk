@@ -94,20 +94,10 @@ INCLUDE( ExternalProject )
 #	SET(gen "${CMAKE_GENERATOR}" )
 #ENDIF()
 
-#MESSAGE( STATUS "Adding DCMTK-3.6.3 ...")
 #INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-DCMTK.cmake )
 
-#MESSAGE( STATUS "Adding YAML-CPP 0.6.2 ...")
-#INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-yaml-cpp.cmake )
-
-MESSAGE( STATUS "Adding EIGEN-3.3.4 ...")
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
-
-MESSAGE( STATUS "Adding OpenCV-3.4.1 ...")
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
-
-MESSAGE( STATUS "Adding VTK-8.1.0 ...")
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
-
-MESSAGE( STATUS "Adding ITK-4.13.0 ...")
+#INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV_Contrib.cmake )
+INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )

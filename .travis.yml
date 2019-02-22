@@ -1,14 +1,17 @@
 language: cpp
-cache: ccache
-
-# Make sure to install ccache locally as well
 
 # You may find that on your travis CI or on the master branch that for some reason travis is timing out,
 # ccache can fix this if you compile the dependency manager one at a time since VTK takes 50 minutes to compile on travis
 # To do this, go into the superbuild cmake and simply comment out the packages so that opencv only builds, then vtk and opencv, etc
 # After that, also make sure the script terminates afterwards immediately so travis can pack and upload the cache
-cache: ccache
 
+before_cache: 
+  - ls '/home/travis/.ccache'
+
+cache: ccache
+#cache:
+#  directories:
+#    - $TRAVIS_BUILD_DIR
 
 # Build matrix to run jobs in parallel
 matrix:
@@ -24,20 +27,42 @@ matrix:
       sudo: required
       env:
         - LINUX_DIST=trusty
+    # Test the installer on xenial
+    # - os: linux
+    #   dist: xenial
+    #   sudo: required
+    #   env:
+    #     - LINUX_DIST=xenial
+    #     - INSTALL_TEST=true
+    # Test the installer on trusty
+    # - os: linux
+    #   dist: trusty
+    #   sudo: required
+    #   env:
+    #     - LINUX_DIST=trusty
+    #     - INSTALL_TEST=true
     - os: windows
       env:
         - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
+  # If the non-allowed failure builds complete, marked job as done
   fast_finish: true
+  # Allow failures for specific platforms
   allow_failures:
     - os: linux
       dist: trusty
     - os: windows
 
 before_install:
+  # chmod all travis scripts
+  - chmod +x ./.travis/*
+
   # Linux install step
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy; fi
   
+  # Install expect for install testers
+  - if [[ "$INSTALL_TEST" == "true" ]]; then sudo apt-get install -qq expect; fi
+
   # Update step
   # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
 
@@ -45,6 +70,8 @@ before_install:
   # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
   
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./.travis/linux-generic.sh; fi
+  # Launch either the install linux script or compilation linux script
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then if [[ "$INSTALL_TEST" == "true" ]]; then ./.travis/linux-installer.sh; else ./.travis/linux-generic.sh; fi; fi
+
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export PATH=$MSBUILD_PATH:$PATH; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./.travis/windows-generic.sh; fi

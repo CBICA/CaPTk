@@ -88,20 +88,37 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ts", "tissuePt", cbica::Parameter::FILE, ".txt", "Tissue Point file for the image(s) being loaded");
   parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
   
-  // parser.addOptionalParameter("de", "direction", cbica::Parameter::STRING, "", "Calls Directionality Estimator CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("eg", "egfrviii", cbica::Parameter::STRING, "", "Calls EGFRvIII PHI Calculator CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("fe", "feature", cbica::Parameter::STRING, "", "Calls Feature Extractor CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("ge", "geodesic", cbica::Parameter::STRING, "", "Calls Geodesic Segmentation CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("is", "imgsub", cbica::Parameter::STRING, "", "Calls Imaging SubType CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("ms", "molsub", cbica::Parameter::STRING, "", "Calls Molecular SubType CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("pa", "population", cbica::Parameter::STRING, "", "Calls Population Atlas CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("re", "recurrence", cbica::Parameter::STRING, "", "Calls Recurrence Estimator CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("ss", "sbrtSeg", cbica::Parameter::STRING, "", "Calls SBRT Segmentation CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("sa", "sbrtAna", cbica::Parameter::STRING, "", "Calls SBRT Analyze CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("su", "survival", cbica::Parameter::STRING, "", "Calls Survival Predictor CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("ws", "whites", cbica::Parameter::STRING, "", "Calls WhiteStripe CLI", "This needs to be passed first (before any images/masks)");
-  
   parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
+
+  // check for CWL command coming in through the command line after "CaPTk"
+  if (argc > 1)
+  {
+    auto cwlFiles = cbica::getCWLFilesInApplicationDir();
+    auto argv_1 = std::string(argv[1]);
+    std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
+    for (auto & file : cwlFiles)
+    {
+      auto cwlFileBase = cbica::getFilenameBase(file);
+      std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
+
+      // Check for filename without cwl extension
+      if (cwlFileBase.find(argv_1) != std::string::npos)
+      {
+        // Get base command
+        //std::ofstream selected_file;
+        //selected_file.open(file.c_str());
+        auto config = YAML::LoadFile(file);
+        // Get all args passed to application
+        std::string argv_complete;
+        for (size_t i = 2; i < argc; i++) // 2 because the argv[1] is always the "application"
+        {
+          argv_complete += " " + std::string(argv[i]);
+        }
+        // Pass them in
+        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
+      }
+    }
+  }
 
   std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
   
@@ -122,36 +139,6 @@ int main(int argc, char** argv)
     parser.getParameterValue("ts", cmd_tissue);
   }
 
-  // check for CWL command coming in through the command line after "CaPTk"
-  if (cmd_inputs.empty() && (argc > 1))
-  {
-    auto cwlFiles = cbica::getCWLFilesInApplicationDir();
-    for (auto & file : cwlFiles)
-    {
-      auto cwlFileBase = cbica::getFilenameBase(file);
-      std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
-      auto argv_1 = std::string(argv[1]);
-      std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
-
-      // Check for filename without cwl extension
-      if (cwlFileBase.find(argv_1) != std::string::npos)
-      {
-        // Get base command
-        //std::ofstream selected_file;
-        //selected_file.open(file.c_str());
-        auto config = YAML::LoadFile(file);
-        // Get all args passed to application
-        std::string argv_complete;        
-        for (size_t i = 2; i < argc; i++) // 2 because the argv[1] is always the "application"
-        {
-          argv_complete += " " + std::string(argv[i]);
-        }
-        // Pass them in
-        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
-      }
-    }
-  }
-
   ///// debug
   //HANDLE hLogFile;
 
@@ -165,139 +152,6 @@ int main(int argc, char** argv)
   //_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
   //_CrtSetReportFile(_CRT_ASSERT, hLogFile);
   ///// debug
-
-  // if (parser.isPresent("de"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("de", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("DirectionalityEstimate") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("eg"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("eg", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("EGFRvIIISurrogateIndex") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("fe"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("fe", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("FeatureExtraction") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("ge"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("ge", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("GeodesicSegmentation") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("is"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("is", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("ImagingSubtypePredictor") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("ms"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("ms", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("MolecularSubtypePredictor") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("pa"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("pa", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("PopulationAtlases") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("re"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("re", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("RecurrenceEstimator") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("ss"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("ss", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("SBRT_Lung_Segment") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("sa"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("sa", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("SBRT_Lung_Analyze") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("su"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("su", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("SurvivalPredictor") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("ws"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("ws", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("WhiteStripe") + argv_complete).c_str());
-  // }
 
   //vtkOpenGLRenderWindow::SetGlobalMaximumNumberOfMultiSamples(0);
 
