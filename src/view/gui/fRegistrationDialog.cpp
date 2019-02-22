@@ -295,9 +295,9 @@ void fRegistrationDialog::SelectMovingFile2()
     movingFileName2->setText(file);
 
     if (!matrixRadioButton->isChecked())
-      matrixName1->setText(mInputPathName + "/" + fileName + "_reg_to_remove_" + fixedfileName + matExtn);
+      matrixName2->setText(mInputPathName + "/" + fileName + "_reg_to_remove_" + fixedfileName + matExtn);
     else
-      matrixName1->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + matExtn);
+      matrixName2->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + matExtn);
 
     movingFileOutputName2->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + extn);
 
@@ -331,9 +331,9 @@ void fRegistrationDialog::SelectMovingFile3()
     movingFileName3->setText(file);
 
     if (!matrixRadioButton->isChecked())
-      matrixName1->setText(mInputPathName + "/" + fileName + "_reg_to_remove_" + fixedfileName + matExtn);
+      matrixName3->setText(mInputPathName + "/" + fileName + "_reg_to_remove_" + fixedfileName + matExtn);
     else
-      matrixName1->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + matExtn);
+      matrixName3->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + matExtn);
 
     movingFileOutputName3->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + extn);
 
@@ -366,9 +366,9 @@ void fRegistrationDialog::SelectMovingFile4()
     movingFileName4->setText(file);
 
     if (!matrixRadioButton->isChecked())
-      matrixName1->setText(mInputPathName + "/" + fileName + "_reg_to_remove_" + fixedfileName + matExtn);
+      matrixName4->setText(mInputPathName + "/" + fileName + "_reg_to_remove_" + fixedfileName + matExtn);
     else
-      matrixName1->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + matExtn);
+      matrixName4->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + matExtn);
 
     movingFileOutputName4->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + extn);
 
@@ -402,9 +402,9 @@ void fRegistrationDialog::SelectMovingFile5()
     movingFileName5->setText(file);
 
     if (!matrixRadioButton->isChecked())
-      matrixName1->setText(mInputPathName + "/" + fileName + "_reg_to_remove_" + fixedfileName + matExtn);
+      matrixName5->setText(mInputPathName + "/" + fileName + "_reg_to_remove_" + fixedfileName + matExtn);
     else
-      matrixName1->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + matExtn);
+      matrixName5->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + matExtn);
 
     movingFileOutputName5->setText(mInputPathName + "/" + fileName + "_reg_to_" + fixedfileName + extn);
 
