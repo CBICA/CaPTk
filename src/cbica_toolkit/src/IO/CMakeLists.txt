@@ -5,10 +5,12 @@ SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY
   
 SET( ${PROJECT_NAME}_HDRS
   inc/DicomSeriesReader.h
+  inc/DicomMetadataReader.h
 )
 
 SET( ${PROJECT_NAME}_SRCS
   src/DicomSeriesReader.cpp
+  src/DicomMetadataReader.cpp
 )
                      
 INCLUDE_DIRECTORIES( 
