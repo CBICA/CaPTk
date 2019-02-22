@@ -5,11 +5,11 @@ SET( VTK_DEPENDENCIES )
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
-MESSAGE( STATUS "Adding VTK-8.2.0 ...")
+MESSAGE( STATUS "Adding VTK-8.1.0 ...")
 
 ExternalProject_Add( 
   VTK
-  URL https://github.com/Kitware/VTK/archive/v8.2.0.zip
+  URL https://github.com/Kitware/VTK/archive/v8.1.0.zip
   #GIT_REPOSITORY ${git_protocol}://github.com/Kitware/VTK.git
   #GIT_TAG v8.1.0
   SOURCE_DIR VTK-source
@@ -37,9 +37,9 @@ ExternalProject_Add(
     -DVTK_USE_QTCHARTS:BOOL=ON
     -DVTK_USE_QVTK_QTOPENGL:BOOL=ON    
     -DCMAKE_DEBUG_POSTFIX:STRING=d
-    -DVTK_QT_VERSION:STRING=5
+    -DVTK_QT_VERSION:STRING=5 
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_BINARY_DIR}/install
+    -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_INSTALL_PREFIX}
     -DQt5_DIR=${CAPTK_QT5_DIR}
 )
 

@@ -4,6 +4,10 @@ language: cpp
 # ccache can fix this if you compile the dependency manager one at a time since VTK takes 50 minutes to compile on travis
 # To do this, go into the superbuild cmake and simply comment out the packages so that opencv only builds, then vtk and opencv, etc
 # After that, also make sure the script terminates afterwards immediately so travis can pack and upload the cache
+
+before_cache: 
+  - ls '/home/travis/.ccache'
+
 cache: ccache
 #cache:
 #  directories:
