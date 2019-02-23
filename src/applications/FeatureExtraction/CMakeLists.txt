@@ -22,6 +22,38 @@ INCLUDE( ${ITK_USE_FILE} )
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/../../../cmake_modules/)
 INCLUDE( CaPTk_macros )
 
+# For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
+SET( FeatureDefinitions "" )
+FILE( GLOB allFeatureDefinitionFiles "${PROJECT_SOURCE_DIR}/data/*.csv" )
+FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
+
+  GET_FILENAME_COMPONENT( CURRENT_DEF_FILE ${featureDefinitionFile} NAME_WE )
+
+  IF (NOT APPLE)
+    INSTALL(
+      FILES "${featureDefinitionFile}"
+      DESTINATION data/features
+    )
+  ENDIF()
+
+  SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
+ENDFOREACH()
+
+IF (APPLE)
+  SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
+
+  SET( BATCHMODE "${PROJECT_SOURCE_DIR}/data/features/batchMode/batch_featureextraction.csv" )
+  SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
+
+  SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
+
+ELSE()
+  INSTALL( FILES "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
+ENDIF()
+
+SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
+ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
+
 if(APPLE)
 #  set(CMAKE_C_COMPILER "/usr/local/Cellar/llvm/6.0.1/bin/clang")
 #  set(CMAKE_CXX_COMPILER "/usr/local/Cellar/llvm/6.0.1/bin/clang++")

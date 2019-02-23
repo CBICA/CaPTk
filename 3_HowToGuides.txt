@@ -32,7 +32,7 @@ Contains the following applications:
 - \subpage preprocessing_susan "Denoise-SUSAN (ITK filter)"
 - \subpage preprocessing_biasN4 "N4 Bias Correction (ITK filter)"
 - \subpage preprocessing_histoMatch "Histogram Matching"
-- \subpage preprocessing_dmNorm "DeepMedic Normalization"
+- \subpage preprocessing_zScoreNorm "Z-Score Normalization"
 
 --------
 */
@@ -67,7 +67,13 @@ This tool registers multiple moving images to a single target image using the Gr
   -# Specify the moving images (up to 5) and their respective output images.
 	-# Click on 'Register'.
 	-# The output image is saved in the specified locations.
- 
+
+This can also be used from the command line:
+\verbatim
+[WINDOWS] GreedyRegistration.exe -i C:/test/moving.nii.gz -f C:/test/fixed.nii.gz -o C:/test/output.nii.gz -t C:/test/output.mat -reg -trf -a -m MI -n 100x50x5 -th 4
+[LINUX] captk GreedyRegistration -i /mnt/c/test/moving.nii.gz -f /mnt/c/test/fixed.nii.gz -o /mnt/c/test/output.nii.gz -t /mnt/c/test/output.mat -reg -trf -a -m MI -n 100x50x5 -th 4
+\endverbatim
+
  
 --------
 
@@ -143,6 +149,14 @@ This tool normalizes the intensity profile of an input image based on the intens
 	-# Click on 'Confirm'.
 	-# The output image is saved in the specified folder.
 
+This can also be used from the command line:
+\verbatim
+[WINDOWS] Preprocessing.exe -i C:/test/input.nii.gz -o C:/test/output.nii.gz -hi C:/test/target.nii.gz -hb 100 -hq 50
+[LINUX] captk Preprocessing -i /mnt/c/test/input.nii.gz -o /mnt/c/test/output.nii.gz -hi /mnt/c/test/target.nii.gz -hb 100 -hq 50
+\endverbatim
+
+<br>
+
 --------
 
 Reference:
@@ -153,7 +167,7 @@ Reference:
 */
 
 /**  
-\page preprocessing_dmNorm DeepMedic Normalization
+\page preprocessing_zScoreNorm Z-Scoring Normalization
 This tool does a z-scoring based normalization on the loaded image.
 
 <b>REQUIREMENTS:</b>
@@ -167,6 +181,12 @@ This tool does a z-scoring based normalization on the loaded image.
 	-# Click on 'Confirm'.
 	-# The output image is saved in the specified folder.
  
+This can also be used from the command line:
+\verbatim
+Preprocessing.exe -i C:/test/input.nii.gz -m C:/test/input_binaryMask.nii.gz -o C:/test/output.nii.gz -zn 1 -zq 5,95 -zc 3,3
+[LINUX] captk Preprocessing -i /mnt/c/test/input.nii.gz -m /mnt/c/test/input_binaryMask.nii.gz -o /mnt/c/test/output.nii.gz -zn 1 -zq 5,95 -zc 3,3
+\endverbatim
+
 <br>
 
 --------
@@ -223,10 +243,12 @@ A single image with distinct boundaries for the structure that needs to be segme
 	-# The mask is populated within ~5 minutes, showing the progress at the bottom right corner of CaPTk.
 	-# The mask is visualized automatically in the visualization panels.
 	-# You can revise the resulted segmentation mask (Label:1), by selecting the "Geodesic" preset and changing the "Threshold" at the bottom right corner of CaPTk.
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
-	\verbatim
-	GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
-	\endverbatim
+	
+This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
+\verbatim
+[WINDOWS] GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
+[LINUX] captk GeodesicSegmentation -i /mnt/c/inputImage.nii.gz -m /mnt/c/maskWithOneLabel.nii.gz -o /mnt/c/outputImage.nii.gz -t 20
+\endverbatim
 
 <br>
 
@@ -358,8 +380,6 @@ Contains the following applications:
 /**
 \page Glioblastoma_Molecular "Brain Cancer: Glioblastoma Molecular Subtype Prediction"
 This application provides the prediction of the molecular subtype of <i>de novo</i> glioblastoma patients using baseline pre-operative multi-parametric MRI analysis [1].
-
-A multivariate model trained on data from the Hospital of the University of Pennsylvania (as described in [1]) is provided with the CaPTk. This can be found in [CaPTk_Installation_Folder]/data/molecular. 
 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multi-modal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV. 
@@ -584,8 +604,6 @@ References:
 \page Glioblastoma_Survival Brain Cancer: Glioblastoma Survival Prediction Index
 This application provides the survival prediction index (SPI) of <i>de novo</i> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].
 
-A multivariate model trained on data from the Hospital of the University of Pennsylvania (as described in the study of [1]) is provided with the CaPTk. This can be found in [CaPTk_Installation_Folder]/data/survival. 
-
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
 -# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)
@@ -652,8 +670,6 @@ Reference:
 /**
 \page Glioblastoma_EGFRvIII Brain Cancer: Glioblastoma EGFRvIII SVM Index
 This application provides the detection of EGFRvIII mutation status of <i>de novo</i> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].
-
-A multivariate model trained on data from the Hospital of the University of Pennsylvania (as described in the study of [1]) is provided with the CaPTk. This can be found in [CaPTk_Installation_Folder]/data/egfrv3. 
 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
