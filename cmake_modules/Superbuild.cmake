@@ -97,22 +97,7 @@ INCLUDE( ExternalProject )
 #INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-DCMTK.cmake )
 
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
-<<<<<<< HEAD
-
-MESSAGE( STATUS "Adding OpenCV_Contrib-3.4.5 ...")
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV_Contrib.cmake )
-
-MESSAGE( STATUS "Adding OpenCV-3.4.5 ...")
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
-
-MESSAGE( STATUS "Adding VTK-8.1.0 ...")
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
-
-MESSAGE( STATUS "Adding ITK-4.13.0 ...")
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
-=======
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
 #INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV_Contrib.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
->>>>>>> 0006e8a23e719ed952550c8ddfa9f2ab3225f14e
