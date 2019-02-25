@@ -19,7 +19,7 @@ brew link --force qt
 
 echo "Run Dependency Manager"
 # # make & sleep 5600; kill $! 
-make
+make -j 2
 
 rm CMakeCache.txt
 
@@ -34,7 +34,7 @@ cmake ../
 export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 cmake ../
 cmake ../
-make 
+make -j 2
 
 make package
 }
