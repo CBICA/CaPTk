@@ -8,7 +8,7 @@ rm -rf data
 rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
-mv ./binaries/qt5.11.2_windows.zip ./qt.zip
+mv ./binaries/qt5.12.1_windows.zip ./qt.zip
 
 # Superbuild
 cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF .

@@ -159,27 +159,6 @@ usage () {
   exit 0
 }
 
-echo "[!] Warn: This script has not been updated for the superbuild option. If you are building with the superbuild enabled, note that this script may not work as intended"
-
-# Check commandline arguments for ITK-PATH
-ITK_PATH=""
-case $1 in
-  --itk=*)
-  ITK_PATH="${1#*=}"
-  if [[ -d "${ITK_PATH}" ]] ; then
-    echo "[*] Got ITK Path: ${ITK_PATH}"
-  else
-    echo "[!] Error: No ITK Path found."
-    usage
-  fi
-  ;;
-  -h|--help)
-  usage
-  ;;
-  *)
-  echo "[!] Warn: You did not supply an ITK path, and it is assumed it is in your PATH variable. see ${0} -h for more"
-esac
-
 echo "[:] Starting CaPTk packaging process..."
 
 echo "[?] Checking if you are in trunk..."
@@ -201,16 +180,18 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 cd bin
 
-# Expose ITK_PATH if given one
-echo "[:] Making ITK visible to cmake..."
-if [[ -z "${ITK_PATH}" ]] ; then
-  echo "[!] Assuming it is in your PATH"
-else
-  export PATH=${ITK_PATH}:$PATH
-fi
-
+# Superbuild
 # Configure cmake
-echo "[:] Running cmake command..."
+echo "[:] Running cmake command for superbuild..."
+bash ../scripts/linux-cmake-conf
+
+# Make install/strip
+echo "[:] Building superbuild..."
+make -j2
+
+# CaPTk
+# Configure cmake
+echo "[:] Running cmake command for CaPTk..."
 bash ../scripts/linux-cmake-conf
 
 # Make install/strip

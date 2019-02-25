@@ -132,7 +132,7 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 
 # Move OS specific qt lib in
-mv ./binaries/qt5.11.2_linux.zip ./bin/qt.zip
+mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
 
 # Move externalApps into bin to trick CMake
 mv ./binaries/externalApps.zip ./bin/
@@ -141,7 +141,7 @@ mv ./binaries/externalApps.zip ./bin/
 rm -rf binaries
 
 # FTP override
-# wget -t inf ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.11.2/linux.zip
+# wget -t inf ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.12.1/linux.zip
 # mv linux.zip qt.zip
 
 cd bin
