@@ -59,6 +59,9 @@
 # With this, they'll see the first error and the script will terminate.
 set -e
 
+# Enable globstar
+shopt -s globstar
+
 # Store the root dir this is being run from
 SRC_DIR=`pwd`
 
@@ -133,8 +136,8 @@ FIX_CMD () {
 LINDEPQT_CMD () {
   # Download linuxdeployqt and run it
   echo "[:] Downloading linuxdeployqt..."
-  wget https://github.com/probonopd/linuxdeployqt/releases/download/5/linuxdeployqt-5-x86_64.AppImage
-  chmod +x linuxdeployqt-5-x86_64.AppImage
+  wget https://github.com/probonopd/linuxdeployqt/releases/download/6/linuxdeployqt-6-x86_64.AppImage
+  chmod +x linuxdeployqt-6-x86_64.AppImage
   # Okay here's where it gets insane
   # So we need to run linuxdeployqt, and show it where our *.desktop files are so it can generate an AppImage that
   # properly can provide a direct link to the CaPTk binary within the /bin folder of the appdir structure
@@ -142,7 +145,9 @@ LINDEPQT_CMD () {
   # After that it attempts to link EVERYTHING IT CAN FIND
   # Yes, that means at some point it will try to link the **ENTIRE** MATLAB runtime and ITK-snap libraries even though they don't need it
   # So this insane regex was created to make sure linuxdeployqt just flat out recursively ignores those directories
-  ./linuxdeployqt-5-x86_64.AppImage ./appdir/usr/share/applications/*.desktop -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**} -appimage
+
+  # Anyway globstar just doesnt work in this anymore? so now every possible dir needs to be elaborated by hand. Yeah, not joking.
+  ./linuxdeployqt-6-x86_64.AppImage ./appdir/usr/share/applications/*.desktop -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*} -appimage
   # Move the appimage up to the root
   mv ./CaPTk*.AppImage ../../CaPTk.bin
   # And likewise move there as well
