@@ -198,43 +198,43 @@ cp FeatureExtraction.cwl ./src/applications/FeatureExtraction/
 
 make -j install/strip
 
-# Fix
-cd install
-APP_DIR=`pwd`
-cd ./appdir/usr/
-# We need to fix the project first
-FIX_CMD
-cd ${APP_DIR}
+# # Fix
+# cd install
+# APP_DIR=`pwd`
+# cd ./appdir/usr/
+# # We need to fix the project first
+# FIX_CMD
+# cd ${APP_DIR}
 
-# Build package
-echo "[:] Building Package..."
-LINDEPQT_CMD
+# # Build package
+# echo "[:] Building Package..."
+# LINDEPQT_CMD
 
-# Step 1: Get makeself, and extract it
-wget --tries=inf https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
-chmod +x ./makeself-2.4.0.run
-./makeself-2.4.0.run
-rm makeself-2.4.0.run
+# # Step 1: Get makeself, and extract it
+# wget --tries=inf https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
+# chmod +x ./makeself-2.4.0.run
+# ./makeself-2.4.0.run
+# rm makeself-2.4.0.run
 
-# Step 2: Create a package directory for makeself to package
-mkdir pkg
-# We package the AppImage, the license, and a script to display the agreement and install the AppImage
-mv CaPTk.bin ./pkg/
-mv ./bin/install/appdir/usr/bin/*.cwl ./pkg/
-cp ./licenses/Linux-Combined.txt ./pkg/
-cp ./scripts/linux-makeself ./pkg/
-chmod +x ./pkg/linux-makeself
+# # Step 2: Create a package directory for makeself to package
+# mkdir pkg
+# # We package the AppImage, the license, and a script to display the agreement and install the AppImage
+# mv CaPTk.bin ./pkg/
+# mv ./bin/install/appdir/usr/bin/*.cwl ./pkg/
+# cp ./licenses/Linux-Combined.txt ./pkg/
+# cp ./scripts/linux-makeself ./pkg/
+# chmod +x ./pkg/linux-makeself
 
-# Step 3: Wrap it all upp
+# # Step 3: Wrap it all upp
 
-# Version number for CaPTk
-ver=`./pkg/CaPTk.bin -v | grep Version | awk '{print $2}'`
+# # Version number for CaPTk
+# ver=`./pkg/CaPTk.bin -v | grep Version | awk '{print $2}'`
 
-# Create the installer
-./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk-${ver}-Installer.bin "CaPTk Linux Installer" ./linux-makeself
+# # Create the installer
+# ./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk-${ver}-Installer.bin "CaPTk Linux Installer" ./linux-makeself
 
-# Cleanup
-rm -rf ./pkg
-rm -rf ./makeself-2.4.0*
+# # Cleanup
+# rm -rf ./pkg
+# rm -rf ./makeself-2.4.0*
 
 echo "[:] Done. Project has been built"
