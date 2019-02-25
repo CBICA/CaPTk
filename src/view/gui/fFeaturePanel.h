@@ -81,8 +81,13 @@ private:
   void loadFeatureFiles() // TBD move to cpp 
   {
     //auto names = FeatureExtraction::getFeatureMapFiles();
-
-    std::string dataFeatureDir = cbica::normPath(getCaPTkDataDir() + "/features");
+    std::string dataFeatureDir =
+#ifdef CAPTK_PACKAGE_PROJECT
+      cbica::normPath(getCaPTkDataDir() + "/features")
+#else
+      std::string(PROJECT_SOURCE_DIR) + "/src/applications/FeatureExtraction/data/";
+#endif
+      ;
 
     //std::string defaultFeatureFile = dataFeatureDir + "/1_params_default.csv";
     if (!cbica::isFile(dataFeatureDir + "/1_params_default.csv"))

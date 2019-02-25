@@ -230,8 +230,8 @@ void fSurvivalPredictor::CheckForDisclaimer()
     }
     else
     {
-      std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
-      ShowMessage(dataMessage, this);
+      //std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
+      //ShowMessage(dataMessage, this);
       return;
     }
   }

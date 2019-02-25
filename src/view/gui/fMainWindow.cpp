@@ -4777,6 +4777,10 @@ void fMainWindow::LoadDrawing()
   {
     auto filename = getExistingFile(this, mInputPathName);
 
+    if (filename.isNull() || filename.isEmpty())
+    {
+      return;
+    }
     std::string filename_string = filename.toStdString();
     auto reader = itk::ImageIOFactory::CreateImageIO(filename_string.c_str(), itk::ImageIOFactory::ReadMode);
     if (reader)
@@ -4989,6 +4993,9 @@ void fMainWindow::openDicomImages()
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   imageManager->SetImage(dicomSeriesReader->GetITKImage());
+
+  // make sure to delete the dicom series reader
+  delete dicomSeriesReader; 
 
   imageManager->SetMask(mMask);
   imageManager->setTempFolderLocation(m_tempFolderLocation);
@@ -6236,6 +6243,7 @@ void fMainWindow::ImageRegistration()
 void fMainWindow::ImageHistogramMatching()
 {
   // open a simple dialog box with reference image, input and output
+  histoMatchPanel.SetCurrentImagePath(mInputPathName);
   histoMatchPanel.exec();
 }
 

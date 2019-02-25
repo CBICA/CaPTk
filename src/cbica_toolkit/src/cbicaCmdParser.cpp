@@ -638,7 +638,7 @@ namespace cbica
 
       std::cout << "[" << spaces_lac << "-" << inputParameters[i].laconic << ", --" <<
         inputParameters[i].verbose << "]" << spaces_verb <<
-        inputParameters[i].descriptionLine1 << " " << inputParameters[i].laconic.length() << " " << spaces_verb.size() << " \n";
+        inputParameters[i].descriptionLine1 << " \n";
 
       if (inputParameters[i].descriptionLine2 != "")
       {

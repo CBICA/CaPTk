@@ -82,7 +82,7 @@ void fDiffusionEstimator::ConfirmButtonPressed()
 void fDiffusionEstimator::OpenInputImage()
 {
 	auto inputImage = getExistingFile(this, mInputPathName);
-	if (inputImage.isNull())
+	if (inputImage.isNull() || inputImage.isEmpty())
 		return;
 	else
 		inputImageName->setText(inputImage);
@@ -93,7 +93,7 @@ void fDiffusionEstimator::OpenInputImage()
 void fDiffusionEstimator::OpenInputMaskImage()
 {
 	auto inputImage = getExistingFile(this, mInputMaskName);
-	if (inputImage.isNull())
+	if (inputImage.isNull() || inputImage.isEmpty())
 		return;
 	else
 		inputMaskName->setText(inputImage);
@@ -103,7 +103,7 @@ void fDiffusionEstimator::OpenInputMaskImage()
 void fDiffusionEstimator::OpenInputBValImage()
 {
   auto inputImage = getExistingFile(this, mInputBValName, "*.bval");
-	if (inputImage.isNull())
+	if (inputImage.isNull() || inputImage.isEmpty())
 		return;
 	else
 		inputBvalName->setText(inputImage);
@@ -114,7 +114,7 @@ void fDiffusionEstimator::OpenInputBValImage()
 void fDiffusionEstimator::OpenInputBVecImage()
 {
   auto inputImage = getExistingFile(this, mInputBVecName, "*.bvec");
-	if (inputImage.isNull())
+	if (inputImage.isNull() || inputImage.isEmpty())
 		return;
 	else
 		inputBvecName->setText(inputImage);
@@ -124,7 +124,7 @@ void fDiffusionEstimator::OpenInputBVecImage()
 void fDiffusionEstimator::SelectOutputImage()
 {
 	QString directory = getExistingDirectory(this, mOutputPathName);
-	if (directory.isNull())
+	if (directory.isNull() || directory.isEmpty())
 		return;
 	else
 		outputImageName->setText(directory);

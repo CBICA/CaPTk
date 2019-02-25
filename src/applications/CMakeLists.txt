@@ -52,10 +52,12 @@ SET( CAPTK_MISC_APPS "" )
 ADD_SUBDIRECTORY( FeatureExtraction )
 ADD_SUBDIRECTORY( GeodesicTraining )
 ADD_SUBDIRECTORY( Preprocessing )
+ADD_SUBDIRECTORY( Utilities )
 INCLUDE_DIRECTORIES( 
   FeatureExtraction/src/depends 
   FeatureExtraction/src 
   Preprocessing/src/depends
+  Utilities/src/depends
 )
 
 INCLUDE_DIRECTORIES( 
