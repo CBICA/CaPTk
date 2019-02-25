@@ -5,64 +5,6 @@ FIND_PACKAGE( Git REQUIRED )
 
 OPTION( USE_GIT_PROTOCOL "If behind a firewall turn this off to use https instead." OFF )
 
-SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/qt/5.11.2" )
-SET( FILENAME_TO_EXTRACT "qt" )
-SET( FILE_TO_EXTRACT "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip" )
-SET( QT_EXTRACTED_DIR "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}" )
-
-IF( NOT EXISTS "${QT_EXTRACTED_DIR}" )
-  FILE(MAKE_DIRECTORY "${QT_EXTRACTED_DIR}" )
-ENDIF()
-
-IF(WIN32)
-  SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/windows.zip" )
-ELSEIF(APPLE)
-  SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/macos.zip" )
-ELSE()
-  SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/linux.zip" )
-ENDIF()
-
-IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
-  MESSAGE( STATUS "Downloading pre-compiled Qt with open source license (see Qt site for more details)" )
-  FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000 STATUS STATUS_CODE SHOW_PROGRESS)
-  IF(NOT STATUS_CODE EQUAL 0)
-    MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
-  ENDIF()
-
-ENDIF()
-
-IF( EXISTS "${FILE_TO_EXTRACT}" )
-
-  IF( NOT EXISTS "${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5" )
-    MESSAGE( STATUS "Extracting pre-compiled Qt binaries" )
-    EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${FILE_TO_EXTRACT}
-      WORKING_DIRECTORY ${QT_EXTRACTED_DIR}
-      RESULT_VARIABLE RESULT_CODE
-    )
-
-    IF(NOT RESULT_CODE EQUAL 0)
-      MESSAGE( WARNING "Extracting the pre-compiled Qt binaries failed" )
-    ENDIF()
-  ENDIF()
-
-  LIST(APPEND CMAKE_PREFIX_PATH "${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5")
-  LIST(APPEND CMAKE_PROGRAM_PATH  "${QT_EXTRACTED_DIR}/5.11.2/bin")
-  
-  #SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
-  
-  SET(ENV{CMAKE_PREFIX_PATH} "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/" )
-  SET(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/" )
-  SET(ENV{CMAKE_PROGRAM_PATH} "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/bin" )
-  
-  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore)
-
-ENDIF()
-  
-LINK_DIRECTORIES(${QT_LIBRARY_DIR})
-SET( Qt5_DIR ${Qt5_DIR} CACHE STRING "Qt5_DIR Path for use in other builds" FORCE )
-SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
-LIST(APPEND CMAKE_PREFIX_PATH "${Qt5_DIR}")
-
 #LIST(APPEND CMAKE_PROGRAM_PATH  "c:/MyProject/Tools/mingw/bin/" ...)
 
 SET(git_protocol "git")
