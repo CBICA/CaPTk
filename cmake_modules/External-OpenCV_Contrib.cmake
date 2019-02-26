@@ -1,3 +1,6 @@
+
+MESSAGE( STATUS "Adding OpenCV_Contrib-3.4.5 ...")
+
 ExternalProject_Add( 
   OpenCV_Contrib
   URL https://github.com/opencv/opencv_contrib/archive/3.4.5.zip

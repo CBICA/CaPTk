@@ -86,7 +86,7 @@ void fPopulationAtlasDialog::ConfirmButtonPressed()
 void fPopulationAtlasDialog::OpenOutputDirectory()
 {
   QString directory = getExistingDirectory(this, mInputPathName);
-  if (directory.isNull())
+  if (directory.isNull() || directory.isEmpty())
     return;
   else
     outputdirectoryName->setText(directory);
@@ -95,7 +95,7 @@ void fPopulationAtlasDialog::OpenOutputDirectory()
 void fPopulationAtlasDialog::OpenInputDirectory()
 {
   QString directory = getExistingDirectory(this, mInputPathName);
-  if (directory.isNull())
+  if (directory.isNull() || directory.isEmpty())
     return;
   else
     inputdirectoryName->setText(directory);
@@ -106,7 +106,11 @@ void fPopulationAtlasDialog::OpenInputLabelFile()
 {
   auto file = getExistingFile(this, mInputPathName, "Labels (*.csv)");
 
-  if (!file.isEmpty())
+  if (file.isNull() || file.isEmpty())
+  {
+    return;
+  }
+  else
   {
     inputlabelName->setText(file);
   }
@@ -122,8 +126,12 @@ void fPopulationAtlasDialog::OpenInputAtlasFile()
 {
   auto file = getExistingFile(this, mInputPathName);
 
-  if (!file.isEmpty())
+  if (file.isNull() || file.isEmpty())
   {
-    inputAtlasName->setText(file);
+    return;
+  }
+  else
+  {
+    inputlabelName->setText(file);
   }
 }

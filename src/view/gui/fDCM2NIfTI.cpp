@@ -68,7 +68,7 @@ void fDCM2NIfTIConverter::OpenInputImage()
 {
   auto inputImage = getExistingFile(this, mInputPathName, "DICOM Images (*.dcm *.dicom)");
 
-  if (inputImage.isNull())
+  if (inputImage.isNull() || inputImage.isEmpty())
     return;
   else
     inputImageName->setText(inputImage);
@@ -79,7 +79,7 @@ void fDCM2NIfTIConverter::OpenInputImage()
 void fDCM2NIfTIConverter::SelectOutputImage()
 {
   QString outputImage = getSaveFile(this, mInputPathName, mInputPathName + "dcm2nii.nii.gz");
-  if (outputImage.isNull())
+  if (outputImage.isNull() || outputImage.isEmpty())
     return;
   else
     outputImageName->setText(outputImage);
