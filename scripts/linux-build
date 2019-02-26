@@ -164,7 +164,7 @@ fi
 
 # Make install/strip
 echo "[:] Building CaPTk..."
-make -j2 install/strip
+make -j install/strip
 
 # Install docs
 echo "[:] Installing docs..."
