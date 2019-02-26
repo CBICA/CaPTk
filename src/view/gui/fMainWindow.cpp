@@ -5961,10 +5961,12 @@ void fMainWindow::ApplicationGeodesicTraining()
     return;
   }
 
-  // The algorithm needs to know if the images are 2D or 3D  
-  unsigned int dimensions = (
+  // The algorithm needs to know if the images are 2D or 3D -- TODO: FIX THIS --
+  /*unsigned int dimensions = (
     (mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) ? 2 : 3
-  );
+  );*/
+
+  unsigned int dimensions = 3;
 
   // Different operations happen if the user reruns it on the same images
   std::string firstFileName = mSlicerManagers[0]->mFileName;
