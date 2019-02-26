@@ -210,6 +210,29 @@ Informatics Technology Initiative (NIfTI) file format.
 /**
 \page ht_Segmentation Segmentation
 
+## Geodesic Training Segmentation
+The geodesic training builds upon the geodesic distance transform based segmentation by adding support vector machines, support for multiple classes, multiple modalities, the ability to iterate the algorithm until a desired outcome is achieved and no need for thresholding. 
+
+<b> REQUIREMENTS:</b>
+One or more co-register images of the same subject and a ROI image containing sample labels for the different areas the user wants to segment. 
+
+<b> USAGE:</b>
+	-# Load the different modalities (of the same subject) into CaPTk. It doesn't matter which image you have selected, everything that is loaded is passed to the algorithm.
+	-# Draw over the images using CaPTk's drawing tools. You have to use at least two different colors. This means that if there is only one region you want to segment, you have to draw some labels for this region and some, using a different color, for the healthy tissues too. There is no restriction for which color to use for what and you can use as many colors (classes) as you want (for instance for brain tumors you can use one color for non-enhancing, one for enhancing, one for edema and one for healthy tissue or just two and do whole tumor vs healthy tissue, etc). You don't need to draw a lot of labels. In fact it is advised not to go overboard, as this leaves you room for better corrections later on. It's best to stick to the free-hand drawing tool with 1x1 or 3x3 marker size.
+	-# Click Applications>'Geodesic Training Segmentation' from the menu and wait ~30 seconds (depending on the image size).
+	-# Now you will see the output segmentation where your labels were previously drawn. You can keep this segmentation if it's ok. Chances are though that it contains mistakes. Using the drawing tools again, draw over *some* of those mistakes (right on the output segmentation!) and then click Applications>'Geodesic Training Segmentation' again. You can repeat this as many times as you want. (There probably won't be a need for more than 2-3 runs though). Something that you might not know about about CaPTk is that you can change the opacity of the ROI by clicking an image, then the 'opacity' checkbox next to the image and using the slider.
+	-# Once you are satisfied with the segmentation you can save it using File>Save>ROI. Most of the time people don't want their segmentations to contain labels for the healthy tissue. If you want that, before saving, select the color you used for healthy tissue from the 'label selector' in the drawing tools and click 'Clear selected label' and save.
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format (more advanced usage inside (src/applications/GeodesicTraining/GeodesicTraining/README.md):
+	\verbatim
+	GeodesicTraining.exe -i C:/inputImage1.nii.gz,C:/inputImage2.nii.gz,... -l C:/maskWithAtLeastTwoDifferentClasses.nii.gz -o C:/outputDirectory.nii.gz
+	\endverbatim
+
+<br>
+
+--------
+
+
+
 ## Geodesic Distance Transform-based Segmentation
 The geodesic distance transform based segmentation is a semi-automatic technique to delineate structures of distinct intensity.
 
