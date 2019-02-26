@@ -21,6 +21,7 @@ SET( CAPTK_MACOSX_BUNDLE_FILES "")
 SET( APPLICATIONS
   WhiteStripe
   GeodesicSegmentation
+  GeodesicTraining
   EGFRvIIISurrogateIndex
   EGFRvIIIIndexPredictor
   RecurrenceEstimator
@@ -49,6 +50,7 @@ SET( CAPTK_LUNG_APPS "" )
 SET( CAPTK_MISC_APPS "" )
 
 ADD_SUBDIRECTORY( FeatureExtraction )
+ADD_SUBDIRECTORY( GeodesicTraining )
 ADD_SUBDIRECTORY( Preprocessing )
 ADD_SUBDIRECTORY( Utilities )
 INCLUDE_DIRECTORIES( 
@@ -56,6 +58,10 @@ INCLUDE_DIRECTORIES(
   FeatureExtraction/src 
   Preprocessing/src/depends
   Utilities/src/depends
+)
+
+INCLUDE_DIRECTORIES( 
+  ${GEODESIC_TRAINING_INCLUDE_DIRS}
 )
 
 SET(PREPROCESSING_ALGOS "DCM2NIfTI Denoise-SUSAN Register BiasCorrect-N3 HistogramMatching SkullStripping" CACHE STRING "All Preprocessing algorithms available")
@@ -172,6 +178,10 @@ FOREACH(application ${APPLICATIONS})
   ENDIF()
 
   IF ( (${application} STREQUAL FeatureExtraction))
+    SET( CAPTK_APP_LIST "${CAPTK_APP_LIST} ${application}" )
+  ENDIF()
+
+  IF ( (${application} STREQUAL GeodesicTraining))
     SET( CAPTK_APP_LIST "${CAPTK_APP_LIST} ${application}" )
   ENDIF()
 

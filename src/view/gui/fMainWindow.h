@@ -61,6 +61,15 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
 
+#include <atomic>
+
+#include "GeodesicTrainingCaPTkApp.h"
+
+#include <QMessageBox>
+
+#include "itkJoinSeriesImageFilter.h"
+#include "itkExtractImageFilter.h"
+
 #include "QVTKOpenGLWidget.h"
 #include <QScopedPointer>
 #include "vtkGenericOpenGLRenderWindow.h"
@@ -291,6 +300,7 @@ private:
   QAction *actionAppEGFR;
   QAction *actionAppRecurrence;
   QAction *actionAppGeodesic;
+  QAction *actionAppGeodesicTraining;
 
   // obtain list from CMake variables using populateStringListInMenu() function
   std::vector< std::string >
@@ -1274,8 +1284,8 @@ signals:
 #ifdef BUILD_GEODESIC
   void ApplicationGeodesic();
 #endif
-#ifdef BUILD_GEODESICTRAIN
-  void ApplicationGeoTrain();
+#ifdef BUILD_GEODESICTRAINING
+  void ApplicationGeodesicTraining();
 #endif
   void ApplicationGeodesicTreshold();
 #ifdef BUILD_ITKSNAP
@@ -1298,6 +1308,9 @@ signals:
   void ClassifierTraining();
   void ApplicationDeepMedicSegmentation();
   void ApplicationTheia();
+
+  void GeodesicTrainingFinishedHandler();
+  void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
   void Registration(std::string fixedfilename, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
 
@@ -1386,13 +1399,21 @@ public:
 
   int mSequenceNumber, mCustomImageToThreshold_min, mCustomImageToThreshold_max;
 
-  private:
-    ImageTypeFloat3D::Pointer m_InputGeomasks;
-    ImageTypeShort3D::Pointer m_imgGeodesicOut;
-    ImageTypeShort3D::Pointer m_imgGeodesicOutPositive;
-    ImageTypeShort3D::Pointer m_imgGeodesicOutNegative;
-    std::map<std::string, float> m_fetalbrainfeatures;
-    int m_fetalslice;
+private:
+  ImageTypeFloat3D::Pointer m_InputGeomasks;
+  ImageTypeShort3D::Pointer m_imgGeodesicOut;
+  ImageTypeShort3D::Pointer m_imgGeodesicOutPositive;
+  ImageTypeShort3D::Pointer m_imgGeodesicOutNegative;
+  std::map<std::string, float> m_fetalbrainfeatures;
+  int m_fetalslice;
+
+  // GeodesicTraining private variables
+	GeodesicTrainingCaPTkApp<2>* m_GeodesicTrainingCaPTkApp2D;
+  GeodesicTrainingCaPTkApp<3>* m_GeodesicTrainingCaPTkApp3D;
+	std::string m_GeodesicTrainingFirstFileNameFromLastExec = "";
+  bool m_IsGeodesicTrainingRunning = false;
+
+	std::thread m_ExternalProcessThread;
 
     struct DicomDictTagAndVal
     {
@@ -1413,9 +1434,14 @@ public:
       }
     };
 
-    bool m_skipTutorialOnNextRun = false;
+	void RegistrationWorker(std::vector<std::string> compVector, std::vector<std::string> inputFileNames,
+		std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames);
 
-    int startExternalProcess(const QString &application, const QStringList &arguments);
+  bool m_skipTutorialOnNextRun = false;
+
+  std::atomic<int> m_NumberOfUnfinishedExternalProcesses = {0};
+
+  int  startExternalProcess(const QString &application, const QStringList &arguments);
 };
 #if __GNUC__
 #pragma GCC visibility pop
