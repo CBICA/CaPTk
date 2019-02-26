@@ -20,11 +20,9 @@ For project documentation and how-to guides, please visit http://captk.projects.
 
 For issues, please visit https://github.com/cbica/captk/issues
 
-## Download Latest Release (1.6.1)
+## Downloads (All)
 
-- Windows: https://www.nitrc.org/frs/downloadlink.php/11129
-- Linux: https://www.nitrc.org/frs/downloadlink.php/11131
-- macOS (1.6.0): https://www.nitrc.org/frs/downloadlink.php/11037
+Visit our NITRC downloads page for details: https://www.nitrc.org/frs/?group_id=1059
 
 ## Supporting Grant
 This work is in part supported by the grant U24-CA189523, awarded by the National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research (NIH/NCI/ITCR).

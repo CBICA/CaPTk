@@ -130,7 +130,14 @@ int main(int argc, char **argv)
       {
         std::string path, base, ext;
         cbica::splitFileName(currentImagePath, path, base, ext);
-        cbica::WriteImage< ImageTypeFloat3D >(normImage, outputDir + "/" + base + "_wsNormalized" + ext);
+        if (cbica::isDir(outputDir))
+        {
+          cbica::WriteImage< ImageTypeFloat3D >(normImage, outputDir + "/" + base + "_wsNormalized" + ext);
+        }
+        else
+        {
+          cbica::WriteImage< ImageTypeFloat3D >(normImage, outputDir);
+        }
       }
     }
   }
