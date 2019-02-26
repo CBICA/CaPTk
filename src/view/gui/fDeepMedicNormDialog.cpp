@@ -54,7 +54,7 @@ void fDeepMedicNormalizer::ConfirmButtonPressed()
 void fDeepMedicNormalizer::OpenMaskImage()
 {
   QString maskImage = getExistingFile(this, mInputPathName);
-  if (maskImage.isNull())
+  if (maskImage.isNull() || maskImage.isEmpty())
     return;
   else
     maskImageName->setText(maskImage);
@@ -65,7 +65,7 @@ void fDeepMedicNormalizer::OpenMaskImage()
 void fDeepMedicNormalizer::OpenInputImage()
 {
   QString inputImage = getExistingFile(this, mInputPathName);
-  if (inputImage.isNull())
+  if (inputImage.isNull() || inputImage.isEmpty())
     return;
   else
     inputImageName->setText(inputImage);
@@ -76,7 +76,7 @@ void fDeepMedicNormalizer::OpenInputImage()
 void fDeepMedicNormalizer::SelectOutputImage()
 {
   QString outputImage = getSaveFile(this, mInputPathName, outputImageName->text());
-  if (outputImage.isNull())
+  if (outputImage.isNull() || outputImage.isEmpty())
     return;
   else
     outputImageName->setText(outputImage);

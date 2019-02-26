@@ -51,7 +51,7 @@ void fDirectionalityDialog::ConfirmButtonPressed()
 void fDirectionalityDialog::OpenROI1Image()
 {
   QString roi1File = getExistingFile(this, mInputPathName);
-  if (roi1File.isNull())
+  if (roi1File.isNull() || roi1File.isEmpty())
     return;
   else
     roi1ImageName->setText(roi1File);
@@ -62,7 +62,7 @@ void fDirectionalityDialog::OpenROI1Image()
 void fDirectionalityDialog::OpenROI2Image()
 {
   QString roi2File = getExistingFile(this, mInputPathName);
-  if (roi2File.isNull())
+  if (roi2File.isNull() || roi2File.isEmpty())
     return;
   else
     roi2ImageName->setText(roi2File);
@@ -73,7 +73,7 @@ void fDirectionalityDialog::OpenROI2Image()
 void fDirectionalityDialog::SelectOutputFolder()
 {
   QString outputFolder = getExistingDirectory(this, mInputPathName);
-  if (outputFolder.isNull())
+  if (outputFolder.isNull() || outputFolder.isEmpty())
     return;
   else
     outputDirectory->setText(outputFolder);

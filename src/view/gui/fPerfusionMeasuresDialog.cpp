@@ -58,7 +58,7 @@ void fPerfusionEstimator::ConfirmButtonPressed()
 void fPerfusionEstimator::SelectOutputImage()
 {
   QString directory = getExistingDirectory(this, mOutputPathName);
-  if (directory.isNull())
+  if (directory.isNull() || directory.isEmpty())
     return;
   else
     outputImageName->setText(directory);
@@ -69,7 +69,7 @@ void fPerfusionEstimator::SelectOutputImage()
 void fPerfusionEstimator::SelectInputImage()
 {
 	auto inputImage = getExistingFile(this, mInputPathName);
-	if (inputImage.isNull())
+	if (inputImage.isNull() || inputImage.isEmpty())
 		return;
 	else
 		inputImageName->setText(inputImage);
