@@ -42,13 +42,13 @@ ENDFOREACH()
 IF (APPLE)
   SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
 
-  SET( BATCHMODE "${PROJECT_SOURCE_DIR}/data/features/batchMode/batch_featureextraction.csv" )
+  SET( BATCHMODE "${PROJECT_SOURCE_DIR}/data/features/batchMode/batch_featureExtraction.csv" )
   SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
 
   SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
 
 ELSE()
-  INSTALL( FILES "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
+  INSTALL( FILES "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureExtraction.csv" DESTINATION share/featureExtractionBatch )
 ENDIF()
 
 SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)

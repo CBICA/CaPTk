@@ -116,7 +116,7 @@ install_captk () {
   fi
 
   echo "Done."
-  echo "To run CaPTk, enter the command \"~/CaPTk/1.6.1/captk\" in your console."
+  echo "To run CaPTk, enter the command \"~/CaPTk/${ver}/captk\" in your console."
   
 }
 
