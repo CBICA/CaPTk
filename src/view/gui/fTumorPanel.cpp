@@ -225,10 +225,7 @@ void fTumorPanel::sLoad()
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
   dialog.selectFile("init_seed.txt");
 
-  //auto file = getExistingFile(this, QString::fromStdString(mCurrentPath), "Seed Points (*.txt)");
-
-  int ret = dialog.exec();
-  if (ret == QDialog::Accepted)
+  if (dialog.exec() == QDialog::Accepted)
   {
     file = dialog.selectedFiles()[0];
 
@@ -346,12 +343,9 @@ void fTumorPanel::tLoad()
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
   dialog.selectFile("init_point.txt");
 
-  int ret = dialog.exec();
-  if (ret == QDialog::Accepted)
+  if (dialog.exec() == QDialog::Accepted)
   {
     file = dialog.selectedFiles()[0];
-
-    QFile inputFile(file);
 
     tLoad(file); // call actual reader here
   }

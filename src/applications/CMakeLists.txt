@@ -50,10 +50,12 @@ SET( CAPTK_MISC_APPS "" )
 
 ADD_SUBDIRECTORY( FeatureExtraction )
 ADD_SUBDIRECTORY( Preprocessing )
+ADD_SUBDIRECTORY( Utilities )
 INCLUDE_DIRECTORIES( 
   FeatureExtraction/src/depends 
   FeatureExtraction/src 
   Preprocessing/src/depends
+  Utilities/src/depends
 )
 
 SET(PREPROCESSING_ALGOS "DCM2NIfTI Denoise-SUSAN Register BiasCorrect-N3 HistogramMatching SkullStripping" CACHE STRING "All Preprocessing algorithms available")

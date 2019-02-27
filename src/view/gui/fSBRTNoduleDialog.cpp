@@ -30,7 +30,11 @@ void fSBRTNoduleDialog::OnSeedImageBrowseButtonClicked()
 {
 	auto file = getExistingFile(this, mInputPathName);
 
-	if (!file.isEmpty())
+  if (file.isNull() || file.isEmpty())
+  {
+    return;
+  }
+  else
 	{
 		seedImageName->setText(file);
 	}
