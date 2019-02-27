@@ -64,7 +64,7 @@
 #include "itkBinaryContourImageFilter.h"
 #include "itkNormalizeImageFilter.h"
 
-#include "opencv2/core/core.hpp"
+#include "opencv2/core.hpp"
 #include "opencv2/ml.hpp"
 
 

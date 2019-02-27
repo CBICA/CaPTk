@@ -93,6 +93,11 @@ private:
     if (!cbica::isFile(dataFeatureDir + "/1_params_default.csv"))
     {
       dataFeatureDir = cbica::normPath(captk_currentApplicationPath + "/../../data/features/");
+
+      #ifdef __APPLE__
+          dataFeatureDir = cbica::normPath(captk_currentApplicationPath + "/../Resources/data/features/");
+      #endif 
+
       //defaultFeatureFile = dataFeatureDir + "/1_params_default.csv";
     }
 

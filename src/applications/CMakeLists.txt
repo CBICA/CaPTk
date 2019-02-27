@@ -60,10 +60,6 @@ INCLUDE_DIRECTORIES(
   Utilities/src/depends
 )
 
-INCLUDE_DIRECTORIES( 
-  ${GEODESIC_TRAINING_INCLUDE_DIRS}
-)
-
 SET(PREPROCESSING_ALGOS "DCM2NIfTI Denoise-SUSAN Register BiasCorrect-N3 HistogramMatching SkullStripping" CACHE STRING "All Preprocessing algorithms available")
 
 MACRO( ADD_APPLICATION application)
