@@ -12,7 +12,11 @@ Changes to dependencies should be discussed in the group so that any downstream 
 
 - Command line parsing
 - Safe Image I/O (NIfTI, DICOM)
-- Image Utilities
+- Image Utilities and wrappers to ITK filters
 ..- CreateMaskIndeces
 ..- GetPixelValuesFromIndeces
+..- Preprocessing: histogram matching, smoothing, image comparison, orientation fix, skull stripping, resize, resample
+..- Image sanity checking
+..- Distance calculations: image and world coordinates
+..- Create new image based on existing image
 - File system functionalities
