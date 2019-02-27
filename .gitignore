@@ -5,6 +5,7 @@ bin
 CaPTk*.bin
 *Installer.bin
 makeself-*.run*
+archive
 
 # Linux specific paths that get pulled in
 src/applications/individualApps/dcm2nii
@@ -15,6 +16,7 @@ src/applications/individualApps/libra/MCRInstaller.zip
 # Misc
 .vs
 .vscode/
+.DS_Store
 
 # Linux Testing. Will be removed or implemented better
 src/applications/individualApps/libra/MCR
@@ -24,6 +26,8 @@ src/applications/FeatureExtraction/data/output
 /src/applications/FeatureExtraction/data/3_params_default_IBSI.csv
 ibsi_phantom
 /src/applications/FeatureExtraction/runner.ps1
+
+mac-local-build.sh
 deepmedic
 itksnap
 libra

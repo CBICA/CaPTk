@@ -16,6 +16,7 @@ cache: ccache
 # Build matrix to run jobs in parallel
 matrix:
   include:
+    - os: osx
     - os: linux
       dist: xenial
       sudo: required
@@ -50,6 +51,8 @@ matrix:
   allow_failures:
     - os: linux
       dist: trusty
+    - os: linux
+      dist: xenial
     - os: windows
 
 before_install:
@@ -68,10 +71,16 @@ before_install:
 
   # Git LFS
   # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
+
+  ### OSX
+  # OSX install step
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex make git-lfs doxygen llvm ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
   # Launch either the install linux script or compilation linux script
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./.travis/mac-generic.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then if [[ "$INSTALL_TEST" == "true" ]]; then ./.travis/linux-installer.sh; else ./.travis/linux-generic.sh; fi; fi
-
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export PATH=$MSBUILD_PATH:$PATH; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./.travis/windows-generic.sh; fi
