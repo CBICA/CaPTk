@@ -30,6 +30,8 @@ void WhiteStripe::getHisInfo(std::vector<float>& mids, std::vector<float>& origH
 }
 void WhiteStripe::setParams(float wsWidth, int sliceStartZ, int sliceStopZ, int tissuesMax, float smoothMax, float smoothDelta, int histSize, bool bT1)
 {
+  std::cout << "cpp HIT";
+
   m_wsWidth = wsWidth;
   m_sliceStartZ = sliceStartZ;
   m_sliceStopZ = sliceStopZ;

@@ -7324,21 +7324,28 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
   int index = GetSlicerIndexFromItem(items[0]);
 
   WhiteStripe normalizer;
+  std::cout << "fmain HIT";
   normalizer.setParams(twsWidth, sliceStartZ, sliceStopZ, tissuesMax, smoothMax, smoothDelta, histSize, T1Image);
+
+  std::cout << "fmain HIT";
 
   ImageTypeFloat3D::Pointer mask;
   auto normImage = normalizer.process(mSlicerManagers[index]->mITKImage, mask);
-
+  
   if (normImage.IsNotNull())
   {
+    std::cout << "fmain HIT2";
+
     cbica::WriteImage< ImageTypeFloat3D >(normImage, outputFileName);
     LoadSlicerImages(outputFileName, CAPTK::ImageExtension::NIfTI);
 
+    std::cout << "fmain HIT3";
     std::vector<float> mids, origHist, smoothHist;
     std::vector<int> peakIds;
     int modeId;
     normalizer.getHisInfo(mids, origHist, smoothHist, peakIds, modeId);
 
+    std::cout << "fmain HIT4";
     auto m_hWdg = new  HistWidget(this);
     m_hWdg->setAxis(mids, 2);
     m_hWdg->addColumn(origHist, "Hist", 1, cv::Scalar(0, 255, 255, 255));
@@ -7346,9 +7353,11 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
     float height = *max_element(smoothHist.begin(), smoothHist.end());
     m_hWdg->plotVerticalLine(mids[modeId], height, "Mode");
     m_hWdg->show();
+    std::cout << "fmain HIT5";
   }
   else
   {
+    std::cout << "fmain HIT6";
     ShowErrorMessage("WhiteStripe did not run as expected. Please see 'Help' for assistance.");
     help_contextual("Glioblastoma_WhiteStripe.html");
     return;
