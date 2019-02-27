@@ -772,7 +772,7 @@ fMainWindow::fMainWindow()
   connect(&histoMatchPanel, SIGNAL(RunHistogramMatching(const std::string, const std::string, const std::string)), this, SLOT(CallImageHistogramMatching(const std::string, const std::string, const std::string)));
   connect(&deepMedicNormPanel, SIGNAL(RunDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)), this, SLOT(CallImageDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)));
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
-  connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string)));
+  connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
@@ -6211,51 +6211,51 @@ void fMainWindow::ImageSkullStripping()
 }
 void fMainWindow::ApplicationPCA()
 {
-  typedef ImageTypeFloat3D ImageType;
-  typedef ImageTypeFloat4D PerfusionImageType;
-  ImageTypeFloat4D::Pointer perfusionImage = ImageTypeFloat4D::New();
-  std::string msg = "";
+  //typedef ImageTypeFloat3D ImageType;
+  //typedef ImageTypeFloat4D PerfusionImageType;
+  //ImageTypeFloat4D::Pointer perfusionImage = ImageTypeFloat4D::New();
+  //std::string msg = "";
 
 
-  bool perfusionDataPresent = false;
-  for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
-  {
-    if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-    {
-      perfusionDataPresent = true;
-      perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
-    }
-  }
-  if (perfusionDataPresent == false)
-    msg = msg + "\n DSC-MRI scan";
+  //bool perfusionDataPresent = false;
+  //for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
+  //{
+  //  if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+  //  {
+  //    perfusionDataPresent = true;
+  //    perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
+  //  }
+  //}
+  //if (perfusionDataPresent == false)
+  //  msg = msg + "\n DSC-MRI scan";
 
 
-  if (mSlicerManagers.size() > 0)
-  {
-    ImageTypeShort3D::Pointer img = convertVtkToItk<short, 3>(mSlicerManagers[0]->mMask);
-    int  mask_counter = 0;
+  //if (mSlicerManagers.size() > 0)
+  //{
+  //  ImageTypeShort3D::Pointer img = convertVtkToItk<short, 3>(mSlicerManagers[0]->mMask);
+  //  int  mask_counter = 0;
 
-    typedef itk::ImageRegionIteratorWithIndex <ImageTypeShort3D> IteratorType;
-    IteratorType maskIt(img, img->GetLargestPossibleRegion());
-    maskIt.GoToBegin();
-    while (!maskIt.IsAtEnd())
-    {
-      if (maskIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
-        mask_counter++;
-      ++maskIt;
-    }
-    if (mask_counter == 0)
-      msg = msg + "\n" + "Segmentation Label: 1.";
-  }
-  else
-  {
-    msg = msg + "\n" + "Segmentation Label: 1.";
-  }
+  //  typedef itk::ImageRegionIteratorWithIndex <ImageTypeShort3D> IteratorType;
+  //  IteratorType maskIt(img, img->GetLargestPossibleRegion());
+  //  maskIt.GoToBegin();
+  //  while (!maskIt.IsAtEnd())
+  //  {
+  //    if (maskIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
+  //      mask_counter++;
+  //    ++maskIt;
+  //  }
+  //  if (mask_counter == 0)
+  //    msg = msg + "\n" + "Segmentation Label: 1.";
+  //}
+  //else
+  //{
+  //  msg = msg + "\n" + "Segmentation Label: 1.";
+  //}
 
-  if (!msg.empty())
-  {
-    ShowErrorMessage(msg, this);
-  }
+  //if (!msg.empty())
+  //{
+  //  ShowErrorMessage(msg, this);
+  //}
   
   pcaPanel.exec();
 }
@@ -7178,17 +7178,52 @@ void fMainWindow::CallTrainingSimulation(const std::string featurefilename, cons
   }
 }
 
-void fMainWindow::CallPCACalculation(const int number, const std::string outputFolder)
+void fMainWindow::CallPCACalculation(const int number, const std::string inputdirectory, const std::string outputdirectory)
 {
-  typedef ImageTypeFloat4D PerfusionImageType;
-  ImageTypeFloat4D::Pointer perfusionImage = ImageTypeFloat4D::New();
+  //typedef ImageTypeFloat4D PerfusionImageType;
+  //ImageTypeFloat4D::Pointer perfusionImage = ImageTypeFloat4D::New();
 
-  for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
+  //for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
+  //{
+  //  if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+  //    perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
+  //}
+  //ImageTypeFloat3D::Pointer maskImage = convertVtkToItk<float, 3>(mSlicerManagers[0]->mMask);
+
+
+
+  if (inputdirectory.empty())
   {
-    if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-      perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
+    ShowErrorMessage("Please provide path of a directory having input images");
+    return;
   }
-  ImageTypeFloat3D::Pointer maskImage = convertVtkToItk<float, 3>(mSlicerManagers[0]->mMask);
+  if (!cbica::isDir(inputdirectory))
+  {
+    ShowErrorMessage("The given input directory does not exist");
+    return;
+  }
+  if (inputdirectory.empty())
+  {
+    ShowErrorMessage("Please provide path of a directory having input images");
+    return;
+  }
+  if (!cbica::isDir(outputdirectory))
+  {
+    if (!cbica::createDir(outputdirectory))
+    {
+      ShowErrorMessage("Unable to create the output directory");
+      return;
+    }
+  }
+
+
+  std::vector<double> finalresult;
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
+  if (QualifiedSubjects.size() == 0)
+  {
+    ShowErrorMessage("No patient inside the given input directory has required scans");
+    return;
+  }
   PerfusionPCA object_pca;
   QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long Running Application", "This application takes some time to run (<15 minutes).", QMessageBox::Ok | QMessageBox::Cancel);
   box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
@@ -7196,10 +7231,10 @@ void fMainWindow::CallPCACalculation(const int number, const std::string outputF
   QCoreApplication::processEvents();
   if (box->exec() == QMessageBox::Ok)
   {
-    std::vector<ImageTypeFloat3D::Pointer> individual_pcs = object_pca.Run<ImageTypeFloat4D, ImageTypeFloat3D>(maskImage, perfusionImage);
-    for (int index = 0; index < number; index++)
-      cbica::WriteImage< ImageTypeFloat3D >(individual_pcs[index], outputFolder + "/pca_" + std::to_string(index) + ".nii.gz");
-
+//    object_pca.PrepareNewPCAModel(number,inputdirectory,outputdirectory);
+    /*for (int index = 0; index < number; index++)
+      cbica::WriteImage< ImageTypeFloat3D >(individual_pcs[index], outputdirectory + "/pca_" + std::to_string(index) + ".nii.gz");
+*/
     QString message;
     message = "First " + QString::number(number) + " principal components have been saved at the specified locations.";
     ShowMessage(message.toStdString(), this);
@@ -7694,6 +7729,50 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
   }
   return QualifiedSubjects;
 }
+
+std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname)
+{
+  std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
+  std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+  std::sort(subjectNames.begin(), subjectNames.end());
+
+  for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
+  {
+    std::string subjectPath = directoryname + "/" + subjectNames[sid];
+
+    std::string perfFilePath = "";
+    std::string labelPath = "";
+
+    std::vector<std::string> files;
+    files = cbica::filesInDirectory(subjectPath + "", false);
+
+    for (unsigned int i = 0; i < files.size(); i++)
+    {
+      std::string filePath = subjectPath + "/" + files[i], filePath_lower;
+      std::string extension = cbica::getFilenameExtension(filePath, false);
+      filePath_lower = filePath;
+      std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
+      if ((filePath_lower.find("label") != std::string::npos || filePath_lower.find("segmentation") != std::string::npos)
+        && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        labelPath = subjectPath + "/" + files[i];
+      else if ((filePath_lower.find("perf") != std::string::npos || filePath_lower.find("PERF") != std::string::npos || filePath_lower.find("DSC") != std::string::npos)
+        && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        perfFilePath = subjectPath + "/SEGMENTATION" + "/" + files[i];
+    }
+
+    if (labelPath.empty() || perfFilePath.empty())
+      continue;
+
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION] = perfFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG] = labelPath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID] = subjectNames[sid];
+
+    QualifiedSubjects.push_back(OneQualifiedSubject);
+  }
+  return QualifiedSubjects;
+}
+
 std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQualifiedSubjectsFromGivenDirectoryForRecurrence(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useConventionalData, const bool &useDTIData, const bool &usePerfData, const bool &useDistData)
 {
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;

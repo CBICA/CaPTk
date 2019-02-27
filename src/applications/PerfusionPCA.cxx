@@ -3,12 +3,57 @@
 #include "cbicaCmdParser.h"
 #include "cbicaITKSafeImageIO.h"
 
+std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname)
+{
+  std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
+  std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+  std::sort(subjectNames.begin(), subjectNames.end());
+
+  for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
+  {
+    std::string subjectPath = directoryname + "/" + subjectNames[sid];
+
+    std::string perfFilePath = "";
+    std::string labelPath = "";
+
+    std::vector<std::string> files;
+    files = cbica::filesInDirectory(subjectPath + "", false);
+
+    for (unsigned int i = 0; i < files.size(); i++)
+    {
+      std::string filePath = subjectPath + "/" + files[i], filePath_lower;
+      std::string extension = cbica::getFilenameExtension(filePath, false);
+      filePath_lower = filePath;
+      std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
+      if ((filePath_lower.find("label") != std::string::npos || filePath_lower.find("segmentation") != std::string::npos)
+        && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        labelPath = subjectPath + "/" + files[i];
+      else if ((filePath_lower.find("perf") != std::string::npos || filePath_lower.find("PERF") != std::string::npos || filePath_lower.find("DSC") != std::string::npos)
+        && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        perfFilePath = subjectPath +  "/" + files[i];
+    }
+
+    if (labelPath.empty() || perfFilePath.empty())
+      continue;
+
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION] = perfFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG] = labelPath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID] = subjectNames[sid];
+
+    QualifiedSubjects.push_back(OneQualifiedSubject);
+  }
+  return QualifiedSubjects;
+}
+
+
 int main(int argc, char **argv)
 {
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionPCA");
-  parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DSC-MRI image.");
-  parser.addRequiredParameter("m", "mask", cbica::Parameter::STRING, "", "The input mask.");
+  parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory.");
+  parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
   parser.addRequiredParameter("n", "number of PCAs", cbica::Parameter::STRING, "", "The number of principal components.");
+  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   parser.exampleUsage("");
@@ -19,9 +64,12 @@ int main(int argc, char **argv)
   bool loggerRequested = false;
 
   int tempPosition;
+  int applicationType;
+  applicationType = 0;
+
 
   double inputPCs = 0;
-  std::string inputFileName, inputMaskName, outputDirectoryName;
+  std::string inputFileName, inputMaskName, outputDirectoryName, modelDirectoryName;
 
   if ((argc < 1) || (parser.compareParameter("u", tempPosition)))
   {
@@ -38,10 +86,6 @@ int main(int argc, char **argv)
   {
     inputFileName = argv[tempPosition + 1];
   }
-  if (parser.compareParameter("m", tempPosition))
-  {
-    inputMaskName = argv[tempPosition + 1];
-  }
   if (parser.compareParameter("n", tempPosition))
   {
 	  inputPCs = atof(argv[tempPosition + 1]);
@@ -50,14 +94,21 @@ int main(int argc, char **argv)
   {
     outputDirectoryName = argv[tempPosition + 1];
   }
+  if (parser.compareParameter("m", tempPosition))
+  {
+    modelDirectoryName = argv[tempPosition + 1];
+  }
+  if (parser.compareParameter("t", tempPosition))
+  {
+    applicationType = atoi(argv[tempPosition + 1]);
+  }
 
   std::cout << "Input File:" << inputFileName << std::endl;
-  std::cout << "Input Mask:" << inputMaskName << std::endl;
   std::cout << "Output Directory:" << outputDirectoryName << std::endl;
 
-  if (!cbica::isFile(inputFileName))
+  if (!cbica::isDir(inputFileName))
   {
-    std::cout << "The input file does not exist:" << inputFileName << std::endl;
+    std::cout << "The input directory does not exist:" << inputFileName << std::endl;
     return EXIT_FAILURE;
   }
   if (!cbica::directoryExists(outputDirectoryName))
@@ -66,13 +117,33 @@ int main(int argc, char **argv)
       std::cout << "The output directory can not be created:" << outputDirectoryName << std::endl;
     return EXIT_FAILURE;
   }
-  ImageTypeFloat4D::Pointer perfusionImage = cbica::ReadImage<ImageTypeFloat4D>(inputFileName);
-  ImageTypeFloat3D::Pointer maskImage = cbica::ReadImage<ImageTypeFloat3D>(inputMaskName);
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputFileName);
+  //ImageTypeFloat4D::Pointer perfusionImage = cbica::ReadImage<ImageTypeFloat4D>(inputFileName);
+  //ImageTypeFloat3D::Pointer maskImage = cbica::ReadImage<ImageTypeFloat3D>(inputMaskName);
 
+  if (QualifiedSubjects.size() == 0)
+  {
+    std::cout << "There is no subject with the required input in the given directory." << std::endl;
+    return EXIT_FAILURE;
+  }
   PerfusionPCA object_pca;
-  std::vector<ImageTypeFloat3D::Pointer> individual_pcs = object_pca.Run<ImageTypeFloat4D, ImageTypeFloat3D>(maskImage, perfusionImage);
-    for (int index = 0; index < inputPCs; index++)
-      cbica::WriteImage< ImageTypeFloat3D >(individual_pcs[index], outputDirectoryName + "/pca_" + std::to_string(index) + ".nii.gz");
+  if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
+  {
+    std::cout << "Model directory name:" << modelDirectoryName << std::endl;
+    if (!cbica::directoryExists(modelDirectoryName))
+    {
+      std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
+      return EXIT_FAILURE;
+    }
+    object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
+  }
+  else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
+    object_pca.PrepareNewPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
+  else
+  {
+    parser.echoVersion();
+    return EXIT_SUCCESS;
+  }
 
   std::cout<<"principal components have been saved at the specified locations."; 
   std::cout << "Finished successfully.\n";
