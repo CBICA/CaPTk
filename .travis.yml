@@ -57,8 +57,8 @@ before_install:
   - chmod +x ./.travis/*
 
   # Linux install step
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy dos2unix; fi
   
   # Install expect for install testers
   - if [[ "$INSTALL_TEST" == "true" ]]; then sudo apt-get install -qq expect; fi

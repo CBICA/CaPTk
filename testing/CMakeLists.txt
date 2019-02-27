@@ -151,7 +151,7 @@ IF(WIN32)
   ADD_TEST(NAME DeepMedicTest COMMAND DeepMedic -t1 ${TESTING_DATA_DIR}/deepmedic/ -t1c ${TESTING_DATA_DIR}/deepmedic/ -t2 ${TESTING_DATA_DIR}/deepmedic/ -fl ${TESTING_DATA_DIR}/deepmedic/ -o ${TESTING_OUTPUT_DIR}/deepmedic/ )
 ENDIF()
 
-# Diffusion Derivatives !!
+# Diffusion Derivatives (Incomplete)
 
 ADD_TEST(NAME DiffusionDerivativesHelpTest COMMAND DiffusionDerivatives -h )
 ADD_TEST(NAME DiffusionDerivativesVersionTest COMMAND DiffusionDerivatives -v )
@@ -193,12 +193,12 @@ ADD_TEST(NAME FeatureExtractionFeatureMapsWriteTest COMMAND FeatureExtraction -n
 ADD_TEST(NAME FeatureExtractionHelpTest COMMAND FeatureExtraction -h )
 ADD_TEST(NAME FeatureExtractionVersionTest COMMAND FeatureExtraction -v )
 
-# Geodesic Segmentation Tests !!
+# Geodesic Segmentation Tests (Incomplete)
 
 ADD_TEST(NAME GeodesicSegmentationHelpTest COMMAND GeodesicSegmentation -h )
 ADD_TEST(NAME GeodesicSegmentationVersionTest COMMAND GeodesicSegmentation -v )
 
-# Greedy Registration Tests !!
+# Greedy Registration Tests (Incomplete)
 
 # -reg -trf -i moving.nii.gz -f fixed.nii.gz -o output.nii.gz -t matrix.mat -a -m MI -n 100x50x5 -th 4
 
@@ -236,7 +236,7 @@ ADD_TEST(NAME PerfusionDerivativesEcho10Test COMMAND PerfusionDerivatives -i ${T
 ADD_TEST(NAME PerfusionDerivativesHelpTest COMMAND PerfusionDerivatives -h )
 ADD_TEST(NAME PerfusionDerivativesVersionTest COMMAND PerfusionDerivatives -v )
 
-# Perfusion PCA Tests !!
+# Perfusion PCA Tests (Incomplete)
 
 ADD_TEST(NAME PerfusionPCAHelpTest COMMAND PerfusionPCA -h )
 ADD_TEST(NAME PerfusionPCAVersionTest COMMAND PerfusionPCA -v )
