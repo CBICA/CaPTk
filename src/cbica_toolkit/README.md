@@ -19,4 +19,6 @@ Changes to dependencies should be discussed in the group so that any downstream 
 ..- Image sanity checking
 ..- Distance calculations: image and world coordinates
 ..- Create new image based on existing image
-- File system functionalities
+- Generic functionalities: file/directory check, sym-link creation, sub-directories, filename splitting, create/delete/copy directory, file/folder size, normalize path, get current working and/or executable directory, get/set environment variables, CSV parsing, confusion matrix, ROC, randn, 
+- First order statistics using a standard vector
+
