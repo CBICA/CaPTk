@@ -1,0 +1,12 @@
+---
+# Configuration for Geodesic Training's SVMs
+# MRI Machine Model: X
+# Tumor type: Y
+
+svms:
+  - kernel_type: sigmoid
+    consider_weights: true 
+    c: auto
+    gamma: auto
+    coef: auto
+...

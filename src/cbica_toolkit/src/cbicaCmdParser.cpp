@@ -39,6 +39,10 @@ static const char  cSeparator = '/';
 //  static const char* cSeparators = "/";
 #endif
 
+#if (__APPLE__)
+#include <mach-o/dyld.h>
+#endif
+
 #include <fstream>
 #include <stdlib.h>
 #include <stdio.h>
