@@ -10,7 +10,7 @@ export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
 
-export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.11.2/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.11.2/bin:$CMAKE_PREFIX_PATH"
+export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
 
 rm -rf /usr/local/opt/qt
 rm -rf /usr/local/Cellar/qt
@@ -59,8 +59,6 @@ exit -1
 fi
 
 # Nuclear option
-# rm -rf binaries
-# rm -rf data
 rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
@@ -68,14 +66,8 @@ rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 echo "[:] Creating binary directory..."
 mkdir -p bin
 
-# Move OS specific qt lib in
-# mv ${TRAVIS_BUILD_DIR}/binaries/qt5.11.2_macos.zip ./bin/qt.zip
-
 # Move externalApps into bin to trick CMake
 mv ${TRAVIS_BUILD_DIR}/binaries/externalApps.zip ./bin/
-
-# Remove all other blobs
-# rm -rf ${TRAVIS_BUILD_DIR}/binaries
 
 cd bin
 
@@ -89,9 +81,5 @@ mkdir ./testing/TestData
 # Cmake
 echo "[:] Running cmake command and build CaPTk..."
 CAPTK_CMD
-
-# # Make install/strip
-# echo "[:] Building CaPTk..."
-# make
 
 echo "[:] Done. Built test target"
