@@ -123,7 +123,7 @@ fi
 
 # Nuclear option
 # rm -rf binaries
-# rm -rf data
+rm -rf data
 rm -rf history
 rm -rf src/applications/individualApps/libra/MCRInstaller.zip
 
@@ -191,12 +191,6 @@ bash ../scripts/linux-cmake-conf
 # Make
 echo "[:] Building CaPTk..."
 make -j
-
-ls ./src/applications/FeatureExtraction/
-
-cp FeatureExtraction.cwl ./src/applications/FeatureExtraction/
-
-make -j install/strip
 
 # # Fix
 # cd install
