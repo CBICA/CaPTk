@@ -185,7 +185,7 @@ std::vector< std::string > splitTheString(const std::string &inputString)
 
 int main(int argc, char** argv)
 {
-  cbica::CmdParser parser(argc, argv/*, "FeatureExtraction"*/);
+  cbica::CmdParser parser(argc, argv, "FeatureExtraction");
 
   parser.addOptionalParameter("p", "paramFile", cbica::Parameter::FILE, ".csv", "A csv file with all features and its parameters filled", "Default: '../data/1_params_default.csv'");
   parser.addRequiredParameter("o", "outputDir", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory to save results", "Result can be a CSV or Feature Maps (for lattice)");

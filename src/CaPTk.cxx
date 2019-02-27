@@ -77,6 +77,38 @@ int main(int argc, char** argv)
 
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
   cbica::setEnvironmentVariable("QT_OPENGL", "software");
+
+  std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
+
+  // check for CWL command coming in through the command line after "CaPTk"
+  if (cmd_inputs.empty() && (argc > 1))
+  {
+    auto cwlFiles = cbica::getCWLFilesInApplicationDir();
+    for (auto & file : cwlFiles)
+    {
+      auto cwlFileBase = cbica::getFilenameBase(file);
+      std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
+      auto argv_1 = std::string(argv[1]);
+      std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
+
+      // Check for filename without cwl extension
+      if (cwlFileBase.find(argv_1) != std::string::npos)
+      {
+        // Get base command
+        //std::ofstream selected_file;
+        //selected_file.open(file.c_str());
+        auto config = YAML::LoadFile(file);
+        // Get all args passed to application
+        std::string argv_complete;        
+        for (size_t i = 2; i < argc; i++) // 2 because the argv[1] is always the "application"
+        {
+          argv_complete += " " + std::string(argv[i]);
+        }
+        // Pass them in
+        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
+      }
+    }
+  }
   
   // parse the command line
   auto parser = cbica::CmdParser(argc, argv, "CaPTk");
@@ -89,38 +121,6 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
   
   parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
-
-  // check for CWL command coming in through the command line after "CaPTk"
-  if (argc > 1)
-  {
-    auto cwlFiles = cbica::getCWLFilesInApplicationDir();
-    auto argv_1 = std::string(argv[1]);
-    std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
-    for (auto & file : cwlFiles)
-    {
-      auto cwlFileBase = cbica::getFilenameBase(file);
-      std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
-
-      // Check for filename without cwl extension
-      if (cwlFileBase.find(argv_1) != std::string::npos)
-      {
-        // Get base command
-        //std::ofstream selected_file;
-        //selected_file.open(file.c_str());
-        auto config = YAML::LoadFile(file);
-        // Get all args passed to application
-        std::string argv_complete;
-        for (size_t i = 2; i < argc; i++) // 2 because the argv[1] is always the "application"
-        {
-          argv_complete += " " + std::string(argv[i]);
-        }
-        // Pass them in
-        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
-      }
-    }
-  }
-
-  std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
   
   if (parser.isPresent("i"))
   {
