@@ -246,8 +246,8 @@ inline std::string getApplicationPath(std::string appName)
   }
 
 #ifdef CAPTK_PACKAGE_PROJECT
-#ifndef _APPLE
-  return captk_currentApplicationPath + appName_wrap + winExt;
+#ifndef __APPLE__
+    return captk_currentApplicationPath + appName_wrap + winExt;
 #else
   return cbica::normPath(captk_currentApplicationPath + "../Resources/bin/" + appName_wrap);
 #endif  

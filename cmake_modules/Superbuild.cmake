@@ -11,7 +11,7 @@ SET( FILE_TO_EXTRACT "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip" )
 SET( QT_EXTRACTED_DIR "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}" )
 
 IF( NOT EXISTS "${QT_EXTRACTED_DIR}" )
-  FILE(MAKE_DIRECTORY "${QT_EXTRACTED_DIR}" )
+ FILE(MAKE_DIRECTORY "${QT_EXTRACTED_DIR}" )
 ENDIF()
 
 IF(WIN32)
@@ -23,11 +23,11 @@ ELSE()
 ENDIF()
 
 IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
-  MESSAGE( STATUS "Downloading pre-compiled Qt with open source license (see Qt site for more details)" )
-  FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000 STATUS STATUS_CODE SHOW_PROGRESS)
-  IF(NOT STATUS_CODE EQUAL 0)
-    MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
-  ENDIF()
+ MESSAGE( STATUS "Downloading pre-compiled Qt with open source license (see Qt site for more details)" )
+ FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000 STATUS STATUS_CODE SHOW_PROGRESS)
+ IF(NOT STATUS_CODE EQUAL 0)
+   MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
+ ENDIF()
 
 ENDIF()
 
@@ -48,7 +48,7 @@ IF( EXISTS "${FILE_TO_EXTRACT}" )
   LIST(APPEND CMAKE_PREFIX_PATH "${QT_EXTRACTED_DIR}/5.12.1/lib/cmake/Qt5")
   LIST(APPEND CMAKE_PROGRAM_PATH  "${QT_EXTRACTED_DIR}/5.12.1/bin")
   
-  #SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/5.12.1/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
+  SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/5.12.1/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
   
   SET(ENV{CMAKE_PREFIX_PATH} "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.12.1/lib/cmake/Qt5/" )
   SET(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.12.1/lib/cmake/Qt5/" )
@@ -96,8 +96,9 @@ INCLUDE( ExternalProject )
 
 #INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-DCMTK.cmake )
 
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
+INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Qt.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
+INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
 #INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV_Contrib.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
