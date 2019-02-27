@@ -1,7 +1,6 @@
 SET( FILENAME_TO_EXTRACT "qt" )
 SET( FILE_TO_EXTRACT "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip" )
 SET( QT_EXTRACTED_DIR "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}" )
-SET( QT_VERSION "5.12.1" )
 SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/qt/${QT_VERSION}" )
 
 MESSAGE( STATUS "Adding pre-compiled Qt-${QT_VERSION} ...")
