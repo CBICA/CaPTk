@@ -29,12 +29,12 @@ matrix:
       env:
         - LINUX_DIST=trusty
     # Test the installer on xenial
-    - os: linux
-      dist: xenial
-      sudo: required
-      env:
-        - LINUX_DIST=xenial
-        - INSTALL_TEST=true
+    # - os: linux
+    #   dist: xenial
+    #   sudo: required
+    #   env:
+    #     - LINUX_DIST=xenial
+    #     - INSTALL_TEST=true
     # Test the installer on trusty
     # - os: linux
     #   dist: trusty
