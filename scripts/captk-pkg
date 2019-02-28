@@ -84,8 +84,6 @@ FIX_CMD () {
   cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
   cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
 
-  cp ./scripts/linux-ld-run ./bin/install/appdir/usr/bin
-
   # Move into install
   cd ./bin/install/appdir/usr
 
