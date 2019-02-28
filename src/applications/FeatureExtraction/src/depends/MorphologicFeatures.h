@@ -59,8 +59,10 @@ public:
       auto connected = itk::ConnectedComponentImageFilter < TShapeImageType, OutputImageType >::New();
       connected->SetInput(m_maskShape);
       connected->SetFullyConnected(true);
-      connected->SetBackgroundValue(0);
+      //connected->SetBackgroundValue(0);
       connected->Update();
+
+      //cbica::WriteImage< OutputImageType >(connected->GetOutput(), "C:/Projects/CaPTk_myFork/src/applications/FeatureExtraction/data/ibsi_phantom/connected.nii.gz");
 
       /* TBD
       // using this provides distance threshold https://itk.org/Doxygen/html/classitk_1_1NeighborhoodConnectedImageFilter.html
@@ -77,21 +79,21 @@ public:
 
       auto numberOfLabelObjects = labelMap->GetNumberOfLabelObjects();
 
-      if (numberOfLabelObjects > 1)
+      if (numberOfLabelObjects > 2)
       {
         std::cerr << "Number of connected components are more than 1, cannot compute morphologic features.\n";
         return;
       }
 
-      for (unsigned int i = 0; i < numberOfLabelObjects; i++)
+      //for (unsigned int i = 0; i < numberOfLabelObjects; i++)
       {
-        auto labelObject = labelMap->GetNthLabelObject(i);
+        auto labelObject = labelMap->GetNthLabelObject(1);
 
         std::string labelString = "";
-        if (numberOfLabelObjects > 1)
-        {
-          labelString = "-Label-" + std::to_string(i);
-        }
+        //if (numberOfLabelObjects > 1)
+        //{
+        //  labelString = "-Label-" + std::to_string(i);
+        //}
         /// TBD: convert this into a function of minSize or maxSize instead of the hard-coded '20'
         auto tt = labelObject->GetNumberOfPixels();
         if (labelObject->GetNumberOfPixels() > (0.1 * minSize)) // this is to ensure really small portions of an ROI do not get picked 
@@ -115,6 +117,8 @@ public:
           {
             this->m_features["EllipseDiameter" + labelString + "_Axis-" + std::to_string(d)] = ellipseDiameter[d];
             this->m_features["OrientedBoundingBoxSize" + labelString + "_Axis-" + std::to_string(d)] = orientedBoundingBoxSize[d];
+
+            //std::cout << "EllipseDiameter" + labelString + "_Axis-" + std::to_string(d) << ellipseDiameter[d] << "\n";
           }
           //m_features["FeretDiameter" + labelString] = labelObject->GetFeretDiameter();
           this->m_features["PerimeterOnBorder" + labelString] = labelObject->GetPerimeterOnBorder();
@@ -129,6 +133,10 @@ public:
           this->m_features["Flatness" + labelString] = labelObject->GetFlatness();
           this->m_features["Elongation" + labelString] = labelObject->GetElongation();
           //m_features["OrientedBoundingBoxSize"] = labelObject->GetOrientedBoundingBoxSize(); // vector<double 2> cannot be converted to double
+
+          //std::cout << "Eccentricity" + labelString << this->m_features["Eccentricity" + labelString] << "\n";
+          //std::cout << "PerimeterOnBorder" + labelString << labelObject->GetPerimeterOnBorder() << "\n";
+          //std::cout << "Perimeter" + labelString << labelObject->GetPerimeter() << "\n";
         }
         else
         {
