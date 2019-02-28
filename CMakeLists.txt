@@ -1,6 +1,23 @@
 # parent CMakeLists file
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2)
+
+# Configure CCache if available
+FIND_PROGRAM(CCACHE_FOUND ccache)
+IF(CCACHE_FOUND)
+  #SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  #SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+ENDIF(CCACHE_FOUND)
+
+FIND_PROGRAM(CCacheExectuable ccache)
+IF( CCacheExectuable )
+  # only used with >=cmake-3.4
+  SET( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
+  SET( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
+  MESSAGE( STATUS "Speeding up build with ccache" )
+ENDIF()
+
 #CMAKE_POLICY(VERSION 2.8)
 #IF(COMMAND cmake_policy)
 #  CMAKE_POLICY(SET CMP0003 NEW)
@@ -180,7 +197,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ### third party library processing
   # find and include all third party libraries
   SUBDIRLIST(SUBDIRECTORIES ${THIRDPARTY_LIB_PATH})
-
   FIND_PACKAGE(ITK)
   SET( QT_VERSION "5.12.1" CACHE STRING "Qt version to build CaPTk against" FORCE )
   IF(NOT EXISTS ${ITK_USE_FILE})
