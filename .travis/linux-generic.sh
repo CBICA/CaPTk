@@ -190,7 +190,7 @@ bash ../scripts/linux-cmake-conf
 
 # Make
 echo "[:] Building CaPTk..."
-make -j
+make -j2
 
 # # Fix
 # cd install
