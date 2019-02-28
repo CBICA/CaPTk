@@ -180,6 +180,12 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ### third party library processing
   # find and include all third party libraries
   SUBDIRLIST(SUBDIRECTORIES ${THIRDPARTY_LIB_PATH})
+  # Configure CCache if available
+  FIND_PROGRAM(CCACHE_FOUND ccache)
+  IF(CCACHE_FOUND)
+          SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+          SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+  ENDIF(CCACHE_FOUND)
 
   FIND_PACKAGE(ITK)
   SET( QT_VERSION "5.12.1" CACHE STRING "Qt version to build CaPTk against" FORCE )
