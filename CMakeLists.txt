@@ -29,6 +29,38 @@ CMAKE_POLICY(SET CMP0025 NEW) # only with CMake 3
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES)
 
+OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
+SET( QT_VERSION "5.12.1" CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
+
+IF( CAPTK_SUPERBUILD_FORCE )
+
+  PROJECT(${PROJECT_NAME}_Depends)
+  INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
+  return()
+
+ELSE()
+  FIND_PACKAGE(ITK)
+  
+  IF(NOT EXISTS ${ITK_USE_FILE})
+    IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
+
+      OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
+      IF( CAPTK_SUPERBUILD )
+        PROJECT(${PROJECT_NAME}_Depends)
+        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
+        return()
+      ENDIF()
+
+    ENDIF()
+  ENDIF()
+    
+  IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
+    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build/;${PROJECT_BINARY_DIR}/OpenCV-build/" )
+    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build/")
+    SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
+  ENDIF()
+ENDIF()
+
 #INCLUDE(FindSubversion)
 #IF(Subversion_FOUND) 
 #  IF(EXISTS "${CMAKE_SOURCE_DIR}/../../.svn")
@@ -52,7 +84,7 @@ PROJECT( CaPTk )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
 SET (PROJECT_VERSION_MAJOR 1 )
 SET (PROJECT_VERSION_MINOR 6 )
-SET (PROJECT_VERSION_PATCH 2.PreAlpha )
+SET (PROJECT_VERSION_PATCH 2.Alpha )
 #SET (SVN_REVISION "${SVN_REVISION}")
 
 IF (APPLE)
@@ -197,28 +229,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ### third party library processing
   # find and include all third party libraries
   SUBDIRLIST(SUBDIRECTORIES ${THIRDPARTY_LIB_PATH})
-  FIND_PACKAGE(ITK)
-  SET( QT_VERSION "5.12.1" CACHE STRING "Qt version to build CaPTk against" FORCE )
-  IF(NOT EXISTS ${ITK_USE_FILE})
-
-    IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-
-      OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
-      IF( CAPTK_SUPERBUILD )
-        PROJECT(${PROJECT_NAME}_Depends)
-        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
-        return()
-      ENDIF()
-
-    ENDIF()
-  ENDIF()
-    
-  IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build/;${PROJECT_BINARY_DIR}/OpenCV-build/" )
-    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build/")
-    SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
-  ENDIF()
-
+  
   FIND_PACKAGE( ITK REQUIRED )
   #FIND_PACKAGE( ITK REQUIRED )
   INCLUDE("${ITK_USE_FILE}")
