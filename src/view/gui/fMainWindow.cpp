@@ -7339,13 +7339,13 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
     int modeId;
     normalizer.getHisInfo(mids, origHist, smoothHist, peakIds, modeId);
 
-    auto m_hWdg = new  HistWidget(this);
-    m_hWdg->setAxis(mids, 2);
-    m_hWdg->addColumn(origHist, "Hist", 1, cv::Scalar(0, 255, 255, 255));
-    m_hWdg->addColumn(smoothHist, "Smooth", 2);
-    float height = *max_element(smoothHist.begin(), smoothHist.end());
-    m_hWdg->plotVerticalLine(mids[modeId], height, "Mode");
-    m_hWdg->show();
+    //auto m_hWdg = new  HistWidget(this);
+    //m_hWdg->setAxis(mids, 2);
+    //m_hWdg->addColumn(origHist, "Hist", 1, cv::Scalar(0, 255, 255, 255));
+    //m_hWdg->addColumn(smoothHist, "Smooth", 2);
+    //float height = *max_element(smoothHist.begin(), smoothHist.end());
+    //m_hWdg->plotVerticalLine(mids[modeId], height, "Mode");
+    //m_hWdg->show();
   }
   else
   {
