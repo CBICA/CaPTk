@@ -6,37 +6,38 @@
 CAPTK_CMD () {
 export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
-export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
+# export CMAKE_PREFIX_PATH="/usr/local/opt/qt/lib/cmake/Qt5:/usr/local/opt/qt/bin:$CMAKE_PREFIX_PATH"
 
 cmake ../
 
-# export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
+export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
 
-# rm -rf /usr/local/opt/qt
-# rm -rf /usr/local/Cellar/qt
-# cp -r qt /usr/local/Cellar/qt
-# brew link --force qt
+rm -rf /usr/local/opt/qt
+rm -rf /usr/local/Cellar/qt
+cp -r qt /usr/local/Cellar/qt
+brew link --force qt
+mv /usr/local/opt/qt5 /usr/local/opt/qt
 
 echo "Run Dependency Manager"
 # # make & sleep 5600; kill $! 
 make -j 2
 
-# rm CMakeCache.txt
+rm CMakeCache.txt
 
-# export CC=/usr/locgital/opt/llvm/bin/clang
-# export CXX=/usr/local/opt/llvm/bin/clang++
-# export LDFLAGS="-L/usr/local/opt/llvm/lib"
-# export CPPFLAGS="-L/usr/local/opt/llvm/include"
+export CC=/usr/locgital/opt/llvm/bin/clang
+export CXX=/usr/local/opt/llvm/bin/clang++
+export LDFLAGS="-L/usr/local/opt/llvm/lib"
+export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-# echo "Run CaPTk Build"
-# export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
-# cmake ../
-# export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
-# cmake ../
-# cmake ../
-# make -j 2
+echo "Run CaPTk Build"
+export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
+cmake ../
+export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
+cmake ../
+cmake ../
+make -j 2
 
-# make package
+make package
 }
 
 ###########################
