@@ -1529,7 +1529,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins());
       auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fileName);
-       imageManager->SetOriginalDirection(currentImage->GetDirection());
+      imageManager->SetOriginalDirection(currentImage->GetDirection());
       currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fileName));
       imageManager->SetImage(currentImage);
       imageManager->mImageSubType = guessImageType(fileName);
@@ -2659,31 +2659,31 @@ void fMainWindow::SaveDrawing()
 
   auto imageToWrite_wrap = imageToWrite;
   imageToWrite->DisconnectPipeline();
-  //if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-  //{
-  //  ImageTypeMask::DirectionType originalDirection;
-  //  originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
-  //  originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
-  //  originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
-  //  originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
-  //  originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
-  //  originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
-  //  originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
-  //  originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
-  //  originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
+  if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+  {
+    ImageTypeMask::DirectionType originalDirection;
+    originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
+    originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
+    originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
+    originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
+    originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
+    originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
+    originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
+    originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
+    originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
 
-  //  ImageTypeMask::PointType originalOrigin;
-  //  originalOrigin = mSlicerManagers[index]->mOrigin;
+    ImageTypeMask::PointType originalOrigin;
+    originalOrigin = mSlicerManagers[index]->mOrigin;
 
-  //  auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
-  //  infoChanger->SetInput(imageToWrite);
-  //  infoChanger->ChangeDirectionOn();
-  //  infoChanger->ChangeOriginOn();
-  //  infoChanger->SetOutputDirection(originalDirection);
-  //  infoChanger->SetOutputOrigin(originalOrigin);
-  //  infoChanger->Update();
-  //  imageToWrite_wrap = infoChanger->GetOutput();
-  //}
+    auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
+    infoChanger->SetInput(imageToWrite);
+    infoChanger->ChangeDirectionOn();
+    infoChanger->ChangeOriginOn();
+    infoChanger->SetOutputDirection(originalDirection);
+    infoChanger->SetOutputOrigin(originalOrigin);
+    infoChanger->Update();
+    imageToWrite_wrap = infoChanger->GetOutput();
+  }
 
   QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "mask.nii.gz");
   if (!saveFileName.isEmpty())
