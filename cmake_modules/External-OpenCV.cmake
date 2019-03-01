@@ -37,7 +37,7 @@ ExternalProject_Add(
     -DBUILD_DOCS:BOOL=OFF
     -DWITH_OPENCL_SVM:BOOL=OFF
     -DCPU_BASELINE:STRING=SSE
-    -DWITH_QT:BOOL=TRUE # [QT] dependency, enables better GUI
+    # -DWITH_QT:BOOL=TRUE # [QT] dependency, enables better GUI
     -DWITH_EIGEN:BOOL=TRUE # [Eigen] dependency, enables better matrix operations 
     -DWITH_OPENMP:BOOL=ON
     -DWITH_OPENGL:BOOL=ON
