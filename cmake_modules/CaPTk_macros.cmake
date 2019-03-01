@@ -94,11 +94,16 @@ MACRO(SUBDIRLIST result curdir)
   SET(${result} ${dirlist})
 ENDMACRO()
 
+# a common version number is always maintained in CaPTk and all its applications
 MACRO( CAPTK_ADD_PROJECT NEW_PROJECT_NAME NEW_PROJECT_VERSION )
   
   IF( PROJECT_VERSION STREQUAL "" )
+    # this basically means that packaging will not be happening since the project is independent of CaPTk 
     PROJECT( ${NEW_PROJECT_NAME} ${NEW_PROJECT_VERSION} LANGUAGES CXX )  
+    SET( CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Default configuration types" FORCE )
   ELSE()
-    PROJECT( ${NEW_PROJECT_NAME} LANGUAGES CXX )  
+    PROJECT( ${NEW_PROJECT_NAME} ${PROJECT_VERSION} LANGUAGES CXX )  
   ENDIF()
+  
+  
 ENDMACRO()
