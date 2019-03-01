@@ -50,6 +50,7 @@ ELSE()
   FIND_PACKAGE(ITK)
   
   IF(NOT EXISTS ${ITK_USE_FILE})
+    MESSAGE( STATUS "=== [DEBUG] PROJECT_BIN_DIR=${PROJECT_BINARY_DIR}" )
     IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
 
       OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
@@ -68,6 +69,7 @@ ELSE()
     LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/VTK-build/")
     LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/OpenCV-build/")
     SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
+    MESSAGE( STATUS "=== [DEBUG] CMAKE_PREFIX_PATH=$ENV{CMAKE_PREFIX_PATH}" )
   ENDIF()
 ENDIF()
 
