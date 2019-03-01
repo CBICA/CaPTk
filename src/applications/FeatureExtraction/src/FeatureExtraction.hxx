@@ -206,6 +206,7 @@ void FeatureExtraction< TImage >::CalculateMorphologic(const typename TImage::Po
   morphologicCalculator.SetInputMask(mask2);
   morphologicCalculator.SetMaskShape(mask1);
   morphologicCalculator.SetStartingIndex(m_currentLatticeStart);
+  morphologicCalculator.SetRange(m_Range);
   morphologicCalculator.Update();
   auto temp = morphologicCalculator.GetOutput();
   if (temp.empty())

@@ -5,6 +5,7 @@ Generic,ResamplingInterpolator,mm,Linear:BSpline,Linear,Type of interpolator to 
 Intensity,,,,,
 Morphologic,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area along specified axis) or full 3D volume features
 Morphologic,Axis,String,[z:x:y],z,The axis with maximum area for which the 2D slice computation is to be done
+Morphologic,Range,Int,(0:1),0,0:largest connected component in ROI; 1: all connected components larger than 5% of total image size
 Volumetric,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area along specified axis) or full 3D volume features
 Volumetric,Axis,String,[z:x:y],z,The axis with maximum area for which the 2D slice computation is to be done
 Histogram,Bins,Int,,10,The number of bins to calculate for the Histogram

@@ -29,6 +29,14 @@ CMAKE_POLICY(SET CMP0025 NEW) # only with CMake 3
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES)
 
+# set project name. The exe name is taken from this
+PROJECT( CaPTk )
+SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
+SET (PROJECT_VERSION_MAJOR 1 )
+SET (PROJECT_VERSION_MINOR 6 )
+SET (PROJECT_VERSION_PATCH 2.20190301 )
+#SET (SVN_REVISION "${SVN_REVISION}")
+
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
 SET( QT_VERSION "5.12.1" CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
 
@@ -55,8 +63,10 @@ ELSE()
   ENDIF()
     
   IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build/;${PROJECT_BINARY_DIR}/OpenCV-build/" )
+    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build/;${PROJECT_BINARY_DIR}/OpenCV-build/;${PROJECT_BINARY_DIR}/VTK-build" )
     LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build/")
+    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/VTK-build/")
+    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/OpenCV-build/")
     SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
   ENDIF()
 ENDIF()
@@ -78,14 +88,6 @@ ENDIF()
 #ELSE(Subversion_FOUND)
 #  SET(SVN_REVISION "-1")
 #ENDIF(Subversion_FOUND) 
-
-# set project name. The exe name is taken from this
-PROJECT( CaPTk )
-SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
-SET (PROJECT_VERSION_MAJOR 1 )
-SET (PROJECT_VERSION_MINOR 6 )
-SET (PROJECT_VERSION_PATCH 2.Alpha )
-#SET (SVN_REVISION "${SVN_REVISION}")
 
 IF (APPLE)
   SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
