@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 {
   auto parser = cbica::CmdParser(argc, argv, "WhiteStripe");
   parser.addRequiredParameter("i", "inputImages", cbica::Parameter::FILE, "3D NIfTI Image(s)", "Input Images on which WhiteStripe needs to be applied", "Delieanted by ','");
-  parser.addRequiredParameter("o", "outputDir", cbica::Parameter::DIRECTORY, "Dir with write access", "Output directory where results are to be saved");
+  parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "Dir with write access", "Output directory where results are to be saved", "Can be absolute path to file if input is a single image");
   parser.addOptionalParameter("r", "radius", cbica::Parameter::FLOAT, "0.0 to 5.0", "WhiteStripe Radius", "Default: 0.05");
   parser.addOptionalParameter("sk", "skullStrippedImg", cbica::Parameter::BOOLEAN, "1 or 0", "Whether skull stripped image is passed", "If not, 'zSliceRange' is needed", "Default: 1");
   parser.addOptionalParameter("z", "zSliceRange", cbica::Parameter::INTEGER, "50 to 150", "z-slice Range for cropping", "Delieanted by '-'", "Default (if image is not skull-stripped): 80-120");
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("d", "deltaSmooth", cbica::Parameter::FLOAT, "0.0 to 10.0", "Smoothing Delta", "Default: 0.5");
   parser.addOptionalParameter("b", "binsHist", cbica::Parameter::INTEGER, "100 to 3000", "Number of Histogram bins to do processing", "Default: 2000");
   parser.addOptionalParameter("t1", "t1Image", cbica::Parameter::BOOLEAN, "0 or 1", "T1 Image being passed or not", "Default: 1");
-  parser.exampleUsage("WhiteStripe -i in.nii.gz -o <output dir>");
+  parser.exampleUsage("-i c:/test/in.nii.gz -o c:/test/output.nii.gz");
 
   bool t1Image = true, skullStrippedImage = true;
   int zSliceStart = -1, zSliceEnd = -1, tissuesMax = 5, histSize = 2000;
@@ -30,6 +30,7 @@ int main(int argc, char **argv)
 
   parser.getParameterValue("i", inputImages);
   parser.getParameterValue("o", outputDir);
+  outputDir = cbica::normPath(outputDir);
 
   if (parser.isPresent("t1"))
   {
@@ -128,10 +129,10 @@ int main(int argc, char **argv)
       
       if (normImage.IsNotNull())
       {
-        std::string path, base, ext;
-        cbica::splitFileName(currentImagePath, path, base, ext);
         if (cbica::isDir(outputDir))
         {
+          std::string path, base, ext;
+          cbica::splitFileName(currentImagePath, path, base, ext);
           cbica::WriteImage< ImageTypeFloat3D >(normImage, outputDir + "/" + base + "_wsNormalized" + ext);
         }
         else

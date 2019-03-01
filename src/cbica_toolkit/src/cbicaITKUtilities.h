@@ -950,7 +950,7 @@ namespace cbica
 
     for (size_t i = 0; i < TImageType::ImageDimension; i++)
     {
-      distances[i] = end_worldCoordinates[i] - start_worldCoordinates[i]; // real world image span along each axis
+      distances[i] = std::abs(end_worldCoordinates[i] - start_worldCoordinates[i]); // real world image span along each axis
     }
 
     return distances;
