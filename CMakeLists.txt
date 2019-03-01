@@ -37,7 +37,7 @@ SET (PROJECT_VERSION_MINOR 6 )
 SET (PROJECT_VERSION_PATCH 2.20190301 )
 #SET (SVN_REVISION "${SVN_REVISION}")
 
-OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" ON )
+OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
 SET( QT_VERSION "5.12.1" CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
 
 IF( CAPTK_SUPERBUILD_FORCE )
