@@ -1,9 +1,14 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2)
 
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/../../../cmake_modules/)
+INCLUDE( CaPTk_macros )
+
 SET( PROJECT_NAME FeatureExtraction )
 
+CAPTK_ADD_PROJECT( ${PROJECT_NAME} 1.6.2 )
+
 # Set project name 
-PROJECT( ${PROJECT_NAME} VERSION 1.6.1 LANGUAGES CXX )
+#PROJECT( ${PROJECT_NAME} VERSION 1.6.1 LANGUAGES CXX )
 #SET( PROJECT_VERSION "1.6.1")
 ADD_DEFINITIONS(-DPROJECT_VERSION="${PROJECT_VERSION}" )
 
@@ -18,9 +23,6 @@ INCLUDE_DIRECTORIES(
 #Find libraries
 FIND_PACKAGE( ITK REQUIRED )
 INCLUDE( ${ITK_USE_FILE} )
-
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/../../../cmake_modules/)
-INCLUDE( CaPTk_macros )
 
 # For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
 SET( FeatureDefinitions "" )
