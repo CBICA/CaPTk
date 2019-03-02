@@ -68,6 +68,8 @@ struct HistSruct
   }
   void setParams(int tissuesMax, float smoothMax, float smoothDelta, int histSize)
   {
+    // std::cout << "h HIT";
+
     m_tissuesMax = tissuesMax;
     m_smoothMax = smoothMax;
     m_smoothDelta = smoothDelta;
