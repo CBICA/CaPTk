@@ -124,8 +124,6 @@ int main(int argc, char **argv)
       WhiteStripe normalizer;
       normalizer.setParams(radius, zSliceStart, zSliceEnd, tissuesMax, maxSmooth, deltaSmooth, histSize, t1Image);
 
-      // std::cout << "whitestripecxx HIT";
-
       ImageTypeFloat3D::Pointer mask;
       auto normImage = normalizer.process(currentImage, mask);
       
@@ -136,12 +134,10 @@ int main(int argc, char **argv)
           std::string path, base, ext;
           cbica::splitFileName(currentImagePath, path, base, ext);
           cbica::WriteImage< ImageTypeFloat3D >(normImage, outputDir + "/" + base + "_wsNormalized" + ext);
-          // std::cout << "whitestripecxx HIT3";
         }
         else
         {
           cbica::WriteImage< ImageTypeFloat3D >(normImage, outputDir);
-          // std::cout << "whitestripecxx HIT4";
         }
       }
     }
