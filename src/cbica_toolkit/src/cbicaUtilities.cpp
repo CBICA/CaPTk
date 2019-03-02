@@ -126,6 +126,11 @@ namespace cbica
   std::vector<std::string> getCWLFilesInApplicationDir() 
   {
     auto appDir = getExecutablePath();
+
+#ifdef __APPLE__
+    appDir += "../Resources/bin";
+#endif
+
     auto filesInDir = filesInDirectory(appDir);
     auto cwlFiles = filesInDir;
     cwlFiles.clear();

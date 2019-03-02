@@ -1,15 +1,77 @@
 # parent CMakeLists file
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2)
+
+# Configure CCache if available
+FIND_PROGRAM(CCACHE_FOUND ccache)
+IF(CCACHE_FOUND)
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+ENDIF(CCACHE_FOUND)
+
+FIND_PROGRAM(CCacheExectuable ccache)
+IF( CCacheExectuable )
+  # only used with >=cmake-3.4
+  SET( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
+  SET( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
+  MESSAGE( STATUS "Speeding up build with ccache" )
+ENDIF()
+
 #CMAKE_POLICY(VERSION 2.8)
 #IF(COMMAND cmake_policy)
 #  CMAKE_POLICY(SET CMP0003 NEW)
 #  CMAKE_POLICY(SET CMP0020 NEW)
 #  CMAKE_POLICY(SET CMP0010 NEW)
 CMAKE_POLICY(SET CMP0048 NEW) # only with CMake 3
+CMAKE_POLICY(SET CMP0025 NEW) # only with CMake 3
 #ENDIF(COMMAND cmake_policy)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES)
+
+# set project name. The exe name is taken from this
+PROJECT( CaPTk )
+SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
+SET (PROJECT_VERSION_MAJOR 1 )
+SET (PROJECT_VERSION_MINOR 6 )
+SET (PROJECT_VERSION_PATCH 2.Alpha )
+#SET (SVN_REVISION "${SVN_REVISION}")
+
+OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
+SET( QT_VERSION "5.12.1" CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
+
+IF( CAPTK_SUPERBUILD_FORCE )
+
+  PROJECT(${PROJECT_NAME}_Depends)
+  INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
+  return()
+
+ELSE()
+  FIND_PACKAGE(ITK)
+  
+  IF(NOT EXISTS ${ITK_USE_FILE})
+    MESSAGE( STATUS "=== [DEBUG] PROJECT_BIN_DIR=${PROJECT_BINARY_DIR}" )
+    IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
+
+      OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
+      IF( CAPTK_SUPERBUILD )
+        PROJECT(${PROJECT_NAME}_Depends)
+        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
+        return()
+      ENDIF()
+
+    ENDIF()
+  ENDIF()
+    
+  IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
+    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build/;${PROJECT_BINARY_DIR}/OpenCV-build/;${PROJECT_BINARY_DIR}/VTK-build" )
+    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build/")
+    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/VTK-build/")
+    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/OpenCV-build/")
+    SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
+    MESSAGE( STATUS "=== [DEBUG] CMAKE_PREFIX_PATH=$ENV{CMAKE_PREFIX_PATH}" )
+  ENDIF()
+ENDIF()
 
 #INCLUDE(FindSubversion)
 #IF(Subversion_FOUND) 
@@ -28,14 +90,6 @@ SET(CMAKE_CXX_STANDARD_REQUIRED YES)
 #ELSE(Subversion_FOUND)
 #  SET(SVN_REVISION "-1")
 #ENDIF(Subversion_FOUND) 
-
-# set project name. The exe name is taken from this
-PROJECT( CaPTk )
-SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
-SET (PROJECT_VERSION_MAJOR 1 )
-SET (PROJECT_VERSION_MINOR 6 )
-SET (PROJECT_VERSION_PATCH 2.PreAlpha )
-#SET (SVN_REVISION "${SVN_REVISION}")
 
 IF (APPLE)
   SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
@@ -104,7 +158,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF()
 
     if(APPLE)
-      list(APPEND CMAKE_CXX_FLAGS "-std=c++11 -Wno-narrowing -mmacosx-version-min=10.9 ${CMAKE_CXX_FLAGS}")
+      list(APPEND CMAKE_CXX_FLAGS "-std=c++11 -Wno-narrowing -Wall ${CMAKE_CXX_FLAGS}")
 
       SET (CAPTK_MACOSX_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${PROJECT}" )
@@ -179,28 +233,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ### third party library processing
   # find and include all third party libraries
   SUBDIRLIST(SUBDIRECTORIES ${THIRDPARTY_LIB_PATH})
-
-  FIND_PACKAGE(ITK)
-  IF(NOT EXISTS ${ITK_USE_FILE})
-
-    IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-
-      OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
-      IF( CAPTK_SUPERBUILD )
-        PROJECT(${PROJECT_NAME}_Depends)
-        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
-        return()
-      ENDIF()
-
-    ENDIF()
-  ENDIF()
-    
-  IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build/;${PROJECT_BINARY_DIR}/OpenCV-build/" )
-    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build/")
-    SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
-  ENDIF()
-
+  
   FIND_PACKAGE( ITK REQUIRED )
   #FIND_PACKAGE( ITK REQUIRED )
   INCLUDE("${ITK_USE_FILE}")
@@ -227,8 +260,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ### third party library processing
 
   IF(APPLE)
-    set(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../bin")
+    set(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../lib")
     set(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../../include")
+
+    MESSAGE ("${CMAKE_C_COMPILER}")
 
     SET(OpenMP_C "${CMAKE_C_COMPILER}")
     SET(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
@@ -338,7 +373,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_MSUBTYPE ON CACHE BOOL "Do you want to build Molecular Subtype Estimation?" )
   SET( BUILD_ATLAS ON CACHE BOOL "Do you want to build Population Atlas?" )
   SET( BUILD_GEODESIC ON CACHE BOOL "Do you want to build Geodesic Segmentation?" )
-  SET( BUILD_GEODESICTRAINING OFF CACHE BOOL "Do you want to build Geodesic Training Segmentation?" )
+  SET( BUILD_GEODESICTRAINING ON CACHE BOOL "Do you want to build Geodesic Training Segmentation?" )
   SET( BUILD_SBRT ON CACHE BOOL "Do you want to build SBRT Lung?" )
   SET( BUILD_WHITESTRIPE ON CACHE BOOL "Do you want to build WhiteStripe Normalization?" )
   SET( BUILD_ITKSNAP ON CACHE BOOL "Do you want to connect ITK-SNAP to CaPTk Console?" )
@@ -453,6 +488,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${PROJECT_SOURCE_DIR}/src/common/inc/
     ${PROJECT_SOURCE_DIR}/src/view/gui/
     ${APPLICATION_INCLUDES}
+    ${CACHED_INCLUDE_DIRS}
   )
   
   INCLUDE_DIRECTORIES( 
@@ -877,8 +913,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   FOREACH(dependent_lib ${ALL_DEPENDENT_LIBS})
     IF (APPLE)
-      # SET_SOURCE_FILES_PROPERTIES(${dependent_lib} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
-      # SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${dependent_lib})
+      SET_SOURCE_FILES_PROPERTIES(${dependent_lib} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${dependent_lib})
 
       INSTALL(FILES "${dependent_lib}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
 
@@ -920,19 +956,22 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       SET (ICON_FILE "${DATA_DIR}/icons/application/apple/CaPTk.icns")
       SET_SOURCE_FILES_PROPERTIES(${ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
-      FOREACH(CAPTK_MACOSX_BUNDLE_FILE ${CAPTK_MACOSX_BUNDLE_FILES_INSTALL_TARGETS})
-        
-        IF (${CAPTK_MACOSX_BUNDLE_FILE} STREQUAL "${INDIVIDUAL_APPLICATIONS_DIR}/dcm2nii/dcm2nii")
+      FOREACH(CAPTK_MACOSX_BUNDLE_FILE ${CAPTK_MACOSX_BUNDLE_FILES_INSTALL_TARGETS})  
           SET_SOURCE_FILES_PROPERTIES(${CAPTK_MACOSX_BUNDLE_FILE} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin )
 
           SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${CAPTK_MACOSX_BUNDLE_FILE})
-        ENDIF()
+      ENDFOREACH()
 
-        IF (${CAPTK_MACOSX_BUNDLE_FILE} STREQUAL "${INDIVIDUAL_APPLICATIONS_DIR}/itksnap/ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
-          SET_SOURCE_FILES_PROPERTIES(${CAPTK_MACOSX_BUNDLE_FILE} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+      FOREACH(FT_META_FILES_TO_INCLUDE ${FEATURE_EXTRACTION_META_FILES_TO_INCLUDE})
+        IF (${FT_META_FILES_TO_INCLUDE} STREQUAL "${DATA_DIR}/features/batchmode/batch_featureextraction.csv")
+          SET_SOURCE_FILES_PROPERTIES(${FT_META_FILES_TO_INCLUDE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch )
 
-          SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${CAPTK_MACOSX_BUNDLE_FILE})
-        ENDIF()
+          SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FT_META_FILES_TO_INCLUDE})
+        ELSE() 
+          SET_SOURCE_FILES_PROPERTIES(${FT_META_FILES_TO_INCLUDE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features )
+
+          SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FT_META_FILES_TO_INCLUDE}) 
+        ENDIF()        
       ENDFOREACH()
 
       IF (NOT ICON_NAME)

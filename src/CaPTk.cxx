@@ -50,6 +50,16 @@ void setStyleSheet(const std::string &styleFileName = CAPTK_STYLESHEET_FILE)
   }
 }
 
+void echoCWLFiles(std::vector< std::string > inputCWLFiles)
+{
+  std::cout << "Availble CWL applications (refer to individual CLI usage): \n\n";
+  for (size_t i = 0; i < inputCWLFiles.size(); i++)
+  {
+    auto cwlFileBase = cbica::getFilenameBase(inputCWLFiles[i]);
+    std::cout << "\t" << cwlFileBase << "\n";
+  }
+}
+
 #ifdef _WIN32
 // ensures no console pops up when launching the program
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCmdLine, int nShowCmd)
@@ -61,23 +71,11 @@ int main(int argc, char** argv)
 {
 #endif
 
-  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
+  std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
 
-  #if __APPLE__
-  // this->
-  QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-  #endif
+  // this is used to populate the available CWL files for the cli
+  auto cwlFiles = cbica::getCWLFilesInApplicationDir();
 
-  //! Support for High DPI monitors..works on windows but still some menu issues are seen
-  //! Needs to be tested on Linux and Mac
-  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-  //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
-
-  QApplication app(argc, argv);
-
-  //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
-  cbica::setEnvironmentVariable("QT_OPENGL", "software");
-  
   // parse the command line
   auto parser = cbica::CmdParser(argc, argv, "CaPTk");
   parser.ignoreArgc1();
@@ -89,17 +87,16 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
   
   parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
-
+  
   // check for CWL command coming in through the command line after "CaPTk"
-  if (argc > 1)
+  if (cmd_inputs.empty() && (argc > 1))
   {
-    auto cwlFiles = cbica::getCWLFilesInApplicationDir();
-    auto argv_1 = std::string(argv[1]);
-    std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
     for (auto & file : cwlFiles)
     {
       auto cwlFileBase = cbica::getFilenameBase(file);
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
+      auto argv_1 = std::string(argv[1]);
+      std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
 
       // Check for filename without cwl extension
       if (cwlFileBase.find(argv_1) != std::string::npos)
@@ -120,8 +117,18 @@ int main(int argc, char** argv)
     }
   }
 
-  std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
-  
+  if (parser.isPresent("u"))
+  {
+    parser.echoUsage();
+    echoCWLFiles(cwlFiles);
+  }
+
+  if (parser.isPresent("h"))
+  {
+    parser.echoHelp();
+    echoCWLFiles(cwlFiles);
+  }
+
   if (parser.isPresent("i"))
   {
     parser.getParameterValue("i", cmd_inputs);
@@ -138,6 +145,23 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("ts", cmd_tissue);
   }
+
+  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
+
+#if __APPLE__
+  // this->
+  QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
+
+  //! Support for High DPI monitors..works on windows but still some menu issues are seen
+  //! Needs to be tested on Linux and Mac
+  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+
+  QApplication app(argc, argv);
+
+  //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
+  cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
   ///// debug
   //HANDLE hLogFile;

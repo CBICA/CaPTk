@@ -9,7 +9,7 @@ MESSAGE( STATUS "Adding OpenCV-3.4.5 ...")
 
 ExternalProject_Add( 
   OpenCV
-  DEPENDS Eigen
+  DEPENDS Eigen VTK
   URL https://github.com/opencv/opencv/archive/3.4.5.zip
   #GIT_REPOSITORY ${git_protocol}://github.com/opencv/opencv.git
   #GIT_TAG 3.4.1
@@ -17,7 +17,7 @@ ExternalProject_Add(
   BINARY_DIR OpenCV-build
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
-  INSTALL_COMMAND ""
+  #INSTALL_COMMAND ""
   #BUILD_COMMAND ""
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
@@ -35,7 +35,7 @@ ExternalProject_Add(
     -DBUILD_opencv_python_bindings_generator:BOOL=OFF
     -DWITH_CUDA:BOOL=OFF
     -DBUILD_DOCS:BOOL=OFF
-    -DWITH_OPENCL_SVM:BOOL=ON
+    -DWITH_OPENCL_SVM:BOOL=OFF
     -DCPU_BASELINE:STRING=SSE
     #-DWITH_QT:BOOL=TRUE # [QT] dependency, enables better GUI
     -DWITH_EIGEN:BOOL=TRUE # [Eigen] dependency, enables better matrix operations 
@@ -43,14 +43,14 @@ ExternalProject_Add(
     -DWITH_OPENGL:BOOL=ON
     -DBUILD_JPEG:BOOL=ON
     -DWITH_JPEG:BOOL=ON
-    #-DWITH_VTK:BOOL=ON
+    -DWITH_VTK:BOOL=ON
     -DBUILD_JAVA:BOOL=OFF 
     -DEIGEN_INCLUDE_PATH:STRING=${EIGEN_INCLUDE_DIR}
     -DVTK_DIR:PATH=${VTK_DIR} # [VTK] dependency
     -DOpenCV_USE_GUISUPPORT:BOOL=FALSE
     #-DOPENCV_EXTRA_MODULES_PATH:STRING=${OPENCV_CONTRIB_PATH}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/install
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
 )
 
 SET( OpenCV_DIR ${CMAKE_BINARY_DIR}/OpenCV-build )

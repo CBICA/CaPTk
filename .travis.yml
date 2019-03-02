@@ -9,6 +9,10 @@ before_cache:
   - ls '/home/travis/.ccache'
 
 cache: ccache
+  #ccache: true
+  #directories:
+  #- $HOME/.ccache
+  #- $TRAVIS_BUILD_DIR
 #cache:
 #  directories:
 #    - $TRAVIS_BUILD_DIR
@@ -16,6 +20,7 @@ cache: ccache
 # Build matrix to run jobs in parallel
 matrix:
   include:
+    - os: osx
     - os: linux
       dist: xenial
       sudo: required
@@ -49,6 +54,8 @@ matrix:
   # Allow failures for specific platforms
   allow_failures:
     - os: linux
+      dist: xenial
+    - os: linux
       dist: trusty
     - os: windows
 
@@ -57,8 +64,8 @@ before_install:
   - chmod +x ./.travis/*
 
   # Linux install step
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "xenial" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$LINUX_DIST" == "trusty" && "$INSTALL_TEST" != "true" ]]; then sudo apt-get install -qq gcc g++ make libgl1-mesa-dev cmake python3-pip python-numpy dos2unix; fi
   
   # Install expect for install testers
   - if [[ "$INSTALL_TEST" == "true" ]]; then sudo apt-get install -qq expect; fi
@@ -68,10 +75,17 @@ before_install:
 
   # Git LFS
   # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git lfs fetch --all; fi
+
+  ### OSX
+  # OSX install step
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex make git-lfs doxygen llvm ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt ; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
   # Launch either the install linux script or compilation linux script
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./.travis/mac-generic.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then if [[ "$INSTALL_TEST" == "true" ]]; then ./.travis/linux-installer.sh; else ./.travis/linux-generic.sh; fi; fi
-
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export PATH=$MSBUILD_PATH:$PATH; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./.travis/windows-generic.sh; fi

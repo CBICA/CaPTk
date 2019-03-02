@@ -1,79 +1,146 @@
-set (qt_depends)
-set (qt_options)
-if (APPLE)
-  list (APPEND qt_options
-    -sdk ${CMAKE_OSX_SDK}
-    -qt-libpng)
-elseif (UNIX)
-  list (APPEND qt_depends freetype fontconfig png)
-  list (APPEND qt_options
-    -qt-xcb
-    -system-libpng
-    -I <INSTALL_DIR>/include/freetype2
-    -I <INSTALL_DIR>/include/fontconfig)
-endif()
+FIND_PACKAGE(Qt5 COMPONENTS Core )
 
-if (NOT WIN32)
-  list(APPEND qt_depends
-    zlib)
-  list(APPEND qt_options
-    -no-alsa
-    -no-pulseaudio
-    -system-zlib)
-else ()
-  list(APPEND qt_options
-    -qt-zlib)
-endif ()
+OPTION( QT_DOWNLOAD_FORCE "Force Qt binary download regardless of whether Qt was found in host machine or not" OFF )
 
-set(qt_EXTRA_CONFIGURATION_OPTIONS ""
-    CACHE STRING "Extra arguments to be passed to Qt when configuring.")
+IF( ("${Qt5_DIR}" STREQUAL "") OR QT_DOWNLOAD_FORCE )
 
-set(qt_configure_command <SOURCE_DIR>/configure)
-if (WIN32)
-  set(qt_configure_command <SOURCE_DIR>/configure.bat)
-endif ()
+  SET( FILENAME_TO_EXTRACT "qt" )
+  SET( FILE_TO_EXTRACT "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip" )
+  SET( QT_EXTRACTED_DIR "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}" )
+  SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/qt/${QT_VERSION}" )
 
-set(qt_build_commands)
-if (WIN32)
-  list(APPEND qt_build_commands
-    BUILD_COMMAND ${NMAKE_PATH}
-    INSTALL_COMMAND ${NMAKE_PATH} install)
-endif ()
+  MESSAGE( STATUS "Adding pre-compiled Qt-${QT_VERSION} ...")
 
-add_external_project_or_use_system(
-    qt
-    DEPENDS zlib ${qt_depends}
-    CONFIGURE_COMMAND
-      ${qt_configure_command}
-      -prefix <INSTALL_DIR>
-      -opensource
-      -release
-      -confirm-license
-      -nomake examples
-      -skip qtconnectivity
-      -skip qtlocation
-      -skip qtmultimedia
-      -skip qtquick1
-      -skip qtsensors
-      -skip qtserialport
-      -skip qtsvg
-      -skip qtwayland
-      -skip qtwebchannel
-      -skip qtwebengine
-      -skip qtwebkit
-      -skip qtwebsockets
-      -no-dbus
-      -no-openssl
-      -qt-libjpeg
-      -qt-pcre
-      -I <INSTALL_DIR>/include
-      -L <INSTALL_DIR>/lib
-      ${qt_options}
-      ${qt_EXTRA_CONFIGURATION_OPTIONS}
-    ${qt_build_commands}
-)
+  IF( NOT EXISTS "${QT_EXTRACTED_DIR}" )
+    FILE(MAKE_DIRECTORY "${QT_EXTRACTED_DIR}" )
+  ENDIF()
 
-add_extra_cmake_args(
-  -DPARAVIEW_QT_VERSION:STRING=5
-  -DQt5_DIR:PATH=<INSTALL_DIR>/lib/cmake/Qt5
-)
+  IF(WIN32)
+    SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/windows.zip" )
+  ELSEIF(APPLE)
+    SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/macos.zip" )
+  ELSE()
+    SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/linux.zip" )
+  ENDIF()
+
+  IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
+    MESSAGE( STATUS "Downloading pre-compiled Qt with open source license (see Qt site for more details)" )
+    FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 10000 STATUS STATUS_CODE SHOW_PROGRESS)
+    IF(NOT STATUS_CODE EQUAL 0)
+      MESSAGE(FATAL_ERROR "Failed to download pre-compiled packages. Status=${STATUS_CODE}")
+    ENDIF()
+
+  ENDIF()
+
+  IF( EXISTS "${FILE_TO_EXTRACT}" )
+
+    IF( NOT EXISTS "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5" )
+      MESSAGE( STATUS "Extracting pre-compiled Qt binaries" )
+      EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${FILE_TO_EXTRACT}
+        WORKING_DIRECTORY ${QT_EXTRACTED_DIR}
+        RESULT_VARIABLE RESULT_CODE
+      )
+
+      IF(NOT RESULT_CODE EQUAL 0)
+        MESSAGE( WARNING "Extracting the pre-compiled Qt binaries failed" )
+      ENDIF()
+    ENDIF()
+
+    LIST(APPEND CMAKE_PREFIX_PATH "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5")
+    LIST(APPEND CMAKE_PROGRAM_PATH  "${QT_EXTRACTED_DIR}/${QT_VERSION}/bin")
+    
+    #SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
+    
+    SET(ENV{CMAKE_PREFIX_PATH} "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5/" )
+    SET(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5/" )
+    SET(ENV{CMAKE_PROGRAM_PATH} "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/${QT_VERSION}/bin" )
+    
+    FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore)
+
+  ENDIF()
+    
+  LINK_DIRECTORIES(${QT_LIBRARY_DIR})
+  SET( Qt5_DIR ${Qt5_DIR} CACHE STRING "Qt5_DIR Path for use in other builds" FORCE )
+  SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
+  LIST(APPEND CMAKE_PREFIX_PATH "${Qt5_DIR}")
+
+ENDIF()
+# set (qt_depends)
+# set (qt_options)
+# if (APPLE)
+  # list (APPEND qt_options
+    # -sdk ${CMAKE_OSX_SDK}
+    # -qt-libpng)
+# elseif (UNIX)
+  # list (APPEND qt_depends freetype fontconfig png)
+  # list (APPEND qt_options
+    # -qt-xcb
+    # -system-libpng
+    # -I <INSTALL_DIR>/include/freetype2
+    # -I <INSTALL_DIR>/include/fontconfig)
+# endif()
+
+# if (NOT WIN32)
+  # list(APPEND qt_depends
+    # zlib)
+  # list(APPEND qt_options
+    # -no-alsa
+    # -no-pulseaudio
+    # -system-zlib)
+# else ()
+  # list(APPEND qt_options
+    # -qt-zlib)
+# endif ()
+
+# set(qt_EXTRA_CONFIGURATION_OPTIONS ""
+    # CACHE STRING "Extra arguments to be passed to Qt when configuring.")
+
+# set(qt_configure_command <SOURCE_DIR>/configure)
+# if (WIN32)
+  # set(qt_configure_command <SOURCE_DIR>/configure.bat)
+# endif ()
+
+# set(qt_build_commands)
+# if (WIN32)
+  # list(APPEND qt_build_commands
+    # BUILD_COMMAND ${NMAKE_PATH}
+    # INSTALL_COMMAND ${NMAKE_PATH} install)
+# endif ()
+
+# add_external_project_or_use_system(
+    # qt
+    # DEPENDS zlib ${qt_depends}
+    # CONFIGURE_COMMAND
+      # ${qt_configure_command}
+      # -prefix <INSTALL_DIR>
+      # -opensource
+      # -release
+      # -confirm-license
+      # -nomake examples
+      # -skip qtconnectivity
+      # -skip qtlocation
+      # -skip qtmultimedia
+      # -skip qtquick1
+      # -skip qtsensors
+      # -skip qtserialport
+      # -skip qtsvg
+      # -skip qtwayland
+      # -skip qtwebchannel
+      # -skip qtwebengine
+      # -skip qtwebkit
+      # -skip qtwebsockets
+      # -no-dbus
+      # -no-openssl
+      # -qt-libjpeg
+      # -qt-pcre
+      # -I <INSTALL_DIR>/include
+      # -L <INSTALL_DIR>/lib
+      # ${qt_options}
+      # ${qt_EXTRA_CONFIGURATION_OPTIONS}
+    # ${qt_build_commands}
+# )
+
+# add_extra_cmake_args(
+  # -DPARAVIEW_QT_VERSION:STRING=5
+  # -DQt5_DIR:PATH=<INSTALL_DIR>/lib/cmake/Qt5
+# )

@@ -1,11 +1,11 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2)
 
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/../../../cmake_modules/)
+INCLUDE( CaPTk_macros )
+
 SET( PROJECT_NAME FeatureExtraction )
 
-# Set project name 
-PROJECT( ${PROJECT_NAME} VERSION 1.6.1 LANGUAGES CXX )
-#SET( PROJECT_VERSION "1.6.1")
-ADD_DEFINITIONS(-DPROJECT_VERSION="${PROJECT_VERSION}" )
+CAPTK_ADD_PROJECT( ${PROJECT_NAME} 1.6.2 )
 
 #MESSAGE( STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}" )
 INCLUDE_DIRECTORIES( 
@@ -18,9 +18,6 @@ INCLUDE_DIRECTORIES(
 #Find libraries
 FIND_PACKAGE( ITK REQUIRED )
 INCLUDE( ${ITK_USE_FILE} )
-
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/../../../cmake_modules/)
-INCLUDE( CaPTk_macros )
 
 # For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
 SET( FeatureDefinitions "" )
@@ -42,62 +39,44 @@ ENDFOREACH()
 IF (APPLE)
   SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
 
-  SET( BATCHMODE "${PROJECT_SOURCE_DIR}/data/features/batchMode/batch_featureextraction.csv" )
+  SET( BATCHMODE "${PROJECT_SOURCE_DIR}/data/features/batchMode/batch_featureExtraction.csv" )
   SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
 
   SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
 
 ELSE()
-  INSTALL( FILES "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
+  INSTALL( FILES "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureExtraction.csv" DESTINATION share/featureExtractionBatch )
 ENDIF()
 
 SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
 ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
 
-if(APPLE)
-#  set(CMAKE_C_COMPILER "/usr/local/Cellar/llvm/6.0.1/bin/clang")
-#  set(CMAKE_CXX_COMPILER "/usr/local/Cellar/llvm/6.0.1/bin/clang++")
-#  set(OPENMP_LIBRARIES "/usr/local/Cellar/llvm/6.0.1/lib")
-#  set(OPENMP_INCLUDES "/usr/local/Cellar/llvm/6.0.1/include")
-#
-#  OPTION (USE_OpenMP "Use OpenMP to enable <omp.h>" ON)
-#
-#  # Find OpenMP
-#  if(USE_OpenMP)
-#      if(CMAKE_C_COMPILER_ID MATCHES "Clang")
-#          set(OpenMP_C "${CMAKE_C_COMPILER}")
-#          set(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
-#          set(OpenMP_C_LIB_NAMES "libomp" "libgomp" "libiomp5")
-#          set(OpenMP_libomp_LIBRARY ${OpenMP_C_LIB_NAMES})
-#          set(OpenMP_libgomp_LIBRARY ${OpenMP_C_LIB_NAMES})
-#          set(OpenMP_libiomp5_LIBRARY ${OpenMP_C_LIB_NAMES})
-#      endif()
-#      if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-#          set(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
-#          set(OpenMP_CXX_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
-#          set(OpenMP_CXX_LIB_NAMES "libomp" "libgomp" "libiomp5")
-#          set(OpenMP_libomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-#          set(OpenMP_libgomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-#          set(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-#      endif()
-#  endif()
-#
-#  if(USE_OpenMP)
-#      find_package(OpenMP REQUIRED)
-#  endif(USE_OpenMP)
-#
-#  if (OPENMP_FOUND)
-#    include_directories("${OPENMP_INCLUDES}")
-#    link_directories("${OPENMP_LIBRARIES}")
-#    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-#    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-#    # set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-#  endif(OPENMP_FOUND)
-else()
-  FIND_PACKAGE(OpenMP REQUIRED)
-  SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
-  SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
-endif()
+IF(APPLE)
+  set(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../lib")
+  set(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../../include")
+
+  MESSAGE ("${CMAKE_C_COMPILER}")
+
+  SET(OpenMP_C "${CMAKE_C_COMPILER}")
+  SET(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
+  SET(OpenMP_C_LIB_NAMES "libomp" "libgomp" "libiomp5")
+  SET(OpenMP_libomp_LIBRARY ${OpenMP_C_LIB_NAMES})
+  SET(OpenMP_libgomp_LIBRARY ${OpenMP_C_LIB_NAMES})
+  SET(OpenMP_libiomp5_LIBRARY ${OpenMP_C_LIB_NAMES})
+  SET(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
+  SET(OpenMP_CXX_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
+  SET(OpenMP_CXX_LIB_NAMES "libomp" "libgomp" "libiomp5")
+  SET(OpenMP_libomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
+  SET(OpenMP_libgomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
+  SET(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES})
+
+  INCLUDE_DIRECTORIES("${OPENMP_INCLUDES}")
+  LINK_DIRECTORIES("${OPENMP_LIBRARIES}")
+ENDIF()
+
+FIND_PACKAGE(OpenMP REQUIRED)
+SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
+SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
 
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
@@ -129,19 +108,11 @@ IF(NOT (TARGET ${LIBNAME_CBICATK}))
   
 ENDIF()
 
-CAPTK_ADD_EXECUTABLE(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.cxx "${LIBNAME_CBICATK}")
+CAPTK_ADD_EXECUTABLE(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/FeatureExtraction.cxx ${LIBNAME_CBICATK} ${ITK_LIBRARIES} ${OpenCV_LIBRARIES} )
 
 ADD_DEPENDENCIES( ${PROJECT_NAME} ${LIBNAME_CBICATK} )
 
-# Link the libraries to be used
-TARGET_LINK_LIBRARIES(
-  ${PROJECT_NAME}
-  ${LIBNAME_CBICATK}
-  ${ITK_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
-
-OPTION( BUILD_REFERENCES "Build reference executables from CBICA pipeline" OFF )
+OPTION( BUILD_REFERENCES "Build reference executables from CBIG pipeline" OFF )
 
 IF( BUILD_REFERENCES )
 
@@ -181,6 +152,7 @@ ENDIF()
 
 # For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
 SET( FeatureDefinitions "" )
+SET( FT_META_FILES_TO_INCLUDE "")
 FILE( GLOB allFeatureDefinitionFiles "${PROJECT_SOURCE_DIR}/data/*.csv" )
 FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
 
@@ -198,13 +170,13 @@ FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
   SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
 ENDFOREACH()
 
-IF (APPLE)
+IF (APPLE)  
   SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
 
-  SET( BATCHMODE "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureExtraction.csv" )
+  SET( BATCHMODE "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureextraction.csv" )
   SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
 
-  SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
+  SET(FT_META_FILES_TO_INCLUDE ${FT_META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
 
 ELSE()
   INSTALL( FILES "${PROJECT_SOURCE_DIR}/data/batchMode/batch_featureExtraction.csv" DESTINATION share/featureExtractionBatch )
@@ -212,3 +184,6 @@ ENDIF()
 
 SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
 ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
+
+SET( FEATURE_EXTRACTION_META_FILES_TO_INCLUDE "${FT_META_FILES_TO_INCLUDE}" CACHE STRING "macOS features extraction" FORCE)
+

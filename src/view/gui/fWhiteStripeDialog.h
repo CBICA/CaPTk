@@ -31,6 +31,7 @@
 #include "vtkContextView.h"
 #include "vtkContextScene.h"
 #include "vtkRenderer.h"
+#include "vtkGenericOpenGLRenderWindow.h"
 
 #include "opencv2/core/core.hpp"
 
@@ -56,7 +57,11 @@ public:
     widget.reset(new QVTKOpenGLWidget(this));
     widget->setMinimumSize(QSize(256, 256));
     m_view = vtkSmartPointer<vtkContextView>::New();
-    m_view->SetInteractor(widget->GetInteractor());
+    auto m_renWin = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+    auto m_iren = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+    m_renWin->SetInteractor(m_iren);
+    widget->SetRenderWindow(m_renWin);
+    m_view->SetInteractor(widget->GetInteractor()); // crash is happening here with reference to QVTKOpenGLWidget
     widget->SetRenderWindow(m_view->GetRenderWindow());
     m_view->GetRenderer()->SetBackground(0.3, 0.3, 0.3);
     m_view->GetInteractor()->Initialize();

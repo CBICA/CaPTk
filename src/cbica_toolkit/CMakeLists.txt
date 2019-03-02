@@ -20,8 +20,18 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/include/ 
 )
   
+SET( CACHED_INCLUDE_DIRS 
+  ${CACHED_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/src/
+  ${PROJECT_SOURCE_DIR}/../thirdparty/
+  ${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/include/ 
+  CACHE STRING "All include directories"
+)
+  
+
 SET( LIBNAME_CBICATK "${PROJECT_NAME}" CACHE STRING "CaPTk's common toolkit for use throughout the project" )
 MARK_AS_ADVANCED( ${LIBNAME_CBICATK} )
+
 IF(NOT (TARGET ${LIBNAME_CBICATK}))
   
   ADD_LIBRARY(
@@ -34,8 +44,10 @@ IF(NOT (TARGET ${LIBNAME_CBICATK}))
   TARGET_LINK_LIBRARIES(
     ${LIBNAME_CBICATK}
     ${DEPENDENT_LIBS}
+    CaPTk_IO
   )
   
 ENDIF()
+
 
 MARK_AS_ADVANCED(CBICA-TK_SOURCES)
