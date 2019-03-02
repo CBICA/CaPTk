@@ -1461,7 +1461,9 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     else if (!bFirstLoad)
     {
       {
-        auto imageInfoPrev = cbica::ImageInfo(mSlicerManagers[0]->GetPathFileName());
+        auto temp = cbica::normPath(m_tempFolderLocation + "/temp.nii.gz");
+        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp);
+        auto imageInfoPrev = cbica::ImageInfo(temp);
         auto sizePrev = imageInfoPrev.GetImageSize();
         auto size = imageInfo.GetImageSize();
         const std::string errorMsg = " not matching. Please register the image(s). Skipping file: ";
@@ -4121,11 +4123,15 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
   {
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
-      ctImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
-      petImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      petImageFile = temp;
     }
     else
     {
@@ -5193,11 +5199,15 @@ void fMainWindow::ApplicationSBRTLungField()
   {
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
-      ctImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
-      petImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      petImageFile = temp;
     }
     else
     {
@@ -5328,11 +5338,15 @@ void fMainWindow::ApplicationSBRTAnalysis()
   {
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
-      ctImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
-      petImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      petImageFile = temp;
     }
     else
     {
@@ -6439,17 +6453,33 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     switch (mSlicerManagers[i]->mImageSubType)
     {
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1CE:
-      file_t1ce = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/t1ce.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_t1ce = temp;
       break;
+    }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1:
-      file_t1 = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/t1.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_t1 = temp;
       break;
+    }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2:
-      file_t2 = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/t2.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_t2 = temp;
       break;
+    }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR:
-      file_flair = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/flair.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_flair = temp;
       break;
+    }
     default:
       ShowErrorMessage("DeepMedic needs the following images to work: T1CE, T1, T2, FLAIR", this);
       break;
