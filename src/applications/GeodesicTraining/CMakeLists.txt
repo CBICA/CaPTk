@@ -1,14 +1,11 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/../../../cmake_modules/)
+INCLUDE( CaPTk_macros )
+
 SET( PROJECT_NAME GeodesicTrainingCaPTk )
 
-# This cmake file is here because there were problems
-# adding the GeodesicTraining cmake file directly
-
-# Set project name 
-PROJECT( ${PROJECT_NAME} )
-SET( PROJECT_VERSION "0.12")
-ADD_DEFINITIONS(-DPROJECT_VERSION="${PROJECT_VERSION}" )
+CAPTK_ADD_PROJECT( ${PROJECT_NAME} 1.6.2 )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
