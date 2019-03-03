@@ -473,7 +473,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
   SET_TARGET_PROPERTIES( GeodesicTraining      PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-  SET_TARGET_PROPERTIES( GeodesicTrainingCaPTk PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
   # include dependencies
   # add source code include directories
@@ -764,7 +763,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${LIBNAME_CBICATK} 
     ${LIBNAME_Applications} 
     ${LIBNAME_FeatureExtractor} 
-    ${GeodesicTrainingCaPTk}
   )
 
   # find stand-alone CMD applications
@@ -1028,7 +1026,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     TARGET_LINK_LIBRARIES( ${EXE_NAME}
       ${DEPENDENT_LIBS}
-      GeodesicTrainingCaPTk
       CaPTk_GUI
       CaPTk_Common
       ${LIBNAME_Applications}

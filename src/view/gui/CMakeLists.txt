@@ -69,6 +69,8 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/ASyncAppManager.h"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
+  ${GEODESIC_TRAINING_CAPTK_HEADERS}
+  ${GEODESIC_TRAINING_CAPTK_SOURCES}
   #"${CMAKE_CURRENT_SOURCE_DIR}/ApplicationBase.h"
   #"${CMAKE_CURRENT_SOURCE_DIR}/NearFarDrawingManager.h"
   #"${CMAKE_CURRENT_SOURCE_DIR}/NearFarDrawingManager.cpp"
