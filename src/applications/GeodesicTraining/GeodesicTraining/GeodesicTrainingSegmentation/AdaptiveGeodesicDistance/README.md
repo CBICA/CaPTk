@@ -1,1 +1,0 @@
-# Adaptive Geodesic Distance Algorithm for Medical Image Segmentation

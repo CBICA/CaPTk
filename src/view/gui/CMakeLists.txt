@@ -134,7 +134,6 @@ INCLUDE_DIRECTORIES( ${CaPTk_SOURCE_DIR}/src
   ${CaPTk_SOURCE_DIR}/src/applications/WhiteStripe_includes
   ${CaPTk_SOURCE_DIR}/src/common/inc
   ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends
-  ${GEODESIC_TRAINING_INCLUDE_DIRS}
   ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
   #${CMAKE_CURRENT_SOURCE_DIR}/inc
   #${VTK_INCLUDE_DIRS} 
@@ -147,9 +146,9 @@ ADD_LIBRARY(
 )
 
 TARGET_LINK_LIBRARIES(
-  ${GeodesicTrainingCaPTk}
-  #${LIBNAME_GUI}
   ${PROJECT_NAME}
+  #${LIBNAME_GUI}
+  GeodesicTrainingCaPTkLib
   ${DEPENDENT_LIBS}
   ${LIBNAME_CBICATK}
   ${LIBNAME_FeatureExtractor}
