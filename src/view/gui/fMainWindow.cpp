@@ -5943,7 +5943,7 @@ void fMainWindow::ApplicationITKSNAP()
 }
 #endif
 
-#ifdef BUILD_GEODESICTRAINING
+#ifndef BUILD_GEODESICTRAINING
 void fMainWindow::ApplicationGeodesicTraining()
 {
   // 2D

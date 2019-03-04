@@ -14,7 +14,8 @@ set(CMAKE_AUTOMOC ON)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
-# Library dependencies
+
+# --------- Library dependencies ---------
 
 # For ITK
 FIND_PACKAGE( ITK REQUIRED )
@@ -30,12 +31,17 @@ FIND_PACKAGE(OpenMP REQUIRED)
 SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
 SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
 
-# Source dependencies
+FIND_PACKAGE( Qt5 COMPONENTS Core )
+
+# --------- Source code dependencies ---------
+
 FILE( GLOB_RECURSE CBICA_TOOLKIT_HEADERS
   "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/*.h"
+  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc/*.h"
 )
 FILE( GLOB_RECURSE CBICA_TOOLKIT_SOURCES
   "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/*cpp"
+  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/src/*.cpp"
 )
 FILE( GLOB_RECURSE YAML_HEADERS
   "${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/include/yaml-cpp/*.*"
@@ -44,28 +50,15 @@ FILE( GLOB_RECURSE YAML_SOURCES
   "${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/src/*.*"
 )
 
-# Setting the files
+
+# --------- Setting the project files ---------
 
 FILE( GLOB_RECURSE GEODESIC_TRAINING_HEADERS
-  include/*.h
-  CACHE INTERNAL ""
+  ${PROJECT_SOURCE_DIR}/include/*.h
 )
 
 FILE( GLOB_RECURSE GEODESIC_TRAINING_SOURCES
-  include/*.cpp
-  CACHE INTERNAL ""
-)
-
-FILE( GLOB_RECURSE GEODESIC_TRAINING_CAPTK_HEADERS
-  include/*.h
-  GeodesicTrainingCaPTkApp.h
-  CACHE INTERNAL ""
-)
-
-FILE( GLOB_RECURSE GEODESIC_TRAINING_CAPTK_SOURCES
-  include/*.cpp
-  GeodesicTrainingCaPTkApp.cpp
-  CACHE INTERNAL ""
+  ${PROJECT_SOURCE_DIR}/include/*.cpp
 )
 
 SET( GEODESIC_TRAINING_INCLUDE_DIRS 
@@ -73,8 +66,32 @@ SET( GEODESIC_TRAINING_INCLUDE_DIRS
   ${CMAKE_SOURCE_DIR}/src/applications/GeodesicTraining/include
   ${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/include/yaml-cpp
   ${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src
-  CACHE INTERNAL ""
+  ${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
 )
+
+
+# --------- For the library ---------
+
+ADD_LIBRARY( GeodesicTrainingCaPTkLib
+  GeodesicTrainingCaPTkApp.cpp
+  ${GEODESIC_TRAINING_SOURCES}
+  ${CBICA_TOOLKIT_SOURCES}
+  ${YAML_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES( GeodesicTrainingCaPTkLib
+  ${ITK_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+
+qt5_use_modules( GeodesicTrainingCaPTkLib Core )
+
+TARGET_INCLUDE_DIRECTORIES( GeodesicTrainingCaPTkLib PUBLIC
+  ${GEODESIC_TRAINING_INCLUDE_DIRS}
+)
+
+
+# --------- For the executable ---------
 
 SET( GEODESIC_TRAINING_EXE_FILES
   GeodesicTraining.cxx
@@ -89,10 +106,8 @@ SET( GEODESIC_TRAINING_EXE_FILES
 SET( GEODESIC_TRAINING_EXE_LIBS
   ${ITK_LIBRARIES}
   ${OpenCV_LIBRARIES}
-  ${LIBNAME_CBICATK}
 )
 
-# Add sources to executable
 CAPTK_ADD_EXECUTABLE( GeodesicTraining
   ${GEODESIC_TRAINING_EXE_FILES}
   ${GEODESIC_TRAINING_EXE_LIBS}
