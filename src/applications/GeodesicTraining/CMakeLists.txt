@@ -14,15 +14,12 @@ set(CMAKE_AUTOMOC ON)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
-<<<<<<< HEAD
 INCLUDE_DIRECTORIES( 
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/ 
   ${PROJECT_SOURCE_DIR}/../../thirdparty/
   ${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/include/ 
 )
-=======
->>>>>>> ad6aaf5d7aa853d0faac767f31b8d4b6b6687022
 
 # --------- Library dependencies ---------
 
@@ -45,7 +42,6 @@ FIND_PACKAGE( Qt5 COMPONENTS Core )
 # --------- Source code dependencies ---------
 
 FILE( GLOB_RECURSE CBICA_TOOLKIT_HEADERS
-<<<<<<< HEAD
   "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/*.h"
   "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/IO/inc/*.h"
 )
@@ -58,20 +54,6 @@ FILE( GLOB_RECURSE YAML_HEADERS
 )
 FILE( GLOB_RECURSE YAML_SOURCES
   "${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/src/*.*"
-=======
-  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/*.h"
-  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc/*.h"
-)
-FILE( GLOB_RECURSE CBICA_TOOLKIT_SOURCES
-  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/*cpp"
-  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/src/*.cpp"
-)
-FILE( GLOB_RECURSE YAML_HEADERS
-  "${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/include/yaml-cpp/*.*"
-)
-FILE( GLOB_RECURSE YAML_SOURCES
-  "${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/src/*.*"
->>>>>>> ad6aaf5d7aa853d0faac767f31b8d4b6b6687022
 )
 
 
@@ -86,19 +68,11 @@ FILE( GLOB_RECURSE GEODESIC_TRAINING_SOURCES
 )
 
 SET( GEODESIC_TRAINING_INCLUDE_DIRS 
-<<<<<<< HEAD
   ${PROJECT_SOURCE_DIR}
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_SOURCE_DIR}/../../thirdparty/thirdparty/yaml-cpp/include/yaml-cpp
   ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src
   ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/IO/inc
-=======
-  ${CMAKE_SOURCE_DIR}/src/applications/GeodesicTraining
-  ${CMAKE_SOURCE_DIR}/src/applications/GeodesicTraining/include
-  ${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/include/yaml-cpp
-  ${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src
-  ${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
->>>>>>> ad6aaf5d7aa853d0faac767f31b8d4b6b6687022
 )
 
 
@@ -140,14 +114,7 @@ SET( GEODESIC_TRAINING_EXE_LIBS
   ${OpenCV_LIBRARIES}
 )
 
-<<<<<<< HEAD
-# CAPTK_ADD_EXECUTABLE( GeodesicTraining
-#   ${GEODESIC_TRAINING_EXE_FILES}
-#   ${GEODESIC_TRAINING_EXE_LIBS}
-# )
-=======
 #CAPTK_ADD_EXECUTABLE( GeodesicTraining
 #  ${GEODESIC_TRAINING_EXE_FILES}
 #  ${GEODESIC_TRAINING_EXE_LIBS}
 #)
->>>>>>> ad6aaf5d7aa853d0faac767f31b8d4b6b6687022
