@@ -815,6 +815,25 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
   mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
 
 
+  //remove the nan values
+  for (unsigned int index1 = 0; index1 < scaledFeatureSet.Rows(); index1++)
+  {
+    for (unsigned int index2 = 0; index2 < scaledFeatureSet.Cols(); index2++)
+    {
+      if (std::isnan(scaledFeatureSet[index1][index2]))
+        scaledFeatureSet[index1][index2] = 0;
+    }
+  }
+  for (unsigned int index1 = 0; index1 < meanVector.Size(); index1++)
+  {
+    if (std::isnan(meanVector[index1]))
+      meanVector[index1] = 0;
+    if (std::isnan(stdVector[index1]))
+      stdVector[index1] = 0;
+  }
+
+
+
   std::ofstream myfile;
   myfile.open(outputdirectory + "/scaled_feature_set.csv");
   for (unsigned int index1 = 0; index1 < scaledFeatureSet.Rows(); index1++)
@@ -950,6 +969,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   for (int featureNo = 15; featureNo < std::get<2>(FoldingDataMap[0]).Cols(); featureNo++)
   {
     std::cout << featureNo << std::endl;
+
     VariableSizeMatrixType reducedFeatureSet;
     reducedFeatureSet.SetSize(std::get<1>(FoldingDataMap[0]).size(), featureNo + 1);
 
@@ -1118,7 +1138,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
 
 
-  myfile.open(outputfolder + "/predicted_distances222.csv");
+  myfile.open(outputfolder + "/predicted_distances.csv");
   for (unsigned int index1 = 0; index1 < predictedDistances.size(); index1++)
     myfile << std::to_string(predictedDistances[index1]) + "," + std::to_string(std::get<4>(FoldingDataMap[0])[index1]) + "\n";
   myfile.close();
