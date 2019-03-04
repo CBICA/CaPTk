@@ -117,16 +117,18 @@ int main(int argc, char** argv)
     }
   }
 
-  if (parser.isPresent("u"))
+  if (parser.isPresent("u", false))
   {
     parser.echoUsage();
     echoCWLFiles(cwlFiles);
+    return EXIT_SUCCESS;
   }
 
-  if (parser.isPresent("h"))
+  if (parser.isPresent("h", false))
   {
     parser.echoHelp();
     echoCWLFiles(cwlFiles);
+    return EXIT_SUCCESS;
   }
 
   if (parser.isPresent("i"))

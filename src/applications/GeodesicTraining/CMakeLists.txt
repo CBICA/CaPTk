@@ -14,6 +14,12 @@ set(CMAKE_AUTOMOC ON)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
+INCLUDE_DIRECTORIES( 
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/ 
+  ${PROJECT_SOURCE_DIR}/../../thirdparty/
+  ${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/include/ 
+)
 
 # --------- Library dependencies ---------
 
@@ -36,18 +42,18 @@ FIND_PACKAGE( Qt5 COMPONENTS Core )
 # --------- Source code dependencies ---------
 
 FILE( GLOB_RECURSE CBICA_TOOLKIT_HEADERS
-  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/*.h"
-  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc/*.h"
+  "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/*.h"
+  "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/IO/inc/*.h"
 )
 FILE( GLOB_RECURSE CBICA_TOOLKIT_SOURCES
-  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/*cpp"
-  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/src/*.cpp"
+  "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/*.cpp"
+  "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/IO/src/*.cpp"
 )
 FILE( GLOB_RECURSE YAML_HEADERS
-  "${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/include/yaml-cpp/*.*"
+  "${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/include/yaml-cpp/*.*"
 )
 FILE( GLOB_RECURSE YAML_SOURCES
-  "${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/src/*.*"
+  "${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/src/*.*"
 )
 
 
@@ -62,11 +68,11 @@ FILE( GLOB_RECURSE GEODESIC_TRAINING_SOURCES
 )
 
 SET( GEODESIC_TRAINING_INCLUDE_DIRS 
-  ${CMAKE_SOURCE_DIR}/src/applications/GeodesicTraining
-  ${CMAKE_SOURCE_DIR}/src/applications/GeodesicTraining/include
-  ${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/include/yaml-cpp
-  ${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src
-  ${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/../../thirdparty/thirdparty/yaml-cpp/include/yaml-cpp
+  ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src
+  ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/IO/inc
 )
 
 
