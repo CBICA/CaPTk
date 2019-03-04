@@ -1466,9 +1466,13 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         {
           m_resamplingResolution = std::atof(currentValue.c_str());
         }
-        else if (outer_key == ParamsString[ResamplingInterpolator])
+        else if (outer_key == ParamsString[ResamplingInterpolator_Image])
         {
-          m_resamplingInterpolator = currentValue;
+          m_resamplingInterpolator_Image = currentValue;
+        }
+        else if (outer_key == ParamsString[ResamplingInterpolator_Mask])
+        {
+        m_resamplingInterpolator_Mask = currentValue;
         }
         else if (outer_key == ParamsString[LBPStyle])
         {
@@ -2082,13 +2086,16 @@ void FeatureExtraction< TImage >::Update()
       {
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
-          m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator);
+          m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator_Image);
         }
-        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator);
-        auto roundingFilter = itk::RoundImageFilter< TImage, TImage >::New();
-        roundingFilter->SetInput(m_Mask);
-        roundingFilter->Update();
-        m_Mask = roundingFilter->GetOutput();
+        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator_Mask);
+        if (m_resamplingInterpolator_Mask.find("Nearest") == std::string::npos)
+        {
+          auto roundingFilter = itk::RoundImageFilter< TImage, TImage >::New();
+          roundingFilter->SetInput(m_Mask);
+          roundingFilter->Update();
+          m_Mask = roundingFilter->GetOutput();
+        }
       }
 
       if (m_debug)
