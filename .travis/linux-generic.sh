@@ -191,15 +191,12 @@ bash ../scripts/linux-cmake-conf
 # Make
 echo "[:] Building CaPTk..."
 make -j2
-<<<<<<< HEAD
-=======
 
 ls ./src/applications/FeatureExtraction/
 
 cp FeatureExtraction.cwl ./src/applications/FeatureExtraction/
 
 make -j2 install/strip
->>>>>>> ad6aaf5d7aa853d0faac767f31b8d4b6b6687022
 
 # # Fix
 # cd install
