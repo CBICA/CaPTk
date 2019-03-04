@@ -743,7 +743,7 @@ signals:
   \param outputImageFile The output file to save 
   */
   void CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask, const std::string inputImageFile, const std::string outputImageFile);
-  void CallPCACalculation(const int, const std::string outputFolder);
+  void CallPCACalculation(const int, const std::string inputFolder, const std::string outputFolder);
   void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
   void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
   void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int, int, int);
@@ -1200,6 +1200,7 @@ signals:
   void MoveSlicerCursor(double x, double y, double z, int mode = 0);
 
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForSurvival (const std::string directoryname);
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useConventionalData, const bool &useDTIData, const bool &usePerfData, const bool &useDistData);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForRecurrence(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useT1Data, const bool &useDTIData, const bool &usePerfData, const bool &useDistData);
   /**

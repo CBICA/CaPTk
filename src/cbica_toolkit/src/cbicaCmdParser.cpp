@@ -397,7 +397,7 @@ namespace cbica
   void CmdParser::initializeClass(int &input_argc, std::vector< std::string > &input_argv, const std::string &input_exeName)
   {
 #ifdef PROJECT_VERSION
-    m_version = PROJECT_VERSION;
+    m_version = std::string(PROJECT_VERSION);
 #else
     m_version = 0.1.0;
 #endif    

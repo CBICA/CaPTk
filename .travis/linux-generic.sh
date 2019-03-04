@@ -9,7 +9,7 @@ set -e
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CMAKE_CMD () {
-  cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF ..
+  cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
 }
 
 # Run the fixes for linux
@@ -191,6 +191,15 @@ bash ../scripts/linux-cmake-conf
 # Make
 echo "[:] Building CaPTk..."
 make -j2
+<<<<<<< HEAD
+=======
+
+ls ./src/applications/FeatureExtraction/
+
+cp FeatureExtraction.cwl ./src/applications/FeatureExtraction/
+
+make -j2 install/strip
+>>>>>>> ad6aaf5d7aa853d0faac767f31b8d4b6b6687022
 
 # # Fix
 # cd install

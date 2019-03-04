@@ -9,6 +9,10 @@ before_cache:
   - ls '/home/travis/.ccache'
 
 cache: ccache
+  #ccache: true
+  #directories:
+  #- $HOME/.ccache
+  #- $TRAVIS_BUILD_DIR
 #cache:
 #  directories:
 #    - $TRAVIS_BUILD_DIR
@@ -49,6 +53,9 @@ matrix:
   fast_finish: true
   # Allow failures for specific platforms
   allow_failures:
+    #- os: linux
+    #  dist: xenial
+    #- os: osx
     - os: linux
       dist: trusty
     - os: windows

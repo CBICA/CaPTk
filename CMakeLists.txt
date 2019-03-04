@@ -472,7 +472,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   
   SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
-  # SET_TARGET_PROPERTIES( GeodesicTraining      PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+  #SET_TARGET_PROPERTIES( GeodesicTraining      PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
   # include dependencies
   # add source code include directories
@@ -484,7 +484,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
     ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/
-    ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/include
+    ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/include/
     ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/
     ${PROJECT_SOURCE_DIR}/src/common/inc/
     ${PROJECT_SOURCE_DIR}/src/view/gui/
