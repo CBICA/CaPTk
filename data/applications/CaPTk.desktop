@@ -2,6 +2,6 @@
 Type=Application
 Name=CaPTk
 Comment=Linux CaPTk
-Exec=CaPTk
+Exec=linux-wrapper
 Icon=CaPTk
 Categories=Office;

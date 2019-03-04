@@ -5,8 +5,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2)
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
 IF(CCACHE_FOUND)
-  #SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-  #SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
   SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 ENDIF(CCACHE_FOUND)
 
@@ -29,6 +29,50 @@ CMAKE_POLICY(SET CMP0025 NEW) # only with CMake 3
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES)
 
+# set project name. The exe name is taken from this
+PROJECT( CaPTk )
+SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
+SET (PROJECT_VERSION_MAJOR 1 )
+SET (PROJECT_VERSION_MINOR 6 )
+SET (PROJECT_VERSION_PATCH 2.Alpha )
+#SET (SVN_REVISION "${SVN_REVISION}")
+
+OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
+SET( QT_VERSION "5.12.1" CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
+
+IF( CAPTK_SUPERBUILD_FORCE )
+
+  PROJECT(${PROJECT_NAME}_Depends)
+  INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
+  return()
+
+ELSE()
+  FIND_PACKAGE(ITK)
+  
+  IF(NOT EXISTS ${ITK_USE_FILE})
+    MESSAGE( STATUS "=== [DEBUG] PROJECT_BIN_DIR=${PROJECT_BINARY_DIR}" )
+    IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
+
+      OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
+      IF( CAPTK_SUPERBUILD )
+        PROJECT(${PROJECT_NAME}_Depends)
+        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
+        return()
+      ENDIF()
+
+    ENDIF()
+  ENDIF()
+    
+  IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
+    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build/;${PROJECT_BINARY_DIR}/OpenCV-build/;${PROJECT_BINARY_DIR}/VTK-build" )
+    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build/")
+    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/VTK-build/")
+    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/OpenCV-build/")
+    SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
+    MESSAGE( STATUS "=== [DEBUG] CMAKE_PREFIX_PATH=$ENV{CMAKE_PREFIX_PATH}" )
+  ENDIF()
+ENDIF()
+
 #INCLUDE(FindSubversion)
 #IF(Subversion_FOUND) 
 #  IF(EXISTS "${CMAKE_SOURCE_DIR}/../../.svn")
@@ -46,14 +90,6 @@ SET(CMAKE_CXX_STANDARD_REQUIRED YES)
 #ELSE(Subversion_FOUND)
 #  SET(SVN_REVISION "-1")
 #ENDIF(Subversion_FOUND) 
-
-# set project name. The exe name is taken from this
-PROJECT( CaPTk )
-SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
-SET (PROJECT_VERSION_MAJOR 1 )
-SET (PROJECT_VERSION_MINOR 6 )
-SET (PROJECT_VERSION_PATCH 2.PreAlpha )
-#SET (SVN_REVISION "${SVN_REVISION}")
 
 IF (APPLE)
   SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
@@ -197,28 +233,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ### third party library processing
   # find and include all third party libraries
   SUBDIRLIST(SUBDIRECTORIES ${THIRDPARTY_LIB_PATH})
-  FIND_PACKAGE(ITK)
-  SET( QT_VERSION "5.12.1" CACHE STRING "Qt version to build CaPTk against" FORCE )
-  IF(NOT EXISTS ${ITK_USE_FILE})
-
-    IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-
-      OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
-      IF( CAPTK_SUPERBUILD )
-        PROJECT(${PROJECT_NAME}_Depends)
-        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
-        return()
-      ENDIF()
-
-    ENDIF()
-  ENDIF()
-    
-  IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build/;${PROJECT_BINARY_DIR}/OpenCV-build/" )
-    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build/")
-    SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
-  ENDIF()
-
+  
   FIND_PACKAGE( ITK REQUIRED )
   #FIND_PACKAGE( ITK REQUIRED )
   INCLUDE("${ITK_USE_FILE}")
@@ -457,8 +472,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   
   SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
-  SET_TARGET_PROPERTIES( GeodesicTraining      PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-  SET_TARGET_PROPERTIES( GeodesicTrainingCaPTk PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+  # SET_TARGET_PROPERTIES( GeodesicTraining      PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
   # include dependencies
   # add source code include directories
@@ -469,10 +483,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
+    ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/
+    ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/include
     ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/
     ${PROJECT_SOURCE_DIR}/src/common/inc/
     ${PROJECT_SOURCE_DIR}/src/view/gui/
     ${APPLICATION_INCLUDES}
+    ${CACHED_INCLUDE_DIRS}
   )
   
   INCLUDE_DIRECTORIES( 
@@ -748,7 +765,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${LIBNAME_CBICATK} 
     ${LIBNAME_Applications} 
     ${LIBNAME_FeatureExtractor} 
-    ${GeodesicTrainingCaPTk}
   )
 
   # find stand-alone CMD applications
@@ -1012,7 +1028,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     TARGET_LINK_LIBRARIES( ${EXE_NAME}
       ${DEPENDENT_LIBS}
-      GeodesicTrainingCaPTk
       CaPTk_GUI
       CaPTk_Common
       ${LIBNAME_Applications}
