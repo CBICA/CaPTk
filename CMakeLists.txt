@@ -472,8 +472,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   
   SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
 
-  SET_TARGET_PROPERTIES( GeodesicTraining      PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-
   # include dependencies
   # add source code include directories
   INCLUDE_DIRECTORIES(
