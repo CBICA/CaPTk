@@ -108,3 +108,55 @@ MACRO( CAPTK_ADD_PROJECT NEW_PROJECT_NAME NEW_PROJECT_VERSION )
   ENDIF()  
   
 ENDMACRO()
+
+# macro to handle initial setup of projects (no library dependency management)
+MACRO( CAPTK_INITIAL_SETUP )
+
+FIND_PACKAGE( ITK REQUIRED )
+INCLUDE( ${ITK_USE_FILE} )
+
+SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
+SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
+
+SET( CACHED_INCLUDE_DIRS
+  ${CACHED_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/src/
+  ${PROJECT_SOURCE_DIR}/src/depends/
+  CACHE STRING "All include directories" FORCE
+)
+#MESSAGE( STATUS "[DEBUG] CACHED_INCLUDE_DIRS@Macro: ${CACHED_INCLUDE_DIRS}" )
+
+FILE( GLOB_RECURSE CURRENT_APPLICATION_DEPENDS "${PROJECT_SOURCE_DIR}/src/depends/" )
+
+  IF(APPLE)
+    SET(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../lib")
+    SET(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../../include")
+    
+    MESSAGE ("${CMAKE_C_COMPILER}")
+    
+    SET(OpenMP_C "${CMAKE_C_COMPILER}")
+    SET(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
+    SET(OpenMP_C_LIB_NAMES "libomp" "libgomp" "libiomp5")
+    SET(OpenMP_libomp_LIBRARY ${OpenMP_C_LIB_NAMES})
+    SET(OpenMP_libgomp_LIBRARY ${OpenMP_C_LIB_NAMES})
+    SET(OpenMP_libiomp5_LIBRARY ${OpenMP_C_LIB_NAMES})
+    SET(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
+    SET(OpenMP_CXX_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
+    SET(OpenMP_CXX_LIB_NAMES "libomp" "libgomp" "libiomp5")
+    SET(OpenMP_libomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
+    SET(OpenMP_libgomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
+    SET(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES})
+    
+    INCLUDE_DIRECTORIES("${OPENMP_INCLUDES}")
+    LINK_DIRECTORIES("${OPENMP_LIBRARIES}")
+
+  ELSE()
+
+    FIND_PACKAGE(OpenMP REQUIRED)
+    SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
+    SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
+
+  ENDIF()
+  
+ENDMACRO()
