@@ -45,10 +45,10 @@ FILE( GLOB_RECURSE CBICA_TOOLKIT_SOURCES
   "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/src/*.cpp"
 )
 FILE( GLOB_RECURSE YAML_HEADERS
-  "${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/include/*.*"
+  "${CMAKE_SOURCE_DIR}/src/thirdparty/yaml-cpp/include/yaml-cpp/*.*"
 )
 FILE( GLOB_RECURSE YAML_SOURCES
-  "${CMAKE_SOURCE_DIR}/src/thirdparty/thirdparty/yaml-cpp/src/*.*"
+  "${CMAKE_SOURCE_DIR}/src/thirdparty/yaml-cpp/src/*.*"
 )
 
 
@@ -74,10 +74,10 @@ SET( GEODESIC_TRAINING_INCLUDE_DIRS
 # --------- For the executable ---------
 
 SET( GEODESIC_TRAINING_EXE_FILES
-  #${CBICA_TOOLKIT_HEADERS}
-  ${CBICA_TOOLKIT_SOURCES}  
-  #${YAML_HEADERS}
+  ${YAML_HEADERS}
   ${YAML_SOURCES}
+  ${CBICA_TOOLKIT_HEADERS}
+  ${CBICA_TOOLKIT_SOURCES}  
   GeodesicTraining.cxx
   ${GEODESIC_TRAINING_HEADERS}
   ${GEODESIC_TRAINING_SOURCES}
@@ -124,7 +124,7 @@ ELSE()
     )
 ENDIF()
 
-ADD_TEST( NAME GeodesicTraining_rt COMMAND GeodesicTraining -rt )
+#ADD_TEST( NAME GeodesicTraining_rt COMMAND GeodesicTraining -rt )
 
 CWL_INSTALL( GeodesicTraining )
 
@@ -132,9 +132,12 @@ CWL_INSTALL( GeodesicTraining )
 
 ADD_LIBRARY( GeodesicTrainingCaPTkLib
   GeodesicTrainingCaPTkApp.cpp
+  ${YAML_HEADERS}
+  ${YAML_SOURCES}  
+  ${CBICA_TOOLKIT_HEADERS}
+  ${CBICA_TOOLKIT_SOURCES}  
+  ${GEODESIC_TRAINING_HEADERS}
   ${GEODESIC_TRAINING_SOURCES}
-  ${CBICA_TOOLKIT_SOURCES}
-  ${YAML_SOURCES}
 )
 
 TARGET_LINK_LIBRARIES( GeodesicTrainingCaPTkLib
