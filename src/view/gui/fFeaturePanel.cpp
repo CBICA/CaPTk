@@ -212,6 +212,29 @@ void fFeaturePanel::computeFeature(int type)
   auto featureMap = m_FeatureMaps[type];
   auto selectedFeatures = getEnabledFeatures();
 
+  // check for resampling rate
+  for (auto &currentFeature : featureMap) // iterating over the feature families, i.e., GLCM, Intensity, ...
+  {
+    auto selectedFeatureFlagStruct = selectedFeatures.find(currentFeature.first); // this is to check for user input in UI (if selected or not)
+
+    if (selectedFeatureFlagStruct->first.find("Generic") != std::string::npos)
+    {
+      for (size_t j = 0; j < currentFeature.second.size(); j++)
+      {
+        for (auto &currentFeature_Parameter : currentFeature.second[j]) // each parameter within the feature family
+        {
+          if (currentFeature_Parameter.first != "ParamName")
+          {
+            //currentFeature_ParamsAndVals[currentFeature_Parameter.first] = currentFeature_Parameter.second;
+          }
+          else
+          {
+            //paramName = currentFeature_Parameter.second;
+          }
+        }
+      }
+    }
+  }
   std::string feature_selected;
 
   ((fMainWindow*)m_listener)->updateProgress(30, "Calculating and exporting features", images.size());
