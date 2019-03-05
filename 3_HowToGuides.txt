@@ -470,7 +470,7 @@ References:
 
 /**
 \page Glioblastoma_WhiteStripe Brain Cancer: WhiteStripe Normalization
-This algorithm normalizes conventional brain MRI scans [1] by detecting a latent subdistribution of normal tissue and linearly scaling the histogram of images.
+This algorithm normalizes conventional brain MRI scans [1] by detecting a latent subdistribution of normal tissue and linearly scaling the histogram of images. It is to be used on structural modalities only.
 
 <b>REQUIREMENTS:</b>
 	- Bias-corrected (N3 or N4) T1-weighted or T2-weighted images, ideally either skull-stripped or rigidly aligned to MNI space.
@@ -478,6 +478,7 @@ This algorithm normalizes conventional brain MRI scans [1] by detecting a latent
 <b>USAGE:</b>
 	-# Launch the WhiteStripe UI using the 'Applications -> WhiteStripe Normalization' menu option.
 	-# Specify the Input and Output files and different parameters (defaults are populated).
+  -# For T1-Gd images, use the "T1" option and for T2-FLAIR images, use the "T2" option.
 	-# Click on 'Run WhiteStripe" and the results can be seen in a slice format using "Toggle Mask/Image" checkbox.
 	-# Use 'Level Display' when needed.
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
