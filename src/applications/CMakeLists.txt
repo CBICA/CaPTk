@@ -59,7 +59,10 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}/FeatureExtraction/src 
   ${CMAKE_CURRENT_SOURCE_DIR}/Preprocessing/src/depends
   ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/src/depends
+  ${GEODESIC_TRAINING_INCLUDE_DIRS}
 )
+
+SET( INCLUDES ${INCLUDES} ${GEODESIC_TRAINING_INCLUDE_DIRS})
 
 SET(PREPROCESSING_ALGOS "DCM2NIfTI Denoise-SUSAN Register BiasCorrect-N3 HistogramMatching SkullStripping" CACHE STRING "All Preprocessing algorithms available")
 
