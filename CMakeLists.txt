@@ -440,6 +440,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   # include dependencies
   # add source code include directories
   INCLUDE_DIRECTORIES(
+    ${CACHED_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/src/
     ${PROJECT_SOURCE_DIR}/src/applications/
     ${PROJECT_SOURCE_DIR}/src/applications/common_includes/
@@ -447,6 +448,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
     ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/
+    ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
     ${PROJECT_SOURCE_DIR}/src/common/inc/
     ${PROJECT_SOURCE_DIR}/src/view/gui/
     ${APPLICATION_INCLUDES}
@@ -710,7 +712,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET_TARGET_PROPERTIES( ${LIBNAME_CBICATK} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( CaPTk_GUI PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( CaPTk_Common PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
-  SET_TARGET_PROPERTIES( CaPTk_IO PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  #SET_TARGET_PROPERTIES( CaPTk_IO PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
   SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )

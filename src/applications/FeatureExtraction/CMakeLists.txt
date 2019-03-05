@@ -13,6 +13,7 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/ 
   ${PROJECT_SOURCE_DIR}/../../thirdparty/
   ${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/include/ 
+  ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/IO/inc
 )
 
 #Find libraries

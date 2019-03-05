@@ -877,7 +877,7 @@ signals:
   /**
   \brief Open Dicom image functionality. Shows dialog to select Dicom files
   */
-  void openDicomImages();
+  void openDicomImages(QString dir);
 
   /**
   \brief Function called when the sliders of axial view is changed

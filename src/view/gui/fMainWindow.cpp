@@ -56,7 +56,7 @@
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkLookupTable.h"
 
-#include "DicomSeriesReader.h"
+//#include "DicomSeriesReader.h"
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
@@ -507,7 +507,7 @@ fMainWindow::fMainWindow()
 
   connect(actionLoad_Recurrence_Images, SIGNAL(triggered()), this, SLOT(openImages()));
   connect(actionLoad_Nifti_Images, SIGNAL(triggered()), this, SLOT(openImages()));
-  connect(actionLoad_Dicom_Images, SIGNAL(triggered()), this, SLOT(openDicomImages()));
+  //connect(actionLoad_Dicom_Images, SIGNAL(triggered()), this, SLOT(openDicomImages()));
 
   connect(actionSave_ROI_Images, SIGNAL(triggered()), this, SLOT(SaveDrawing()));
   connect(actionSave_ROI_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomDrawing()));
@@ -1417,20 +1417,28 @@ void fMainWindow::LoadNonViewingImages(const std::string &directoryname, const i
 
 void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &imagetype_int, bool bSkipDup)
 {
+  std::string fname;
   auto extension = cbica::getFilenameExtension(fileName);
-  if (extension != ".dcm")
+  //if (extension != ".dcm")
   {
     if (extension == ".zip")
     {
       ShowErrorMessage("Please extract the zip file before trying to load into CaPTk.");
       return;
     }
-    if ((extension != ".nii") && (extension != ".nii.gz"))
+    //if ((extension != ".nii") && (extension != ".nii.gz"))
+    //{
+    //  ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
+    //  return;
+    //}
+    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
     {
-      ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
-      return;
+      QDir d = QFileInfo(fileName.c_str()).absoluteDir();
+      fname = d.absolutePath().toStdString();
     }
-    auto imageInfo = cbica::ImageInfo(fileName);
+    else 
+      fname = fileName;
+    auto imageInfo = cbica::ImageInfo(fname);
     SlicerManager* imageManager = new SlicerManager(3, mLandmarks, mSeedPoints, mTissuePoints);
     imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
 
@@ -1441,7 +1449,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     }
     if (imageInfo.GetImageDimensions() == 2)
     {
-      ConversionFrom2Dto3D(fileName, true);
+      ConversionFrom2Dto3D(fname, true);
     }
     else if (!bFirstLoad)
     {
@@ -1454,8 +1462,8 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
         {
           if (sizePrev[i] != size[i])
           {
-            updateProgress(0, "Size" + errorMsg + fileName);
-            ShowErrorMessage("Size" + errorMsg + fileName);
+            updateProgress(0, "Size" + errorMsg + fname);
+            ShowErrorMessage("Size" + errorMsg + fname);
             return; //
           }
         }
@@ -1465,8 +1473,8 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
         {
           if (spacing[i] != spacingPrev[i])
           {
-            updateProgress(0, "Spacing" + errorMsg + fileName);
-            ShowErrorMessage("Spacing" + errorMsg + fileName);
+            updateProgress(0, "Spacing" + errorMsg + fname);
+            ShowErrorMessage("Spacing" + errorMsg + fname);
             return; //
           }
         }
@@ -1478,8 +1486,8 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
           {
             if (origin[i] != originPrev[i])
             {
-              updateProgress(0, "Origin" + errorMsg + fileName);
-              ShowErrorMessage("Origin" + errorMsg + fileName);
+              updateProgress(0, "Origin" + errorMsg + fname);
+              ShowErrorMessage("Origin" + errorMsg + fname);
               return; //
             }
           }
@@ -1490,9 +1498,9 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       {
         for (int j = 0; j < (int)mSlicerManagers.size(); j++)
         {
-          if (fileName == mSlicerManagers[j]->GetPathFileName())
+          if (fname == mSlicerManagers[j]->GetPathFileName())
           {
-            updateProgress(0, "Duplicate file skipped :" + fileName);
+            updateProgress(0, "Duplicate file skipped :" + fname);
             return;
           }
         }
@@ -1505,7 +1513,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       image4DSlider->setEnabled(true);
       image4DSlider->setRange(0, imageInfo.GetImageSize()[3] - 1);
-      ImageTypeFloat4D::Pointer imagePerf = cbica::ReadImage<ImageTypeFloat4D>(fileName);
+      ImageTypeFloat4D::Pointer imagePerf = cbica::ReadImage<ImageTypeFloat4D>(fname);
       imageManager->SetPerfImage(imagePerf);
       imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION;
       //return;
@@ -1513,14 +1521,14 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     else
     {
       imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins());
-      auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fileName);
+      auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fname);
        imageManager->SetOriginalDirection(currentImage->GetDirection());
-      currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fileName));
+      currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fname));
       imageManager->SetImage(currentImage);
-      imageManager->mImageSubType = guessImageType(fileName);
+      imageManager->mImageSubType = guessImageType(fname);
     }
-    mInputPathName = cbica::getFilenamePath(fileName).c_str();
-    imageManager->SetFilename(fileName);
+    mInputPathName = cbica::getFilenamePath(fname).c_str();
+    imageManager->SetFilename(fname);
     imageManager->SetMask(mMask);
     imageManager->setTempFolderLocation(m_tempFolderLocation);
     int rowIndex = (int)mSlicerManagers.size();
@@ -1530,7 +1538,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
 
 
     QFileInfo fileinfo(imageManager->GetFileName().c_str());
-    QString id = fileName.c_str() + QString::number(mSlicerManagers.size() - 1);
+    QString id = fname.c_str() + QString::number(mSlicerManagers.size() - 1);
     //
     std::string strImageType = " IMAGE ";
     {
@@ -1590,15 +1598,15 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       mSlicerManagers.back()->mSlicers[j]->SetMask(mSlicerManagers.back()->GetMask());
     }
-    if (fileName.find("scan_label_map") != std::string::npos)
+    if (fname.find("scan_label_map") != std::string::npos)
     {
       mSlicerManagers.back()->SetPreset(PRESET_LABEL);
     }
-    if (fileName.find("gt") != std::string::npos)
+    if (fname.find("gt") != std::string::npos)
     {
       mSlicerManagers.back()->SetPreset(PRESET_LABEL2);
     }
-    if (fileName.find("roiDE") != std::string::npos)
+    if (fname.find("roiDE") != std::string::npos)
     {
       mSlicerManagers.back()->SetPreset(PRESET_PROB);
     }
@@ -1660,46 +1668,46 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     updateProgress(0);
     QApplication::restoreOverrideCursor();
   }
-  else
-  {
-    auto path = cbica::getFilenamePath(fileName);
-    dicomfilename = fileName;
-    auto filesInDir = cbica::filesInDirectory(path, false);
-
-#ifndef _WIN32
-    for (auto it = filesInDir.begin(); it != filesInDir.end();)
-    {
-      if ((*it == ".") || (*it == ".."))
-      {
-        filesInDir.erase(it);
-      }
-      else
-      {
-        ++it;
-      }
-    }
-#endif
-
-    // remove any files that aren't DICOM (thumbs.db and stuff like that)
-    for (size_t i = 0; i < filesInDir.size(); i++)
-    {
-      if (cbica::getFilenameExtension(path + "/" + filesInDir[i]) != ".dcm")
-      {
-        filesInDir.erase(filesInDir.begin() + i);
-      }
-    }
-
-    if (filesInDir.size() == 1) // single DICOM slice
-    {
-      ConversionFrom2Dto3D(fileName, true);
-    }
-    else // for 3D images, call dcm2nii
-    {
-      CallDCM2NIfTIConversion(fileName, true);
-    }
-
-    return;
-  }
+//  else
+//  {
+//    auto path = cbica::getFilenamePath(fileName);
+//    dicomfilename = fileName;
+//    auto filesInDir = cbica::filesInDirectory(path, false);
+//
+//#ifndef _WIN32
+//    for (auto it = filesInDir.begin(); it != filesInDir.end();)
+//    {
+//      if ((*it == ".") || (*it == ".."))
+//      {
+//        filesInDir.erase(it);
+//      }
+//      else
+//      {
+//        ++it;
+//      }
+//    }
+//#endif
+//
+//    // remove any files that aren't DICOM (thumbs.db and stuff like that)
+//    for (size_t i = 0; i < filesInDir.size(); i++)
+//    {
+//      if (cbica::getFilenameExtension(path + "/" + filesInDir[i]) != ".dcm")
+//      {
+//        filesInDir.erase(filesInDir.begin() + i);
+//      }
+//    }
+//
+//    if (filesInDir.size() == 1) // single DICOM slice
+//    {
+//      ConversionFrom2Dto3D(fileName, true);
+//    }
+//    else // for 3D images, call dcm2nii
+//    {
+//      CallDCM2NIfTIConversion(fileName, true);
+//    }
+//
+//    return;
+//  }
 }
 
 void fMainWindow::CurrentImageChanged(std::string &id)
@@ -4939,33 +4947,47 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     std::string fileName = files[i].toStdString();
     fileName = cbica::normPath(fileName);
     updateProgress(i + 1, "Opening " + fileName, files.size());
-    LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
+    auto extension = cbica::getFilenameExtension(fileName);
+    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    {
+      QDir d = QFileInfo(fileName.c_str()).absoluteDir();
+      QString fname = d.absolutePath();
+      this->openDicomImages(fname);
+    }
+    else
+      LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
 
   }
   updateProgress(0, "Loading complete", 100);
 }
 
-void fMainWindow::openDicomImages()
+void fMainWindow::openDicomImages(QString dir)
 {
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-    QDir::currentPath(),
-    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+  //QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+  //  QDir::currentPath(),
+  //  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-  if (dir.isNull())
+  //if (dir.isNull())
+  //{
+  //  ShowErrorMessage("Please open a directory containing Dicom images.");
+  //  return;
+  //}
+
+  //DicomSeriesReader *dicomSeriesReader = new DicomSeriesReader();
+  //dicomSeriesReader->SetDirectoryPath(dir.toStdString());
+  //bool loadstatus = dicomSeriesReader->LoadDicom();
+  //if (!loadstatus)
+  //{
+  //  QMessageBox::critical(this, "Dicom Loading", "Dicom Load Failed");
+  //  return;
+  //}
+
+  auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(dir.toStdString());
+  if (!currentImage)
   {
-    ShowErrorMessage("Please open a directory containing Dicom images.");
+    ShowMessage("Dicom Load Failed");
     return;
   }
-
-  DicomSeriesReader *dicomSeriesReader = new DicomSeriesReader();
-  dicomSeriesReader->SetDirectoryPath(dir.toStdString());
-  bool loadstatus = dicomSeriesReader->LoadDicom();
-  if (!loadstatus)
-  {
-    QMessageBox::critical(this, "Dicom Loading", "Dicom Load Failed");
-    return;
-  }
-
   SlicerManager* imageManager = new SlicerManager(3, mLandmarks, mSeedPoints, mTissuePoints);
   imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
 
@@ -4977,13 +4999,14 @@ void fMainWindow::openDicomImages()
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  imageManager->SetImage(dicomSeriesReader->GetITKImage());
+  imageManager->SetImage(currentImage);
+  //imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
-  // make sure to delete the dicom series reader
-  delete dicomSeriesReader; 
-
+  //delete dicomSeriesReader; 
+  //imageManager->SetFilename(dir.toStdString());
   imageManager->SetMask(mMask);
   imageManager->setTempFolderLocation(m_tempFolderLocation);
+  imageManager->mImageSubType = guessImageType(dir.toStdString());
   int rowIndex = (int)mSlicerManagers.size();
 
   m_imagesTable->setRowCount(rowIndex + 1);
@@ -4992,7 +5015,11 @@ void fMainWindow::openDicomImages()
 
   QFileInfo fileinfo(imageManager->GetFileName().c_str());
   std::string seriesDescLabel, seriesDescValue;
-  QString id = seriesDescValue.c_str() + QString::number(mSlicerManagers.size() - 1);
+  QDir d(dir);
+  seriesDescValue = d.dirName().toStdString(); 
+  imageManager->SetFilename(seriesDescValue);
+
+  QString id = QString(seriesDescValue.c_str()) + QString::number(mSlicerManagers.size() - 1);
   //
   std::string strImageType = " IMAGE ";
 
