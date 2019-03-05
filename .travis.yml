@@ -9,6 +9,10 @@ before_cache:
   - ls '/home/travis/.ccache'
 
 cache: ccache
+  #ccache: true
+  #directories:
+  #- $HOME/.ccache
+  #- $TRAVIS_BUILD_DIR
 #cache:
 #  directories:
 #    - $TRAVIS_BUILD_DIR
@@ -50,9 +54,10 @@ matrix:
   # Allow failures for specific platforms
   allow_failures:
     - os: linux
-      dist: trusty
-    - os: linux
       dist: xenial
+    #- os: osx
+    - os: linux
+      dist: trusty
     - os: windows
 
 before_install:
@@ -76,7 +81,8 @@ before_install:
   # OSX install step
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex make git-lfs doxygen llvm ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt ; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
   # Launch either the install linux script or compilation linux script

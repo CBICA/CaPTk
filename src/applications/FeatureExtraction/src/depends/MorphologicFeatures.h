@@ -15,6 +15,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkImage.h"
 #include "itkLabelGeometryImageFilter.h"
 
+#include "itkHardConnectedComponentImageFilter.h"
+
 #include "FeatureBase.h"
 
 template< typename TImageType, typename TShapeImageType >
@@ -31,6 +33,11 @@ public:
   {
     m_maskShape = maskShape;
   }
+
+  void SetRange(int inputRange)
+  {
+    m_extractionType = inputRange;
+  }
   
   /**
   \brief Update calculate five feature values
@@ -39,35 +46,23 @@ public:
   {
     if (!this->m_algorithmDone)
     {
-      auto size = this->m_Mask->GetBufferedRegion().GetSize();
-      auto minSize = size[0];
-      auto maxSize = size[0];
-      for (size_t d = 1; d < TImageType::ImageDimension; d++)
-      {
-        if (size[d] < minSize)
-        {
-          minSize = size[d];
-        }
-        if (size[d] > maxSize)
-        {
-          maxSize = size[d];
-        }
-      }
-
       using LabelType = short;
-      using OutputImageType = itk::Image< LabelType, TShapeImageType::ImageDimension >;
-      auto connected = itk::ConnectedComponentImageFilter < TShapeImageType, OutputImageType >::New();
+      using OutputImageType = itk::Image< LabelType, 3 >;
+      //auto connected = itk::ConnectedComponentImageFilter < TShapeImageType, OutputImageType >::New();
+      auto connected = itk::HardConnectedComponentImageFilter < TShapeImageType, TShapeImageType >::New();
       connected->SetInput(m_maskShape);
-      connected->SetFullyConnected(true);
-      connected->SetBackgroundValue(0);
+      //connected->SetFullyConnected(true);
+      //connected->SetBackgroundValue(0);
       connected->Update();
+
+      cbica::WriteImage< TShapeImageType >(connected->GetOutput(), "C:/Projects/CaPTk_myFork/src/applications/FeatureExtraction/data/ibsi_phantom/connected.nii.gz");
 
       /* TBD
       // using this provides distance threshold https://itk.org/Doxygen/html/classitk_1_1NeighborhoodConnectedImageFilter.html
       // this filter needs an initial seed to be placed in the mask and then the region growing to happen
       */
 
-      auto i2l = itk::LabelImageToShapeLabelMapFilter < OutputImageType, itk::LabelMap< itk::ShapeLabelObject< LabelType, TShapeImageType::ImageDimension > > >::New();
+      auto i2l = itk::LabelImageToShapeLabelMapFilter < TShapeImageType >::New();
       i2l->SetInput(connected->GetOutput());
       //i2l->ComputeFeretDiameterOn();
       i2l->ComputePerimeterOn();
@@ -77,63 +72,130 @@ public:
 
       auto numberOfLabelObjects = labelMap->GetNumberOfLabelObjects();
 
-      if (numberOfLabelObjects > 1)
+      //if (numberOfLabelObjects > 2)
+      //{
+      //  std::cerr << "Number of connected components are more than 1, cannot compute morphologic features.\n";
+      //  return;
+      //}
+
+      int componentToConsider = 1;
+      int largestComponentSize = 0;
+      if (m_extractionType == ExtractionType::Largest)
       {
-        std::cerr << "Number of connected components are more than 1, cannot compute morphologic features.\n";
-        return;
+        for (size_t i = 1; i < numberOfLabelObjects; i++) // 0 is always background
+        {
+          auto currentComponentSize = labelMap->GetNthLabelObject(i)->GetNumberOfPixels();
+          if (largestComponentSize < currentComponentSize)
+          {
+            componentToConsider = i;
+            largestComponentSize = currentComponentSize;
+          }
+        }
+
+        auto labelObject = labelMap->GetNthLabelObject(componentToConsider);
+
+        auto ellipseDiameter = labelObject->GetEquivalentEllipsoidDiameter();
+        auto orientedBoundingBoxSize = labelObject->GetOrientedBoundingBoxSize();
+
+        double numerator = 1;
+        if (ellipseDiameter.Size() == 2)
+        {
+          numerator = std::pow(ellipseDiameter[0], 2);
+        }
+        else if (ellipseDiameter.Size() == 3)
+        {
+          numerator = ellipseDiameter[0] * ellipseDiameter[1];
+        }
+
+        this->m_features["LargestComponentSize"] = largestComponentSize;
+        this->m_features["Eccentricity"] = std::sqrt(1 - numerator / std::pow(ellipseDiameter[ellipseDiameter.Size() - 1], 2));
+
+        for (size_t d = 0; d < TShapeImageType::ImageDimension; d++)
+        {
+          this->m_features["EllipseDiameter_Axis-" + std::to_string(d)] = ellipseDiameter[d];
+          this->m_features["OrientedBoundingBoxSize_Axis-" + std::to_string(d)] = orientedBoundingBoxSize[d];
+
+          //std::cout << "EllipseDiameter" + "_Axis-" + std::to_string(d) << " = " << ellipseDiameter[d] << "\n";
+        }
+        //m_features["FeretDiameter"] = labelObject->GetFeretDiameter();
+        this->m_features["PerimeterOnBorder"] = labelObject->GetPerimeterOnBorder();
+        this->m_features["Perimeter"] = labelObject->GetPerimeter();
+        this->m_features["PixelsOnBorder"] = labelObject->GetNumberOfPixelsOnBorder();
+        this->m_features["PhysicalSize"] = labelObject->GetPhysicalSize();
+        this->m_features["NumberOfPixels"] = labelObject->GetNumberOfPixels();
+        this->m_features["EquivalentSphericalRadius"] = labelObject->GetEquivalentSphericalRadius();
+        this->m_features["EquivalentSphericalPerimeter"] = labelObject->GetEquivalentSphericalPerimeter();
+        this->m_features["PerimeterOnBorderRatio"] = labelObject->GetPerimeterOnBorderRatio();
+        this->m_features["Roundness"] = labelObject->GetRoundness();
+        this->m_features["Flatness"] = labelObject->GetFlatness();
+        this->m_features["Elongation"] = labelObject->GetElongation();
+        //m_features["OrientedBoundingBoxSize"] = labelObject->GetOrientedBoundingBoxSize(); // vector<double 2> cannot be converted to double
+
+        //std::cout << "Eccentricity" << " = " << this->m_features["Eccentricity"] << "\n";
+        //std::cout << "PerimeterOnBorder" << " = " << labelObject->GetPerimeterOnBorder() << "\n";
+        //std::cout << "Perimeter" << " = " << labelObject->GetPerimeter() << "\n";
+
       }
-
-      for (unsigned int i = 0; i < numberOfLabelObjects; i++)
+      else
       {
-        auto labelObject = labelMap->GetNthLabelObject(i);
-
-        std::string labelString = "";
-        if (numberOfLabelObjects > 1)
+        auto size = this->m_Mask->GetBufferedRegion().GetSize();
+        size_t totalSizeThreshold = 0.05; // 5% threshold in case all connected components are chosen
+        for (size_t d = 1; d < TImageType::ImageDimension; d++)
         {
-          labelString = "-Label-" + std::to_string(i);
+          totalSizeThreshold *= size[d];
         }
-        /// TBD: convert this into a function of minSize or maxSize instead of the hard-coded '20'
-        auto tt = labelObject->GetNumberOfPixels();
-        if (labelObject->GetNumberOfPixels() > (0.1 * minSize)) // this is to ensure really small portions of an ROI do not get picked 
+
+        for (size_t i = 1; i < numberOfLabelObjects; i++) // 0 is always background
         {
-          auto ellipseDiameter = labelObject->GetEquivalentEllipsoidDiameter();
-          auto orientedBoundingBoxSize = labelObject->GetOrientedBoundingBoxSize();
+          auto labelObject = labelMap->GetNthLabelObject(i);
 
-          double numerator = 1;
-          if (ellipseDiameter.Size() == 2)
+          std::string labelString = ""; // TBD: redundant
+          if (numberOfLabelObjects > 2)
           {
-            numerator = std::pow(ellipseDiameter[0], 2);
+            labelString = "-Label-" + std::to_string(i);
           }
-          else if (ellipseDiameter.Size() == 3)
-          {
-            numerator = ellipseDiameter[0] * ellipseDiameter[1];
-          }
+          auto currentComponentSize = labelMap->GetNthLabelObject(i)->GetNumberOfPixels();
 
-          this->m_features["Eccentricity" + labelString] = sqrt(1 - numerator / std::pow(ellipseDiameter[ellipseDiameter.Size() - 1], 2));
-
-          for (size_t d = 0; d < TShapeImageType::ImageDimension; d++)
+          if (currentComponentSize > totalSizeThreshold)
           {
-            this->m_features["EllipseDiameter" + labelString + "_Axis-" + std::to_string(d)] = ellipseDiameter[d];
-            this->m_features["OrientedBoundingBoxSize" + labelString + "_Axis-" + std::to_string(d)] = orientedBoundingBoxSize[d];
+            auto ellipseDiameter = labelObject->GetEquivalentEllipsoidDiameter();
+            auto orientedBoundingBoxSize = labelObject->GetOrientedBoundingBoxSize();
+
+            double numerator = 1;
+            if (ellipseDiameter.Size() == 2)
+            {
+              numerator = std::pow(ellipseDiameter[0], 2);
+            }
+            else if (ellipseDiameter.Size() == 3)
+            {
+              numerator = ellipseDiameter[0] * ellipseDiameter[1];
+            }
+
+            this->m_features["Eccentricity" + labelString] = std::sqrt(1 - numerator / std::pow(ellipseDiameter[ellipseDiameter.Size() - 1], 2));
+
+            for (size_t d = 0; d < TShapeImageType::ImageDimension; d++)
+            {
+              this->m_features["EllipseDiameter" + labelString + "_Axis-" + std::to_string(d)] = ellipseDiameter[d];
+              this->m_features["OrientedBoundingBoxSize" + labelString + "_Axis-" + std::to_string(d)] = orientedBoundingBoxSize[d];
+
+              //std::cout << "EllipseDiameter" + labelString + "_Axis-" + std::to_string(d) << " = " << ellipseDiameter[d] << "\n";
+            }
+            //m_features["FeretDiameter" + labelString] = labelObject->GetFeretDiameter();
+            this->m_features["PerimeterOnBorder" + labelString] = labelObject->GetPerimeterOnBorder();
+            this->m_features["Perimeter" + labelString] = labelObject->GetPerimeter();
+            this->m_features["PixelsOnBorder" + labelString] = labelObject->GetNumberOfPixelsOnBorder();
+            this->m_features["PhysicalSize" + labelString] = labelObject->GetPhysicalSize();
+            this->m_features["NumberOfPixels" + labelString] = labelObject->GetNumberOfPixels();
+            this->m_features["EquivalentSphericalRadius" + labelString] = labelObject->GetEquivalentSphericalRadius();
+            this->m_features["EquivalentSphericalPerimeter" + labelString] = labelObject->GetEquivalentSphericalPerimeter();
+            this->m_features["PerimeterOnBorderRatio" + labelString] = labelObject->GetPerimeterOnBorderRatio();
+            this->m_features["Roundness" + labelString] = labelObject->GetRoundness();
+            this->m_features["Flatness" + labelString] = labelObject->GetFlatness();
+            this->m_features["Elongation" + labelString] = labelObject->GetElongation();
+            //m_features["OrientedBoundingBoxSize"] = labelObject->GetOrientedBoundingBoxSize(); // vector<double 2> cannot be converted to double
           }
-          //m_features["FeretDiameter" + labelString] = labelObject->GetFeretDiameter();
-          this->m_features["PerimeterOnBorder" + labelString] = labelObject->GetPerimeterOnBorder();
-          this->m_features["Perimeter" + labelString] = labelObject->GetPerimeter();
-          this->m_features["PixelsOnBorder" + labelString] = labelObject->GetNumberOfPixelsOnBorder();
-          this->m_features["PhysicalSize" + labelString] = labelObject->GetPhysicalSize();
-          this->m_features["NumberOfPixels" + labelString] = labelObject->GetNumberOfPixels();
-          this->m_features["EquivalentSphericalRadius" + labelString] = labelObject->GetEquivalentSphericalRadius();
-          this->m_features["EquivalentSphericalPerimeter" + labelString] = labelObject->GetEquivalentSphericalPerimeter();
-          this->m_features["PerimeterOnBorderRatio" + labelString] = labelObject->GetPerimeterOnBorderRatio();
-          this->m_features["Roundness" + labelString] = labelObject->GetRoundness();
-          this->m_features["Flatness" + labelString] = labelObject->GetFlatness();
-          this->m_features["Elongation" + labelString] = labelObject->GetElongation();
-          //m_features["OrientedBoundingBoxSize"] = labelObject->GetOrientedBoundingBoxSize(); // vector<double 2> cannot be converted to double
         }
-        else
-        {
-          std::cerr << "LabelObject '" << i << "' is too small (total pixels = " << labelObject->GetNumberOfPixels() << ").\n";
-        }
+
       }
 
       this->m_algorithmDone = true;
@@ -155,4 +217,11 @@ public:
 private:
 
   typename TShapeImageType::Pointer m_maskShape;
+
+  enum ExtractionType
+  {
+    Largest, All
+  };
+
+  int m_extractionType = ExtractionType::Largest;
 };

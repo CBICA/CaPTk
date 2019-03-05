@@ -950,7 +950,7 @@ namespace cbica
 
     for (size_t i = 0; i < TImageType::ImageDimension; i++)
     {
-      distances[i] = end_worldCoordinates[i] - start_worldCoordinates[i]; // real world image span along each axis
+      distances[i] = std::abs(end_worldCoordinates[i] - start_worldCoordinates[i]); // real world image span along each axis
     }
 
     return distances;
@@ -1132,6 +1132,12 @@ namespace cbica
     if (interpolator_wrap == "bspline")
     {
       auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else if (interpolator_wrap.find("bicubic") != std::string::npos)
+    {
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType >::New();
+      interpolatorFunc->SetSplineOrder(3);
       resampler->SetInterpolator(interpolatorFunc);
     }
     else if (interpolator_wrap.find("nearest") != std::string::npos)
