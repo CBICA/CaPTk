@@ -276,7 +276,7 @@ fMainWindow::fMainWindow()
 
   menuLoadFile->addAction(actionLoad_Nifti_Images);
   menuLoadFile->addAction(actionLoad_Nifti_ROI);
-  menuLoadFile->addAction(actionLoad_Dicom_Images);
+ // menuLoadFile->addAction(actionLoad_Dicom_Images);
 
   menuSaveFile->addAction(actionSave_Nifti_Images);
   menuSaveFile->addAction(actionSave_ROI_Images);
