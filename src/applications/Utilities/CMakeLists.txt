@@ -7,78 +7,17 @@ SET( PROJECT_NAME Utilities )
 
 CAPTK_ADD_PROJECT( ${PROJECT_NAME} 1.6.2 )
 
-#MESSAGE( STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}" )
-INCLUDE_DIRECTORIES( 
-  ${PROJECT_SOURCE_DIR}/src/depends/ 
-  ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/
-  ${PROJECT_SOURCE_DIR}/../../thirdparty/
-  ${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/include/ 
+ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/ cbica_toolkit ) # takes care of find_itk
+
+CAPTK_INITIAL_SETUP()
+
+INCLUDE_DIRECTORIES( ${CACHED_INCLUDE_DIRS} )
+
+SET( APPLICATION_SOURCES 
+  ${PROJECT_SOURCE_DIR}/src/Utilities.cxx 
+  ${CURRENT_APPLICATION_DEPENDS}
 )
 
-#Find libraries
-FIND_PACKAGE( ITK REQUIRED )
-INCLUDE( ${ITK_USE_FILE} )
-
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/../../../cmake_modules/)
-INCLUDE( CaPTk_macros )
-
-IF(APPLE)
-    set(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../lib")
-    set(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../../include")
-
-    MESSAGE ("${CMAKE_C_COMPILER}")
-
-    SET(OpenMP_C "${CMAKE_C_COMPILER}")
-    SET(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
-    SET(OpenMP_C_LIB_NAMES "libomp" "libgomp" "libiomp5")
-    SET(OpenMP_libomp_LIBRARY ${OpenMP_C_LIB_NAMES})
-    SET(OpenMP_libgomp_LIBRARY ${OpenMP_C_LIB_NAMES})
-    SET(OpenMP_libiomp5_LIBRARY ${OpenMP_C_LIB_NAMES})
-    SET(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
-    SET(OpenMP_CXX_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
-    SET(OpenMP_CXX_LIB_NAMES "libomp" "libgomp" "libiomp5")
-    SET(OpenMP_libomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-    SET(OpenMP_libgomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-    SET(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-
-    INCLUDE_DIRECTORIES("${OPENMP_INCLUDES}")
-    LINK_DIRECTORIES("${OPENMP_LIBRARIES}")
-  ENDIF()
-
-  FIND_PACKAGE(OpenMP REQUIRED)
-  SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
-  SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
-
-SET(CMAKE_CXX_STANDARD 11)
-SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
-SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
-
-FILE( GLOB sources "${PROJECT_SOURCE_DIR}/src/depends/*.*" )
-FILE( GLOB cbicatk "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/*.*" )
-FILE( GLOB_RECURSE YAMLCPP_Headers "${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/src/*.h")
-FILE( GLOB_RECURSE YAMLCPP_Sources "${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/src/*.cpp")
-SET( YAMLCPP_Headers ${YAMLCPP_Headers} CACHE STRING "YAML-CPP headers" FORCE )
-SET( YAMLCPP_Sources ${YAMLCPP_Sources} CACHE STRING "YAML-CPP sources" FORCE )
-SOURCE_GROUP( YAMLCPP_Headers FILES ${YAMLCPP_Headers} )
-SOURCE_GROUP( YAMLCPP_Sources FILES ${YAMLCPP_Sources} )
-
-SET( LIBNAME_CBICATK "CaPTk_CBICATK" )
-IF(NOT (TARGET ${LIBNAME_CBICATK}))
-  
-  ADD_LIBRARY(
-    ${LIBNAME_CBICATK}
-    ${cbicatk}
-    ${YAMLCPP_Sources}
-  )
-  
-  TARGET_LINK_LIBRARIES(
-    ${LIBNAME_CBICATK}
-    ${ITK_LIBRARIES}
-    ${OpenCV_LIBRARIES}
-  )
-  
-ENDIF()
-
-CAPTK_ADD_EXECUTABLE(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/Utilities.cxx "${LIBNAME_CBICATK}")
+CAPTK_ADD_EXECUTABLE( ${PROJECT_NAME} ${APPLICATION_SOURCES} ${LIBNAME_CBICATK} )
 
 ADD_DEPENDENCIES( ${PROJECT_NAME} ${LIBNAME_CBICATK} )
