@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=CaPTk
-Comment= Linux Deploy Test
-Exec=CaPTk
+Comment=Linux CaPTk
+Exec=linux-wrapper
 Icon=CaPTk
 Categories=Office;

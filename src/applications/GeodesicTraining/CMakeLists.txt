@@ -14,6 +14,12 @@ set(CMAKE_AUTOMOC ON)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
+INCLUDE_DIRECTORIES( 
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/ 
+  ${PROJECT_SOURCE_DIR}/../../thirdparty/
+  ${PROJECT_SOURCE_DIR}/../../thirdparty/yaml-cpp/include/ 
+)
 
 # --------- Library dependencies ---------
 
@@ -37,8 +43,8 @@ FIND_PACKAGE( Qt5 COMPONENTS Core )
 # --------- Source code dependencies ---------
 
 FILE( GLOB_RECURSE CBICA_TOOLKIT_HEADERS
-  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/*.h"
-  "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc/*.h"
+  "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/*.h"
+  "${PROJECT_SOURCE_DIR}/../../cbica_toolkit/src/IO/inc/*.h"
 )
 FILE( GLOB_RECURSE CBICA_TOOLKIT_SOURCES
   "${CMAKE_SOURCE_DIR}/src/cbica_toolkit/src/*.cpp"

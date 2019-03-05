@@ -1134,6 +1134,12 @@ namespace cbica
       auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
+    else if (interpolator_wrap.find("bicubic") != std::string::npos)
+    {
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType >::New();
+      interpolatorFunc->SetSplineOrder(3);
+      resampler->SetInterpolator(interpolatorFunc);
+    }
     else if (interpolator_wrap.find("nearest") != std::string::npos)
     {
       auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();

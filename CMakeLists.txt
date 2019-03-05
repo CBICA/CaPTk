@@ -481,6 +481,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
+    ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/
+    ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/include/
     ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/
     ${PROJECT_SOURCE_DIR}/src/common/inc/
     ${PROJECT_SOURCE_DIR}/src/view/gui/

@@ -1,7 +1,8 @@
 FeatureName,ParamName,Type,Range,Default,Comments
 Generic,Quantization,String,Image:ROI,ROI,Whether the quantization of Intensities is supposed to happen on a per-image basis or on a per-ROI basis
 Generic,Resampling,mm,0:10,1.0,Resamples all images and masks to this value of voxel/pixel resolution before computations (0: no resampling)
-Generic,ResamplingInterpolator,mm,Linear:BSpline,Linear,Type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
+Generic,ResamplingInterpolator_Image,mm,Nearest:Linear:BSpline,Linear,Type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
+Generic,ResamplingInterpolator_Mask,mm,Nearest:Linear:BSpline,Nearest,Type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
 Intensity,,,,,
 Morphologic,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area along specified axis) or full 3D volume features
 Morphologic,Axis,String,[z:x:y],z,The axis with maximum area for which the 2D slice computation is to be done
