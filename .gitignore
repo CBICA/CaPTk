@@ -9,7 +9,10 @@ archive
 
 # Linux specific paths that get pulled in
 src/applications/individualApps/dcm2nii
+src/applications/individualApps/itksnap
+src/applications/individualApps/itksnap/bin
 src/applications/individualApps/itksnap/lib
+src/applications/individualApps/libra/bin
 src/applications/individualApps/libra/libexec
 src/applications/individualApps/libra/MCRInstaller.zip
 
