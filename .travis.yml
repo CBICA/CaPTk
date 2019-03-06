@@ -53,8 +53,8 @@ matrix:
   fast_finish: true
   # Allow failures for specific platforms
   allow_failures:
-    #- os: linux
-    #  dist: xenial
+    - os: linux
+      dist: xenial
     #- os: osx
     - os: linux
       dist: trusty

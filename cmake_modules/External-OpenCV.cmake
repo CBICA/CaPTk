@@ -5,12 +5,12 @@ SET( OpenCV_DEPENDENCIES )
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
-MESSAGE( STATUS "Adding OpenCV-3.4.5 ...")
+MESSAGE( STATUS "Adding OpenCV-${OPENCV_VERSION} ...")
 
 ExternalProject_Add( 
   OpenCV
   DEPENDS Eigen VTK
-  URL https://github.com/opencv/opencv/archive/3.4.5.zip
+  URL https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip
   #GIT_REPOSITORY ${git_protocol}://github.com/opencv/opencv.git
   #GIT_TAG 3.4.1
   SOURCE_DIR OpenCV-source
