@@ -43,6 +43,7 @@ static const char  cSeparator = '/';
 #include <mach-o/dyld.h>
 #endif
 
+#include <assert.h>
 #include <fstream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -62,7 +63,6 @@ static const char  cSeparator = '/';
 #ifndef PROJECT_VERSION
 #define PROJECT_VERSION "0.0.1"
 #endif
-
 
 /*
 \namespace cbica
@@ -797,6 +797,7 @@ namespace cbica
     // check for argc values during the first run otherwise don't
     if (firstRun)
     {
+      //assert(("Example of usage is needed; use 'parser.exampleUsage()' to populate example", std::strlen(m_exampleOfUsage.c_str()) > 0));
       if (m_argc > static_cast< int >(2 * (m_optionalParameters.size() + m_requiredParameters.size() - 3) + 1))
       {
         std::cerr << "Extra parameters passed, please check usage. Exiting.\n\n";
