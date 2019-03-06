@@ -81,8 +81,7 @@ before_install:
   # OSX install step
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache && export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install caskroom/cask/mactex make git-lfs doxygen llvm ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt ; fi
-  # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git lfs install && git lfs fetch --all; fi
   
 script:
   # Launch either the install linux script or compilation linux script
