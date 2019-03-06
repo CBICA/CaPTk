@@ -55,6 +55,7 @@ public:
   QLineEdit* m_txtSaveFileName;
 
 
+  QCheckBox* m_generic;
   QCheckBox* m_firstOrderStatistics;
   QCheckBox* m_Volumetric;
   QCheckBox* m_Morphologic;
@@ -89,6 +90,7 @@ public:
   void setupFeatureCheckBoxMap()
   {
     m_featureCheckBoxMap.clear();
+    m_featureCheckBoxMap["Generic"] = m_generic;
     m_featureCheckBoxMap["Intensity"] = m_firstOrderStatistics;
     m_featureCheckBoxMap["Histogram"] = m_Histogram;
     m_featureCheckBoxMap["GLRLM"] = m_GLRLM;
@@ -152,6 +154,10 @@ public:
     featureLayout1->addWidget(m_btnAdvanced);
     //featureLayout1->addStretch();
 
+    m_generic = new QCheckBox("Setup");
+    m_generic->setToolTip(QString("Resampling, Quantization, Interpolation"));
+    m_generic->setChecked(true);
+    m_generic->setEnabled(false);
     m_firstOrderStatistics = new QCheckBox("1st Order Statistics");
     m_firstOrderStatistics->setToolTip(QString("Minimum, Maximum, Mean, Variance, Standard Deviation, Skewness, Kurtosis"));
     m_firstOrderStatistics->setChecked(true);
@@ -207,6 +213,7 @@ public:
     featureLayouthbox->addWidget(intensitygroup);
     featureLayouthbox->addWidget(Volumetric);
 
+    featureLayout2->addWidget(m_generic);
     featureLayout2->addWidget(m_firstOrderStatistics);
     featureLayout2->addWidget(m_Histogram);
 

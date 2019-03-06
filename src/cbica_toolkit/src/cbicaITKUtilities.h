@@ -1038,13 +1038,14 @@ namespace cbica
   typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const float outputSpacing = 1.0, const std::string interpolator = "Linear")
   {
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
-    itk::Vector< double, TImageType::ImageDimension > outputSpacingVector;
+    auto inputSpacing = inputImage->GetSpacing();
+    auto outputSpacingVector = inputSpacing;
     if (TImageType::ImageDimension != 4)
     {
       outputSpacingVector.Fill(outputSpacing);
       for (size_t i = 0; i < TImageType::ImageDimension; i++)
       {
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing);
       }
     }
     else // preserve all time points of a time series image
@@ -1052,8 +1053,9 @@ namespace cbica
       for (size_t i = 0; i < 3; i++)
       {
         outputSpacingVector[i] = outputSpacing;
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing);
       }
+      outputSpacingVector[3] = inputSpacing[3];
     }
 
     std::string interpolator_wrap = interpolator;
@@ -1103,18 +1105,19 @@ namespace cbica
   {
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
     auto outputSpacingVector = outputSpacing;
+    auto inputSpacing = inputImage->GetSpacing();
     if (TImageType::ImageDimension != 4)
     {
       for (size_t i = 0; i < TImageType::ImageDimension; i++)
       {
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing[i];
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
       }
     }
     else // preserve all time points of a time series image
     {
       for (size_t i = 0; i < 3; i++)
       {
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing[i];
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
       }
     }
 

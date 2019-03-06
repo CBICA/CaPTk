@@ -5,19 +5,10 @@ FIND_PACKAGE( Git REQUIRED )
 
 OPTION( USE_GIT_PROTOCOL "If behind a firewall turn this off to use https instead." OFF )
 
-SET( 
-  CMAKE_MODULE_PATH
-  ${PROJECT_SOURCE_DIR}/cmake_modules
-  ${CMAKE_MODULE_PATH}
-)
-
-SET(CMAKE_CXX_STANDARD 11)
-SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
-
 IF(MSVC)
-  SET( CMAKE_BUILD_TYPE "Debug;Release")
+  SET( CMAKE_CONFIGURATION_TYPES "Debug;Release")
 ELSEIF(UNIX)
-  SET( CMAKE_BUILD_TYPE "Release")
+  SET( CMAKE_CONFIGURATION_TYPES "Release")
 ENDIF()
 
 INCLUDE( ExternalProject )
