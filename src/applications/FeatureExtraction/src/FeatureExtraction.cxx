@@ -299,7 +299,7 @@ int main(int argc, char** argv)
   else
   {
     auto baseParamFile = "1_params_default.csv";
-    auto temp = cbica::normPath(cbica::getExecutablePath() + "../data/" + baseParamFile);
+    auto temp = cbica::normPath(cbica::getExecutablePath() + "/../data/" + baseParamFile);
     if (cbica::isFile(temp))
     {
       param_file = temp;
@@ -308,10 +308,11 @@ int main(int argc, char** argv)
     {
       std::string dataDir = "";
 #ifndef APPLE
-      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../data/");
+      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../../data/");
 #else
-      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../Resources/data/";
+      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../Resources/data/features/";
 #endif
+      temp = dataDir + baseParamFile;
       if (cbica::isFile(temp))
       {
         param_file = temp;
