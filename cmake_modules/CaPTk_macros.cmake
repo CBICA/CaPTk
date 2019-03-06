@@ -129,34 +129,40 @@ SET( CACHED_INCLUDE_DIRS
 
 FILE( GLOB_RECURSE CURRENT_APPLICATION_DEPENDS "${PROJECT_SOURCE_DIR}/src/depends/" )
 
-  IF(APPLE)
-    SET(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../lib")
-    SET(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../../include")
-    
-    MESSAGE ("${CMAKE_C_COMPILER}")
-    
-    SET(OpenMP_C "${CMAKE_C_COMPILER}")
-    SET(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
-    SET(OpenMP_C_LIB_NAMES "libomp" "libgomp" "libiomp5")
-    SET(OpenMP_libomp_LIBRARY ${OpenMP_C_LIB_NAMES})
-    SET(OpenMP_libgomp_LIBRARY ${OpenMP_C_LIB_NAMES})
-    SET(OpenMP_libiomp5_LIBRARY ${OpenMP_C_LIB_NAMES})
-    SET(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
-    SET(OpenMP_CXX_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
-    SET(OpenMP_CXX_LIB_NAMES "libomp" "libgomp" "libiomp5")
-    SET(OpenMP_libomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-    SET(OpenMP_libgomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-    SET(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-    
-    INCLUDE_DIRECTORIES("${OPENMP_INCLUDES}")
-    LINK_DIRECTORIES("${OPENMP_LIBRARIES}")
+# set the install path
+IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+  SET( CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/install )
+ENDIF( )
 
-  ELSE()
+# find openmp flags
+IF(APPLE)
+  SET(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../lib")
+  SET(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../../include")
+  
+  MESSAGE ("${CMAKE_C_COMPILER}")
+  
+  SET(OpenMP_C "${CMAKE_C_COMPILER}")
+  SET(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
+  SET(OpenMP_C_LIB_NAMES "libomp" "libgomp" "libiomp5")
+  SET(OpenMP_libomp_LIBRARY ${OpenMP_C_LIB_NAMES})
+  SET(OpenMP_libgomp_LIBRARY ${OpenMP_C_LIB_NAMES})
+  SET(OpenMP_libiomp5_LIBRARY ${OpenMP_C_LIB_NAMES})
+  SET(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
+  SET(OpenMP_CXX_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
+  SET(OpenMP_CXX_LIB_NAMES "libomp" "libgomp" "libiomp5")
+  SET(OpenMP_libomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
+  SET(OpenMP_libgomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
+  SET(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES})
+  
+  INCLUDE_DIRECTORIES("${OPENMP_INCLUDES}")
+  LINK_DIRECTORIES("${OPENMP_LIBRARIES}")
 
-    FIND_PACKAGE(OpenMP REQUIRED)
-    SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
-    SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
+ELSE()
 
-  ENDIF()
+  FIND_PACKAGE(OpenMP REQUIRED)
+  SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
+  SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
+
+ENDIF()
   
 ENDMACRO()
