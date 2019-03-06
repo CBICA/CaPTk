@@ -5682,7 +5682,9 @@ void fMainWindow::ApplicationWhiteStripe()
   int index = GetSlicerIndexFromItem(items[0]);
 
   if ((mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1) || 
-    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2))
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) || 
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2) || 
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR))
   {
     auto tmp = mInputPathName.toStdString();
     whiteStripeNormalizer.SetCurrentImagePath(mInputPathName);
