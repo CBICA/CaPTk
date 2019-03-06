@@ -56,6 +56,8 @@
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkLookupTable.h"
 
+#include "QtConcurrent/qtconcurrentrun.h"
+
 //#include "DicomSeriesReader.h"
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
