@@ -155,8 +155,7 @@ RUN_DEPLOYQT () {
   # The issue is that linuxdeployqt cannot for the life of it process globstars (**) for some reason, meaning we cannot simply exclude MCR/** and be done,
   # no, we need to manually come up with a glob for EVERY possible directory hierarchy for MCR, leaving us with this.
   # Using continuous release as of 3/5/18, please change to version 5 or 6 if you are having issues with this.
-  ./linuxdeployqt-continuous-x86_64.AppImage ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*} -appimage
-  
+  ./linuxdeployqt-continuous-x86_64.AppImage ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
   # But now we aren't even done. Normally, you could run linuxdeployqt with the -appimage flag which gives us our amazing AppImage file that can be ran anywhere.
   # However, we have started to see a lot of issues revolving around the $LD_LIBRARY_PATH since we want to arbitrarily run applications from the main CaPTk binary.
   # The solution is to wrap the entry of the AppImage according to this guide made by the guy who made AppImages: https://github.com/probonopd/linuxdeployqt/wiki/Custom-wrapper-script-instead-of-AppRun
@@ -164,9 +163,6 @@ RUN_DEPLOYQT () {
   # Replace AppRun
   rm ./appdir/AppRun
   cp ../../scripts/AppRun ./appdir/
-
-  # Remove AppImage as we need to make a new one
-  rm ./CaPTk*.AppImage
 
   # Download and mark executable appimagetool. Using release 11 as of 3/5/18
   wget -nc https://github.com/AppImage/AppImageKit/releases/download/11/appimagetool-x86_64.AppImage
@@ -268,7 +264,7 @@ chmod +x ./pkg/linux-makeself
 # Step 3: Wrap it all upp
 
 # Version number for CaPTk
-ver=`./pkg/CaPTk.bin -v | grep Version | awk '{print $2}'`
+ver=`./pkg/CaPTk.bin -v | grep Executable | awk '{print $4}'`
 
 # Create the installer
 ./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk-${ver}-Installer.bin "CaPTk Linux Installer" ./linux-makeself
