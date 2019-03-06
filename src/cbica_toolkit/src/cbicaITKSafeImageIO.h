@@ -41,6 +41,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "cbicaUtilities.h"
 #include "cbicaITKImageInfo.h"
 #include "cbicaITKUtilities.h"
+#include "DicomIOManager.h"
 
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 using TImageType = ImageTypeFloat3D;
@@ -660,16 +661,27 @@ namespace cbica
   template <class TImageType = ImageTypeFloat3D >
   typename TImageType::Pointer ReadImage(const std::string &fName, const std::string &supportedExtensions = ".nii.gz,.nii,.dcm", const std::string &delimitor = ",")
   {
-    std::string extension = cbica::getFilenameExtension(fName);
-    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-    //if ((cbica::isDir(fName) || (extension == ".dcm") || (extension == ".dicom")) && (TImageType::ImageDimension > 2))
-    //{
-    //  return GetDicomImage< TImageType >(fName);
-    //}
-    //else
-    //{
-    return GetImageReader< TImageType >(fName, supportedExtensions, delimitor)->GetOutput();
-    //   }
+    //std::string extension = cbica::getFilenameExtension(fName);
+    //std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+    //if ((cbica::isDir(fName) || (extension == ".dcm") || (extension == ".dicom")) && (TImageType::ImageDimension == 3))
+    if (cbica::isDir(fName))
+    {
+      typedef DicomIOManager<TImageType> ReaderType;
+        ReaderType *dcmSeriesReader = new ReaderType();
+        dcmSeriesReader->SetDirectoryPath(fName);
+        bool loadstatus = dcmSeriesReader->LoadDicom();
+        if (!loadstatus)
+        {
+          //QMessageBox::critical(this, "Dicom Loading", "Dicom Load Failed");
+          return nullptr;
+        }
+      return dcmSeriesReader->GetITKImage();
+      //return GetDicomImage< TImageType >(fName);
+    }
+    else
+    {
+      return GetImageReader< TImageType >(fName, supportedExtensions, delimitor)->GetOutput();
+    }
   }
 
   /**
