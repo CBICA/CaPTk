@@ -10,13 +10,13 @@ export CMAKE_PREFIX_PATH=/Library/TeX/texbin
 
 cmake ../
 
-export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
-
 rm -rf /usr/local/opt/qt
 rm -rf /usr/local/Cellar/qt
 cp -r qt /usr/local/Cellar/qt
 brew link --force qt
 mv /usr/local/opt/qt5 /usr/local/opt/qt
+
+export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
 
 # mkdir -p /usr/local/opt/qt
 
