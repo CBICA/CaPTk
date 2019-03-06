@@ -67,54 +67,54 @@
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
   m_NumberOfUnfinishedExternalProcesses++;
-	cbica::Logging(loggerFile, application.toStdString() + " " + arguments.join(" ").toStdString());
-	int returnVal = std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
+  cbica::Logging(loggerFile, application.toStdString() + " " + arguments.join(" ").toStdString());
+  int returnVal = std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
   m_NumberOfUnfinishedExternalProcesses--;
   return returnVal;
 
 #ifdef _WIN32
-	//QProcess process;
-	//process.setStandardOutputFile((m_tempFolderLocation + "/process_" + application.toStdString() + ".log").c_str());
-	//if (arguments.isEmpty())
-	//{
-	//  if (QFileInfo(application).completeSuffix() == "py")
-	//  {
-	//    process.start("python.exe " + application + ".py");
-	//  }
-	//  else
-	//  {
-	//    process.start(application);
-	//  }
-	//}
-	//else
-	//{
-	//  if (QFileInfo(application).completeSuffix() == "py")
-	//  {
-	//    process.start("python.exe " + application + ".py", arguments);
-	//  }
-	//  else
-	//  {
-	//    process.start(application, arguments);
-	//  }
-	//}
-	//process.write("exit\n\r");
-	//process.waitForFinished(-1);
-	//process.close();
+  //QProcess process;
+  //process.setStandardOutputFile((m_tempFolderLocation + "/process_" + application.toStdString() + ".log").c_str());
+  //if (arguments.isEmpty())
+  //{
+  //  if (QFileInfo(application).completeSuffix() == "py")
+  //  {
+  //    process.start("python.exe " + application + ".py");
+  //  }
+  //  else
+  //  {
+  //    process.start(application);
+  //  }
+  //}
+  //else
+  //{
+  //  if (QFileInfo(application).completeSuffix() == "py")
+  //  {
+  //    process.start("python.exe " + application + ".py", arguments);
+  //  }
+  //  else
+  //  {
+  //    process.start(application, arguments);
+  //  }
+  //}
+  //process.write("exit\n\r");
+  //process.waitForFinished(-1);
+  //process.close();
 
-	//return process.exitCode();
+  //return process.exitCode();
 #else
-	//std::string args_string = ""/*arguments.join(" ")*/, app_string = application.toStdString();
-	//for (size_t i = 0; i < arguments.size(); i++)
-	//{
-	//  args_string += " " + arguments[i].toStdString();
-	//}
+  //std::string args_string = ""/*arguments.join(" ")*/, app_string = application.toStdString();
+  //for (size_t i = 0; i < arguments.size(); i++)
+  //{
+  //  args_string += " " + arguments[i].toStdString();
+  //}
 
-	////if (cbica::getFilenameExtension(application.toStdString()) == ".py")
-	////{
-	////  app_string = "python " + application.toStdString();
-	////}
+  ////if (cbica::getFilenameExtension(application.toStdString()) == ".py")
+  ////{
+  ////  app_string = "python " + application.toStdString();
+  ////}
 
-	//return std::system((app_string + args_string).c_str());
+  //return std::system((app_string + args_string).c_str());
 #endif
 }
 
@@ -252,7 +252,7 @@ fMainWindow::fMainWindow()
   frame->setFrameShadow(QFrame::Sunken);
 
   overallGridLayout->addWidget(frame, 3, 0, 1, 3);
-  
+
   this->setCentralWidget(centralwidget);
   AxialViewWidget->raise();
   CoronalViewWidget->raise();
@@ -357,7 +357,7 @@ fMainWindow::fMainWindow()
 #ifdef WIN32
   segAppList += " deepmedic";
 #endif
-  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching DeepMedicNormalizer";
+  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer";
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
   menuApp->addSeparator();
@@ -613,11 +613,11 @@ fMainWindow::fMainWindow()
 
   for (size_t i = 0; i < vectorOfLungApps.size(); i++)
   {
-	  if (vectorOfLungApps[i].name.find("LungField") != std::string::npos)
-	  {
-		  vectorOfLungApps[i].action->setText("  Lung Field Segmentation"); 
-		  connect(vectorOfLungApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationSBRTLungField()));
-	  }
+    if (vectorOfLungApps[i].name.find("LungField") != std::string::npos)
+    {
+      vectorOfLungApps[i].action->setText("  Lung Field Segmentation");
+      connect(vectorOfLungApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationSBRTLungField()));
+    }
     if (vectorOfLungApps[i].name.find("Nodule") != std::string::npos)
     {
       vectorOfLungApps[i].action->setText("  Lung Nodule Segmentation");
@@ -840,7 +840,7 @@ fMainWindow::fMainWindow()
 
   //connect
   connect(m_toolTabdock, SIGNAL(topLevelChanged(bool)), this, SLOT(toolTabDockChanged(bool)));
-  
+
   recurrencePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   msubtypePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   survivalPanel.SetCurrentLoggerPath(m_tempFolderLocation);
@@ -2563,7 +2563,7 @@ void fMainWindow::SaveDicomImage()
   {
     directory_wrap += "/";
   }
-  
+
   typedef itk::Image<PixelType, Dimensions> ImageType;
   typedef itk::CastImageFilter< itk::Image< float, Dimensions >, ImageType > CastFilterType;
   CastFilterType::Pointer castFilter = CastFilterType::New();
@@ -2891,7 +2891,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     else
     {
-      using ImageType = itk::Image<unsigned int, 3>; 
+      using ImageType = itk::Image<unsigned int, 3>;
       auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName);
       inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
 
@@ -3584,8 +3584,8 @@ void fMainWindow::StartRecurrenceEstimate(const std::string &outputdirectory, bo
       T2ImagePointer = RescaleImageIntensity(mSlicerManagers[index]->mITKImage);
       filenames[3] = mSlicerManagers[index]->mFileName;
     }
-    else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_AX || 
-      mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_FA || 
+    else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_AX ||
+      mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_FA ||
       mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_RAD ||
       mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_TR)
     {
@@ -4229,7 +4229,7 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
   updateProgress(80, "Segmentation of nodule");
   segObject.PerformSegmentation();
   cbica::Logging(loggerFile, "segmentation done");
- 
+
   updateProgress(100, "Finishing up");
   segObject.WriteLabel(seedAvail);
   cbica::Logging(loggerFile, "written labels");
@@ -4454,7 +4454,7 @@ void fMainWindow::CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::st
   else
   {
     msg = "EGFRvIII mutation detection has been done for the given subjects by applying the specified model. \n\n";
-    if (result[0]>0)
+    if (result[0] > 0)
       msg = msg + "EGFRvIII Mutation = Detected. \n\n";
     else
       msg = msg + "EGFRvIII Mutation = Not detected. \n\n";
@@ -4617,7 +4617,7 @@ void fMainWindow::TrainNewPseudoprogressionModelOnGivenData(const std::string &i
     help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-  if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
+  if (QualifiedSubjects.size() > 0 && QualifiedSubjects.size() <= 20)
   {
     ShowErrorMessage("There should be atleast 20 patients to build reliable pseudo-progression model.");
     return;
@@ -5001,7 +5001,7 @@ void fMainWindow::openDicomImages()
   imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
   // make sure to delete the dicom series reader
-  delete dicomSeriesReader; 
+  delete dicomSeriesReader;
 
   imageManager->SetMask(mMask);
   imageManager->setTempFolderLocation(m_tempFolderLocation);
@@ -5031,7 +5031,7 @@ void fMainWindow::openDicomImages()
   m_imagesTable->setCellWidget(rowIndex, TAB_IMAGES_COLUMN_CLOSE, cButton);
   m_imagesTable->setCellWidget(rowIndex, TAB_IMAGES_COLUMN_TYPE, label);
   m_imagesTable->setItem(rowIndex, TAB_IMAGES_COLUMN_NAME, item);
- 
+
   imagesPanel->NewImageLoaded(id, imageManager->GetBaseFileName(), rowIndex, strImageType, imageManager->mImageSubType, this);
 
   mSlicerManagers.back()->SetId(id.toStdString());
@@ -5130,11 +5130,11 @@ void fMainWindow::ApplicationLIBRABatch()
 
   if (cbica::fileExists(scriptToCall))
   {
-   	QtConcurrent::run(this, &fMainWindow::startExternalProcess,
+    QtConcurrent::run(this, &fMainWindow::startExternalProcess,
       scriptToCall.c_str(),
       QStringList()
-	);
-    
+    );
+
     return;
   }
   else
@@ -5163,7 +5163,7 @@ void fMainWindow::ApplicationLIBRASingle()
     std::string command = scriptToCall + " " + dicomfilename + " " + m_tempFolderLocation + "/" + casename + " true true";
     cbica::Logging(loggerFile, "Running LIBRA Single Image with command '" + command + "'");
     startExternalProcess(command.c_str(), QStringList());
-    
+
     updateProgress(100, "Finished and loading mask");
 
     readMaskFile(m_tempFolderLocation + "/" + casename + "/Result_Images/totalmask/totalmask.dcm");
@@ -5360,7 +5360,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
     ShowErrorMessage("PET image needs to be loaded for SBRT Analysis", this);
     return;
   }
-  
+
   if (!isMaskDefined())
   {
     ShowErrorMessage("Please load lung nodule mask", this);
@@ -5421,7 +5421,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
   updateProgress(20, "Initializing");
   anaObject.Initialization(inputFileName, maskName);
   cbica::Logging(loggerFile, "SBRT Analysis Initialization complete");
- 
+
   updateProgress(50, "Feature Extraction");
   anaObject.FeaExtraction();
   cbica::Logging(loggerFile, "SBRT Analysis Feature Extraction complete");
@@ -5434,7 +5434,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
   {
     anaObject.OutputFeature(oname);
   }
-  
+
   updateProgress(0, ""); //! reset progress bar
 
   QString msgStr = QString("Predicted Risk (Survival): %1\nPredicted Risk(Nodal Failure): %2").arg(anaObject.GetSurivalRisk())
@@ -5681,9 +5681,9 @@ void fMainWindow::ApplicationWhiteStripe()
   }
   int index = GetSlicerIndexFromItem(items[0]);
 
-  if ((mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1) || 
-    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) || 
-    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2) || 
+  if ((mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1) ||
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) ||
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2) ||
     (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR))
   {
     auto tmp = mInputPathName.toStdString();
@@ -5950,15 +5950,15 @@ void fMainWindow::ApplicationGeodesicTraining()
 {
   // 2D
   typedef          itk::Image<float, 2>            InputImageType2D;
-  typedef          itk::Image<int,   2>            LabelsImageType2D;
+  typedef          itk::Image<int, 2>            LabelsImageType2D;
   typedef typename itk::Image<float, 2>::Pointer   InputImagePointer2D;
-  typedef typename itk::Image<int,   2>::Pointer   LabelsImagePointer2D;
-  
+  typedef typename itk::Image<int, 2>::Pointer   LabelsImagePointer2D;
+
   // 3D
   typedef          itk::Image<float, 3>            InputImageType3D;
-  typedef          itk::Image<int,   3>            LabelsImageType3D;
+  typedef          itk::Image<int, 3>            LabelsImageType3D;
   typedef typename itk::Image<float, 3>::Pointer   InputImagePointer3D;
-  typedef typename itk::Image<int,   3>::Pointer   LabelsImagePointer3D;
+  typedef typename itk::Image<int, 3>::Pointer   LabelsImagePointer3D;
 
   if (m_IsGeodesicTrainingRunning)
   {
@@ -5969,15 +5969,15 @@ void fMainWindow::ApplicationGeodesicTraining()
   m_IsGeodesicTrainingRunning = true;
 
   // Check if there are loaded images
-  if (mSlicerManagers[0] == nullptr)
+  if (mSlicerManagers.empty())
   {
-	  ShowErrorMessage("Please load some images.", this);
+    ShowErrorMessage("Please load some images.", this);
     m_IsGeodesicTrainingRunning = false;
     return;
   }
 
   // Check if mask has been instantiated (not sure if necessary)
-  if (mSlicerManagers[0]->mMask == nullptr)
+  if (!isMaskDefined())
   {
     ShowErrorMessage("Please draw a ROI image with at least 2 different labels.", this);
     m_IsGeodesicTrainingRunning = false;
@@ -6004,9 +6004,9 @@ void fMainWindow::ApplicationGeodesicTraining()
   auto labelsMap = GeodesicTrainingSegmentation::ParserGTS::CountsOfEachLabel<LabelsImageType3D>(currentROI);
   if (labelsMap.size() < 2)
   {
-	  ShowErrorMessage("Please draw using at least 2 different labels.", this);
-	  m_IsGeodesicTrainingRunning = false;
-	  return;
+    ShowErrorMessage("Please draw using at least 2 different labels.", this);
+    m_IsGeodesicTrainingRunning = false;
+    return;
   }
 
   // The input that GeodesicTraining needs
@@ -6016,42 +6016,42 @@ void fMainWindow::ApplicationGeodesicTraining()
   // Find the input images
   for (SlicerManager* sm : mSlicerManagers)
   {
-	  inputImages.push_back(sm->mITKImage);
+    inputImages.push_back(sm->mITKImage);
   }
 
   if (!isRerun)
   {
-	  // The user runs the algorithm for the first time for this subject
-	  mask = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
+    // The user runs the algorithm for the first time for this subject
+    mask = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
   }
   else {
-	  // The user is doing a rerun for the same subject
-	  // The new points that the user drew on the output segmentation are added
-	  // to the old mask and the algorithm executes again.
-	  mask = cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
-	  LabelsImagePointer3D previousResult =
-		  cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
+    // The user is doing a rerun for the same subject
+    // The new points that the user drew on the output segmentation are added
+    // to the old mask and the algorithm executes again.
+    mask = cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
+    LabelsImagePointer3D previousResult =
+      cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
 
-	  itk::ImageRegionIterator<LabelsImageType3D> iter_m(mask, mask->GetRequestedRegion());
-	  itk::ImageRegionIterator<LabelsImageType3D> iter_p(previousResult, previousResult->GetRequestedRegion());
-	  itk::ImageRegionIterator<LabelsImageType3D> iter_c(currentROI, currentROI->GetRequestedRegion());
+    itk::ImageRegionIterator<LabelsImageType3D> iter_m(mask, mask->GetRequestedRegion());
+    itk::ImageRegionIterator<LabelsImageType3D> iter_p(previousResult, previousResult->GetRequestedRegion());
+    itk::ImageRegionIterator<LabelsImageType3D> iter_c(currentROI, currentROI->GetRequestedRegion());
 
-	  for (iter_m.GoToBegin(), iter_p.GoToBegin(), iter_c.GoToBegin(); !iter_m.IsAtEnd(); ++iter_m, ++iter_p, ++iter_c)
-	  {
-		  int p = iter_p.Get();
-		  int c = iter_c.Get();
+    for (iter_m.GoToBegin(), iter_p.GoToBegin(), iter_c.GoToBegin(); !iter_m.IsAtEnd(); ++iter_m, ++iter_p, ++iter_c)
+    {
+      int p = iter_p.Get();
+      int c = iter_c.Get();
 
-		  if (p != c)
-		  {
-			  iter_m.Set(c);
-		  }
-	  }
+      if (p != c)
+      {
+        iter_m.Set(c);
+      }
+    }
   }
 
   // Save the mask for potential reruns on the same subject
   if (!cbica::isDir(m_tempFolderLocation + "/GeodesicTrainingOutput"))
   {
-	  cbica::createDir(m_tempFolderLocation + "/GeodesicTrainingOutput");
+    cbica::createDir(m_tempFolderLocation + "/GeodesicTrainingOutput");
   }
   cbica::WriteImage<LabelsImageType3D>(mask, m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
 
@@ -6067,8 +6067,8 @@ void fMainWindow::ApplicationGeodesicTraining()
     connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingFinishedWithError(QString)),
       this, SLOT(GeodesicTrainingSegmentationResultErrorHandler(QString))
     );
-    auto test = connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingProgressUpdate(int,std::string,int)),
-      this, SLOT(updateProgress(int,std::string,int))
+    auto test = connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingProgressUpdate(int, std::string, int)),
+      this, SLOT(updateProgress(int, std::string, int))
     );
 
     // Run the algorithm
@@ -6077,58 +6077,58 @@ void fMainWindow::ApplicationGeodesicTraining()
   }
   else {
     // 2D (which has been loaded as a 3D image with a single slize in z-direction)
-	std::vector< InputImagePointer2D > inputImages2D(inputImages.size());
-	LabelsImagePointer2D               mask2D;
+    std::vector< InputImagePointer2D > inputImages2D(inputImages.size());
+    LabelsImagePointer2D               mask2D;
 
-	// Convert from 3D to 2D
-	cbica::Logging(loggerFile, "2D Image detected, doing conversion");
-	InputImageType3D::IndexType regionIndex;
-	regionIndex.Fill(0);
-	auto regionSize = inputImages[0]->GetLargestPossibleRegion().GetSize();
-	regionSize[2] = 0; // Only 2D image is needed
+    // Convert from 3D to 2D
+    cbica::Logging(loggerFile, "2D Image detected, doing conversion");
+    InputImageType3D::IndexType regionIndex;
+    regionIndex.Fill(0);
+    auto regionSize = inputImages[0]->GetLargestPossibleRegion().GetSize();
+    regionSize[2] = 0; // Only 2D image is needed
 
-	// Convert input images
-	for (size_t i = 0; i < inputImages.size(); i++)
-	{
-		auto extractor = itk::ExtractImageFilter< InputImageType3D, InputImageType2D >::New();
-		ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
-		extractor->SetExtractionRegion(desiredRegion);
-		extractor->SetInput(inputImages[i]);
-		extractor->SetDirectionCollapseToIdentity();
-		extractor->Update();
-		inputImages2D[i] = extractor->GetOutput();
-		inputImages2D[i]->DisconnectPipeline();
-	}
+    // Convert input images
+    for (size_t i = 0; i < inputImages.size(); i++)
+    {
+      auto extractor = itk::ExtractImageFilter< InputImageType3D, InputImageType2D >::New();
+      ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->SetInput(inputImages[i]);
+      extractor->SetDirectionCollapseToIdentity();
+      extractor->Update();
+      inputImages2D[i] = extractor->GetOutput();
+      inputImages2D[i]->DisconnectPipeline();
+    }
 
-	// Convert mask
-	auto extractor = itk::ExtractImageFilter< LabelsImageType3D, LabelsImageType2D >::New();
-	ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
-	extractor->SetExtractionRegion(desiredRegion);
-	extractor->SetInput(mask);
-	extractor->SetDirectionCollapseToIdentity();
-	extractor->Update();
-	mask2D = extractor->GetOutput();
-	mask2D->DisconnectPipeline();
+    // Convert mask
+    auto extractor = itk::ExtractImageFilter< LabelsImageType3D, LabelsImageType2D >::New();
+    ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
+    extractor->SetExtractionRegion(desiredRegion);
+    extractor->SetInput(mask);
+    extractor->SetDirectionCollapseToIdentity();
+    extractor->Update();
+    mask2D = extractor->GetOutput();
+    mask2D->DisconnectPipeline();
 
-	// Same as 3D but in 2D form
-	m_GeodesicTrainingCaPTkApp2D = new GeodesicTrainingCaPTkApp<2>(this);
+    // Same as 3D but in 2D form
+    m_GeodesicTrainingCaPTkApp2D = new GeodesicTrainingCaPTkApp<2>(this);
 
-	// Connect the signals/slots for progress updates and notifying that the algorithm is finished
-	connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingFinished()),
-		this, SLOT(GeodesicTrainingFinishedHandler())
-	);
-	connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingFinishedWithError(QString)),
-		this, SLOT(GeodesicTrainingSegmentationResultErrorHandler(QString))
-	);
-	auto test = connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingProgressUpdate(int, std::string, int)),
-		this, SLOT(updateProgress(int, std::string, int))
-	);
+    // Connect the signals/slots for progress updates and notifying that the algorithm is finished
+    connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingFinished()),
+      this, SLOT(GeodesicTrainingFinishedHandler())
+    );
+    connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingFinishedWithError(QString)),
+      this, SLOT(GeodesicTrainingSegmentationResultErrorHandler(QString))
+    );
+    auto test = connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingProgressUpdate(int, std::string, int)),
+      this, SLOT(updateProgress(int, std::string, int))
+    );
 
-	// Run the algorithm
-	m_GeodesicTrainingCaPTkApp2D->SetOutputPath(m_tempFolderLocation + "/GeodesicTrainingOutput");
-	m_GeodesicTrainingCaPTkApp2D->Run(inputImages2D, mask2D);
+    // Run the algorithm
+    m_GeodesicTrainingCaPTkApp2D->SetOutputPath(m_tempFolderLocation + "/GeodesicTrainingOutput");
+    m_GeodesicTrainingCaPTkApp2D->Run(inputImages2D, mask2D);
   }
-  
+
 }
 #endif
 
@@ -6376,7 +6376,7 @@ void fMainWindow::ApplicationPCA()
   //{
   //  ShowErrorMessage(msg, this);
   //}
-  
+
   pcaPanel.exec();
 }
 void fMainWindow::PerfusionMeasuresCalculation()
@@ -6399,19 +6399,27 @@ void fMainWindow::ApplicationTheia()
 {
   if (!mSlicerManagers.empty())
   {
-    std::string maskFile = m_tempFolderLocation + "/theia_mask.nii.gz";
-    cbica::WriteImage< ImageTypeFloat3D >(getMaskImage(), maskFile);
+    if (isMaskDefined())
+    {
+      std::string maskFile = m_tempFolderLocation + "/theia_mask.nii.gz";
+      cbica::WriteImage< ImageTypeFloat3D >(getMaskImage(), maskFile);
 
-    auto items = m_imagesTable->selectedItems();
-    auto index = GetSlicerIndexFromItem(items[0]);
+      auto items = m_imagesTable->selectedItems();
+      auto index = GetSlicerIndexFromItem(items[0]);
 
-    QStringList args;
-    args << "-i" << mSlicerManagers[index]->GetFileName().c_str() << "-m" << maskFile.c_str();
+      QStringList args;
+      args << "-i" << mSlicerManagers[index]->GetFileName().c_str() << "-m" << maskFile.c_str();
 
-	QtConcurrent::run(this, &fMainWindow::startExternalProcess,
-		getApplicationPath("Theia").c_str(),
-		args
-	);
+      QtConcurrent::run(this, &fMainWindow::startExternalProcess,
+        getApplicationPath("Theia").c_str(),
+        args
+      );
+    }
+    else
+    {
+      ShowErrorMessage("Please initialize a valid mask before trying 3D Visualizer", this);
+      return;
+    }
   }
   else
   {
@@ -6493,7 +6501,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
   QStringList args;
   args /*<< "-model" << (dataDir + "to_use/modelConfig.txt").c_str()*/
     << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
-  
+
   if (!file_mask.empty())
   {
     args << "-m" << file_mask.c_str();
@@ -6509,7 +6517,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     return;
   }
 
-   if (std::system((dmExe + " " + temp).c_str()) != 0)
+  if (std::system((dmExe + " " + temp).c_str()) != 0)
   {
     ShowErrorMessage("DeepMedic returned with exit code != 0");
     updateProgress(0, "");
@@ -6582,12 +6590,12 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, 
 
   if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
   {
-	  ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
-	  return;
+    ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
+    return;
   }
   else
   {
-	  ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
+    ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
   }
 }
 
@@ -7216,42 +7224,60 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
 void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile)
 {
-  auto referenceAtlasImage = cbica::ReadImage< ImageTypeFloat3D >(referenceImage);
-  auto inputImageImage = cbica::ReadImage< ImageTypeFloat3D >(inputImageFile);
+  if (!referenceImage.empty() && !inputImageFile.empty() && !outputImageFile.empty())
+  {
+    auto referenceAtlasImage = cbica::ReadImage< ImageTypeFloat3D >(referenceImage);
+    auto inputImageImage = cbica::ReadImage< ImageTypeFloat3D >(inputImageFile);
 
-  auto outputImage = cbica::GetHistogramMatchedImage< ImageTypeFloat3D >(inputImageImage, referenceAtlasImage);
+    auto outputImage = cbica::GetHistogramMatchedImage< ImageTypeFloat3D >(inputImageImage, referenceAtlasImage);
 
-  cbica::WriteImage< ImageTypeFloat3D >(outputImage, outputImageFile);
+    cbica::WriteImage< ImageTypeFloat3D >(outputImage, outputImageFile);
 
-  LoadSlicerImages(outputImageFile, CAPTK::ImageExtension::NIfTI);
+    LoadSlicerImages(outputImageFile, CAPTK::ImageExtension::NIfTI);
+  }
+  else
+  {
+    ShowErrorMessage("Please provide all inputs before trying histogram matching", this);
+    help_contextual("preprocessing_histoMatch.html");
+    return;
+  }
 }
 
 void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, const std::string maskImage, const std::string outputImageFile,
   const std::string quantLower, const std::string quantUpper,
   const std::string cutoffLower, const std::string cutoffUpper, bool wholeImageMeanThreshold)
 {
-  auto input = cbica::ReadImage< ImageTypeFloat3D >(inputImage);
-  auto mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
+  if (!inputImage.empty() && !maskImage.empty() && !outputImageFile.empty())
+  {
+    auto input = cbica::ReadImage< ImageTypeFloat3D >(inputImage);
+    auto mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
 
-  auto qLower = std::atof(quantLower.c_str());
-  auto qUpper = std::atof(quantUpper.c_str());
-  auto cLower = std::atof(cutoffLower.c_str());
-  auto cUpper = std::atof(cutoffUpper.c_str());
+    auto qLower = std::atof(quantLower.c_str());
+    auto qUpper = std::atof(quantUpper.c_str());
+    auto cLower = std::atof(cutoffLower.c_str());
+    auto cUpper = std::atof(cutoffUpper.c_str());
 
-  updateProgress(5, "Starting Normalization");
+    updateProgress(5, "Starting Normalization");
 
-  DeepMedicNormalizer< ImageTypeFloat3D > normalizer;
-  normalizer.SetInputImage(input);
-  normalizer.SetInputMask(mask);
-  normalizer.SetQuantiles(qLower, qUpper);
-  normalizer.SetCutoffs(cLower, cUpper);
-  normalizer.Update();
+    DeepMedicNormalizer< ImageTypeFloat3D > normalizer;
+    normalizer.SetInputImage(input);
+    normalizer.SetInputMask(mask);
+    normalizer.SetQuantiles(qLower, qUpper);
+    normalizer.SetCutoffs(cLower, cUpper);
+    normalizer.Update();
 
-  updateProgress(100, "Normalization Done");
+    updateProgress(100, "Normalization Done");
 
-  cbica::WriteImage< ImageTypeFloat3D >(normalizer.GetOutput(), outputImageFile);
+    cbica::WriteImage< ImageTypeFloat3D >(normalizer.GetOutput(), outputImageFile);
 
-  LoadSlicerImages(outputImageFile, CAPTK::ImageExtension::NIfTI);
+    LoadSlicerImages(outputImageFile, CAPTK::ImageExtension::NIfTI);
+  }
+  else
+  {
+    ShowErrorMessage("Please provide all inputs before trying Z-Scoring normalization", this);
+    help_contextual("preprocessing_zScoreNorm.html");
+    return;
+  }
 }
 
 void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder)
@@ -7294,7 +7320,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
     if (psr == true)
       cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputFolder + "/PSR.nii.gz");
     if (ph == true)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputFolder + "/PH.nii.gz"); 
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputFolder + "/PH.nii.gz");
     if (rcbv == true)
       cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[2], outputFolder + "/ap-RCBV.nii.gz");
 
@@ -7369,10 +7395,10 @@ void fMainWindow::CallPCACalculation(const int number, const std::string inputdi
   QCoreApplication::processEvents();
   if (box->exec() == QMessageBox::Ok)
   {
-//    object_pca.PrepareNewPCAModel(number,inputdirectory,outputdirectory);
-    /*for (int index = 0; index < number; index++)
-      cbica::WriteImage< ImageTypeFloat3D >(individual_pcs[index], outputdirectory + "/pca_" + std::to_string(index) + ".nii.gz");
-*/
+    //    object_pca.PrepareNewPCAModel(number,inputdirectory,outputdirectory);
+        /*for (int index = 0; index < number; index++)
+          cbica::WriteImage< ImageTypeFloat3D >(individual_pcs[index], outputdirectory + "/pca_" + std::to_string(index) + ".nii.gz");
+    */
     QString message;
     message = "First " + QString::number(number) + " principal components have been saved at the specified locations.";
     ShowMessage(message.toStdString(), this);
@@ -7396,7 +7422,7 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
 
   ImageTypeFloat3D::Pointer mask;
   auto normImage = normalizer.process(mSlicerManagers[index]->mITKImage, mask);
-  
+
   if (normImage.IsNotNull())
   {
 
@@ -7418,7 +7444,7 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
   }
   else
   {
-  // std::cout << "fmain HIT10" << std::endl;
+    // std::cout << "fmain HIT10" << std::endl;
     ShowErrorMessage("WhiteStripe did not run as expected. Please see 'Help' for assistance.");
     help_contextual("Glioblastoma_WhiteStripe.html");
     return;
@@ -7511,174 +7537,174 @@ std::vector<int> read_int_vector(std::string &nccRadii)
 void fMainWindow::GeodesicTrainingFinishedHandler()
 {
   // Load the output segmentation as a ROI
-	if (mSlicerManagers[0]->mFileName == m_GeodesicTrainingFirstFileNameFromLastExec)
-	{
-		readMaskFile(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
-	}
+  if (mSlicerManagers[0]->mFileName == m_GeodesicTrainingFirstFileNameFromLastExec)
+  {
+    readMaskFile(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
+  }
 
-	ShowMessage(std::string("Geodesic Training Segmentation finished. If the output contains mistakes, ") +
-              std::string("just correct some of them on the output mask and ") +
-	            std::string("run Geodesic Training Segmentation again.")
-	);
+  ShowMessage(std::string("Geodesic Training Segmentation finished. If the output contains mistakes, ") +
+    std::string("just correct some of them on the output mask and ") +
+    std::string("run Geodesic Training Segmentation again.")
+  );
   m_IsGeodesicTrainingRunning = false;
 }
 
 void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 {
-	ShowErrorMessage(errorMessage.toStdString(), this);
+  ShowErrorMessage(errorMessage.toStdString(), this);
   m_IsGeodesicTrainingRunning = false;
 }
 
-void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, 
-	std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
+void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames,
+  std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
 {
-	// This happens because the qconcurrent doesn't allow more than 5 function parameters, without std::bind + not sure what else
-	std::vector<std::string> compVector = {
-		fixedFileName,
-		((registrationMode) ? "true" : "false"),
-		metrics,
-		((affineMode) ? "true" : "false"),
-		radii,
-		iterations
-	};
+  // This happens because the qconcurrent doesn't allow more than 5 function parameters, without std::bind + not sure what else
+  std::vector<std::string> compVector = {
+    fixedFileName,
+    ((registrationMode) ? "true" : "false"),
+    metrics,
+    ((affineMode) ? "true" : "false"),
+    radii,
+    iterations
+  };
 
-	QtConcurrent::run(this, &fMainWindow::RegistrationWorker, 
-		compVector,
-		inputFileNames,
-		outputFileNames,
-		matrixFileNames
-	);
-	/*QFuture<void> r = QtConcurrent::run(std::bind(
-	  this, &fMainWindow::RegistrationWorker,
-	  fixedFileName, inputFileNames, outputFileNames, 
-	  matrixFileNames, registrationMode, metrics, affineMode, radii, iterations
-	));*/
+  QtConcurrent::run(this, &fMainWindow::RegistrationWorker,
+    compVector,
+    inputFileNames,
+    outputFileNames,
+    matrixFileNames
+  );
+  /*QFuture<void> r = QtConcurrent::run(std::bind(
+    this, &fMainWindow::RegistrationWorker,
+    fixedFileName, inputFileNames, outputFileNames,
+    matrixFileNames, registrationMode, metrics, affineMode, radii, iterations
+  ));*/
 }
 
-void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::vector<std::string> inputFileNames, 
-	std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames)
+void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::vector<std::string> inputFileNames,
+  std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames)
 {
-	// "Unpacking" the variables
-	std::string fixedFileName = compVector[0];
-	bool registrationMode = (compVector[1] == "true");
-	std::string metrics = compVector[2];
-	bool affineMode = (compVector[3] == "true");
-	std::string radii = compVector[4];
-	std::string iterations = compVector[5];
+  // "Unpacking" the variables
+  std::string fixedFileName = compVector[0];
+  bool registrationMode = (compVector[1] == "true");
+  std::string metrics = compVector[2];
+  bool affineMode = (compVector[3] == "true");
+  std::string radii = compVector[4];
+  std::string iterations = compVector[5];
 
-	std::string configPathName;
-	std::string configFileName;
-	std::string extn = ".txt";
+  std::string configPathName;
+  std::string configFileName;
+  std::string extn = ".txt";
 
-	std::vector<std::string> affineMatrix;
-	std::vector<std::string> outputImage;
+  std::vector<std::string> affineMatrix;
+  std::vector<std::string> outputImage;
 
-	//updateProgress(5, "Starting Registration");
+  //updateProgress(5, "Starting Registration");
 
-	auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
+  auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
 
-	if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
-	{
-		//ShowErrorMessage("Number of input, matrix and output file names do not match");
-		return;
-	}
+  if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
+  {
+    //ShowErrorMessage("Number of input, matrix and output file names do not match");
+    return;
+  }
 
-	configPathName = itksys::SystemTools::GetFilenamePath(matrixFileNames[0]).c_str();
-	configFileName = configPathName + "/" + itksys::SystemTools::GetFilenameWithoutExtension(matrixFileNames[0]).c_str() + extn;
+  configPathName = itksys::SystemTools::GetFilenamePath(matrixFileNames[0]).c_str();
+  configFileName = configPathName + "/" + itksys::SystemTools::GetFilenameWithoutExtension(matrixFileNames[0]).c_str() + extn;
 
-	for (unsigned int i = 0; i < inputFileNames.size(); i++)
-	{
-		if (!cbica::isFile(inputFileNames[i]))
-		{
-			//ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
-			return;
-		}
-		//updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
+  for (unsigned int i = 0; i < inputFileNames.size(); i++)
+  {
+    if (!cbica::isFile(inputFileNames[i]))
+    {
+      //ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
+      return;
+    }
+    //updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
 
-		std::string fixedFileCommand = "-f " + fixedFileName;
-		std::string movingFileCommand = " -i " + inputFileNames[i];
-		std::string affineMatrixCommand = " -t " + matrixFileNames[i];
-		std::string outputCommand = " -o " + outputFileNames[i];
-		std::string metricsCommand = " -m " + metrics;
-		std::string iterationsCommand = " -n " + iterations;
-		QStringList args;
-		args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
-			<< "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
-			<< "-m" << metrics.c_str() << "-n" << iterations.c_str();
+    std::string fixedFileCommand = "-f " + fixedFileName;
+    std::string movingFileCommand = " -i " + inputFileNames[i];
+    std::string affineMatrixCommand = " -t " + matrixFileNames[i];
+    std::string outputCommand = " -o " + outputFileNames[i];
+    std::string metricsCommand = " -m " + metrics;
+    std::string iterationsCommand = " -n " + iterations;
+    QStringList args;
+    args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
+      << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
+      << "-m" << metrics.c_str() << "-n" << iterations.c_str();
 
-		if (metrics == "NCC")
-			args << "-ri" << radii.c_str();
-		if (affineMode)
-		{
-			args << "-a";
-		}
-		else
-		{
-			args << "-r";
-		}
-		std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
+    if (metrics == "NCC")
+      args << "-ri" << radii.c_str();
+    if (affineMode)
+    {
+      args << "-a";
+    }
+    else
+    {
+      args << "-r";
+    }
+    std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
 
-		if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
-		{
-			//ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
-			return;
-		}
-		else
-		{
-			affineMatrix.push_back(matrixFileNames[i] + ".mat");
-		}
+    if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
+    {
+      //ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
+      return;
+    }
+    else
+    {
+      affineMatrix.push_back(matrixFileNames[i] + ".mat");
+    }
 
 
-		if (matrixFileNames[i].find("remove") != std::string::npos)
-		{
-			if (cbica::isFile(matrixFileNames[i]))
-			{
-				if (std::remove(matrixFileNames[i].c_str()) == 0)
-				{
-					//updateProgress(80, "Cleaning temporary files");
-				}
-			}
+    if (matrixFileNames[i].find("remove") != std::string::npos)
+    {
+      if (cbica::isFile(matrixFileNames[i]))
+      {
+        if (std::remove(matrixFileNames[i].c_str()) == 0)
+        {
+          //updateProgress(80, "Cleaning temporary files");
+        }
+      }
 
-			//updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
-		}
+      //updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
+    }
 
-		//updateProgress(100, "Registration Complete.");
+    //updateProgress(100, "Registration Complete.");
 
-		time_t t = std::time(0);
-		long int now = static_cast<long int> (t);
+    time_t t = std::time(0);
+    long int now = static_cast<long int> (t);
 
-		std::ofstream file;
-		file.open(configFileName.c_str());
+    std::ofstream file;
+    file.open(configFileName.c_str());
 
-		std::string mode;
+    std::string mode;
 
-		if (affineMode == true)
-			mode = "Affine";
-		else
-			mode = "Rigid";
+    if (affineMode == true)
+      mode = "Affine";
+    else
+      mode = "Rigid";
 
-		if (file.is_open())
-		{
-			if (metrics != "NCC") {
-				file << fixedFileName << ","
-					<< metrics << ","
-					<< mode << ","
-					<< iterations << ","
-					<< now << "\n";
-			}
-			else {
-				file << fixedFileName << ","
-					<< metrics << ","
-					<< radii << ","
-					<< mode << ","
-					<< iterations << ","
-					<< now << "\n";
-			}
-		}
-		file.close();
-	}
+    if (file.is_open())
+    {
+      if (metrics != "NCC") {
+        file << fixedFileName << ","
+          << metrics << ","
+          << mode << ","
+          << iterations << ","
+          << now << "\n";
+      }
+      else {
+        file << fixedFileName << ","
+          << metrics << ","
+          << radii << ","
+          << mode << ","
+          << iterations << ","
+          << now << "\n";
+      }
+    }
+    file.close();
+  }
 
-	//std::terminate();
+  //std::terminate();
 }
 
 
@@ -7734,7 +7760,7 @@ void fMainWindow::closeEvent(QCloseEvent* event)
   {
     ShowErrorMessage("Please close all external applications before exiting.");
     event->ignore();
-    return;    
+    return;
   }
 
   if (m_IsGeodesicTrainingRunning)
@@ -8126,7 +8152,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
 {
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
-  std::vector<std::string> subjectNames= cbica::subdirectoriesInDirectory(directoryname);
+  std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
 
   //subjectNames.clear();
   //subjectNames.push_back("AAMA");
