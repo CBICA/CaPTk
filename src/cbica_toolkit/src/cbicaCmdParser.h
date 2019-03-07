@@ -444,7 +444,7 @@ namespace cbica
     \param commandExcludingExeName A string which would correspond to the command line usage AFTER the executable has been called
     \param descriptionOfCommand A string which would correspond to what the command is expected to do
     */
-    void AddExampleUsage(const std::string &commandExcludingExeName, const std::string &descriptionOfCommand);
+    void addExampleUsage(const std::string &commandExcludingExeName, const std::string &descriptionOfCommand);
 
     /**
     \brief Adds descrition for the application for which the class is being initialized

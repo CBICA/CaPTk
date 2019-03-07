@@ -1190,7 +1190,7 @@ namespace cbica
     m_exampleOfUsage = cbica::stringReplace(m_exampleOfUsage, "./" + m_exeName, "");
   }
 
-  void CmdParser::AddExampleUsage(const std::string &commandExcludingExeName, const std::string &descriptionOfCommand)
+  void CmdParser::addExampleUsage(const std::string &commandExcludingExeName, const std::string &descriptionOfCommand)
   {
     auto tempUsage = commandExcludingExeName;
 
