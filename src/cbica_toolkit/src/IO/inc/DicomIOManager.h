@@ -39,5 +39,5 @@ private:
   typename T::Pointer m_image3d;
 };
 
-#include "dicomiomanager.hxx"
+#include "DicomIOManager.hxx"
 #endif // DICOMIOMANAGER_H

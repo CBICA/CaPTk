@@ -1,4 +1,4 @@
-#include "dicomiomanager.h"
+#include "DicomIOManager.h"
 #include "itkImageSeriesReader.h"
 #include "DicomSeriesReader.h"
 #include "DicomImageReader.h"
