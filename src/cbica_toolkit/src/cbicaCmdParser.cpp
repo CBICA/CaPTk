@@ -692,8 +692,11 @@ namespace cbica
       getMaxLength();
     }
     std::cout << "Executable Name: " << m_exeName << " v" << m_version
-      << "\n\n" << "Usage:\n\n";
+      << "\n\n";
+    
+    std::cout << "Description:\n\n" << m_description << "\n\n";
 
+    std::cout << "Usage:\n\n";
     std::cout << ":::Required parameters:::\n\n";
     writeParameters(m_requiredParameters, true);
     std::cout << ":::Optional parameters:::\n\n";
@@ -706,10 +709,22 @@ namespace cbica
     m_exeName_wrap = m_exeName;
 #endif
 
-    if (m_exampleOfUsage != "")
+    if (m_exampleOfUsage != "") // this is deprecated
     {
       std::cout << "For example: \n\n" <<
         m_exeName_wrap << " " << m_exampleOfUsage << "\n";
+    }
+
+    if (!m_exampleUsageAndDescription.empty()) // this will become required
+    {
+      std::cout << "Examples of Usage:\n\n";
+
+      for (size_t i = 0; i < m_exampleUsageAndDescription.size(); i++)
+      {
+        std::cout << " Command: " << m_exeName_wrap << " " << m_exampleUsageAndDescription[i].first << "\n\n";
+        std::cout << " Result : " << m_exampleUsageAndDescription[i].second << "\n\n";
+      }
+      std::cout << "\n";
     }
 
     copyrightNotice();
