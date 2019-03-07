@@ -19,6 +19,15 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <algorithm>
 #include <vector>
 
+#if defined(__GNUC__) || defined(__clang__)
+#define DEPRECATED __attribute__((deprecated))
+#elif defined(_MSC_VER)
+#define DEPRECATED __declspec(deprecated)
+#else
+#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#define DEPRECATED
+#endif
+
 enum Separator
 {
   Param, DataType, DataRange
@@ -393,9 +402,12 @@ namespace cbica
     */
     int getDataTypeAsEnumCode(const std::string &execParamToCheck);
 
-	  void writeJSONFile(const std::string & dirName);
+    /**
+    \brief Write the parser configuration as a JSON file
+    */
+    //void writeJSONFile(const std::string & dirName);
 
-	  /**
+    /**
     \brief Write the configuration file for the executable for use in the common GUI framework
 
     The generated config file is always named 'EXE_NAME.txt'.
@@ -420,7 +432,23 @@ namespace cbica
 
     \param usageOfExe A string which would correspond to the command line usage AFTER the executable has been called
     */
-    void exampleUsage(const std::string &usageOfExe);
+    DEPRECATED void exampleUsage(const std::string &usageOfExe);
+
+    /**
+    \brief Gives a brief example of how to use the executable
+
+    This should not contain any references to the executable name (it is automatically picked up).
+    It should start directly with the parameters to be put in.
+
+    \param commandExcludingExeName A string which would correspond to the command line usage AFTER the executable has been called
+    \param descriptionOfCommand A string which would correspond to what the command is expected to do
+    */
+    void AddExampleUsage(const std::string &commandExcludingExeName, const std::string &descriptionOfCommand);
+
+    /**
+    \brief Adds descrition for the application for which the class is being initialized
+    */
+    void SetApplicationDescription(const std::string &description);
 
 	  /**
 	  \brief Writes out a CWL specification file from cmd parser
@@ -537,7 +565,6 @@ namespace cbica
 	  */
 	  std::string getLaconic(const std::string &execParamToCheck);
 
-	  void logCWL(const std::string &inpFileName, const std::string &cwlFileName);
     /**
     \brief Get the value of the parameter
 
@@ -595,6 +622,10 @@ namespace cbica
     }
     
   private:
+
+    //! Logs the CWL that is passed through cwl-runner
+    void logCWL(const std::string &inpFileName, const std::string &cwlFileName);
+
     //! Executable name
     std::string m_exeName;
     //! Executable path
@@ -603,6 +634,8 @@ namespace cbica
     std::string m_version;
     //! Example of how to use the executable in question
     std::string m_exampleOfUsage;
+    //! Description of the application - intended to give a short overview of what the user should expect
+    std::string m_description;
     //! CMD variable, used to ensure that 'const' based variables are taken into consideration
     int m_argc;
     //! CMD variable, used to ensure that 'const' based variables are taken into consideration

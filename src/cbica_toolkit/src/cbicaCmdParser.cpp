@@ -10,6 +10,7 @@ Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
 See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 */
+
 #if (_WIN32)
 #define NOMINMAX
 #include <direct.h>
@@ -58,7 +59,6 @@ static const char  cSeparator = '/';
 #include <vector>
 #include "cbicaCmdParser.h"
 #include "yaml-cpp/yaml.h"
-
 
 #ifndef PROJECT_VERSION
 #define PROJECT_VERSION "0.0.1"
@@ -405,7 +405,7 @@ namespace cbica
     cbica::splitFileName(cbica::_getFullPath(), path, base, ext);
     if (input_exeName.empty())
     {
-      m_exeName = base;
+      m_exeName = getExecutableName();
     }
     else
     {
@@ -1189,6 +1189,16 @@ namespace cbica
     m_exampleOfUsage = cbica::stringReplace(m_exampleOfUsage, "./" + m_exeName, "");
   }
 
+  void CmdParser::AddExampleUsage(const std::string &commandExcludingExeName, const std::string &descriptionOfCommand)
+  {
+
+  }
+
+  void CmdParser::SetApplicationDescription(const std::string &description)
+  {
+    m_description = description;
+  }
+
   void CmdParser::writeCWLFile(const std::string &dirName, bool overwriteFile = true) 
   {
     if (!checkMaxLen)
@@ -1531,7 +1541,7 @@ namespace cbica
       cmd += cwl_spec_path + " " + cwl_input_path;
     }
     cmd += cwl_spec_path;
-    system(cmd.c_str());
+    std::system(cmd.c_str());
     //ShellExecute(0, "open", "cmd.exe", cmd.c_str(), 0, SW_HIDE);;
   }
 
@@ -1572,59 +1582,58 @@ namespace cbica
     return "";
   }
 
-  void CmdParser::logCWL(const std::string &inpFileName, const std::string &cwlFileName) {
-  /*
-    //create a timecode specific folder
-    // current date/time based on current system
-    time_t now = time(0);
+  void CmdParser::logCWL(const std::string &inpFileName, const std::string &cwlFileName) 
+  {  
+    ////create a timecode specific folder
+    //// current date/time based on current system
+    //time_t now = time(0);
 
-    struct tm timeinfo;
-    localtime_s(&timeinfo, &now);
+    //struct tm timeinfo;
+    //localtime_s(&timeinfo, &now);
 
-    // print various components of tm structure.
-    std::cout << "Year: " << 1900 + timeinfo.tm_year << std::endl;
-    int Y = 1900 + timeinfo.tm_year;
-    std::cout << "Month: " << 1 + timeinfo.tm_mon << std::endl;
-    int M = 1 + timeinfo.tm_mon;
-    std::cout << "Day: " << timeinfo.tm_mday << std::endl;
-    int D = timeinfo.tm_mday;
-    std::cout << "Time: " << 1 + timeinfo.tm_hour << ":";
-    int H = timeinfo.tm_hour;
-    std::cout << 1 + timeinfo.tm_min << ":";
-    int Mi = timeinfo.tm_min;
-    std::cout << 1 + timeinfo.tm_sec << std::endl;
-    int S = 1 + timeinfo.tm_sec;
+    //// print various components of tm structure.
+    //std::cout << "Year: " << 1900 + timeinfo.tm_year << std::endl;
+    //int Y = 1900 + timeinfo.tm_year;
+    //std::cout << "Month: " << 1 + timeinfo.tm_mon << std::endl;
+    //int M = 1 + timeinfo.tm_mon;
+    //std::cout << "Day: " << timeinfo.tm_mday << std::endl;
+    //int D = timeinfo.tm_mday;
+    //std::cout << "Time: " << 1 + timeinfo.tm_hour << ":";
+    //int H = timeinfo.tm_hour;
+    //std::cout << 1 + timeinfo.tm_min << ":";
+    //int Mi = timeinfo.tm_min;
+    //std::cout << 1 + timeinfo.tm_sec << std::endl;
+    //int S = 1 + timeinfo.tm_sec;
 
-    std::string timestampStr;
-    std::stringstream convD, convM, convY, convH, convMi, convS;
-    convD << D;
-    convM << M;
-    convY << Y;
-    convH << H;
-    convMi << Mi;
-    convS << S;
-    std::cout << "Timestamp:" << std::endl;
-    timestampStr = convD.str() + '.' + convM.str() + '.' + convY.str() + '-' + convH.str() + ':' + convMi.str() + ':' + convS.str();
-    std::cout << timestampStr << std::endl;
+    //std::string timestampStr;
+    //std::stringstream convD, convM, convY, convH, convMi, convS;
+    //convD << D;
+    //convM << M;
+    //convY << Y;
+    //convH << H;
+    //convMi << Mi;
+    //convS << S;
+    //std::cout << "Timestamp:" << std::endl;
+    //timestampStr = convD.str() + '.' + convM.str() + '.' + convY.str() + '-' + convH.str() + ':' + convMi.str() + ':' + convS.str();
+    //std::cout << timestampStr << std::endl;
 
-    namespace fs = std::experimental::filesystem;
-    fs::path inpSourceFile = inpFileName;
-    fs::path cwlSourceFile = cwlFileName;
-    fs::path targetParent = "m_exeName/" + timestampStr;
-    auto target1 = targetParent / inpSourceFile.filename(); // sourceFile.filename() returns "sourceFile.ext".
-    auto target2 = targetParent / cwlSourceFile.filename();
-    try // If you want to avoid exception handling, then use the error code overload of the following functions.
-    {
-      fs::create_directories(targetParent); // Recursively create target directory if not existing.
-      fs::copy_file(inpSourceFile, target1, fs::copy_options::overwrite_existing);
-      fs::create_directories(targetParent); // Recursively create target directory if not existing.
-      fs::copy_file(cwlSourceFile, target2, fs::copy_options::overwrite_existing);
-    }
-    catch (std::exception& e) // Not using fs::filesystem_error since std::bad_alloc can throw too.  
-    {
-      std::cout << e.what();
-    }
-    */
+    //namespace fs = std::experimental::filesystem;
+    //fs::path inpSourceFile = inpFileName;
+    //fs::path cwlSourceFile = cwlFileName;
+    //fs::path targetParent = "m_exeName/" + timestampStr;
+    //auto target1 = targetParent / inpSourceFile.filename(); // sourceFile.filename() returns "sourceFile.ext".
+    //auto target2 = targetParent / cwlSourceFile.filename();
+    //try // If you want to avoid exception handling, then use the error code overload of the following functions.
+    //{
+    //  fs::create_directories(targetParent); // Recursively create target directory if not existing.
+    //  fs::copy_file(inpSourceFile, target1, fs::copy_options::overwrite_existing);
+    //  fs::create_directories(targetParent); // Recursively create target directory if not existing.
+    //  fs::copy_file(cwlSourceFile, target2, fs::copy_options::overwrite_existing);
+    //}
+    //catch (std::exception& e) // Not using fs::filesystem_error since std::bad_alloc can throw too.  
+    //{
+    //  std::cout << e.what();
+    //}    
   }
 
 
