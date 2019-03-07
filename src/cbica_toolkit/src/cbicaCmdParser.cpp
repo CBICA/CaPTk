@@ -336,6 +336,22 @@ namespace cbica
     return path;
   }
 
+  static inline std::string getFilenameBase(const std::string &filename, bool checkFile)
+  {
+    if (checkFile)
+    {
+      if (!fileExists(filename))
+      {
+        std::cerr << "[getFilenameBase()] Supplied file name'" << filename << "'wasn't found.\n";
+        exit(EXIT_FAILURE);
+      }
+    }
+    std::string path, base, ext;
+    splitFileName(filename, path, base, ext);
+
+    return base;
+  }
+
   //! copied from cbicaUtilities to ensure CmdParser stays header-only
   static inline std::string getExecutableName()
   {
@@ -344,13 +360,35 @@ namespace cbica
     //! Initialize pointers to file and user names
     char filename[FILENAME_MAX];
     GetModuleFileNameA(NULL, filename, FILENAME_MAX);
-    std::string path, ext;
-    splitFileName(filename, path, return_string, ext);
-    filename[0] = '\0';
+    return_string = getFilenameBase(filename);
     //_splitpath_s(filename, NULL, NULL, NULL, NULL, filename, NULL, NULL, NULL);
+#elif __APPLE__
+    char path[PATH_MAX];
+    uint32_t size = PATH_MAX - 1;
+    if (path != NULL)
+    {
+      if (_NSGetExecutablePath(path, &size) == 0)
+      {
+        return_string = getFilenameBase(std::string(path));
+      }
+    }
 #else
     return_string = getEnvironmentVariableValue("_");
-    splitFileName(filename, path, return_string, ext);
+    return_string = stringReplace(return_string, "./", "");
+    char path[PATH_MAX];
+    if (path != NULL)
+    {
+      auto ret = ::readlink("/proc/self/exe", path, sizeof(path) - 1);
+      if (ret == -1)
+      {
+        //free(path);
+        path[0] = '\0';
+      }
+      path[ret] = 0;
+    }
+    auto temp = std::string(path);
+    return_string = getFilenameBase(temp);
+    path[0] = '\0';
 #endif
 
     return return_string;
