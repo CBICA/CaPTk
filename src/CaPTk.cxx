@@ -50,6 +50,16 @@ void setStyleSheet(const std::string &styleFileName = CAPTK_STYLESHEET_FILE)
   }
 }
 
+void echoCWLFiles(std::vector< std::string > inputCWLFiles)
+{
+  std::cout << "Availble CWL applications (refer to individual CLI usage): \n\n";
+  for (size_t i = 0; i < inputCWLFiles.size(); i++)
+  {
+    auto cwlFileBase = cbica::getFilenameBase(inputCWLFiles[i]);
+    std::cout << "\t" << cwlFileBase << "\n";
+  }
+}
+
 #ifdef _WIN32
 // ensures no console pops up when launching the program
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCmdLine, int nShowCmd)
@@ -61,29 +71,26 @@ int main(int argc, char** argv)
 {
 #endif
 
-  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
-
-  #if __APPLE__
-  // this->
-  QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-  #endif
-
-  //! Support for High DPI monitors..works on windows but still some menu issues are seen
-  //! Needs to be tested on Linux and Mac
-  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-  //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
-
-  QApplication app(argc, argv);
-
-  //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
-  cbica::setEnvironmentVariable("QT_OPENGL", "software");
-
   std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
 
+  // this is used to populate the available CWL files for the cli
+  auto cwlFiles = cbica::getCWLFilesInApplicationDir();
+
+  // parse the command line
+  auto parser = cbica::CmdParser(argc, argv, "CaPTk");
+  parser.ignoreArgc1();
+
+  parser.addOptionalParameter("i", "images", cbica::Parameter::FILE, "NIfTI or DICOM", "Input coregistered image(s) to load into CaPTk", "Multiple images are delineated using ','");
+  parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "NIfTI or DICOM", "Input mask [coregistered with image(s)] to load into CaPTk", "Accepts only one file");
+  parser.addOptionalParameter("tu", "tumorPt", cbica::Parameter::FILE, ".txt", "Tumor Point file for the image(s) being loaded");
+  parser.addOptionalParameter("ts", "tissuePt", cbica::Parameter::FILE, ".txt", "Tissue Point file for the image(s) being loaded");
+  parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
+  
+  parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
+  
   // check for CWL command coming in through the command line after "CaPTk"
   if (cmd_inputs.empty() && (argc > 1))
   {
-    auto cwlFiles = cbica::getCWLFilesInApplicationDir();
     for (auto & file : cwlFiles)
     {
       auto cwlFileBase = cbica::getFilenameBase(file);
@@ -99,7 +106,7 @@ int main(int argc, char** argv)
         //selected_file.open(file.c_str());
         auto config = YAML::LoadFile(file);
         // Get all args passed to application
-        std::string argv_complete;        
+        std::string argv_complete;
         for (size_t i = 2; i < argc; i++) // 2 because the argv[1] is always the "application"
         {
           argv_complete += " " + std::string(argv[i]);
@@ -109,19 +116,21 @@ int main(int argc, char** argv)
       }
     }
   }
-  
-  // parse the command line
-  auto parser = cbica::CmdParser(argc, argv, "CaPTk");
-  parser.ignoreArgc1();
 
-  parser.addOptionalParameter("i", "images", cbica::Parameter::FILE, "NIfTI or DICOM", "Input coregistered image(s) to load into CaPTk", "Multiple images are delineated using ','");
-  parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "NIfTI or DICOM", "Input mask [coregistered with image(s)] to load into CaPTk", "Accepts only one file");
-  parser.addOptionalParameter("tu", "tumorPt", cbica::Parameter::FILE, ".txt", "Tumor Point file for the image(s) being loaded");
-  parser.addOptionalParameter("ts", "tissuePt", cbica::Parameter::FILE, ".txt", "Tissue Point file for the image(s) being loaded");
-  parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
-  
-  parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
-  
+  if (parser.isPresent("u", false))
+  {
+    parser.echoUsage();
+    echoCWLFiles(cwlFiles);
+    return EXIT_SUCCESS;
+  }
+
+  if (parser.isPresent("h", false))
+  {
+    parser.echoHelp();
+    echoCWLFiles(cwlFiles);
+    return EXIT_SUCCESS;
+  }
+
   if (parser.isPresent("i"))
   {
     parser.getParameterValue("i", cmd_inputs);
@@ -138,6 +147,23 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("ts", cmd_tissue);
   }
+
+  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
+
+#if __APPLE__
+  // this->
+  QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
+
+  //! Support for High DPI monitors..works on windows but still some menu issues are seen
+  //! Needs to be tested on Linux and Mac
+  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+
+  QApplication app(argc, argv);
+
+  //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
+  cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
   ///// debug
   //HANDLE hLogFile;

@@ -397,7 +397,7 @@ namespace cbica
   void CmdParser::initializeClass(int &input_argc, std::vector< std::string > &input_argv, const std::string &input_exeName)
   {
 #ifdef PROJECT_VERSION
-    m_version = PROJECT_VERSION;
+    m_version = std::string(PROJECT_VERSION);
 #else
     m_version = 0.1.0;
 #endif    
@@ -792,7 +792,7 @@ namespace cbica
     }
   }
 
-  bool CmdParser::compareParameter(const std::string &execParamToCheck, int &position)
+  bool CmdParser::compareParameter(const std::string &execParamToCheck, int &position, bool automaticEcho)
   {
     // check for argc values during the first run otherwise don't
     if (firstRun)
@@ -828,25 +828,34 @@ namespace cbica
       {
         helpRequested = true;
         position = i;
-        echoUsage();
-        exit(EXIT_SUCCESS);
-        //return true;
+        if (automaticEcho)
+        {
+          echoUsage();
+          exit(EXIT_SUCCESS);
+        }
+        return true;
       }
       if (inputParamToCheck == "h")
       {
         helpRequested = true;
         position = i;
-        echoHelp();
-        exit(EXIT_SUCCESS);
-        //return true;
+        if (automaticEcho)
+        {
+          echoHelp();
+          exit(EXIT_SUCCESS);
+        }
+        return true;
       }
       if (inputParamToCheck == "v")
       {
         helpRequested = true;
         position = i;
-        echoVersion();
-        exit(EXIT_SUCCESS);
-        //return true;
+        if (automaticEcho)
+        {
+          echoVersion();
+          exit(EXIT_SUCCESS);
+        }
+        return true;
       }
       if (inputParamToCheck == "rt")
       {
@@ -895,15 +904,15 @@ namespace cbica
     return false;
   }
 
-  bool CmdParser::compareParameter(const std::string &execParamToCheck)
+  bool CmdParser::compareParameter(const std::string &execParamToCheck, bool automaticEcho)
   {
     int position;
-    return compareParameter(execParamToCheck, position);
+    return compareParameter(execParamToCheck, position, automaticEcho);
   }
 
-  bool CmdParser::isPresent(const std::string &execParamToCheck)
+  bool CmdParser::isPresent(const std::string &execParamToCheck, bool automaticEcho)
   {
-    return compareParameter(execParamToCheck);
+    return compareParameter(execParamToCheck, automaticEcho);
   }
 
   std::string CmdParser::getDescription(const std::string &execParamToCheck, bool NewLine = false)

@@ -231,22 +231,25 @@ Informatics Technology Initiative (NIfTI) file format.
 \page ht_Segmentation Segmentation
 
 ## Geodesic Training Segmentation
-The geodesic training builds upon the geodesic distance transform based segmentation by adding support vector machines, support for multiple classes, multiple modalities, the ability to iterate the algorithm until a desired outcome is achieved and no need for thresholding. 
+'GeodesicTraining' builds upon the geodesic distance based segmentation by using machine learning (SVMs). 
+
+It also adds support for multiple areas of interest, multiple modalities, the ability to iterate the algorithm until a desired outcome is achieved and no need for thresholding. 
 
 <b> REQUIREMENTS:</b>
-One or more co-register images of the same subject and a ROI image containing sample labels for the different areas the user wants to segment. 
+One or more co-register images of the same subject. A ROI image has to be drawn which will containing sample labels for the different areas the user wants to segment (see usage for details). 
 
 <b> USAGE:</b>
-	-# Load the different modalities (of the same subject) into CaPTk. It doesn't matter which image you have selected, everything that is loaded is passed to the algorithm.
-	-# Draw over the images using CaPTk's drawing tools. You have to use at least two different colors. This means that if there is only one region you want to segment, you have to draw some labels for this region and some, using a different color, for the healthy tissues too. There is no restriction for which color to use for what and you can use as many colors (classes) as you want (for instance for brain tumors you can use one color for non-enhancing, one for enhancing, one for edema and one for healthy tissue or just two and do whole tumor vs healthy tissue, etc). You don't need to draw a lot of labels. In fact it is advised not to go overboard, as this leaves you room for better corrections later on. It's best to stick to the free-hand drawing tool with 1x1 or 3x3 marker size.
-	-# Click Applications>'Geodesic Training Segmentation' from the menu and wait ~30 seconds (depending on the image size).
-	-# Now you will see the output segmentation where your labels were previously drawn. You can keep this segmentation if it's ok. Chances are though that it contains mistakes. Using the drawing tools again, draw over *some* of those mistakes (right on the output segmentation!) and then click Applications>'Geodesic Training Segmentation' again. You can repeat this as many times as you want. (There probably won't be a need for more than 2-3 runs though). Something that you might not know about about CaPTk is that you can change the opacity of the ROI by clicking an image, then the 'opacity' checkbox next to the image and using the slider.
-	-# Once you are satisfied with the segmentation you can save it using File>Save>ROI. Most of the time people don't want their segmentations to contain labels for the healthy tissue. If you want that, before saving, select the color you used for healthy tissue from the 'label selector' in the drawing tools and click 'Clear selected label' and save.
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format (more advanced usage inside (src/applications/GeodesicTraining/GeodesicTraining/README.md):
+	-# Load the different images, that are different modalities of the same subject into CaPTk. It doesn't matter which image you have selected from the ones that are loaded. Everything that is loaded is passed to the algorithm.
+	-# Draw over the images using CaPTk's drawing tools. Example: Suppose that you have an image of a brain tumor and you are interested in segmenting the image into 3 different sections, tumor core (the main tumor), edema (a fluid surrounding the tumor core) and healthy tissue (the reset of the brain). You have to use three different colors. Suppose you use RED for tumor core, GREEN for edema and BLUE for healthy tissue (it's up to you to pick the colors). Draw a little bit over the tumor core with the red marker, a little bit over the edema with the green one and a little bit anywhere else that is not an affected area with the blue marker. Keep in mind to always use a color for areas that are not of interest (like we used now for healthy tissue), otherwise the algorithm will try to classify the healthy tissue as one of the colors you have actually drawn. Obviously, whatever you do you have to use at least two different colors. You don't need to draw excessively. In fact it is advised not to go overboard, as this leaves you room for better corrections later on (see below). It's best to stick to the free-hand drawing tool with 1x1 or 3x3 marker size.
+	-# After you have drawn, Click Applications>'Geodesic Training Segmentation' from the menu and wait ~30 seconds (depends on the number of images, the images' size and your computer specs).
+	-# Now you will see the output segmentation where your labels were previously drawn. You can keep this segmentation if it's ok. Chances are though that it contains mistakes. Using the drawing tools again, draw over *some* of those mistakes (right on the output segmentation!) and then click Applications>'Geodesic Training Segmentation' again. You can repeat this as many times as you want. (There probably won't be a need for more than 2-3 runs though). Something that you might not know about about CaPTk is that you can change the opacity of the ROI by clicking an image, then the 'opacity' checkbox next to the same image and using the slider.
+	-# Once you are satisfied with the segmentation you can save it using File>Save>ROI. Most of the time people don't want their segmentations to contain labels for the healthy tissue. If you wish for something similar then, before saving, select the color you used for healthy tissues from the 'label selector' in the drawing tools and click 'Clear selected label' and save.
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format (more advanced usage inside (src/applications/GeodesicTraining/GeodesicTraining/README.md) (use GeodesicTraining instead of GeodesicTraining.exe under linux):
 	\verbatim
-	GeodesicTraining.exe -i C:/inputImage1.nii.gz,C:/inputImage2.nii.gz,... -l C:/maskWithAtLeastTwoDifferentClasses.nii.gz -o C:/outputDirectory.nii.gz
+	GeodesicTraining.exe -i C:/inputImage1.nii.gz,C:/inputImage2.nii.gz,... -l C:/maskWithAtLeastTwoDifferentClasses.nii.gz -o C:/outputDirectoryNotFilename
 	\endverbatim
-
+	
+	You have to draw the ROI image somewhere else to use the CLI executable. This image should be zero everywhere, except for the voxels that you have drawn. These voxels should be the same value if they belong to the same area. For instance in the example we discussed before, you can use value 1 for tumor core, value 2 for edema and value 3 for healthy tissue. If you don't want the output to contain the healthy tissue you can use parameter "-cl 3/0" which means that value 3 will be changed to 0. Keep in mind that values for healthy tissue are still needed, they just not going to show up in the output segmentation. If you want to iterate (correct mistakes in the segmentation), it's a bit harder to do with the CLI. You have to add new values to the input ROI (not the output segmentation) and run again. If you are going to use the CLI it is recommended to spend a little bit more time when you draw your input ROI so the first segmentation you get is good and you don't have to iterate the algorithm often.
 <br>
 
 --------
@@ -347,7 +350,7 @@ References:
 	
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
 	\verbatim
-	FeatureExtraction -s AAC0_timestamp" -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
+	FeatureExtraction -n AAC0_timestamp" -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
 	\endverbatim
 	\verbatim
 	FeatureExtraction -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv # batch processing
@@ -355,7 +358,7 @@ References:
 	
 	- As intermediate results of the "Custom_lattice", the user also has the option to save feature maps, i.e., images that represent the spatial distribution of the corresponding feature measurements as sampled by the lattice over the ROI, using the following CLI format:
 	\verbatim
-	FeatureExtraction -s AAC0_timestamp" -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv -f 1
+	FeatureExtraction -n AAC0_timestamp" -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv -f 1
 	\endverbatim
   
 An example of the list file for batch processing can be found in <b>CAPTK_INSTALL_DIR/share/featureExtractionBatch/batch_featureextraction.csv</b>.
@@ -470,7 +473,7 @@ References:
 
 /**
 \page Glioblastoma_WhiteStripe Brain Cancer: WhiteStripe Normalization
-This algorithm normalizes conventional brain MRI scans [1] by detecting a latent subdistribution of normal tissue and linearly scaling the histogram of images.
+This algorithm normalizes conventional brain MRI scans [1] by detecting a latent subdistribution of normal tissue and linearly scaling the histogram of images. It is to be used on structural modalities only.
 
 <b>REQUIREMENTS:</b>
 	- Bias-corrected (N3 or N4) T1-weighted or T2-weighted images, ideally either skull-stripped or rigidly aligned to MNI space.
@@ -478,6 +481,7 @@ This algorithm normalizes conventional brain MRI scans [1] by detecting a latent
 <b>USAGE:</b>
 	-# Launch the WhiteStripe UI using the 'Applications -> WhiteStripe Normalization' menu option.
 	-# Specify the Input and Output files and different parameters (defaults are populated).
+  -# For T1-Gd images, use the "T1" option and for T2-FLAIR images, use the "T2" option.
 	-# Click on 'Run WhiteStripe" and the results can be seen in a slice format using "Toggle Mask/Image" checkbox.
 	-# Use 'Level Display' when needed.
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
@@ -1007,7 +1011,8 @@ Please see the LIBRA manual for more details: http://www.med.upenn.edu/sbia/libr
 
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-LIBRA.exe --input C:/inputDICOMDir --output C:/outputDir
+libra.bat --input C:/inputDICOMDir --output C:/outputDir # windows
+libra --input C:/inputDICOMDir --output C:/outputDir # linux
 \endverbatim
 
 <br>

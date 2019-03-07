@@ -1,0 +1,6 @@
+#ifndef H_CBICA_RANDOM_FOREST_SUITE
+#define H_CBICA_RANDOM_FOREST_SUITE
+
+#include "RFSuiteManager.h"
+
+#endif // !H_CBICA_RANDOM_FOREST_SUITE

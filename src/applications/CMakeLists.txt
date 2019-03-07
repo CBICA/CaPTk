@@ -53,12 +53,16 @@ ADD_SUBDIRECTORY( FeatureExtraction )
 ADD_SUBDIRECTORY( GeodesicTraining )
 ADD_SUBDIRECTORY( Preprocessing )
 ADD_SUBDIRECTORY( Utilities )
+
 INCLUDE_DIRECTORIES( 
-  FeatureExtraction/src/depends 
-  FeatureExtraction/src 
-  Preprocessing/src/depends
-  Utilities/src/depends
+  ${CMAKE_CURRENT_SOURCE_DIR}/FeatureExtraction/src/depends 
+  ${CMAKE_CURRENT_SOURCE_DIR}/FeatureExtraction/src 
+  ${CMAKE_CURRENT_SOURCE_DIR}/Preprocessing/src/depends
+  ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/src/depends
+  ${GEODESIC_TRAINING_INCLUDE_DIRS}
 )
+
+SET( INCLUDES ${INCLUDES} ${GEODESIC_TRAINING_INCLUDE_DIRS})
 
 SET(PREPROCESSING_ALGOS "DCM2NIfTI Denoise-SUSAN Register BiasCorrect-N3 HistogramMatching SkullStripping" CACHE STRING "All Preprocessing algorithms available")
 

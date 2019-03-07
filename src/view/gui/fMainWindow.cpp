@@ -1461,7 +1461,9 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     else if (!bFirstLoad)
     {
       {
-        auto imageInfoPrev = cbica::ImageInfo(mSlicerManagers[0]->GetPathFileName());
+        auto temp = cbica::normPath(m_tempFolderLocation + "/temp.nii.gz");
+        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp);
+        auto imageInfoPrev = cbica::ImageInfo(temp);
         auto sizePrev = imageInfoPrev.GetImageSize();
         auto size = imageInfo.GetImageSize();
         const std::string errorMsg = " not matching. Please register the image(s). Skipping file: ";
@@ -1529,7 +1531,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins());
       auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fileName);
-       imageManager->SetOriginalDirection(currentImage->GetDirection());
+      imageManager->SetOriginalDirection(currentImage->GetDirection());
       currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fileName));
       imageManager->SetImage(currentImage);
       imageManager->mImageSubType = guessImageType(fileName);
@@ -2659,31 +2661,31 @@ void fMainWindow::SaveDrawing()
 
   auto imageToWrite_wrap = imageToWrite;
   imageToWrite->DisconnectPipeline();
-  //if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-  //{
-  //  ImageTypeMask::DirectionType originalDirection;
-  //  originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
-  //  originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
-  //  originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
-  //  originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
-  //  originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
-  //  originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
-  //  originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
-  //  originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
-  //  originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
+  if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+  {
+    ImageTypeMask::DirectionType originalDirection;
+    originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
+    originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
+    originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
+    originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
+    originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
+    originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
+    originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
+    originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
+    originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
 
-  //  ImageTypeMask::PointType originalOrigin;
-  //  originalOrigin = mSlicerManagers[index]->mOrigin;
+    ImageTypeMask::PointType originalOrigin;
+    originalOrigin = mSlicerManagers[index]->mOrigin;
 
-  //  auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
-  //  infoChanger->SetInput(imageToWrite);
-  //  infoChanger->ChangeDirectionOn();
-  //  infoChanger->ChangeOriginOn();
-  //  infoChanger->SetOutputDirection(originalDirection);
-  //  infoChanger->SetOutputOrigin(originalOrigin);
-  //  infoChanger->Update();
-  //  imageToWrite_wrap = infoChanger->GetOutput();
-  //}
+    auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
+    infoChanger->SetInput(imageToWrite);
+    infoChanger->ChangeDirectionOn();
+    infoChanger->ChangeOriginOn();
+    infoChanger->SetOutputDirection(originalDirection);
+    infoChanger->SetOutputOrigin(originalOrigin);
+    infoChanger->Update();
+    imageToWrite_wrap = infoChanger->GetOutput();
+  }
 
   QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "mask.nii.gz");
   if (!saveFileName.isEmpty())
@@ -4121,11 +4123,15 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
   {
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
-      ctImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
-      petImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      petImageFile = temp;
     }
     else
     {
@@ -5193,11 +5199,15 @@ void fMainWindow::ApplicationSBRTLungField()
   {
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
-      ctImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
-      petImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      petImageFile = temp;
     }
     else
     {
@@ -5328,11 +5338,15 @@ void fMainWindow::ApplicationSBRTAnalysis()
   {
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
-      ctImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
-      petImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      petImageFile = temp;
     }
     else
     {
@@ -5668,7 +5682,9 @@ void fMainWindow::ApplicationWhiteStripe()
   int index = GetSlicerIndexFromItem(items[0]);
 
   if ((mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1) || 
-    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2))
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) || 
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2) || 
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR))
   {
     auto tmp = mInputPathName.toStdString();
     whiteStripeNormalizer.SetCurrentImagePath(mInputPathName);
@@ -6439,17 +6455,33 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     switch (mSlicerManagers[i]->mImageSubType)
     {
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1CE:
-      file_t1ce = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/t1ce.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_t1ce = temp;
       break;
+    }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1:
-      file_t1 = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/t1.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_t1 = temp;
       break;
+    }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2:
-      file_t2 = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/t2.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_t2 = temp;
       break;
+    }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR:
-      file_flair = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/flair.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_flair = temp;
       break;
+    }
     default:
       ShowErrorMessage("DeepMedic needs the following images to work: T1CE, T1, T2, FLAIR", this);
       break;
@@ -7356,6 +7388,7 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
   {
     return;
   }
+
   int index = GetSlicerIndexFromItem(items[0]);
 
   WhiteStripe normalizer;
@@ -7363,9 +7396,10 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
 
   ImageTypeFloat3D::Pointer mask;
   auto normImage = normalizer.process(mSlicerManagers[index]->mITKImage, mask);
-
+  
   if (normImage.IsNotNull())
   {
+
     cbica::WriteImage< ImageTypeFloat3D >(normImage, outputFileName);
     LoadSlicerImages(outputFileName, CAPTK::ImageExtension::NIfTI);
 
@@ -7374,16 +7408,17 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
     int modeId;
     normalizer.getHisInfo(mids, origHist, smoothHist, peakIds, modeId);
 
-    auto m_hWdg = new  HistWidget(this);
-    m_hWdg->setAxis(mids, 2);
-    m_hWdg->addColumn(origHist, "Hist", 1, cv::Scalar(0, 255, 255, 255));
-    m_hWdg->addColumn(smoothHist, "Smooth", 2);
-    float height = *max_element(smoothHist.begin(), smoothHist.end());
-    m_hWdg->plotVerticalLine(mids[modeId], height, "Mode");
-    m_hWdg->show();
+    //auto m_hWdg = new  HistWidget(this);
+    //m_hWdg->setAxis(mids, 2);
+    //m_hWdg->addColumn(origHist, "Hist", 1, cv::Scalar(0, 255, 255, 255));
+    //m_hWdg->addColumn(smoothHist, "Smooth", 2);
+    //float height = *max_element(smoothHist.begin(), smoothHist.end());
+    //m_hWdg->plotVerticalLine(mids[modeId], height, "Mode");
+    //m_hWdg->show();
   }
   else
   {
+  // std::cout << "fmain HIT10" << std::endl;
     ShowErrorMessage("WhiteStripe did not run as expected. Please see 'Help' for assistance.");
     help_contextual("Glioblastoma_WhiteStripe.html");
     return;

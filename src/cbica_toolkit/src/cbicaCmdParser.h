@@ -340,7 +340,7 @@ namespace cbica
     \param position Position of parameter in argv else -1
     \return True if parameter found else False
     */
-    bool compareParameter(const std::string &execParamToCheck, int &position);
+    bool compareParameter(const std::string &execParamToCheck, int &position, bool automaticEcho = true);
 
     /**
     \brief Check parameters WITHOUT hyphens
@@ -350,7 +350,7 @@ namespace cbica
     \param execParamToCheck Which parameter to check
     \return True if parameter found else False
     */
-    bool compareParameter(const std::string &execParamToCheck);
+    bool compareParameter(const std::string &execParamToCheck, bool automaticEcho = true);
 
     /**
     \brief Check if supplied parameter is present in the argument list
@@ -360,7 +360,7 @@ namespace cbica
     \param execParamToCheck Which parameter to check
     \return True if parameter found else False
     */
-    bool isPresent(const std::string &execParamToCheck);
+    bool isPresent(const std::string &execParamToCheck, bool automaticEcho = true);
 
     /**
     \brief Get the description analogous with the parameter
