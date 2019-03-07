@@ -350,6 +350,7 @@ namespace cbica
     //_splitpath_s(filename, NULL, NULL, NULL, NULL, filename, NULL, NULL, NULL);
 #else
     return_string = getEnvironmentVariableValue("_");
+    splitFileName(filename, path, return_string, ext);
 #endif
 
     return return_string;
@@ -519,7 +520,7 @@ namespace cbica
 #ifdef _WIN32
           m_exeName_wrap = m_exeName + ".exe";
 #else
-          m_exeName_wrap = "./" + m_exeName;
+          m_exeName_wrap = m_exeName;
 #endif
 
           std::cout << "An exemplary usage scenario: \n\n" << m_exeName_wrap << " " << m_exampleOfUsage << "\n\n";
