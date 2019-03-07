@@ -1184,6 +1184,7 @@ namespace cbica
 
   void CmdParser::exampleUsage(const std::string &usageOfExe)
   {
+    std::cerr << "!!! CmdParser::exampleUsage() IS DEPRECATED; use CmdParser::AddExampleUsage instead !!!\n";
     m_exampleOfUsage = usageOfExe;
     m_exampleOfUsage = cbica::stringReplace(m_exampleOfUsage, m_exeName + ".exe", "");
     m_exampleOfUsage = cbica::stringReplace(m_exampleOfUsage, "./" + m_exeName, "");
@@ -1191,7 +1192,14 @@ namespace cbica
 
   void CmdParser::AddExampleUsage(const std::string &commandExcludingExeName, const std::string &descriptionOfCommand)
   {
+    auto tempUsage = commandExcludingExeName;
 
+    // remove Windows/Linux/macOS specific usage call pattern
+    tempUsage = cbica::stringReplace(tempUsage, m_exeName + ".exe", "");
+    tempUsage = cbica::stringReplace(tempUsage, "./" + m_exeName, "");
+    tempUsage = cbica::stringReplace(tempUsage, "/" + m_exeName, "");
+
+    m_exampleUsageAndDescription.push_back(std::make_pair(tempUsage, descriptionOfCommand));
   }
 
   void CmdParser::SetApplicationDescription(const std::string &description)
