@@ -162,7 +162,7 @@ RUN_DEPLOYQT () {
   
   # Replace AppRun
   rm ./appdir/AppRun
-  cp ../../scripts/AppRun ./appdir/
+  cp ../../data/applications/AppRun ./appdir/
 
   # Download and mark executable appimagetool. Using release 11 as of 3/5/18
   wget -nc https://github.com/AppImage/AppImageKit/releases/download/11/appimagetool-x86_64.AppImage
@@ -260,11 +260,12 @@ cp ./licenses/Linux-Combined.txt ./pkg/
 # Move installer in
 cp ./scripts/linux-makeself ./pkg/
 chmod +x ./pkg/linux-makeself
+# Create version file
+# Save version as variable
+ver=`./scripts/unix-version`
+echo ${ver} >> ./pkg/version
 
 # Step 3: Wrap it all upp
-
-# Version number for CaPTk
-ver=`./pkg/CaPTk.bin -v | grep Executable | awk '{print $4}'`
 
 # Create the installer
 ./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk-${ver}-Installer.bin "CaPTk Linux Installer" ./linux-makeself

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# This is a file to manually override the default AppRun that the AppImage uses.
+# This new AppRun will properly set the LD_LIBRARY_PATH so that the other binaries that CaPTk
+# comes bundled with can use those qt libraries over the existing ones that may be on the system.
+
+HERE="$(dirname "$(readlink -f "${0}")")"
+export LD_LIBRARY_PATH=${HERE}/usr/lib/:$LD_LIBRARY_PATH
+exec "${HERE}/usr/bin/CaPTk" "$@"
