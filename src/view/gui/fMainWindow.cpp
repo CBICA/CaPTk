@@ -23,7 +23,7 @@
 #include "PerfusionPCA.h"
 #include "PerfusionDerivatives.h"
 #include "DiffusionDerivatives.h"
-#include "DeepMedicNormalizer.h"
+#include "ZScoreNormalizer.h"
 #include "SBRT_LungField.h"
 #include "SBRT_Nodule.h"
 #include "SBRT_Analysis.h"
@@ -7283,7 +7283,7 @@ void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, con
 
     updateProgress(5, "Starting Normalization");
 
-    DeepMedicNormalizer< ImageTypeFloat3D > normalizer;
+    ZScoreNormalizer< ImageTypeFloat3D > normalizer;
     normalizer.SetInputImage(input);
     normalizer.SetInputMask(mask);
     normalizer.SetQuantiles(qLower, qUpper);
