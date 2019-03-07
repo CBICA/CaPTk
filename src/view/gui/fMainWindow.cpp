@@ -1438,11 +1438,11 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       ShowErrorMessage("Please extract the zip file before trying to load into CaPTk.");
       return;
     }
-    //if ((extension != ".nii") && (extension != ".nii.gz"))
-    //{
-    //  ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
-    //  return;
-    //}
+    if ((extension != ".nii") && (extension != ".nii.gz"))
+    {
+      ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
+      return;
+    }
     if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
