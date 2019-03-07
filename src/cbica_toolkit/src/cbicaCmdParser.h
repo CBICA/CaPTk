@@ -449,7 +449,7 @@ namespace cbica
     /**
     \brief Adds descrition for the application for which the class is being initialized
     */
-    void SetApplicationDescription(const std::string &description);
+    void addApplicationDescription(const std::string &description);
 
 	  /**
 	  \brief Writes out a CWL specification file from cmd parser

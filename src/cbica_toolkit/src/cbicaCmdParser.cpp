@@ -812,7 +812,8 @@ namespace cbica
     // check for argc values during the first run otherwise don't
     if (firstRun)
     {
-      //assert(("Example of usage is needed; use 'parser.exampleUsage()' to populate example", std::strlen(m_exampleOfUsage.c_str()) > 0));
+      //assert(("Example of usage and respective description is needed; use 'parser.addExampleUsage()'", !m_exampleUsageAndDescription.empty());
+      //assert(("Application description is needed; use 'parser.addApplicationDescription()'", !m_description.empty());
       if (m_argc > static_cast< int >(2 * (m_optionalParameters.size() + m_requiredParameters.size() - 3) + 1))
       {
         std::cerr << "Extra parameters passed, please check usage. Exiting.\n\n";
@@ -1217,7 +1218,7 @@ namespace cbica
     m_exampleUsageAndDescription.push_back(std::make_pair(tempUsage, descriptionOfCommand));
   }
 
-  void CmdParser::SetApplicationDescription(const std::string &description)
+  void CmdParser::addApplicationDescription(const std::string &description)
   {
     m_description = description;
   }
