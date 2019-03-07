@@ -18,6 +18,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <iterator>
 #include <algorithm>
 #include <vector>
+#include <map>
 
 #if defined(__GNUC__) || defined(__clang__)
 #define DEPRECATED __attribute__((deprecated))
@@ -623,9 +624,6 @@ namespace cbica
     
   private:
 
-    //! Logs the CWL that is passed through cwl-runner
-    void logCWL(const std::string &inpFileName, const std::string &cwlFileName);
-
     //! Executable name
     std::string m_exeName;
     //! Executable path
@@ -660,6 +658,12 @@ namespace cbica
     inline void verbose_check(std::string &input_string);
     //! Internal function to write vector of parameters
     inline void writeParameters(const std::vector< Parameter > &inputParameters, bool verbose);
+    //! Logs the CWL that is passed through cwl-runner
+    void logCWL(const std::string &inpFileName, const std::string &cwlFileName);
+
+    //! application usage examples and their respective descriptions
+    std::vector< std::pair< std::string, std::string > > m_exampleUsageAndDescription;
+
 
     size_t m_maxLaconicLength, //! maximum length of laconic parameters
       m_minVerboseLength,
