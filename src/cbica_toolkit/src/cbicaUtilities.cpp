@@ -1969,7 +1969,7 @@ namespace cbica
       if (idx != std::string::npos)
       {
         extension = "." + dataFile_wrap.substr(idx + 1);
-        replaceString(dataFile_wrap, extension, "");
+        dataFile_wrap = replaceString(dataFile_wrap, extension, "");
       }
       // else // there is no extension for file
 
