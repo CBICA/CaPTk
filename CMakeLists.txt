@@ -15,7 +15,7 @@ IF( CCacheExectuable )
   # only used with >=cmake-3.4
   SET( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
   SET( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
-  MESSAGE( STATUS "Speeding up build with ccache" )
+  #MESSAGE( STATUS "Speeding up build with ccache" )
 ENDIF()
 
 #CMAKE_POLICY(VERSION 2.8)
