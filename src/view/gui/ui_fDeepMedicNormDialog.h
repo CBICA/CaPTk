@@ -282,7 +282,7 @@ public:
 
   void retranslateUi(QDialog *fDeepMedicNormalizer)
   {
-    fDeepMedicNormalizer->setWindowTitle(QApplication::translate("fDeepMedicNormalizer", "DeepMedic Normalizer", 0));
+    fDeepMedicNormalizer->setWindowTitle(QApplication::translate("fDeepMedicNormalizer", "Z-Scoring Normalizer", 0));
     confirmButton->setText(QApplication::translate("fDeepMedicNormalizer", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fDeepMedicNormalizer", "Cancel", 0));
 

@@ -1,30 +1,30 @@
-#include "DicomSeriesReader.h"
+#include "DicomImageReader.h"
 //#include <QString>
 //#include <QDir>
 //#include <QDirIterator>
 //#include <QTime>
 
-DicomSeriesReader::DicomSeriesReader()
+DicomImageReader::DicomImageReader()
 {
 }
 
-DicomSeriesReader::~DicomSeriesReader()
+DicomImageReader::~DicomImageReader()
 {
 }
 
-void DicomSeriesReader::SetDirectoryPath(std::string path)
+void DicomImageReader::SetDirectoryPath(std::string path)
 {
   this->m_dir = path;
 }
 
-//bool DicomSeriesReader::LoadDicom()
+//bool DicomImageReader::LoadDicom()
 //{
 //  bool loadStatus = false;
-//
+
 //  NamesGeneratorType::Pointer nG = NamesGeneratorType::New();
 //  nG->SetDirectory(this->m_dir);
 //  std::vector<std::string> files = nG->GetInputFileNames();
-//
+
 //  if (files.empty())
 //  {
 //    //! no files in the given directory
@@ -37,7 +37,7 @@ void DicomSeriesReader::SetDirectoryPath(std::string path)
 //    //! template type
 //    //std::string fname = files[0].absoluteFilePath().toStdString();
 //    std::string fname = files[0].c_str();
-//
+
 //    itk::ImageIOBase::Pointer imageIO;
 //    itk::ImageIOBase::IOPixelType       pixelType;
 //    itk::ImageIOBase::IOComponentType   componentType;
@@ -51,7 +51,7 @@ void DicomSeriesReader::SetDirectoryPath(std::string path)
 //      pixelType = imageIO->GetPixelType();
 //      componentType = imageIO->GetComponentType();
 //      dimensions = imageIO->GetNumberOfDimensions();
-//
+
 //      if (pixelType == itk::ImageIOBase::SCALAR)
 //      {
 //        if (dimensions == 3)
@@ -78,6 +78,22 @@ void DicomSeriesReader::SetDirectoryPath(std::string path)
 //          {
 //            using PixelType = unsigned short;
 //            using ImageType = itk::Image<PixelType, 3>;
+//            typename ImageType::Pointer img = ImageType::New();
+//            bool readStatus = false;
+//            img = ReadDicomSeries<ImageType>(readStatus);
+//            if (readStatus)
+//            {
+//              m_image3dfloat = ConvertImage3DToFloatImage3D<ImageType>(img);
+//              loadStatus = true;
+//            }
+//            else
+//              loadStatus = false;
+//            break;
+//          }
+//          case itk::ImageIOBase::INT:
+//          {
+//            using PType = int;
+//            using ImageType = itk::Image<PType, 3>;
 //            typename ImageType::Pointer img = ImageType::New();
 //            bool readStatus = false;
 //            img = ReadDicomSeries<ImageType>(readStatus);
@@ -134,8 +150,8 @@ void DicomSeriesReader::SetDirectoryPath(std::string path)
 //  }
 //  return loadStatus;
 //}
-//
-//DicomSeriesReader::ImageType3DFloat::Pointer DicomSeriesReader::GetITKImage()
+
+//DicomImageReader::ImageType3DFloat::Pointer DicomImageReader::GetITKImage()
 //{
 //  return m_image3dfloat;
 //}

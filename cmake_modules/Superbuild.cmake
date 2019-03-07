@@ -13,6 +13,14 @@ ENDIF()
 
 INCLUDE( ExternalProject )
 
+# check build path lenght for windows and give a warning if greater than 15
+IF( WIN32 )
+  STRING( LENGTH ${PROJECT_BINARY_DIR} BUILD_PATH_LENGTH )
+  IF( ${BUILD_PATH_LENGTH} GREATER 15 )
+    MESSAGE( WARNING "WARNING: The Superbuild path is greater than 15; it is HIGHLY recommended to make this shorter so that ITK library linkage will succeed" )
+  ENDIF()
+ENDIF()
+
 ## Compute -G arg for configuring external projects with the same CMake generator:
 #IF(CMAKE_EXTRA_GENERATOR)
 #	SET(gen "${CMAKE_EXTRA_GENERATOR} - ${CMAKE_GENERATOR}")
