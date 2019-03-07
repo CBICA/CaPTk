@@ -1,9 +1,9 @@
 
-MESSAGE( STATUS "Adding OpenCV_Contrib-3.4.5 ...")
+MESSAGE( STATUS "Adding OpenCV_Contrib-${OPENCV_VERSION} ...")
 
 ExternalProject_Add( 
   OpenCV_Contrib
-  URL https://github.com/opencv/opencv_contrib/archive/3.4.5.zip
+  URL https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip
   SOURCE_DIR OpenCV_Contrib
   UPDATE_COMMAND ""
   PATCH_COMMAND ""

@@ -5,22 +5,21 @@ FIND_PACKAGE( Git REQUIRED )
 
 OPTION( USE_GIT_PROTOCOL "If behind a firewall turn this off to use https instead." OFF )
 
-SET( 
-  CMAKE_MODULE_PATH
-  ${PROJECT_SOURCE_DIR}/cmake_modules
-  ${CMAKE_MODULE_PATH}
-)
-
-SET(CMAKE_CXX_STANDARD 11)
-SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
-
 IF(MSVC)
-  SET( CMAKE_BUILD_TYPE "Debug;Release")
+  SET( CMAKE_CONFIGURATION_TYPES "Debug;Release")
 ELSEIF(UNIX)
-  SET( CMAKE_BUILD_TYPE "Release")
+  SET( CMAKE_CONFIGURATION_TYPES "Release")
 ENDIF()
 
 INCLUDE( ExternalProject )
+
+# check build path lenght for windows and give a warning if greater than 15
+IF( WIN32 )
+  STRING( LENGTH ${PROJECT_BINARY_DIR} BUILD_PATH_LENGTH )
+  IF( ${BUILD_PATH_LENGTH} GREATER 15 )
+    MESSAGE( WARNING "WARNING: The Superbuild path is greater than 15; it is HIGHLY recommended to make this shorter so that ITK library linkage will succeed" )
+  ENDIF()
+ENDIF()
 
 ## Compute -G arg for configuring external projects with the same CMake generator:
 #IF(CMAKE_EXTRA_GENERATOR)

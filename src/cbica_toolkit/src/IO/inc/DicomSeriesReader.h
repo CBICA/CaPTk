@@ -48,13 +48,13 @@ public:
   template <class TInputImage>
   typename TInputImage::Pointer ReadDicomSeries(bool &readStatus);
 
-  //! helper to write itk image
-  template <class TInputImage>
-  void WriteITKImage(typename TInputImage::Pointer image, std::string filename);
+  ////! helper to write itk image
+  //template <class TInputImage>
+  //void WriteITKImage(typename TInputImage::Pointer image, std::string filename);
 
-  //! convert itk image to float 3D itk image
-  template <class TInputImage>
-  DicomSeriesReader::ImageType3DFloat::Pointer ConvertImage3DToFloatImage3D(typename TInputImage::Pointer image);
+  ////! convert itk image to float 3D itk image
+  //template <class TInputImage>
+  //DicomSeriesReader::ImageType3DFloat::Pointer ConvertImage3DToFloatImage3D(typename TInputImage::Pointer image);
 
 private:
 
@@ -92,25 +92,25 @@ inline typename TInputImage::Pointer DicomSeriesReader::ReadDicomSeries(bool &re
   return reader->GetOutput();
 
 }
-
-template<class TInputImage>
-inline void DicomSeriesReader::WriteITKImage(typename TInputImage::Pointer image, std::string filename)
-{
-  typedef  itk::ImageFileWriter< TInputImage  > WriterType;
-  auto writer = WriterType::New();
-  writer->SetFileName(filename);
-  writer->SetInput(image);
-  writer->Update();
-}
-
-template<class TInputImage>
-inline DicomSeriesReader::ImageType3DFloat::Pointer DicomSeriesReader::ConvertImage3DToFloatImage3D(typename TInputImage::Pointer image)
-{
-  typedef itk::CastImageFilter<TInputImage, ImageType3DFloat> CastFilterType;
-  auto castFilter = CastFilterType::New();
-  castFilter->SetInput(image);
-  castFilter->Update();
-  return castFilter->GetOutput();
-}
+//
+//template<class TInputImage>
+//inline void DicomSeriesReader::WriteITKImage(typename TInputImage::Pointer image, std::string filename)
+//{
+//  typedef  itk::ImageFileWriter< TInputImage  > WriterType;
+//  auto writer = WriterType::New();
+//  writer->SetFileName(filename);
+//  writer->SetInput(image);
+//  writer->Update();
+//}
+//
+//template<class TInputImage>
+//inline DicomSeriesReader::ImageType3DFloat::Pointer DicomSeriesReader::ConvertImage3DToFloatImage3D(typename TInputImage::Pointer image)
+//{
+//  typedef itk::CastImageFilter<TInputImage, ImageType3DFloat> CastFilterType;
+//  auto castFilter = CastFilterType::New();
+//  castFilter->SetInput(image);
+//  castFilter->Update();
+//  return castFilter->GetOutput();
+//}
 
 #endif // DICOMSERIESREADER_H

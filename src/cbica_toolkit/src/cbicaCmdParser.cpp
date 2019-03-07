@@ -43,6 +43,7 @@ static const char  cSeparator = '/';
 #include <mach-o/dyld.h>
 #endif
 
+#include <assert.h>
 #include <fstream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -62,7 +63,6 @@ static const char  cSeparator = '/';
 #ifndef PROJECT_VERSION
 #define PROJECT_VERSION "0.0.1"
 #endif
-
 
 /*
 \namespace cbica
@@ -423,9 +423,9 @@ namespace cbica
     argc1ignore = false;
     m_exampleOfUsage = "";
 
-    m_optionalParameters.push_back(Parameter("u", "usage", cbica::Parameter::NONE, "", "Prints basic usage message.", "", "", "", ""));
-    m_optionalParameters.push_back(Parameter("h", "help", cbica::Parameter::NONE, "", "Prints verbose usage information.", "", "", "", ""));
-    m_optionalParameters.push_back(Parameter("v", "version", cbica::Parameter::NONE, "", "Prints information about software version.", "", "", "", ""));
+    m_optionalParameters.push_back(Parameter("u", "usage", cbica::Parameter::NONE, "", "Prints basic usage message", "", "", "", ""));
+    m_optionalParameters.push_back(Parameter("h", "help", cbica::Parameter::NONE, "", "Prints verbose usage information", "", "", "", ""));
+    m_optionalParameters.push_back(Parameter("v", "version", cbica::Parameter::NONE, "", "Prints information about software version", "", "", "", ""));
     m_optionalParameters.push_back(Parameter("rt", "run-test", cbica::Parameter::NONE, "", "Runs the tests", "", "", "", ""));
     m_optionalParameters.push_back(Parameter("cwl", "cwl", cbica::Parameter::NONE, "", "Generates a .cwl file for the software", "", "", "", ""));
   }
@@ -797,6 +797,7 @@ namespace cbica
     // check for argc values during the first run otherwise don't
     if (firstRun)
     {
+      //assert(("Example of usage is needed; use 'parser.exampleUsage()' to populate example", std::strlen(m_exampleOfUsage.c_str()) > 0));
       if (m_argc > static_cast< int >(2 * (m_optionalParameters.size() + m_requiredParameters.size() - 3) + 1))
       {
         std::cerr << "Extra parameters passed, please check usage. Exiting.\n\n";

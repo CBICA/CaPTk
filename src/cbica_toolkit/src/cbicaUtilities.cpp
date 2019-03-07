@@ -1963,10 +1963,18 @@ namespace cbica
       //_splitpath(dataFile_wrap.c_str(), NULL, path_name, basename_var, ext);
       _splitpath_s(dataFile.c_str(), drive_letter, FILENAME_MAX, path_name, FILENAME_MAX, basename_var, FILENAME_MAX, ext, FILENAME_MAX);
 #else
-      char *basename_var, *ext, *path_name;
+      char *basename_var, *path_name; 
+
+      auto idx = dataFile_wrap.rfind('.');
+      if (idx != std::string::npos)
+      {
+        extension = "." + dataFile_wrap.substr(idx + 1);
+        dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+      }
+      // else // there is no extension for file
+
       path_name = dirname(cbica::constCharToChar(dataFile_wrap.c_str()));
       basename_var = basename(cbica::constCharToChar(dataFile_wrap.c_str()));
-      ext = strrchr(cbica::constCharToChar(dataFile_wrap.c_str()), '.');
 #endif
 
       //path sanity check
@@ -1996,20 +2004,9 @@ namespace cbica
         baseName = std::string(basename_var);
       }
 
-      //extension sanity check
-      if (ext == NULL)
-      {
-        extension = "";
-      }
-      else
-      {
-        extension = std::string(ext);
-      }
-
 #if (_MSC_VER >= 1700)
       path_name[0] = NULL;
       basename_var[0] = NULL;
-      ext[0] = NULL;
       drive_letter[0] = NULL;
 #endif
       if (!path.empty())
