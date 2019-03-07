@@ -360,7 +360,7 @@ namespace cbica
     //! Initialize pointers to file and user names
     char filename[FILENAME_MAX];
     GetModuleFileNameA(NULL, filename, FILENAME_MAX);
-    return_string = getFilenameBase(filename);
+    return_string = getFilenameBase(filename, false);
     //_splitpath_s(filename, NULL, NULL, NULL, NULL, filename, NULL, NULL, NULL);
 #elif __APPLE__
     char path[PATH_MAX];
@@ -369,7 +369,7 @@ namespace cbica
     {
       if (_NSGetExecutablePath(path, &size) == 0)
       {
-        return_string = getFilenameBase(std::string(path));
+        return_string = getFilenameBase(std::string(path), false);
       }
     }
 #else
@@ -387,7 +387,7 @@ namespace cbica
       path[ret] = 0;
     }
     auto temp = std::string(path);
-    return_string = getFilenameBase(temp);
+    return_string = getFilenameBase(temp, false);
     path[0] = '\0';
 #endif
 
