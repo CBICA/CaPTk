@@ -1963,12 +1963,12 @@ namespace cbica
       //_splitpath(dataFile_wrap.c_str(), NULL, path_name, basename_var, ext);
       _splitpath_s(dataFile.c_str(), drive_letter, FILENAME_MAX, path_name, FILENAME_MAX, basename_var, FILENAME_MAX, ext, FILENAME_MAX);
 #else
-      char *basename_var, *ext, *path_name; idx;
+      char *basename_var, *ext, *path_name; 
 
-      auto idx = filename.rfind('.');
+      auto idx = dataFile_wrap.rfind('.');
       if (idx != std::string::npos)
       {
-        extension = "." + filename.substr(idx + 1);
+        extension = "." + dataFile_wrap.substr(idx + 1);
         replaceString(dataFile_wrap, extension)
       }
       // else // there is no extension for file
