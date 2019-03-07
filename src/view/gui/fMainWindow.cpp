@@ -6008,12 +6008,12 @@ void fMainWindow::ApplicationGeodesicTraining()
     return;
   }
 
-  // The algorithm needs to know if the images are 2D or 3D -- TODO: FIX THIS --
-  /*unsigned int dimensions = (
+  // The algorithm needs to know if the images are 2D or 3D
+  unsigned int dimensions = (
     (mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) ? 2 : 3
-  );*/
+  );
 
-  unsigned int dimensions = 3;
+  /*unsigned int dimensions = 3;*/
 
   // Different operations happen if the user reruns it on the same images
   std::string firstFileName = mSlicerManagers[0]->mFileName;
@@ -6105,17 +6105,16 @@ void fMainWindow::ApplicationGeodesicTraining()
     LabelsImagePointer2D               mask2D;
 
     // Convert from 3D to 2D
-    cbica::Logging(loggerFile, "2D Image detected, doing conversion");
-    InputImageType3D::IndexType regionIndex;
-    regionIndex.Fill(0);
     auto regionSize = inputImages[0]->GetLargestPossibleRegion().GetSize();
     regionSize[2] = 0; // Only 2D image is needed
 
     // Convert input images
     for (size_t i = 0; i < inputImages.size(); i++)
     {
+      InputImageType3D::IndexType regionIndex;
+      regionIndex.Fill(0);
+      InputImageType3D::RegionType desiredRegion(regionIndex, regionSize);
       auto extractor = itk::ExtractImageFilter< InputImageType3D, InputImageType2D >::New();
-      ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
       extractor->SetExtractionRegion(desiredRegion);
       extractor->SetInput(inputImages[i]);
       extractor->SetDirectionCollapseToIdentity();
@@ -6125,8 +6124,10 @@ void fMainWindow::ApplicationGeodesicTraining()
     }
 
     // Convert mask
+    LabelsImageType3D::IndexType regionIndex;
+    regionIndex.Fill(0);    
+    LabelsImageType3D::RegionType desiredRegion(regionIndex, regionSize);
     auto extractor = itk::ExtractImageFilter< LabelsImageType3D, LabelsImageType2D >::New();
-    ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
     extractor->SetExtractionRegion(desiredRegion);
     extractor->SetInput(mask);
     extractor->SetDirectionCollapseToIdentity();
