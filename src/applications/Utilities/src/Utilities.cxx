@@ -21,12 +21,15 @@ enum AvailableAlgorithms
   TestComparison,
   BoundingBox,
   CreateMask,
-  ChangeValue
+  ChangeValue,
+  DicomLoadTesting,
+  Dicom2Nifti
 };
 
 int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator;
+std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<double>::max();
@@ -89,6 +92,68 @@ int algorithmsRunner()
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
     std::cout << "Create Mask completed.\n";
     return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == DicomLoadTesting)
+  {
+    auto readDicomImage = cbica::ReadImage< TImageType >(dicomFolderPath);
+    if (!readDicomImage)
+    {
+      std::cout << "Dicom Load Failed" << std::endl;
+      return EXIT_FAILURE;
+    }
+    auto inputNiftiImage = cbica::ReadImage< TImageType >(inputImageFile);
+
+    cbica::WriteImage< TImageType>(inputNiftiImage, "readNifti.nii.gz");
+
+    bool differenceFailed = false;
+
+    auto diffFilter = itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
+    diffFilter->SetValidInput(inputNiftiImage);
+    diffFilter->SetTestInput(readDicomImage);
+    auto size = inputNiftiImage->GetBufferedRegion().GetSize();
+      diffFilter->VerifyInputInformationOn();
+      diffFilter->SetDifferenceThreshold(testThresh);
+      diffFilter->SetToleranceRadius(testRadius);
+      diffFilter->UpdateLargestPossibleRegion();
+
+      size_t totalSize = 1;
+      for (size_t d = 0; d < TImageType::ImageDimension; d++)
+      {
+        totalSize *= size[d];
+      }
+
+      std::cout << "Minimum Intensity Difference: " << diffFilter->GetMinimumDifference() << "\n";
+      std::cout << "Maximum Intensity Difference: " << diffFilter->GetMaximumDifference() << "\n";
+      std::cout << "Average Intensity Difference: " << diffFilter->GetMeanDifference() << "\n";
+      std::cout << "Overall Intensity Difference: " << diffFilter->GetTotalDifference() << "\n";
+
+      const double averageIntensityDifference = diffFilter->GetTotalDifference();
+      const unsigned long numberOfPixelsWithDifferences = diffFilter->GetNumberOfPixelsWithDifferences();
+
+      std::cout << "Number of Difference Voxels : " << diffFilter->GetNumberOfPixelsWithDifferences() << "\n";
+      std::cout << "Total Voxels in Image       : " << totalSize << "\n";
+      std::cout << "Percentage of Diff Voxels   : " << diffFilter->GetNumberOfPixelsWithDifferences() * 100 / totalSize << "\n";
+
+      int numberOfPixelsTolerance = 70;
+      if (averageIntensityDifference > 0.0)
+      {
+        if (static_cast<int>(numberOfPixelsWithDifferences) >
+          numberOfPixelsTolerance)
+        {
+          differenceFailed = true;
+        }
+        else
+        {
+          differenceFailed = false;
+        }
+      }
+      else
+      {
+        differenceFailed = false;
+      }
+    return differenceFailed;
+    //return EXIT_FAILURE;
   }
 
   if (requestedAlgorithm == ChangeValue)
@@ -371,6 +436,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("i", "inputImage", cbica::Parameter::FILE, "NIfTI", "Input Image for processing");
   parser.addOptionalParameter("m", "maskImage", cbica::Parameter::FILE, "NIfTI", "Input Mask for processing");
   parser.addOptionalParameter("o", "outputImage", cbica::Parameter::FILE, "NIfTI", "Output Image for processing");
+  parser.addOptionalParameter("df", "dicomDirectory", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory containing single dicom series");
   parser.addOptionalParameter("r", "resize", cbica::Parameter::INTEGER, "10-500", "Resize an image based on the resizing factor given", "Example: -r 150 resizes inputImage by 150%", "Defaults to 100, i.e., no resizing", "Resampling can be done on image with 100");
   parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::FLOAT, "0-10", "[Resample] Isotropic resolution of the voxels/pixels to change to", "Resize value needs to be 100", "Defaults to 1.0");
   parser.addOptionalParameter("ri", "resizeInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE:BICUBIC", "The interpolation type to use for resampling or resizing", "Defaults to LINEAR");
@@ -410,6 +476,13 @@ int main(int argc, char** argv)
   if (parser.isPresent("o"))
   {
     parser.getParameterValue("o", outputImageFile);
+  }
+  if(parser.isPresent("df"))
+  {
+    requestedAlgorithm = DicomLoadTesting;
+    parser.getParameterValue("df", dicomFolderPath);
+    parser.getParameterValue("i", inputImageFile);
+    parser.getParameterValue("tt", testThresh);
   }
   if (parser.isPresent("r"))
   {
