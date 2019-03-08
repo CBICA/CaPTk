@@ -192,12 +192,6 @@ bash ../scripts/linux-cmake-conf
 echo "[:] Building CaPTk..."
 make -j2
 
-ls ./src/applications/FeatureExtraction/
-
-cp FeatureExtraction.cwl ./src/applications/FeatureExtraction/
-
-make -j2 install/strip
-
 # # Fix
 # cd install
 # APP_DIR=`pwd`

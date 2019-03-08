@@ -15,7 +15,7 @@ IF( CCacheExectuable )
   # only used with >=cmake-3.4
   SET( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
   SET( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
-  MESSAGE( STATUS "Speeding up build with ccache" )
+  #MESSAGE( STATUS "Speeding up build with ccache" )
 ENDIF()
 
 #CMAKE_POLICY(VERSION 2.8)
@@ -34,7 +34,7 @@ PROJECT( CaPTk )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
 SET (PROJECT_VERSION_MAJOR 1 )
 SET (PROJECT_VERSION_MINOR 6 )
-SET (PROJECT_VERSION_PATCH 2.Alpha )
+SET (PROJECT_VERSION_PATCH 2.Beta )
 #SET (SVN_REVISION "${SVN_REVISION}")
 
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
@@ -54,7 +54,7 @@ ELSE()
   FIND_PACKAGE(ITK)
   
   IF(NOT EXISTS ${ITK_USE_FILE})
-    #MESSAGE( STATUS "=== [DEBUG] PROJECT_BIN_DIR=${PROJECT_BINARY_DIR}" )
+    #MESSAGE( AUTHOR_WARNING "=== [DEBUG] PROJECT_BIN_DIR=${PROJECT_BINARY_DIR}" )
     IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
 
       OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
@@ -476,6 +476,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   # include dependencies
   # add source code include directories
   INCLUDE_DIRECTORIES(
+    ${CACHED_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/src/
     ${PROJECT_SOURCE_DIR}/src/applications/
     ${PROJECT_SOURCE_DIR}/src/applications/common_includes/
@@ -485,6 +486,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/
     ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/include/
     ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/
+    ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
     ${PROJECT_SOURCE_DIR}/src/common/inc/
     ${PROJECT_SOURCE_DIR}/src/view/gui/
     ${APPLICATION_INCLUDES}
@@ -753,7 +755,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET_TARGET_PROPERTIES( ${LIBNAME_CBICATK} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( CaPTk_GUI PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( CaPTk_Common PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
-  SET_TARGET_PROPERTIES( CaPTk_IO PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  #SET_TARGET_PROPERTIES( CaPTk_IO PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
   SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
