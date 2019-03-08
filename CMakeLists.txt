@@ -399,14 +399,12 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   # set stand-alone applications and libs directories
   SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
-  SET( StandAloneCLIAppsFolder "CaPTk_CLIApps")
-  SET(CaPTk_Libs_Folder "CaPTk_Libs")
+  SET( CaPTk_CLIs_Folder "CaPTk_CLIApps")
+  SET( CaPTk_Libs_Folder "CaPTk_Libs")
 
   ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
   SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
   
-  SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-
   # include dependencies
   # add source code include directories
   INCLUDE_DIRECTORIES(
@@ -575,10 +573,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( CaPTk_GUI PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( CaPTk_Common PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
-  SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-  SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-  SET_TARGET_PROPERTIES( Utilities PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-  SET_TARGET_PROPERTIES( GeodesicTraining PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
   SET_TARGET_PROPERTIES( GeodesicTrainingCaPTkLib PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
 
   
