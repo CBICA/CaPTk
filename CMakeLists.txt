@@ -457,18 +457,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ADD_DEFINITIONS(-DBUILD_GEODESICTRAINING)
   ENDIF()
 
-  ## add the CBICA-TK library before any of the applications get added  
-  #ADD_LIBRARY(
-  #  ${LIBNAME_CBICATK}
-  #  ${CBICA-TK_SOURCES}
-  #  ${YAMLCPP_Headers}
-  #  ${YAMLCPP_Sources}
-  #)
-  #
-  #TARGET_LINK_LIBRARIES(
-  #  ${LIBNAME_CBICATK}
-  #  ${DEPENDENT_LIBS}
-  #)
+  # set stand-alone applications and libs directories
+  SET( StandAloneCLIAppsFolder "CaPTk_CLIApps")
+  SET(CaPTk_Libs_Folder "CaPTk_Libs")
+
   ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
   SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
   
@@ -490,76 +482,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
     ${PROJECT_SOURCE_DIR}/src/common/inc/
     ${PROJECT_SOURCE_DIR}/src/view/gui/
+    ${GEODESIC_TRAINING_INCLUDE_DIRS}
     ${APPLICATION_INCLUDES}
     ${CACHED_INCLUDE_DIRS}
   )
   
-  INCLUDE_DIRECTORIES( 
-    ${GEODESIC_TRAINING_INCLUDE_DIRS}
-  )
-
-  # set stand-alone applications directory
-  SET( StandAloneCLIAppsFolder "CaPTk_CLIApps")
-
-  #IF( BUILD_WHITESTRIPE )
-  #  SET(WhiteStripeSrcs
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/main.cpp
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripe.cpp
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/KernelFit.cpp)
-  #  SET(WhiteStripeHeaders
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/testWhiteStripe.h
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripe.h
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/KernelFit.h)
-  #
-  #  ADD_EXECUTABLE(WhiteStripe ${WhiteStripeSrcs} ${WhiteStripeHeaders})
-  #
-  #  SET_TARGET_PROPERTIES( WhiteStripe PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-  #
-  #  INSTALL( TARGETS WhiteStripe
-  #      #DESTINATION bin
-  #      BUNDLE DESTINATION .
-  #      RUNTIME DESTINATION bin
-  #      LIBRARY DESTINATION lib
-  #    CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-  #    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-  #  )
-  #  TARGET_LINK_LIBRARIES(WhiteStripe ${OpenCV_LIBS} ${ITK_LIBRARIES})
-  #
-  #  SET( BUILD_WHITESTRIPE_GUI ON CACHE BOOL "Do you want to build GUI?" )
-  #  IF( BUILD_WHITESTRIPE_GUI )
-  #    FIND_PACKAGE(Qt4 REQUIRED)
-  #    INCLUDE( ${QT_USE_FILE} )
-  #    SET(WhiteStripeGUISrc
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripeGUI.cpp
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripe.cpp
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/KernelFit.cpp
-  #      )
-  #    SET(WhiteStripeGUIIncludes
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripe.h
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/KernelFit.h
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/utils.h
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripeGUI.h)
-  #    QT4_WRAP_CPP(MOCSrcs ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripeGUI.h)
-  #
-  #    IF( NOT CAPTK_CLI_MODE )
-  #      ADD_EXECUTABLE(WhiteStripeGUI ${WhiteStripeGUISrc} ${WhiteStripeGUIIncludes} ${MOCSrcs})
-  #
-  #      SET_TARGET_PROPERTIES( WhiteStripeGUI PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-  #
-  #      TARGET_LINK_LIBRARIES(WhiteStripeGUI ${VTK_LIBRARIES} ${ITK_LIBRARIES} ${OpenCV_LIBS})
-  #      INSTALL( TARGETS WhiteStripeGUI
-  #        #DESTINATION bin
-  #        BUNDLE DESTINATION .
-  #        RUNTIME DESTINATION bin
-  #        LIBRARY DESTINATION lib
-  #        CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-  #        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-  #      )
-  #    ENDIF()
-  #
-  #  ENDIF ()
-  #ENDIF()
-
   IF( BUILD_CONFETTI )
     IF (WIN32)
       # do nothing for windows since the pre-compiled binaries will be used
@@ -749,8 +676,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${OpenCV_LIBRARIES}
   )
 
-  SET(CaPTk_Libs_Folder "CaPTk_Libs")
-
   ADD_DEPENDENCIES( ${LIBNAME_Applications} ${LIBNAME_GUI} ${LIBNAME_FeatureExtractor} )
 
   SET_TARGET_PROPERTIES( ${LIBNAME_CBICATK} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
@@ -762,6 +687,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET_TARGET_PROPERTIES( Preprocessing PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
   SET_TARGET_PROPERTIES( Utilities PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
   SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  SET_TARGET_PROPERTIES( GeodesicTraining PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+  SET_TARGET_PROPERTIES( GeodesicTrainingCaPTkLib PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+
   
   SET( CAPTK_LIBRARIES 
     ${LIBNAME_CBICATK} 
