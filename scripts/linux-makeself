@@ -24,8 +24,8 @@ install_captk () {
     mkdir ~/CaPTk/
   fi
 
-  # Version number. Note that if the format of CaPTk -v changes, this line will need to be changed as well.
-  ver=`./CaPTk -v | grep "Executable Name" | awk '{print $4}'`
+  # Version number. 'version' file should be provided by captk-pkg
+  ver=`cat version`
 
   # Check version dir/file
   if [ -f ~/CaPTk/${ver} ]
