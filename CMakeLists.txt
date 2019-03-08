@@ -60,7 +60,7 @@ ELSE()
       OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
       IF( CAPTK_SUPERBUILD )
         PROJECT(${PROJECT_NAME}_Depends)
-        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbugitild.cmake )
+        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
         return()
       ENDIF()
 
