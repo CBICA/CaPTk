@@ -104,7 +104,7 @@ int algorithmsRunner()
     }
     auto inputNiftiImage = cbica::ReadImage< TImageType >(inputImageFile);
 
-    cbica::WriteImage< TImageType>(inputNiftiImage, "readNifti.nii.gz");
+    //cbica::WriteImage< TImageType>(inputNiftiImage, "readNifti.nii.gz");
 
     bool differenceFailed = false;
 
@@ -154,6 +154,20 @@ int algorithmsRunner()
       }
     return differenceFailed;
     //return EXIT_FAILURE;
+  }
+
+  if (requestedAlgorithm == Dicom2Nifti)
+  {
+    auto readDicomImage = cbica::ReadImage< TImageType >(dicomFolderPath);
+    if (!readDicomImage)
+    {
+      std::cout << "Dicom Load Failed" << std::endl;
+      return EXIT_FAILURE;
+    }
+    
+    cbica::WriteImage< TImageType>(readDicomImage, outputImageFile);
+
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == ChangeValue)
@@ -453,6 +467,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
   parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
+  parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory containing single dicom series");
 
   /// unit testing
   if (parser.isPresent("utB"))
@@ -483,6 +498,12 @@ int main(int argc, char** argv)
     parser.getParameterValue("df", dicomFolderPath);
     parser.getParameterValue("i", inputImageFile);
     parser.getParameterValue("tt", testThresh);
+  }
+  if (parser.isPresent("d2n"))
+  {
+    requestedAlgorithm = Dicom2Nifti;
+    parser.getParameterValue("d2n", dicomFolderPath);
+    parser.getParameterValue("o", outputImageFile);
   }
   if (parser.isPresent("r"))
   {
