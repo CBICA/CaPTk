@@ -11,14 +11,23 @@ ADD_SUBDIRECTORY(src/IO)
 
 PROJECT( CaPTk_CBICATK )
 
-FILE( GLOB sources "${PROJECT_SOURCE_DIR}/src/*.*" )
+# FILE( GLOB sources "${PROJECT_SOURCE_DIR}/src/*.*" )
 
-set( CBICA-TK_SOURCES
-${sources}
-${CaPTk_IO_HDRS}
-${CaPTk_IO_SRCS}
+# set( CBICA-TK_SOURCES
+# ${sources}
+# ${CaPTk_IO_HDRS}
+# ${CaPTk_IO_SRCS}
+# )
+
+FILE( GLOB_RECURSE sources_h "${PROJECT_SOURCE_DIR}/src/*.h" )
+FILE( GLOB_RECURSE sources_hxx "${PROJECT_SOURCE_DIR}/src/*.hxx" )
+FILE( GLOB_RECURSE sources_cpp "${PROJECT_SOURCE_DIR}/src/*.cpp" )
+
+SET( CBICA-TK_SOURCES
+  ${sources_h}
+  ${sources_hxx}
+  ${sources_cpp}
 )
-
 
 SET( CBICA-TK_SOURCES CACHE STRING "CBICA Toolkit sources" )
 FILE( GLOB_RECURSE YAMLCPP_Headers "${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/includes/*.h")
