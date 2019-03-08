@@ -27,9 +27,9 @@ SET( CBICA-TK_SOURCES
   ${sources_h}
   ${sources_hxx}
   ${sources_cpp}
+  CACHE STRING "CBICA Toolkit sources" FORCE
 )
 
-SET( CBICA-TK_SOURCES CACHE STRING "CBICA Toolkit sources" )
 FILE( GLOB_RECURSE YAMLCPP_Headers "${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/includes/*.h")
 FILE( GLOB_RECURSE YAMLCPP_Headers_MORE "${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/src/*.h")
 FILE( GLOB_RECURSE YAMLCPP_Sources "${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/src/*.cpp")
