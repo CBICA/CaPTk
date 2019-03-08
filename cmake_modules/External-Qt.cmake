@@ -2,7 +2,7 @@ FIND_PACKAGE(Qt5 COMPONENTS Core )
 
 OPTION( QT_DOWNLOAD_FORCE "Force Qt binary download regardless of whether Qt was found in host machine or not" OFF )
 
-IF( ("${Qt5_DIR}" STREQUAL "") OR QT_DOWNLOAD_FORCE )
+IF( ("${Qt5_DIR}" STREQUAL "") OR ("${Qt5_DIR}" STREQUAL "Qt5_DIR-NOTFOUND") OR QT_DOWNLOAD_FORCE )
 
   SET( FILENAME_TO_EXTRACT "qt" )
   SET( FILE_TO_EXTRACT "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip" )

@@ -27,6 +27,7 @@ find_package(Qt5Core REQUIRED)
 get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
+MESSAGE( AUTHOR_WARNING "=== [DEBUG] qtdir=${_qt_bin_dir}" )
 
 # Add commands that copy the required Qt files to the application bundle
 # represented by the target
@@ -34,7 +35,6 @@ function(macdeployqt target)
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND "${MACDEPLOYQT_EXECUTABLE}"
             \"${CMAKE_BINARY_DIR}/${target}.app\"
-            -always-overwrite
         COMMENT "Deploying Qt..."
     )
 endfunction()
