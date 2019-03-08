@@ -627,6 +627,29 @@ int main(int argc, char** argv)
     requestedAlgorithm = ChangeValue;
   }
 
+  if (parser.isPresent("n3"))
+  {
+    /*
+  parser.addOptionalParameter("n3I", "n3BiasIter", cbica::Parameter::INTEGER, "N.A.", "Number of iterations the algorithm needs to run for", "Defaults to " + std::to_string(n3Bias_iterations));
+  parser.addOptionalParameter("n3F", "n3BiasFitLevl", cbica::Parameter::INTEGER, "N.A.", "Number of fitting levels the algorithm needs obtain", "Defaults to " + std::to_string(n3Bias_fittingLevels));
+  parser.addOptionalParameter("n3B", "n3BiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3 Bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(n3Bias_otsuBins));
+    */
+    if (parser.isPresent("n3I"))
+    {
+      parser.getParameterValue("n3I", n3Bias_iterations);
+    }
+    if (parser.isPresent("n3F"))
+    {
+      parser.getParameterValue("n3F", n3Bias_fittingLevels);
+    }
+    if (parser.isPresent("n3B"))
+    {
+      parser.getParameterValue("n3B", n3Bias_otsuBins);
+    }
+
+    requestedAlgorithm = BiasCorrectionN3;
+  }
+
   // this doesn't need any template initialization
   if (requestedAlgorithm == SanityCheck)
   {
