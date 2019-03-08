@@ -442,7 +442,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       
       ADD_EXECUTABLE(Confetti ${ConfettiSrcs} ${ConfettiHeaders})
       TARGET_LINK_LIBRARIES(Confetti ${OpenCV_LIBS} ${ITK_LIBRARIES})
-      SET_TARGET_PROPERTIES( Confetti PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+      SET_TARGET_PROPERTIES( Confetti PROPERTIES FOLDER "${CaPTk_CLIApps}" )
 
       ADD_LIBRARY(ConfettiCore SHARED
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/confetti.cpp
