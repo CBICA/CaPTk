@@ -1,4 +1,4 @@
-#include "DeepMedicNormalizer.h"
+#include "ZScoreNormalizer.h"
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
 #include "cbicaLogging.h"
@@ -36,7 +36,7 @@ void algorithmRunner()
   if (statsCalculator->GetMean() != 0)
   {
     std::cout << "Starting Normalization of T1CE image.\n";
-    DeepMedicNormalizer< TImageType > normalizer;
+    ZScoreNormalizer< TImageType > normalizer;
     normalizer.SetInputImage(t1cImg);
     normalizer.SetInputMask(maskImage);
     normalizer.SetCutoffs(cutOffLower, cutOffUpper);
@@ -51,7 +51,7 @@ void algorithmRunner()
   if (statsCalculator->GetMean() != 0)
   {
     std::cout << "Starting Normalization of T1 image.\n";
-    DeepMedicNormalizer< TImageType > normalizer;
+    ZScoreNormalizer< TImageType > normalizer;
     normalizer.SetInputImage(t1Img);
     normalizer.SetInputMask(maskImage);
     normalizer.SetCutoffs(cutOffLower, cutOffUpper);
@@ -66,7 +66,7 @@ void algorithmRunner()
   if (statsCalculator->GetMean() != 0)
   {
     std::cout << "Starting Normalization of T2 image.\n";
-    DeepMedicNormalizer< TImageType > normalizer;
+    ZScoreNormalizer< TImageType > normalizer;
     normalizer.SetInputImage(t2Img);
     normalizer.SetInputMask(maskImage);
     normalizer.SetCutoffs(cutOffLower, cutOffUpper);
@@ -81,7 +81,7 @@ void algorithmRunner()
   if (statsCalculator->GetMean() != 0)
   {
     std::cout << "Starting Normalization of T2-Flair image.\n";
-    DeepMedicNormalizer< TImageType > normalizer;
+    ZScoreNormalizer< TImageType > normalizer;
     normalizer.SetInputImage(flImg);
     normalizer.SetInputMask(maskImage);
     normalizer.SetCutoffs(cutOffLower, cutOffUpper);

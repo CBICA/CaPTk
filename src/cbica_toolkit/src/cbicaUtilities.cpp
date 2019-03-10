@@ -1962,6 +1962,7 @@ namespace cbica
       char basename_var[FILENAME_MAX], ext[FILENAME_MAX], path_name[FILENAME_MAX], drive_letter[FILENAME_MAX];
       //_splitpath(dataFile_wrap.c_str(), NULL, path_name, basename_var, ext);
       _splitpath_s(dataFile.c_str(), drive_letter, FILENAME_MAX, path_name, FILENAME_MAX, basename_var, FILENAME_MAX, ext, FILENAME_MAX);
+      extension = std::string(ext);
 #else
       char *basename_var, *path_name; 
 
