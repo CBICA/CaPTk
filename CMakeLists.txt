@@ -848,6 +848,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       ${DEPENDENT_LIBS}
       CaPTk_GUI
       CaPTk_Common
+      GeodesicTrainingComputeLib
+      GeodesicTrainingCaPTkLib
       ${LIBNAME_Applications}
       ${LIBNAME_FeatureExtractor}
       ${LIBNAME_CBICATK}
