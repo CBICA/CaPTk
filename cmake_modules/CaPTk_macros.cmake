@@ -116,6 +116,9 @@ ENDMACRO()
 # macro to handle initial setup of projects (no library dependency management)
 MACRO( CAPTK_INITIAL_SETUP )
 
+CMAKE_POLICY(SET CMP0048 NEW) # only with CMake 3
+CMAKE_POLICY(SET CMP0025 NEW) # only with CMake 3
+
 FIND_PACKAGE( ITK )
 IF( EXISTS ${ITK_USE_FILE} )
   INCLUDE( ${ITK_USE_FILE} )

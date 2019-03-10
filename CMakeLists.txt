@@ -1,5 +1,3 @@
-# parent CMakeLists file
-
 CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2)
 
 # Configure CCache if available
@@ -18,19 +16,13 @@ IF( CCacheExectuable )
   #MESSAGE( STATUS "Speeding up build with ccache" )
 ENDIF()
 
-#CMAKE_POLICY(VERSION 2.8)
-#IF(COMMAND cmake_policy)
-#  CMAKE_POLICY(SET CMP0003 NEW)
-#  CMAKE_POLICY(SET CMP0020 NEW)
-#  CMAKE_POLICY(SET CMP0010 NEW)
-CMAKE_POLICY(SET CMP0048 NEW) # only with CMake 3
-CMAKE_POLICY(SET CMP0025 NEW) # only with CMake 3
-#ENDIF(COMMAND cmake_policy)
-SET(CMAKE_CXX_STANDARD 11)
-SET(CMAKE_CXX_STANDARD_REQUIRED YES)
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules/)
+INCLUDE( CaPTk_macros )
 
 # set project name. The exe name is taken from this
+SET( PROJECT_NAME CaPTk )
 PROJECT( CaPTk )
+SET( ${PROJECT_NAME} )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
 SET (PROJECT_VERSION_MAJOR 1 )
 SET (PROJECT_VERSION_MINOR 6 )
@@ -40,9 +32,6 @@ SET (PROJECT_VERSION_PATCH 2.Beta )
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
 SET( QT_VERSION "5.12.1" CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
 SET( OPENCV_VERSION "3.4.5" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
-
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules/)
-INCLUDE( CaPTk_macros )
 
 CAPTK_INITIAL_SETUP()
 
