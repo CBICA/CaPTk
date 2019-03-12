@@ -576,13 +576,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   )
 
   # find stand-alone CMD applications
-  # FILE( GLOB STANDALONE_APPS
-    # "${PROJECT_SOURCE_DIR}/src/applications/*.cxx"
-  # )
+  FILE( GLOB STANDALONE_APPS
+    "${PROJECT_SOURCE_DIR}/src/applications/*.cxx"
+  )
 
   #MESSAGE( STATUS "[debug]STANDALONE_APPS == ${STANDALONE_APPS}")
 
-  # SET(STANDALONE_APPS_LIST "")
+  #SET(STANDALONE_APPS_LIST "")
 
   FOREACH(application ${STANDALONE_APPS})
 
