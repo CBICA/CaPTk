@@ -3,6 +3,7 @@
 bin_debug
 bin
 bin2
+superbuild
 CaPTk*.bin
 *Installer.bin
 makeself-*.run*

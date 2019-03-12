@@ -34,7 +34,7 @@ PROJECT( CaPTk )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
 SET (PROJECT_VERSION_MAJOR 1 )
 SET (PROJECT_VERSION_MINOR 6 )
-SET (PROJECT_VERSION_PATCH 2.Beta )
+SET (PROJECT_VERSION_PATCH "2.Beta" )
 #SET (SVN_REVISION "${SVN_REVISION}")
 
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
@@ -769,9 +769,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   )
 
   # find stand-alone CMD applications
-  FILE( GLOB STANDALONE_APPS
-    "${PROJECT_SOURCE_DIR}/src/applications/*.cxx"
-  )
+  # FILE( GLOB STANDALONE_APPS
+    # "${PROJECT_SOURCE_DIR}/src/applications/*.cxx"
+  # )
 
   #MESSAGE( STATUS "[debug]STANDALONE_APPS == ${STANDALONE_APPS}")
 
@@ -1191,6 +1191,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
+
+      # install(CODE "set(deployqt \"${MACDEPLOYQT_EXECUTABLE}\")" COMPONENT Runtime)
+      # install(CODE [===[
+      # execute_process(COMMAND "${deployqt}" "${PROJECT_BINARY_DIR}/CaPTk_1.6.2.Beta.app")
+      # ]===] COMPONENT Runtime)
     ELSE()
       # ITK HERE
     ENDIF()
