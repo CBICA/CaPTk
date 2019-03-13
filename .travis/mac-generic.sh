@@ -10,8 +10,10 @@ export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
 export CMAKE_PROGRAM_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PROGRAM_PATH"
 export PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$PATH"
+export CMAKE_INSTALL_RPATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:"
+export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 
-cmake ../
+cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
 
 # rm -rf /usr/local/opt/qt
 # rm -rf /usr/local/Cellar/qt
@@ -45,8 +47,8 @@ make -j 2
 
 # make package
 
-# chmod +x ../scripts/mac-preinstall-pkg.sh
-# ../scripts/mac-preinstall-pkg.sh
+chmod +x ../.travis/mac-pkg.sh
+../.travis/mac-pkg.sh
 }
 
 ###########################

@@ -785,7 +785,6 @@ namespace cbica
   {
     std::string path, base, ext;
     splitFileName(getFullPath(), path, base, ext);
-    std::cout << "===DEBUG path" << path << " base " << base << " ext " << ext << std::endl;
     return path;
   }
 
@@ -1254,8 +1253,6 @@ namespace cbica
 
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath)
   {
-    std::cout << "===DEBUG HIT" << std::endl;
-
     if (!cbica::directoryExists(dirName))
     {
       std::cerr << "Supplied directory name wasn't found: " << dirName << std::endl;

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <pkg-ref id="com.cbica.captk"/>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.cbica.captk"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="com.cbica.captk" visible="false">
+        <pkg-ref id="com.cbica.captk"/>
+    </choice>
+    <pkg-ref id="com.cbica.captk" version="1.6.2.Beta" onConclusion="none">CaPTk_1.6.2.Beta.pkg</pkg-ref>
+</installer-gui-script>

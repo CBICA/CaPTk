@@ -4,6 +4,7 @@ bin_debug
 bin
 bin2
 superbuild
+Qt5
 CaPTk*.bin
 *Installer.bin
 makeself-*.run*
@@ -33,6 +34,7 @@ ibsi_phantom
 /src/applications/FeatureExtraction/runner.ps1
 
 mac-local-build.sh
+mac-pkg.sh
 deepmedic
 itksnap
 libra
