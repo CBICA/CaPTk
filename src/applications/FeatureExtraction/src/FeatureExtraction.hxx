@@ -1685,7 +1685,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
     m_logger.WriteError("Output file has not been initialized; saving in '" + m_outputFile + "'");
     SetOutputFilename(m_outputFile);
   }
-  std::ofstream myfile;
+  //std::ofstream myfile;
 
   for (auto const &f : featureList)
   {
@@ -1791,13 +1791,13 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
       m_trainingFile_features += cbica::to_string_precision(f.second) + ",";
     }
   }
-  if (m_outputVerticallyConcatenated)
-  {
-#ifndef WIN32
-    myfile.flush();
-#endif
-    myfile.close();
-  }
+//  if (m_outputVerticallyConcatenated)
+//  {
+//#ifndef WIN32
+//    myfile.flush();
+//#endif
+//    myfile.close();
+//  }
 }
 
 
