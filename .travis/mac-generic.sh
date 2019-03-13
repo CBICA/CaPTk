@@ -10,8 +10,9 @@ export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
 export CMAKE_PROGRAM_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PROGRAM_PATH"
 export PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$PATH"
-export CMAKE_INSTALL_RPATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:"
 export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+# export CMAKE_INSTALL_RPATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:"
+
 
 cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
 
@@ -38,9 +39,8 @@ make -j 2
 # export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
 # echo "Run CaPTk Build"
-# # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
+# # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/install/lib/cmake/ITK-4.13:$CMAKE_PREFIX_PATH"
 # cmake ../
-# # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 # cmake ../
 # cmake ../
 # make -j 2
