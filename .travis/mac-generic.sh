@@ -13,19 +13,10 @@ export PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}
 export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 # export CMAKE_INSTALL_RPATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:"
 
+ls qt
 
 cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
-
-# rm -rf /usr/local/opt/qt
-# rm -rf /usr/local/Cellar/qt
-# cp -r qt /usr/local/Cellar/qt
-# brew link --force qt
-# mv /usr/local/opt/qt5 /usr/local/opt/qt
-
-# export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
-# export PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$PATH"
-
-# mkdir -p /usr/local/opt/qt
+cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
 
 echo "Run Dependency Manager"
 # # make & sleep 5600; kill $! 
