@@ -1,49 +1,83 @@
-# parent CMakeLists file
-
 CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2)
-#CMAKE_POLICY(VERSION 2.8)
-#IF(COMMAND cmake_policy)
-#  CMAKE_POLICY(SET CMP0003 NEW)
-#  CMAKE_POLICY(SET CMP0020 NEW)
-#  CMAKE_POLICY(SET CMP0010 NEW)
-CMAKE_POLICY(SET CMP0048 NEW) # only with CMake 3
-#ENDIF(COMMAND cmake_policy)
-SET(CMAKE_CXX_STANDARD 11)
-SET(CMAKE_CXX_STANDARD_REQUIRED YES)
-
-#INCLUDE(FindSubversion)
-#IF(Subversion_FOUND) 
-#  IF(EXISTS "${CMAKE_SOURCE_DIR}/../../.svn")
-#    Subversion_WC_INFO("${CMAKE_SOURCE_DIR}/../../" MY)
-#    SET(SVN_REVISION "${MY_WC_REVISION}")
-#  ELSEIF(EXISTS "${CMAKE_SOURCE_DIR}/../.svn")
-#    Subversion_WC_INFO("${CMAKE_SOURCE_DIR}/../" MY)
-#    SET(SVN_REVISION "${MY_WC_REVISION}")
-#  ELSEIF(EXISTS "${CMAKE_SOURCE_DIR}/.svn")
-#    Subversion_WC_INFO("${CMAKE_SOURCE_DIR}/" MY)
-#    SET(SVN_REVISION "${MY_WC_REVISION}")
-#  ELSE ()
-#    SET(SVN_REVISION "-1")
-#  ENDIF()
-#ELSE(Subversion_FOUND)
-#  SET(SVN_REVISION "-1")
-#ENDIF(Subversion_FOUND) 
 
 # set project name. The exe name is taken from this
+SET( PROJECT_NAME CaPTk )
 PROJECT( CaPTk )
+SET( ${PROJECT_NAME} )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
-SET (PROJECT_VERSION_MAJOR 1 )
-SET (PROJECT_VERSION_MINOR 6 )
-SET (PROJECT_VERSION_PATCH 1 )
+SET( PROJECT_VERSION_MAJOR 1 )
+SET( PROJECT_VERSION_MINOR 6 )
+SET( PROJECT_VERSION_PATCH 2.RC1 )
+SET( PROJECT_VERSION_TWEAK b )
+
+# Configure CCache if available
+FIND_PROGRAM(CCACHE_FOUND ccache)
+IF(CCACHE_FOUND)
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+ENDIF(CCACHE_FOUND)
+
+FIND_PROGRAM(CCacheExectuable ccache)
+IF( CCacheExectuable )
+  # only used with >=cmake-3.4
+  SET( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
+  SET( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
+  #MESSAGE( STATUS "Speeding up build with ccache" )
+ENDIF()
+
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules/)
+INCLUDE( CaPTk_macros )
+
 #SET (SVN_REVISION "${SVN_REVISION}")
 
+OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
+SET( QT_VERSION "5.12.1" CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
+SET( OPENCV_VERSION "3.4.5" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
+
+CAPTK_INITIAL_SETUP()
+
+IF( CAPTK_SUPERBUILD_FORCE )
+
+  PROJECT(${PROJECT_NAME}_Depends)
+  INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
+  return()
+
+ELSE()
+  FIND_PACKAGE(ITK)
+  
+  IF(NOT EXISTS ${ITK_USE_FILE})
+    #MESSAGE( AUTHOR_WARNING "=== [DEBUG] PROJECT_BIN_DIR=${PROJECT_BINARY_DIR}" )
+    IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
+
+      OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
+      IF( CAPTK_SUPERBUILD )
+        PROJECT(${PROJECT_NAME}_Depends)
+        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
+        return()
+      ENDIF()
+
+    ENDIF()
+  ENDIF()
+    # org_cmake_prefix_path=/usr/local/opt/qt/bin:/usr/local/opt/qt/lib/cmake/Qt5:/Library/TeX/texbin:/Users/phucngo/Desktop/CaPTk/bin/ITK-build:
+  # org_path=/usr/local/opt/make/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/usr/local/opt/make/libexec/gnubin:/System/Library/Frameworks:/System/Library/Frameworks:/usr/local/opt/qt/bin:/usr/local/opt/qt/lib/cmake/Qt5:
+  IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
+    SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
+    SET( ENV{CMAKE_PREFIX_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:${PROJECT_BINARY_DIR}/ITK-build/:${PROJECT_BINARY_DIR}/OpenCV-build/:${PROJECT_BINARY_DIR}/VTK-build:$ENV{CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE )
+    SET( ENV{CMAKE_PROGRAM_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{CMAKE_PROGRAM_PATH}" CACHE PATH "" FORCE )
+    SET( ENV{PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{PATH}" CACHE PATH "" FORCE)
+    #MESSAGE( AUTHOR_WARNING "=== [DEBUG] CMAKE_PREFIX_PATH=$ENV{CMAKE_PREFIX_PATH}" )
+  ENDIF()
+ENDIF()
+
+SET( PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+
 IF (APPLE)
-  SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+  SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
 ELSE()
   SET( EXE_NAME "${PROJECT_NAME}" )
 ENDIF()
 
-SET( PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 #IF( NOT( ${SVN_REVISION} STREQUAL "" ) )
 #  SET( PROJECT_VERSION "${PROJECT_VERSION}_${SVN_REVISION}")
 #ENDIF()
@@ -83,7 +117,7 @@ IF( BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_DOCUMENTATION ON )
 ENDIF()
 IF( BUILD_DOCUMENTATION )
-  ADD_SUBDIRECTORY( docs )
+  ADD_SUBDIRECTORY( docs_sources )
 ENDIF ()
 
 IF( NOT BUILD_DOCUMENTATION_ONLY )
@@ -104,7 +138,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF()
 
     if(APPLE)
-      list(APPEND CMAKE_CXX_FLAGS "-std=c++11 -Wno-narrowing -mmacosx-version-min=10.9 ${CMAKE_CXX_FLAGS}")
+      list(APPEND CMAKE_CXX_FLAGS "-std=c++11 -Wno-narrowing -Wall ${CMAKE_CXX_FLAGS}")
 
       SET (CAPTK_MACOSX_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${PROJECT}" )
@@ -121,17 +155,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   ENDIF()
 
-  IF(WIN32)
-    SET(CMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS 1)
-    SET(CMAKE_CXX_USE_RESPONSE_FILE_FOR_OBJECTS 1)
-    SET(CMAKE_C_USE_RESPONSE_FILE_FOR_INCLUDES 1)
-    SET(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES 1)
-    SET(CMAKE_C_RESPONSE_FILE_LINK_FLAG "@")
-    SET(CMAKE_CXX_RESPONSE_FILE_LINK_FLAG "@")
-    SET(CMAKE_C_CREATE_STATIC_LIBRARY "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>") 
-    SET(CMAKE_CXX_CREATE_STATIC_LIBRARY "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>") 
-  ENDIF()
-
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
 
@@ -145,16 +168,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   MARK_AS_ADVANCED(CAPTK_BUILD_CONSOLE_ONLY)
 
-  SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-  SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules)
-
   SET( CAPTK_CLI_MODE OFF CACHE BOOL "Builds only CLI apps of CaPTk." )
   ADD_DEFINITIONS(-DCAPTK_CLI_MODE)
-
-  IF(LINUX)
-    SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-  ENDIF()
 
   # find dependencies START
 
@@ -179,28 +194,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ### third party library processing
   # find and include all third party libraries
   SUBDIRLIST(SUBDIRECTORIES ${THIRDPARTY_LIB_PATH})
-
-  FIND_PACKAGE(ITK)
-  IF(NOT EXISTS ${ITK_USE_FILE})
-
-    IF( NOT EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-
-      OPTION( CAPTK_SUPERBUILD "Do a Superbuild of the CaPTk dependencies or Specify ITK install directory with the defined components" ON )
-      IF( CAPTK_SUPERBUILD )
-        PROJECT(${PROJECT_NAME}_Depends)
-        INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/Superbuild.cmake )
-        return()
-      ENDIF()
-
-    ENDIF()
-  ENDIF()
-    
-  IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
-    SET( $ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/5.11.2/lib/cmake/Qt5/;${PROJECT_BINARY_DIR}/ITK-build/;${PROJECT_BINARY_DIR}/OpenCV-build/" )
-    LIST(APPEND CMAKE_PREFIX_PATH "${PROJECT_BINARY_DIR}/ITK-build/")
-    SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
-  ENDIF()
-
+  
   FIND_PACKAGE( ITK REQUIRED )
   #FIND_PACKAGE( ITK REQUIRED )
   INCLUDE("${ITK_USE_FILE}")
@@ -225,31 +219,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( YAMLCPP_Headers ${YAMLCPP_Headers} CACHE STRING "YAML-CPP headers" FORCE )
   SET( YAMLCPP_Sources ${YAMLCPP_Sources} CACHE STRING "YAML-CPP sources" FORCE )
   ### third party library processing
-
-  IF(APPLE)
-    set(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../bin")
-    set(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../../include")
-
-    SET(OpenMP_C "${CMAKE_C_COMPILER}")
-    SET(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
-    SET(OpenMP_C_LIB_NAMES "libomp" "libgomp" "libiomp5")
-    SET(OpenMP_libomp_LIBRARY ${OpenMP_C_LIB_NAMES})
-    SET(OpenMP_libgomp_LIBRARY ${OpenMP_C_LIB_NAMES})
-    SET(OpenMP_libiomp5_LIBRARY ${OpenMP_C_LIB_NAMES})
-    SET(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
-    SET(OpenMP_CXX_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
-    SET(OpenMP_CXX_LIB_NAMES "libomp" "libgomp" "libiomp5")
-    SET(OpenMP_libomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-    SET(OpenMP_libgomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-    SET(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-
-    INCLUDE_DIRECTORIES("${OPENMP_INCLUDES}")
-    LINK_DIRECTORIES("${OPENMP_LIBRARIES}")
-  ENDIF()
-
-  FIND_PACKAGE(OpenMP REQUIRED)
-  SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
-  SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
 
   FIND_PACKAGE(VTK REQUIRED)
   INCLUDE("${VTK_USE_FILE}")
@@ -338,7 +307,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_MSUBTYPE ON CACHE BOOL "Do you want to build Molecular Subtype Estimation?" )
   SET( BUILD_ATLAS ON CACHE BOOL "Do you want to build Population Atlas?" )
   SET( BUILD_GEODESIC ON CACHE BOOL "Do you want to build Geodesic Segmentation?" )
-  SET( BUILD_GEODESICTRAIN OFF CACHE BOOL "Do you want to build Geodesic Segmentation Train?" )
+  SET( BUILD_GEODESICTRAINING ON CACHE BOOL "Do you want to build Geodesic Training Segmentation?" )
   SET( BUILD_SBRT ON CACHE BOOL "Do you want to build SBRT Lung?" )
   SET( BUILD_WHITESTRIPE ON CACHE BOOL "Do you want to build WhiteStripe Normalization?" )
   SET( BUILD_ITKSNAP ON CACHE BOOL "Do you want to connect ITK-SNAP to CaPTk Console?" )
@@ -416,103 +385,39 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ADD_DEFINITIONS(-DBUILD_FETALBRAIN)
   ENDIF()
 
-  IF(BUILD_GEODESICTRAIN)
-    ADD_DEFINITIONS(-DBUILD_GEODESICTRAIN)
+  IF(BUILD_GEODESICTRAINING)
+    ADD_DEFINITIONS(-DBUILD_GEODESICTRAINING)
   ENDIF()
 
-  ## add the CBICA-TK library before any of the applications get added  
-  #ADD_LIBRARY(
-  #  ${LIBNAME_CBICATK}
-  #  ${CBICA-TK_SOURCES}
-  #  ${YAMLCPP_Headers}
-  #  ${YAMLCPP_Sources}
-  #)
-  #
-  #TARGET_LINK_LIBRARIES(
-  #  ${LIBNAME_CBICATK}
-  #  ${DEPENDENT_LIBS}
-  #)
+  # set stand-alone applications and libs directories
+  SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
+  SET( CaPTk_CLIs_Folder "CaPTk_CLIApps")
+  SET( CaPTk_Libs_Folder "CaPTk_Libs")
+
   ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
   SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
-
-
+  
   # include dependencies
   # add source code include directories
   INCLUDE_DIRECTORIES(
+    ${CACHED_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/src/
     ${PROJECT_SOURCE_DIR}/src/applications/
     ${PROJECT_SOURCE_DIR}/src/applications/common_includes/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/src/
     ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction_includes/
+    ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/
+    ${PROJECT_SOURCE_DIR}/src/applications/GeodesicTraining/include/
     ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/
+    ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
     ${PROJECT_SOURCE_DIR}/src/common/inc/
     ${PROJECT_SOURCE_DIR}/src/view/gui/
+    ${GEODESIC_TRAINING_INCLUDE_DIRS}
     ${APPLICATION_INCLUDES}
+    ${CACHED_INCLUDE_DIRS}
   )
-
-  # set stand-alone applications directory
-  SET( StandAloneCLIAppsFolder "CaPTk_CLIApps")
-
-  #IF( BUILD_WHITESTRIPE )
-  #  SET(WhiteStripeSrcs
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/main.cpp
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripe.cpp
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/KernelFit.cpp)
-  #  SET(WhiteStripeHeaders
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/testWhiteStripe.h
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripe.h
-  #    ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/KernelFit.h)
-  #
-  #  ADD_EXECUTABLE(WhiteStripe ${WhiteStripeSrcs} ${WhiteStripeHeaders})
-  #
-  #  SET_TARGET_PROPERTIES( WhiteStripe PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-  #
-  #  INSTALL( TARGETS WhiteStripe
-  #      #DESTINATION bin
-  #      BUNDLE DESTINATION .
-  #      RUNTIME DESTINATION bin
-  #      LIBRARY DESTINATION lib
-  #    CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-  #    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-  #  )
-  #  TARGET_LINK_LIBRARIES(WhiteStripe ${OpenCV_LIBS} ${ITK_LIBRARIES})
-  #
-  #  SET( BUILD_WHITESTRIPE_GUI ON CACHE BOOL "Do you want to build GUI?" )
-  #  IF( BUILD_WHITESTRIPE_GUI )
-  #    FIND_PACKAGE(Qt4 REQUIRED)
-  #    INCLUDE( ${QT_USE_FILE} )
-  #    SET(WhiteStripeGUISrc
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripeGUI.cpp
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripe.cpp
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/KernelFit.cpp
-  #      )
-  #    SET(WhiteStripeGUIIncludes
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripe.h
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/KernelFit.h
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/utils.h
-  #      ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripeGUI.h)
-  #    QT4_WRAP_CPP(MOCSrcs ${INDIVIDUAL_APPLICATIONS_DIR}/whitestripe_source/src/whiteStripeGUI.h)
-  #
-  #    IF( NOT CAPTK_CLI_MODE )
-  #      ADD_EXECUTABLE(WhiteStripeGUI ${WhiteStripeGUISrc} ${WhiteStripeGUIIncludes} ${MOCSrcs})
-  #
-  #      SET_TARGET_PROPERTIES( WhiteStripeGUI PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-  #
-  #      TARGET_LINK_LIBRARIES(WhiteStripeGUI ${VTK_LIBRARIES} ${ITK_LIBRARIES} ${OpenCV_LIBS})
-  #      INSTALL( TARGETS WhiteStripeGUI
-  #        #DESTINATION bin
-  #        BUNDLE DESTINATION .
-  #        RUNTIME DESTINATION bin
-  #        LIBRARY DESTINATION lib
-  #        CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
-  #        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-  #      )
-  #    ENDIF()
-  #
-  #  ENDIF ()
-  #ENDIF()
-
+  
   IF( BUILD_CONFETTI )
     IF (WIN32)
       # do nothing for windows since the pre-compiled binaries will be used
@@ -529,7 +434,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       
       ADD_EXECUTABLE(Confetti ${ConfettiSrcs} ${ConfettiHeaders})
       TARGET_LINK_LIBRARIES(Confetti ${OpenCV_LIBS} ${ITK_LIBRARIES})
-      SET_TARGET_PROPERTIES( Confetti PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
+      SET_TARGET_PROPERTIES( Confetti PROPERTIES FOLDER "${CaPTk_CLIApps}" )
 
       ADD_LIBRARY(ConfettiCore SHARED
         ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/src/confetti.cpp
@@ -601,44 +506,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ADD_DEFINITIONS(-DCAPTK_APP_LIST_PY_GUI="${CAPTK_APP_LIST_PY_GUI}")
   ADD_DEFINITIONS(-DCAPTK_APP_LIST_PY_CLI="${CAPTK_APP_LIST_PY_CLI}")
 
-  # generate moc files for each GUI element
-  # SET(GUI_SOURCES_DIR "${PROJECT_SOURCE_DIR}/src/gui")
-  # SET(GUI_SOURCES_UPDATED ${GUI_SOURCES} )
-  # FOREACH(gui_tool ${UI_ELEMENTS})
-
-    # IF( EXISTS "${GUI_SOURCES_DIR}/ui_${gui_tool}.h" )
-      # SET(
-        # GUI_SOURCES_UPDATED
-        # ${GUI_SOURCES_UPDATED}
-        # "${GUI_SOURCES_DIR}/ui_${gui_tool}.h"
-        # CACHE STRING "All UI elements" FORCE
-      # )
-    # ENDIF()
-    # IF( EXISTS "${GUI_SOURCES_DIR}/${gui_tool}.cpp" )
-      # SET(
-        # GUI_SOURCES_UPDATED
-        # ${GUI_SOURCES_UPDATED}
-        # "${GUI_SOURCES_DIR}/${gui_tool}.cpp"
-        # CACHE STRING "All UI elements" FORCE
-      # )
-    # ENDIF()
-    # IF( EXISTS "${GUI_SOURCES_DIR}/${gui_tool}.h" )
-      # SET(
-        # GUI_SOURCES_UPDATED
-        # ${GUI_SOURCES_UPDATED}
-        # "${GUI_SOURCES_DIR}/${gui_tool}.h"
-        # CACHE STRING "All UI elements" FORCE
-      # )
-
-      # QT5_WRAP_CPP(GUI_SOURCES_UPDATED
-      # "${GUI_SOURCES_DIR}/${gui_tool}.h"
-      # )
-    # ENDIF()
-
-  # ENDFOREACH(gui_tool)
-
   # keep source files structured as folders for clarity
-  SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
   SOURCE_GROUP( GUI FILES ${GUI_SOURCES_UPDATED} )
   SOURCE_GROUP( CBICA-TK FILES ${CBICA-TK_SOURCES} )
   SOURCE_GROUP( APPLICATIONS FILES ${APPLICATION_SOURCES} )
@@ -675,18 +543,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${OpenCV_LIBRARIES}
   )
 
-  #ADD_LIBRARY(
-  #  ${LIBNAME_GUI}
-  #  ${GUI_SOURCES_UPDATED}
-  #)
-  #
-  #TARGET_LINK_LIBRARIES(
-  #  ${LIBNAME_GUI}
-  #  ${DEPENDENT_LIBS}
-  #  ${LIBNAME_CBICATK}
-  #  ${LIBNAME_FeatureExtractor}
-  #)
-
   ADD_LIBRARY(
     ${LIBNAME_Applications}
     ${APPLICATION_SOURCES}
@@ -696,24 +552,28 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   TARGET_LINK_LIBRARIES(
     ${LIBNAME_Applications}
-    #${DEPENDENT_LIBS}
+    ${DEPENDENT_LIBS}
     ${LIBNAME_CBICATK}
     ${ITK_LIBRARIES}
     ${OpenCV_LIBRARIES}
   )
 
-  SET(CaPTk_Libs_Folder "CaPTk_Libs")
-
   ADD_DEPENDENCIES( ${LIBNAME_Applications} ${LIBNAME_GUI} ${LIBNAME_FeatureExtractor} )
 
   SET_TARGET_PROPERTIES( ${LIBNAME_CBICATK} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( CaPTk_GUI PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
   SET_TARGET_PROPERTIES( CaPTk_Common PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
-  SET_TARGET_PROPERTIES( ${LIBNAME_Applications} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
-  SET_TARGET_PROPERTIES( FeatureExtraction PROPERTIES FOLDER "${StandAloneCLIAppsFolder}" )
-  SET_TARGET_PROPERTIES( ${LIBNAME_FeatureExtractor} PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  SET_TARGET_PROPERTIES( GeodesicTrainingCaPTkLib PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+  SET_TARGET_PROPERTIES( GeodesicTrainingComputeLib PROPERTIES FOLDER "${CaPTk_Libs_Folder}" )
+
   
-  SET( CAPTK_LIBRARIES ${LIBNAME_CBICATK} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} )
+  SET( CAPTK_LIBRARIES 
+    ${LIBNAME_CBICATK} 
+    ${LIBNAME_Applications} 
+    ${LIBNAME_FeatureExtractor} 
+  )
 
   # find stand-alone CMD applications
   FILE( GLOB STANDALONE_APPS
@@ -722,7 +582,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   #MESSAGE( STATUS "[debug]STANDALONE_APPS == ${STANDALONE_APPS}")
 
-  # SET(STANDALONE_APPS_LIST "")
+  #SET(STANDALONE_APPS_LIST "")
 
   FOREACH(application ${STANDALONE_APPS})
 
@@ -744,7 +604,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDFOREACH()
 
   IF (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    SET(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/install" CACHE PATH "Default Install Path" FORCE )
     SET(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/install" CACHE PATH "Default Install Path" FORCE )
   ENDIF()
 
@@ -772,7 +631,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   SET(META_FILES_TO_INCLUDE "") # used for Apple package
   #IF( BUILD_DOCUMENTATION )
-    FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs/html/*.*")
+    FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs_sources/html/*.*")
     FOREACH(docFiles ${ALL_DOC_FILES_BASE})
       IF (APPLE)
         SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
@@ -781,7 +640,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         INSTALL(FILES "${docFiles}" DESTINATION share/doc)
       ENDIF()
     ENDFOREACH()
-    #INSTALL( DIRECTORY ${PROJECT_BINARY_DIR}/docs/html DESTINATION share/doc )
+    #INSTALL( DIRECTORY ${PROJECT_BINARY_DIR}/docs_sources/html DESTINATION share/doc )
   #ENDIF()
 
   # ensure all licenses are in the package
@@ -834,11 +693,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     SET( FLAIR_TESTTUMOR_FILE "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz")
     SET_SOURCE_FILES_PROPERTIES( ${FLAIR_TESTTUMOR_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
 
-    FILE(GLOB survival_FILES "${DATA_DIR}/survival/*.*")
-    SET_SOURCE_FILES_PROPERTIES(${survival_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/survival)
+    #FILE(GLOB survival_FILES "${DATA_DIR}/survival/*.*")
+    #SET_SOURCE_FILES_PROPERTIES(${survival_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/survival)
 
-    FILE(GLOB egfrv3_FILES "${DATA_DIR}/egfrv3/*.*")
-    SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/egfrv3)
+    #FILE(GLOB egfrv3_FILES "${DATA_DIR}/egfrv3/*.*")
+    #SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/egfrv3)
 
     FILE(GLOB sri24_FILES "${DATA_DIR}/sri24/*.*")
     SET_SOURCE_FILES_PROPERTIES(${sri24_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
@@ -848,8 +707,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ELSE ()
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz" DESTINATION data)
-    INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
-    INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
+    #INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
+    #INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/sri24" DESTINATION data PATTERN ".svn" EXCLUDE)
   ENDIF()
 
@@ -861,8 +720,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   FOREACH(dependent_lib ${ALL_DEPENDENT_LIBS})
     IF (APPLE)
-      # SET_SOURCE_FILES_PROPERTIES(${dependent_lib} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
-      # SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${dependent_lib})
+      SET_SOURCE_FILES_PROPERTIES(${dependent_lib} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${dependent_lib})
 
       INSTALL(FILES "${dependent_lib}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
 
@@ -871,56 +730,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF()
   ENDFOREACH()
 
-
-  ## For new feature, add the feature definition name here; it needs to correspond to the file in "${DATA_DIR}/features"
-  #SET( FeatureDefinitions "" )
-  #FILE( GLOB allFeatureDefinitionFiles "${DATA_DIR}/features/*.csv" )
-  #FOREACH(featureDefinitionFile ${allFeatureDefinitionFiles})
-  #
-  #  GET_FILENAME_COMPONENT( CURRENT_DEF_FILE ${featureDefinitionFile} NAME_WE )
-  #
-  #  IF (NOT APPLE)
-  #    INSTALL(
-  #      FILES "${featureDefinitionFile}"
-  #      DESTINATION data/features
-  #    )
-  #  ENDIF()
-  #
-  #  SET( FeatureDefinitions "${FeatureDefinitions} ${CURRENT_DEF_FILE}" )
-  #ENDFOREACH()
-  #
-  #IF (APPLE)
-  #  SET_SOURCE_FILES_PROPERTIES(${allFeatureDefinitionFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features)
-  #
-  #  SET( BATCHMODE "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" )
-  #  SET_SOURCE_FILES_PROPERTIES(${BATCHMODE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch)
-  #
-  #  SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${allFeatureDefinitionFiles} ${BATCHMODE})
-  #
-  #ELSE()
-  #  INSTALL( FILES "${DATA_DIR}/features/batchmode/batch_featureextraction.csv" DESTINATION share/featureExtractionBatch )
-  #ENDIF()
-  #
-  #SET( FeatureDefinitions ${FeatureDefinitions} CACHE STRING "Available Feature Definitions" FORCE)
-  #ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
-
   IF( WIN32 )
     INSTALL(DIRECTORY "${DATA_DIR}/GnuWin32" DESTINATION data PATTERN ".svn" EXCLUDE)
   ENDIF()
 
-  ## [TBD] change this to a directory install, if possible
-  #FILE(GLOB_RECURSE ALL_DOC_FILES "${PROJECT_SOURCE_DIR}/docs/tutorial/*.*")
-  #FOREACH(docFiles ${ALL_DOC_FILES})
-  #  IF (APPLE)
-  #    SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
-  #    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
-  #
-  #  ELSE()
-  #    INSTALL(FILES "${docFiles}" DESTINATION share/doc)
-  #  ENDIF()
-  #ENDFOREACH()
-
-  FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs/html/*.*")
+  FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs_sources/html/*.*")
   FOREACH(docFiles ${ALL_DOC_FILES_BASE})
     IF (APPLE)
       SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
@@ -930,29 +744,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INSTALL(FILES "${docFiles}" DESTINATION share/doc)
     ENDIF()
   ENDFOREACH()
-
-  #FILE(GLOB ALL_DOC_FILES_SEARCH "${PROJECT_BINARY_DIR}/docs/html/search/*.*")
-  #FOREACH(docFiles ${ALL_DOC_FILES_SEARCH})
-  #  IF (APPLE)
-  #      SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc/search)
-  #      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
-  #
-  #  ELSE()
-  #    INSTALL(FILES "${docFiles}" DESTINATION share/doc/search)
-  #  ENDIF()
-  #ENDFOREACH()
-
-  ## ensure all icons are in the package
-  #FILE( GLOB ALL_IMGS "${PROJECT_SOURCE_DIR}/docs/images/*.png" )
-  #FOREACH( img ${ALL_IMGS} )
-  #  IF (APPLE)
-  #      SET_SOURCE_FILES_PROPERTIES(${img} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
-  #      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${img})
-  #
-  #  ELSE()
-  #    INSTALL(FILES "${img}" DESTINATION share/doc )
-  #  ENDIF()
-  #ENDFOREACH()
 
   set(OS_BUNDLE MACOSX_BUNDLE)
 
@@ -966,25 +757,28 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         ${EXE_SOURCES}
         #${YAMLCPP_Headers}
         #${YAMLCPP_Sources}
-        ${DATA_DIR}/icons/captk.rc
+        ${DATA_DIR}/icons/application/windows/captk.rc
       )
     ELSEIF(APPLE)
       SET (ICON_FILE "${DATA_DIR}/icons/application/apple/CaPTk.icns")
       SET_SOURCE_FILES_PROPERTIES(${ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
-      FOREACH(CAPTK_MACOSX_BUNDLE_FILE ${CAPTK_MACOSX_BUNDLE_FILES_INSTALL_TARGETS})
-        
-        IF (${CAPTK_MACOSX_BUNDLE_FILE} STREQUAL "${INDIVIDUAL_APPLICATIONS_DIR}/dcm2nii/dcm2nii")
-          SET_SOURCE_FILES_PROPERTIES(${CAPTK_MACOSX_BUNDLE_FILE} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin )
+      # FOREACH(CAPTK_MACOSX_BUNDLE_FILE ${CAPTK_MACOSX_BUNDLE_FILES_INSTALL_TARGETS})  
+      #     SET_SOURCE_FILES_PROPERTIES(${CAPTK_MACOSX_BUNDLE_FILE} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin )
 
-          SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${CAPTK_MACOSX_BUNDLE_FILE})
-        ENDIF()
+      #     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${CAPTK_MACOSX_BUNDLE_FILE})
+      # ENDFOREACH()
 
-        IF (${CAPTK_MACOSX_BUNDLE_FILE} STREQUAL "${INDIVIDUAL_APPLICATIONS_DIR}/itksnap/ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
-          SET_SOURCE_FILES_PROPERTIES(${CAPTK_MACOSX_BUNDLE_FILE} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+      FOREACH(FT_META_FILES_TO_INCLUDE ${FEATURE_EXTRACTION_META_FILES_TO_INCLUDE})
+        IF (${FT_META_FILES_TO_INCLUDE} STREQUAL "${DATA_DIR}/features/batchmode/batch_featureextraction.csv")
+          SET_SOURCE_FILES_PROPERTIES(${FT_META_FILES_TO_INCLUDE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch )
 
-          SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${CAPTK_MACOSX_BUNDLE_FILE})
-        ENDIF()
+          SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FT_META_FILES_TO_INCLUDE})
+        ELSE() 
+          SET_SOURCE_FILES_PROPERTIES(${FT_META_FILES_TO_INCLUDE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/features )
+
+          SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FT_META_FILES_TO_INCLUDE}) 
+        ENDIF()        
       ENDFOREACH()
 
       IF (NOT ICON_NAME)
@@ -1043,6 +837,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       ${DEPENDENT_LIBS}
       CaPTk_GUI
       CaPTk_Common
+      GeodesicTrainingComputeLib
+      GeodesicTrainingCaPTkLib
       ${LIBNAME_Applications}
       ${LIBNAME_FeatureExtractor}
       ${LIBNAME_CBICATK}
@@ -1108,12 +904,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     IF( WIN32 )
       INSTALL(FILES "${DATA_DIR}/icons/application/windows/captk.ico" DESTINATION share/icons)
-      INSTALL(FILES "${DATA_DIR}/icons/captk.rc" DESTINATION data/icons)
+      INSTALL(FILES "${DATA_DIR}/icons/application/windows/captk.rc" DESTINATION data/icons)
     ELSEIF (APPLE)
       
     ELSE()
       INSTALL( DIRECTORY "${DATA_DIR}/icons/application/linux/hicolor" DESTINATION share/icons)
-      INSTALL(FILES "${DATA_DIR}/icons/captk.rc" DESTINATION data/icons)
+      # Not in data dir on linux for some reason
+      # INSTALL(FILES "${DATA_DIR}/icons/captk.rc" DESTINATION data/icons)
     ENDIF()
 
     # CPack settings
@@ -1197,11 +994,16 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       #   ENDIF()
       # ENDFOREACH()
 
-      chmodFile(${EXE_NAME} dcm2nii)
-      chmodFile(${EXE_NAME} ITK-SNAP)
+      # chmodFile(${EXE_NAME} dcm2nii)
+      # chmodFile(${EXE_NAME} ITK-SNAP)
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
+
+      # install(CODE "set(deployqt \"${MACDEPLOYQT_EXECUTABLE}\")" COMPONENT Runtime)
+      # install(CODE [===[
+      # execute_process(COMMAND "${deployqt}" "${PROJECT_BINARY_DIR}/CaPTk_1.6.2.Beta.app")
+      # ]===] COMPONENT Runtime)
     ELSE()
       # ITK HERE
     ENDIF()

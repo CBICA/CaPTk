@@ -88,7 +88,7 @@ namespace cbica
     // start data processing
     // made parallel for efficiency
     int threads = omp_get_max_threads(); // obtain maximum number of threads available on machine  
-    threads > inputModalitiesAndImages.size() ? threads = inputModalitiesAndImages.size() : threads = threads;
+    //threads > inputModalitiesAndImages.size() ? threads = inputModalitiesAndImages.size() : threads = threads;
     //#pragma omp parallel for num_threads(threads)
     for (int i = 0; i < inputModalitiesAndImages.size(); i++)
     {
@@ -156,7 +156,7 @@ namespace cbica
 
     // made parallel for efficiency
     int threads = omp_get_max_threads(); // obtain maximum number of threads available on machine  
-    threads > returnVector.size() ? threads = returnVector.size() : threads = threads;
+    //threads > returnVector.size() ? threads = returnVector.size() : threads = threads;
     //#pragma omp parallel for num_threads(threads)
     for (int i = 0; i < returnVector.size(); i++)
     {
@@ -950,7 +950,7 @@ namespace cbica
 
     for (size_t i = 0; i < TImageType::ImageDimension; i++)
     {
-      distances[i] = end_worldCoordinates[i] - start_worldCoordinates[i]; // real world image span along each axis
+      distances[i] = std::abs(end_worldCoordinates[i] - start_worldCoordinates[i]); // real world image span along each axis
     }
 
     return distances;
@@ -962,7 +962,7 @@ namespace cbica
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
   \param resizeFactor The resize factor; can be greater than 100 (which causes an expanded image to be written) but can never be less than zero
-  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \param interpolator The type of interpolator to use; can be Linear, BSpline, BiCubic or NearestNeighbor
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
@@ -1001,7 +1001,13 @@ namespace cbica
     resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
     if (interpolator_wrap == "bspline")
     {
-      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else if (interpolator_wrap.find("bicubic") != std::string::npos)
+    {
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType >::New();
+      interpolatorFunc->SetSplineOrder(3);
       resampler->SetInterpolator(interpolatorFunc);
     }
     else if (interpolator_wrap.find("nearest") != std::string::npos)
@@ -1032,13 +1038,14 @@ namespace cbica
   typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const float outputSpacing = 1.0, const std::string interpolator = "Linear")
   {
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
-    itk::Vector< double, TImageType::ImageDimension > outputSpacingVector;
+    auto inputSpacing = inputImage->GetSpacing();
+    auto outputSpacingVector = inputSpacing;
     if (TImageType::ImageDimension != 4)
     {
       outputSpacingVector.Fill(outputSpacing);
       for (size_t i = 0; i < TImageType::ImageDimension; i++)
       {
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing);
       }
     }
     else // preserve all time points of a time series image
@@ -1046,8 +1053,9 @@ namespace cbica
       for (size_t i = 0; i < 3; i++)
       {
         outputSpacingVector[i] = outputSpacing;
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing;
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing);
       }
+      outputSpacingVector[3] = inputSpacing[3];
     }
 
     std::string interpolator_wrap = interpolator;
@@ -1097,18 +1105,19 @@ namespace cbica
   {
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
     auto outputSpacingVector = outputSpacing;
+    auto inputSpacing = inputImage->GetSpacing();
     if (TImageType::ImageDimension != 4)
     {
       for (size_t i = 0; i < TImageType::ImageDimension; i++)
       {
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing[i];
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
       }
     }
     else // preserve all time points of a time series image
     {
       for (size_t i = 0; i < 3; i++)
       {
-        outputSize[i] = outputSize[i] * outputSpacingVector[i] / outputSpacing[i];
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
       }
     }
 
@@ -1126,6 +1135,12 @@ namespace cbica
     if (interpolator_wrap == "bspline")
     {
       auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
+    }
+    else if (interpolator_wrap.find("bicubic") != std::string::npos)
+    {
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType >::New();
+      interpolatorFunc->SetSplineOrder(3);
       resampler->SetInterpolator(interpolatorFunc);
     }
     else if (interpolator_wrap.find("nearest") != std::string::npos)

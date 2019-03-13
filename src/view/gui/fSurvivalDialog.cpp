@@ -3,6 +3,7 @@
 //#include "CAPTk.h"
 #include "CaPTkGUIUtils.h"
 #include "cbicaLogging.h"
+#include "qdesktopservices.h"
 
 fSurvivalPredictor::fSurvivalPredictor()
 {
@@ -222,15 +223,15 @@ void fSurvivalPredictor::CheckForDisclaimer()
 
     ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    if (std::system((link).c_str()) != 0)
+    if /*(std::system((link).c_str()) != 0)*/(!openLink("ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/SurvivalPredictor_PretrainedModel.zip"))
     {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified model.");
       return;
     }
     else
     {
-      std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
-      ShowMessage(dataMessage, this);
+      //std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
+      //ShowMessage(dataMessage, this);
       return;
     }
   }

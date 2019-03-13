@@ -1,28 +1,34 @@
 PROJECT(CaPTk_Common)
 
-SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY 
-	${CaPTk_BINARY_DIR})
+#SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY 
+#	${CaPTk_BINARY_DIR})
   
 SET( ${PROJECT_NAME}_HDRS
-  inc/CaPTkClassifierUtils.h
-  inc/CaPTkDefines.h
-  inc/CaPTkEnums.h
-  inc/CaPTkGUIUtils.h
-  inc/CaPTkUtils.h
+  ${PROJECT_SOURCE_DIR}/inc/CaPTkClassifierUtils.h
+  ${PROJECT_SOURCE_DIR}/inc/CaPTkDefines.h
+  ${PROJECT_SOURCE_DIR}/inc/CaPTkEnums.h
+  ${PROJECT_SOURCE_DIR}/inc/CaPTkGUIUtils.h
+  ${PROJECT_SOURCE_DIR}/inc/CaPTkUtils.h
 )
 
 SET( ${PROJECT_NAME}_SRCS
   src/CaPTkGUIUtils.cpp
 )
 
-INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/inc
-  ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src
-  ${CaPTk_SOURCE_DIR}/src/applications/common_includes
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/inc
+  ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src
+  ${PROJECT_SOURCE_DIR}/src/applications/common_includes
 )
-                     
+
 ADD_LIBRARY(
   ${PROJECT_NAME}
   ${${PROJECT_NAME}_SRCS}
   ${${PROJECT_NAME}_HDRS}
 )
-
+ 
+SET( CACHED_INCLUDE_DIRS 
+  ${CACHED_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/inc
+  CACHE STRING "All include directories"
+)
+  

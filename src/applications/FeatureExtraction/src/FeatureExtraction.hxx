@@ -213,6 +213,7 @@ void FeatureExtraction< TImage >::CalculateMorphologic(const typename TImage::Po
   morphologicCalculator.SetInputMask(mask2);
   morphologicCalculator.SetMaskShape(mask1);
   morphologicCalculator.SetStartingIndex(m_currentLatticeStart);
+  morphologicCalculator.SetRange(m_Range);
   morphologicCalculator.Update();
   auto temp = morphologicCalculator.GetOutput();
   if (temp.empty())
@@ -1697,9 +1698,13 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         {
           m_resamplingResolution = std::atof(currentValue.c_str());
         }
-        else if (outer_key == ParamsString[ResamplingInterpolator])
+        else if (outer_key == ParamsString[ResamplingInterpolator_Image])
         {
-          m_resamplingInterpolator = currentValue;
+          m_resamplingInterpolator_Image = currentValue;
+        }
+        else if (outer_key == ParamsString[ResamplingInterpolator_Mask])
+        {
+        m_resamplingInterpolator_Mask = currentValue;
         }
         else if (outer_key == ParamsString[LBPStyle])
         {
@@ -1912,7 +1917,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
     m_logger.WriteError("Output file has not been initialized; saving in '" + m_outputFile + "'");
     SetOutputFilename(m_outputFile);
   }
-  std::ofstream myfile;
+  //std::ofstream myfile;
 
   for (auto const &f : featureList)
   {
@@ -2018,13 +2023,13 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
       m_trainingFile_features += cbica::to_string_precision(f.second) + ",";
     }
   }
+
   if (m_outputVerticallyConcatenated)
   {
 #ifndef WIN32
     myfile.flush();
 #endif
     myfile.close();
-}
 }
 
 
@@ -2313,13 +2318,26 @@ void FeatureExtraction< TImage >::Update()
       {
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
-          m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator);
+          m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator_Image);
+          if (m_debug)
+          {
+            cbica::WriteImage< TImage >(m_inputImages[i], m_outputPath + "/" + m_modality[i] +
+              "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image + ".nii.gz");
+          }
         }
-        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator);
-        auto roundingFilter = itk::RoundImageFilter< TImage, TImage >::New();
-        roundingFilter->SetInput(m_Mask);
-        roundingFilter->Update();
-        m_Mask = roundingFilter->GetOutput();
+        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator_Mask);
+        if (m_resamplingInterpolator_Mask.find("Nearest") == std::string::npos)
+        {
+          auto roundingFilter = itk::RoundImageFilter< TImage, TImage >::New();
+          roundingFilter->SetInput(m_Mask);
+          roundingFilter->Update();
+          m_Mask = roundingFilter->GetOutput();
+        }
+        if (m_debug)
+        {
+          cbica::WriteImage< TImage >(m_Mask, m_outputPath + 
+            "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + ".nii.gz");
+        }
       }
 
       if (m_debug)

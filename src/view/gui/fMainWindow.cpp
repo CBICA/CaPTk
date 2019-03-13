@@ -23,7 +23,7 @@
 #include "PerfusionPCA.h"
 #include "PerfusionDerivatives.h"
 #include "DiffusionDerivatives.h"
-#include "DeepMedicNormalizer.h"
+#include "ZScoreNormalizer.h"
 #include "SBRT_LungField.h"
 #include "SBRT_Nodule.h"
 #include "SBRT_Analysis.h"
@@ -56,11 +56,19 @@
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkLookupTable.h"
 
+#include "QtConcurrent/qtconcurrentrun.h"
+
+//#include "DicomSeriesReader.h"
+
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
+  m_NumberOfUnfinishedExternalProcesses++;
   cbica::Logging(loggerFile, application.toStdString() + " " + arguments.join(" ").toStdString());
-  return std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
+  int returnVal = std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
+  m_NumberOfUnfinishedExternalProcesses--;
+  return returnVal;
+
 #ifdef _WIN32
   //QProcess process;
   //process.setStandardOutputFile((m_tempFolderLocation + "/process_" + application.toStdString() + ".log").c_str());
@@ -105,7 +113,6 @@ int fMainWindow::startExternalProcess(const QString &application, const QStringL
 
   //return std::system((app_string + args_string).c_str());
 #endif
-
 }
 
 int GetNumberOfDimensions(vtkImageData* input)
@@ -157,6 +164,7 @@ fMainWindow::fMainWindow()
   help_download = new QAction(this);
   actionLoad_Recurrence_Images = new QAction(this);
   actionLoad_Nifti_Images = new QAction(this);
+  actionLoad_Dicom_Images = new QAction(this);
   actionLoad_Nifti_ROI = new QAction(this);
   actionSave_Nifti_Images = new QAction(this);
   actionSave_Dicom_Images = new QAction(this);
@@ -166,6 +174,7 @@ fMainWindow::fMainWindow()
   actionAppEGFR = new QAction(this);
   actionAppRecurrence = new QAction(this);
   actionAppGeodesic = new QAction(this);
+  actionAppGeodesicTraining = new QAction(this);
   actionHelp_Interactions = new QAction(this);
   actionAbout = new QAction(this);
 
@@ -240,7 +249,7 @@ fMainWindow::fMainWindow()
   frame->setFrameShadow(QFrame::Sunken);
 
   overallGridLayout->addWidget(frame, 3, 0, 1, 3);
-  
+
   this->setCentralWidget(centralwidget);
   AxialViewWidget->raise();
   CoronalViewWidget->raise();
@@ -273,6 +282,7 @@ fMainWindow::fMainWindow()
 
   menuLoadFile->addAction(actionLoad_Nifti_Images);
   menuLoadFile->addAction(actionLoad_Nifti_ROI);
+ // menuLoadFile->addAction(actionLoad_Dicom_Images);
 
   menuSaveFile->addAction(actionSave_Nifti_Images);
   menuSaveFile->addAction(actionSave_ROI_Images);
@@ -334,17 +344,17 @@ fMainWindow::fMainWindow()
   auto brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator SurvivalPredictor MolecularSubtypePredictor PopulationAtlases WhiteStripe confetti";
   std::string breastAppList = "";
 
-#ifndef APPLE
+#ifndef __APPLE__
   breastAppList = " librasingle librabatch";
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionDerivatives PerfusionPCA TrainingModule";
-  std::string segAppList = " itksnap GeodesicSegmentation";
+  std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation";
 #ifdef WIN32
   segAppList += " deepmedic";
 #endif
-  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching DeepMedicNormalizer";
+  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer";
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
   menuApp->addSeparator();
@@ -503,6 +513,7 @@ fMainWindow::fMainWindow()
 
   connect(actionLoad_Recurrence_Images, SIGNAL(triggered()), this, SLOT(openImages()));
   connect(actionLoad_Nifti_Images, SIGNAL(triggered()), this, SLOT(openImages()));
+  //connect(actionLoad_Dicom_Images, SIGNAL(triggered()), this, SLOT(openDicomImages()));
 
   connect(actionSave_ROI_Images, SIGNAL(triggered()), this, SLOT(SaveDrawing()));
   connect(actionSave_ROI_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomDrawing()));
@@ -543,7 +554,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfGBMApps[i].name.find("PseudoProgression") != std::string::npos)
     {
-      vectorOfGBMApps[i].action->setText("  PseudoProgression Infiltration Index"); // TBD set at source
+      vectorOfGBMApps[i].action->setText("  Glioblastoma PseudoProgression Infiltration Index"); // TBD set at source
       connect(vectorOfGBMApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPseudoProgression()));
     }
     else if (vectorOfGBMApps[i].name.find("Survival") != std::string::npos)
@@ -599,11 +610,11 @@ fMainWindow::fMainWindow()
 
   for (size_t i = 0; i < vectorOfLungApps.size(); i++)
   {
-	  if (vectorOfLungApps[i].name.find("LungField") != std::string::npos)
-	  {
-		  vectorOfLungApps[i].action->setText("  Lung Field Segmentation"); 
-		  connect(vectorOfLungApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationSBRTLungField()));
-	  }
+    if (vectorOfLungApps[i].name.find("LungField") != std::string::npos)
+    {
+      vectorOfLungApps[i].action->setText("  Lung Field Segmentation");
+      connect(vectorOfLungApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationSBRTLungField()));
+    }
     if (vectorOfLungApps[i].name.find("Nodule") != std::string::npos)
     {
       vectorOfLungApps[i].action->setText("  Lung Nodule Segmentation");
@@ -623,10 +634,15 @@ fMainWindow::fMainWindow()
       vectorOfSegmentationApps[i].action->setText("  ITK-SNAP"); //TBD set at source
       connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationITKSNAP()));
     }
-    else if (vectorOfSegmentationApps[i].name.find("Geodesic") != std::string::npos)
+    else if (vectorOfSegmentationApps[i].name.find("GeodesicSegmentation") != std::string::npos)
     {
       vectorOfSegmentationApps[i].action->setText("  Geodesic Segmentation"); // TBD set at source
       connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationGeodesic()));
+    }
+    else if (vectorOfSegmentationApps[i].name.find("GeodesicTrainingSegmentation") != std::string::npos)
+    {
+      vectorOfSegmentationApps[i].action->setText("  Geodesic Training Segmentation"); // TBD set at source
+      connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationGeodesicTraining()));
     }
     else if (vectorOfSegmentationApps[i].name.find("deepmedic") != std::string::npos)
     {
@@ -767,7 +783,7 @@ fMainWindow::fMainWindow()
   connect(&histoMatchPanel, SIGNAL(RunHistogramMatching(const std::string, const std::string, const std::string)), this, SLOT(CallImageHistogramMatching(const std::string, const std::string, const std::string)));
   connect(&deepMedicNormPanel, SIGNAL(RunDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)), this, SLOT(CallImageDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)));
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
-  connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string)));
+  connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
@@ -821,7 +837,7 @@ fMainWindow::fMainWindow()
 
   //connect
   connect(m_toolTabdock, SIGNAL(topLevelChanged(bool)), this, SLOT(toolTabDockChanged(bool)));
-  
+
   recurrencePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   msubtypePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   survivalPanel.SetCurrentLoggerPath(m_tempFolderLocation);
@@ -829,6 +845,7 @@ fMainWindow::fMainWindow()
   //
   actionLoad_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image(s)", 0));
   actionLoad_Nifti_ROI->setText(QApplication::translate("fMainWindow", "ROI", 0));
+  actionLoad_Dicom_Images->setText(QApplication::translate("fMainWindow", "Dicom", 0));
 
   actionSave_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image (NIfTI)", 0));
   actionSave_Dicom_Images->setText(QApplication::translate("fMainWindow", "Image (DICOM)", 0));
@@ -843,6 +860,7 @@ fMainWindow::fMainWindow()
   actionAbout->setText(QApplication::translate("fMainWindow", "About", 0));
   actionExit->setText(QApplication::translate("fMainWindow", "Exit", 0));
   actionAppGeodesic->setText(QApplication::translate("fMainWindow", "Geodesic segmentation", 0));
+  actionAppGeodesicTraining->setText(QApplication::translate("fMainWindow", "Geodesic Training Segmentation", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(tumorPanel), QApplication::translate("fMainWindow", "Seed Points", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(drawingPanel), QApplication::translate("fMainWindow", "Drawing", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(imagesPanel), QApplication::translate("fMainWindow", "Images", 0));
@@ -883,8 +901,8 @@ fMainWindow::~fMainWindow()
     file.close();
   }
 
-  // call the close() function explicitly during mainWindow closure
-  mHelpDlg->close();
+  if (mHelpDlg)
+    delete mHelpDlg;
 
 }
 
@@ -1411,8 +1429,9 @@ void fMainWindow::LoadNonViewingImages(const std::string &directoryname, const i
 
 void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &imagetype_int, bool bSkipDup)
 {
+  std::string fname;
   auto extension = cbica::getFilenameExtension(fileName);
-  if (extension != ".dcm")
+  //if (extension != ".dcm")
   {
     if (extension == ".zip")
     {
@@ -1424,7 +1443,14 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
       return;
     }
-    auto imageInfo = cbica::ImageInfo(fileName);
+    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    {
+      QDir d = QFileInfo(fileName.c_str()).absoluteDir();
+      fname = d.absolutePath().toStdString();
+    }
+    else 
+      fname = fileName;
+    auto imageInfo = cbica::ImageInfo(fname);
     SlicerManager* imageManager = new SlicerManager(3, mLandmarks, mSeedPoints, mTissuePoints);
     imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
 
@@ -1435,12 +1461,14 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     }
     if (imageInfo.GetImageDimensions() == 2)
     {
-      ConversionFrom2Dto3D(fileName, true);
+      ConversionFrom2Dto3D(fname, true);
     }
     else if (!bFirstLoad)
     {
       {
-        auto imageInfoPrev = cbica::ImageInfo(mSlicerManagers[0]->GetPathFileName());
+        auto temp = cbica::normPath(m_tempFolderLocation + "/temp.nii.gz");
+        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp);
+        auto imageInfoPrev = cbica::ImageInfo(temp);
         auto sizePrev = imageInfoPrev.GetImageSize();
         auto size = imageInfo.GetImageSize();
         const std::string errorMsg = " not matching. Please register the image(s). Skipping file: ";
@@ -1448,8 +1476,8 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
         {
           if (sizePrev[i] != size[i])
           {
-            updateProgress(0, "Size" + errorMsg + fileName);
-            ShowErrorMessage("Size" + errorMsg + fileName);
+            updateProgress(0, "Size" + errorMsg + fname);
+            ShowErrorMessage("Size" + errorMsg + fname);
             return; //
           }
         }
@@ -1459,8 +1487,8 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
         {
           if (spacing[i] != spacingPrev[i])
           {
-            updateProgress(0, "Spacing" + errorMsg + fileName);
-            ShowErrorMessage("Spacing" + errorMsg + fileName);
+            updateProgress(0, "Spacing" + errorMsg + fname);
+            ShowErrorMessage("Spacing" + errorMsg + fname);
             return; //
           }
         }
@@ -1472,8 +1500,8 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
           {
             if (origin[i] != originPrev[i])
             {
-              updateProgress(0, "Origin" + errorMsg + fileName);
-              ShowErrorMessage("Origin" + errorMsg + fileName);
+              updateProgress(0, "Origin" + errorMsg + fname);
+              ShowErrorMessage("Origin" + errorMsg + fname);
               return; //
             }
           }
@@ -1484,9 +1512,9 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       {
         for (int j = 0; j < (int)mSlicerManagers.size(); j++)
         {
-          if (fileName == mSlicerManagers[j]->GetPathFileName())
+          if (fname == mSlicerManagers[j]->GetPathFileName())
           {
-            updateProgress(0, "Duplicate file skipped :" + fileName);
+            updateProgress(0, "Duplicate file skipped :" + fname);
             return;
           }
         }
@@ -1499,7 +1527,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       image4DSlider->setEnabled(true);
       image4DSlider->setRange(0, imageInfo.GetImageSize()[3] - 1);
-      ImageTypeFloat4D::Pointer imagePerf = cbica::ReadImage<ImageTypeFloat4D>(fileName);
+      ImageTypeFloat4D::Pointer imagePerf = cbica::ReadImage<ImageTypeFloat4D>(fname);
       imageManager->SetPerfImage(imagePerf);
       imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION;
       //return;
@@ -1507,14 +1535,14 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     else
     {
       imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins());
-      auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fileName);
-       imageManager->SetOriginalDirection(currentImage->GetDirection());
-      currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fileName));
+      auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fname);
+      imageManager->SetOriginalDirection(currentImage->GetDirection());
+      currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fname));
       imageManager->SetImage(currentImage);
-      imageManager->mImageSubType = guessImageType(fileName);
+      imageManager->mImageSubType = guessImageType(fname);
     }
-    mInputPathName = cbica::getFilenamePath(fileName).c_str();
-    imageManager->SetFilename(fileName);
+    mInputPathName = cbica::getFilenamePath(fname).c_str();
+    imageManager->SetFilename(fname);
     imageManager->SetMask(mMask);
     imageManager->setTempFolderLocation(m_tempFolderLocation);
     int rowIndex = (int)mSlicerManagers.size();
@@ -1524,7 +1552,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
 
 
     QFileInfo fileinfo(imageManager->GetFileName().c_str());
-    QString id = fileName.c_str() + QString::number(mSlicerManagers.size() - 1);
+    QString id = fname.c_str() + QString::number(mSlicerManagers.size() - 1);
     //
     std::string strImageType = " IMAGE ";
     {
@@ -1584,15 +1612,15 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       mSlicerManagers.back()->mSlicers[j]->SetMask(mSlicerManagers.back()->GetMask());
     }
-    if (fileName.find("scan_label_map") != std::string::npos)
+    if (fname.find("scan_label_map") != std::string::npos)
     {
       mSlicerManagers.back()->SetPreset(PRESET_LABEL);
     }
-    if (fileName.find("gt") != std::string::npos)
+    if (fname.find("gt") != std::string::npos)
     {
       mSlicerManagers.back()->SetPreset(PRESET_LABEL2);
     }
-    if (fileName.find("roiDE") != std::string::npos)
+    if (fname.find("roiDE") != std::string::npos)
     {
       mSlicerManagers.back()->SetPreset(PRESET_PROB);
     }
@@ -1654,46 +1682,46 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     updateProgress(0);
     QApplication::restoreOverrideCursor();
   }
-  else
-  {
-    auto path = cbica::getFilenamePath(fileName);
-    dicomfilename = fileName;
-    auto filesInDir = cbica::filesInDirectory(path, false);
-
-#ifndef _WIN32
-    for (auto it = filesInDir.begin(); it != filesInDir.end();)
-    {
-      if ((*it == ".") || (*it == ".."))
-      {
-        filesInDir.erase(it);
-      }
-      else
-      {
-        ++it;
-      }
-    }
-#endif
-
-    // remove any files that aren't DICOM (thumbs.db and stuff like that)
-    for (size_t i = 0; i < filesInDir.size(); i++)
-    {
-      if (cbica::getFilenameExtension(path + "/" + filesInDir[i]) != ".dcm")
-      {
-        filesInDir.erase(filesInDir.begin() + i);
-      }
-    }
-
-    if (filesInDir.size() == 1) // single DICOM slice
-    {
-      ConversionFrom2Dto3D(fileName, true);
-    }
-    else // for 3D images, call dcm2nii
-    {
-      CallDCM2NIfTIConversion(fileName, true);
-    }
-
-    return;
-  }
+//  else
+//  {
+//    auto path = cbica::getFilenamePath(fileName);
+//    dicomfilename = fileName;
+//    auto filesInDir = cbica::filesInDirectory(path, false);
+//
+//#ifndef _WIN32
+//    for (auto it = filesInDir.begin(); it != filesInDir.end();)
+//    {
+//      if ((*it == ".") || (*it == ".."))
+//      {
+//        filesInDir.erase(it);
+//      }
+//      else
+//      {
+//        ++it;
+//      }
+//    }
+//#endif
+//
+//    // remove any files that aren't DICOM (thumbs.db and stuff like that)
+//    for (size_t i = 0; i < filesInDir.size(); i++)
+//    {
+//      if (cbica::getFilenameExtension(path + "/" + filesInDir[i]) != ".dcm")
+//      {
+//        filesInDir.erase(filesInDir.begin() + i);
+//      }
+//    }
+//
+//    if (filesInDir.size() == 1) // single DICOM slice
+//    {
+//      ConversionFrom2Dto3D(fileName, true);
+//    }
+//    else // for 3D images, call dcm2nii
+//    {
+//      CallDCM2NIfTIConversion(fileName, true);
+//    }
+//
+//    return;
+//  }
 }
 
 void fMainWindow::CurrentImageChanged(std::string &id)
@@ -2540,7 +2568,7 @@ void fMainWindow::SaveDicomImage()
   {
     directory_wrap += "/";
   }
-  
+
   typedef itk::Image<PixelType, Dimensions> ImageType;
   typedef itk::CastImageFilter< itk::Image< float, Dimensions >, ImageType > CastFilterType;
   CastFilterType::Pointer castFilter = CastFilterType::New();
@@ -2638,31 +2666,31 @@ void fMainWindow::SaveDrawing()
 
   auto imageToWrite_wrap = imageToWrite;
   imageToWrite->DisconnectPipeline();
-  //if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-  //{
-  //  ImageTypeMask::DirectionType originalDirection;
-  //  originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
-  //  originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
-  //  originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
-  //  originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
-  //  originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
-  //  originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
-  //  originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
-  //  originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
-  //  originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
+  if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+  {
+    ImageTypeMask::DirectionType originalDirection;
+    originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
+    originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
+    originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
+    originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
+    originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
+    originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
+    originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
+    originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
+    originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
 
-  //  ImageTypeMask::PointType originalOrigin;
-  //  originalOrigin = mSlicerManagers[index]->mOrigin;
+    ImageTypeMask::PointType originalOrigin;
+    originalOrigin = mSlicerManagers[index]->mOrigin;
 
-  //  auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
-  //  infoChanger->SetInput(imageToWrite);
-  //  infoChanger->ChangeDirectionOn();
-  //  infoChanger->ChangeOriginOn();
-  //  infoChanger->SetOutputDirection(originalDirection);
-  //  infoChanger->SetOutputOrigin(originalOrigin);
-  //  infoChanger->Update();
-  //  imageToWrite_wrap = infoChanger->GetOutput();
-  //}
+    auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
+    infoChanger->SetInput(imageToWrite);
+    infoChanger->ChangeDirectionOn();
+    infoChanger->ChangeOriginOn();
+    infoChanger->SetOutputDirection(originalDirection);
+    infoChanger->SetOutputOrigin(originalOrigin);
+    infoChanger->Update();
+    imageToWrite_wrap = infoChanger->GetOutput();
+  }
 
   QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "mask.nii.gz");
   if (!saveFileName.isEmpty())
@@ -2868,7 +2896,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     else
     {
-      using ImageType = itk::Image<unsigned int, 3>; 
+      using ImageType = itk::Image<unsigned int, 3>;
       auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName);
       inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
 
@@ -3561,8 +3589,8 @@ void fMainWindow::StartRecurrenceEstimate(const std::string &outputdirectory, bo
       T2ImagePointer = RescaleImageIntensity(mSlicerManagers[index]->mITKImage);
       filenames[3] = mSlicerManagers[index]->mFileName;
     }
-    else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_AX || 
-      mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_FA || 
+    else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_AX ||
+      mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_FA ||
       mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_RAD ||
       mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_TR)
     {
@@ -4100,11 +4128,15 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
   {
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
-      ctImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
-      petImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      petImageFile = temp;
     }
     else
     {
@@ -4202,7 +4234,7 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
   updateProgress(80, "Segmentation of nodule");
   segObject.PerformSegmentation();
   cbica::Logging(loggerFile, "segmentation done");
- 
+
   updateProgress(100, "Finishing up");
   segObject.WriteLabel(seedAvail);
   cbica::Logging(loggerFile, "written labels");
@@ -4427,7 +4459,7 @@ void fMainWindow::CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::st
   else
   {
     msg = "EGFRvIII mutation detection has been done for the given subjects by applying the specified model. \n\n";
-    if (result[0]>0)
+    if (result[0] > 0)
       msg = msg + "EGFRvIII Mutation = Detected. \n\n";
     else
       msg = msg + "EGFRvIII Mutation = Not detected. \n\n";
@@ -4590,7 +4622,11 @@ void fMainWindow::TrainNewPseudoprogressionModelOnGivenData(const std::string &i
     help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-
+  if (QualifiedSubjects.size() > 0 && QualifiedSubjects.size() <= 20)
+  {
+    ShowErrorMessage("There should be atleast 20 patients to build reliable pseudo-progression model.");
+    return;
+  }
   if (mPseudoEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, useConvData, useDTIData, usePerfData, useDistData))
     ShowMessage("Trained pseudoprogression model has been saved at the specified location.", this);
   else
@@ -4752,6 +4788,10 @@ void fMainWindow::LoadDrawing()
   {
     auto filename = getExistingFile(this, mInputPathName);
 
+    if (filename.isNull() || filename.isEmpty())
+    {
+      return;
+    }
     std::string filename_string = filename.toStdString();
     auto reader = itk::ImageIOFactory::CreateImageIO(filename_string.c_str(), itk::ImageIOFactory::ReadMode);
     if (reader)
@@ -4925,10 +4965,187 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     std::string fileName = files[i].toStdString();
     fileName = cbica::normPath(fileName);
     updateProgress(i + 1, "Opening " + fileName, files.size());
-    LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
+    auto extension = cbica::getFilenameExtension(fileName);
+    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    {
+      QDir d = QFileInfo(fileName.c_str()).absoluteDir();
+      QString fname = d.absolutePath();
+      this->openDicomImages(fname);
+    }
+    else
+      LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
 
   }
   updateProgress(0, "Loading complete", 100);
+}
+
+void fMainWindow::openDicomImages(QString dir)
+{
+  //QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+  //  QDir::currentPath(),
+  //  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+  //if (dir.isNull())
+  //{
+  //  ShowErrorMessage("Please open a directory containing Dicom images.");
+  //  return;
+  //}
+
+  //DicomSeriesReader *dicomSeriesReader = new DicomSeriesReader();
+  //dicomSeriesReader->SetDirectoryPath(dir.toStdString());
+  //bool loadstatus = dicomSeriesReader->LoadDicom();
+  //if (!loadstatus)
+  //{
+  //  QMessageBox::critical(this, "Dicom Loading", "Dicom Load Failed");
+  //  return;
+  //}
+
+  auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(dir.toStdString());
+  if (!currentImage)
+  {
+    ShowMessage("Dicom Load Failed");
+    return;
+  }
+  SlicerManager* imageManager = new SlicerManager(3, mLandmarks, mSeedPoints, mTissuePoints);
+  imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
+
+  bool bFirstLoad = false;
+  if (mSlicerManagers.size() == 0)
+  {
+    bFirstLoad = true;
+  }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  imageManager->SetImage(currentImage);
+  //imageManager->SetImage(dicomSeriesReader->GetITKImage());
+
+  //delete dicomSeriesReader; 
+  //imageManager->SetFilename(dir.toStdString());
+  imageManager->SetMask(mMask);
+  imageManager->setTempFolderLocation(m_tempFolderLocation);
+  imageManager->mImageSubType = guessImageType(dir.toStdString());
+  int rowIndex = (int)mSlicerManagers.size();
+
+  m_imagesTable->setRowCount(rowIndex + 1);
+  mSlicerManagers.push_back(imageManager);
+
+
+  QFileInfo fileinfo(imageManager->GetFileName().c_str());
+  std::string seriesDescLabel, seriesDescValue;
+  QDir d(dir);
+  seriesDescValue = d.dirName().toStdString(); 
+  imageManager->SetFilename(seriesDescValue);
+
+  QString id = QString(seriesDescValue.c_str()) + QString::number(mSlicerManagers.size() - 1);
+  //
+  std::string strImageType = " IMAGE ";
+
+  QTableWidgetItem *item = new QTableWidgetItem(seriesDescValue.c_str());
+  item->setData(Qt::UserRole, id.toStdString().c_str());
+  item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+
+  QTablePushButton* cButton = new QTablePushButton;
+  cButton->setItem(item);
+  cButton->setText(QString("X"));
+  connect(cButton, SIGNAL(clickedInto(QTableWidgetItem*)), this, SLOT(CloseImage(QTableWidgetItem*)));
+
+  QLabel * label = new QLabel;
+  label->setText(QString::fromStdString(strImageType));
+  m_imagesTable->setCellWidget(rowIndex, TAB_IMAGES_COLUMN_CLOSE, cButton);
+  m_imagesTable->setCellWidget(rowIndex, TAB_IMAGES_COLUMN_TYPE, label);
+  m_imagesTable->setItem(rowIndex, TAB_IMAGES_COLUMN_NAME, item);
+
+  imagesPanel->NewImageLoaded(id, imageManager->GetBaseFileName(), rowIndex, strImageType, imageManager->mImageSubType, this);
+
+  mSlicerManagers.back()->SetId(id.toStdString());
+  connect(mSlicerManagers.back(), SIGNAL(LeftButtonReleaseSignal(int)), this, SLOT(propogateSlicerPosition(int)));
+  connect(mSlicerManagers.back(), SIGNAL(currentImageChanged(std::string &)), this, SLOT(CurrentImageChanged(std::string &)));
+  connect(mSlicerManagers.back(), SIGNAL(currentPickedImageChanged(std::string)), this, SLOT(CurrentPickedImageChanged(std::string)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdatePosition(int, double, double, double, double, double, double, double)), this, SLOT(MousePositionChanged(int, double, double, double, double, double, double, double)));
+  connect(mSlicerManagers.back(), SIGNAL(WindowLevelChanged()), this, SLOT(WindowLevelChanged()));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateSlice(int, int)), this, SLOT(UpdateSlice(int, int)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateSliceRange(int, int, int)), this, SLOT(UpdateSliceRange(int, int, int)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateLinkManager(std::string, int, double, double, double)), this, SLOT(UpdateLinkManager(std::string, int, double, double, double)));
+  connect(mSlicerManagers.back(), SIGNAL(ChangeImageWithOrder(SlicerManager*, int)), this, SLOT(ChangeImageWithOrder(SlicerManager*, int)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateBorderWidgetInMain(double, double, double, double)), this, SLOT(UpdateBorderWidget(double, double, double, double)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateBorderWidgetInMain(double, double)), this, SLOT(UpdateBorderWidget(double, double)));
+  connect(mSlicerManagers.back(), SIGNAL(UpdateActionInMain(const QVariantList&)), this, SLOT(UpdateActionQ(const QVariantList&)));
+
+  connect(mSlicerManagers.back(), SIGNAL(SeedPointsAdded()), tumorPanel, SLOT(sAddPoint()));
+  connect(mSlicerManagers.back(), SIGNAL(SeedPointsAdded(int, bool)), tumorPanel, SLOT(sAddPoint(int, bool)));
+  connect(mSlicerManagers.back(), SIGNAL(TissuePointsAdded(int)), tumorPanel, SLOT(tAddPoint(int)));
+  connect(m_tabWidget, SIGNAL(currentChanged(int)), tumorPanel, SLOT(tabSelected()));
+  InitSlicers();
+
+  if (bFirstLoad)
+  {
+    InitMask(mSlicerManagers.back()->mImage);
+  }
+  for (int j = 0; j < (int)mSlicerManagers.back()->mSlicers.size(); j++)
+  {
+    mSlicerManagers.back()->mSlicers[j]->SetMask(mSlicerManagers.back()->GetMask());
+  }
+
+  if (mSlicerManagers.size() > 0)
+  {
+    if (mSlicerManagers.back()->mMask->GetDimensions()[2] != 1)
+    {
+      CoronalViewWidget->show();
+      SaggitalViewWidget->show();
+    }
+    AxialViewWidget->show();
+    infoPanel->show();
+
+    windowLabel->setEnabled(true);
+    windowSpinBox->setEnabled(true);
+    levelLabel->setEnabled(true);
+    levelSpinBox->setEnabled(true);
+    presetLabel->setEnabled(true);
+    presetComboBox->setEnabled(true);
+
+    if (bFirstLoad)
+    {
+      for (int i = 0; i < 3; i++)
+      {
+        mSlicerManagers.back()->GetSlicer(i)->SetInitPosition();
+      }
+      QTableWidgetItem* item = NULL;
+      item = GetItemFromSlicerManager(mSlicerManagers[0]);
+      DisplayChanged(item);
+    }
+    else
+    {
+      QTableWidgetItem* item = NULL;
+      for (int i = 0; i < (int)mSlicerManagers.size(); i++)
+      {
+        item = GetItemFromSlicerManager(mSlicerManagers[i]);
+        if (!item->isSelected())
+        {
+          item->setSelected(true);
+        }
+      }
+      DisplayChanged(item);
+    }
+
+    if (mSlicerManagers.size() > 1)
+    {
+      for (int i = 0; i < (int)mSlicerManagers.size(); i++)
+      {
+        for (int j = i + 1; j < (int)mSlicerManagers.size(); j++)
+        {
+          AddLink(/*QString::fromStdString*/(mSlicerManagers[i]->GetId().c_str()), /*QString::fromStdString*/(mSlicerManagers[j]->GetId().c_str()));
+        }
+      }
+    }
+    QTableWidgetItem* item = GetItemFromSlicerManager(mSlicerManagers.back());
+    item->setSelected(true);
+    InitDisplay();
+  }
+  propogateSlicerPosition();
+  updateProgress(0);
+  QApplication::restoreOverrideCursor();
+
 }
 
 void fMainWindow::ApplicationLIBRABatch()
@@ -4937,7 +5154,11 @@ void fMainWindow::ApplicationLIBRABatch()
 
   if (cbica::fileExists(scriptToCall))
   {
-    startExternalProcess(scriptToCall.c_str(), QStringList());
+    QtConcurrent::run(this, &fMainWindow::startExternalProcess,
+      scriptToCall.c_str(),
+      QStringList()
+    );
+
     return;
   }
   else
@@ -4966,7 +5187,7 @@ void fMainWindow::ApplicationLIBRASingle()
     std::string command = scriptToCall + " " + dicomfilename + " " + m_tempFolderLocation + "/" + casename + " true true";
     cbica::Logging(loggerFile, "Running LIBRA Single Image with command '" + command + "'");
     startExternalProcess(command.c_str(), QStringList());
-    
+
     updateProgress(100, "Finished and loading mask");
 
     readMaskFile(m_tempFolderLocation + "/" + casename + "/Result_Images/totalmask/totalmask.dcm");
@@ -5002,11 +5223,15 @@ void fMainWindow::ApplicationSBRTLungField()
   {
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
-      ctImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
-      petImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      petImageFile = temp;
     }
     else
     {
@@ -5137,11 +5362,15 @@ void fMainWindow::ApplicationSBRTAnalysis()
   {
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
-      ctImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
-      petImageFile = mSlicerManagers[index]->mPathFileName;
+      auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      petImageFile = temp;
     }
     else
     {
@@ -5155,7 +5384,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
     ShowErrorMessage("PET image needs to be loaded for SBRT Analysis", this);
     return;
   }
-  
+
   if (!isMaskDefined())
   {
     ShowErrorMessage("Please load lung nodule mask", this);
@@ -5216,7 +5445,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
   updateProgress(20, "Initializing");
   anaObject.Initialization(inputFileName, maskName);
   cbica::Logging(loggerFile, "SBRT Analysis Initialization complete");
- 
+
   updateProgress(50, "Feature Extraction");
   anaObject.FeaExtraction();
   cbica::Logging(loggerFile, "SBRT Analysis Feature Extraction complete");
@@ -5229,7 +5458,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
   {
     anaObject.OutputFeature(oname);
   }
-  
+
   updateProgress(0, ""); //! reset progress bar
 
   QString msgStr = QString("Predicted Risk (Survival): %1\nPredicted Risk(Nodal Failure): %2").arg(anaObject.GetSurivalRisk())
@@ -5476,8 +5705,10 @@ void fMainWindow::ApplicationWhiteStripe()
   }
   int index = GetSlicerIndexFromItem(items[0]);
 
-  if ((mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1) || 
-    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2))
+  if ((mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1) ||
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) ||
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2) ||
+    (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR))
   {
     auto tmp = mInputPathName.toStdString();
     whiteStripeNormalizer.SetCurrentImagePath(mInputPathName);
@@ -5738,104 +5969,190 @@ void fMainWindow::ApplicationITKSNAP()
 }
 #endif
 
-#ifdef BUILD_GEODESICTRAIN
-void fMainWindow::ApplicationGeoTrain()
+#ifdef BUILD_GEODESICTRAINING
+void fMainWindow::ApplicationGeodesicTraining()
 {
-  m_imgGeodesicOut = NULL;
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
-  if (items.empty())
+  // 2D
+  typedef          itk::Image<float, 2>            InputImageType2D;
+  typedef          itk::Image<int, 2>            LabelsImageType2D;
+  typedef typename itk::Image<float, 2>::Pointer   InputImagePointer2D;
+  typedef typename itk::Image<int, 2>::Pointer   LabelsImagePointer2D;
+
+  // 3D
+  typedef          itk::Image<float, 3>            InputImageType3D;
+  typedef          itk::Image<int, 3>            LabelsImageType3D;
+  typedef typename itk::Image<float, 3>::Pointer   InputImagePointer3D;
+  typedef typename itk::Image<int, 3>::Pointer   LabelsImagePointer3D;
+
+  if (m_IsGeodesicTrainingRunning)
   {
-    ShowErrorMessage("Please specify an input image.");
-    return;
-  }
-  int index = GetSlicerIndexFromItem(items[0]);
-  if (index < 0 || index >= (int)mSlicerManagers.size())
-  {
-    ShowErrorMessage("Please specify an input image.");
-    return;
-  }
-  updateProgress(5, "Running Geodesic Training");
-  VectorVectorDouble tumorPoints = FormulateDrawingPointsForTumorSegmentation();
-  if (tumorPoints.size() == 0)
-  {
-    ShowErrorMessage("Please draw inner and outer seed points.");
+    ShowErrorMessage("Please wait for the previous execution to finish", this);
     return;
   }
 
-  //if (cbica::directoryExists(m_tempFolderLocation))
-  //{
-  //  auto temp = cbica::stringSplit(cbica::getCurrentLocalTime(), ":");
-  //  m_tempFolderLocation += temp[0] + temp[1] + temp[2] + "/";
-  //}
+  m_IsGeodesicTrainingRunning = true;
 
-
-  QString extensions = IMAGES_EXTENSIONS;
-  extensions += ";;All Files (*)";
-  QString file;
-  typedef ImageTypeFloat3D ImageType;
-  typedef ImageTypeShort3D ImageTypeGeodesic;
-  updateProgress(10, "Running Geodesic Training");
-  std::vector<ImageType::Pointer> Inp;
-  for (size_t i = 0; i < mSlicerManagers.size(); i++)
+  // Check if there are loaded images
+  if (mSlicerManagers.empty())
   {
-    Inp.push_back(mSlicerManagers[i]->mITKImage);
+    ShowErrorMessage("Please load some images.", this);
+    m_IsGeodesicTrainingRunning = false;
+    return;
   }
-  ImageTypeFloat3D::Pointer mask = convertVtkToItk<float, 3>(mSlicerManagers[0]->mMask);
-  updateProgress(15, "Running Geodesic Training");
 
-  itk::ImageRegionIterator<ImageTypeFloat3D> maskiter(mask, mask->GetLargestPossibleRegion());
-  maskiter.GoToBegin();
-
-  if (m_InputGeomasks.IsNotNull())
+  // Check if mask has been instantiated (not sure if necessary)
+  if (!isMaskDefined())
   {
-    itk::ImageRegionIterator<ImageTypeFloat3D> previousmask(m_InputGeomasks, m_InputGeomasks->GetLargestPossibleRegion());
-    previousmask.GoToBegin();
-    while (!maskiter.IsAtEnd())
+    ShowErrorMessage("Please draw a ROI image with at least 2 different labels.", this);
+    m_IsGeodesicTrainingRunning = false;
+    return;
+  }
+
+  // The algorithm needs to know if the images are 2D or 3D
+  unsigned int dimensions = (
+    (mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) ? 2 : 3
+  );
+
+  /*unsigned int dimensions = 3;*/
+
+  // Different operations happen if the user reruns it on the same images
+  std::string firstFileName = mSlicerManagers[0]->mFileName;
+  bool isRerun = (firstFileName == m_GeodesicTrainingFirstFileNameFromLastExec);
+  m_GeodesicTrainingFirstFileNameFromLastExec = firstFileName;
+
+  updateProgress(0, "Geodesic Training segmentation started, please wait");
+
+  LabelsImagePointer3D currentROI = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
+
+  // Check if there are at least two different labels in the image (function in UtilImageToCvMatGTS.h)
+  auto labelsMap = GeodesicTrainingSegmentation::ParserGTS::CountsOfEachLabel<LabelsImageType3D>(currentROI);
+  if (labelsMap.size() < 2)
+  {
+    ShowErrorMessage("Please draw using at least 2 different labels.", this);
+    m_IsGeodesicTrainingRunning = false;
+    return;
+  }
+
+  // The input that GeodesicTraining needs
+  std::vector<InputImagePointer3D> inputImages;
+  LabelsImagePointer3D mask;
+
+  // Find the input images
+  for (SlicerManager* sm : mSlicerManagers)
+  {
+    inputImages.push_back(sm->mITKImage);
+  }
+
+  if (!isRerun)
+  {
+    // The user runs the algorithm for the first time for this subject
+    mask = convertVtkToItk<int, 3>(mSlicerManagers[0]->mMask);
+  }
+  else {
+    // The user is doing a rerun for the same subject
+    // The new points that the user drew on the output segmentation are added
+    // to the old mask and the algorithm executes again.
+    mask = cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
+    LabelsImagePointer3D previousResult =
+      cbica::ReadImage<LabelsImageType3D>(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
+
+    itk::ImageRegionIterator<LabelsImageType3D> iter_m(mask, mask->GetRequestedRegion());
+    itk::ImageRegionIterator<LabelsImageType3D> iter_p(previousResult, previousResult->GetRequestedRegion());
+    itk::ImageRegionIterator<LabelsImageType3D> iter_c(currentROI, currentROI->GetRequestedRegion());
+
+    for (iter_m.GoToBegin(), iter_p.GoToBegin(), iter_c.GoToBegin(); !iter_m.IsAtEnd(); ++iter_m, ++iter_p, ++iter_c)
     {
-      auto currentIndex = maskiter.GetIndex();
-      previousmask.SetIndex(currentIndex);
-      previousmask.Set(maskiter.Get());
+      int p = iter_p.Get();
+      int c = iter_c.Get();
+
+      if (p != c)
+      {
+        iter_m.Set(c);
+      }
     }
   }
-  else
+
+  // Save the mask for potential reruns on the same subject
+  if (!cbica::isDir(m_tempFolderLocation + "/GeodesicTrainingOutput"))
   {
-    m_InputGeomasks = mask;
+    cbica::createDir(m_tempFolderLocation + "/GeodesicTrainingOutput");
   }
+  cbica::WriteImage<LabelsImageType3D>(mask, m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz");
 
-  Geotrain<ImageTypeFloat3D> geotraining;
-  geotraining.SetInputImage(Inp);
-  geotraining.SetMask(m_InputGeomasks);
-  geotraining.SetOutputpath(loggerFolder + "../GeodesicSVM");
-  geotraining.Update();
+  if (dimensions == 3)
+  {
+    // 3D
+    m_GeodesicTrainingCaPTkApp3D = new GeodesicTrainingCaPTkApp<3>(this);
 
+    // Connect the signals/slots for progress updates and notifying that the algorithm is finished
+    connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingFinished()),
+      this, SLOT(GeodesicTrainingFinishedHandler())
+    );
+    connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingFinishedWithError(QString)),
+      this, SLOT(GeodesicTrainingSegmentationResultErrorHandler(QString))
+    );
+    auto test = connect(m_GeodesicTrainingCaPTkApp3D, SIGNAL(GeodesicTrainingProgressUpdate(int, std::string, int)),
+      this, SLOT(updateProgress(int, std::string, int))
+    );
 
-  updateProgress(85, "Running Geodesic Training");
-  auto filter = itk::RescaleIntensityImageFilter< ImageTypeShort3D, ImageTypeShort3D >::New();
+    // Run the algorithm
+    m_GeodesicTrainingCaPTkApp3D->SetOutputPath(m_tempFolderLocation + "/GeodesicTrainingOutput");
+    m_GeodesicTrainingCaPTkApp3D->Run(inputImages, mask);
+  }
+  else {
+    // 2D (which has been loaded as a 3D image with a single slize in z-direction)
+    std::vector< InputImagePointer2D > inputImages2D(inputImages.size());
+    LabelsImagePointer2D               mask2D;
 
-  //for positve probablity
-  filter->SetInput(geotraining.m_geoOutputPos);
-  filter->SetOutputMinimum(0);
-  filter->SetOutputMaximum(255);
-  filter->Update();
-  //  Inp = filter->GetOutput();
-  m_imgGeodesicOutPositive = filter->GetOutput();
-  updateProgress(90, "Displaying Geodesic Segmentation");
-  ApplicationGeodesicTreshold();
+    // Convert from 3D to 2D
+    auto regionSize = inputImages[0]->GetLargestPossibleRegion().GetSize();
+    regionSize[2] = 0; // Only 2D image is needed
 
+    // Convert input images
+    for (size_t i = 0; i < inputImages.size(); i++)
+    {
+      InputImageType3D::IndexType regionIndex;
+      regionIndex.Fill(0);
+      InputImageType3D::RegionType desiredRegion(regionIndex, regionSize);
+      auto extractor = itk::ExtractImageFilter< InputImageType3D, InputImageType2D >::New();
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->SetInput(inputImages[i]);
+      extractor->SetDirectionCollapseToIdentity();
+      extractor->Update();
+      inputImages2D[i] = extractor->GetOutput();
+      inputImages2D[i]->DisconnectPipeline();
+    }
 
-  //for negative probablity
-  filter->SetInput(geotraining.m_geoOutputNeg);
-  filter->SetOutputMinimum(0);
-  filter->SetOutputMaximum(255);
-  filter->Update();
-  //  Inp = filter->GetOutput();
-  m_imgGeodesicOutNegative = filter->GetOutput();
-  updateProgress(90, "Displaying Geodesic Segmentation");
-  ApplicationGeodesicTreshold();
+    // Convert mask
+    LabelsImageType3D::IndexType regionIndex;
+    regionIndex.Fill(0);    
+    LabelsImageType3D::RegionType desiredRegion(regionIndex, regionSize);
+    auto extractor = itk::ExtractImageFilter< LabelsImageType3D, LabelsImageType2D >::New();
+    extractor->SetExtractionRegion(desiredRegion);
+    extractor->SetInput(mask);
+    extractor->SetDirectionCollapseToIdentity();
+    extractor->Update();
+    mask2D = extractor->GetOutput();
+    mask2D->DisconnectPipeline();
 
+    // Same as 3D but in 2D form
+    m_GeodesicTrainingCaPTkApp2D = new GeodesicTrainingCaPTkApp<2>(this);
 
-  updateProgress(0, "Geodesic Segmentation Finished!");
-  presetComboBox->setCurrentIndex(PRESET_GEODESIC);
+    // Connect the signals/slots for progress updates and notifying that the algorithm is finished
+    connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingFinished()),
+      this, SLOT(GeodesicTrainingFinishedHandler())
+    );
+    connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingFinishedWithError(QString)),
+      this, SLOT(GeodesicTrainingSegmentationResultErrorHandler(QString))
+    );
+    auto test = connect(m_GeodesicTrainingCaPTkApp2D, SIGNAL(GeodesicTrainingProgressUpdate(int, std::string, int)),
+      this, SLOT(updateProgress(int, std::string, int))
+    );
+
+    // Run the algorithm
+    m_GeodesicTrainingCaPTkApp2D->SetOutputPath(m_tempFolderLocation + "/GeodesicTrainingOutput");
+    m_GeodesicTrainingCaPTkApp2D->Run(inputImages2D, mask2D);
+  }
 
 }
 #endif
@@ -6018,6 +6335,7 @@ void fMainWindow::ImageRegistration()
 void fMainWindow::ImageHistogramMatching()
 {
   // open a simple dialog box with reference image, input and output
+  histoMatchPanel.SetCurrentImagePath(mInputPathName);
   histoMatchPanel.exec();
 }
 
@@ -6038,52 +6356,52 @@ void fMainWindow::ImageSkullStripping()
 }
 void fMainWindow::ApplicationPCA()
 {
-  typedef ImageTypeFloat3D ImageType;
-  typedef ImageTypeFloat4D PerfusionImageType;
-  ImageTypeFloat4D::Pointer perfusionImage = ImageTypeFloat4D::New();
-  std::string msg = "";
+  //typedef ImageTypeFloat3D ImageType;
+  //typedef ImageTypeFloat4D PerfusionImageType;
+  //ImageTypeFloat4D::Pointer perfusionImage = ImageTypeFloat4D::New();
+  //std::string msg = "";
 
 
-  bool perfusionDataPresent = false;
-  for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
-  {
-    if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-    {
-      perfusionDataPresent = true;
-      perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
-    }
-  }
-  if (perfusionDataPresent == false)
-    msg = msg + "\n DSC-MRI scan";
+  //bool perfusionDataPresent = false;
+  //for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
+  //{
+  //  if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+  //  {
+  //    perfusionDataPresent = true;
+  //    perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
+  //  }
+  //}
+  //if (perfusionDataPresent == false)
+  //  msg = msg + "\n DSC-MRI scan";
 
 
-  if (mSlicerManagers.size() > 0)
-  {
-    ImageTypeShort3D::Pointer img = convertVtkToItk<short, 3>(mSlicerManagers[0]->mMask);
-    int  mask_counter = 0;
+  //if (mSlicerManagers.size() > 0)
+  //{
+  //  ImageTypeShort3D::Pointer img = convertVtkToItk<short, 3>(mSlicerManagers[0]->mMask);
+  //  int  mask_counter = 0;
 
-    typedef itk::ImageRegionIteratorWithIndex <ImageTypeShort3D> IteratorType;
-    IteratorType maskIt(img, img->GetLargestPossibleRegion());
-    maskIt.GoToBegin();
-    while (!maskIt.IsAtEnd())
-    {
-      if (maskIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
-        mask_counter++;
-      ++maskIt;
-    }
-    if (mask_counter == 0)
-      msg = msg + "\n" + "Segmentation Label: 1.";
-  }
-  else
-  {
-    msg = msg + "\n" + "Segmentation Label: 1.";
-  }
+  //  typedef itk::ImageRegionIteratorWithIndex <ImageTypeShort3D> IteratorType;
+  //  IteratorType maskIt(img, img->GetLargestPossibleRegion());
+  //  maskIt.GoToBegin();
+  //  while (!maskIt.IsAtEnd())
+  //  {
+  //    if (maskIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
+  //      mask_counter++;
+  //    ++maskIt;
+  //  }
+  //  if (mask_counter == 0)
+  //    msg = msg + "\n" + "Segmentation Label: 1.";
+  //}
+  //else
+  //{
+  //  msg = msg + "\n" + "Segmentation Label: 1.";
+  //}
 
-  if (!msg.empty())
-  {
-    ShowErrorMessage(msg, this);
-  }
-  
+  //if (!msg.empty())
+  //{
+  //  ShowErrorMessage(msg, this);
+  //}
+
   pcaPanel.exec();
 }
 void fMainWindow::PerfusionMeasuresCalculation()
@@ -6106,16 +6424,27 @@ void fMainWindow::ApplicationTheia()
 {
   if (!mSlicerManagers.empty())
   {
-    std::string maskFile = m_tempFolderLocation + "/theia_mask.nii.gz";
-    cbica::WriteImage< ImageTypeFloat3D >(getMaskImage(), maskFile);
+    if (isMaskDefined())
+    {
+      std::string maskFile = m_tempFolderLocation + "/theia_mask.nii.gz";
+      cbica::WriteImage< ImageTypeFloat3D >(getMaskImage(), maskFile);
 
-    auto items = m_imagesTable->selectedItems();
-    auto index = GetSlicerIndexFromItem(items[0]);
+      auto items = m_imagesTable->selectedItems();
+      auto index = GetSlicerIndexFromItem(items[0]);
 
-    QStringList args;
-    args << "-i" << mSlicerManagers[index]->GetFileName().c_str() << "-m" << maskFile.c_str();
+      QStringList args;
+      args << "-i" << mSlicerManagers[index]->GetFileName().c_str() << "-m" << maskFile.c_str();
 
-    startExternalProcess(getApplicationPath("Theia").c_str(), args);
+      QtConcurrent::run(this, &fMainWindow::startExternalProcess,
+        getApplicationPath("Theia").c_str(),
+        args
+      );
+    }
+    else
+    {
+      ShowErrorMessage("Please initialize a valid mask before trying 3D Visualizer", this);
+      return;
+    }
   }
   else
   {
@@ -6159,17 +6488,33 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     switch (mSlicerManagers[i]->mImageSubType)
     {
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1CE:
-      file_t1ce = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/t1ce.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_t1ce = temp;
       break;
+    }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1:
-      file_t1 = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/t1.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_t1 = temp;
       break;
+    }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2:
-      file_t2 = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/t2.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_t2 = temp;
       break;
+    }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR:
-      file_flair = mSlicerManagers[i]->GetPathFileName();
+    {
+      auto temp = cbica::normPath(m_tempFolderLocation + "/flair.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      file_flair = temp;
       break;
+    }
     default:
       ShowErrorMessage("DeepMedic needs the following images to work: T1CE, T1, T2, FLAIR", this);
       break;
@@ -6181,7 +6526,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
   QStringList args;
   args /*<< "-model" << (dataDir + "to_use/modelConfig.txt").c_str()*/
     << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
-  
+
   if (!file_mask.empty())
   {
     args << "-m" << file_mask.c_str();
@@ -6197,7 +6542,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     return;
   }
 
-   if (std::system((dmExe + " " + temp).c_str()) != 0)
+  if (std::system((dmExe + " " + temp).c_str()) != 0)
   {
     ShowErrorMessage("DeepMedic returned with exit code != 0");
     updateProgress(0, "");
@@ -6277,7 +6622,6 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, 
   {
     ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
   }
-
 }
 
 void fMainWindow::CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask,
@@ -6905,42 +7249,60 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
 void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile)
 {
-  auto referenceAtlasImage = cbica::ReadImage< ImageTypeFloat3D >(referenceImage);
-  auto inputImageImage = cbica::ReadImage< ImageTypeFloat3D >(inputImageFile);
+  if (!referenceImage.empty() && !inputImageFile.empty() && !outputImageFile.empty())
+  {
+    auto referenceAtlasImage = cbica::ReadImage< ImageTypeFloat3D >(referenceImage);
+    auto inputImageImage = cbica::ReadImage< ImageTypeFloat3D >(inputImageFile);
 
-  auto outputImage = cbica::GetHistogramMatchedImage< ImageTypeFloat3D >(inputImageImage, referenceAtlasImage);
+    auto outputImage = cbica::GetHistogramMatchedImage< ImageTypeFloat3D >(inputImageImage, referenceAtlasImage);
 
-  cbica::WriteImage< ImageTypeFloat3D >(outputImage, outputImageFile);
+    cbica::WriteImage< ImageTypeFloat3D >(outputImage, outputImageFile);
 
-  LoadSlicerImages(outputImageFile, CAPTK::ImageExtension::NIfTI);
+    LoadSlicerImages(outputImageFile, CAPTK::ImageExtension::NIfTI);
+  }
+  else
+  {
+    ShowErrorMessage("Please provide all inputs before trying histogram matching", this);
+    help_contextual("preprocessing_histoMatch.html");
+    return;
+  }
 }
 
 void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, const std::string maskImage, const std::string outputImageFile,
   const std::string quantLower, const std::string quantUpper,
   const std::string cutoffLower, const std::string cutoffUpper, bool wholeImageMeanThreshold)
 {
-  auto input = cbica::ReadImage< ImageTypeFloat3D >(inputImage);
-  auto mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
+  if (!inputImage.empty() && !maskImage.empty() && !outputImageFile.empty())
+  {
+    auto input = cbica::ReadImage< ImageTypeFloat3D >(inputImage);
+    auto mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
 
-  auto qLower = std::atof(quantLower.c_str());
-  auto qUpper = std::atof(quantUpper.c_str());
-  auto cLower = std::atof(cutoffLower.c_str());
-  auto cUpper = std::atof(cutoffUpper.c_str());
+    auto qLower = std::atof(quantLower.c_str());
+    auto qUpper = std::atof(quantUpper.c_str());
+    auto cLower = std::atof(cutoffLower.c_str());
+    auto cUpper = std::atof(cutoffUpper.c_str());
 
-  updateProgress(5, "Starting Normalization");
+    updateProgress(5, "Starting Normalization");
 
-  DeepMedicNormalizer< ImageTypeFloat3D > normalizer;
-  normalizer.SetInputImage(input);
-  normalizer.SetInputMask(mask);
-  normalizer.SetQuantiles(qLower, qUpper);
-  normalizer.SetCutoffs(cLower, cUpper);
-  normalizer.Update();
+    ZScoreNormalizer< ImageTypeFloat3D > normalizer;
+    normalizer.SetInputImage(input);
+    normalizer.SetInputMask(mask);
+    normalizer.SetQuantiles(qLower, qUpper);
+    normalizer.SetCutoffs(cLower, cUpper);
+    normalizer.Update();
 
-  updateProgress(100, "Normalization Done");
+    updateProgress(100, "Normalization Done");
 
-  cbica::WriteImage< ImageTypeFloat3D >(normalizer.GetOutput(), outputImageFile);
+    cbica::WriteImage< ImageTypeFloat3D >(normalizer.GetOutput(), outputImageFile);
 
-  LoadSlicerImages(outputImageFile, CAPTK::ImageExtension::NIfTI);
+    LoadSlicerImages(outputImageFile, CAPTK::ImageExtension::NIfTI);
+  }
+  else
+  {
+    ShowErrorMessage("Please provide all inputs before trying Z-Scoring normalization", this);
+    help_contextual("preprocessing_zScoreNorm.html");
+    return;
+  }
 }
 
 void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder)
@@ -6980,12 +7342,13 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   }
   else
   {
-    if (rcbv == true)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputFolder + "/ap-RCBV.nii.gz");
     if (psr == true)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputFolder + "/PSR.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputFolder + "/PSR.nii.gz");
     if (ph == true)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[2], outputFolder + "/PH.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputFolder + "/PH.nii.gz");
+    if (rcbv == true)
+      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[2], outputFolder + "/ap-RCBV.nii.gz");
+
 
     QString msg;
     msg = "Perfusion derivatives have been saved at the specified locations.";
@@ -7004,17 +7367,52 @@ void fMainWindow::CallTrainingSimulation(const std::string featurefilename, cons
   }
 }
 
-void fMainWindow::CallPCACalculation(const int number, const std::string outputFolder)
+void fMainWindow::CallPCACalculation(const int number, const std::string inputdirectory, const std::string outputdirectory)
 {
-  typedef ImageTypeFloat4D PerfusionImageType;
-  ImageTypeFloat4D::Pointer perfusionImage = ImageTypeFloat4D::New();
+  //typedef ImageTypeFloat4D PerfusionImageType;
+  //ImageTypeFloat4D::Pointer perfusionImage = ImageTypeFloat4D::New();
 
-  for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
+  //for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
+  //{
+  //  if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+  //    perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
+  //}
+  //ImageTypeFloat3D::Pointer maskImage = convertVtkToItk<float, 3>(mSlicerManagers[0]->mMask);
+
+
+
+  if (inputdirectory.empty())
   {
-    if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-      perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
+    ShowErrorMessage("Please provide path of a directory having input images");
+    return;
   }
-  ImageTypeFloat3D::Pointer maskImage = convertVtkToItk<float, 3>(mSlicerManagers[0]->mMask);
+  if (!cbica::isDir(inputdirectory))
+  {
+    ShowErrorMessage("The given input directory does not exist");
+    return;
+  }
+  if (inputdirectory.empty())
+  {
+    ShowErrorMessage("Please provide path of a directory having input images");
+    return;
+  }
+  if (!cbica::isDir(outputdirectory))
+  {
+    if (!cbica::createDir(outputdirectory))
+    {
+      ShowErrorMessage("Unable to create the output directory");
+      return;
+    }
+  }
+
+
+  std::vector<double> finalresult;
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
+  if (QualifiedSubjects.size() == 0)
+  {
+    ShowErrorMessage("No patient inside the given input directory has required scans");
+    return;
+  }
   PerfusionPCA object_pca;
   QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long Running Application", "This application takes some time to run (<15 minutes).", QMessageBox::Ok | QMessageBox::Cancel);
   box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
@@ -7022,10 +7420,10 @@ void fMainWindow::CallPCACalculation(const int number, const std::string outputF
   QCoreApplication::processEvents();
   if (box->exec() == QMessageBox::Ok)
   {
-    std::vector<ImageTypeFloat3D::Pointer> individual_pcs = object_pca.Run<ImageTypeFloat4D, ImageTypeFloat3D>(maskImage, perfusionImage);
-    for (int index = 0; index < number; index++)
-      cbica::WriteImage< ImageTypeFloat3D >(individual_pcs[index], outputFolder + "/pca_" + std::to_string(index) + ".nii.gz");
-
+    //    object_pca.PrepareNewPCAModel(number,inputdirectory,outputdirectory);
+        /*for (int index = 0; index < number; index++)
+          cbica::WriteImage< ImageTypeFloat3D >(individual_pcs[index], outputdirectory + "/pca_" + std::to_string(index) + ".nii.gz");
+    */
     QString message;
     message = "First " + QString::number(number) + " principal components have been saved at the specified locations.";
     ShowMessage(message.toStdString(), this);
@@ -7041,6 +7439,7 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
   {
     return;
   }
+
   int index = GetSlicerIndexFromItem(items[0]);
 
   WhiteStripe normalizer;
@@ -7051,6 +7450,7 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
 
   if (normImage.IsNotNull())
   {
+
     cbica::WriteImage< ImageTypeFloat3D >(normImage, outputFileName);
     LoadSlicerImages(outputFileName, CAPTK::ImageExtension::NIfTI);
 
@@ -7059,16 +7459,17 @@ void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceSto
     int modeId;
     normalizer.getHisInfo(mids, origHist, smoothHist, peakIds, modeId);
 
-    auto m_hWdg = new  HistWidget(this);
-    m_hWdg->setAxis(mids, 2);
-    m_hWdg->addColumn(origHist, "Hist", 1, cv::Scalar(0, 255, 255, 255));
-    m_hWdg->addColumn(smoothHist, "Smooth", 2);
-    float height = *max_element(smoothHist.begin(), smoothHist.end());
-    m_hWdg->plotVerticalLine(mids[modeId], height, "Mode");
-    m_hWdg->show();
+    //auto m_hWdg = new  HistWidget(this);
+    //m_hWdg->setAxis(mids, 2);
+    //m_hWdg->addColumn(origHist, "Hist", 1, cv::Scalar(0, 255, 255, 255));
+    //m_hWdg->addColumn(smoothHist, "Smooth", 2);
+    //float height = *max_element(smoothHist.begin(), smoothHist.end());
+    //m_hWdg->plotVerticalLine(mids[modeId], height, "Mode");
+    //m_hWdg->show();
   }
   else
   {
+    // std::cout << "fmain HIT10" << std::endl;
     ShowErrorMessage("WhiteStripe did not run as expected. Please see 'Help' for assistance.");
     help_contextual("Glioblastoma_WhiteStripe.html");
     return;
@@ -7158,8 +7559,64 @@ std::vector<int> read_int_vector(std::string &nccRadii)
   return vector;
 }
 
-void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
+void fMainWindow::GeodesicTrainingFinishedHandler()
 {
+  // Load the output segmentation as a ROI
+  if (mSlicerManagers[0]->mFileName == m_GeodesicTrainingFirstFileNameFromLastExec)
+  {
+    readMaskFile(m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz");
+  }
+
+  ShowMessage(std::string("Geodesic Training Segmentation finished. If the output contains mistakes, ") +
+    std::string("just correct some of them on the output mask and ") +
+    std::string("run Geodesic Training Segmentation again.")
+  );
+  m_IsGeodesicTrainingRunning = false;
+}
+
+void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
+{
+  ShowErrorMessage(errorMessage.toStdString(), this);
+  m_IsGeodesicTrainingRunning = false;
+}
+
+void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames,
+  std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
+{
+  // This happens because the qconcurrent doesn't allow more than 5 function parameters, without std::bind + not sure what else
+  std::vector<std::string> compVector = {
+    fixedFileName,
+    ((registrationMode) ? "true" : "false"),
+    metrics,
+    ((affineMode) ? "true" : "false"),
+    radii,
+    iterations
+  };
+
+  QtConcurrent::run(this, &fMainWindow::RegistrationWorker,
+    compVector,
+    inputFileNames,
+    outputFileNames,
+    matrixFileNames
+  );
+  /*QFuture<void> r = QtConcurrent::run(std::bind(
+    this, &fMainWindow::RegistrationWorker,
+    fixedFileName, inputFileNames, outputFileNames,
+    matrixFileNames, registrationMode, metrics, affineMode, radii, iterations
+  ));*/
+}
+
+void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::vector<std::string> inputFileNames,
+  std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames)
+{
+  // "Unpacking" the variables
+  std::string fixedFileName = compVector[0];
+  bool registrationMode = (compVector[1] == "true");
+  std::string metrics = compVector[2];
+  bool affineMode = (compVector[3] == "true");
+  std::string radii = compVector[4];
+  std::string iterations = compVector[5];
+
   std::string configPathName;
   std::string configFileName;
   std::string extn = ".txt";
@@ -7167,13 +7624,13 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
   std::vector<std::string> affineMatrix;
   std::vector<std::string> outputImage;
 
-  updateProgress(5, "Starting Registration");
+  //updateProgress(5, "Starting Registration");
 
   auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
 
   if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
   {
-    ShowErrorMessage("Number of input, matrix and output file names do not match");
+    //ShowErrorMessage("Number of input, matrix and output file names do not match");
     return;
   }
 
@@ -7184,10 +7641,10 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
   {
     if (!cbica::isFile(inputFileNames[i]))
     {
-      ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
+      //ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
       return;
     }
-    updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
+    //updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
 
     std::string fixedFileCommand = "-f " + fixedFileName;
     std::string movingFileCommand = " -i " + inputFileNames[i];
@@ -7214,7 +7671,7 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
 
     if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
     {
-      ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
+      //ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
       return;
     }
     else
@@ -7223,20 +7680,20 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     }
 
 
-    if (matrixFileNames[i].find("remove") != std::string::npos) 
+    if (matrixFileNames[i].find("remove") != std::string::npos)
     {
       if (cbica::isFile(matrixFileNames[i]))
       {
-        if (std::remove(matrixFileNames[i].c_str()) == 0) 
+        if (std::remove(matrixFileNames[i].c_str()) == 0)
         {
-          updateProgress(80, "Cleaning temporary files");
+          //updateProgress(80, "Cleaning temporary files");
         }
       }
 
-      updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
+      //updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
     }
-  
-    updateProgress(100, "Registration Complete.");
+
+    //updateProgress(100, "Registration Complete.");
 
     time_t t = std::time(0);
     long int now = static_cast<long int> (t);
@@ -7271,6 +7728,8 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     }
     file.close();
   }
+
+  //std::terminate();
 }
 
 
@@ -7322,6 +7781,20 @@ void fMainWindow::SetOpacity()
 
 void fMainWindow::closeEvent(QCloseEvent* event)
 {
+  if (m_NumberOfUnfinishedExternalProcesses > 0)
+  {
+    ShowErrorMessage("Please close all external applications before exiting.");
+    event->ignore();
+    return;
+  }
+
+  if (m_IsGeodesicTrainingRunning)
+  {
+    ShowErrorMessage("Please wait for GeodesicTraining execution to finish.");
+    event->ignore();
+    return;
+  }
+
   if (!cbica::fileExists(closeConfirmation))
   {
     auto msgBox = new QMessageBox();
@@ -7343,6 +7816,10 @@ void fMainWindow::closeEvent(QCloseEvent* event)
         file << "User doesn't want close confirmation.\n";
         file.close();
       }
+
+      //! close the help dialog forcefully as we are about to exit the application
+      bool closed = mHelpDlg->close();
+
       event->accept();
     }
     else
@@ -7352,9 +7829,12 @@ void fMainWindow::closeEvent(QCloseEvent* event)
   }
   else
   {
+    //! close the help dialog forcefully as we are about to exit the application
+    bool closed = mHelpDlg->close();
+
     event->accept();
   }
-};
+}
 
 void fMainWindow::updateProgress(int progress, std::string message, int max)
 {
@@ -7513,6 +7993,50 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
   }
   return QualifiedSubjects;
 }
+
+std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname)
+{
+  std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
+  std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+  std::sort(subjectNames.begin(), subjectNames.end());
+
+  for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
+  {
+    std::string subjectPath = directoryname + "/" + subjectNames[sid];
+
+    std::string perfFilePath = "";
+    std::string labelPath = "";
+
+    std::vector<std::string> files;
+    files = cbica::filesInDirectory(subjectPath + "", false);
+
+    for (unsigned int i = 0; i < files.size(); i++)
+    {
+      std::string filePath = subjectPath + "/" + files[i], filePath_lower;
+      std::string extension = cbica::getFilenameExtension(filePath, false);
+      filePath_lower = filePath;
+      std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
+      if ((filePath_lower.find("label") != std::string::npos || filePath_lower.find("segmentation") != std::string::npos)
+        && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        labelPath = subjectPath + "/" + files[i];
+      else if ((filePath_lower.find("perf") != std::string::npos || filePath_lower.find("PERF") != std::string::npos || filePath_lower.find("DSC") != std::string::npos)
+        && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        perfFilePath = subjectPath + "/SEGMENTATION" + "/" + files[i];
+    }
+
+    if (labelPath.empty() || perfFilePath.empty())
+      continue;
+
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION] = perfFilePath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG] = labelPath;
+    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID] = subjectNames[sid];
+
+    QualifiedSubjects.push_back(OneQualifiedSubject);
+  }
+  return QualifiedSubjects;
+}
+
 std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQualifiedSubjectsFromGivenDirectoryForRecurrence(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useConventionalData, const bool &useDTIData, const bool &usePerfData, const bool &useDistData)
 {
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
@@ -7653,11 +8177,15 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
 {
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
-  std::vector<std::string> subjectNames;
-  //= cbica::subdirectoriesInDirectory(directoryname);
-  subjectNames.push_back("ABEM");
-  subjectNames.push_back("ABFC");
-  subjectNames.push_back("ABFD");
+  std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+
+  //subjectNames.clear();
+  //subjectNames.push_back("AAMA");
+  //subjectNames.push_back("AAMG");
+  //subjectNames.push_back("AAMJ");
+  //subjectNames.push_back("AAMP");
+  //subjectNames.push_back("AAMQ");
+  //subjectNames.push_back("ABEM");
 
   std::sort(subjectNames.begin(), subjectNames.end());
 

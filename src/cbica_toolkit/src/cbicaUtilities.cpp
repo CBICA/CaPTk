@@ -123,52 +123,68 @@ namespace cbica
       return true;
   }
 
-  std::vector<std::string> getCWLFilesInApplicationDir() {
+  std::vector<std::string> getCWLFilesInApplicationDir() 
+  {
+    auto appDir = getExecutablePath();
 
-    std::vector<std::string> files;
+#ifdef __APPLE__
+    appDir += "../Resources/bin";
+#endif
 
-    #ifdef _WIN32
-      WIN32_FIND_DATA data;
-      HANDLE hFind = FindFirstFile("\\*", &data);
-
-      if ( hFind != INVALID_HANDLE_VALUE ) {
-        do {
-          files.push_back(data.cFileName);
-        } while (FindNextFile(hFind, &data));
-        FindClose(hFind);
+    auto filesInDir = filesInDirectory(appDir);
+    auto cwlFiles = filesInDir;
+    cwlFiles.clear();
+    for (size_t i = 0; i < filesInDir.size(); i++)
+    {
+      if (getFilenameExtension(filesInDir[i], false).find(".cwl") != std::string::npos)
+      {
+        cwlFiles.push_back(filesInDir[i]);
       }
-    #else
-      DIR *dir;
-      struct dirent *ent;
-      if ((dir = opendir(".")) != NULL) {
-        /* print all the files and directories within directory */
-        while ((ent = readdir (dir)) != NULL) {
-          if (ent->d_type == DT_REG) {  
-            files.push_back(ent->d_name);
-          }
-        }
-        closedir (dir);
-      } else {
-        /* could not open directory */
-        perror ("");
-        return files;
-      }
-    #endif
-
-    // Prune non cwl files
-    std::vector<std::string> cwlfiles;
-    for(auto const& value: files) {
-
-      if (value.substr(value.size() - 4) == ".cwl") {
-        cwlfiles.push_back(value);
-      }
-
     }
+    //std::vector<std::string> files;
 
-    // Sort cwl files
-    std::sort(cwlfiles.begin(), cwlfiles.end());
+    //#ifdef _WIN32
+    //  WIN32_FIND_DATA data;
+    //  HANDLE hFind = FindFirstFile("\\*", &data);
 
-    return cwlfiles;
+    //  if ( hFind != INVALID_HANDLE_VALUE ) {
+    //    do {
+    //      files.push_back(data.cFileName);
+    //    } while (FindNextFile(hFind, &data));
+    //    FindClose(hFind);
+    //  }
+    //#else
+    //  DIR *dir;
+    //  struct dirent *ent;
+    //  if ((dir = opendir(".")) != NULL) {
+    //    /* print all the files and directories within directory */
+    //    while ((ent = readdir (dir)) != NULL) {
+    //      if (ent->d_type == DT_REG) {  
+    //        files.push_back(ent->d_name);
+    //      }
+    //    }
+    //    closedir (dir);
+    //  } else {
+    //    /* could not open directory */
+    //    perror ("");
+    //    return files;
+    //  }
+    //#endif
+
+    //// Prune non cwl files
+    //std::vector<std::string> cwlfiles;
+    //for(auto const& value: files) {
+
+    //  if (value.substr(value.size() - 4) == ".cwl") {
+    //    cwlfiles.push_back(value);
+    //  }
+
+    //}
+
+    //// Sort cwl files
+    //std::sort(cwlfiles.begin(), cwlfiles.end());
+
+    return cwlFiles;
 
   }
 
@@ -769,6 +785,7 @@ namespace cbica
   {
     std::string path, base, ext;
     splitFileName(getFullPath(), path, base, ext);
+    std::cout << "===DEBUG path" << path << " base " << base << " ext " << ext << std::endl;
     return path;
   }
 
@@ -1237,6 +1254,8 @@ namespace cbica
 
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath)
   {
+    std::cout << "===DEBUG HIT" << std::endl;
+
     if (!cbica::directoryExists(dirName))
     {
       std::cerr << "Supplied directory name wasn't found: " << dirName << std::endl;
@@ -1305,7 +1324,7 @@ namespace cbica
   return allFiles;
   }
 
-  std::vector<std::string> subdirectoriesInDirectory(const std::string &dirName, bool recursiveSearch)
+  std::vector<std::string> subdirectoriesInDirectory(const std::string &dirName, bool recursiveSearch, bool returnFullPath)
   {
     if (!cbica::directoryExists(dirName))
     {
@@ -1327,9 +1346,16 @@ namespace cbica
     {
       do
       {
-        if ((fd.dwFileAttributes | FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY && (fd.cFileName[0] != '.') && (fd.cFileName != ".svn"))
+        if ((fd.dwFileAttributes | FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY && (fd.cFileName[0] != '.'))
         {
-          allDirectories.push_back(dirName + "/" + std::string(fd.cFileName));
+          if (returnFullPath)
+          {
+            allDirectories.push_back(dirName + "/" + std::string(fd.cFileName));
+          }
+          else
+          {
+            allDirectories.push_back(std::string(fd.cFileName));
+          }
           if (recursiveSearch)
           {
             std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true);
@@ -1361,6 +1387,14 @@ namespace cbica
       if (dirp->d_type == DT_DIR)
       {
         allDirectories.push_back(dirName + "/" + dirp->d_name);
+        if (returnFullPath)
+        {
+          allDirectories.push_back(dirName + "/" + dirp->d_name);
+        }
+        else
+        {
+          allDirectories.push_back(dirp->d_name);
+        }
       }
     }
     closedir(dp);
@@ -1473,7 +1507,7 @@ namespace cbica
     int threads = omp_get_max_threads(); // obtain maximum number of threads available on machine
     // if the total number of rows in CSV file are less than the available number of threads on machine (happens for testing),
     // use only the number of rows where meaningful data is present - this avoids extra thread overhead
-    threads > static_cast<int>(numberOfRows) ? threads = static_cast<int>(numberOfRows - 1) : threads = threads;
+    //threads > static_cast<int>(numberOfRows) ? threads = static_cast<int>(numberOfRows - 1) : threads = threads;
     //#pragma omp parallel for num_threads(threads)
 #endif
     for (int rowCounter = 1; rowCounter < static_cast<int>(allRows.size()); rowCounter++)
@@ -1516,16 +1550,16 @@ namespace cbica
           }
         }
 
-        for (size_t j = 0; j < inputLabelIndeces.size(); j++)
+        if (!inputLabelIndeces.empty())
         {
-          if (inputLabelIndeces.size() != 0)
+          for (size_t j = 0; j < inputLabelIndeces.size(); j++)
           {
             return_CSVDict[rowCounter - 1].inputLabels[j] = std::atof(allRows[rowCounter][inputLabelIndeces[j]].c_str());
           }
-          else
-          {
-            return_CSVDict[rowCounter - 1].inputLabels[j] = 1;
-          }
+        }
+        else
+        {
+          return_CSVDict[rowCounter - 1].inputLabels[0] = 1;
         }
       }
 
@@ -1931,11 +1965,20 @@ namespace cbica
       char basename_var[FILENAME_MAX], ext[FILENAME_MAX], path_name[FILENAME_MAX], drive_letter[FILENAME_MAX];
       //_splitpath(dataFile_wrap.c_str(), NULL, path_name, basename_var, ext);
       _splitpath_s(dataFile.c_str(), drive_letter, FILENAME_MAX, path_name, FILENAME_MAX, basename_var, FILENAME_MAX, ext, FILENAME_MAX);
+      extension = std::string(ext);
 #else
-      char *basename_var, *ext, *path_name;
+      char *basename_var, *path_name; 
+
+      auto idx = dataFile_wrap.rfind('.');
+      if (idx != std::string::npos)
+      {
+        extension = "." + dataFile_wrap.substr(idx + 1);
+        dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+      }
+      // else // there is no extension for file
+
       path_name = dirname(cbica::constCharToChar(dataFile_wrap.c_str()));
       basename_var = basename(cbica::constCharToChar(dataFile_wrap.c_str()));
-      ext = strrchr(cbica::constCharToChar(dataFile_wrap.c_str()), '.');
 #endif
 
       //path sanity check
@@ -1965,25 +2008,17 @@ namespace cbica
         baseName = std::string(basename_var);
       }
 
-      //extension sanity check
-      if (ext == NULL)
-      {
-        extension = "";
-      }
-      else
-      {
-        extension = std::string(ext);
-      }
-
 #if (_MSC_VER >= 1700)
       path_name[0] = NULL;
       basename_var[0] = NULL;
-      ext[0] = NULL;
       drive_letter[0] = NULL;
 #endif
-      if (path[path.length() - 1] != '/')
+      if (!path.empty())
       {
-        path += "/";
+        if (path[path.length() - 1] != '/')
+        {
+          path += "/";
+        }
       }
 
       return true;

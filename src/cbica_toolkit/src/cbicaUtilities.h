@@ -600,7 +600,7 @@ namespace cbica
   \param dirName The directory to do the search in
   \param recursiveSearch Whether to do a recursive search or on a single level
   */
-  std::vector<std::string> subdirectoriesInDirectory(const std::string &dirName, bool recursiveSearch = false);
+  std::vector<std::string> subdirectoriesInDirectory(const std::string &dirName, bool recursiveSearch = false, bool returnFullPath = false);
 
   /**
   \brief Find number of rows in CSV file

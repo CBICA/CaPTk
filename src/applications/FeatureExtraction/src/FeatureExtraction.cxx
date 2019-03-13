@@ -185,7 +185,7 @@ std::vector< std::string > splitTheString(const std::string &inputString)
 
 int main(int argc, char** argv)
 {
-  cbica::CmdParser parser(argc, argv/*, "FeatureExtraction"*/);
+  cbica::CmdParser parser(argc, argv, "FeatureExtraction");
 
   parser.addOptionalParameter("p", "paramFile", cbica::Parameter::FILE, ".csv", "A csv file with all features and its parameters filled", "Default: '../data/1_params_default.csv'");
   parser.addRequiredParameter("o", "outputDir", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory to save results", "Result can be a CSV or Feature Maps (for lattice)");
@@ -299,7 +299,7 @@ int main(int argc, char** argv)
   else
   {
     auto baseParamFile = "1_params_default.csv";
-    auto temp = cbica::normPath(cbica::getExecutablePath() + "../data/" + baseParamFile);
+    auto temp = cbica::normPath(cbica::getExecutablePath() + "/../data/" + baseParamFile);
     if (cbica::isFile(temp))
     {
       param_file = temp;
@@ -308,10 +308,11 @@ int main(int argc, char** argv)
     {
       std::string dataDir = "";
 #ifndef APPLE
-      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../data/");
+      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../../data/");
 #else
-      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../Resources/data/";
+      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../Resources/data/features/";
 #endif
+      temp = dataDir + baseParamFile;
       if (cbica::isFile(temp))
       {
         param_file = temp;

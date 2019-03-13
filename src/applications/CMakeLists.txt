@@ -21,6 +21,7 @@ SET( CAPTK_MACOSX_BUNDLE_FILES "")
 SET( APPLICATIONS
   WhiteStripe
   GeodesicSegmentation
+  GeodesicTraining
   EGFRvIIISurrogateIndex
   EGFRvIIIIndexPredictor
   RecurrenceEstimator
@@ -49,12 +50,19 @@ SET( CAPTK_LUNG_APPS "" )
 SET( CAPTK_MISC_APPS "" )
 
 ADD_SUBDIRECTORY( FeatureExtraction )
+ADD_SUBDIRECTORY( GeodesicTraining )
 ADD_SUBDIRECTORY( Preprocessing )
+ADD_SUBDIRECTORY( Utilities )
+
 INCLUDE_DIRECTORIES( 
-  FeatureExtraction/src/depends 
-  FeatureExtraction/src 
-  Preprocessing/src/depends
+  ${CMAKE_CURRENT_SOURCE_DIR}/FeatureExtraction/src/depends 
+  ${CMAKE_CURRENT_SOURCE_DIR}/FeatureExtraction/src 
+  ${CMAKE_CURRENT_SOURCE_DIR}/Preprocessing/src/depends
+  ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/src/depends
+  ${GEODESIC_TRAINING_INCLUDE_DIRS}
 )
+
+SET( INCLUDES ${INCLUDES} ${GEODESIC_TRAINING_INCLUDE_DIRS})
 
 SET(PREPROCESSING_ALGOS "DCM2NIfTI Denoise-SUSAN Register BiasCorrect-N3 HistogramMatching SkullStripping" CACHE STRING "All Preprocessing algorithms available")
 
@@ -173,6 +181,10 @@ FOREACH(application ${APPLICATIONS})
     SET( CAPTK_APP_LIST "${CAPTK_APP_LIST} ${application}" )
   ENDIF()
 
+  IF ( (${application} STREQUAL GeodesicTraining))
+    SET( CAPTK_APP_LIST "${CAPTK_APP_LIST} ${application}" )
+  ENDIF()
+
 ENDFOREACH()
 
 ## this is for all stand-alone applications which do not integrate at source code level with CaPTk
@@ -199,19 +211,19 @@ SET( DOWNLOAD_URL "" )
 SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/externalApps )
 SET( SOURCE_APPLICATIONS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/individualApps )
 
+IF(WIN32)
+  SET( FILENAME_TO_EXTRACT "binaries_windows")
+  SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_windows.zip")
+ELSEIF(APPLE)
+  SET( FILENAME_TO_EXTRACT "binaries_mac")
+  SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_mac.zip")
+ELSE()
+  SET( FILENAME_TO_EXTRACT "binaries_linux")
+  SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_linux.zip")
+ENDIF()
+
 # putting this condition so that the extraction doesn't happen every single time
 IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
-
-  IF(WIN32)
-    SET( FILENAME_TO_EXTRACT "binaries_windows")
-    SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_windows.zip")
-  ELSEIF(APPLE)
-    SET( FILENAME_TO_EXTRACT "binaries_mac")
-    SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_mac.zip")
-  ELSE()
-    SET( FILENAME_TO_EXTRACT "binaries_linux")
-    SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_linux.zip")
-  ENDIF()
 
   SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
 
@@ -238,21 +250,25 @@ IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
       MESSAGE( WARNING "Extracting the pre-compiled applications failed" )
     ENDIF()
 
-    SUBDIRLIST(EXTERNAL_APPS ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT})
-
-    # copy the prepared app into the appropriate folder
-    FOREACH(external_app ${EXTERNAL_APPS})
-
-      FILE(MAKE_DIRECTORY ${SOURCE_APPLICATIONS_PATH}/${external_app})
-
-      EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT}/${external_app} ${SOURCE_APPLICATIONS_PATH}/${external_app}
-      )
-
-    ENDFOREACH()
-
   ENDIF()
 ENDIF()
+
+SUBDIRLIST(EXTERNAL_APPS ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT}/)
+
+# copy the prepared app into the appropriate folder
+FOREACH(external_app ${EXTERNAL_APPS})
+
+  IF( NOT EXISTS "${SOURCE_APPLICATIONS_PATH}/${external_app}" )
+
+    FILE(MAKE_DIRECTORY ${SOURCE_APPLICATIONS_PATH}/${external_app})
+    
+    EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy_directory
+      ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT}/${external_app} ${SOURCE_APPLICATIONS_PATH}/${external_app}
+    )
+  
+  ENDIF()
+
+ENDFOREACH()
 
 SUBDIRLIST(SUBDIRECTORIES ${SOURCE_APPLICATIONS_PATH})
 INCLUDE(${CMAKE_ROOT}/Modules/ExternalProject.cmake)

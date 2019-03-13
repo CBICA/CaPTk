@@ -4,7 +4,7 @@
 
 ## Windows
 
-The Windows executable package contains all required dependencies and does not need administrative privileges for installation.
+The Windows executable package contains all required dependencies and does not need administrative privileges for installation. This is a standard MSI installer. If a security prompt comes up, click on "Run Anyway".
 
 ## Linux
 
@@ -24,13 +24,13 @@ After this, in the same terminal, run the following command to start CaPTk:
 
 ## macOS
 
-For macOS users, we urge users to use the "Low Resolution" mode for the application. To do this, follow these instructions:
+Users will download the ".pkg" file from NITRC; double-click the file. 
 
-- Open the <b>CaPTk_${Version}.dmg</b> file (a Window should pop up with <b>CaPTk.app</b> inside)
-- Move the <b>CaPTk.app</b> into your <b>Applications</b> folder
-- Right click <b>CaPTk.app</b>
-- Click on <b>Get Info</b>
-- Select the box <b>Open in Low Resolution</b> 
-- Open <b>CaPTk.app</b> as usual
+If there is a window saying that this is an "unidentified developer", hit "OK" and then go to "System Preferences > Security and Privacy" and you need to click on "Open Anyway" beside the "CaPTk_$version.pkg" (this will prompt for your password).
 
+Double click on the pkg file and click on "Open". This will guide you through the installation screen with licensing information.
+
+Before installation begins, you may be prompted for your password again.
+
+You will find CaPTk under your "Applications" folder and you can delete the disk image.
 */

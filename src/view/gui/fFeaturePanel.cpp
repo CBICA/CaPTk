@@ -203,6 +203,7 @@ void fFeaturePanel::computeFeature(int type)
   else*/ if (cbica::fileExists(featureFileName))
   {
     ShowErrorMessage("File already exists. Please give a new filename");
+    ((fMainWindow*)m_listener)->updateProgress(0, "");
     return;
   }
 
@@ -212,7 +213,27 @@ void fFeaturePanel::computeFeature(int type)
   auto featureMap = m_FeatureMaps[type];
   auto selectedFeatures = getEnabledFeatures();
 
-  std::string feature_selected;
+  // check for resampling rate
+  for (auto &currentFeature : featureMap) // iterating over the feature families, i.e., GLCM, Intensity, ...
+  {
+    if (currentFeature.first.find("Generic") != std::string::npos)
+    {
+      for (size_t j = 0; j < currentFeature.second.size(); j++)
+      {
+        for (auto &currentFeature_Parameter : currentFeature.second[j]) // each parameter within the feature family
+        {
+          if (currentFeature_Parameter.first.find("Value"))
+          {
+            if (std::atof(currentFeature_Parameter.second.c_str()) == 3.0)
+            {
+              ShowMessage("The resampling rate is set to 3.0 for computation efficiency, please reduce it to increase accuracy of extracted features",
+                this, "Warning");
+            }
+          }
+        }
+      }
+    }
+  }
 
   ((fMainWindow*)m_listener)->updateProgress(30, "Calculating and exporting features", images.size());
 

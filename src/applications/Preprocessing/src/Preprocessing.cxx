@@ -5,10 +5,12 @@
 #include "cbicaITKUtilities.h"
 
 #include "ZScoreNormalizer.h"
+#include "itkN3MRIBiasFieldCorrectionImageFilter.h"
 
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
 #include "itkBinaryThresholdImageFilter.h"
+#include "itkOtsuThresholdImageFilter.h"
 
 //! Detail the available algorithms to make it easier to initialize
 enum AvailableAlgorithms
@@ -25,18 +27,20 @@ enum AvailableAlgorithms
   BoundingBox,
   ZScoreNormalize,
   CreateMask,
-  ChangeValue
+  ChangeValue,
+  BiasCorrectionN3 // TBD: do this today and send Release exe to Anahita 
 };
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator;
+std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator = "LINEAR";
 size_t resize = 100;
 int histoMatchQuantiles = 40, histoMatchBins = 100, testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<double>::max();
 std::string changeOldValues, changeNewValues;
 float resamplingResolution = 1.0;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95;
+int n3Bias_iterations = 50, n3Bias_fittingLevels = 4, n3Bias_otsuBins = 200;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
 
@@ -349,9 +353,9 @@ int algorithmsRunner()
     {
       for (size_t x = minFromCenter[0]; x < maxFromCenter[0]; x++)
       {
-        for (size_t y = minFromCenter[1]; x < maxFromCenter[1]; x++)
+        for (size_t y = minFromCenter[1]; y < maxFromCenter[1]; y++)
         {
-          for (size_t z = minFromCenter[2]; z < maxFromCenter[2]; x++)
+          for (size_t z = minFromCenter[2]; z < maxFromCenter[2]; z++)
           {
             typename TImageType::IndexType currentIndex;
             currentIndex[0] = x;
@@ -387,125 +391,33 @@ int algorithmsRunner()
     normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
     normalizer.Update();
     cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+  }
 
-    //auto currentDataDir = cbica::normalizePath(inputImageFile); // this is a data directory for now and will be changed
-    //auto outputDir = cbica::normalizePath(outputImageFile);// this is a data directory for now and will be changed
-    //cbica::createDir(outputDir);
-    //std::string hggFL_file = outputDir + "/hgg_fl.cfg", hggT1C_file = outputDir + "/hgg_t1c.cfg", hggT1_file = outputDir + "/hgg_t1.cfg", hggT2_file = outputDir + "/hgg_t2.cfg",
-    //  lggFL_file = outputDir + "/lgg_fl.cfg", lggT1C_file = outputDir + "/lgg_t1c.cfg", lggT1_file = outputDir + "/lgg_t1.cfg", lggT2_file = outputDir + "/lgg_t2.cfg",
-    //  hggMask_file = outputDir + "/hgg_brainMask.cfg", lggMask_file = outputDir + "/lgg_brainMask.cfg",
-    //  hggGt_file = outputDir + "/hgg_Gt.cfg", lggGt_file = outputDir + "/lgg_Gt.cfg";
+  if (requestedAlgorithm == BiasCorrectionN3)
+  {
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    auto corrector = itk::N3MRIBiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
+    corrector->SetMaximumNumberOfIterations(n3Bias_iterations);
+    corrector->SetNumberOfFittingLevels(n3Bias_fittingLevels);
+    corrector->SetInput(inputImage);
+    if (!inputMaskFile.empty())
+    {
+      corrector->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+    }
+    else
+    {
+      auto otsu = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
+      otsu->SetInput(inputImage);
+      otsu->SetNumberOfHistogramBins(n3Bias_otsuBins);
+      otsu->SetInsideValue(0);
+      otsu->SetOutsideValue(1);
+      otsu->Update();
+      corrector->SetMaskImage(otsu->GetOutput());
+    }
+    corrector->Update();
 
-    //auto output_HGG = outputDir + "/HGG";
-    //auto output_LGG = outputDir + "/LGG";
-    //cbica::createDir(output_HGG);
-    //cbica::createDir(output_LGG);
-    //auto allFolders = cbica::subdirectoriesInDirectory(currentDataDir, true);
+    cbica::WriteImage< TImageType >(corrector->GetOutput(), outputImageFile);
 
-    //for (size_t i = 0; i < allFolders.size(); i++)
-    //{
-    //  auto filesInFolder = cbica::filesInDirectory(allFolders[i]);
-    //  for (size_t j = 0; j < filesInFolder.size(); j++)
-    //  {
-    //    std::ofstream file_hggFL(hggFL_file, std::ofstream::out | std::ofstream::app), file_hggT1C(hggT1C_file, std::ofstream::out | std::ofstream::app), file_hggT1(hggT1_file, std::ofstream::out | std::ofstream::app), file_hggT2(hggT2_file, std::ofstream::out | std::ofstream::app),
-    //      file_lggFL(lggFL_file, std::ofstream::out | std::ofstream::app), file_lggT1C(lggT1C_file, std::ofstream::out | std::ofstream::app), file_lggT1(lggT1_file, std::ofstream::out | std::ofstream::app), file_lggT2(lggT2_file, std::ofstream::out | std::ofstream::app),
-    //      file_hggBM(hggMask_file, std::ofstream::out | std::ofstream::app), file_lggBM(lggMask_file, std::ofstream::out | std::ofstream::app),
-    //      file_hggGT(hggGt_file, std::ofstream::out | std::ofstream::app), file_lggGT(lggGt_file, std::ofstream::out | std::ofstream::app);
-    //    std::string inputBase, inputExt, inputPath;
-    //    cbica::splitFileName(filesInFolder[j], inputPath, inputBase, inputExt);
-    //    if (filesInFolder[j].find("_seg.nii.gz") == std::string::npos)
-    //    {
-    //      if (inputExt == ".nii.gz")
-    //      {
-    //        auto inputImage = cbica::ReadImage< TImageType >(filesInFolder[j]);
-    //        ZScoreNormalizer< TImageType > normalizer;
-    //        normalizer.SetInputImage(inputImage);
-    //        normalizer.SetCutoffs(zNormCutLow, zNormCutHigh);
-    //        normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
-    //        normalizer.Update();
-    //        auto outputImage = normalizer.GetOutput();
-
-    //        if (allFolders[i].find("HGG") != std::string::npos)
-    //        {
-    //          cbica::WriteImage< TImageType >(outputImage, output_HGG + "/" + inputBase + inputExt);
-    //          if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
-    //          {
-    //            file_hggT1C << output_HGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
-    //          {
-    //            file_hggT1 << output_HGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
-    //          {
-    //            file_hggFL << output_HGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
-    //          {
-    //            file_hggT2 << output_HGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //        }
-    //        else
-    //        {
-    //          cbica::WriteImage< TImageType >(outputImage, output_LGG + "/" + inputBase + inputExt);
-    //          if (filesInFolder[j].find("_t1ce.nii.gz") != std::string::npos)
-    //          {
-    //            file_lggT1C << output_LGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_t1.nii.gz") != std::string::npos)
-    //          {
-    //            file_lggT1 << output_LGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_flair.nii.gz") != std::string::npos)
-    //          {
-    //            file_lggFL << output_LGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //          else if (filesInFolder[j].find("_t2.nii.gz") != std::string::npos)
-    //          {
-    //            file_lggT2 << output_LGG + "/" + inputBase + inputExt << "\n";
-    //          }
-    //        }
-    //      }
-    //    }
-    //    else
-    //    {
-    //      auto currentFile = cbica::replaceString(filesInFolder[j], "_seg.nii.gz", "_t1ce.nii.gz");
-
-    //      auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
-    //      thresholder->SetInput(cbica::ReadImage< TImageType >(currentFile));
-    //      thresholder->SetLowerThreshold(1);
-    //      thresholder->SetUpperThreshold(std::numeric_limits<float>::max());
-    //      thresholder->SetOutsideValue(0);
-    //      thresholder->SetInsideValue(1);
-    //      thresholder->Update();
-
-    //      if (allFolders[i].find("HGG") != std::string::npos)
-    //      {
-    //        file_hggGT << filesInFolder[j] << "\n";
-    //        cbica::WriteImage< TImageType >(thresholder->GetOutput(), output_HGG + "/brainMask_" + inputBase + inputExt);
-    //        file_hggBM << output_HGG + "/brainMask_" + inputBase + inputExt << "\n";
-    //      }
-    //      else
-    //      {
-    //        file_lggGT << filesInFolder[j] << "\n";
-    //        cbica::WriteImage< TImageType >(thresholder->GetOutput(), output_LGG + "/brainMask_" + inputBase + inputExt);
-    //        file_lggBM << output_LGG + "/brainMask_" + inputBase + inputExt << "\n";
-    //      }
-    //    }
-    //    file_lggGT.close();
-    //    file_hggGT.close();
-    //    file_hggT1C.close();
-    //    file_hggT1.close();
-    //    file_hggT2.close();
-    //    file_hggFL.close();
-    //    file_lggT1C.close();
-    //    file_lggT1.close();
-    //    file_lggT2.close();
-    //    file_lggFL.close();
-    //    file_hggBM.close();
-    //    file_lggBM.close();
-    //  }
-    //}
   }
 
   return EXIT_SUCCESS;
@@ -514,33 +426,37 @@ int algorithmsRunner()
 
 int main(int argc, char** argv)
 {
-  cbica::CmdParser parser(argc, argv, "Preprocessing");
+  cbica::CmdParser parser(argc, argv);
 
   parser.addOptionalParameter("i", "inputImage", cbica::Parameter::FILE, "NIfTI", "Input Image for processing");
   parser.addOptionalParameter("m", "maskImage", cbica::Parameter::FILE, "NIfTI", "Input Mask for processing");
   parser.addOptionalParameter("o", "outputImage", cbica::Parameter::FILE, "NIfTI", "Output Image for processing");
   parser.addOptionalParameter("r", "resize", cbica::Parameter::INTEGER, "10-500", "Resize an image based on the resizing factor given", "Example: -r 150 resizes inputImage by 150%", "Defaults to 100, i.e., no resizing", "Resampling can be done on image with 100");
-  parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::FLOAT, "0-10", "[Resample] Isotropic resolution of the voxels/pixels to change to", "Resize value needs to be 100", "Defaults to 1.0");
-  parser.addOptionalParameter("ri", "resizeInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE", "[Resample] The interpolation type to use for resampling", "Resize value needs to be 100", "Defaults to LINEAR");
+  parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::FLOAT, "0-10", "[Resample] Isotropic resolution of the voxels/pixels to change to", "Resize value needs to be 100", "Defaults to " + std::to_string(resamplingResolution));
+  parser.addOptionalParameter("ri", "resizeInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE:BICUBIC", "[Resample] The interpolation type to use for resampling", "Resize value needs to be 100", "Defaults to " + resamplingInterpolator);
   parser.addOptionalParameter("s", "sanityCheck", cbica::Parameter::FILE, "NIfTI Reference", "Do sanity check of inputImage with the file provided in with this parameter", "Performs checks on size, origin & spacing",
     "Pass the target image after '-s'");
   parser.addOptionalParameter("inf", "information", cbica::Parameter::BOOLEAN, "true or false", "Output the information in inputImage");
   parser.addOptionalParameter("c", "cast", cbica::Parameter::STRING, "(u)char, (u)int, (u)long, (u)longlong, float, double", "Change the input image type", "Examples: '-c uchar', '-c float', '-c longlong'");
-  parser.addOptionalParameter("un", "uniqueVals", cbica::Parameter::BOOLEAN, "true or false", "Output the unique values in the inputImage", "Pass value '1' for ascending sort or '0' for no sort", "Defaults to '1'");
+  parser.addOptionalParameter("un", "uniqueVals", cbica::Parameter::BOOLEAN, "true or false", "Output the unique values in the inputImage", "Pass value '1' for ascending sort or '0' for no sort", "Defaults to " + std::to_string(uniqueValsSort));
   parser.addOptionalParameter("b", "boundingBox", cbica::Parameter::FILE, "NIfTI Mask", "Extracts the smallest bounding box around the mask file", "With respect to inputImage", "Writes to outputImage");
   parser.addOptionalParameter("bi", "boundingIso", cbica::Parameter::BOOLEAN, "Isotropic Box or not", "Whether the bounding box is Isotropic or not", "Defaults to true");
   parser.addOptionalParameter("tb", "testBase", cbica::Parameter::FILE, "NIfTI Reference", "Baseline image to compare inputImage with");
-  parser.addOptionalParameter("tr", "testRadius", cbica::Parameter::INTEGER, "0-10", "Maximum distance away to look for a matching pixel", "Defaults to 0");
-  parser.addOptionalParameter("tt", "testThresh", cbica::Parameter::FLOAT, "0-5", "Minimum threshold for pixels to be different", "Defaults to 0.0");
+  parser.addOptionalParameter("tr", "testRadius", cbica::Parameter::INTEGER, "0-10", "Maximum distance away to look for a matching pixel", "Defaults to " + std::to_string(testRadius));
+  parser.addOptionalParameter("tt", "testThresh", cbica::Parameter::FLOAT, "0-5", "Minimum threshold for pixels to be different", "Defaults to " + std::to_string(testThresh));
   parser.addOptionalParameter("hi", "histoMatch", cbica::Parameter::FILE, "NIfTI Target", "Match inputImage with the file provided in with this parameter", "Pass the target image after '-hi'");
-  parser.addOptionalParameter("hb", "hMatchBins", cbica::Parameter::INTEGER, "1-1000", "Number of histogram bins for histogram matching", "Only used for histoMatching", "Defaults to 100");
-  parser.addOptionalParameter("hq", "hMatchQnts", cbica::Parameter::INTEGER, "1-1000", "Number of quantile values to match for histogram matching", "Only used for histoMatching", "Defaults to 40");
+  parser.addOptionalParameter("hb", "hMatchBins", cbica::Parameter::INTEGER, "1-1000", "Number of histogram bins for histogram matching", "Only used for histoMatching", "Defaults to " + std::to_string(histoMatchBins));
+  parser.addOptionalParameter("hq", "hMatchQnts", cbica::Parameter::INTEGER, "1-1000", "Number of quantile values to match for histogram matching", "Only used for histoMatching", "Defaults to " + std::to_string(histoMatchQuantiles));
   parser.addOptionalParameter("utB", "unitTestBuffer", cbica::Parameter::STRING, "N.A.", "Buffer test of application");
   parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization");
   parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: 5,95");
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
   parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
+  parser.addOptionalParameter("n3", "n3BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N3 bias correction", "Optional parameters: mask or bins, iterations, fitting levels");
+  parser.addOptionalParameter("n3I", "n3BiasIter", cbica::Parameter::INTEGER, "N.A.", "Number of iterations the algorithm needs to run for", "Defaults to " + std::to_string(n3Bias_iterations));
+  parser.addOptionalParameter("n3F", "n3BiasFitLevl", cbica::Parameter::INTEGER, "N.A.", "Number of fitting levels the algorithm needs obtain", "Defaults to " + std::to_string(n3Bias_fittingLevels));
+  parser.addOptionalParameter("n3B", "n3BiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3 Bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(n3Bias_otsuBins));
 
   /// unit testing
   if (parser.isPresent("utB"))
@@ -709,6 +625,29 @@ int main(int argc, char** argv)
     }
 
     requestedAlgorithm = ChangeValue;
+  }
+
+  if (parser.isPresent("n3"))
+  {
+    /*
+  parser.addOptionalParameter("n3I", "n3BiasIter", cbica::Parameter::INTEGER, "N.A.", "Number of iterations the algorithm needs to run for", "Defaults to " + std::to_string(n3Bias_iterations));
+  parser.addOptionalParameter("n3F", "n3BiasFitLevl", cbica::Parameter::INTEGER, "N.A.", "Number of fitting levels the algorithm needs obtain", "Defaults to " + std::to_string(n3Bias_fittingLevels));
+  parser.addOptionalParameter("n3B", "n3BiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3 Bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(n3Bias_otsuBins));
+    */
+    if (parser.isPresent("n3I"))
+    {
+      parser.getParameterValue("n3I", n3Bias_iterations);
+    }
+    if (parser.isPresent("n3F"))
+    {
+      parser.getParameterValue("n3F", n3Bias_fittingLevels);
+    }
+    if (parser.isPresent("n3B"))
+    {
+      parser.getParameterValue("n3B", n3Bias_otsuBins);
+    }
+
+    requestedAlgorithm = BiasCorrectionN3;
   }
 
   // this doesn't need any template initialization

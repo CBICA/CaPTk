@@ -256,15 +256,15 @@ void fRecurrenceDialog::CheckForDisclaimer()
 
     ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    if (std::system((link).c_str()) != 0)
+    if /*(std::system((link).c_str()) != 0)*/ (!openLink("ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/RecurrenceEstimator_PretrainedModel.zip"))
     {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified model.");
+      ShowErrorMessage("CaPTk couldn't open the browser to download specified model.", this);
       return;
     }
     else
     {
-      std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
-      ShowMessage(dataMessage, this, "Saved");
+      //std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
+      //ShowMessage(dataMessage, this, "Saved");
       return;
     }
   }

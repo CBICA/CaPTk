@@ -15,6 +15,8 @@ ENDIF()
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
+MESSAGE( STATUS "Adding ITK-4.13.1 ...")
+
 ExternalProject_Add( 
   ITK
   DEPENDS ${ITK_DEPENDS}
@@ -26,7 +28,7 @@ ExternalProject_Add(
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
   #BUILD_COMMAND ""
-  INSTALL_COMMAND ""
+  #INSTALL_COMMAND ""
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
     ${ep_common_args}   
@@ -56,7 +58,7 @@ ExternalProject_Add(
     -DModule_ITKVtkGlue:BOOL=ON # [VTK] dependency
     -DVTK_DIR:PATH=${VTK_DIR} # [VTK] dependency
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE} # toggle for type of build if something different that 
-    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/install
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
 )
 
 SET( ITK_DIR ${CMAKE_BINARY_DIR}/ITK-build )

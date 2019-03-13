@@ -33,8 +33,7 @@ find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 function(macdeployqt target)
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND "${MACDEPLOYQT_EXECUTABLE}"
-            \"${CMAKE_BINARY_DIR}/${target}.app\"
-            -always-overwrite -dmg
+            \"${CMAKE_BINARY_DIR}/${target}.app\" -always-overwrite
         COMMENT "Deploying Qt..."
     )
 endfunction()

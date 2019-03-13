@@ -9,6 +9,7 @@
 //#include "CAPTk.h"
 
 #include "vtkFileOutputWindow.h"
+#include "itkFileOutputWindow.h"
 //#include "vtkOutputWindow"
 
 #include "cbicaCmdParser.h"
@@ -49,6 +50,16 @@ void setStyleSheet(const std::string &styleFileName = CAPTK_STYLESHEET_FILE)
   }
 }
 
+void echoCWLFiles(std::vector< std::string > inputCWLFiles)
+{
+  std::cout << "Availble CWL applications (refer to individual CLI usage): \n\n";
+  for (size_t i = 0; i < inputCWLFiles.size(); i++)
+  {
+    auto cwlFileBase = cbica::getFilenameBase(inputCWLFiles[i]);
+    std::cout << "\t" << cwlFileBase << "\n";
+  }
+}
+
 #ifdef _WIN32
 // ensures no console pops up when launching the program
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCmdLine, int nShowCmd)
@@ -60,24 +71,13 @@ int main(int argc, char** argv)
 {
 #endif
 
-  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
+  std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
 
-  #if __APPLE__
-  // this->
-  QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-  #endif
+  // this is used to populate the available CWL files for the cli
+  auto cwlFiles = cbica::getCWLFilesInApplicationDir();
 
-  //! Support for High DPI monitors..works on windows but still some menu issues are seen
-  //! Needs to be tested on Linux and Mac
-  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
-  QApplication app(argc, argv);
-
-  //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
-  cbica::setEnvironmentVariable("QT_OPENGL", "software");
-  
   // parse the command line
-  auto parser = cbica::CmdParser(argc, argv);
+  auto parser = cbica::CmdParser(argc, argv, "CaPTk");
   parser.ignoreArgc1();
 
   parser.addOptionalParameter("i", "images", cbica::Parameter::FILE, "NIfTI or DICOM", "Input coregistered image(s) to load into CaPTk", "Multiple images are delineated using ','");
@@ -86,23 +86,51 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ts", "tissuePt", cbica::Parameter::FILE, ".txt", "Tissue Point file for the image(s) being loaded");
   parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
   
-  // parser.addOptionalParameter("de", "direction", cbica::Parameter::STRING, "", "Calls Directionality Estimator CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("eg", "egfrviii", cbica::Parameter::STRING, "", "Calls EGFRvIII PHI Calculator CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("fe", "feature", cbica::Parameter::STRING, "", "Calls Feature Extractor CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("ge", "geodesic", cbica::Parameter::STRING, "", "Calls Geodesic Segmentation CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("is", "imgsub", cbica::Parameter::STRING, "", "Calls Imaging SubType CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("ms", "molsub", cbica::Parameter::STRING, "", "Calls Molecular SubType CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("pa", "population", cbica::Parameter::STRING, "", "Calls Population Atlas CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("re", "recurrence", cbica::Parameter::STRING, "", "Calls Recurrence Estimator CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("ss", "sbrtSeg", cbica::Parameter::STRING, "", "Calls SBRT Segmentation CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("sa", "sbrtAna", cbica::Parameter::STRING, "", "Calls SBRT Analyze CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("su", "survival", cbica::Parameter::STRING, "", "Calls Survival Predictor CLI", "This needs to be passed first (before any images/masks)");
-  // parser.addOptionalParameter("ws", "whites", cbica::Parameter::STRING, "", "Calls WhiteStripe CLI", "This needs to be passed first (before any images/masks)");
-  
   parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
-
-  std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
   
+  // check for CWL command coming in through the command line after "CaPTk"
+  if (cmd_inputs.empty() && (argc > 1))
+  {
+    for (auto & file : cwlFiles)
+    {
+      auto cwlFileBase = cbica::getFilenameBase(file);
+      std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
+      auto argv_1 = std::string(argv[1]);
+      std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
+
+      // Check for filename without cwl extension
+      if (cwlFileBase.find(argv_1) != std::string::npos)
+      {
+        // Get base command
+        //std::ofstream selected_file;
+        //selected_file.open(file.c_str());
+        auto config = YAML::LoadFile(file);
+        // Get all args passed to application
+        std::string argv_complete;
+        for (size_t i = 2; i < argc; i++) // 2 because the argv[1] is always the "application"
+        {
+          argv_complete += " " + std::string(argv[i]);
+        }
+        // Pass them in
+        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
+      }
+    }
+  }
+
+  if (parser.isPresent("u", false))
+  {
+    parser.echoUsage();
+    echoCWLFiles(cwlFiles);
+    return EXIT_SUCCESS;
+  }
+
+  if (parser.isPresent("h", false))
+  {
+    parser.echoHelp();
+    echoCWLFiles(cwlFiles);
+    return EXIT_SUCCESS;
+  }
+
   if (parser.isPresent("i"))
   {
     parser.getParameterValue("i", cmd_inputs);
@@ -120,29 +148,22 @@ int main(int argc, char** argv)
     parser.getParameterValue("ts", cmd_tissue);
   }
 
-  // check for CWL command coming in through the command line after "CaPTk"
-  if (cmd_inputs.empty() && (argc > 1))
-  {
-    for (auto & file : cbica::getCWLFilesInApplicationDir()) 
-    {
-      // Check for filename without cwl extension
-      if (argv[1] == file.substr(0, file.size() - 4)) 
-      {
-        // Get base command
-        std::ofstream selected_file;
-        selected_file.open(file.c_str());
-        YAML::Node config = YAML::LoadFile(file);
-        // Get all args passed to application
-        std::string argv_complete;        
-        for (size_t i = 1; i < argc; i++)
-        {
-          argv_complete += " " + std::string(argv[i]);
-        }
-        // Pass them in
-        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
-      }
-    }
-  }
+  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
+
+#if __APPLE__
+  // this->
+  QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
+
+  //! Support for High DPI monitors..works on windows but still some menu issues are seen
+  //! Needs to be tested on Linux and Mac
+  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+
+  QApplication app(argc, argv);
+
+  //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
+  cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
   ///// debug
   //HANDLE hLogFile;
@@ -158,139 +179,6 @@ int main(int argc, char** argv)
   //_CrtSetReportFile(_CRT_ASSERT, hLogFile);
   ///// debug
 
-  // if (parser.isPresent("de"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("de", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("DirectionalityEstimate") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("eg"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("eg", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("EGFRvIIISurrogateIndex") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("fe"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("fe", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("FeatureExtraction") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("ge"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("ge", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("GeodesicSegmentation") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("is"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("is", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("ImagingSubtypePredictor") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("ms"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("ms", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("MolecularSubtypePredictor") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("pa"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("pa", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("PopulationAtlases") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("re"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("re", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("RecurrenceEstimator") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("ss"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("ss", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("SBRT_Lung_Segment") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("sa"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("sa", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("SBRT_Lung_Analyze") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("su"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("su", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("SurvivalPredictor") + argv_complete).c_str());
-  // }
-  // else if (parser.isPresent("ws"))
-  // {
-  //   int temp;
-  //   parser.compareParameter("ws", temp);
-  //   std::string argv_complete;
-  //   for (size_t i = temp + 1; i < argc; i++)
-  //   {
-  //     argv_complete = argv_complete + " " + std::string(argv[i]);
-  //   }
-  //   return std::system((getApplicationPath("WhiteStripe") + argv_complete).c_str());
-  // }
-
   //vtkOpenGLRenderWindow::SetGlobalMaximumNumberOfMultiSamples(0);
 
   //auto defaultFormat = QVTKOpenGLWidget::defaultFormat();
@@ -303,6 +191,12 @@ int main(int argc, char** argv)
   auto fileOutputWindow = vtkSmartPointer< vtkFileOutputWindow >::New();
   fileOutputWindow->SetFileName((loggerFolderBase + "vtk_errors.txt").c_str());
   vtkOutputWindow::SetInstance(fileOutputWindow);
+
+  //! redirect the itk output window contents to file
+  auto itkOutputWindow = itk::FileOutputWindow::New();
+  itkOutputWindow->SetFileName((loggerFolderBase + "itk_errors.txt").c_str());
+  itkOutputWindow->FlushOn();
+  itk::OutputWindow::SetInstance(itkOutputWindow);
 
   fMainWindow window; // initialize main app
   if (parser.isPresent("a"))

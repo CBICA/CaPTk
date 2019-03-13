@@ -11,6 +11,7 @@ INCLUDE_DIRECTORIES(
 SET( TEST_EXE_NAME CaPTk_Tests )
 
 SET( TESTING_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/TestData )
+ADD_DEFINITIONS( -DTEST_DATA_DIR=${TESTING_DATA_DIR} )
 
 IF( NOT EXISTS "${TESTING_DATA_DIR}" )  
   
@@ -150,7 +151,7 @@ IF(WIN32)
   ADD_TEST(NAME DeepMedicTest COMMAND DeepMedic -t1 ${TESTING_DATA_DIR}/deepmedic/ -t1c ${TESTING_DATA_DIR}/deepmedic/ -t2 ${TESTING_DATA_DIR}/deepmedic/ -fl ${TESTING_DATA_DIR}/deepmedic/ -o ${TESTING_OUTPUT_DIR}/deepmedic/ )
 ENDIF()
 
-# Diffusion Derivatives !!
+# Diffusion Derivatives (Incomplete)
 
 ADD_TEST(NAME DiffusionDerivativesHelpTest COMMAND DiffusionDerivatives -h )
 ADD_TEST(NAME DiffusionDerivativesVersionTest COMMAND DiffusionDerivatives -v )
@@ -192,12 +193,12 @@ ADD_TEST(NAME FeatureExtractionFeatureMapsWriteTest COMMAND FeatureExtraction -n
 ADD_TEST(NAME FeatureExtractionHelpTest COMMAND FeatureExtraction -h )
 ADD_TEST(NAME FeatureExtractionVersionTest COMMAND FeatureExtraction -v )
 
-# Geodesic Segmentation Tests !!
+# Geodesic Segmentation Tests (Incomplete)
 
 ADD_TEST(NAME GeodesicSegmentationHelpTest COMMAND GeodesicSegmentation -h )
 ADD_TEST(NAME GeodesicSegmentationVersionTest COMMAND GeodesicSegmentation -v )
 
-# Greedy Registration Tests !!
+# Greedy Registration Tests (Incomplete)
 
 # -reg -trf -i moving.nii.gz -f fixed.nii.gz -o output.nii.gz -t matrix.mat -a -m MI -n 100x50x5 -th 4
 
@@ -235,7 +236,7 @@ ADD_TEST(NAME PerfusionDerivativesEcho10Test COMMAND PerfusionDerivatives -i ${T
 ADD_TEST(NAME PerfusionDerivativesHelpTest COMMAND PerfusionDerivatives -h )
 ADD_TEST(NAME PerfusionDerivativesVersionTest COMMAND PerfusionDerivatives -v )
 
-# Perfusion PCA Tests !!
+# Perfusion PCA Tests (Incomplete)
 
 ADD_TEST(NAME PerfusionPCAHelpTest COMMAND PerfusionPCA -h )
 ADD_TEST(NAME PerfusionPCAVersionTest COMMAND PerfusionPCA -v )
@@ -322,7 +323,8 @@ ADD_TEST(NAME WhiteStripeVersionTest COMMAND WhiteStripe -v )
 ##
 
 # Utilities Test-1
-ADD_TEST(NAME UtilitiesTestHistoMatch COMMAND CaPTk_Utilities -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -o ${TESTING_OUTPUT_DIR}/histoMatch.nii.gz -hm 40 -hl 120 )
+# CaPTk Utilities not created
+# ADD_TEST(NAME UtilitiesTestHistoMatch COMMAND CaPTk_Utilities -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -o ${TESTING_OUTPUT_DIR}/histoMatch.nii.gz -hm 40 -hl 120 )
 
 # buffer test
 ADD_TEST(NAME BufferTest COMMAND ${TEST_EXE_NAME} --bufferTest "random" )

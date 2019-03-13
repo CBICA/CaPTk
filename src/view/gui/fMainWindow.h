@@ -61,6 +61,15 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
 
+#include <atomic>
+
+#include "GeodesicTrainingCaPTkApp.h"
+
+#include <QMessageBox>
+
+#include "itkJoinSeriesImageFilter.h"
+#include "itkExtractImageFilter.h"
+
 #include "QVTKOpenGLWidget.h"
 #include <QScopedPointer>
 #include "vtkGenericOpenGLRenderWindow.h"
@@ -275,6 +284,7 @@ private:
   QAction *actionLoad_Recurrence_Images;
   QAction *actionLoad_Nifti_Images;
   QAction *actionLoad_Nifti_ROI;
+  QAction *actionLoad_Dicom_Images;
 
 
   QAction *actionSave_Nifti_Images;
@@ -290,6 +300,7 @@ private:
   QAction *actionAppEGFR;
   QAction *actionAppRecurrence;
   QAction *actionAppGeodesic;
+  QAction *actionAppGeodesicTraining;
 
   // obtain list from CMake variables using populateStringListInMenu() function
   std::vector< std::string >
@@ -732,7 +743,7 @@ signals:
   \param outputImageFile The output file to save 
   */
   void CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask, const std::string inputImageFile, const std::string outputImageFile);
-  void CallPCACalculation(const int, const std::string outputFolder);
+  void CallPCACalculation(const int, const std::string inputFolder, const std::string outputFolder);
   void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
   void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
   void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int, int, int);
@@ -840,28 +851,23 @@ signals:
   {
     auto currentApp = action->text().toStdString();
     std::string path = getCaPTkDataDir();
+    auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
     std::string link =
 #ifdef _WIN32
       path + "/GnuWin32/bin/wget.exe"
 #else
       "wget"
 #endif
-      + std::string(" ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/") + currentApp + ".zip" +
+      + currentLink +
       " -O " + captk_SampleDataFolder + "/" + currentApp + ".zip";
 
     cbica::Logging(loggerFile, link);
 
-    ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
+    //ShowMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    if (std::system((link).c_str()) != 0)
+    if /*(std::system((link).c_str()) != 0)*/(!openLink(currentLink))
     {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.");
-      return;
-    }
-    else
-    {
-      std::string dataMessage = "Data has been saved to: " + captk_SampleDataFolder;
-      ShowMessage(dataMessage, this);
+      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
       return;
     }
   }
@@ -877,6 +883,11 @@ signals:
   \brief Open Nifti image functionality. Shows dialog to select nifti files
   */
   void openImages(QStringList files = QStringList(), bool callingFromCmd = false);
+
+  /**
+  \brief Open Dicom image functionality. Shows dialog to select Dicom files
+  */
+  void openDicomImages(QString dir);
 
   /**
   \brief Function called when the sliders of axial view is changed
@@ -1189,6 +1200,7 @@ signals:
   void MoveSlicerCursor(double x, double y, double z, int mode = 0);
 
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForSurvival (const std::string directoryname);
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useConventionalData, const bool &useDTIData, const bool &usePerfData, const bool &useDistData);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForRecurrence(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useT1Data, const bool &useDTIData, const bool &usePerfData, const bool &useDistData);
   /**
@@ -1273,8 +1285,8 @@ signals:
 #ifdef BUILD_GEODESIC
   void ApplicationGeodesic();
 #endif
-#ifdef BUILD_GEODESICTRAIN
-  void ApplicationGeoTrain();
+#ifdef BUILD_GEODESICTRAINING
+  void ApplicationGeodesicTraining();
 #endif
   void ApplicationGeodesicTreshold();
 #ifdef BUILD_ITKSNAP
@@ -1297,6 +1309,9 @@ signals:
   void ClassifierTraining();
   void ApplicationDeepMedicSegmentation();
   void ApplicationTheia();
+
+  void GeodesicTrainingFinishedHandler();
+  void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
   void Registration(std::string fixedfilename, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
 
@@ -1385,13 +1400,21 @@ public:
 
   int mSequenceNumber, mCustomImageToThreshold_min, mCustomImageToThreshold_max;
 
-  private:
-    ImageTypeFloat3D::Pointer m_InputGeomasks;
-    ImageTypeShort3D::Pointer m_imgGeodesicOut;
-    ImageTypeShort3D::Pointer m_imgGeodesicOutPositive;
-    ImageTypeShort3D::Pointer m_imgGeodesicOutNegative;
-    std::map<std::string, float> m_fetalbrainfeatures;
-    int m_fetalslice;
+private:
+  ImageTypeFloat3D::Pointer m_InputGeomasks;
+  ImageTypeShort3D::Pointer m_imgGeodesicOut;
+  ImageTypeShort3D::Pointer m_imgGeodesicOutPositive;
+  ImageTypeShort3D::Pointer m_imgGeodesicOutNegative;
+  std::map<std::string, float> m_fetalbrainfeatures;
+  int m_fetalslice;
+
+  // GeodesicTraining private variables
+	GeodesicTrainingCaPTkApp<2>* m_GeodesicTrainingCaPTkApp2D;
+  GeodesicTrainingCaPTkApp<3>* m_GeodesicTrainingCaPTkApp3D;
+	std::string m_GeodesicTrainingFirstFileNameFromLastExec = "";
+  bool m_IsGeodesicTrainingRunning = false;
+
+	std::thread m_ExternalProcessThread;
 
     struct DicomDictTagAndVal
     {
@@ -1412,9 +1435,14 @@ public:
       }
     };
 
-    bool m_skipTutorialOnNextRun = false;
+	void RegistrationWorker(std::vector<std::string> compVector, std::vector<std::string> inputFileNames,
+		std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames);
 
-    int startExternalProcess(const QString &application, const QStringList &arguments);
+  bool m_skipTutorialOnNextRun = false;
+
+  std::atomic<int> m_NumberOfUnfinishedExternalProcesses = {0};
+
+  int  startExternalProcess(const QString &application, const QStringList &arguments);
 };
 #if __GNUC__
 #pragma GCC visibility pop
