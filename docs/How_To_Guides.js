@@ -1,0 +1,7 @@
+var How_To_Guides =
+[
+    [ "Pre-processing", "ht_Preprocessing.html", "ht_Preprocessing" ],
+    [ "Segmentation", "ht_Segmentation.html", null ],
+    [ "Feature Extraction", "ht_FeatureExtraction.html", null ],
+    [ "Specialized Applications (SAs) Usage", "ht_SpecialApps.html", "ht_SpecialApps" ]
+];
