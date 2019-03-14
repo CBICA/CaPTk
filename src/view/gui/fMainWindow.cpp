@@ -4079,6 +4079,21 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
 }
 void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputdirectory)
 {
+  if (!cbica::isDir(inputdirectory))
+  {
+    ShowErrorMessage("Input directory passed is not a valid directory, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputlabel))
+  {
+    ShowErrorMessage("Input Label passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputatlas))
+  {
+    ShowErrorMessage("Input Atlas passed is not a valid file, please re-check", this);
+    return;
+  }
   std::vector<typename ImageTypeFloat3D::Pointer> atlases = mPopulationAtlas.GeneratePopualtionAtlas(inputdirectory, inputlabel, inputatlas, outputdirectory);
   if (mPopulationAtlas.mLastErrorMessage.empty() && atlases.size() > 0)
   {
@@ -6628,6 +6643,21 @@ void fMainWindow::CallImageSkullStripping(const std::string referenceAtlas, cons
   const std::string inputImageFile, const std::string outputImageFile)
 {
   ShowErrorMessage("Skull Stripping takes a long time to run, during which CaPTk will not be responsive.", this, "Long Running Application");
+  if (!cbica::isFile(referenceAtlas))
+  {
+    ShowErrorMessage("Reference Atlas is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(referenceMask))
+  {
+    ShowErrorMessage("Reference Mask is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputImageFile))
+  {
+    ShowErrorMessage("Input Image is not a valid file, please re-check", this);
+    return;
+  }
   auto referenceAtlasImage = cbica::ReadImage< ImageTypeFloat3D >(referenceAtlas);
   auto referenceAtlasMaskImage = cbica::ReadImage< ImageTypeFloat3D >(referenceMask);
   auto inputImageImage = cbica::ReadImage< ImageTypeFloat3D >(inputImageFile);
@@ -7284,6 +7314,16 @@ void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, con
 {
   if (!inputImage.empty() && !maskImage.empty() && !outputImageFile.empty())
   {
+    if (!cbica::isFile(maskImage))
+    {
+      ShowErrorMessage("Mask Image passed is not a valid file, please re-check", this);
+      return;
+    }
+    if (!cbica::isFile(inputImage))
+    {
+      ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
+      return;
+    }
     auto input = cbica::ReadImage< ImageTypeFloat3D >(inputImage);
     auto mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
 
@@ -7321,6 +7361,26 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
   typedef itk::Image<float, 3> ScalarImageType;
   std::vector<ScalarImageType::Pointer> diffusionDerivatives;
 
+  if (!cbica::isFile(BVecFile))
+  {
+    ShowErrorMessage("BVec passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(BValFile))
+  {
+    ShowErrorMessage("BVal passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(maskImage))
+  {
+    ShowErrorMessage("Mask Image is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputImage))
+  {
+    ShowErrorMessage("Input Image is not a valid file, please re-check", this);
+    return;
+  }
   diffusionDerivatives = m_diffusionderivatives.Run(inputImage, maskImage, BValFile, BVecFile, outputFolder);
   //fa,tr, rad , ax
   if (fa == true)
@@ -7338,6 +7398,11 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
 }
 void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
 {
+  if (!cbica::isFile(inputfilename))
+  {
+    ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
+    return;
+  }
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
