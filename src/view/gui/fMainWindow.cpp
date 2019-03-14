@@ -1466,47 +1466,56 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     else if (!bFirstLoad)
     {
       {
-        auto temp = cbica::normPath(m_tempFolderLocation + "/temp.nii.gz");
-        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp);
-        auto imageInfoPrev = cbica::ImageInfo(temp);
-        auto sizePrev = imageInfoPrev.GetImageSize();
-        auto size = imageInfo.GetImageSize();
-        const std::string errorMsg = " not matching. Please register the image(s). Skipping file: ";
-        for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+        auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
+        if (!cbica::ImageSanityCheck(fname, temp_prev))
         {
-          if (sizePrev[i] != size[i])
-          {
-            updateProgress(0, "Size" + errorMsg + fname);
-            ShowErrorMessage("Size" + errorMsg + fname);
-            return; //
-          }
-        }
-        auto spacingPrev = imageInfoPrev.GetImageSpacings();
-        auto spacing = imageInfo.GetImageSpacings();
-        for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
-        {
-          if (spacing[i] != spacingPrev[i])
-          {
-            updateProgress(0, "Spacing" + errorMsg + fname);
-            ShowErrorMessage("Spacing" + errorMsg + fname);
-            return; //
-          }
-        }
-        auto originPrev = imageInfoPrev.GetImageOrigins();
-        auto origin = imageInfo.GetImageOrigins();
-        if (!m_advancedVisualizer)
-        {
-          for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
-          {
-            if (origin[i] != originPrev[i])
-            {
-              updateProgress(0, "Origin" + errorMsg + fname);
-              ShowErrorMessage("Origin" + errorMsg + fname);
-              return; //
-            }
-          }
+          ShowErrorMessage("The physical dimensions of the previously loaded image and current image are inconsistent; cannot load");
+          return;
         }
       }
+      //{
+      //  auto temp = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+      //  cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp);
+      //  auto imageInfoPrev = cbica::ImageInfo(temp);
+      //  auto sizePrev = imageInfoPrev.GetImageSize();
+      //  auto size = imageInfo.GetImageSize();
+      //  const std::string errorMsg = " not matching. Please register the image(s). Skipping file: ";
+      //  for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+      //  {
+      //    if (sizePrev[i] != size[i])
+      //    {
+      //      updateProgress(0, "Size" + errorMsg + fname);
+      //      ShowErrorMessage("Size" + errorMsg + fname);
+      //      return; //
+      //    }
+      //  }
+      //  auto spacingPrev = imageInfoPrev.GetImageSpacings();
+      //  auto spacing = imageInfo.GetImageSpacings();
+      //  for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+      //  {
+      //    if (spacing[i] != spacingPrev[i])
+      //    {
+      //      updateProgress(0, "Spacing" + errorMsg + fname);
+      //      ShowErrorMessage("Spacing" + errorMsg + fname);
+      //      return; //
+      //    }
+      //  }
+      //  auto originPrev = imageInfoPrev.GetImageOrigins();
+      //  auto origin = imageInfo.GetImageOrigins();
+      //  if (!m_advancedVisualizer)
+      //  {
+      //    for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+      //    {
+      //      if (origin[i] != originPrev[i])
+      //      {
+      //        updateProgress(0, "Origin" + errorMsg + fname);
+      //        ShowErrorMessage("Origin" + errorMsg + fname);
+      //        return; //
+      //      }
+      //    }
+      //  }
+      //}
 
       if (bSkipDup)
       {
@@ -2896,6 +2905,15 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     else
     {
+      {
+        auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
+        if (!cbica::ImageSanityCheck(maskFileName, temp_prev))
+        {
+          ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
+          return;
+        }
+      }
       using ImageType = itk::Image<unsigned int, 3>;
       auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName);
       inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
