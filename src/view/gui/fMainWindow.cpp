@@ -7251,6 +7251,16 @@ void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, c
 {
   if (!referenceImage.empty() && !inputImageFile.empty() && !outputImageFile.empty())
   {
+    if (!cbica::isFile(referenceImage))
+    {
+      ShowErrorMessage("Reference Image is not a valid file, please re-check", this);
+      return;
+    }
+    if (!cbica::isFile(inputImageFile))
+    {
+      ShowErrorMessage("Input Image is not a valid file, please re-check", this);
+      return;
+    }
     auto referenceAtlasImage = cbica::ReadImage< ImageTypeFloat3D >(referenceImage);
     auto inputImageImage = cbica::ReadImage< ImageTypeFloat3D >(inputImageFile);
 
