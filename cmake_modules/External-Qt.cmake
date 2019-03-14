@@ -9,8 +9,6 @@ IF( ("${Qt5_DIR}" STREQUAL "") OR ("${Qt5_DIR}" STREQUAL "Qt5_DIR-NOTFOUND") OR 
   SET( QT_EXTRACTED_DIR "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}" )
   SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/qt/${QT_VERSION}" )
 
-  MESSAGE( STATUS "Adding pre-compiled Qt-${QT_VERSION} ...")
-
   IF( NOT EXISTS "${QT_EXTRACTED_DIR}" )
     FILE(MAKE_DIRECTORY "${QT_EXTRACTED_DIR}" )
   ENDIF()

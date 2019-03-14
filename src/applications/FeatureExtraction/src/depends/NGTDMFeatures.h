@@ -120,8 +120,8 @@ public:
         }
       }
 
-      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
-      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
 
       /// histogram calculation from ITK -- for texture feature pipeline
       using TMaskImageType = itk::Image< int, TImageType::ImageDimension >;
@@ -136,13 +136,13 @@ public:
       stats->SetUseHistograms(true);
       stats->SetHistogramParameters(m_bins, m_minimum, m_maximum);
       stats->Update();
-      std::cout << "\n[DEBUG] NGTDMFeatures.h - itk::LabelStatisticsImageFilter->SetHistogramParameters: (m_bins=" << m_bins << " | m_minimum=" << m_minimum << " | m_maximum=" << m_maximum << ")" << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - itk::LabelStatisticsImageFilter->SetHistogramParameters: (m_bins=" << m_bins << " | m_minimum=" << m_minimum << " | m_maximum=" << m_maximum << ")" << std::endl;
 
       m_histogram = stats->GetHistogram(1); //Get Histogram for the label value one
 
       m_radius.Fill(m_range);
 
-      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_range = " << m_range << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_range = " << m_range << std::endl;
 
       using NeighborhoodType = itk::NeighborhoodIterator< TImageType, itk::ConstantBoundaryCondition< TImageType > >;
       //using NeighborhoodType = itk::NeighborhoodIterator< TImageType >;
@@ -211,7 +211,7 @@ public:
         sumStimesP += pVector[i] * sVector[i];
 
         //TBD - for debugging NGTDM matrix
-        std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - bin[" << i << "] | p[" << i << "] * s[" << i << "] = " << pVector[i] << " * " << sVector[i] << " = " << (pVector[i] * sVector[i]) << std::endl;
+        //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - bin[" << i << "] | p[" << i << "] * s[" << i << "] = " << pVector[i] << " * " << sVector[i] << " = " << (pVector[i] * sVector[i]) << std::endl;
         //TBD - for debugging NGTDM matrix
 
         for (unsigned int j = 0; j < m_bins; ++j)
@@ -251,11 +251,11 @@ public:
       this->m_features["Complexity"] = complexity;
       this->m_features["Strength"] = strength;
 
-      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Coarsness = " << coarsness << std::endl;
-      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Contrast = " << contrast << std::endl;
-      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Busyness = " << busyness << std::endl;
-      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Complexity = " << complexity << std::endl;
-      std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Strength = " << strength << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Coarsness = " << coarsness << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Contrast = " << contrast << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Busyness = " << busyness << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Complexity = " << complexity << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - Strength = " << strength << std::endl;
 
 
       this->m_algorithmDone = true;
