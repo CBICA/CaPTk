@@ -315,7 +315,44 @@ namespace cbica
   }
 
   /**
-  \brief Check properties of 2 images to see if they are defined in the same space, etc.
+  \brief Check properties of 2 images to see if they are defined in the same space.
+  */
+  template< typename TImageType >
+  inline bool ImageSanityCheck(const typename TImageType::Pointer image1, const typename TImageType::Pointer image2)
+  {
+    auto size_1 = image1->GetLargestPossibleRegion().GetSize();
+    auto size_2 = image2->GetLargestPossibleRegion().GetSize();
+
+    auto origin_1 = image1->GetOrigin();
+    auto origin_2 = image2->GetOrigin();
+
+    auto spacing_1 = image1->GetSpacing();
+    auto spacing_2 = image2->GetSpacing();
+
+    for (size_t i = 0; i < TImageType::ImageDimension; i++)
+    {
+      if (size_1[i] != size_2[i])
+      {
+        std::cerr << "Size mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+      if (origin_1[i] != origin_2[i])
+      {
+        std::cerr << "Origin mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+      if (spacing_1[i] != spacing_2[i])
+      {
+        std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+  \brief Check properties of 2 images to see if they are defined in the same space.
 
   Checks are done based on cbica::ImageInfo class
   */
