@@ -111,7 +111,7 @@ public:
     sizePolicy.setHeightForWidth(inputImageLabel->sizePolicy().hasHeightForWidth());
     inputImageLabel->setSizePolicy(sizePolicy);
 
-    inputImageName = new QLineEdit(" ");
+    inputImageName = new QLineEdit("");
     inputImageName->setObjectName(QString::fromUtf8("inputImageName"));
     sizePolicy.setHeightForWidth(inputImageName->sizePolicy().hasHeightForWidth());
     inputImageName->setSizePolicy(sizePolicy);
@@ -136,7 +136,7 @@ public:
     sizePolicy.setHeightForWidth(maskImageLabel->sizePolicy().hasHeightForWidth());
     maskImageLabel->setSizePolicy(sizePolicy);
 
-    maskImageName = new QLineEdit(" ");
+    maskImageName = new QLineEdit("");
     maskImageName->setObjectName(QString::fromUtf8("maskImageName"));
     sizePolicy.setHeightForWidth(maskImageName->sizePolicy().hasHeightForWidth());
     maskImageName->setSizePolicy(sizePolicy);
@@ -163,7 +163,7 @@ public:
     sizePolicy.setHeightForWidth(options_quantileLowerLabel->sizePolicy().hasHeightForWidth());
     options_quantileLowerLabel->setSizePolicy(sizePolicy);
     options_quantileLowerLabel->setText("Quantalization Lower");
-    options_quantileLowerName = new QLineEdit(" ");
+    options_quantileLowerName = new QLineEdit("");
     options_quantileLowerName->setObjectName(QString::fromUtf8("options_quantileLowerName"));
     sizePolicy.setHeightForWidth(options_quantileLowerName->sizePolicy().hasHeightForWidth());
     options_quantileLowerName->setSizePolicy(sizePolicy);
@@ -178,7 +178,7 @@ public:
     sizePolicy.setHeightForWidth(options_quantileUpperLabel->sizePolicy().hasHeightForWidth());
     options_quantileUpperLabel->setSizePolicy(sizePolicy);
     options_quantileUpperLabel->setText("Quantalization Upper");
-    options_quantileUpperName = new QLineEdit(" ");
+    options_quantileUpperName = new QLineEdit("");
     options_quantileUpperName->setObjectName(QString::fromUtf8("options_quantileUpperName"));
     sizePolicy.setHeightForWidth(options_quantileUpperName->sizePolicy().hasHeightForWidth());
     options_quantileUpperName->setSizePolicy(sizePolicy);
@@ -194,7 +194,7 @@ public:
     sizePolicy.setHeightForWidth(options_cutoffLowerLabel->sizePolicy().hasHeightForWidth());
     options_cutoffLowerLabel->setSizePolicy(sizePolicy);
     options_cutoffLowerLabel->setText("Cut-Off Lower");
-    options_cutoffLowerName = new QLineEdit(" ");
+    options_cutoffLowerName = new QLineEdit("");
     options_cutoffLowerName->setObjectName(QString::fromUtf8("options_cutoffLowerName"));
     sizePolicy.setHeightForWidth(options_cutoffLowerName->sizePolicy().hasHeightForWidth());
     options_cutoffLowerName->setSizePolicy(sizePolicy);
@@ -210,7 +210,7 @@ public:
     sizePolicy.setHeightForWidth(options_cutoffUpperLabel->sizePolicy().hasHeightForWidth());
     options_cutoffUpperLabel->setSizePolicy(sizePolicy);
     options_cutoffUpperLabel->setText("Cut-Off Upper");
-    options_cutoffUpperName = new QLineEdit(" ");
+    options_cutoffUpperName = new QLineEdit("");
     options_cutoffUpperName->setObjectName(QString::fromUtf8("options_cutoffUpperName"));
     sizePolicy.setHeightForWidth(options_cutoffUpperName->sizePolicy().hasHeightForWidth());
     options_cutoffUpperName->setSizePolicy(sizePolicy);
@@ -239,7 +239,7 @@ public:
     sizePolicy.setHeightForWidth(outputImageLabel->sizePolicy().hasHeightForWidth());
     outputImageLabel->setSizePolicy(sizePolicy);
 
-    outputImageName = new QLineEdit(" ");
+    outputImageName = new QLineEdit("");
     outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
     sizePolicy.setHeightForWidth(outputImageName->sizePolicy().hasHeightForWidth());
     outputImageName->setSizePolicy(sizePolicy);
