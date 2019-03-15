@@ -265,6 +265,7 @@ namespace itk
               lastGoodIndex = index;
               index += offset;
               steps++;
+              //std::cout << "\n[DEBUG] - itkEnhancedScalarImageToRunLengthMatrixFilter.hxx - GenerateData() - pixelIntensity (" << pixelIntensity << ") : within Range [" << centerBinMin << ", " << centerBinMax << "] ( this->GetMaskImage()->GetPixel(" << index << ") = [" << this->GetMaskImage()->GetPixel(index) << "] - steps = " << steps << std::endl;
             }
             else
             {
@@ -274,7 +275,9 @@ namespace itk
 
           if (runLengthSegmentAlreadyVisited)
           {
-            //MITK_INFO << "Already visited 1 " << index;
+
+            std::cout << "Already visited 1 " << index << std::endl;
+
             continue;
           }
           IndexType lastGoodIndex2 = lastGoodIndex;
@@ -305,13 +308,14 @@ namespace itk
               lastGoodIndex = index;
               steps++;
               index -= offset;
+              std::cout << "\n[DEBUG] - itkEnhancedScalarImageToRunLengthMatrixFilter.hxx - GenerateData() - pixelIntensity (" << pixelIntensity << ") : within Range [" << centerBinMin << ", " << centerBinMax << "] - steps = " << steps << std::endl;
             }
             else
               break;
           }
           if (runLengthSegmentAlreadyVisited)
           {
-            //MITK_INFO << "Already visited 2 " << index;
+            std::cout << "Already visited 2 " << index << std::endl;
             continue;
           }
           PointType centerPoint;
@@ -346,6 +350,19 @@ namespace itk
                 << std::endl);
           }
         }
+        //TBD - to determine pre flattened matrix
+        for (int index_intensity = this->m_Min; index_intensity < this->m_Max; index_intensity++) {
+          run[0] = index_intensity;
+          for (int index_steps = this->m_MinDistance; index_steps < this->m_MaxDistance; index_steps++) {
+            run[1] = index_steps;
+            output->GetIndex(run, hIndex);
+            auto freq_temp = output->SetFrequencyOfIndex(hIndex, 1);
+            //if (freq_temp > 0) {
+            //  std::cout << "[DEBUG] - itkEnhancedScalarImageToRunLengthMatrixFilter.hxx - GenerateData - [Intensity, Steps, Frequency] = [" << run[0] << ",\t" << run[1] << ",\t" << freq_temp << "]" << std::endl;;
+            //}
+          }
+        }
+        //TBD - to determine pre flattened matrix
       }
     }
 

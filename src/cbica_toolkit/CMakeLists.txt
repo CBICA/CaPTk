@@ -7,17 +7,7 @@ INCLUDE( CaPTk_macros )
 
 CAPTK_INITIAL_SETUP()
 
-ADD_SUBDIRECTORY(src/IO)
-
 PROJECT( CaPTk_CBICATK )
-
-# FILE( GLOB sources "${PROJECT_SOURCE_DIR}/src/*.*" )
-
-# set( CBICA-TK_SOURCES
-# ${sources}
-# ${CaPTk_IO_HDRS}
-# ${CaPTk_IO_SRCS}
-# )
 
 FILE( GLOB_RECURSE sources_h "${PROJECT_SOURCE_DIR}/src/*.h" )
 FILE( GLOB_RECURSE sources_hxx "${PROJECT_SOURCE_DIR}/src/*.hxx" )
@@ -27,9 +17,9 @@ SET( CBICA-TK_SOURCES
   ${sources_h}
   ${sources_hxx}
   ${sources_cpp}
-  CACHE STRING "CBICA Toolkit sources" FORCE
 )
 
+SET( CBICA-TK_SOURCES ${CBICA-TK_SOURCES} CACHE STRING "CBICA Toolkit sources" FORCE )
 FILE( GLOB_RECURSE YAMLCPP_Headers "${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/includes/*.h")
 FILE( GLOB_RECURSE YAMLCPP_Headers_MORE "${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/src/*.h")
 FILE( GLOB_RECURSE YAMLCPP_Sources "${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/src/*.cpp")
