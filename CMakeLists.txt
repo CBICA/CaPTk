@@ -96,7 +96,7 @@ ENDIF()
 SET( PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
 IF (APPLE)
-  SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+  SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.app")
   # SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
 ELSE()
   SET( EXE_NAME "${PROJECT_NAME}" )
@@ -593,23 +593,23 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       IF (APPLE) 
         INSTALL( TARGETS Confetti
         BUNDLE DESTINATION .
-        RUNTIME DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-        LIBRARY DESTINATION ${EXE_NAME}.app/Contents/Resources/lib
+        RUNTIME DESTINATION ${EXE_NAME}/Contents/Resources/bin
+        LIBRARY DESTINATION ${EXE_NAME}/Contents/Resources/lib
         CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
         )
 
         INSTALL( TARGETS ConfettiCore
-        DESTINATION ${EXE_NAME}.app/Contents/Resources/lib
+        DESTINATION ${EXE_NAME}/Contents/Resources/lib
         )
 
         INSTALL( FILES ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/pyGUI/ConfettiCore.py
-          DESTINATION ${EXE_NAME}.app/Contents/Resources/libexec
+          DESTINATION ${EXE_NAME}/Contents/Resources/libexec
         )
 
         IF( NOT CAPTK_CLI_MODE )
           INSTALL( FILES ${INDIVIDUAL_APPLICATIONS_DIR}/confetti_source/pyGUI/ConfettiGUI.py
-            DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+            DESTINATION ${EXE_NAME}/Contents/Resources/bin
             #CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
           )
@@ -922,7 +922,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       SET_SOURCE_FILES_PROPERTIES(${dependent_lib} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
       SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${dependent_lib})
 
-      INSTALL(FILES "${dependent_lib}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
+      INSTALL(FILES "${dependent_lib}" DESTINATION ${EXE_NAME}/Contents/Resources/bin)
 
     ELSE()
       INSTALL(FILES "${dependent_lib}" DESTINATION bin)
@@ -1176,31 +1176,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-      # INCLUDE(CopyToMACOSX)
-      INCLUDE(ChmodFile)
-
-      # list(REVERSE STANDALONE_APPS_LIST)
-      # FOREACH(APPLICATION ${STANDALONE_APPS_LIST})
-      #   message(STATUS ${APPLICATION})
-      #   IF(EXISTS ${APPLICATION})
-      #     message(STATUS "COPY")
-
-      #     copyToMacOSX(${EXE_NAME} ${APPLICATION})
-      #   ELSE()
-      #     list(APPEND STANDALONE_APPS_LIST ${APPLICATION})
-      #   ENDIF()
-      # ENDFOREACH()
+      # INCLUDE(ChmodFile)
 
       # chmodFile(${EXE_NAME} dcm2nii)
       # chmodFile(${EXE_NAME} ITK-SNAP)
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
-
-      # install(CODE "set(deployqt \"${MACDEPLOYQT_EXECUTABLE}\")" COMPONENT Runtime)
-      # install(CODE [===[
-      # execute_process(COMMAND "${deployqt}" "${PROJECT_BINARY_DIR}/CaPTk_1.6.2.Beta.app")
-      # ]===] COMPONENT Runtime)
     ELSE()
       # ITK HERE
     ENDIF()

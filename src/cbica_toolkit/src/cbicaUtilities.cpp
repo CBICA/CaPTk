@@ -819,6 +819,7 @@ namespace cbica
     std::string return_string = std::string(path);
     path[0] = '\0';
 
+    std::cout << "PATH: " << path << std::endl;
     return return_string;
   }
 
@@ -1974,6 +1975,9 @@ namespace cbica
       {
         extension = "." + dataFile_wrap.substr(idx + 1);
         dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+
+        std::cout << "EXTENDSION " << extension << std::endl;
+        std::cout << "datafilewrap " << dataFile_wrap << std::endl;
       }
       // else // there is no extension for file
 
