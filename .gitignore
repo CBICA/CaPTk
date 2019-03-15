@@ -2,9 +2,6 @@
 
 bin_debug
 bin
-bin2
-superbuild
-Qt5
 CaPTk*.bin
 *Installer.bin
 makeself-*.run*

@@ -168,7 +168,7 @@ IF(APPLE)
   SET(OPENMP_LIBRARIES "${CMAKE_C_COMPILER}/../../lib")
   SET(OPENMP_INCLUDES "${CMAKE_C_COMPILER}/../../include")
   
-  MESSAGE( AUTHOR_WARNING "Apple_C_Compiler: ${CMAKE_C_COMPILER}")
+  # MESSAGE( AUTHOR_WARNING "Apple_C_Compiler: ${CMAKE_C_COMPILER}")
   
   SET(OpenMP_C "${CMAKE_C_COMPILER}")
   SET(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
