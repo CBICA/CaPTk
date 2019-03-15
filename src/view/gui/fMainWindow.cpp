@@ -1466,47 +1466,56 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     else if (!bFirstLoad)
     {
       {
-        auto temp = cbica::normPath(m_tempFolderLocation + "/temp.nii.gz");
-        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp);
-        auto imageInfoPrev = cbica::ImageInfo(temp);
-        auto sizePrev = imageInfoPrev.GetImageSize();
-        auto size = imageInfo.GetImageSize();
-        const std::string errorMsg = " not matching. Please register the image(s). Skipping file: ";
-        for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+        auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
+        if (!cbica::ImageSanityCheck(fname, temp_prev))
         {
-          if (sizePrev[i] != size[i])
-          {
-            updateProgress(0, "Size" + errorMsg + fname);
-            ShowErrorMessage("Size" + errorMsg + fname);
-            return; //
-          }
-        }
-        auto spacingPrev = imageInfoPrev.GetImageSpacings();
-        auto spacing = imageInfo.GetImageSpacings();
-        for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
-        {
-          if (spacing[i] != spacingPrev[i])
-          {
-            updateProgress(0, "Spacing" + errorMsg + fname);
-            ShowErrorMessage("Spacing" + errorMsg + fname);
-            return; //
-          }
-        }
-        auto originPrev = imageInfoPrev.GetImageOrigins();
-        auto origin = imageInfo.GetImageOrigins();
-        if (!m_advancedVisualizer)
-        {
-          for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
-          {
-            if (origin[i] != originPrev[i])
-            {
-              updateProgress(0, "Origin" + errorMsg + fname);
-              ShowErrorMessage("Origin" + errorMsg + fname);
-              return; //
-            }
-          }
+          ShowErrorMessage("The physical dimensions of the previously loaded image and current image are inconsistent; cannot load");
+          return;
         }
       }
+      //{
+      //  auto temp = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+      //  cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp);
+      //  auto imageInfoPrev = cbica::ImageInfo(temp);
+      //  auto sizePrev = imageInfoPrev.GetImageSize();
+      //  auto size = imageInfo.GetImageSize();
+      //  const std::string errorMsg = " not matching. Please register the image(s). Skipping file: ";
+      //  for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+      //  {
+      //    if (sizePrev[i] != size[i])
+      //    {
+      //      updateProgress(0, "Size" + errorMsg + fname);
+      //      ShowErrorMessage("Size" + errorMsg + fname);
+      //      return; //
+      //    }
+      //  }
+      //  auto spacingPrev = imageInfoPrev.GetImageSpacings();
+      //  auto spacing = imageInfo.GetImageSpacings();
+      //  for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+      //  {
+      //    if (spacing[i] != spacingPrev[i])
+      //    {
+      //      updateProgress(0, "Spacing" + errorMsg + fname);
+      //      ShowErrorMessage("Spacing" + errorMsg + fname);
+      //      return; //
+      //    }
+      //  }
+      //  auto originPrev = imageInfoPrev.GetImageOrigins();
+      //  auto origin = imageInfo.GetImageOrigins();
+      //  if (!m_advancedVisualizer)
+      //  {
+      //    for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+      //    {
+      //      if (origin[i] != originPrev[i])
+      //      {
+      //        updateProgress(0, "Origin" + errorMsg + fname);
+      //        ShowErrorMessage("Origin" + errorMsg + fname);
+      //        return; //
+      //      }
+      //    }
+      //  }
+      //}
 
       if (bSkipDup)
       {
@@ -2896,6 +2905,15 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     else
     {
+      {
+        auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
+        if (!cbica::ImageSanityCheck(maskFileName, temp_prev))
+        {
+          ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
+          return;
+        }
+      }
       using ImageType = itk::Image<unsigned int, 3>;
       auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName);
       inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
@@ -4079,6 +4097,21 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
 }
 void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputdirectory)
 {
+  if (!cbica::isDir(inputdirectory))
+  {
+    ShowErrorMessage("Input directory passed is not a valid directory, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputlabel))
+  {
+    ShowErrorMessage("Input Label passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputatlas))
+  {
+    ShowErrorMessage("Input Atlas passed is not a valid file, please re-check", this);
+    return;
+  }
   std::vector<typename ImageTypeFloat3D::Pointer> atlases = mPopulationAtlas.GeneratePopualtionAtlas(inputdirectory, inputlabel, inputatlas, outputdirectory);
   if (mPopulationAtlas.mLastErrorMessage.empty() && atlases.size() > 0)
   {
@@ -6628,6 +6661,21 @@ void fMainWindow::CallImageSkullStripping(const std::string referenceAtlas, cons
   const std::string inputImageFile, const std::string outputImageFile)
 {
   ShowErrorMessage("Skull Stripping takes a long time to run, during which CaPTk will not be responsive.", this, "Long Running Application");
+  if (!cbica::isFile(referenceAtlas))
+  {
+    ShowErrorMessage("Reference Atlas is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(referenceMask))
+  {
+    ShowErrorMessage("Reference Mask is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputImageFile))
+  {
+    ShowErrorMessage("Input Image is not a valid file, please re-check", this);
+    return;
+  }
   auto referenceAtlasImage = cbica::ReadImage< ImageTypeFloat3D >(referenceAtlas);
   auto referenceAtlasMaskImage = cbica::ReadImage< ImageTypeFloat3D >(referenceMask);
   auto inputImageImage = cbica::ReadImage< ImageTypeFloat3D >(inputImageFile);
@@ -7251,6 +7299,16 @@ void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, c
 {
   if (!referenceImage.empty() && !inputImageFile.empty() && !outputImageFile.empty())
   {
+    if (!cbica::isFile(referenceImage))
+    {
+      ShowErrorMessage("Reference Image is not a valid file, please re-check", this);
+      return;
+    }
+    if (!cbica::isFile(inputImageFile))
+    {
+      ShowErrorMessage("Input Image is not a valid file, please re-check", this);
+      return;
+    }
     auto referenceAtlasImage = cbica::ReadImage< ImageTypeFloat3D >(referenceImage);
     auto inputImageImage = cbica::ReadImage< ImageTypeFloat3D >(inputImageFile);
 
@@ -7274,6 +7332,16 @@ void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, con
 {
   if (!inputImage.empty() && !maskImage.empty() && !outputImageFile.empty())
   {
+    if (!cbica::isFile(maskImage))
+    {
+      ShowErrorMessage("Mask Image passed is not a valid file, please re-check", this);
+      return;
+    }
+    if (!cbica::isFile(inputImage))
+    {
+      ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
+      return;
+    }
     auto input = cbica::ReadImage< ImageTypeFloat3D >(inputImage);
     auto mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
 
@@ -7311,6 +7379,26 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
   typedef itk::Image<float, 3> ScalarImageType;
   std::vector<ScalarImageType::Pointer> diffusionDerivatives;
 
+  if (!cbica::isFile(BVecFile))
+  {
+    ShowErrorMessage("BVec passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(BValFile))
+  {
+    ShowErrorMessage("BVal passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(maskImage))
+  {
+    ShowErrorMessage("Mask Image is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputImage))
+  {
+    ShowErrorMessage("Input Image is not a valid file, please re-check", this);
+    return;
+  }
   diffusionDerivatives = m_diffusionderivatives.Run(inputImage, maskImage, BValFile, BVecFile, outputFolder);
   //fa,tr, rad , ax
   if (fa == true)
@@ -7328,6 +7416,11 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
 }
 void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
 {
+  if (!cbica::isFile(inputfilename))
+  {
+    ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
+    return;
+  }
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
