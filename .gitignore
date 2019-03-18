@@ -19,7 +19,7 @@ src/applications/individualApps/libra/MCRInstaller.zip
 # Misc
 .vs
 .vscode/
-.DS_Store
+/.DS_Store
 
 # Linux Testing. Will be removed or implemented better
 src/applications/individualApps/libra/MCR
@@ -31,12 +31,15 @@ ibsi_phantom
 /src/applications/FeatureExtraction/runner.ps1
 
 mac-local-build.sh
+mac-pkg.sh
 deepmedic
 itksnap
 libra
 confetti
 dcm2nii
 theia
-bin2
+.DS_Store
 testing
-/.DS_Store
+/binaries/.DS_Store
+/cmake_modules/.DS_Store
+/src/applications/.DS_Store

@@ -10,19 +10,13 @@ export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
 export CMAKE_PROGRAM_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PROGRAM_PATH"
 export PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$PATH"
+export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+# export CMAKE_INSTALL_RPATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:"
 
-cmake ../
+ls qt
 
-# rm -rf /usr/local/opt/qt
-# rm -rf /usr/local/Cellar/qt
-# cp -r qt /usr/local/Cellar/qt
-# brew link --force qt
-# mv /usr/local/opt/qt5 /usr/local/opt/qt
-
-# export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
-# export PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$PATH"
-
-# mkdir -p /usr/local/opt/qt
+cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
+cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
 
 echo "Run Dependency Manager"
 # # make & sleep 5600; kill $! 
@@ -36,17 +30,16 @@ make -j 2
 # export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
 # echo "Run CaPTk Build"
-# # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
+# # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/install/lib/cmake/ITK-4.13:$CMAKE_PREFIX_PATH"
 # cmake ../
-# # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/ITK-build:$CMAKE_PREFIX_PATH"
 # cmake ../
 # cmake ../
 # make -j 2
 
 # make package
 
-# chmod +x ../scripts/mac-preinstall-pkg.sh
-# ../scripts/mac-preinstall-pkg.sh
+chmod +x ../.travis/mac-pkg.sh
+../.travis/mac-pkg.sh
 }
 
 ###########################

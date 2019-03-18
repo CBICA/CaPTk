@@ -785,7 +785,9 @@ namespace cbica
   {
     std::string path, base, ext;
     splitFileName(getFullPath(), path, base, ext);
-    std::cout << "===DEBUG path" << path << " base " << base << " ext " << ext << std::endl;
+  // #ifdef __APPLE__
+  //   return "/Applications/CaPTk_1.6.2.Beta.app/Contents/MacOS/";
+  // #endif
     return path;
   }
 
@@ -817,6 +819,7 @@ namespace cbica
     std::string return_string = std::string(path);
     path[0] = '\0';
 
+    std::cout << "PATH: " << path << std::endl;
     return return_string;
   }
 
@@ -1254,8 +1257,6 @@ namespace cbica
 
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath)
   {
-    std::cout << "===DEBUG HIT" << std::endl;
-
     if (!cbica::directoryExists(dirName))
     {
       std::cerr << "Supplied directory name wasn't found: " << dirName << std::endl;
@@ -1936,9 +1937,7 @@ namespace cbica
   bool splitFileName(const std::string &dataFile, std::string &path,
     std::string &baseName, std::string &extension)
   {
-    //std::cout << "[DEBUG] dataFile:      " << dataFile << std::endl;
-    std::string dataFile_wrap = normPath(dataFile);
-    //std::cout << "[DEBUG] dataFile_wrap: " << dataFile_wrap << std::endl;
+    std::string dataFile_wrap = dataFile;
     std::vector< std::string > compressionFormats;
     compressionFormats.push_back(".gz");
     compressionFormats.push_back(".bz");
@@ -1970,22 +1969,23 @@ namespace cbica
       extension = std::string(ext);
 #else
       char *basename_var, *path_name; 
-      struct stat sb;
-      if (stat(dataFile_wrap.c_str(), &sb) == 0 && sb.st_mode & S_IXUSR) 
+
+      auto idx = dataFile_wrap.rfind('.');
+      if (idx != std::string::npos)
       {
-          /* executable */
-      } 
-      else 
-      {
-        auto idx = dataFile_wrap.rfind('.');
-        if (idx != std::string::npos)
+        extension = "." + dataFile_wrap.substr(idx + 1);
+        if (std::string(PROJECT_VERSION).find(extension) != std::string::npos) // this means the exetuable has the version information embedded
         {
-          extension = "." + dataFile_wrap.substr(idx + 1);
-          if (extension.find("/") != std::string::npos)
-            extension = "";
-          else
-            dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+          extension = "";
         }
+        if (extension.find("/") != std::string::npos) // this means that the extension contains part of folder separatation - which is incorrect 
+        {
+          extension = "";
+        }
+        dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+
+        std::cout << "EXTENSION " << extension << std::endl;
+        std::cout << "datafilewrap " << dataFile_wrap << std::endl;
       }
       // else // there is no extension for file
 
@@ -2060,19 +2060,15 @@ namespace cbica
     const std::string &replaceWith)
   {
     std::string return_string = entireString;
+    for (size_t pos = 0;; pos += replaceWith.length())
+    {
+      pos = return_string.find(toReplace, pos);
+      if (pos == std::string::npos)
+        break;
 
-    if ( !toReplace.empty() ) {
-      for (size_t pos = 0;; pos += replaceWith.length())
-      {
-        pos = return_string.find(toReplace, pos);
-        if (pos == std::string::npos)
-          break;
-
-        return_string.erase(pos, toReplace.length());
-        return_string.insert(pos, replaceWith);
-      }
+      return_string.erase(pos, toReplace.length());
+      return_string.insert(pos, replaceWith);
     }
-
     return return_string;
     /*
     if( entireString.length() < toReplace.length() )

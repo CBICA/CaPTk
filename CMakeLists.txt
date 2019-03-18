@@ -7,8 +7,8 @@ SET( ${PROJECT_NAME} )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 6 )
-SET( PROJECT_VERSION_PATCH 2.RC1 )
-SET( PROJECT_VERSION_TWEAK b )
+SET( PROJECT_VERSION_PATCH 2.RC )
+SET( PROJECT_VERSION_TWEAK RC )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -138,7 +138,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF()
 
     if(APPLE)
-      list(APPEND CMAKE_CXX_FLAGS "-std=c++11 -Wno-narrowing -Wall ${CMAKE_CXX_FLAGS}")
 
       SET (CAPTK_MACOSX_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${PROJECT}" )
@@ -979,31 +978,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-      # INCLUDE(CopyToMACOSX)
-      INCLUDE(ChmodFile)
-
-      # list(REVERSE STANDALONE_APPS_LIST)
-      # FOREACH(APPLICATION ${STANDALONE_APPS_LIST})
-      #   message(STATUS ${APPLICATION})
-      #   IF(EXISTS ${APPLICATION})
-      #     message(STATUS "COPY")
-
-      #     copyToMacOSX(${EXE_NAME} ${APPLICATION})
-      #   ELSE()
-      #     list(APPEND STANDALONE_APPS_LIST ${APPLICATION})
-      #   ENDIF()
-      # ENDFOREACH()
+      # INCLUDE(ChmodFile)
 
       # chmodFile(${EXE_NAME} dcm2nii)
       # chmodFile(${EXE_NAME} ITK-SNAP)
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
-
-      # install(CODE "set(deployqt \"${MACDEPLOYQT_EXECUTABLE}\")" COMPONENT Runtime)
-      # install(CODE [===[
-      # execute_process(COMMAND "${deployqt}" "${PROJECT_BINARY_DIR}/CaPTk_1.6.2.Beta.app")
-      # ]===] COMPONENT Runtime)
     ELSE()
       # ITK HERE
     ENDIF()
