@@ -138,7 +138,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF()
 
     if(APPLE)
-      list(APPEND CMAKE_CXX_FLAGS "-std=c++11  -Wno-dev -Wno-narrowing -Wall ${CMAKE_CXX_FLAGS}")
+      # list(APPEND CMAKE_CXX_FLAGS "-std=c++11  -Wno-dev -Wno-narrowing -Wall ${CMAKE_CXX_FLAGS}")
 
       SET (CAPTK_MACOSX_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${PROJECT}" )
