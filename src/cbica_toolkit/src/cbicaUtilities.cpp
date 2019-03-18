@@ -1936,7 +1936,9 @@ namespace cbica
   bool splitFileName(const std::string &dataFile, std::string &path,
     std::string &baseName, std::string &extension)
   {
-    std::string dataFile_wrap = dataFile;
+    //std::cout << "[DEBUG] dataFile:      " << dataFile << std::endl;
+    std::string dataFile_wrap = normPath(dataFile);
+    //std::cout << "[DEBUG] dataFile_wrap: " << dataFile_wrap << std::endl;
     std::vector< std::string > compressionFormats;
     compressionFormats.push_back(".gz");
     compressionFormats.push_back(".bz");
@@ -1968,12 +1970,22 @@ namespace cbica
       extension = std::string(ext);
 #else
       char *basename_var, *path_name; 
-
-      auto idx = dataFile_wrap.rfind('.');
-      if (idx != std::string::npos)
+      struct stat sb;
+      if (stat(dataFile_wrap.c_str(), &sb) == 0 && sb.st_mode & S_IXUSR) 
       {
-        extension = "." + dataFile_wrap.substr(idx + 1);
-        dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+          /* executable */
+      } 
+      else 
+      {
+        auto idx = dataFile_wrap.rfind('.');
+        if (idx != std::string::npos)
+        {
+          extension = "." + dataFile_wrap.substr(idx + 1);
+          if (extension.find("/") != std::string::npos)
+            extension = "";
+          else
+            dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+        }
       }
       // else // there is no extension for file
 
@@ -2048,15 +2060,19 @@ namespace cbica
     const std::string &replaceWith)
   {
     std::string return_string = entireString;
-    for (size_t pos = 0;; pos += replaceWith.length())
-    {
-      pos = return_string.find(toReplace, pos);
-      if (pos == std::string::npos)
-        break;
 
-      return_string.erase(pos, toReplace.length());
-      return_string.insert(pos, replaceWith);
+    if ( !toReplace.empty() ) {
+      for (size_t pos = 0;; pos += replaceWith.length())
+      {
+        pos = return_string.find(toReplace, pos);
+        if (pos == std::string::npos)
+          break;
+
+        return_string.erase(pos, toReplace.length());
+        return_string.insert(pos, replaceWith);
+      }
     }
+
     return return_string;
     /*
     if( entireString.length() < toReplace.length() )
