@@ -349,7 +349,7 @@ fMainWindow::fMainWindow()
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
-  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionDerivatives PerfusionPCA TrainingModule";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation";
 #ifdef WIN32
   segAppList += " deepmedic";
@@ -670,7 +670,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionAlignment") != std::string::npos)
     {
-      vectorOfMiscApps[i].action->setText("  Perfusion Alignment");
+      vectorOfMiscApps[i].action->setText("  Perfusion Alignment"); //TBD set at source
       connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(PerfusionAlignmentCalculation()));
     }
     else if (vectorOfMiscApps[i].name.find("DiffusionDerivatives") != std::string::npos)
