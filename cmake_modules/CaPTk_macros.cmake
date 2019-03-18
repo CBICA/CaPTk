@@ -191,6 +191,13 @@ IF(APPLE)
 FIND_PACKAGE(OpenMP REQUIRED)
 SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
 SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
+# add a few compiler options for GCC and MSVC
+IF( CMAKE_COMPILER_IS_GNUCXX )
+  SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function -O3" )
+ENDIF()
 
+if(APPLE)
+  SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-dev -Wno-narrowing -Wall" )
+endif()
   
 ENDMACRO()

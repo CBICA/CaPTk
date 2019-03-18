@@ -1974,9 +1974,17 @@ namespace cbica
       if (idx != std::string::npos)
       {
         extension = "." + dataFile_wrap.substr(idx + 1);
+        if (std::string(PROJECT_VERSION).find(extension) != std::string::npos) // this means the exetuable has the version information embedded
+        {
+          extension = "";
+        }
+        if (extension.find("/") != std::string::npos) // this means that the extension contains part of folder separatation - which is incorrect 
+        {
+          extension = "";
+        }
         dataFile_wrap = replaceString(dataFile_wrap, extension, "");
 
-        std::cout << "EXTENDSION " << extension << std::endl;
+        std::cout << "EXTENSION " << extension << std::endl;
         std::cout << "datafilewrap " << dataFile_wrap << std::endl;
       }
       // else // there is no extension for file
