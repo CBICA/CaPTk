@@ -26,6 +26,8 @@ public:
   //! load dicom data
   bool LoadDicom();
 
+  bool IsDicom(std::string path);
+
   //! helper to write itk image
   //template <class TInputImage>
   //void WriteITKImage(typename T::Pointer image, std::string filename);
