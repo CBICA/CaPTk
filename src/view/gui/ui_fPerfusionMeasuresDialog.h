@@ -101,7 +101,7 @@ public:
     inputEchoLabel->setSizePolicy(sizePolicy);
 
 
-    inputImageName = new QLineEdit(" ");
+    inputImageName = new QLineEdit("");
     inputImageName->setObjectName(QString::fromUtf8("inputImageName"));
     sizePolicy.setHeightForWidth(inputImageName->sizePolicy().hasHeightForWidth());
     inputImageName->setSizePolicy(sizePolicy);
@@ -147,7 +147,7 @@ public:
     //sizePolicy.setHeightForWidth(outputImageLabel->sizePolicy().hasHeightForWidth());
     //outputImageLabel->setSizePolicy(sizePolicy);
 
-    outputImageName = new QLineEdit(" ");
+    outputImageName = new QLineEdit("");
     outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
     sizePolicy.setHeightForWidth(outputImageName->sizePolicy().hasHeightForWidth());
     outputImageName->setSizePolicy(sizePolicy);
