@@ -663,7 +663,7 @@ namespace cbica
   {
     auto gdcmIO = itk::GDCMImageIO::New();
     gdcmIO->SetFileName(fName);
-    if (gdcmIO->CanReadFile() || cbica::isDir(fName))
+    if (gdcmIO->CanReadFile(fName.c_str()) || cbica::isDir(fName))
     {
       typedef DicomIOManager<TImageType> ReaderType;
       ReaderType *dcmSeriesReader = new ReaderType();
