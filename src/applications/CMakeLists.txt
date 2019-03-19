@@ -19,7 +19,8 @@ SET( INCLUDES "")
 SET( CAPTK_MACOSX_BUNDLE_FILES "")
 
 SET( APPLICATIONS
-  WhiteStripe
+  WhiteStripe  
+  PerfusionAlignment
   GeodesicSegmentation
   GeodesicTraining
   EGFRvIIISurrogateIndex
@@ -114,6 +115,10 @@ FOREACH(application ${APPLICATIONS})
   ENDIF()
 
   IF ( BUILD_PDERIVATIVES AND (${application} STREQUAL PerfusionDerivatives))
+    ADD_APPLICATION( ${application} )
+  ENDIF()
+  
+  IF ( BUILD_ALIGNMENT AND (${application} STREQUAL PerfusionAlignment))
     ADD_APPLICATION( ${application} )
   ENDIF()
 
