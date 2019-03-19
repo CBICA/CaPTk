@@ -268,7 +268,7 @@ echo ${ver} >> ./pkg/version
 # Step 3: Wrap it all upp
 
 # Create the installer
-./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk-${ver}-Installer.bin "CaPTk Linux Installer" ./linux-makeself
+./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./linux-makeself
 
 # Cleanup
 rm -rf ./pkg

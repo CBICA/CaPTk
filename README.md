@@ -16,7 +16,7 @@ CaPTk is developed and maintained by the <a href="https://www.cbica.upenn.edu/">
 
 For more details, please visit us at https://www.cbica.upenn.edu/captk
 
-For project documentation and how-to guides, please visit http://captk.projects.nitrc.org/
+For project documentation and how-to guides, please visit https://cbica.github.io/CaPTk/
 
 For issues, please visit https://github.com/cbica/captk/issues
 
