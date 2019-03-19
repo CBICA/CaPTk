@@ -305,6 +305,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_ISUBTYPE OFF CACHE BOOL "Do you want to build Imaging Subtype Estimation?" )
   SET( BUILD_MSUBTYPE ON CACHE BOOL "Do you want to build Molecular Subtype Estimation?" )
   SET( BUILD_ATLAS ON CACHE BOOL "Do you want to build Population Atlas?" )
+  SET( BUILD_ALIGNMENT ON CACHE BOOL "Do you want to build Perfusion Alignment?" )
   SET( BUILD_GEODESIC ON CACHE BOOL "Do you want to build Geodesic Segmentation?" )
   SET( BUILD_GEODESICTRAINING ON CACHE BOOL "Do you want to build Geodesic Training Segmentation?" )
   SET( BUILD_SBRT ON CACHE BOOL "Do you want to build SBRT Lung?" )
@@ -326,6 +327,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   IF(BUILD_EGFRvIIISVM)
     ADD_DEFINITIONS(-DBUILD_EGFRvIIISVM)
+  ENDIF()
+  
+  IF(BUILD_ALIGNMENT)
+    ADD_DEFINITIONS(-DBUILD_ALIGNMENT)
   ENDIF()
 
   IF(BUILD_RECURRENCE)
