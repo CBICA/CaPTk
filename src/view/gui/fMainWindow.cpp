@@ -1443,7 +1443,12 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
       return;
     }
-    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    if ((extension == ".dcm") || 
+      (extension == ".DCM") ||
+      (extension == ".dicom") || 
+      (extension == "") || 
+      (extension == ".ima") ||
+      (extension == ".IMA"))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       fname = d.absolutePath().toStdString();
@@ -4999,7 +5004,9 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     fileName = cbica::normPath(fileName);
     updateProgress(i + 1, "Opening " + fileName, files.size());
     auto extension = cbica::getFilenameExtension(fileName);
-    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+      (extension == ".ima") ||
+      (extension == ".IMA"))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       QString fname = d.absolutePath();
@@ -5051,6 +5058,7 @@ void fMainWindow::openDicomImages(QString dir)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   imageManager->SetImage(currentImage);
+  imageManager->SetOriginalDirection(currentImage->GetDirection());
   //imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
   //delete dicomSeriesReader; 

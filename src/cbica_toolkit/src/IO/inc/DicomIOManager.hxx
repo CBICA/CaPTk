@@ -2,6 +2,7 @@
 #include "itkImageSeriesReader.h"
 #include "DicomSeriesReader.h"
 #include "DicomImageReader.h"
+#include "gdcmReader.h"
 
 template <class T>
 DicomIOManager<T>::DicomIOManager()
@@ -40,13 +41,15 @@ bool DicomIOManager<T>::LoadDicom()
     //std::string fname = files[0].absoluteFilePath().toStdString();
     std::string fname = files[0].c_str();
 
+    bool isDicom = this->IsDicom(fname);
+
     itk::ImageIOBase::Pointer imageIO;
     itk::ImageIOBase::IOPixelType       pixelType;
     itk::ImageIOBase::IOComponentType   componentType;
     unsigned int dimensions;
     imageIO = itk::ImageIOFactory::CreateImageIO(fname.c_str(), itk::ImageIOFactory::ReadMode);
     bool canRead = imageIO->CanReadFile(fname.c_str());
-    if (canRead)
+    if (canRead && isDicom)
     {
       imageIO->SetFileName(fname);
       imageIO->ReadImageInformation();
@@ -276,6 +279,14 @@ bool DicomIOManager<T>::LoadDicom()
       loadStatus = false;
   }
   return loadStatus;
+}
+
+template<class T>
+inline bool DicomIOManager<T>::IsDicom(std::string path)
+{
+  gdcm::Reader reader;
+  reader.SetFileName(path.c_str());
+  return reader.CanRead();
 }
 
 template <class T>
