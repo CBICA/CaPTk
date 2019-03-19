@@ -973,10 +973,6 @@ namespace cbica
   template< class TImageType = ImageTypeFloat3D >
   typename TImageType::Pointer ChangeImageValues(const typename TImageType::Pointer inputImage, const std::string &oldValues, const std::string &newValues)
   {
-    itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
-    auto outputImage = CreateImage< TImageType >(inputImage);
-    itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetBufferedRegion());
-
     auto oldValues_split = cbica::stringSplit(oldValues, "x");
     auto newValues_split = cbica::stringSplit(newValues, "x");
     if (oldValues_split.size() != newValues_split.size())
@@ -985,6 +981,9 @@ namespace cbica
       return typename TImageType::New();
     }
 
+    itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
+    auto outputImage = CreateImage< TImageType >(inputImage);
+    itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetBufferedRegion());
     outputIterator.GoToBegin();
     for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++outputIterator)
     {
