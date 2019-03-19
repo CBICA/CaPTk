@@ -41,6 +41,7 @@
 #include <QtWidgets/QWidget>
 #include <qcombobox.h>
 #include <QToolButton>
+#include "qlineedit.h"
 //#include <QPushButton.h>
 #include <qgroupbox.h>
 #include <qsize.h>
@@ -75,6 +76,10 @@ public:
   QComboBox *maskOpacitySpinBox;
 
   QVector<QPushButton*> shapeButtons;
+
+  QLineEdit* changeOldValues;
+  QLineEdit* changeNewValues;
+  QPushButton* changeButton;
 
   void setupUi(QWidget *parent)
   {
@@ -248,13 +253,36 @@ public:
     shapesLayout->addLayout(shapesLayout2);
     shapesGroup->setLayout(shapesLayout);
 
-    QGroupBox* othersGroup = new QGroupBox("Other");
+    QGroupBox* othersGroup = new QGroupBox("Operations");
     QVBoxLayout* othersLayout = new QVBoxLayout();
     othersLayout->addWidget(clearSelectedLabelButton);
     othersLayout->addWidget(clearAllLabelButton);
     othersLayout->addWidget(UndoButton);
   	othersLayout->addStretch();
     othersGroup->setLayout(othersLayout);
+
+    changeOldValues = new QLineEdit("");
+    changeOldValues->setObjectName(QString::fromUtf8("changeOldValues"));
+    changeOldValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    changeNewValues = new QLineEdit("");
+    changeNewValues->setObjectName(QString::fromUtf8("changeNewValues"));
+    changeNewValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    changeButton = new QPushButton(parent);
+    changeButton->setText(QString("Proceed"));
+    changeButton->setToolTip(QString("Change the selected label sets"));
+    changeButton->setFixedWidth(buttonWidth + buttonWidth / 5);
+
+    auto changeGroup = new QGroupBox("Change Label Values");
+    auto changeLayout_V = new QVBoxLayout();
+    auto changeLayout = new QHBoxLayout();
+    changeLayout->addWidget(changeOldValues);
+    changeLayout->addWidget(changeNewValues);
+    changeLayout_V->addLayout(changeLayout);
+    changeLayout_V->addWidget(changeButton);
+    changeGroup->setLayout(changeLayout);
+    othersLayout->addWidget(changeGroup);
 
     HelpButton = new QPushButton();
     HelpButton->setIcon(QIcon((iconDir + "help.png").c_str()));
