@@ -4,8 +4,10 @@
 # It is intended to be used by captk-pkg to capture the version number directly from the cmakelists. It is then transformed into a text
 # file that hte installer is given to properly set the version.
 
-MAJOR=`cat CMakeLists.txt | grep "(PROJECT_VERSION_MAJOR" | awk '{print $3}'`
-MINOR=`cat CMakeLists.txt | grep "(PROJECT_VERSION_MINOR" | awk '{print $3}'`
-PATCH=`cat CMakeLists.txt | grep "(PROJECT_VERSION_PATCH" | awk '{print $3}'`
+# If you notice the version numbers start appearing as `..` or something dumb, make sure no one changed the CMake because I almost guarantee you that's the issue you're seeing
+
+MAJOR=`cat CMakeLists.txt | grep "( PROJECT_VERSION_MAJOR" | awk '{print $3}'`
+MINOR=`cat CMakeLists.txt | grep "( PROJECT_VERSION_MINOR" | awk '{print $3}'`
+PATCH=`cat CMakeLists.txt | grep "( PROJECT_VERSION_PATCH" | awk '{print $3}'`
 
 echo "${MAJOR}.${MINOR}.${PATCH}"
