@@ -964,6 +964,43 @@ namespace cbica
   }
 
   /**
+  \brief Create an empty (optionally pass a value) ITK image based on an input image with same properties
+
+  \param inputImage The image to base the output on
+  \param oldValues Values separated by 'x'
+  \param newValues Values separated by 'x'
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  typename TImageType::Pointer ChangeImageValues(const typename TImageType::Pointer inputImage, const std::string &oldValues, const std::string &newValues)
+  {
+    itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
+    auto outputImage = CreateImage< TImageType >(inputImage);
+    itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetBufferedRegion());
+
+    auto oldValues = cbica::stringSplit(changeOldValues, "x");
+    auto newValues = cbica::stringSplit(changeNewValues, "x");
+    if (oldValues.size() != newValues.size())
+    {
+      std::cerr << "Change values needs the old and new values to be of same size, for example '-cv 1x2,2x3.\n";
+      return EXIT_FAILURE;
+    }
+
+    outputIterator.GoToBegin();
+    for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++outputIterator)
+    {
+      for (size_t i = 0; i < oldValues.size(); i++)
+      {
+        if (iterator.Get() == std::atof(oldValues[i].c_str()))
+        {
+          outputIterator.Set(std::atof(newValues[i].c_str()));
+        }
+      }
+    }
+
+    cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+  }
+
+  /**
   \brief Get distances in world coordinates across axes for an image
 
   \param inputImage
