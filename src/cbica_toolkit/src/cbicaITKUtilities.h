@@ -982,7 +982,8 @@ namespace cbica
     }
 
     itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
-    auto outputImage = CreateImage< TImageType >(inputImage);
+    auto outputImage = inputImage;
+    outputImage->DisconnectPipeline();
     itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetBufferedRegion());
     outputIterator.GoToBegin();
     for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++outputIterator)
