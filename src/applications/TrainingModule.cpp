@@ -867,10 +867,10 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
   else
     FinalResult = mTrainingSimulator.SplitTrainTest(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype);
 
-  std::cout << "Accuray=" << FinalResult[0] << std::endl;
-  std::cout << "Sensitivity=" << FinalResult[1] << std::endl;
-  std::cout << "Specificity=" << FinalResult[2] << std::endl;
-  std::cout << "Balanced Accuracy=" << FinalResult[3] << std::endl;
+  //std::cout << "Accuray=" << FinalResult[0] << std::endl;
+  //std::cout << "Sensitivity=" << FinalResult[1] << std::endl;
+  //std::cout << "Specificity=" << FinalResult[2] << std::endl;
+  //std::cout << "Balanced Accuracy=" << FinalResult[3] << std::endl;
 
   //cbica::Logging(loggerFile, "Accuracy=" + std::to_string(FinalResult[0]) + "\n");
   //cbica::Logging(loggerFile, "Sensitivity=" + std::to_string(FinalResult[1]) + "\n");
@@ -918,7 +918,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   for (unsigned int index = training_size; index < inputLabels.Size(); index++)
     testingindices.push_back(index);
 
-  std::cout << "testigindices" << testingindices.size() << std::endl;
+  //std::cout << "testigindices" << testingindices.size() << std::endl;
 
   VariableSizeMatrixType trainingfeatures;
   VariableSizeMatrixType testingfeatures;
@@ -968,7 +968,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
   for (int featureNo = 15; featureNo < std::get<2>(FoldingDataMap[0]).Cols(); featureNo++)
   {
-    std::cout << featureNo << std::endl;
+    //std::cout << featureNo << std::endl;
 
     VariableSizeMatrixType reducedFeatureSet;
     reducedFeatureSet.SetSize(std::get<1>(FoldingDataMap[0]).size(), featureNo + 1);
@@ -1002,8 +1002,8 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
       maxFeatureNumber = performanceNo;
     }
   }
-  std::cout << "maxFeatureNumber" << maxFeatureNumber << std::endl;
-  std::cout << "maxAveagePerformance:" << maxAveagePerformance << std::endl;
+  //std::cout << "maxFeatureNumber" << maxFeatureNumber << std::endl;
+  //std::cout << "maxAveagePerformance:" << maxAveagePerformance << std::endl;
 
   //std::ofstream myfile;
   //myfile.open("E:/Projects/PSU/CrossValidationTrainingData.csv");
@@ -1021,10 +1021,16 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   //myfile.close();
 
 
+  //Write the selected features
+  myfile.open(outputfolder + "/selectedfeatures.csv");
+  for (unsigned int index1 = 0; index1 < maxFeatureNumber; index1++)
+    myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
+  myfile.close();
+
   //Testing of the replicaiton cohort
 
   int featureNo = maxFeatureNumber;
-  std::cout << "No. of selected features:" << featureNo << std::endl;
+  //std::cout << "No. of selected features:" << featureNo << std::endl;
   VariableSizeMatrixType reducedFeatureSet;
   reducedFeatureSet.SetSize(std::get<1>(FoldingDataMap[0]).size(), featureNo + 1);
 
@@ -1047,8 +1053,8 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
     {
       bestC = pow(2, cValue);
       bestCV = currentcv;
-      std::cout << "best c: " << bestC << std::endl;
-      std::cout << "best cv: " << currentcv << std::endl;
+      //std::cout << "best c: " << bestC << std::endl;
+      //std::cout << "best cv: " << currentcv << std::endl;
     }
   }
 
@@ -1134,13 +1140,13 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   CrossValidatedPerformances(featureNo, 5) = FinalPerformance[1];
   CrossValidatedPerformances(featureNo, 6) = FinalPerformance[2];
   CrossValidatedPerformances(featureNo, 7) = FinalPerformance[3];
-  std::cout << "predicted balanced" << FinalPerformance[3] << std::endl;
+  //std::cout << "predicted balanced" << FinalPerformance[3] << std::endl;
 
 
 
   myfile.open(outputfolder + "/predicted_distances.csv");
   for (unsigned int index1 = 0; index1 < predictedDistances.size(); index1++)
-    myfile << std::to_string(predictedDistances[index1]) + "," + std::to_string(std::get<4>(FoldingDataMap[0])[index1]) + "\n";
+    myfile << std::to_string(std::abs(predictedDistances[index1])*predictedLabels[index1]) + "," + std::to_string(std::get<4>(FoldingDataMap[0])[index1]) + "\n";
   myfile.close();
 
   return FinalPerformance;
