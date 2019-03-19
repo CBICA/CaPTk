@@ -1446,9 +1446,9 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     if ((extension == ".dcm") || 
       (extension == ".DCM") ||
       (extension == ".dicom") || 
-      (extension == "") /*|| 
+      (extension == "") || 
       (extension == ".ima") ||
-      (extension == ".IMA")*/)
+      (extension == ".IMA"))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       fname = d.absolutePath().toStdString();
@@ -5058,6 +5058,7 @@ void fMainWindow::openDicomImages(QString dir)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   imageManager->SetImage(currentImage);
+  imageManager->SetOriginalDirection(currentImage->GetDirection());
   //imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
   //delete dicomSeriesReader; 
