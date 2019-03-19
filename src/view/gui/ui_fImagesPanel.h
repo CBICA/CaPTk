@@ -165,6 +165,8 @@ public:
     visLayout->addLayout(visLayoutSub);
     visLayout->addWidget(m_imagesTable);
 
+    // The below code is a no op now.
+    // We are not showing non visualizing images anymore
     QVBoxLayout* nonVisLayout = new QVBoxLayout();
     QHBoxLayout* nonVisLayoutSub = new QHBoxLayout();
     nonVisLayoutSub->addWidget(new QLabel("Non Visualisation Images"));
@@ -175,10 +177,12 @@ public:
 
     nonVisLayout->addLayout(nonVisLayoutSub);
     nonVisLayout->addWidget(m_nonVisImagesTable);
+    // The above code is a no op now.
+    // We are not showing non visualizing images anymore
 
     QHBoxLayout	* mainLayout = new QHBoxLayout(fImagesPanel);
     mainLayout->addLayout(visLayout);
-    mainLayout->addLayout(nonVisLayout);
+    //mainLayout->addLayout(nonVisLayout); //We are not showing non visualizing images anymore
   }
 
 };
