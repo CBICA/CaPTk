@@ -260,13 +260,15 @@ public:
     othersLayout->addWidget(UndoButton);
   	//othersLayout->addStretch();
 
-    changeOldValues = new QLineEdit("Old Values");
+    changeOldValues = new QLineEdit("");
+    changeOldValues->setPlaceholderText("Old Values");
     changeOldValues->setToolTip("Old values to change in format AxBxC");
     changeOldValues->setObjectName(QString::fromUtf8("changeOldValues"));
     changeOldValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
     changeOldValues->setFixedWidth(constButtonWidth20);
 
-    changeNewValues = new QLineEdit("New Values");
+    changeNewValues = new QLineEdit("");
+    changeNewValues->setPlaceholderText("New Values");
     changeNewValues->setToolTip("New values to change in format AxBxC");
     changeNewValues->setObjectName(QString::fromUtf8("changeNewValues"));
     changeNewValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
