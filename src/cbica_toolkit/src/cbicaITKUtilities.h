@@ -977,27 +977,27 @@ namespace cbica
     auto outputImage = CreateImage< TImageType >(inputImage);
     itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetBufferedRegion());
 
-    auto oldValues = cbica::stringSplit(changeOldValues, "x");
-    auto newValues = cbica::stringSplit(changeNewValues, "x");
-    if (oldValues.size() != newValues.size())
+    auto oldValues_split = cbica::stringSplit(oldValues, "x");
+    auto newValues_split = cbica::stringSplit(newValues, "x");
+    if (oldValues_split.size() != newValues_split.size())
     {
       std::cerr << "Change values needs the old and new values to be of same size, for example '-cv 1x2,2x3.\n";
-      return EXIT_FAILURE;
+      return typename TImageType::New();
     }
 
     outputIterator.GoToBegin();
     for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++outputIterator)
     {
-      for (size_t i = 0; i < oldValues.size(); i++)
+      for (size_t i = 0; i < oldValues_split.size(); i++)
       {
-        if (iterator.Get() == std::atof(oldValues[i].c_str()))
+        if (iterator.Get() == std::atof(oldValues_split[i].c_str()))
         {
-          outputIterator.Set(std::atof(newValues[i].c_str()));
+          outputIterator.Set(std::atof(newValues_split[i].c_str()));
         }
       }
     }
 
-    cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+    return outputImage;
   }
 
   /**
