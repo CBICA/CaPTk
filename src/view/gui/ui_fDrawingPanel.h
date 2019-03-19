@@ -258,18 +258,19 @@ public:
     othersLayout->addWidget(clearSelectedLabelButton);
     othersLayout->addWidget(clearAllLabelButton);
     othersLayout->addWidget(UndoButton);
-  	othersLayout->addStretch();
-    othersGroup->setLayout(othersLayout);
+  	//othersLayout->addStretch();
 
-    changeOldValues = new QLineEdit("");
+    changeOldValues = new QLineEdit("Old Values");
+    changeOldValues->setToolTip("Old values to change in format AxBxC");
     changeOldValues->setObjectName(QString::fromUtf8("changeOldValues"));
     changeOldValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
-    changeOldValues->setFixedWidth(constButtonWidth20 / 2.5);
+    changeOldValues->setFixedWidth(constButtonWidth20);
 
-    changeNewValues = new QLineEdit("");
+    changeNewValues = new QLineEdit("New Values");
+    changeNewValues->setToolTip("New values to change in format AxBxC");
     changeNewValues->setObjectName(QString::fromUtf8("changeNewValues"));
     changeNewValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
-    changeNewValues->setFixedWidth(constButtonWidth20 / 2.5);
+    changeNewValues->setFixedWidth(constButtonWidth20);
 
     changeButton = new QPushButton(parent);
     changeButton->setText(QString("Proceed"));
@@ -277,15 +278,17 @@ public:
     changeButton->setFixedWidth(constButtonWidth20);
 
     auto changeGroup = new QGroupBox("Change Label Values");
-    auto changeLayout_V = new QVBoxLayout();
-    auto changeLayout = new QHBoxLayout();
-    changeLayout->addWidget(changeOldValues);
-    changeLayout->addWidget(changeNewValues);
-    changeLayout_V->addLayout(changeLayout);
+    auto changeLayout_V = new QVBoxLayout(changeGroup);
+    //auto changeLayout_H = new QHBoxLayout(changeGroup);
+    //changeLayout_H->addWidget(changeOldValues);
+    //changeLayout_H->addWidget(changeNewValues);
+    changeLayout_V->addWidget(changeOldValues);
+    changeLayout_V->addWidget(changeNewValues);
     changeLayout_V->addWidget(changeButton);
     changeGroup->setLayout(changeLayout_V);
     changeGroup->setMaximumWidth(constButtonWidth20 + 15);
     othersLayout->addWidget(changeGroup);
+    othersGroup->setLayout(othersLayout);
 
     HelpButton = new QPushButton();
     HelpButton->setIcon(QIcon((iconDir + "help.png").c_str()));
