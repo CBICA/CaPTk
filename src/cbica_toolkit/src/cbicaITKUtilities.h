@@ -978,7 +978,7 @@ namespace cbica
     if (oldValues_split.size() != newValues_split.size())
     {
       std::cerr << "Change values needs the old and new values to be of same size, for example '-cv 1x2,2x3.\n";
-      return typename TImageType::New();
+      return nullptr;
     }
 
     itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());

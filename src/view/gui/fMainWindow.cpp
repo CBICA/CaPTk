@@ -7322,6 +7322,12 @@ void fMainWindow::CallLabelValuesChange(const std::string oldValues, const std::
 
   auto output = cbica::ChangeImageValues< ImageTypeFloat3D >(getMaskImage(), oldValues, newValues);
 
+  if (output.IsNull())
+  {
+    ShowErrorMessage("Changing values did not work as expected, please try again with correct syntax");
+    return;
+  }
+
   std::string tempFile = m_tempFolderLocation + "/mask_changedValues.nii.gz";
   cbica::WriteImage< ImageTypeFloat3D >(output, tempFile);
   readMaskFile(tempFile);

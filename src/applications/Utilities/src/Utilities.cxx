@@ -183,9 +183,16 @@ int algorithmsRunner()
   {
     auto outputImage = cbica::ChangeImageValues< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), changeOldValues, changeNewValues);
 
-    cbica::WriteImage< TImageType >(outputImage, outputImageFile);
-    std::cout << "Create Mask completed.\n";
-    return EXIT_SUCCESS;
+    if (!outputImage.IsNull())
+    {
+      cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+      std::cout << "Create Mask completed.\n";
+      return EXIT_SUCCESS;
+    }
+    else
+    {
+      return EXIT_FAILURE;
+    }
   }
 
   if (requestedAlgorithm == Casting)
