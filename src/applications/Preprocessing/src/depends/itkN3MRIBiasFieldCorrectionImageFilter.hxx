@@ -24,6 +24,7 @@
 #include "vnl/algo/vnl_fft_1d.h"
 #include "vnl/vnl_complex_traits.h"
 #include "antsAllocImage.h"
+
 #include <cmath>
 
 
@@ -232,6 +233,7 @@ N3MRIBiasFieldCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>
   /**
    * Provide an initial log bias field of zeros
    */
+
   typename RealImageType::Pointer logBiasField = AllocImage<RealImageType>(this->GetInput()->GetRequestedRegion(), 0.0);
   logBiasField->SetOrigin( this->GetInput()->GetOrigin() );
   logBiasField->SetSpacing( this->GetInput()->GetSpacing() );

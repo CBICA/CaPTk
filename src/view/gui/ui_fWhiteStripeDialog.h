@@ -224,7 +224,7 @@ public:
     sizePolicy.setHeightForWidth(outputImageLabel->sizePolicy().hasHeightForWidth());
     outputImageLabel->setSizePolicy(sizePolicy);
 
-    outputImageName = new QLineEdit(" ");
+    outputImageName = new QLineEdit("");
     outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
     sizePolicy.setHeightForWidth(outputImageName->sizePolicy().hasHeightForWidth());
     outputImageName->setSizePolicy(sizePolicy);

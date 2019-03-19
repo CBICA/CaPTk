@@ -104,7 +104,7 @@ int algorithmsRunner()
     }
     auto inputNiftiImage = cbica::ReadImage< TImageType >(inputImageFile);
 
-    cbica::WriteImage< TImageType>(inputNiftiImage, "readNifti.nii.gz");
+    //cbica::WriteImage< TImageType>(inputNiftiImage, "readNifti.nii.gz");
 
     bool differenceFailed = false;
 
@@ -154,6 +154,29 @@ int algorithmsRunner()
       }
     return differenceFailed;
     //return EXIT_FAILURE;
+  }
+
+  if (requestedAlgorithm == Dicom2Nifti)
+  {
+    auto readDicomImage = cbica::ReadImage< TImageType >(inputImageFile);
+    if (!readDicomImage)
+    {
+      std::cout << "Dicom Load Failed" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    cbica::WriteImage< TImageType>(readDicomImage, outputImageFile);
+
+    if (!targetImageFile.empty())
+    {
+      if (!cbica::ImageSanityCheck< TImageType >(readDicomImage, cbica::ReadImage< TImageType >(targetImageFile)))
+      {
+        std::cerr << "Input image and target image physical space mismatch.\n";
+        return EXIT_FAILURE;
+      }
+    }
+
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == ChangeValue)
@@ -433,8 +456,8 @@ int main(int argc, char** argv)
 {
   cbica::CmdParser parser(argc, argv, "Utilities");
 
-  parser.addOptionalParameter("i", "inputImage", cbica::Parameter::FILE, "NIfTI", "Input Image for processing");
-  parser.addOptionalParameter("m", "maskImage", cbica::Parameter::FILE, "NIfTI", "Input Mask for processing");
+  parser.addOptionalParameter("i", "inputImage", cbica::Parameter::STRING, "File or Dir", "Input Image (all CaPTk supported images) for processing", "Directory to a single series DICOM only");
+  parser.addOptionalParameter("m", "maskImage", cbica::Parameter::STRING, "File or Dir", "Input Mask (all CaPTk supported images) for processing", "Directory to a single series DICOM only");
   parser.addOptionalParameter("o", "outputImage", cbica::Parameter::FILE, "NIfTI", "Output Image for processing");
   parser.addOptionalParameter("df", "dicomDirectory", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory containing single dicom series");
   parser.addOptionalParameter("r", "resize", cbica::Parameter::INTEGER, "10-500", "Resize an image based on the resizing factor given", "Example: -r 150 resizes inputImage by 150%", "Defaults to 100, i.e., no resizing", "Resampling can be done on image with 100");
@@ -453,6 +476,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
   parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
+  parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
 
   /// unit testing
   if (parser.isPresent("utB"))
@@ -483,6 +507,12 @@ int main(int argc, char** argv)
     parser.getParameterValue("df", dicomFolderPath);
     parser.getParameterValue("i", inputImageFile);
     parser.getParameterValue("tt", testThresh);
+  }
+  if (parser.isPresent("d2n"))
+  {
+    requestedAlgorithm = Dicom2Nifti;
+    parser.getParameterValue("d2n", targetImageFile);
+    parser.getParameterValue("o", outputImageFile);
   }
   if (parser.isPresent("r"))
   {

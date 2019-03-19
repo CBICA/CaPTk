@@ -82,16 +82,22 @@ public:
       int largestComponentSize = 0;
       if (m_extractionType == ExtractionType::Largest)
       {
-        for (size_t i = 1; i < numberOfLabelObjects; i++) // 0 is always background
+        if (numberOfLabelObjects > 1)
         {
-          auto currentComponentSize = labelMap->GetNthLabelObject(i)->GetNumberOfPixels();
-          if (largestComponentSize < currentComponentSize)
+          for (size_t i = 1; i < numberOfLabelObjects; i++) // 0 is always background
           {
-            componentToConsider = i;
-            largestComponentSize = currentComponentSize;
+            auto currentComponentSize = labelMap->GetNthLabelObject(i)->GetNumberOfPixels();
+            if (largestComponentSize < currentComponentSize)
+            {
+              componentToConsider = i;
+              largestComponentSize = currentComponentSize;
+            }
           }
         }
-
+        else
+        {
+          componentToConsider = 0;
+        }
         auto labelObject = labelMap->GetNthLabelObject(componentToConsider);
 
         auto ellipseDiameter = labelObject->GetEquivalentEllipsoidDiameter();

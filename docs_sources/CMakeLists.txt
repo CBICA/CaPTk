@@ -72,14 +72,17 @@ FOREACH(imgFiles ${ALL_IMAGE_FILES})
   FILE(COPY ${imgFiles}
      DESTINATION  ${CMAKE_CURRENT_BINARY_DIR}/html/ )
   
+  FILE(COPY ${imgFiles}
+     DESTINATION  ${PROJECT_SOURCE_DIR}/docs/ )
+  
 ENDFOREACH()
 
-ADD_CUSTOM_TARGET(Documentation ALL ${DOXYGEN_EXECUTABLE} ${DOXY_CONFIG})
+ADD_CUSTOM_TARGET(Documentation ALL ${DOXYGEN_EXECUTABLE} ${DOXY_CONFIG} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/html ${PROJECT_SOURCE_DIR}/docs)
 
 # create a windows help .chm file using hhc.exe
 # HTMLHelp DLL must be in path!
 # fallback: use hhw.exe interactively
-IF    (WIN32)
+IF(WIN32)
   FIND_PACKAGE(HTMLHelp)
   IF   (HTML_HELP_COMPILER)      
     SET (TMP "${PROJECT__BINARY_DIR}\\Documentation\\html\\index.hhp")

@@ -67,7 +67,7 @@ public:
     //sizePolicy.setHeightForWidth(outputImageLabel->sizePolicy().hasHeightForWidth());
     //outputImageLabel->setSizePolicy(sizePolicy);
 
-    outputDirName = new QLineEdit(" ");
+    outputDirName = new QLineEdit("");
     outputDirName->setObjectName(QString::fromUtf8("outputDirName"));
     sizePolicy.setHeightForWidth(outputDirName->sizePolicy().hasHeightForWidth());
     outputDirName->setSizePolicy(sizePolicy);

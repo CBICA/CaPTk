@@ -92,7 +92,7 @@ public:
     //sizePolicy.setHeightForWidth(roi1ImageLabel->sizePolicy().hasHeightForWidth());
     //roi1ImageLabel->setSizePolicy(sizePolicy);
 
-    roi1ImageName = new QLineEdit(" ");
+    roi1ImageName = new QLineEdit("");
     roi1ImageName->setObjectName(QString::fromUtf8("roi1ImageName"));
     sizePolicy.setHeightForWidth(roi1ImageName->sizePolicy().hasHeightForWidth());
     roi1ImageName->setSizePolicy(sizePolicy);
@@ -119,7 +119,7 @@ public:
     //sizePolicy.setHeightForWidth(roi2ImageLabel->sizePolicy().hasHeightForWidth());
     //roi2ImageLabel->setSizePolicy(sizePolicy);
 
-    roi2ImageName = new QLineEdit(" ");
+    roi2ImageName = new QLineEdit("");
     roi2ImageName->setObjectName(QString::fromUtf8("roi2ImageName"));
     sizePolicy.setHeightForWidth(roi2ImageName->sizePolicy().hasHeightForWidth());
     roi2ImageName->setSizePolicy(sizePolicy);
@@ -146,7 +146,7 @@ public:
     //outputImageLabel->setSizePolicy(sizePolicy);
     //outputImageLabel->setText("Select Folder");
 
-    outputDirectory = new QLineEdit(" ");
+    outputDirectory = new QLineEdit("");
     outputDirectory->setObjectName(QString::fromUtf8("outputDirectory"));
     sizePolicy.setHeightForWidth(outputDirectory->sizePolicy().hasHeightForWidth());
     outputDirectory->setSizePolicy(sizePolicy);
