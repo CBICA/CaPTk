@@ -31,11 +31,27 @@ fDrawingPanel::fDrawingPanel(QWidget * parent) : QWidget(parent)
   connect(shapesRectangleButton, SIGNAL(clicked()), this, SLOT(shapesRectangleButtonFunctionality()));
   connect(shapesCircleButton, SIGNAL(clicked()), this, SLOT(shapesCircleButtonFunctionality()));
   connect(HelpButton, SIGNAL(clicked()), this, SLOT(helpClicked()));
+  connect(changeButton, SIGNAL(clicked()), this, SLOT(ChangeLabelValuesClicked()));
 }
 
 void fDrawingPanel::helpClicked()
 {
   emit helpClicked_Interaction("gs_drawing.html");
+}
+
+void fDrawingPanel::ChangeLabelValuesClicked()
+{
+  if (changeOldValues->text().isEmpty())
+  {
+    ShowErrorMessage("Old values cannot be empty: use format AxBxC with the same number of inputs as new values", this);
+    return;
+  }
+  if (changeNewValues->text().isEmpty())
+  {
+    ShowErrorMessage("New values cannot be empty: use format AxBxC with the same number of inputs as old values", this);
+    return;
+  }
+  emit sig_ChangeLabelValuesClicked(changeOldValues->text().toStdString(), changeNewValues->text().toStdString());
 }
 
 void fDrawingPanel::clearSelectedLabelButtonFunctionality()

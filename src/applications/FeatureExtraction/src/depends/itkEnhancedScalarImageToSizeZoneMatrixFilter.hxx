@@ -173,10 +173,10 @@ EnhancedScalarImageToSizeZoneMatrixFilter<TImageType, THistogramFrequencyContain
   this->m_LowerBound[1] = this->m_MinDistance;
   this->m_UpperBound[0] = this->m_Max;
   this->m_UpperBound[1] = this->m_MaxDistance;
-  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - this->m_LowerBound[0] = " << this->m_LowerBound[0] << std::endl;
-  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - this->m_LowerBound[1] = " << this->m_LowerBound[1] << std::endl;
-  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - this->m_UpperBound[0] = " << this->m_UpperBound[0] << std::endl;
-  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - this->m_UpperBound[1] = " << this->m_UpperBound[1] << std::endl;
+  //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - this->m_LowerBound[0] = " << this->m_LowerBound[0] << std::endl;
+  //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - this->m_LowerBound[1] = " << this->m_LowerBound[1] << std::endl;
+  //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - this->m_UpperBound[0] = " << this->m_UpperBound[0] << std::endl;
+  //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - this->m_UpperBound[1] = " << this->m_UpperBound[1] << std::endl;
 
   output->Initialize( size, this->m_LowerBound, this->m_UpperBound );
 
@@ -343,7 +343,7 @@ EnhancedScalarImageToSizeZoneMatrixFilter<TImageType, THistogramFrequencyContain
   relabel->SetMinimumObjectSize(minSize);
   relabel->Update();
 
-  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Components relabeled in variable relabel" << std::endl;
+  //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Components relabeled in variable relabel" << std::endl;
   //MITK_WARN << "Components relabeled.";
 
   //Get the stats of the componentes
@@ -355,8 +355,8 @@ EnhancedScalarImageToSizeZoneMatrixFilter<TImageType, THistogramFrequencyContain
   labelStatisticsImageFilter->UseHistogramsOn(); // needed to compute median
   labelStatisticsImageFilter->Update();
 
-  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Number of labels: " << labelStatisticsImageFilter->GetNumberOfLabels() << std::endl;
-  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Number of objects: " << labelStatisticsImageFilter->GetNumberOfObjects() << std::endl;
+  //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Number of labels: " << labelStatisticsImageFilter->GetNumberOfLabels() << std::endl;
+  //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Number of objects: " << labelStatisticsImageFilter->GetNumberOfObjects() << std::endl;
   /*
   std::cout << "Number of labels: "
             << labelStatisticsImageFilter->GetNumberOfLabels() << std::endl;
@@ -393,64 +393,63 @@ EnhancedScalarImageToSizeZoneMatrixFilter<TImageType, THistogramFrequencyContain
         */
       }
 
-      std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Within forloop for nan fixes: label[" << run[0] << "] = " << run[1] << std::endl;
+      //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Within forloop for nan fixes: label[" << run[0] << "] = " << run[1] << std::endl;
     }
   }
 
-  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Size = " << output->Size() << std::endl;
-  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Total frequency = "
-            << output->GetTotalFrequency() << std::endl;
+  //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Size = " << output->Size() << std::endl;
+  //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Total frequency = "<< output->GetTotalFrequency() << std::endl;
 
-  for(auto iter = output->Begin(); iter != output->End(); ++iter)
-  {
-    std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Measurement vectors = " << iter.GetMeasurementVector()
-      << " frequency = " << iter.GetFrequency() << std::endl;
-  }
+  //for(auto iter = output->Begin(); iter != output->End(); ++iter)
+  //{
+  //  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Measurement vectors = " << iter.GetMeasurementVector()
+  //    << " frequency = " << iter.GetFrequency() << std::endl;
+  //}
 
   //TBD - for debugging
-  for (typename ValidLabelValuesType::const_iterator vIt = labelStatisticsImageFilter->GetValidLabelValues().begin();
-    vIt != labelStatisticsImageFilter->GetValidLabelValues().end();
-    ++vIt)
-  {
-    if (labelStatisticsImageFilter->HasLabel(*vIt))
-    {
-      LabelPixelType labelValue = *vIt;
+  //for (typename ValidLabelValuesType::const_iterator vIt = labelStatisticsImageFilter->GetValidLabelValues().begin();
+  //  vIt != labelStatisticsImageFilter->GetValidLabelValues().end();
+  //  ++vIt)
+  //{
+  //  if (labelStatisticsImageFilter->HasLabel(*vIt))
+  //  {
+  //    LabelPixelType labelValue = *vIt;
 
-      std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - After assignining values for nan -> label[" << labelStatisticsImageFilter->GetMean(labelValue) << "] = " << labelStatisticsImageFilter->GetCount(labelValue) << "(min = " << labelStatisticsImageFilter->GetMinimum(labelValue) << ", max = " << labelStatisticsImageFilter->GetMaximum(labelValue) << ", median = " << labelStatisticsImageFilter->GetMedian(labelValue) << ", variance = " << labelStatisticsImageFilter->GetVariance(labelValue) << ")" << std::endl;
-    }
-  }
+  //    std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - After assignining values for nan -> label[" << labelStatisticsImageFilter->GetMean(labelValue) << "] = " << labelStatisticsImageFilter->GetCount(labelValue) << "(min = " << labelStatisticsImageFilter->GetMinimum(labelValue) << ", max = " << labelStatisticsImageFilter->GetMaximum(labelValue) << ", median = " << labelStatisticsImageFilter->GetMedian(labelValue) << ", variance = " << labelStatisticsImageFilter->GetVariance(labelValue) << ")" << std::endl;
+  //  }
+  //}
 
-  for (typename ValidLabelValuesType::const_iterator vIt = labelStatisticsImageFilter->GetValidLabelValues().begin();
-    vIt != labelStatisticsImageFilter->GetValidLabelValues().end();
-    ++vIt)
-  {
-    if (labelStatisticsImageFilter->HasLabel(*vIt))
-    {
-      LabelPixelType labelValue = *vIt;
+  //for (typename ValidLabelValuesType::const_iterator vIt = labelStatisticsImageFilter->GetValidLabelValues().begin();
+  //  vIt != labelStatisticsImageFilter->GetValidLabelValues().end();
+  //  ++vIt)
+  //{
+  //  if (labelStatisticsImageFilter->HasLabel(*vIt))
+  //  {
+  //    LabelPixelType labelValue = *vIt;
 
-      std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - After assignining values for nan -> label[" << labelStatisticsImageFilter->GetMean(labelValue) << "] Histogram Size = " << labelStatisticsImageFilter->GetHistogram(labelValue)-> Size() << std::endl;
+  //    std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - After assignining values for nan -> label[" << labelStatisticsImageFilter->GetMean(labelValue) << "] Histogram Size = " << labelStatisticsImageFilter->GetHistogram(labelValue)-> Size() << std::endl;
 
-      std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - After assignining values for nan -> label[" << labelStatisticsImageFilter->GetMean(labelValue) << "] Histogram Total Freuquency = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetTotalFrequency() << std::endl;
+  //    std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - After assignining values for nan -> label[" << labelStatisticsImageFilter->GetMean(labelValue) << "] Histogram Total Freuquency = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetTotalFrequency() << std::endl;
 
-      std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - labelStatisticsImageFilter->GetHistogram(" << labelValue << ")->GetSize() = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize() << std::endl;
+  //    std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - labelStatisticsImageFilter->GetHistogram(" << labelValue << ")->GetSize() = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize() << std::endl;
 
-      std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - labelStatisticsImageFilter->GetHistogram(" << labelValue << ")->GetSize()[0] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[0] << std::endl;
-      for (unsigned int temp_int_variable = 0; temp_int_variable < labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[0]; temp_int_variable++) {
-          std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Frequency of " << temp_int_variable << " : (" << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMin(0, temp_int_variable) << " to " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMax(0, temp_int_variable) << ") [Index = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetIndex(temp_int_variable) << "] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetFrequency(temp_int_variable) << std::endl;
-      }
-      //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - labelStatisticsImageFilter->GetHistogram(" << labelValue << ")->GetSize()[1] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[1] << std::endl;
-      //for (unsigned int temp_int_variable = 0; temp_int_variable < labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[1]; temp_int_variable++) {
-      //  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Frequency of " << temp_int_variable << " : (" << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMin(0, temp_int_variable) << " to " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMax(0, temp_int_variable) << ") [Index = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetIndex(temp_int_variable) << "] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetFrequency(temp_int_variable) << std::endl;
-      //}
-      //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - labelStatisticsImageFilter->GetHistogram(" << labelValue << ")->GetSize()[2] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[2] << std::endl;
-      //for (unsigned int temp_int_variable = 0; temp_int_variable < labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[2]; temp_int_variable++) {
-      //  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Frequency of " << temp_int_variable << " : (" << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMin(0, temp_int_variable) << " to " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMax(0, temp_int_variable) << ") [Index = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetIndex(temp_int_variable) << "] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetFrequency(temp_int_variable) << std::endl;
-      //}
+  //    std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - labelStatisticsImageFilter->GetHistogram(" << labelValue << ")->GetSize()[0] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[0] << std::endl;
+  //    for (unsigned int temp_int_variable = 0; temp_int_variable < labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[0]; temp_int_variable++) {
+  //        std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Frequency of " << temp_int_variable << " : (" << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMin(0, temp_int_variable) << " to " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMax(0, temp_int_variable) << ") [Index = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetIndex(temp_int_variable) << "] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetFrequency(temp_int_variable) << std::endl;
+  //    }
+  //    //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - labelStatisticsImageFilter->GetHistogram(" << labelValue << ")->GetSize()[1] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[1] << std::endl;
+  //    //for (unsigned int temp_int_variable = 0; temp_int_variable < labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[1]; temp_int_variable++) {
+  //    //  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Frequency of " << temp_int_variable << " : (" << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMin(0, temp_int_variable) << " to " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMax(0, temp_int_variable) << ") [Index = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetIndex(temp_int_variable) << "] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetFrequency(temp_int_variable) << std::endl;
+  //    //}
+  //    //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - labelStatisticsImageFilter->GetHistogram(" << labelValue << ")->GetSize()[2] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[2] << std::endl;
+  //    //for (unsigned int temp_int_variable = 0; temp_int_variable < labelStatisticsImageFilter->GetHistogram(labelValue)->GetSize()[2]; temp_int_variable++) {
+  //    //  std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - Frequency of " << temp_int_variable << " : (" << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMin(0, temp_int_variable) << " to " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetBinMax(0, temp_int_variable) << ") [Index = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetIndex(temp_int_variable) << "] = " << labelStatisticsImageFilter->GetHistogram(labelValue)->GetFrequency(temp_int_variable) << std::endl;
+  //    //}
 
-      //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - After assignining values for nan -> label[" << labelStatisticsImageFilter->GetMean(labelValue) << "] Histogram = \n" << std::endl;
-      //labelStatisticsImageFilter->GetHistogram(labelValue)->Print(std::cout, '\t');
-    }
-  }
+  //    //std::cout << "[DEBUG] itkEnhancedScalarImageToSizeZoneMatrixFilter.hxx - After assignining values for nan -> label[" << labelStatisticsImageFilter->GetMean(labelValue) << "] Histogram = \n" << std::endl;
+  //    //labelStatisticsImageFilter->GetHistogram(labelValue)->Print(std::cout, '\t');
+  //  }
+  //}
   //TBD - for debugging
 }
 

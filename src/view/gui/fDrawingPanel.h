@@ -72,6 +72,7 @@ signals :
   void CurrentDrawingLabelChanged(int); // multiLabel related change
   void CurrentMaskOpacityChanged(int); // multiLabel related change
   void helpClicked_Interaction(std::string);
+  void sig_ChangeLabelValuesClicked(const std::string, const std::string);
 
 
 public slots :
@@ -108,6 +109,7 @@ public slots :
   void shapesCircleButtonFunctionality();
   void helpClicked();
 
+  void ChangeLabelValuesClicked();
 };
 
 

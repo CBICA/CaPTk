@@ -775,6 +775,11 @@ signals:
   void CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile);
 
   /**
+  \brief Call Histogram Matching module of ITK
+  */
+  void CallLabelValuesChange(const std::string oldValues, const std::string newValues);
+
+  /**
   \brief Call Deep Medic Normalization module
   */
   void CallImageDeepMedicNormalizer(const std::string inputImage, const std::string maskImage, const std::string outputImageFile, 

@@ -235,7 +235,7 @@ make -j2 install/strip
 
 # Install docs
 echo "[:] Installing docs..."
-cp -r docs install/appdir/usr/
+cp -r ../docs install/appdir/usr/
 
 # We need to fix the project first
 RUN_FIXES
