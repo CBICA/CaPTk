@@ -71,7 +71,7 @@ IF( ("${Qt5_DIR}" STREQUAL "") OR ("${Qt5_DIR}" STREQUAL "Qt5_DIR-NOTFOUND") OR 
     
   LINK_DIRECTORIES(${QT_LIBRARY_DIR})
   SET( Qt5_DIR ${Qt5_DIR} CACHE STRING "Qt5_DIR Path for use in other builds" FORCE )
-  SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
+  # SET( CAPTK_QT5_DIR "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5" CACHE STRING "Qt5_DIR Path for use other builds" FORCE )
   LIST(APPEND CMAKE_PREFIX_PATH "${Qt5_DIR}")
 
 ENDIF()
