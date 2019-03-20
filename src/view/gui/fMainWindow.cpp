@@ -756,6 +756,7 @@ fMainWindow::fMainWindow()
   connect(drawingPanel, SIGNAL(CurrentDrawingLabelChanged(int)), this, SLOT(updateDrawMode()));
   connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity(int)));
   connect(drawingPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
+  connect(drawingPanel, SIGNAL(sig_ChangeLabelValuesClicked(const std::string, const std::string)), this, SLOT(CallLabelValuesChange(const std::string, const std::string)));
 
 
   connect(&recurrencePanel, SIGNAL(SubjectBasedRecurrenceEstimate(std::string, bool, bool, bool, bool)), this, SLOT(StartRecurrenceEstimate(const std::string &, bool, bool, bool, bool)));
@@ -1443,7 +1444,12 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
       return;
     }
-    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    if ((extension == ".dcm") || 
+      (extension == ".DCM") ||
+      (extension == ".dicom") || 
+      (extension == "") || 
+      (extension == ".ima") ||
+      (extension == ".IMA"))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       fname = d.absolutePath().toStdString();
@@ -4999,7 +5005,9 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     fileName = cbica::normPath(fileName);
     updateProgress(i + 1, "Opening " + fileName, files.size());
     auto extension = cbica::getFilenameExtension(fileName);
-    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+      (extension == ".ima") ||
+      (extension == ".IMA"))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       QString fname = d.absolutePath();
@@ -5051,6 +5059,7 @@ void fMainWindow::openDicomImages(QString dir)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   imageManager->SetImage(currentImage);
+  imageManager->SetOriginalDirection(currentImage->GetDirection());
   //imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
   //delete dicomSeriesReader; 
@@ -7293,6 +7302,35 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
     LoadSlicerImages(outputDir + "/roiDE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
   }
+}
+
+void fMainWindow::CallLabelValuesChange(const std::string oldValues, const std::string newValues)
+{
+  if (!isMaskDefined())
+  {
+    ShowErrorMessage("A valid mask needs to be loaded");
+    return;
+  }
+  auto oldValues_string_split = cbica::stringSplit(oldValues, "x");
+  auto newValues_string_split = cbica::stringSplit(newValues, "x");
+
+  if (oldValues_string_split.size() != newValues_string_split.size())
+  {
+    ShowErrorMessage("Old and New values have the same number of inputs", this);
+    return;
+  }
+
+  auto output = cbica::ChangeImageValues< ImageTypeFloat3D >(getMaskImage(), oldValues, newValues);
+
+  if (output.IsNull())
+  {
+    ShowErrorMessage("Changing values did not work as expected, please try again with correct syntax");
+    return;
+  }
+
+  std::string tempFile = m_tempFolderLocation + "/mask_changedValues.nii.gz";
+  cbica::WriteImage< ImageTypeFloat3D >(output, tempFile);
+  readMaskFile(tempFile);
 }
 
 void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile)

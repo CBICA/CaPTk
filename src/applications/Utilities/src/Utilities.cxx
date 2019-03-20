@@ -181,34 +181,18 @@ int algorithmsRunner()
 
   if (requestedAlgorithm == ChangeValue)
   {
-    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-    itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
-    auto outputImage = cbica::CreateImage< TImageType >(inputImage);
-    itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetBufferedRegion());
+    auto outputImage = cbica::ChangeImageValues< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), changeOldValues, changeNewValues);
 
-    auto oldValues = cbica::stringSplit(changeOldValues, "x");
-    auto newValues = cbica::stringSplit(changeNewValues, "x");
-    if (oldValues.size() != newValues.size())
+    if (!outputImage.IsNull())
     {
-      std::cerr << "Change values needs the old and new values to be of same size, for example '-cv 1x2,2x3.\n";
+      cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+      std::cout << "Create Mask completed.\n";
+      return EXIT_SUCCESS;
+    }
+    else
+    {
       return EXIT_FAILURE;
     }
-
-    outputIterator.GoToBegin();
-    for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++outputIterator)
-    {
-      for (size_t i = 0; i < oldValues.size(); i++)
-      {
-        if (iterator.Get() == std::atof(oldValues[i].c_str()))
-        {
-          outputIterator.Set(std::atof(newValues[i].c_str()));
-        }
-      }
-    }
-
-    cbica::WriteImage< TImageType >(outputImage, outputImageFile);
-    std::cout << "Create Mask completed.\n";
-    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == Casting)
