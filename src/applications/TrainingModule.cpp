@@ -1388,13 +1388,13 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
   for (double cValue = 1; cValue <= 5; cValue = cValue + 2)
   {
     VectorDouble result = InternalCrossValidation(reducedFeatureSet, traininglabels, pow(2, cValue), 0.01, classifiertype);
-    float value = (int)(result[0] * 10 + .5);
-    double currentcv = (float)value / 100;
+    //float value = (int)(result[0] * 10 + .5);
+    //double currentcv = (float)value / 100;
 
-    if (currentcv > bestCV)
+    if (result[0] > bestCV)
     {
       bestC = pow(2, cValue);
-      bestCV = currentcv;
+      bestCV = result[0];
       //std::cout << "best c: " << bestC << std::endl;
       //std::cout << "best cv: " << currentcv << std::endl;
     }

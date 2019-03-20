@@ -7459,13 +7459,13 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder, int classifier, int conf, int folds)
 {
-  TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf))
-  {
-    QString msg;
-    msg = "Training model has been saved at the specified location.";
-    ShowMessage(msg.toStdString(), this);
-  }
+  //TrainingModule m_trainingsimulator;
+  //if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf))
+  //{
+  //  QString msg;
+  //  msg = "Training model has been saved at the specified location.";
+  //  ShowMessage(msg.toStdString(), this);
+  //}
 }
 
 void fMainWindow::CallPCACalculation(const int number, const std::string inputdirectory, const std::string outputdirectory)
