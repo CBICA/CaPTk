@@ -348,7 +348,7 @@ private:
 
     if (!m_histogram->GetIndex(temp_mv, temp_idx))
     {
-      std::cerr << "Couldn't find index for intensity value '" << intensity << "' in histogram for NGTDM.\n";
+      //std::cerr << "Couldn't find index for intensity value '" << intensity << "' in histogram for NGTDM.\n";
     }
     {
       double index = temp_idx[0]; // for uniform histogram, use "std::floor((intensity - m_minimum) / m_bins)"
