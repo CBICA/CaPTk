@@ -819,11 +819,7 @@ namespace cbica
     std::string return_string = std::string(path);
     path[0] = '\0';
 
-<<<<<<< HEAD
-    // std::cout << "PATH: " << path << std::endl;
-=======
     // std::cout << "PATH: " << return_string << std::endl;
->>>>>>> ef2ab6b377e566db52fff040f0e62f2df39f3121
     return return_string;
   }
 
