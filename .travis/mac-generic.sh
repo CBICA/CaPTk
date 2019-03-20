@@ -4,15 +4,16 @@
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
-export CMAKE_PREFIX_PATH=/Library/TeX/texbin
-
-export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
 # export CMAKE_PROGRAM_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PROGRAM_PATH"
 # export PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$PATH"
-export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 
-cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
+cmake ../ 
+
+rm CMakeCache.txt
+
+export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
 
 echo "Run Dependency Manager"
