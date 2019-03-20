@@ -1977,14 +1977,17 @@ namespace cbica
       // can we not use std::replace? is that not an option?
       if (extension != "") 
         dataFile_wrap = replaceString(dataFile_wrap, extension, "");
-
+      
       if (idx != std::string::npos)
       {
         extension = "." + dataFile_wrap.substr(idx + 1);
         if (extension.find("/") != std::string::npos)
           extension = "";
-        else
+        else {
+#ifndef __APPLE__
           dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+#endif
+        }
       }
       // else // there is no extension for file
 
