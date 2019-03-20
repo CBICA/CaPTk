@@ -6611,10 +6611,10 @@ void fMainWindow::DCM2NIfTIConversion()
   dcmConverter.exec();
 }
 
-void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, bool loadAsImage)
+void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, bool loadAsImage)
 {
   std::string saveFolder = m_tempFolderLocation + "/dcmConv/";
-  CallDCM2NIfTIConversion(firstImageInSeries, saveFolder);
+  CallDCM2NIfTIConversion(inputDir, saveFolder);
 
   auto vectorOfFiles = cbica::filesInDirectory(saveFolder);
 
@@ -6629,31 +6629,9 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, 
 
 }
 
-void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, const std::string outputFileName)
+void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, const std::string outputDir)
 {
-  const std::string inputDataDir = cbica::getFilenamePath(firstImageInSeries);
-
-  auto vectorOfFiles = cbica::filesInDirectory(inputDataDir);
-
-  std::string filesInDir = "" /*+ vectorOfFiles[0]*/;
-
-  for (size_t i = 0; i < vectorOfFiles.size(); i++)
-  {
-    if ((vectorOfFiles[i] != ".") || (vectorOfFiles[i] != ".."))
-    {
-      filesInDir += " " + vectorOfFiles[i];
-    }
-  }
-
-  std::string outputDir = cbica::getFilenamePath(outputFileName, false);
-  outputDir = outputDir.substr(0, outputDir.size() - 1);
-
-  if (!cbica::isDir(outputDir))
-  {
-    cbica::createDir(outputDir);
-  }
-
-  std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + filesInDir;
+  std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
 
   if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
   {
