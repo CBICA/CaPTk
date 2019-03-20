@@ -209,6 +209,12 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 cd bin
 
+# Check for existing install folder, and trash it if it exists. We do this to make sure the binaries are overwritten
+if [ -d "install" ]; then
+  echo "[:] Cleaning up previous build..."
+  rm -rf ./install/
+fi
+
 # Superbuild
 # Configure cmake
 echo "[:] Running cmake command for superbuild..."
@@ -229,7 +235,7 @@ make -j2 install/strip
 
 # Install docs
 echo "[:] Installing docs..."
-cp -r docs install/appdir/usr/
+cp -r ../docs install/appdir/usr/
 
 # We need to fix the project first
 RUN_FIXES
