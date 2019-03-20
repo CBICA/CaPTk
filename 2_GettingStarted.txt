@@ -247,6 +247,7 @@ There are the following controls underneath the <b>Drawing</b> tab:
   <tr><td align="center">Clear Selected Label <td>Remove selected label completely from the mask.
   <tr><td align="center">Clear All Labels <td>Remove all labels completely from the mask.
   <tr><td align="center">Undo <td>Undo last drawing action.
+  <tr><td align="center">Change Values <td>By providing the same number of old and new values in the format <b>AxBxC</b>, the values of the annotated region can be quickly changed.
 </table>
 
 --------
