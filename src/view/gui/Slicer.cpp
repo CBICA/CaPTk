@@ -103,6 +103,7 @@ Slicer::Slicer()
 
   mOverlay = NULL;
   mMask = NULL;
+  mMaskOriginal = NULL;
 
   mOverlayOpacity = 0.5;
   mMaskOpacity = 0.5;
@@ -1077,6 +1078,74 @@ void Slicer::ClipDisplayedExtent(int extent[6], int refExtent[6])
     }
   }
 }
+void Slicer::ResetMap()
+{
+  mMask->DeepCopy(mMaskOriginal);
+  mOriginalMaskSaved = false;
+}
+
+void Slicer::AddLabelToMap(int label)
+{
+  if (!mOriginalMaskSaved)
+  {
+    mMaskOriginal = vtkSmartPointer<vtkImageData>::New();
+    mMaskOriginal->DeepCopy(mMask);
+    mOriginalMaskSaved = true;
+  }
+
+  auto dims = mMaskOriginal->GetDimensions();
+  for (int z = 0; z < dims[2]; z++)
+  {
+    for (int y = 0; y < dims[1]; y++)
+    {
+      for (int x = 0; x < dims[0]; x++)
+      {
+        auto source = static_cast< float* >(mMaskOriginal->GetScalarPointer(x, y, z));
+        auto destination = static_cast< float* >(mMask->GetScalarPointer(x, y, z));
+
+        if (static_cast< int >(*source) == label)
+        {
+          *destination = label;
+        }
+      }
+    }
+  }
+
+}
+
+void Slicer::ShowLabelOnMap(int label)
+{
+  if (!mOriginalMaskSaved)
+  {
+    mMaskOriginal = vtkSmartPointer<vtkImageData>::New();
+    mMaskOriginal->DeepCopy(mMask);
+    mOriginalMaskSaved = true;
+  }
+
+  auto dims = mMaskOriginal->GetDimensions();
+  for (int z = 0; z < dims[2]; z++)
+  {
+    for (int y = 0; y < dims[1]; y++)
+    {
+      for (int x = 0; x < dims[0]; x++)
+      {
+        auto source = static_cast<float*>(mMaskOriginal->GetScalarPointer(x, y, z));
+        auto destination = static_cast<float*>(mMask->GetScalarPointer(x, y, z));
+
+        if (static_cast<int>(*source) == label)
+        {
+          *destination = label;
+        }
+        else
+        {
+          *destination = 0;
+        }
+      }
+    }
+  }
+}
+
+
 void Slicer::SetOverlayOpacity(double opacity)
 {
   mOverlayOpacity = opacity;
