@@ -74,6 +74,7 @@ void fDrawingPanel::CurrentLabelChanged(int size)
 
 void fDrawingPanel::CurrentOpacityChanged(int size)
 {
+  m_currentOpacity = size;
   emit CurrentMaskOpacityChanged(size);
 }
 void fDrawingPanel::UndoButtonFunctionality()

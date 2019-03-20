@@ -7879,7 +7879,7 @@ void fMainWindow::SetOpacity()
     for (int i = 0; i < 3; i++)
     {
       if (this->mSlicerManagers[index]->GetSlicer(i)->GetMaskOpacity() == 0)
-        this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(1);
+        this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(drawingPanel->getCurrentOpacity());
       else
         this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(0);
     }
