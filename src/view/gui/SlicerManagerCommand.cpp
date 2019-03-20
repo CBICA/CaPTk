@@ -88,12 +88,14 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
 
       if (event == vtkCommand::KeyPressEvent)
       {
-        if (KeyPress == "l") {
+        if (KeyPress == "l") 
+        {
           this->SM->ToggleInterpolation();
           this->SM->Render();
           return;
         }
-        if (KeyPress == "h") {
+        if (KeyPress == "h") 
+        {
           for (int i = 0; i < this->SM->GetNumberOfSlicers(); i++)
           {
             int s;
@@ -108,7 +110,8 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
         {
           mw->SetOpacity();
         }
-        if (KeyPress == "r") {
+        if (KeyPress == "r") 
+        {
           this->SM->GetSlicer(VisibleInWindow)->ResetCamera();
           //
           // adjust scale

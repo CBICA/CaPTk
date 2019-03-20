@@ -43,6 +43,19 @@ IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in")
 	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in 
     ${CMAKE_CURRENT_BINARY_DIR}/doxy.config
     @ONLY )
+    
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/custom.css 
+    ${CMAKE_CURRENT_BINARY_DIR}/custom.css
+    @ONLY )
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/custom_dark_theme.css 
+    ${CMAKE_CURRENT_BINARY_DIR}/custom_dark_theme.css
+    @ONLY )
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/html_footer.html 
+    ${CMAKE_CURRENT_BINARY_DIR}/html_footer.html
+    @ONLY )
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/html_header.html 
+    ${CMAKE_CURRENT_BINARY_DIR}/html_header.html
+    @ONLY )
 	
 	# use (configured) doxy.config from (out of place) BUILD tree:
 	SET(DOXY_CONFIG "${CMAKE_CURRENT_BINARY_DIR}/doxy.config")
@@ -52,7 +65,7 @@ ELSE (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in")
 	MESSAGE(SEND_ERROR "Please create ${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in (or doxy.config as fallback)")
 ENDIF( )
 
-FILE(GLOB_RECURSE ALL_DOC_FILES "${PROJECT_SOURCE_DIR}/docs/tutorial/*.*")
+FILE(GLOB_RECURSE ALL_DOC_FILES "${PROJECT_SOURCE_DIR}/docs_sources/tutorial/*.*")
 FOREACH(docFiles ${ALL_DOC_FILES})
   
   #FILE(COPY ${docFiles}
