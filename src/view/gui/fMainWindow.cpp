@@ -349,7 +349,7 @@ fMainWindow::fMainWindow()
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
-  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionDerivatives PerfusionPCA TrainingModule";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation";
 #ifdef WIN32
   segAppList += " deepmedic";
@@ -670,7 +670,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionAlignment") != std::string::npos)
     {
-      vectorOfMiscApps[i].action->setText("  Perfusion Alignment");
+      vectorOfMiscApps[i].action->setText("  Perfusion Alignment"); //TBD set at source
       connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(PerfusionAlignmentCalculation()));
     }
     else if (vectorOfMiscApps[i].name.find("DiffusionDerivatives") != std::string::npos)
@@ -756,6 +756,7 @@ fMainWindow::fMainWindow()
   connect(drawingPanel, SIGNAL(CurrentDrawingLabelChanged(int)), this, SLOT(updateDrawMode()));
   connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity(int)));
   connect(drawingPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
+  connect(drawingPanel, SIGNAL(sig_ChangeLabelValuesClicked(const std::string, const std::string)), this, SLOT(CallLabelValuesChange(const std::string, const std::string)));
 
 
   connect(&recurrencePanel, SIGNAL(SubjectBasedRecurrenceEstimate(std::string, bool, bool, bool, bool)), this, SLOT(StartRecurrenceEstimate(const std::string &, bool, bool, bool, bool)));
@@ -7279,6 +7280,35 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
     LoadSlicerImages(outputDir + "/roiDE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
   }
+}
+
+void fMainWindow::CallLabelValuesChange(const std::string oldValues, const std::string newValues)
+{
+  if (!isMaskDefined())
+  {
+    ShowErrorMessage("A valid mask needs to be loaded");
+    return;
+  }
+  auto oldValues_string_split = cbica::stringSplit(oldValues, "x");
+  auto newValues_string_split = cbica::stringSplit(newValues, "x");
+
+  if (oldValues_string_split.size() != newValues_string_split.size())
+  {
+    ShowErrorMessage("Old and New values have the same number of inputs", this);
+    return;
+  }
+
+  auto output = cbica::ChangeImageValues< ImageTypeFloat3D >(getMaskImage(), oldValues, newValues);
+
+  if (output.IsNull())
+  {
+    ShowErrorMessage("Changing values did not work as expected, please try again with correct syntax");
+    return;
+  }
+
+  std::string tempFile = m_tempFolderLocation + "/mask_changedValues.nii.gz";
+  cbica::WriteImage< ImageTypeFloat3D >(output, tempFile);
+  readMaskFile(tempFile);
 }
 
 void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile)

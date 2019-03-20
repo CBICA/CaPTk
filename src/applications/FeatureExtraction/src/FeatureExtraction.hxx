@@ -247,12 +247,6 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   double double_Coarsness = calculator.GetCoarsness();
   double double_Contrast = calculator.GetContrast();
   double double_Busyness = calculator.GetBusyness();
-  std::cout << "\n" << std::endl;
-  std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateNGTDM - Strength =" << double_Strength << std::endl;
-  std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateNGTDM - Complexity =" << double_Complexity << std::endl;
-  std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateNGTDM - Coarsness =" << double_Coarsness << std::endl;
-  std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateNGTDM - Contrast =" << double_Contrast << std::endl;
-  std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateNGTDM - Busyness =" << double_Busyness << std::endl;
 
   featurevec["Strength"] = calculator.GetStrength();
   featurevec["Complexity"] = calculator.GetComplexity();
@@ -505,7 +499,7 @@ void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer 
   {
     featurevec[f.first] = f.second;
     //TBD - for debugging GLSZM features
-    std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLSZM - Feature '" << f.first << "' = " << f.second << "\n";
+    //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLSZM - Feature '" << f.first << "' = " << f.second << "\n";
     //TBD - for debugging GLSZM features
   }
   //using FilterType = itk::Statistics::EnhancedScalarImageToSizeZoneFeaturesFilter< TImage >;
@@ -943,19 +937,19 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   }
 
   // this defaults to the full dynamic range of double according to ITK's documentation
-  std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [m_minimumToConsider, m_maximumToConsider] = [" << m_minimumToConsider << ", " << m_maximumToConsider << "]" << std::endl;
+  //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [m_minimumToConsider, m_maximumToConsider] = [" << m_minimumToConsider << ", " << m_maximumToConsider << "]" << std::endl;
 
   //matrix_generator->SetDistanceValueMinMax(m_minimumToConsider, m_maximumToConsider); // TBD: TOCHECK - how is this affecting the computation?
 
-  std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [0, m_Range] = [" << 0 << ", " << m_Range << "]" << std::endl;
+  //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [0, m_Range] = [" << 0 << ", " << m_Range << "]" << std::endl;
 
   matrix_generator->SetDistanceValueMinMax(0, m_Range);
-  std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - SetDistanceValueMinMax(0, " << m_Range << ")" << std::endl;
+  //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - SetDistanceValueMinMax(0, " << m_Range << ")" << std::endl;
 
 
   //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
-  std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - m_Bins = " << m_Bins << std::endl;
+  //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - m_Bins = " << m_Bins << std::endl;
 
   //TBD
   //typename RunLengthFilterType::FeatureNameVectorPointer requestedFeatures = RunLengthFilterType::FeatureNameVector::New();
@@ -987,7 +981,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   size_t offsetNum = 0;
 
 
-  std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set offsetNum = " << offsetNum << std::endl;
+  //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set offsetNum = " << offsetNum << std::endl;
 
   auto size = image->GetBufferedRegion().GetSize();
   double size_total = size[0];
@@ -996,7 +990,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     size_total *= size[d];
   }
   //TBD
-  std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set size_total = " << size_total << std::endl;
+  //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set size_total = " << size_total << std::endl;
   //TBD
 
   //TBD - Testing
@@ -1013,23 +1007,23 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
 
     //TBD
     int count_offset = 0;
-    std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - Set count_offset = " << count_offset << std::endl;
+    //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - Set count_offset = " << count_offset << std::endl;
     //TBD
 
     for (offsetIt = offset->Begin(); offsetIt != offset->End(); offsetIt++, offsetNum++)
     {
       //TBD
-      std::cout << "\n\n";
-      std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
+      //std::cout << "\n\n";
+      //std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
       //TBD
 
       matrix_generator->SetOffset(offsetIt.Value());
       matrix_generator->Update();
 
       //TBD
-      std::cout << "\n\n";
+      //std::cout << "\n\n";
       //std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
-      auto temp = matrix_generator->GetOutput();
+      //auto temp = matrix_generator->GetOutput();
       //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
       //{
       //  std::cout << "\tMeasurement vectors = " << iter.GetMeasurementVector()
@@ -1042,7 +1036,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       //{
       //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
       //}
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - GLRLM Matrix: Offset: " << offsetIt.Value() << " | Distance[" << matrix_generator->GetMinDistance() << ", " << matrix_generator->GetMaxDistance() << "] | Pixel [" << m_minimumToConsider << ", " << m_maximumToConsider << "] \n" << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - GLRLM Matrix: Offset: " << offsetIt.Value() << " | Distance[" << matrix_generator->GetMinDistance() << ", " << matrix_generator->GetMaxDistance() << "] | Pixel [" << m_minimumToConsider << ", " << m_maximumToConsider << "] \n" << std::endl;
       //TBD
 
 
@@ -1050,15 +1044,15 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       //std::cout << "\tGLRLM Measurement Vectors -> intensity[]\t|\trunLength[] = midpoint[int,run]\t|\tfrenquency" << std::endl;
 
       //TBD
-      for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
-      {
-        auto temp_index = iter.GetIndex();
-        auto temp_min_vector = temp->GetHistogramMinFromIndex(temp_index);
-        auto temp_max_vector = temp->GetHistogramMaxFromIndex(temp_index);
-        //std::cout << " \tGLRLM Measurement Vectors -> Intensity[" << temp_min_vector[0] << ", " << temp_max_vector[0] << "]\t|\tRun[" << temp_min_vector[1] << ", " << temp_max_vector[1] << "] = [" << temp->GetMeasurementVector(temp_index) << "]\t|\tFrequency = " << temp->GetFrequency(temp_index) << std::endl;
-        //std::cout << "\tGLRLM Measurement vectors = " << iter.GetMeasurementVector()
-          //<< "; Frequency = " << iter.GetFrequency() << std::endl;
-      }
+      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
+      //{
+      //  auto temp_index = iter.GetIndex();
+      //  auto temp_min_vector = temp->GetHistogramMinFromIndex(temp_index);
+      //  auto temp_max_vector = temp->GetHistogramMaxFromIndex(temp_index);
+      //  //std::cout << " \tGLRLM Measurement Vectors -> Intensity[" << temp_min_vector[0] << ", " << temp_max_vector[0] << "]\t|\tRun[" << temp_min_vector[1] << ", " << temp_max_vector[1] << "] = [" << temp->GetMeasurementVector(temp_index) << "]\t|\tFrequency = " << temp->GetFrequency(temp_index) << std::endl;
+      //  //std::cout << "\tGLRLM Measurement vectors = " << iter.GetMeasurementVector()
+      //    //<< "; Frequency = " << iter.GetFrequency() << std::endl;
+      //}
       //TBD
 
       runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
@@ -1085,12 +1079,12 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       //}
       //TBD - Only prints out first set, may not be complete
 
-      std::cout << "\tLowGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
-      std::cout << "\tHighGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis() << std::endl;
-      std::cout << "\tShortRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis() << std::endl;
-      std::cout << "\tShortRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis() << std::endl;
-      std::cout << "\tLongRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
-      std::cout << "\tLongRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
+      //std::cout << "\tLowGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
+      //std::cout << "\tHighGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis() << std::endl;
+      //std::cout << "\tShortRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis() << std::endl;
+      //std::cout << "\tShortRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis() << std::endl;
+      //std::cout << "\tLongRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
+      //std::cout << "\tLongRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
       //TBD - print out matrix
 
       //TBD
@@ -1143,7 +1137,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     if (m_offsetSelect == "Average")
     {
       //TBD
-      std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - offset->size() = " << offset->size() << std::endl;
+      //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - offset->size() = " << offset->size() << std::endl;
       //TBD
 
       sre /= offset->size();
@@ -1183,12 +1177,12 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       featurevec["RunEntropy"] = re;
 
       //TBD
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LowGreyLevelRunEmphasis = " << lglre << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - HighGreyLevelRunEmphasis = " << hglre << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - ShortRunLowGreyLevelEmphasis = " << srlgle << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - ShortRunHighGreyLevelEmphasis = " << srhgle << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LongRunLowGreyLevelEmphasis = " << lrlgle << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LongRunHighGreyLevelEmphasis = " << lrhgle << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LowGreyLevelRunEmphasis = " << lglre << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - HighGreyLevelRunEmphasis = " << hglre << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - ShortRunLowGreyLevelEmphasis = " << srlgle << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - ShortRunHighGreyLevelEmphasis = " << srhgle << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LongRunLowGreyLevelEmphasis = " << lrlgle << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LongRunHighGreyLevelEmphasis = " << lrhgle << std::endl;
       //TBD
 
     }
@@ -1403,7 +1397,7 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
       featureCalc->Update();
 
       //TBD - to debug and compare vs GLRLM
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLCM - GLCM Matrix: Offset: " << offset->at(i) << "\n";
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLCM - GLCM Matrix: Offset: " << offset->at(i) << "\n";
 
       //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
       //auto temp = glcmGenerator->GetOutput();
