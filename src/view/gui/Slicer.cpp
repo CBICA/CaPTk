@@ -356,7 +356,14 @@ double Slicer::GetMaskOpacity()
 }
 void Slicer::SetMaskOpacity(double opacity)
 {
-  mMaskOpacity = opacity;
+  if (opacity > 1)
+  {
+    mMaskOpacity = opacity / 10;
+  }
+  else
+  {
+    mMaskOpacity = opacity;
+  }
 
   if (mMaskActor)
   {

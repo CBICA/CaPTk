@@ -131,6 +131,8 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
           {
             this->SM->GetSlicer(0)->AddLabelToMap(9);
           }
+          this->SM->GetSlicer(0)->mMask->Modified();
+          //this->SM->GetSlicer(0)->Render();
           this->SM->Render();
         }
         if (bCtrlKey)
@@ -175,6 +177,8 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
           {
             this->SM->GetSlicer(0)->ShowLabelOnMap(9);
           }
+          this->SM->GetSlicer(0)->mMask->Modified();
+          //this->SM->GetSlicer(0)->Render();
           this->SM->Render();
         }
         if (KeyPress == "l") 

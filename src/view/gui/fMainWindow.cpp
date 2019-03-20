@@ -7874,18 +7874,10 @@ void fMainWindow::UndoFunctionality()
 
 void fMainWindow::SetOpacity()
 {
-  for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
-  {
-    for (int i = 0; i < 3; i++)
-    {
-      if (this->mSlicerManagers[index]->GetSlicer(i)->GetMaskOpacity() == 0)
-        this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(drawingPanel->getCurrentOpacity());
-      else
-        this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(0);
-    }
-  }
-  this->mSlicerManagers[0]->GetSlicer(0)->mMask->Modified();
-  this->mSlicerManagers[0]->Render();
+  if (this->mSlicerManagers[0]->GetSlicer(0)->GetMaskOpacity() == 0)
+    ChangeMaskOpacity(drawingPanel->getCurrentOpacity());
+  else
+    ChangeMaskOpacity(0);
 }
 
 void fMainWindow::closeEvent(QCloseEvent* event)
