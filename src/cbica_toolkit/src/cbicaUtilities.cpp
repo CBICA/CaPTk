@@ -819,7 +819,11 @@ namespace cbica
     std::string return_string = std::string(path);
     path[0] = '\0';
 
+<<<<<<< HEAD
     // std::cout << "PATH: " << path << std::endl;
+=======
+    // std::cout << "PATH: " << return_string << std::endl;
+>>>>>>> ef2ab6b377e566db52fff040f0e62f2df39f3121
     return return_string;
   }
 
@@ -1955,6 +1959,7 @@ namespace cbica
         extension = tempExt + compressionFormats[i];
       }
     }
+
     if (!path.empty() && !baseName.empty() && !extension.empty())
     {
       return true;
@@ -1971,28 +1976,25 @@ namespace cbica
       char *basename_var, *path_name; 
 
       auto idx = dataFile_wrap.rfind('.');
+
+      // fun fact, replaceString(string, "", "") enters an infinite loop.
+      // can we not use std::replace? is that not an option?
+      if (extension != "") 
+        dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+
       if (idx != std::string::npos)
       {
         extension = "." + dataFile_wrap.substr(idx + 1);
-        if (std::string(PROJECT_VERSION).find(extension) != std::string::npos) // this means the exetuable has the version information embedded
-        {
+        if (extension.find("/") != std::string::npos)
           extension = "";
-        }
-        if (extension.find("/") != std::string::npos) // this means that the extension contains part of folder separatation - which is incorrect 
-        {
-          extension = "";
-        }
-        dataFile_wrap = replaceString(dataFile_wrap, extension, "");
-
-        std::cout << "EXTENSION " << extension << std::endl;
-        std::cout << "datafilewrap " << dataFile_wrap << std::endl;
+        else
+          dataFile_wrap = replaceString(dataFile_wrap, extension, "");
       }
       // else // there is no extension for file
 
       path_name = dirname(cbica::constCharToChar(dataFile_wrap.c_str()));
       basename_var = basename(cbica::constCharToChar(dataFile_wrap.c_str()));
 #endif
-
       //path sanity check
       if (path_name == NULL)
       {
@@ -2063,6 +2065,7 @@ namespace cbica
     for (size_t pos = 0;; pos += replaceWith.length())
     {
       pos = return_string.find(toReplace, pos);
+      // std::cout << "pos: " << pos << std::endl;
       if (pos == std::string::npos)
         break;
 

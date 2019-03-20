@@ -93,10 +93,13 @@ public:
               largestComponentSize = currentComponentSize;
             }
           }
+          this->m_features["LargestComponentSize"] = largestComponentSize;
         }
         else
         {
           componentToConsider = 0;
+          auto currentComponentSize = labelMap->GetNthLabelObject(componentToConsider)->GetNumberOfPixels();
+          this->m_features["LargestComponentSize"] = currentComponentSize;
         }
         auto labelObject = labelMap->GetNthLabelObject(componentToConsider);
 
@@ -113,7 +116,6 @@ public:
           numerator = ellipseDiameter[0] * ellipseDiameter[1];
         }
 
-        this->m_features["LargestComponentSize"] = largestComponentSize;
         this->m_features["Eccentricity"] = std::sqrt(1 - numerator / std::pow(ellipseDiameter[ellipseDiameter.Size() - 1], 2));
 
         for (size_t d = 0; d < TShapeImageType::ImageDimension; d++)
