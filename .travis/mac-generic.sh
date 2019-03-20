@@ -8,12 +8,9 @@ CAPTK_CMD () {
 # export CMAKE_PROGRAM_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PROGRAM_PATH"
 # export PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$PATH"
 
-cmake ../ 
-
-rm CMakeCache.txt
-
 export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
 cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
 
 echo "Run Dependency Manager"
@@ -36,8 +33,8 @@ make -j 2
 
 # make package
 
-chmod +x ../.travis/mac-pkg.sh
-../.travis/mac-pkg.sh
+# chmod +x ../.travis/mac-pkg.sh
+# ../.travis/mac-pkg.sh
 }
 
 ###########################
