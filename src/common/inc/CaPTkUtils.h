@@ -49,6 +49,22 @@ struct PointVal
   {
     return PointVal(-1, -1, -1, -1);
   }
+  bool operator==(const PointVal& rhs) const
+  {
+    if ((x == rhs.x) && (y == rhs.y) && (z == rhs.z))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  float getDistanceFrom(const PointVal& point2)
+  {
+    return std::sqrt(std::pow(point2.z - z, 2) + std::pow(point2.y - y, 2) + std::pow(point2.x - x, 2));
+  }
+
   int x, y, z, value;
 };
 
