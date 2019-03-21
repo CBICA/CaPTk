@@ -10,6 +10,7 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 steps:
+# Checkout validator.
 - bash: |
       set -x
       if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
@@ -17,10 +18,37 @@ steps:
       fi
   displayName: 'Checkout pull request HEAD'
 
+# Dependency manager
 - script: |
       sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix
   displayName: 'Install dependencies from Aptitude'
 
+# Debug info before main scripts start
 - script: |
-      ./.travis/linux-generic.sh
-  displayName: 'Launch Travis CI script'
+      ls
+  displayName: 'Get debugging information'
+
+# Create build dir
+- script: |
+      mkdir -p bin
+  displayName: 'Create build directory'
+
+# Move OS specific qt lib in
+# Move externalApps into bin to trick CMake
+- script: |
+      mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
+      mv ./binaries/externalApps.zip ./bin/
+      cd bin
+      unzip externalApps.zip &> /dev/null
+  displayName: 'Install Qt & external applications'
+
+# Create fake test dirs
+- script: |   
+      mkdir -p testing
+      mkdir -p ./testing/TestData
+  displayName: 'Create phony tests'
+
+# Configure and build superbuild
+      cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
+      make -j2
+  displayName: 'Configure and compile superbuild'
