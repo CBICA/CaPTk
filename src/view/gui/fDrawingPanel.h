@@ -63,6 +63,9 @@ public:
       }
     }
   }
+
+  int getCurrentOpacity() { return m_currentOpacity; };
+
 signals :
   void clearMask(int label=-1);
   void UndoButtonClicked();
@@ -110,6 +113,9 @@ public slots :
   void helpClicked();
 
   void ChangeLabelValuesClicked();
+
+private:
+  int m_currentOpacity = 1;
 };
 
 
