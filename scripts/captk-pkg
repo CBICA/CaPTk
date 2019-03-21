@@ -267,8 +267,10 @@ cp ./licenses/Linux-Combined.txt ./pkg/
 cp ./scripts/linux-makeself ./pkg/
 chmod +x ./pkg/linux-makeself
 # Create version file
+# This should always create a file because the installer script needs the version number and won't have access to the cmake
 # Save version as variable
 ver=`./scripts/unix-version`
+# Should not be an issue to write to this file considering that pkg is created and destroyed in this script
 echo ${ver} >> ./pkg/version
 
 # Step 3: Wrap it all upp
