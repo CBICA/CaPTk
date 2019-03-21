@@ -49,6 +49,7 @@ steps:
   displayName: 'Create phony tests'
 
 # Configure and build superbuild
+- script: |
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j2
   displayName: 'Configure and compile superbuild'
