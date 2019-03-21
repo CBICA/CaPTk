@@ -23,22 +23,22 @@ jobs:
       if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
         git checkout $(System.PullRequest.SourceCommitId)
       fi
-  displayName: 'Checkout pull request HEAD'
+    displayName: 'Checkout pull request HEAD'
 
   # Dependency manager
   - bash: |
       sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix
-  displayName: 'Install dependencies from Aptitude'
+    displayName: 'Install dependencies from Aptitude'
 
   # Debug info before main scripts start
   - bash: |
       ls
-  displayName: 'Get debugging information'
+    displayName: 'Get debugging information'
 
   # Create build dir
   - bash: |
       mkdir -p bin
-  displayName: 'Create build directory'
+    displayName: 'Create build directory'
 
 # Move OS specific qt lib in
 # Move externalApps into bin to trick CMake
@@ -54,10 +54,10 @@ jobs:
       cd bin
       mkdir -p testing
       mkdir -p ./testing/TestData
-  displayName: 'Create phony tests'
+    displayName: 'Create phony tests'
 
 # Configure and build superbuild
   - bash: |
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j2
-  displayName: 'Configure and compile superbuild'
+    displayName: 'Configure and compile superbuild'
