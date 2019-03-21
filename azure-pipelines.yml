@@ -4,9 +4,10 @@
 # https://aka.ms/yaml
 
 trigger:
-- master
-
-
+  batch: true
+  branches:
+    include:
+    - master
 
 jobs:
 
@@ -58,7 +59,7 @@ jobs:
 
 # Configure and build superbuild
   - bash: |
-      ls -al
+      cd bin
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j2
     displayName: 'Configure and compile superbuild'
