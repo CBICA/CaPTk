@@ -19,12 +19,12 @@ jobs:
 
   steps:
   # Checkout validator.
-  - bash: |
-      set -x
-      if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
-        git checkout $(System.PullRequest.SourceCommitId)
-      fi
-    displayName: 'Checkout pull request HEAD'
+  # - bash: |
+  #     set -x
+  #     if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
+  #       git checkout $(System.PullRequest.SourceCommitId)
+  #     fi
+  #   displayName: 'Checkout pull request HEAD'
 
   # Dependency manager
   - bash: |
