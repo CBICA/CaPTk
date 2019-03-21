@@ -819,7 +819,6 @@ namespace cbica
     std::string return_string = std::string(path);
     path[0] = '\0';
 
-    // std::cout << "PATH: " << return_string << std::endl;
     return return_string;
   }
 
@@ -1977,14 +1976,17 @@ namespace cbica
       // can we not use std::replace? is that not an option?
       if (extension != "") 
         dataFile_wrap = replaceString(dataFile_wrap, extension, "");
-
+      
       if (idx != std::string::npos)
       {
         extension = "." + dataFile_wrap.substr(idx + 1);
         if (extension.find("/") != std::string::npos)
           extension = "";
-        else
+        else {
+#ifndef __APPLE__
           dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+#endif
+        }
       }
       // else // there is no extension for file
 

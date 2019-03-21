@@ -4,17 +4,12 @@
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
-export CMAKE_PREFIX_PATH=/Library/TeX/texbin
+# export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
+# export CMAKE_PROGRAM_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PROGRAM_PATH"
+# export PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$PATH"
 
-export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PREFIX_PATH"
-export CMAKE_PROGRAM_PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$CMAKE_PROGRAM_PATH"
-export PATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib/cmake/Qt5:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:$PATH"
 export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-# export CMAKE_INSTALL_RPATH="${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/lib:${TRAVIS_BUILD_DIR}/bin/qt/5.12.1/bin:"
-
-ls qt
-
+export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
 cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
 
@@ -38,8 +33,8 @@ make -j 2
 
 # make package
 
-chmod +x ../.travis/mac-pkg.sh
-../.travis/mac-pkg.sh
+# chmod +x ../.travis/mac-pkg.sh
+# ../.travis/mac-pkg.sh
 }
 
 ###########################
