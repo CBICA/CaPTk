@@ -35,15 +35,16 @@ steps:
 
 # Move OS specific qt lib in
 # Move externalApps into bin to trick CMake
-- bash: |
-      mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
-      mv ./binaries/externalApps.zip ./bin/
-      cd bin
-      unzip externalApps.zip &> /dev/null
-  displayName: 'Install Qt & external applications'
+# - bash: |
+#       mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
+#       mv ./binaries/externalApps.zip ./bin/
+#       cd bin
+#       unzip externalApps.zip &> /dev/null
+#   displayName: 'Install Qt & external applications'
 
 # Create fake test dirs
 - bash: |   
+      cd bin
       mkdir -p testing
       mkdir -p ./testing/TestData
   displayName: 'Create phony tests'
