@@ -12,7 +12,7 @@ trigger:
 jobs:
 
 - job: 'Test'
-  displayName: "Build and test"
+  displayName: "End-to-end Xenial build"
 
   pool:
     vmImage: 'Ubuntu-16.04'
@@ -32,39 +32,38 @@ jobs:
     displayName: 'Install dependencies from Aptitude'
 
   # Debug info before main scripts start
-  - bash: |
-      ls -al
-    displayName: 'Get debugging information'
+  # - bash: |
+  #     ls -al
+  #   displayName: 'Get debugging information'
 
   # Create build dir
   - bash: |
       mkdir -p bin
     displayName: 'Create build directory'
 
-# Move OS specific qt lib in
-# Move externalApps into bin to trick CMake
-# - bash: |
-#       mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
-#       mv ./binaries/externalApps.zip ./bin/
-#       cd bin
-#       unzip externalApps.zip &> /dev/null
-#   displayName: 'Install Qt & external applications'
+  # This is here in case if either Qt or External apps needs to be overridden
+  # - bash: |
+  #       mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
+  #       mv ./binaries/externalApps.zip ./bin/
+  #       cd bin
+  #       unzip externalApps.zip &> /dev/null
+  #   displayName: 'Install Qt & external applications'
 
-# Create fake test dirs
+  # Create fake test dirs. Can be removed.
   - bash: |   
       cd bin
       mkdir -p testing
       mkdir -p ./testing/TestData
     displayName: 'Create phony tests'
 
-# Configure and build superbuild
+  # Configure and build superbuild
   - bash: |
       cd bin
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j
     displayName: 'Configure and compile superbuild'
 
-# Configure and build CaPTk
+  # Configure and build CaPTk
   - bash: |
       cd bin
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
