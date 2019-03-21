@@ -17,21 +17,21 @@ echo "Run Dependency Manager"
 # # make & sleep 5600; kill $! 
 make -j 2
 
-# rm CMakeCache.txt
+rm CMakeCache.txt
 
-# export CC=/usr/local/opt/llvm/bin/clang
-# export CXX=/usr/local/opt/llvm/bin/clang++
-# export LDFLAGS="-L/usr/local/opt/llvm/lib"
-# export CPPFLAGS="-L/usr/local/opt/llvm/include"
+export CC=/usr/local/opt/llvm/bin/clang
+export CXX=/usr/local/opt/llvm/bin/clang++
+export LDFLAGS="-L/usr/local/opt/llvm/lib"
+export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-# echo "Run CaPTk Build"
-# # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/install/lib/cmake/ITK-4.13:$CMAKE_PREFIX_PATH"
-# cmake ../
-# cmake ../
-# cmake ../
-# make -j 2
+echo "Run CaPTk Build"
+# export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/install/lib/cmake/ITK-4.13:$CMAKE_PREFIX_PATH"
+cmake ../
+cmake ../
+cmake ../
+make -j 2
 
-# make package
+make package
 
 # chmod +x ../.travis/mac-pkg.sh
 # ../.travis/mac-pkg.sh
