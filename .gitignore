@@ -30,7 +30,7 @@ src/applications/FeatureExtraction/data/output
 ibsi_phantom
 /src/applications/FeatureExtraction/runner.ps1
 
-mac-local-build.sh
+mac-local-build.sh 
 mac-pkg.sh
 deepmedic
 itksnap
@@ -38,3 +38,9 @@ libra
 confetti
 dcm2nii
 theia
+.DS_Store
+testing
+/binaries/.DS_Store
+/cmake_modules/.DS_Store
+/src/applications/.DS_Store
+/.travis/.DS_Store

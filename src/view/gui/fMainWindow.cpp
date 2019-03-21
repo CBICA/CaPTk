@@ -349,7 +349,7 @@ fMainWindow::fMainWindow()
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
-  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionDerivatives PerfusionPCA TrainingModule";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation";
 #ifdef WIN32
   segAppList += " deepmedic";
@@ -670,7 +670,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionAlignment") != std::string::npos)
     {
-      vectorOfMiscApps[i].action->setText("  Perfusion Alignment");
+      vectorOfMiscApps[i].action->setText("  Perfusion Alignment"); //TBD set at source
       connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(PerfusionAlignmentCalculation()));
     }
     else if (vectorOfMiscApps[i].name.find("DiffusionDerivatives") != std::string::npos)
@@ -756,6 +756,7 @@ fMainWindow::fMainWindow()
   connect(drawingPanel, SIGNAL(CurrentDrawingLabelChanged(int)), this, SLOT(updateDrawMode()));
   connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity(int)));
   connect(drawingPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
+  connect(drawingPanel, SIGNAL(sig_ChangeLabelValuesClicked(const std::string, const std::string)), this, SLOT(CallLabelValuesChange(const std::string, const std::string)));
 
 
   connect(&recurrencePanel, SIGNAL(SubjectBasedRecurrenceEstimate(std::string, bool, bool, bool, bool)), this, SLOT(StartRecurrenceEstimate(const std::string &, bool, bool, bool, bool)));
@@ -1443,7 +1444,12 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
       return;
     }
-    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    if ((extension == ".dcm") || 
+      (extension == ".DCM") ||
+      (extension == ".dicom") || 
+      (extension == "") || 
+      (extension == ".ima") ||
+      (extension == ".IMA"))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       fname = d.absolutePath().toStdString();
@@ -4999,7 +5005,9 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     fileName = cbica::normPath(fileName);
     updateProgress(i + 1, "Opening " + fileName, files.size());
     auto extension = cbica::getFilenameExtension(fileName);
-    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+      (extension == ".ima") ||
+      (extension == ".IMA"))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       QString fname = d.absolutePath();
@@ -5051,6 +5059,7 @@ void fMainWindow::openDicomImages(QString dir)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   imageManager->SetImage(currentImage);
+  imageManager->SetOriginalDirection(currentImage->GetDirection());
   //imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
   //delete dicomSeriesReader; 
@@ -6602,10 +6611,10 @@ void fMainWindow::DCM2NIfTIConversion()
   dcmConverter.exec();
 }
 
-void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, bool loadAsImage)
+void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, bool loadAsImage)
 {
   std::string saveFolder = m_tempFolderLocation + "/dcmConv/";
-  CallDCM2NIfTIConversion(firstImageInSeries, saveFolder);
+  CallDCM2NIfTIConversion(inputDir, saveFolder);
 
   auto vectorOfFiles = cbica::filesInDirectory(saveFolder);
 
@@ -6620,31 +6629,9 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, 
 
 }
 
-void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, const std::string outputFileName)
+void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, const std::string outputDir)
 {
-  const std::string inputDataDir = cbica::getFilenamePath(firstImageInSeries);
-
-  auto vectorOfFiles = cbica::filesInDirectory(inputDataDir);
-
-  std::string filesInDir = "" /*+ vectorOfFiles[0]*/;
-
-  for (size_t i = 0; i < vectorOfFiles.size(); i++)
-  {
-    if ((vectorOfFiles[i] != ".") || (vectorOfFiles[i] != ".."))
-    {
-      filesInDir += " " + vectorOfFiles[i];
-    }
-  }
-
-  std::string outputDir = cbica::getFilenamePath(outputFileName, false);
-  outputDir = outputDir.substr(0, outputDir.size() - 1);
-
-  if (!cbica::isDir(outputDir))
-  {
-    cbica::createDir(outputDir);
-  }
-
-  std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + filesInDir;
+  std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
 
   if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
   {
@@ -7295,6 +7282,35 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   }
 }
 
+void fMainWindow::CallLabelValuesChange(const std::string oldValues, const std::string newValues)
+{
+  if (!isMaskDefined())
+  {
+    ShowErrorMessage("A valid mask needs to be loaded");
+    return;
+  }
+  auto oldValues_string_split = cbica::stringSplit(oldValues, "x");
+  auto newValues_string_split = cbica::stringSplit(newValues, "x");
+
+  if (oldValues_string_split.size() != newValues_string_split.size())
+  {
+    ShowErrorMessage("Old and New values have the same number of inputs", this);
+    return;
+  }
+
+  auto output = cbica::ChangeImageValues< ImageTypeFloat3D >(getMaskImage(), oldValues, newValues);
+
+  if (output.IsNull())
+  {
+    ShowErrorMessage("Changing values did not work as expected, please try again with correct syntax");
+    return;
+  }
+
+  std::string tempFile = m_tempFolderLocation + "/mask_changedValues.nii.gz";
+  cbica::WriteImage< ImageTypeFloat3D >(output, tempFile);
+  readMaskFile(tempFile);
+}
+
 void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile)
 {
   if (!referenceImage.empty() && !inputImageFile.empty() && !outputImageFile.empty())
@@ -7580,13 +7596,21 @@ void fMainWindow::ChangeBrushSize(int size)
 
 void fMainWindow::ChangeMaskOpacity(int newMaskOpacity) // multiLabel uncomment this function
 {
-  double test = newMaskOpacity * 0.1;
+  double tempOpacity;
+  if ((newMaskOpacity > 1) || (newMaskOpacity == 1))
+  {
+    tempOpacity = 1.0;
+  }
+  else
+  {
+    tempOpacity = newMaskOpacity * 0.1;
+  }
   for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
   {
     for (size_t j = 0; j < 3; j++)
     {
-      this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = test;
-      this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(test);
+      this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = tempOpacity;
+      this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(tempOpacity);
       this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
     }
   }
@@ -7858,18 +7882,10 @@ void fMainWindow::UndoFunctionality()
 
 void fMainWindow::SetOpacity()
 {
-  for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
-  {
-    for (int i = 0; i < 3; i++)
-    {
-      if (this->mSlicerManagers[index]->GetSlicer(i)->GetMaskOpacity() == 0)
-        this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(1);
-      else
-        this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(0);
-    }
-  }
-  this->mSlicerManagers[0]->GetSlicer(0)->mMask->Modified();
-  this->mSlicerManagers[0]->Render();
+  if (this->mSlicerManagers[0]->GetSlicer(0)->GetMaskOpacity() == 0)
+    ChangeMaskOpacity(drawingPanel->getCurrentOpacity());
+  else
+    ChangeMaskOpacity(0);
 }
 
 void fMainWindow::closeEvent(QCloseEvent* event)

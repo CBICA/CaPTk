@@ -38,7 +38,6 @@ public:
   void SetCurrentImagePath(const QString &inputPath)
   {
     mInputPathName = inputPath;
-    outputImageName->setText(mInputPathName + "dcm2nii.nii.gz");
   }
 
   QString mInputPathName;
@@ -48,8 +47,8 @@ public:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
 
-  void OpenInputImage();
-  void SelectOutputImage();
+  void OpenInputDir();
+  void SelectOutputDir();
 
 signals:
   void RunDICOMConverter(const std::string firstImageInSeries, const std::string outputImage);

@@ -94,12 +94,15 @@ int main(int argc, char *argv[])
     confType = atoi(argv[tempPosition + 1]);
   }
   TrainingModule mTrainingSimulator;
-  if(mTrainingSimulator.Run(inputFeaturesFile, inputLabelsFile, outputDirectoryName, classifierType, foldType, confType)==true)
+  if (mTrainingSimulator.Run(inputFeaturesFile, inputLabelsFile, outputDirectoryName, classifierType, foldType, confType) == true)
+  {
+    std::cout << "The trained model and classification performance has been saved at the specified location!!!\n";
     std::cout << "Finished successfully!!!\n";
+  }
   else
     std::cout << "Encountered an error!!!\n";
 
-  int a;
-  std::cin >> a;
+  //int a;
+  //std::cin >> a;
   return EXIT_SUCCESS;
 }

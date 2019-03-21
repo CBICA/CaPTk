@@ -842,8 +842,6 @@ namespace cbica
         input_string = m_optionalParameters[i].verbose == input_string ? m_optionalParameters[i].laconic : input_string;
       }
 
-      std::cout << "[DEBUG] Input Str: " << input_string << std::endl;
-
       return;
     }
   }
