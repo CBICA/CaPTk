@@ -10,10 +10,17 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- bash: |
+      set -x
+      if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
+        git checkout $(System.PullRequest.SourceCommitId)
+      fi
+    displayName: 'Checkout pull request HEAD'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+      sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix
+    displayName: 'Install dependencies from Aptitude'
+
+- script: |
+      ./.travis/linux-generic.sh
+    displayName: 'Launch Travis CI script'
