@@ -15,12 +15,12 @@ steps:
       if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
         git checkout $(System.PullRequest.SourceCommitId)
       fi
-    displayName: 'Checkout pull request HEAD'
+  displayName: 'Checkout pull request HEAD'
 
 - script: |
       sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix
-    displayName: 'Install dependencies from Aptitude'
+  displayName: 'Install dependencies from Aptitude'
 
 - script: |
       ./.travis/linux-generic.sh
-    displayName: 'Launch Travis CI script'
+  displayName: 'Launch Travis CI script'
