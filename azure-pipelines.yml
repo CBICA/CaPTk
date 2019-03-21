@@ -61,12 +61,12 @@ jobs:
   - bash: |
       cd bin
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
-      make -j2
+      make -j
     displayName: 'Configure and compile superbuild'
 
 # Configure and build CaPTk
   - bash: |
       cd bin
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
-      make -j2
+      make -j
     displayName: 'Configure and compile CaPTk'
