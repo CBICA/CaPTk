@@ -32,7 +32,7 @@ jobs:
 
   # Debug info before main scripts start
   - bash: |
-      ls
+      ls -al
     displayName: 'Get debugging information'
 
   # Create build dir
@@ -58,6 +58,7 @@ jobs:
 
 # Configure and build superbuild
   - bash: |
+      ls -al
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j2
     displayName: 'Configure and compile superbuild'
