@@ -230,6 +230,10 @@ This panel provides the ability to annotate Regions of Interest (ROIs) and save 
 
 While drawing, you can switch across the image volumes loaded in CaPTk, by pressing the numbers 1-9 on your keyboard.
 
+Toggle between non-zero (taken from the opacity box) and zero opacity of the entire annotated mask by using the keyboard key "m".
+
+Visualize a single label using "Control + <label number>" and add labels to the visualization using "Alt + <label number>". To reset, press "Control/Alt + 0".
+
 There are the following controls underneath the <b>Drawing</b> tab:
  
 <table border="0">

@@ -7596,13 +7596,21 @@ void fMainWindow::ChangeBrushSize(int size)
 
 void fMainWindow::ChangeMaskOpacity(int newMaskOpacity) // multiLabel uncomment this function
 {
-  double test = newMaskOpacity * 0.1;
+  double tempOpacity;
+  if ((newMaskOpacity > 1) || (newMaskOpacity == 1))
+  {
+    tempOpacity = 1.0;
+  }
+  else
+  {
+    tempOpacity = newMaskOpacity * 0.1;
+  }
   for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
   {
     for (size_t j = 0; j < 3; j++)
     {
-      this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = test;
-      this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(test);
+      this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = tempOpacity;
+      this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(tempOpacity);
       this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
     }
   }
@@ -7874,18 +7882,10 @@ void fMainWindow::UndoFunctionality()
 
 void fMainWindow::SetOpacity()
 {
-  for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
-  {
-    for (int i = 0; i < 3; i++)
-    {
-      if (this->mSlicerManagers[index]->GetSlicer(i)->GetMaskOpacity() == 0)
-        this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(1);
-      else
-        this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(0);
-    }
-  }
-  this->mSlicerManagers[0]->GetSlicer(0)->mMask->Modified();
-  this->mSlicerManagers[0]->Render();
+  if (this->mSlicerManagers[0]->GetSlicer(0)->GetMaskOpacity() == 0)
+    ChangeMaskOpacity(drawingPanel->getCurrentOpacity());
+  else
+    ChangeMaskOpacity(0);
 }
 
 void fMainWindow::closeEvent(QCloseEvent* event)

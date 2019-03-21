@@ -61,6 +61,7 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
 
     bool bCtrlKey = isi->GetInteractor()->GetControlKey();
     bool bShiftKey = isi->GetInteractor()->GetShiftKey();
+    bool bAltKey = isi->GetInteractor()->GetAltKey();
     std::string KeyPress;
 
     if (event == vtkCommand::KeyPressEvent) 
@@ -88,12 +89,106 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
 
       if (event == vtkCommand::KeyPressEvent)
       {
-        if (KeyPress == "l") {
+        if (bShiftKey || bAltKey)
+        {
+          if (KeyPress == "0")
+          {
+            this->SM->GetSlicer(0)->ResetMap();
+          }
+          if (KeyPress == "1")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(1);
+          }
+          if (KeyPress == "2")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(2);
+          }
+          if (KeyPress == "3")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(3);
+          }
+          if (KeyPress == "4")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(4);
+          }
+          if (KeyPress == "5")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(5);
+          }
+          if (KeyPress == "6")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(6);
+          }
+          if (KeyPress == "7")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(7);
+          }
+          if (KeyPress == "8")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(8);
+          }
+          if (KeyPress == "9")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(9);
+          }
+          this->SM->GetSlicer(0)->mMask->Modified();
+          //this->SM->GetSlicer(0)->Render();
+          this->SM->Render();
+        }
+        if (bCtrlKey)
+        {
+          if (KeyPress == "0")
+          {
+            this->SM->GetSlicer(0)->ResetMap();
+          }
+          if (KeyPress == "1")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(1);
+          }
+          if (KeyPress == "2")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(2);
+          }
+          if (KeyPress == "3")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(3);
+          }
+          if (KeyPress == "4")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(4);
+          }
+          if (KeyPress == "5")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(5);
+          }
+          if (KeyPress == "6")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(6);
+          }
+          if (KeyPress == "7")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(7);
+          }
+          if (KeyPress == "8")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(8);
+          }
+          if (KeyPress == "9")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(9);
+          }
+          this->SM->GetSlicer(0)->mMask->Modified();
+          //this->SM->GetSlicer(0)->Render();
+          this->SM->Render();
+        }
+        if (KeyPress == "l") 
+        {
           this->SM->ToggleInterpolation();
           this->SM->Render();
           return;
         }
-        if (KeyPress == "h") {
+        if (KeyPress == "h") 
+        {
           for (int i = 0; i < this->SM->GetNumberOfSlicers(); i++)
           {
             int s;
@@ -108,7 +203,8 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
         {
           mw->SetOpacity();
         }
-        if (KeyPress == "r") {
+        if (KeyPress == "r") 
+        {
           this->SM->GetSlicer(VisibleInWindow)->ResetCamera();
           //
           // adjust scale

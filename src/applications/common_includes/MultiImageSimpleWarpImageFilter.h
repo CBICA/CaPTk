@@ -314,28 +314,12 @@ public:
       const InputPixelType *pFix, const InputPixelType *pMov, int nComp,
       float *weight, float mask, double *summary, OutputPixelType &vOut)
   {
-<<<<<<< HEAD
-    double wdiff = 0.0;
-
-    if(mask > 0.0)
-      {
-      for(int i = 0; i < nComp; i+=(1+ImageDimension))
-        {
-        double del = (*pFix++) - *(pMov++);
-        double delw = (*weight++) * del;
-        wdiff += delw * del;
-        }
-
-      summary[0] += wdiff * mask;
-      summary[1] += mask;
-=======
     double avgsqdiff;
     for(int i = 0; i < nComp; i+=(1+ImageDimension))
       {
       double del = (*pFix++) - *(pMov++);
       double delw = (*weight++) * del;
       avgsqdiff += delw * del;
->>>>>>> 43ef7496f075d647d8e516d0c8c81fc86f04a1ae
       }
     summary[0] += avgsqdiff;
     summary[1] += 1.0;
