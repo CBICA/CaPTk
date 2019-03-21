@@ -49,6 +49,16 @@ jobs:
   #       unzip externalApps.zip &> /dev/null
   #   displayName: 'Install Qt & external applications'
 
+  # Create as much free memory as possible
+
+  # Nuclear Option #1
+  - bash: |
+      rm -rf binaries
+      rm -rf data
+      rm -rf history
+      rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    displayName: 'Take the nuclear option'
+
   # Create fake test dirs. Can be removed.
   - bash: |   
       cd bin
@@ -60,12 +70,12 @@ jobs:
   - bash: |
       cd bin
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
-      make -j
+      make -j2
     displayName: 'Configure and compile superbuild'
 
   # Configure and build CaPTk
   - bash: |
       cd bin
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
-      make -j
+      make -j2
     displayName: 'Configure and compile CaPTk'
