@@ -1,5 +1,6 @@
 var Getting_Started =
 [
+    [ "Keyboard Shortcuts", "gs_keyboard.html", null ],
     [ "Components", "gs_components.html", null ],
     [ "Supported Images", "gs_supportedImages.html", null ],
     [ "Image Loading", "gs_imageLoading.html", null ],
