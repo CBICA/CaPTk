@@ -110,6 +110,7 @@ public slots :
   void shapeFreeHandButtonFunctionality();
   void shapesRectangleButtonFunctionality();
   void shapesCircleButtonFunctionality();
+  void shapesSphereButtonFunctionality();
   void helpClicked();
 
   void ChangeLabelValuesClicked();
