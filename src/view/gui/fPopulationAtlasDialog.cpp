@@ -132,6 +132,6 @@ void fPopulationAtlasDialog::OpenInputAtlasFile()
   }
   else
   {
-    inputlabelName->setText(file);
+    inputAtlasName->setText(file);
   }
 }
