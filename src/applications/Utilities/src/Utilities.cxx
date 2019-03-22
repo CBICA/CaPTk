@@ -194,8 +194,8 @@ int algorithmsRunner()
     }
 
     typedef std::map<std::string, std::pair<std::string, std::string>> DicomTagMap;
-    typename DicomTagMap readMap = reader->GetMetaDataMap();
-    typename DicomTagMap::iterator itr;
+    DicomTagMap readMap = reader->GetMetaDataMap();
+    DicomTagMap::iterator itr;
     std::pair<std::string, std::string> labelValuePair;
     std::cout << "Tag" << "\t" << "Description" << "\t" << "Value" << std::endl;
     for (itr = readMap.begin(); itr != readMap.end(); ++itr)

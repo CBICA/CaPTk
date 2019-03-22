@@ -175,10 +175,6 @@ typename ImageType::Pointer PerfusionAlignment::GetOneImageVolume(typename Perfu
 template< class ImageType, class PerfusionImageType >
 typename ImageType::Pointer PerfusionAlignment::CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti,double EchoTime)
 {
-  typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, 0, 9); //values do not matter here
-  std::vector<double> averagecurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK,0, 9); //values do not matter here
-
-  
   typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
 	typename ImageType::Pointer MASK = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 6);
 	//-------------------------------
