@@ -104,6 +104,6 @@ jobs:
     displayName: 'Configure and compile superbuild'
 
   - bash: |
-    cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF .
-    cmake --build . --target ALL_BUILD --config Release
-  displayName: 'Configure and compile CaPTk'
+      cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF .
+      cmake --build . --target ALL_BUILD --config Release
+    displayName: 'Configure and compile CaPTk'
