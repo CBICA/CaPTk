@@ -50,7 +50,7 @@ public:
       using HistogramFilterType = itk::Statistics::MaskedImageToHistogramFilter< TImageType, TImageType >;
       using HistogramMeasurementType = typename HistogramFilterType::HistogramType::MeasurementVectorType;
 
-      HistogramMeasurementType lowerBound(m_Bins), upperBound(m_Bins);
+      HistogramMeasurementType lowerBound(1), upperBound(1);
       lowerBound.Fill(m_minimum);
       upperBound.Fill(m_maximum);
 

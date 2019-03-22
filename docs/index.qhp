@@ -9,6 +9,7 @@
         <section title="Overview" ref="index.html" />
         <section title="Installation Instructions" ref="Installation.html" />
         <section title="Getting Started" ref="Getting_Started.html">
+          <section title="Keyboard Shortcuts" ref="gs_keyboard.html" />
           <section title="Components" ref="gs_components.html" />
           <section title="Supported Images" ref="gs_supportedImages.html" />
           <section title="Image Loading" ref="gs_imageLoading.html" />
@@ -70,6 +71,7 @@
     <keywords>
       <keyword name="Installation Instructions" id="Installation Instructions" ref="Installation.html" />
       <keyword name="Getting Started" id="Getting Started" ref="Getting_Started.html" />
+      <keyword name="Keyboard Shortcuts" id="Keyboard Shortcuts" ref="gs_keyboard.html" />
       <keyword name="Components" id="Components" ref="gs_components.html" />
       <keyword name="Supported Images" id="Supported Images" ref="gs_supportedImages.html" />
       <keyword name="Image Loading" id="Image Loading" ref="gs_imageLoading.html" />
@@ -141,6 +143,7 @@
       <file>dynsections.js</file>
       <file>Installation.html</file>
       <file>Getting_Started.html</file>
+      <file>gs_keyboard.html</file>
       <file>gs_components.html</file>
       <file>gs_supportedImages.html</file>
       <file>gs_imageLoading.html</file>

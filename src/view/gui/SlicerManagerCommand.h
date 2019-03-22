@@ -49,8 +49,12 @@ public:
 static std::vector<PointVal> drawRectangle(PointVal startPt, PointVal endPt, vtkSmartPointer<vtkImageData> image, const int orientation, const int slice, int thickness);
 
 static std::vector<PointVal> drawCircle(PointVal startPt, PointVal endPt, vtkSmartPointer<vtkImageData> image, const int orientation, const int slice, int width);
- 
+
+static std::vector<PointVal> drawSphere(PointVal startPt, vtkSmartPointer<vtkImageData> image, int radius);
+
 static PointVal drawPoint(PointVal pt, vtkSmartPointer<vtkImageData> image, const int orientation, const int slice, const int i = 0, const int j = 0);
+
+static PointVal drawPoint(PointVal pt, vtkSmartPointer<vtkImageData> image);
 
 void makeStroke(int VisibleInWindow, double x, double y);
 

@@ -68,6 +68,7 @@ public:
   QPushButton *  shapesLineButton;
   QPushButton *  shapesRectangleButton;
   QPushButton *  shapesCircleButton;
+  QPushButton * shapesSphereButton;
   QPushButton *  shapeFillButton;
 
   QPushButton * UndoButton;
@@ -103,6 +104,7 @@ public:
     QIcon lineIcon = QIcon((iconDir + "line.png").c_str());
     QIcon rectangleIcon = QIcon((iconDir + "rectangle.png").c_str());
     QIcon circleIcon = QIcon((iconDir + "circle.png").c_str());
+    QIcon sphereIcon = QIcon((iconDir + "sphere.png").c_str());
     QIcon fillIcon = QIcon((iconDir + "fill.png").c_str());
 
     QSize iconSize = QSize(32,32);
@@ -133,6 +135,10 @@ public:
     shapesCircleButton->setIcon(circleIcon);
     shapesCircleButton->setText("Circle");
 
+    shapesSphereButton = new QPushButton(parent);
+    shapesSphereButton->setIcon(sphereIcon);
+    shapesSphereButton->setText("Sphere");
+
     shapeFillButton = new QPushButton(parent);
     shapeFillButton->setIcon(fillIcon);
     //fillButton->setIconSize(iconSize);
@@ -143,6 +149,7 @@ public:
     shapeButtons.push_back(shapeNoneButton);
     shapeButtons.push_back(shapeEracerButton);
     shapeButtons.push_back(shapeFreeHandButton);
+    shapeButtons.push_back(shapesSphereButton);
     shapeButtons.push_back(shapesLineButton);
     shapeButtons.push_back(shapesRectangleButton);
     shapeButtons.push_back(shapesCircleButton);
@@ -242,6 +249,7 @@ public:
     shapesLayout1->addWidget(shapeNoneButton);
     shapesLayout1->addWidget(shapeEracerButton);
     shapesLayout1->addWidget(shapeFreeHandButton);
+    shapesLayout1->addWidget(shapesSphereButton);
 
     QVBoxLayout* shapesLayout2 = new QVBoxLayout();
     shapesLayout2->addWidget(shapesLineButton);

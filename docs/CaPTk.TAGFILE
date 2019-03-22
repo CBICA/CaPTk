@@ -11,6 +11,11 @@
     <filename>Getting_Started</filename>
   </compound>
   <compound kind="page">
+    <name>gs_keyboard</name>
+    <title>Keyboard Shortcuts</title>
+    <filename>gs_keyboard</filename>
+  </compound>
+  <compound kind="page">
     <name>gs_components</name>
     <title>Components</title>
     <filename>gs_components</filename>

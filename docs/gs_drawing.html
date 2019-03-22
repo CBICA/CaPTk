@@ -71,6 +71,8 @@ $(document).ready(function(){initNavTree('gs_drawing.html','');});
 <div class="caption">
 Drawing functions</div></div>
  While drawing, you can switch across the image volumes loaded in CaPTk, by pressing the numbers 1-9 on your keyboard.</p>
+<p>Toggle between non-zero (taken from the opacity box) and zero opacity of the entire annotated mask by using the keyboard key "m".</p>
+<p>Visualize a single label using "Control + &lt;label number&gt;" and add labels to the visualization using "Alt + &lt;label number&gt;". To reset, press "Control/Alt + 0".</p>
 <p>There are the following controls underneath the <b>Drawing</b> tab:</p>
 <table border="0">
 <tr>
@@ -101,6 +103,8 @@ Drawing functions</div></div>
 <td align="center">Clear All Labels </td><td>Remove all labels completely from the mask. </td></tr>
 <tr>
 <td align="center">Undo </td><td>Undo last drawing action. </td></tr>
+<tr>
+<td align="center">Change Values </td><td>By providing the same number of old and new values in the format <b>AxBxC</b>, the values of the annotated region can be quickly changed. </td></tr>
 </table>
 <hr/>
  </div></div><!-- contents -->
@@ -108,7 +112,7 @@ Drawing functions</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Mar 19 2019 10:19:06 for Cancer Imaging Phenomics Toolkit (CaPTk) by
+    <li class="footer">Generated on Thu Mar 21 2019 18:22:21 for Cancer Imaging Phenomics Toolkit (CaPTk) by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.14 </li>
   </ul>
