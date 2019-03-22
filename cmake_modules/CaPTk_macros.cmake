@@ -192,7 +192,7 @@ FIND_PACKAGE(OpenMP REQUIRED)
 SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
 SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
 
-MESSAGE(AUTHOR_WARNING "[DEBUG]: OpenMP")
+MESSAGE(AUTHOR_WARNING "OpenMP is enabled, you may see issues on Azure")
 
 # add a few compiler options for GCC and MSVC
 IF( CMAKE_COMPILER_IS_GNUCXX )

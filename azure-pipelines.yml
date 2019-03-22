@@ -141,9 +141,9 @@ jobs:
   
   - bash: |
       cd bin
-      cmake ../ -DCMAKE_INSTALL_PREFIX="./bin/install"
-      cmake ../ -DCMAKE_INSTALL_PREFIX="./bin/install"
-      make -j 2
+      cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+      cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+      make -j2
       rm CMakeCache.txt
     displayName: 'Configure and compile superbuild'
 
@@ -160,7 +160,7 @@ jobs:
       cmake ../
       cmake ../
       cmake ../
-      make -j 2
+      make -j2
     displayName: 'Configure and compile CaPTk'
   
   - bash: |
