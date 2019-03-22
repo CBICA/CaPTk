@@ -11,7 +11,7 @@ trigger:
 
 jobs:
 
-- job: 'Test'
+- job: 'Test Xenial'
   displayName: "End-to-end Xenial build"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
@@ -82,8 +82,8 @@ jobs:
       make -j2
     displayName: 'Configure and compile CaPTk'
 
-- job: 'Test'
-  displayName: "End-to-end Xenial build"
+- job: 'Test Windows'
+  displayName: "End-to-end Windows build"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
