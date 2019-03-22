@@ -98,12 +98,14 @@ jobs:
       rm -rf src/applications/individualApps/libra/MCRInstaller.zip
     displayName: 'Take the nuclear option'
 
-  - bash: |
-      cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF .
+  - script: |
+      C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
+      cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       cmake --build . --target ALL_BUILD --config Release
     displayName: 'Configure and compile superbuild'
 
-  - bash: |
-      cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF .
+  - script: |
+      C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
+      cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       cmake --build . --target ALL_BUILD --config Release
     displayName: 'Configure and compile CaPTk'
