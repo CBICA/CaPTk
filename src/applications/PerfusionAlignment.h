@@ -24,7 +24,7 @@ See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
 #include "CaPTkDefines.h"
 #include "itkExtractImageFilter.h"
 #include "NiftiDataManager.h"
-
+#include "DicomMetadataReader.h"
 
 #ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
@@ -74,29 +74,28 @@ public:
   NiftiDataManager mNiftiLocalPtr;
 
 
-  template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, bool rcbv, bool psr, bool ph, const double TE);
+  std::string ReadMetaDataTags(std::string filepath,std::string tagstrng);
+  std::vector<double> GetInterpolatedCurve(std::vector<double> averagecurve, double timeinseconds, double totaltimeduration);
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  typename ImageType::Pointer CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, int start, int end);
+  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, std::string dicomFile);
+
+
+  template< class ImageType, class PerfusionImageType >
+  std::vector<double> CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask, int start, int end);
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  typename ImageType::Pointer CalculatePH(typename PerfusionImageType::Pointer perfImagePointerNifti);
-
-
+  typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, int start, int end);
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti, const double TE);
-
-  template< class ImageType, class PerfusionImageType>
-  typename ImageType::Pointer CalculateSignalRecovery(typename PerfusionImageType::Pointer perfImagePointerNifti);
 
   template< class ImageType, class PerfusionImageType>
   typename ImageType::Pointer GetOneImageVolume(typename PerfusionImageType::Pointer perfImagePointerNifti, int index);
 };
 
 template< class ImageType, class PerfusionImageType >
-std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, bool rcbv, bool psr, bool ph, const double TE)
+std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, std::string dicomFile)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   PerfusionAlignment.push_back(NULL);
@@ -127,14 +126,17 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
 
   try
   {
-    if (psr == true)
-      PerfusionAlignment[0] = this->CalculateSignalRecovery<ImageType, PerfusionImageType>(FirstCopyImage);
+    typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, 0, 9); //values do not matter here
+    std::vector<double> averagecurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
+    std::string timeinseconds = ReadMetaDataTags(dicomFile, "tagtype");
+    typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
+    double totaltimeduration = std::stof(timeinseconds) * region.GetSize()[3];
 
-    if (ph == true)
-      PerfusionAlignment[1] = this->CalculatePH<ImageType, PerfusionImageType>(SecondCopyImage);
+    std::vector<double> interpolatedcurve = GetInterpolatedCurve(averagecurve,std::stof(timeinseconds),totaltimeduration);
 
-    if (rcbv == true)
-      PerfusionAlignment[2] = this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti, TE);
+
+
+    //PerfusionAlignment[2] = this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti, TE);
   }
   catch (const std::exception& e1)
   {
@@ -143,6 +145,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   }
   return PerfusionAlignment;
 }
+
 template< class ImageType, class PerfusionImageType>
 typename ImageType::Pointer PerfusionAlignment::GetOneImageVolume(typename PerfusionImageType::Pointer perfImagePointerNifti, int index)
 {
@@ -170,231 +173,13 @@ typename ImageType::Pointer PerfusionAlignment::GetOneImageVolume(typename Perfu
 }
 
 template< class ImageType, class PerfusionImageType >
-typename ImageType::Pointer PerfusionAlignment::CalculateSignalRecovery(typename PerfusionImageType::Pointer perfImagePointerNifti)
-{
-  //---------------------------------------mean from 1-10------------------------------------
-  typename ImageType::Pointer A = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
-  typename ImageType::Pointer B = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
-  typename ImageType::Pointer C = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
-
-  for (unsigned int x = 0; x < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[0]; x++)
-    for (unsigned int y = 0; y < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[1]; y++)
-      for (unsigned int z = 0; z < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[2]; z++)
-      {
-        typename PerfusionImageType::IndexType index4D;
-        index4D[0] = x;
-        index4D[1] = y;
-        index4D[2] = z;
-
-        typename ImageType::IndexType index3D;
-        index3D[0] = x;
-        index3D[1] = y;
-        index3D[2] = z;
-        //---------------------------------------mean from 1-10------------------------------------
-        double sum = 0;
-        for (unsigned int k = 0; k <= 9; k++)
-        {
-          index4D[3] = k;
-          sum = sum + perfImagePointerNifti->GetPixel(index4D);
-        }
-        //if (x == 75 && y == 149 && z == 94)
-        //{
-        //  for (unsigned int k = 0; k <= 9; k++)
-        //  {
-        //    index4D[3] = k;
-        //    std::cout << perfImagePointerNifti->GetPixel(index4D) << std::endl;
-        //  }
-        //}
-        A.GetPointer()->SetPixel(index3D, sum / 10);
-        //---------------------------------------minimum vector------------------------------------
-        std::vector<double> local_measures;
-        for (unsigned int k = 0; k < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3]; k++)
-        {
-          index4D[3] = k;
-          local_measures.push_back(perfImagePointerNifti->GetPixel(index4D));
-        }
-        double min_value = *std::min_element(std::begin(local_measures), std::end(local_measures));
-        B.GetPointer()->SetPixel(index3D, min_value);
-        //if(min_value>0)
-        //  std::cout << min_value << std::endl;
-        //---------------------------------------mean from 30-40------------------------------------
-        sum = 0;
-        for (unsigned int k = 29; k <= 39; k++)
-        {
-          index4D[3] = k;
-          sum = sum + perfImagePointerNifti->GetPixel(index4D);
-        }
-        C.GetPointer()->SetPixel(index3D, sum / 11);
-      }
-
-  typename ImageType::Pointer PSR = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 6);
-  typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-  IteratorType aIt(A, A->GetLargestPossibleRegion());
-  IteratorType bIt(B, B->GetLargestPossibleRegion());
-  IteratorType cIt(C, C->GetLargestPossibleRegion());
-  IteratorType psrIt(PSR, PSR->GetLargestPossibleRegion());
-
-  aIt.GoToBegin();
-  bIt.GoToBegin();
-  cIt.GoToBegin();
-  psrIt.GoToBegin();
-
-  while (!aIt.IsAtEnd())
-  {
-    double val = 0;
-    if ((aIt.Get() - bIt.Get()) != 0)
-      val = ((cIt.Get() - bIt.Get()) / (aIt.Get() - bIt.Get())) * 255;
-
-    psrIt.Set(val);
-    ++aIt;
-    ++bIt;
-    ++cIt;
-    ++psrIt;
-  }
-  //typedef itk::ImageFileWriter< ImageType > WriterType;
-  //typename WriterType::Pointer writer1 = WriterType::New();
-  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionAlignmentRelatedMaterial/PSR_Image_BeforeScaling.nii.gz");
-  //writer1->SetInput(PSR);
-  //writer1->Update();
-
-  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionAlignmentRelatedMaterial/A.nii.gz");
-  //writer1->SetInput(A);
-  //writer1->Update();
-
-  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionAlignmentRelatedMaterial/B.nii.gz");
-  //writer1->SetInput(B);
-  //writer1->Update();
-
-  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionAlignmentRelatedMaterial/C.nii.gz");
-  //writer1->SetInput(C);
-  //writer1->Update();
-
-
-  //scaling the image between 0-255
-  psrIt.GoToBegin();
-  double min_val = psrIt.Get();
-  double max_val = psrIt.Get();
-  while (!psrIt.IsAtEnd())
-  {
-    if (psrIt.Get() > max_val)
-      max_val = psrIt.Get();
-    if (psrIt.Get() < min_val)
-      min_val = psrIt.Get();
-    ++psrIt;
-  }
-  std::cout << "Min:" << min_val << std::endl;
-  std::cout << "Max:" << max_val << std::endl;
-
-  typename ImageType::Pointer ScaledPSR = ImageType::New();
-  ScaledPSR->CopyInformation(PSR);
-  ScaledPSR->SetRequestedRegion(PSR->GetLargestPossibleRegion());
-  ScaledPSR->SetBufferedRegion(PSR->GetBufferedRegion());
-  ScaledPSR->Allocate();
-  ScaledPSR->FillBuffer(0);
-  IteratorType scaledpsrIt(ScaledPSR, ScaledPSR->GetLargestPossibleRegion());
-  psrIt.GoToBegin();
-  scaledpsrIt.GoToBegin();
-
-  while (!psrIt.IsAtEnd())
-  {
-    if (psrIt.Get() <= 255)
-      scaledpsrIt.Set(std::round(psrIt.Get()));
-    else
-      scaledpsrIt.Set(255);
-
-    ++psrIt;
-    ++scaledpsrIt;
-  }
-
-  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionAlignmentRelatedMaterial/PSR_Image_AfterScaling.nii.gz");
-  //writer1->SetInput(ScaledPSR);
-  //writer1->Update();
-
-  return ScaledPSR;
-}
-
-
-
-template< class ImageType, class PerfusionImageType >
-typename ImageType::Pointer PerfusionAlignment::CalculatePH(typename PerfusionImageType::Pointer perfImagePointerNifti)
-{
-  //---------------------------------------mean from 1-10------------------------------------
-  std::vector<typename ImageType::Pointer> perfusionVolumesVector;
-  for (int x = 0; x <= 9; x++)
-    perfusionVolumesVector.push_back(GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, x));
-
-  typename ImageType::Pointer A = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
-  for (unsigned int x = 0; x < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[0]; x++)
-    for (unsigned int y = 0; y < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[1]; y++)
-      for (unsigned int z = 0; z < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[2]; z++)
-      {
-        typename ImageType::IndexType index;
-        index[0] = x;
-        index[1] = y;
-        index[2] = z;
-        double sum = 0;
-        for (unsigned int i = 0; i < perfusionVolumesVector.size(); i++)
-          sum = sum + perfusionVolumesVector[i]->GetPixel(index);
-        A.GetPointer()->SetPixel(index, sum / 10);
-      }
-  //---------------------------------------minimum vector------------------------------------
-  typename ImageType::Pointer B = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
-  for (unsigned int x = 0; x < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[0]; x++)
-    for (unsigned int y = 0; y < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[1]; y++)
-      for (unsigned int z = 0; z < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[2]; z++)
-      {
-        typename PerfusionImageType::IndexType perfIndex;
-        typename ImageType::IndexType index;
-        index[0] = x;
-        index[1] = y;
-        index[2] = z;
-
-        perfIndex[0] = x;
-        perfIndex[1] = y;
-        perfIndex[2] = z;
-
-        std::vector<double> local_measures;
-        for (unsigned int k = 0; k < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3]; k++)
-        {
-          perfIndex[3] = k;
-          local_measures.push_back(perfImagePointerNifti->GetPixel(perfIndex));
-        }
-        double min_value = *std::min_element(std::begin(local_measures), std::end(local_measures));
-        B.GetPointer()->SetPixel(index, min_value);
-      }
-  //---------------------------------------------------------------------------------------------------
-  typename ImageType::Pointer PH = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 6);
-  typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-  IteratorType aIt(A, A->GetLargestPossibleRegion());
-  IteratorType bIt(B, B->GetLargestPossibleRegion());
-  IteratorType phIt(PH, PH->GetLargestPossibleRegion());
-
-  aIt.GoToBegin();
-  bIt.GoToBegin();
-  phIt.GoToBegin();
-
-  while (!aIt.IsAtEnd())
-  {
-    phIt.Set(std::abs(aIt.Get() - bIt.Get()));
-    ++aIt;
-    ++bIt;
-    ++phIt;
-  }
-  ////itk::NiftiImageIO::Pointer nifti_io = itk::NiftiImageIO::New();
-  //typedef itk::ImageFileWriter< ImageType > WriterType;
-  //typename WriterType::Pointer writer1 = WriterType::New();
-  //writer1->SetFileName("PH_Image.nii.gz");
-  ////writer1->SetImageIO(nifti_io);
-  //writer1->SetInput(PH);
-  //writer1->Update();
-
-  return PH;
-}
-
-template< class ImageType, class PerfusionImageType >
 typename ImageType::Pointer PerfusionAlignment::CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti,double EchoTime)
 {
-	typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
+  typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, 0, 9); //values do not matter here
+  std::vector<double> averagecurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK,0, 9); //values do not matter here
+
+  
+  typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
 	typename ImageType::Pointer MASK = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 6);
 	//-------------------------------
 	//step 1
@@ -758,37 +543,111 @@ typename ImageType::Pointer PerfusionAlignment::CalculateRCBV(typename Perfusion
 }
 
 template< class ImageType, class PerfusionImageType >
-typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, int start, int end)
+std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask, int start, int end)
 {
+  std::vector<double> AverageCurve;
 	typename ImageType::Pointer outputImage = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
 
-	int no_of_slices = end - start + 1;
 	ImageTypeFloat4D::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
-	for (unsigned int i = 0; i < region.GetSize()[0]; i++)
-		for (unsigned int j = 0; j < region.GetSize()[1]; j++)
-			for (unsigned int k = 0; k < region.GetSize()[2]; k++)
-			{
-				typename ImageType::IndexType index3D;
-				index3D[0] = i;
-				index3D[1] = j;
-				index3D[2] = k;
+  for (unsigned int volumes = 0; volumes < region.GetSize()[3]; volumes++)
+  {
+    double volume_mean = 0;
+    for (unsigned int i = 0; i < region.GetSize()[0]; i++)
+      for (unsigned int j = 0; j < region.GetSize()[1]; j++)
+        for (unsigned int k = 0; k < region.GetSize()[2]; k++)
+        {
+          typename ImageType::IndexType index3D;
+          index3D[0] = i;
+          index3D[1] = j;
+          index3D[2] = k;
 
-				double local_sum = 0;
+          if (ImagePointerMask.GetPointer()->GetPixel(index3D) == 0)
+            continue;
 
-				for (int l = start; l <= end; l++)
-				{
-					typename PerfusionImageType::IndexType index4D;
-					index4D[0] = i;
-					index4D[1] = j;
-					index4D[2] = k;
-					index4D[3] = l;
-					local_sum = local_sum + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
-				}
-
-				double value = std::round(local_sum / no_of_slices);
-				outputImage->SetPixel(index3D, value);
-			}
-	return outputImage;
+          typename PerfusionImageType::IndexType index4D;
+          index4D[0] = i;
+          index4D[1] = j;
+          index4D[2] = k;
+          index4D[3] = volumes;
+          volume_mean = volume_mean + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
+        }
+    AverageCurve.push_back(std::round(volume_mean / region.GetSize()[3]));
+  }
+  return AverageCurve;
 }
 
+template< class ImageType, class PerfusionImageType >
+typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, int start, int end)
+{
+  typename ImageType::Pointer outputImage = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
+
+  int no_of_slices = end - start + 1;
+  ImageTypeFloat4D::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
+  for (unsigned int i = 0; i < region.GetSize()[0]; i++)
+  {
+    for (unsigned int j = 0; j < region.GetSize()[1]; j++)
+    {
+      for (unsigned int k = 0; k < region.GetSize()[2]; k++)
+      {
+        typename ImageType::IndexType index3D;
+        index3D[0] = i;
+        index3D[1] = j;
+        index3D[2] = k;
+
+        //calculate mean values
+        double local_sum = 0;
+        for (int l = 0; l < region.GetSize()[3]; l++)
+        {
+          typename PerfusionImageType::IndexType index4D;
+          index4D[0] = i;
+          index4D[1] = j;
+          index4D[2] = k;
+          index4D[3] = l;
+          local_sum = local_sum + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
+        }
+        double meanvalue = std::round(local_sum / no_of_slices);
+
+        //calculate standard deviation
+        double temp = 0.0;
+        for (int l = 0; l < region.GetSize()[3]; l++)
+        {
+          typename PerfusionImageType::IndexType index4D;
+          index4D[0] = i;
+          index4D[1] = j;
+          index4D[2] = k;
+          index4D[3] = l;
+          temp += (perfImagePointerNifti.GetPointer()->GetPixel(index4D) - meanvalue)*(perfImagePointerNifti.GetPointer()->GetPixel(index4D) - meanvalue);
+        }
+        double stddeve = std::sqrt(temp / (region.GetSize()[3] - 1));
+        if(stddeve>0)
+          outputImage->SetPixel(index3D, 1);
+        else
+          outputImage->SetPixel(index3D, 0);
+      }
+    }
+  }
+  return outputImage;
+}
+
+std::string PerfusionAlignment::ReadMetaDataTags(std::string filepaths,std::string tag)
+{
+  DicomMetadataReader *dcmMetaReader = new DicomMetadataReader();
+  dcmMetaReader->SetFilePath("");
+  bool readstatus = dcmMetaReader->ReadMetaData();
+  std::string label;
+  std::string value;
+
+  if (readstatus)
+  {
+    bool tagFound = dcmMetaReader->GetTagValue("0000|0000", label, value);
+    if (tagFound)
+      return value;
+  }
+}
+
+std::vector<double> PerfusionAlignment::GetInterpolatedCurve(std::vector<double> averagecurve, double timeinseconds, double totaltimeduration)
+{
+  return averagecurve;
+}
 #endif
+
