@@ -675,8 +675,8 @@ SurvivalPredictor.exe -t 0 -i C:/SurvivalInput -o C:/SurvivalModel
 - Use Existing Model
 	-# "Model Directory". Choose the directory of a saved model.
 	-# "Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
-	-# "Output". Select the output directory where a .csv file with the SPI for all patients will be saved, and click on 'Confirm'.
-	-# A pop-up window appears displaying the completion of SPI calculation. The window will also show the SPI index of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
+	-# "Output". Select the output directory where a .csv file with the classification scores for all patients will be saved, and click on 'Confirm'. The first column and the second column of .csv will be distancce of sample from the hyperplance of 6-months model and 18-months model, respectively. 
+	-# A pop-up window appears displaying the completion of results. The window will also show the SPI index (distance) of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
 	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 SurvivalPredictor.exe -t 1 -i C:/SurvivalInput -m C:/SurvivalModel -o C:/SurvivalOutput
@@ -808,7 +808,7 @@ PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/Pseudo
 	- "Use existing model": 
 		-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/pseudoprogression.zip
 		-# Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
-		-# Select the "Output Directory", where the user wants to save the infiltration maps.
+		-# Select the "Output Directory", where the user wants to save the output. The first and the second column of .csv will be distancce of sample from the hyperplance of pseudoprogression model and true recurrence model, respectively. 
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).
 		-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
