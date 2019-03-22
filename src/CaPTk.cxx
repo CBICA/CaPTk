@@ -16,6 +16,8 @@
 #include "cbicaUtilities.h"
 #include "yaml-cpp/yaml.h"
 
+#include "CheckOpenGLVersion.h"
+
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
@@ -186,6 +188,29 @@ int main(int argc, char** argv)
   //QSurfaceFormat::setDefaultFormat(defaultFormat);
 
   //VTK_MODULE_INIT(vtkRenderingFreeType);
+  
+  const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
+  if (!cbica::isFile(openGLVersionCheckFile))
+  {
+    CheckOpenGLVersion checker(hInstance);
+
+    if (checker.hasVersion_3_2())
+    {
+      std::ofstream myFile;
+      myFile.open(openGLVersionCheckFile.c_str());
+      myFile << "Compatible OpenGL version present.\n";
+      myFile.close();
+    }
+    else
+    {
+      std::string msg = "A working 3.2 version of OpenGL was not found in your hardware/software combination; consequently, CaPTk's GUI will not work.\n\n";
+      msg += "\tOpenGL Version : " + checker.version;
+      msg += "\tOpenGL Renderer: " + checker.renderer;
+      msg += "\tOpenGL Vendor  : " + checker.vendor;
+      ShowErrorMessage(msg);
+      return;
+    }
+  }
 
   //! redirect the vtkoutputwindow contents to file
   auto fileOutputWindow = vtkSmartPointer< vtkFileOutputWindow >::New();
