@@ -192,7 +192,11 @@ int main(int argc, char** argv)
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
   if (!cbica::isFile(openGLVersionCheckFile))
   {
+#if WIN32
     CheckOpenGLVersion checker(hInstance);
+#else
+    CheckOpenGLVersion checker();
+#endif
 
     if (checker.hasVersion_3_2())
     {
