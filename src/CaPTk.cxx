@@ -195,7 +195,7 @@ int main(int argc, char** argv)
 #if WIN32
     CheckOpenGLVersion checker(hInstance);
 #else
-    CheckOpenGLVersion checker();
+    CheckOpenGLVersion checker;
 #endif
 
     if (checker.hasVersion_3_2())

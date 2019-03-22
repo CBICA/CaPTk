@@ -81,3 +81,29 @@ jobs:
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j2
     displayName: 'Configure and compile CaPTk'
+
+- job: 'Test'
+  displayName: "End-to-end Xenial build"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+
+  pool:
+    vmImage: 'Windows-2019'
+
+  steps:
+  
+  - bash: |
+      rm -rf data
+      rm -rf history
+      rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    displayName: 'Take the nuclear option'
+
+  - bash: |
+      cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF .
+      cmake --build . --target ALL_BUILD --config Release
+    displayName: 'Configure and compile superbuild'
+
+  - bash: |
+    cmake -DCMAKE_INSTALL_PREFIX="./install" -DBUILD_DOCUMENTATION=OFF .
+    cmake --build . --target ALL_BUILD --config Release
+  displayName: 'Configure and compile CaPTk'

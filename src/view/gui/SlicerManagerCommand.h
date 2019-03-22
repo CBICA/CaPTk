@@ -54,7 +54,7 @@ static std::vector<PointVal> drawSphere(PointVal startPt, vtkSmartPointer<vtkIma
 
 static PointVal drawPoint(PointVal pt, vtkSmartPointer<vtkImageData> image, const int orientation, const int slice, const int i = 0, const int j = 0);
 
-static PointVal SlicerManagerCommand::drawPoint(PointVal pt, vtkSmartPointer<vtkImageData> image);
+static PointVal drawPoint(PointVal pt, vtkSmartPointer<vtkImageData> image);
 
 void makeStroke(int VisibleInWindow, double x, double y);
 
