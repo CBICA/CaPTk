@@ -266,9 +266,20 @@ cp ./licenses/Linux-Combined.txt ./pkg/
 # Move installer in
 cp ./scripts/linux-makeself ./pkg/
 chmod +x ./pkg/linux-makeself
+
 # Create version file
+# This should always create a file because the installer script needs the version number and won't have access to the cmake
 # Save version as variable
-ver=`./scripts/unix-version`
+
+# Get the version of CaPTk from cmake, assuming it is being ran with respect to a cmake file in the current directory
+# If you notice the version numbers start appearing as `..` or something dumb, make sure no one changed the CMake because I almost guarantee you that's the issue you're seeing
+MAJOR=`cat CMakeLists.txt | grep "( PROJECT_VERSION_MAJOR" | awk '{print $3}'`
+MINOR=`cat CMakeLists.txt | grep "( PROJECT_VERSION_MINOR" | awk '{print $3}'`
+PATCH=`cat CMakeLists.txt | grep "( PROJECT_VERSION_PATCH" | awk '{print $3}'`
+
+ver="${MAJOR}.${MINOR}.${PATCH}"
+
+# Should not be an issue to write to this file considering that pkg is created and destroyed in this script
 echo ${ver} >> ./pkg/version
 
 # Step 3: Wrap it all upp
