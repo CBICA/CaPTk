@@ -5,6 +5,7 @@ The following sections give a high-level overview of CaPTk, with the intention o
 
 Table of Contents
 
+  - \subpage gs_keyboard "Keyboard Shortcuts"
   - \subpage gs_components "Components"
   - \subpage gs_supportedImages "Supported Images"
   - \subpage gs_imageLoading "Image Loading"
@@ -16,6 +17,27 @@ Table of Contents
   - \subpage gs_segmentation "Segmentation"
   - \subpage gs_features "Feature Extraction"
   - \subpage gs_specializedApps "Specialized Applications"
+
+--------
+*/
+
+/**
+\page gs_keyboard Keyboard Shortcuts
+
+These are the keyboard shortcuts available on CaPTk:
+
+<table border="0">
+  <tr><th>Key Stroke <th>Function
+  <tr><td align="center" width="100px">1-9 <td align="center">[IMAGES] Show selected image from table
+  <tr><td align="center" width="100px">"m" <td align="center">[DRAWING] Show/Hide all regions; picks up last used opacity
+  <tr><td align="center" width="100px">Control + 1-9 <td align="center">[DRAWING] Only show selected label
+  <tr><td align="center" width="100px">Alt + 1-9 <td align="center">[DRAWING] Add selected label to visualization
+  <tr><td align="center" width="100px">Control/Alt + 0 <td align="center">[DRAWING] Reset label visualization; i.e., show all
+  <tr><td align="center" width="100px">Shift + Space <td align="center">[SEED POINT] Set initial tumor center
+  <tr><td align="center">Ctrl + Space <td align="center">[SEED POINT] Update tumor radius
+  <tr><td align="center">Space <td align="center">[SEED POINT] Update tumor center
+</table>
+
 
 --------
 */
