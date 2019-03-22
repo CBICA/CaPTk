@@ -800,7 +800,7 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
 		-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
-    -# NOTE: in the sample data, we are providing multiple duplicates of 5 unique subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results.
+    -# NOTE: in the sample data, we are providing multiple duplicates of 5 unique subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM for calculating perfusion derivatives. 
 \verbatim
 PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionModel
 \endverbatim
@@ -1117,6 +1117,7 @@ This application extracts various measurements from a Dynamic-Susceptibility Con
 <b> REQUIREMENTS:</b>
 	-# A single DSC-MRI scan. 
 	-# The Echo Time corresponding to the given DSC-MRI scan
+	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Derivatives".
@@ -1132,7 +1133,8 @@ This application extracts various measurements from a Dynamic-Susceptibility Con
 This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).
 
 <b> REQUIREMENTS:</b>
-A single DW-MRI image, its accompanying bvec and bval files, and a mask for which the measurements will be extracted.
+A single DW-MRI image, its accompanying bvec and bval files, and a mask for which the measurements will be extracted. 
+	-# Note: bvaec and bval files should be calculated by dcm2nii or any other appropriate software. 
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Diffusion Derivatives".
