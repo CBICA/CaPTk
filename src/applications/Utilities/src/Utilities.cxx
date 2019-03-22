@@ -3,6 +3,7 @@
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
+#include "DicomMetadataReader.h"
 
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
@@ -23,7 +24,8 @@ enum AvailableAlgorithms
   CreateMask,
   ChangeValue,
   DicomLoadTesting,
-  Dicom2Nifti
+  Dicom2Nifti,
+  DicomDump
 };
 
 int requestedAlgorithm = 0;
@@ -179,6 +181,34 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
+  if (requestedAlgorithm == DicomDump)
+  {
+    DicomMetadataReader *reader = new DicomMetadataReader();
+    reader->SetFilePath(inputImageFile);
+    bool readStatus = reader->ReadMetaData();
+    if (!readStatus)
+    {
+      std::cout << "Could not read dicom image" << std::endl;
+      delete reader;
+      return EXIT_FAILURE;
+    }
+
+    typedef std::map<std::string, std::pair<std::string, std::string>> DicomTagMap;
+    typename DicomTagMap readMap = reader->GetMetaDataMap();
+    typename DicomTagMap::iterator itr;
+    std::pair<std::string, std::string> labelValuePair;
+    std::cout << "Tag" << "\t" << "Description" << "\t" << "Value" << std::endl;
+    for (itr = readMap.begin(); itr != readMap.end(); ++itr)
+    {
+      labelValuePair = itr->second;
+      std::cout << itr->first.c_str() << "\t"
+        << labelValuePair.first.c_str() << "\t"
+        << labelValuePair.second.c_str() << std::endl;
+    }
+
+    delete reader;
+    return EXIT_SUCCESS;
+  }
   if (requestedAlgorithm == ChangeValue)
   {
     auto outputImage = cbica::ChangeImageValues< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), changeOldValues, changeNewValues);
@@ -461,6 +491,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
+  parser.addOptionalParameter("dcmdump", "dicomDump", cbica::Parameter::FILE, "Dicom Header Dump", "Use '-i' to pass input DICOM image");
 
   /// unit testing
   if (parser.isPresent("utB"))
@@ -497,6 +528,11 @@ int main(int argc, char** argv)
     requestedAlgorithm = Dicom2Nifti;
     parser.getParameterValue("d2n", targetImageFile);
     parser.getParameterValue("o", outputImageFile);
+  }
+  if (parser.isPresent("dcmdump"))
+  {
+    requestedAlgorithm = DicomDump;
+    parser.getParameterValue("i", inputImageFile);
   }
   if (parser.isPresent("r"))
   {

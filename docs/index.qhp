@@ -139,6 +139,8 @@
       <file>sync_on.png</file>
       <file>sync_off.png</file>
       <file>doxygen.css</file>
+      <file>jquery.js</file>
+      <file>dynsections.js</file>
       <file>Installation.html</file>
       <file>Getting_Started.html</file>
       <file>gs_keyboard.html</file>
@@ -192,6 +194,8 @@
       <file>Download.html</file>
       <file>ReleaseNotes.html</file>
       <file>People.html</file>
+      <file>graph_legend.png</file>
+      <file>graph_legend.html</file>
       <file>index.html</file>
       <file>pages.html</file>
     </files>
