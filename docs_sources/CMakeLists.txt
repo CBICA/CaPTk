@@ -66,7 +66,7 @@ FOREACH(docFiles ${ALL_DOC_FILES})
      
 ENDFOREACH()
 
-FILE(GLOB_RECURSE ALL_IMAGE_FILES "${PROJECT_SOURCE_DIR}/docs/images/*.png")
+FILE(GLOB_RECURSE ALL_IMAGE_FILES "${PROJECT_SOURCE_DIR}/docs_sources/images/*.png")
 FOREACH(imgFiles ${ALL_IMAGE_FILES})
   
   FILE(COPY ${imgFiles}
