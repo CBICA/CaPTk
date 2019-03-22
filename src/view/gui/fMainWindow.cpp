@@ -4361,7 +4361,7 @@ void fMainWindow::CallForSurvivalPredictionOnExistingModelFromMain(const std::st
     msg = msg + "SPI index saved in 'results.csv' file in the output directory. \n\n";
 
     msg = msg + "Input Directory = " + QString::fromStdString(inputdirectory) + "\nOutput Directory = " + QString::fromStdString(outputdirectory) + "\nModel Directory = " + QString::fromStdString(modeldirectory);
-    ShowErrorMessage(msg.toStdString(), this);
+    ShowMessage(msg.toStdString(), this);
   }
 }
 
