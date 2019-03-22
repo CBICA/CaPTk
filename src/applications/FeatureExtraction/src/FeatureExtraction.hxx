@@ -682,7 +682,7 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
   using HistogramFilterType = itk::Statistics::MaskedImageToHistogramFilter< TImage, TImage >;
   using HistogramMeasurementType = typename HistogramFilterType::HistogramType::MeasurementVectorType;
 
-  HistogramMeasurementType lowerBound(m_Bins), upperBound(m_Bins);
+  HistogramMeasurementType lowerBound(1), upperBound(1);
   lowerBound.Fill(min);
   upperBound.Fill(max);
 

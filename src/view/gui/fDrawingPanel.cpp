@@ -30,6 +30,7 @@ fDrawingPanel::fDrawingPanel(QWidget * parent) : QWidget(parent)
   connect(shapesLineButton, SIGNAL(clicked()), this, SLOT(shapesLineButtonFunctionality()));
   connect(shapesRectangleButton, SIGNAL(clicked()), this, SLOT(shapesRectangleButtonFunctionality()));
   connect(shapesCircleButton, SIGNAL(clicked()), this, SLOT(shapesCircleButtonFunctionality()));
+  connect(shapesSphereButton, SIGNAL(clicked()), this, SLOT(shapesSphereButtonFunctionality()));
   connect(HelpButton, SIGNAL(clicked()), this, SLOT(helpClicked()));
   connect(changeButton, SIGNAL(clicked()), this, SLOT(ChangeLabelValuesClicked()));
 }
@@ -111,6 +112,11 @@ void fDrawingPanel::shapesCircleButtonFunctionality()
 {
   enableShapeButton(shapesCircleButton);
   emit shapesButtonClicked(SHAPE_MODE_CIRCLE);
+}
+void fDrawingPanel::shapesSphereButtonFunctionality()
+{
+  enableShapeButton(shapesSphereButton);
+  emit shapesButtonClicked(SHAPE_MODE_SPHERE);
 }
 
 void fDrawingPanel::FillButtonFunctionality()
