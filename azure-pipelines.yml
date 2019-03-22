@@ -135,8 +135,12 @@ jobs:
       export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
     displayName: 'Export variables for tex'
 
+  - bash: |
+      mkdir bin
+    displayName: 'Create build directory'
   
   - bash: |
+      cd bin
       cmake ../ -DCMAKE_INSTALL_PREFIX="./bin/install"
       cmake ../ -DCMAKE_INSTALL_PREFIX="./bin/install"
       make -j 2
@@ -151,6 +155,7 @@ jobs:
     displayName: 'Export variables for llvm'
 
   - bash: |
+      cd bin
       # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/install/lib/cmake/ITK-4.13:$CMAKE_PREFIX_PATH"
       cmake ../
       cmake ../
