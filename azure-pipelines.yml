@@ -13,6 +13,8 @@ jobs:
 
 - job: 'Test'
   displayName: "End-to-end Xenial build"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
 
   pool:
     vmImage: 'Ubuntu-16.04'
