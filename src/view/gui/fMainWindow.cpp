@@ -660,7 +660,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionPCA") != std::string::npos)
     {
-      vectorOfMiscApps[i].action->setText("  PCA Volume Extraction"); //TBD set at source
+      vectorOfMiscApps[i].action->setText("  Perfusion PCA"); //TBD set at source
       connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPCA()));
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionDerivatives") != std::string::npos)
