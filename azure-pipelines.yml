@@ -99,13 +99,13 @@ jobs:
     displayName: 'Take the nuclear option'
 
   - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       cmake --build . --target ALL_BUILD --config Release
     displayName: 'Configure and compile superbuild'
 
   - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       cmake --build . --target ALL_BUILD --config Release
     displayName: 'Configure and compile CaPTk'
