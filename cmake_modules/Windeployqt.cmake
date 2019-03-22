@@ -41,11 +41,7 @@ function(windeployqt target directory)
     # Run windeployqt immediately after build
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E
-            env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
-                --verbose 0
-                --no-compiler-runtime
-                --no-angle
-                --no-opengl-sw
+            env PATH="${_qt_bin_dir}" "windeployqt.exe"
                 \"$<TARGET_FILE:${target}>\"
     )
 
@@ -62,11 +58,8 @@ function(windeployqt target directory)
         file(READ \"${CMAKE_CURRENT_BINARY_DIR}/${target}_path\" _file)
         execute_process(
             COMMAND \"${CMAKE_COMMAND}\" -E
-                env PATH=\"${_qt_bin_dir}\" \"${WINDEPLOYQT_EXECUTABLE}\"
+                env PATH=\"${_qt_bin_dir}\" \"windeployqt.exe\"
                     --dry-run
-                    --no-compiler-runtime
-                    --no-angle
-                    --no-opengl-sw
                     --list mapping
                     \${_file}
             OUTPUT_VARIABLE _output
