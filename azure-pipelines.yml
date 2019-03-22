@@ -82,15 +82,47 @@ jobs:
       make -j2
     displayName: 'Configure and compile CaPTk'
 
-- job: 'TestWindows'
-  displayName: "End-to-end Windows build"
+# - job: 'TestWindows'
+#   displayName: "End-to-end Windows build"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 300
+
+#   pool:
+#     vmImage: 'Windows-2019'
+
+#   steps:
+  
+#   - bash: |
+#       rm -rf data
+#       rm -rf history
+#       rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+#     displayName: 'Take the nuclear option'
+
+#   - script: |
+#       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+#       cmake --build . --target ALL_BUILD --config Release
+#     displayName: 'Configure and compile superbuild'
+
+#   - script: |
+#       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+#       cmake --build . --target ALL_BUILD --config Release
+#     displayName: 'Configure and compile CaPTk'
+
+- job: 'TestMacOS'
+  displayName: "End-to-end MacOS build & package"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
   pool:
-    vmImage: 'Windows-2019'
+    vmImage: 'MacOS-10.13'
 
   steps:
+
+  - bash: |
+      brew install caskroom/cask/mactex make git-lfs doxygen llvm
+    displayName: 'Brew dependencies'
   
   - bash: |
       rm -rf data
@@ -98,14 +130,34 @@ jobs:
       rm -rf src/applications/individualApps/libra/MCRInstaller.zip
     displayName: 'Take the nuclear option'
 
-  - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-      cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
-      cmake --build . --target ALL_BUILD --config Release
+  - bash: |
+      export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+      export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+    displayName: 'Export variables for tex'
+
+  
+  - bash: |
+      cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
+      cmake ../ -DCMAKE_INSTALL_PREFIX="${TRAVIS_BUILD_DIR}/bin/install"
+      make -j 2
+      rm CMakeCache.txt
     displayName: 'Configure and compile superbuild'
 
-  - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-      cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
-      cmake --build . --target ALL_BUILD --config Release
+  - bash: |
+      export CC=/usr/local/opt/llvm/bin/clang
+      export CXX=/usr/local/opt/llvm/bin/clang++
+      export LDFLAGS="-L/usr/local/opt/llvm/lib"
+      export CPPFLAGS="-L/usr/local/opt/llvm/include"
+    displayName: 'Export variables for llvm'
+
+  - bash: |
+      # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/install/lib/cmake/ITK-4.13:$CMAKE_PREFIX_PATH"
+      cmake ../
+      cmake ../
+      cmake ../
+      make -j 2
     displayName: 'Configure and compile CaPTk'
+  
+  - bash: |
+      make package
+    displayName: 'Package CaPTk'
