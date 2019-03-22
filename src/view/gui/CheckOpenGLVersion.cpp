@@ -4,10 +4,6 @@ CheckOpenGLVersion::CheckOpenGLVersion()
 {
 }
 
-CheckOpenGLVersion::~CheckOpenGLVersion()
-{
-}
-
 #if WIN32
 CheckOpenGLVersion::CheckOpenGLVersion(HINSTANCE hInstance) :
   hInstance(hInstance)
