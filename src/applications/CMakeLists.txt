@@ -54,7 +54,7 @@ ADD_SUBDIRECTORY( FeatureExtraction )
 ADD_SUBDIRECTORY( GeodesicTraining )
 ADD_SUBDIRECTORY( Preprocessing )
 ADD_SUBDIRECTORY( Utilities )
-ADD_SUBDIRECTORY( PerfusionAlignment )
+#ADD_SUBDIRECTORY( PerfusionAlignment )
 
 INCLUDE_DIRECTORIES( 
   ${CMAKE_CURRENT_SOURCE_DIR}/FeatureExtraction/src/depends 
