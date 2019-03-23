@@ -12,7 +12,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 #pragma once
 
-#include <QApplication>
+//#include <QApplication>
 #include "iostream"
 #include "itkImage.h"
 #include "itkConnectedThresholdImageFilter.h"
@@ -20,7 +20,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkMedianImageFunction.h"
 #include "itkNeighborhoodIterator.h"
 #include "itkImageDuplicator.h"
-#include "ApplicationBase.h"
+//#include "ApplicationBase.h"
 
 /**
 \class SusanDenoising
@@ -38,7 +38,7 @@ year={1997},
 organization={Springer}
 }
 */
-class SusanDenoising : public ApplicationBase
+class SusanDenoising /*: public ApplicationBase*/
 {
 
 public:
@@ -48,25 +48,45 @@ public:
   template<class ImageType>
   typename ImageType::Pointer Run(typename ImageType::Pointer image);
 
+  void SetSigma(float input)
+  {
+    m_sigma = input;
+  }
+
+  void SetIntensityVariationThreshold(float input)
+  {
+    m_intensityVariationThreshold = input;
+  }
+
+  void SetRadius(size_t input)
+  {
+    m_radius = input;
+  }
+
+
 private:
   inline void SetLongRunning(bool longRunning);
+
+  float m_sigma = 0.5;
+  float m_intensityVariationThreshold = 80;
+  size_t m_radius = 1;
 };
 
 template<class ImageType>
 typename ImageType::Pointer SusanDenoising::Run(const typename ImageType::Pointer image)
 {
 	
-  messageUpdate("SUSAN Denoising");
-  progressUpdate(0);
-  qApp->processEvents();
+  //messageUpdate("SUSAN Denoising");
+  //progressUpdate(0);
+  //qApp->processEvents();
 
   typedef itk::ImageDuplicator<ImageType> DuplicatorType;
   typename DuplicatorType::Pointer outputImageFilter = DuplicatorType::New();
   outputImageFilter->SetInputImage(image);
   outputImageFilter->Update();
 
-  double sigma = 0.5;
-  double intensityVariationThreshold = 80;
+  double sigma = m_sigma;
+  double intensityVariationThreshold = m_intensityVariationThreshold;
 
   // typename ImageType::SizeType imageSize = image->GetLargestPossibleRegion().GetSize();
 
@@ -77,12 +97,11 @@ typename ImageType::Pointer SusanDenoising::Run(const typename ImageType::Pointe
 
   typedef typename itk::NeighborhoodIterator<ImageType> NeighborhoodIteratorType;
   typename NeighborhoodIteratorType::RadiusType radius;
-  for (unsigned int i = 0; i < ImageType::ImageDimension; i++)
-    radius[i] = 1;
+  radius.Fill(m_radius);
   NeighborhoodIteratorType ImageIterator(radius, outputImageFilter->GetOutput(), outputImageFilter->GetOutput()->GetLargestPossibleRegion());
 
-  progressUpdate(10);
-  qApp->processEvents();
+  //progressUpdate(10);
+  //qApp->processEvents();
 
   for (ImageIterator.GoToBegin(); !ImageIterator.IsAtEnd(); ++ImageIterator)
   {
@@ -134,6 +153,6 @@ typename ImageType::Pointer SusanDenoising::Run(const typename ImageType::Pointe
       //ImageIterator->SetPixel(currentindex, newval);
     }
   }
-  progressUpdate(100);
+  //progressUpdate(100);
   return outputImageFilter->GetOutput();
 }
