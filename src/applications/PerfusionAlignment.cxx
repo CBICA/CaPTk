@@ -11,7 +11,6 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   parser.exampleUsage("PerfusionAlignment -i AAAC_PreOp_perf_pp.nii.gz -d AAAC_PreOp_perf_pp.dcm -o <output dir>");
   PerfusionAlignment objPerfusion;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>("//cbica-cifs/hasun/comp_space/180815_Henry_Ford/Protocols/5_SSFinal/2/2/2_perf_LPS_r_SSFinal.nii.gz","E:\SoftwareDevelopmentProjects\PerfusionAlignmentMaterial\dicom\MSh_PERF_AX-1001_echo1_I000001.dcm");
 
   // parameters to get from the command line
   cbica::Logging logger;
@@ -58,7 +57,7 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
   
-  //std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName,inputDicomName);
+  std::vector< /*typename*/ ImageTypeFloat3D::Pointer > PerfusionAlignment = objPerfusion.Run< ImageTypeFloat3D, ImageTypeFloat4D >(inputFileName,inputDicomName);
   std::cout << "Writing measures to the specified output directory.\n";
 
   if (PerfusionAlignment.size() == 0)
