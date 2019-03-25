@@ -5,6 +5,10 @@ SET( PROJECT_NAME CaPTk )
 PROJECT( CaPTk )
 SET( ${PROJECT_NAME} )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
+
+# WARNING: captk-pkg (the linux packager) directly tries to pattern match these lines (excluding the actual number/patch text)
+# to read the version number.
+# So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 6 )
 SET( PROJECT_VERSION_PATCH 2.RC )

@@ -130,6 +130,8 @@ SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
 
 SET( CACHED_INCLUDE_DIRS
   ${CACHED_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/../common_includes/
+  ${PROJECT_SOURCE_DIR}/../../common/inc
   ${PROJECT_SOURCE_DIR}/src/
   ${PROJECT_SOURCE_DIR}/src/depends/
   CACHE STRING "All include directories" FORCE
@@ -191,6 +193,9 @@ IF(APPLE)
 FIND_PACKAGE(OpenMP REQUIRED)
 SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
 SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
+
+MESSAGE(AUTHOR_WARNING "OpenMP is enabled, you may see issues on Azure")
+
 # add a few compiler options for GCC and MSVC
 IF( CMAKE_COMPILER_IS_GNUCXX )
   SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function -O3" )

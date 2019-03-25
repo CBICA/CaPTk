@@ -34,7 +34,7 @@ These are the keyboard shortcuts available on CaPTk:
   <tr><td align="center" width="100px">Alt + 1-9 <td align="center">[DRAWING] Add selected label to visualization
   <tr><td align="center" width="100px">Control/Alt + 0 <td align="center">[DRAWING] Reset label visualization; i.e., show all
   <tr><td align="center" width="100px">Shift + Space <td align="center">[SEED POINT] Set initial tumor center
-  <tr><td align="center">Ctrl + Space <td align="center">[SEED POINT] Update tumor radius
+  <tr><td align="center">Ctrl + Space <td align="center">[SEED POINT] Update tumor radius; on macOS, this is "Fn + Command + Space"
   <tr><td align="center">Space <td align="center">[SEED POINT] Update tumor center
 </table>
 

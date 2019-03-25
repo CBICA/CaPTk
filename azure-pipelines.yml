@@ -1,0 +1,168 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+
+jobs:
+
+- job: 'TestXenial'
+  displayName: "End-to-end Xenial build"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+
+  pool:
+    vmImage: 'Ubuntu-16.04'
+
+  steps:
+  # Checkout validator.
+  # - bash: |
+  #     set -x
+  #     if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
+  #       git checkout $(System.PullRequest.SourceCommitId)
+  #     fi
+  #   displayName: 'Checkout pull request HEAD'
+
+  # Dependency manager
+  - bash: |
+      sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix
+    displayName: 'Install dependencies from Aptitude'
+
+  # Debug info before main scripts start
+  # - bash: |
+  #     ls -al
+  #   displayName: 'Get debugging information'
+
+  # Create build dir
+  - bash: |
+      mkdir -p bin
+    displayName: 'Create build directory'
+
+  # This is here in case if either Qt or External apps needs to be overridden
+  # - bash: |
+  #       mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
+  #       mv ./binaries/externalApps.zip ./bin/
+  #       cd bin
+  #       unzip externalApps.zip &> /dev/null
+  #   displayName: 'Install Qt & external applications'
+
+  # Create as much free memory as possible
+
+  # Nuclear Option #1
+  - bash: |
+      rm -rf binaries
+      rm -rf data
+      rm -rf history
+      rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    displayName: 'Take the nuclear option'
+
+  # Create fake test dirs. Can be removed.
+  - bash: |   
+      cd bin
+      mkdir -p testing
+      mkdir -p ./testing/TestData
+    displayName: 'Create phony tests'
+
+  # Configure and build superbuild
+  - bash: |
+      cd bin
+      cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
+      make -j2
+    displayName: 'Configure and compile superbuild'
+
+  # Configure and build CaPTk
+  - bash: |
+      cd bin
+      cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
+      make -j2
+    displayName: 'Configure and compile CaPTk'
+
+# - job: 'TestWindows'
+#   displayName: "End-to-end Windows build"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 300
+
+#   pool:
+#     vmImage: 'Windows-2019'
+
+#   steps:
+  
+#   - bash: |
+#       rm -rf data
+#       rm -rf history
+#       rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+#     displayName: 'Take the nuclear option'
+
+#   - script: |
+#       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+#       cmake --build . --target ALL_BUILD --config Release
+#     displayName: 'Configure and compile superbuild'
+
+#   - script: |
+#       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+#       cmake --build . --target ALL_BUILD --config Release
+#     displayName: 'Configure and compile CaPTk'
+
+- job: 'TestMacOS'
+  displayName: "End-to-end MacOS build & package"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+
+  pool:
+    vmImage: 'MacOS-10.13'
+
+  steps:
+
+  - bash: |
+      brew install caskroom/cask/mactex make git-lfs doxygen llvm
+    displayName: 'Brew dependencies'
+  
+  - bash: |
+      rm -rf data
+      rm -rf history
+      rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    displayName: 'Take the nuclear option'
+
+  - bash: |
+      export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+      export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+    displayName: 'Export variables for tex'
+
+  - bash: |
+      mkdir bin
+    displayName: 'Create build directory'
+  
+  - bash: |
+      cd bin
+      cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+      cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+      make -j2
+      rm CMakeCache.txt
+    displayName: 'Configure and compile superbuild'
+
+  - bash: |
+      export CC=/usr/local/opt/llvm/bin/clang
+      export CXX=/usr/local/opt/llvm/bin/clang++
+      export LDFLAGS="-L/usr/local/opt/llvm/lib"
+      export CPPFLAGS="-L/usr/local/opt/llvm/include"
+    displayName: 'Export variables for llvm'
+
+  - bash: |
+      cd bin
+      # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/install/lib/cmake/ITK-4.13:$CMAKE_PREFIX_PATH"
+      cmake ../
+      cmake ../
+      cmake ../
+      make -j2
+    displayName: 'Configure and compile CaPTk'
+  
+  - bash: |
+      make package
+    displayName: 'Package CaPTk'
