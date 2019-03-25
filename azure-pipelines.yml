@@ -131,9 +131,16 @@ jobs:
     displayName: 'Take the nuclear option'
 
   - bash: |
+      export CC=""
+      export CXX=""
+      export LDFLAGS=""
+      export CPPFLAGS=""
+
+      git lfs install && git lfs fetch --all
+
       export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
       export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-    displayName: 'Export variables for tex'
+    displayName: 'Export variables'
 
   - bash: |
       mkdir bin
@@ -141,13 +148,16 @@ jobs:
   
   - bash: |
       cd bin
+
       cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
       cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+
       make -j2
-      rm CMakeCache.txt
     displayName: 'Configure and compile superbuild'
 
   - bash: |
+      rm CMakeCache.txt
+
       export CC=/usr/local/opt/llvm/bin/clang
       export CXX=/usr/local/opt/llvm/bin/clang++
       export LDFLAGS="-L/usr/local/opt/llvm/lib"
@@ -156,10 +166,10 @@ jobs:
 
   - bash: |
       cd bin
-      # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/install/lib/cmake/ITK-4.13:$CMAKE_PREFIX_PATH"
+
       cmake ../
       cmake ../
-      cmake ../
+
       make -j2
     displayName: 'Configure and compile CaPTk'
   
