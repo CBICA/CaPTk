@@ -32,6 +32,15 @@ typedef itk::Image< float, 3 > ImageType;
 typedef std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble> FoldTupleType;
 typedef std::map<int, FoldTupleType> MapType;
 
+
+typedef std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType> TrainingDataTuple;
+typedef std::map<int, TrainingDataTuple> TrainingMapType;
+
+typedef std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble> TestingDataTuple;
+typedef std::map<int, TestingDataTuple> TestingMapType;
+
+
+
 typedef itk::CSVArray2DFileReader<double> CSVFileReaderType;
 typedef vnl_matrix<double> MatrixType;
 
@@ -48,7 +57,11 @@ public:
   TrainingModule() {};
   ~TrainingModule() {};
 
-  bool Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory,const int classifierType, const int foldtype, const int conftype);
+  VectorDouble TestData(const VariableSizeMatrixType inputFeatures, const std::string modelfolder, const int classifiertype, const std::string outputfolder);
+  VectorDouble TrainData(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
+    const std::string outputfolder, const int classifiertype);
+
+  bool Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory,const int classifierType, const int foldtype, const int conftype, const std::string modeldirectory);
 
   std::string mEighteenTrainedFile, mSixTrainedFile;
 

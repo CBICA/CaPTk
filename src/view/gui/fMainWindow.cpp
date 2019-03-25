@@ -660,7 +660,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionPCA") != std::string::npos)
     {
-      vectorOfMiscApps[i].action->setText("  PCA Volume Extraction"); //TBD set at source
+      vectorOfMiscApps[i].action->setText("  Perfusion PCA"); //TBD set at source
       connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPCA()));
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionDerivatives") != std::string::npos)
@@ -4361,7 +4361,7 @@ void fMainWindow::CallForSurvivalPredictionOnExistingModelFromMain(const std::st
     msg = msg + "SPI index saved in 'results.csv' file in the output directory. \n\n";
 
     msg = msg + "Input Directory = " + QString::fromStdString(inputdirectory) + "\nOutput Directory = " + QString::fromStdString(outputdirectory) + "\nModel Directory = " + QString::fromStdString(modeldirectory);
-    ShowErrorMessage(msg.toStdString(), this);
+    ShowMessage(msg.toStdString(), this);
   }
 }
 
@@ -7467,13 +7467,13 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder, int classifier, int conf, int folds)
 {
-  TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf))
-  {
-    QString msg;
-    msg = "Training model has been saved at the specified location.";
-    ShowMessage(msg.toStdString(), this);
-  }
+  //TrainingModule m_trainingsimulator;
+  //if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf))
+  //{
+  //  QString msg;
+  //  msg = "Training model has been saved at the specified location.";
+  //  ShowMessage(msg.toStdString(), this);
+  //}
 }
 
 void fMainWindow::CallPCACalculation(const int number, const std::string inputdirectory, const std::string outputdirectory)
