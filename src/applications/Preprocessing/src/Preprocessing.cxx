@@ -93,7 +93,7 @@ int algorithmsRunner()
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
     using TBiasCorrectorType = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >;
     auto corrector = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
-    itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::VariableSizeArrayType iterations;
+    typename itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::VariableSizeArrayType iterations;
     iterations.Fill(n3Bias_iterations);
     corrector->SetInput(inputImage);
     corrector->SetMaximumNumberOfIterations(iterations);
