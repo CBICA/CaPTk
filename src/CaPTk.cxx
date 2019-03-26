@@ -208,8 +208,8 @@ int main(int argc, char** argv)
     else
     {
       std::string msg = "A working 3.2 version of OpenGL was not found in your hardware/software combination; consequently, CaPTk's GUI will not work; all CLIs will work as expected.\n\n";
-      msg += "\tOpenGL Version : " + checker.version;
-      msg += "\tOpenGL Renderer: " + checker.renderer;
+      msg += "\tOpenGL Version : " + checker.version + "\n";
+      msg += "\tOpenGL Renderer: " + checker.renderer + "\n";
       msg += "\tOpenGL Vendor  : " + checker.vendor;
       ShowErrorMessage(msg);
       return EXIT_FAILURE;

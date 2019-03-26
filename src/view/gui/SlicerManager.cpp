@@ -860,9 +860,9 @@ void SlicerManager::AddLandmark(float x, float y, float z)
   double z_index = (z - mOrigin[2] /*mSlicers[0]->GetInput()->GetOrigin()[2]*/) / mSlicers[0]->GetInput()->GetSpacing()[2];
   //
   // round up pixel values
-  x_index = ROUND(x_index);
-  y_index = ROUND(y_index);
-  z_index = ROUND(z_index);
+  x_index = std::abs(std::round(x_index));
+  y_index = std::abs(std::round(y_index));
+  z_index = std::abs(std::round(z_index));
   x = x_index * mSlicers[0]->GetInput()->GetSpacing()[0] + mOrigin[0] /*mSlicers[0]->GetInput()->GetOrigin()[0]*/;
   y = y_index * mSlicers[0]->GetInput()->GetSpacing()[1] + mOrigin[1] /*mSlicers[0]->GetInput()->GetOrigin()[1]*/;
   z = z_index * mSlicers[0]->GetInput()->GetSpacing()[2] + mOrigin[2] /*mSlicers[0]->GetInput()->GetOrigin()[2]*/;
@@ -984,22 +984,24 @@ void SlicerManager::AddLandmarkRadius(float x, float y, float z)
   double z_index = (z - mOrigin[2] /*mSlicers[0]->GetInput()->GetOrigin()[2]*/) / mSlicers[0]->GetInput()->GetSpacing()[2];
   //
   // round up pixel values
-  x_index = ROUND(x_index);
-  y_index = ROUND(y_index);
-  z_index = ROUND(z_index);
+  x_index = std::abs(std::round(x_index));
+  y_index = std::abs(std::round(y_index));
+  z_index = std::abs(std::round(z_index));
   // TBD: the next 3 lines are redundant
   x = x_index * mSlicers[0]->GetInput()->GetSpacing()[0] + mOrigin[0] /*mSlicers[0]->GetInput()->GetOrigin()[0]*/;
   y = y_index * mSlicers[0]->GetInput()->GetSpacing()[1] + mOrigin[1] /*mSlicers[0]->GetInput()->GetOrigin()[1]*/;
   z = z_index * mSlicers[0]->GetInput()->GetSpacing()[2] + mOrigin[2] /*mSlicers[0]->GetInput()->GetOrigin()[2]*/;
+
+  auto currentExtent = mSlicers[0]->GetInput()->GetExtent();
   //
 #if VTK_MAJOR_VERSION <= 5
   if (x_index >= mSlicers[0]->GetInput()->GetWholeExtent()[0] && x_index <= mSlicers[0]->GetInput()->GetWholeExtent()[1] &&
     y_index >= mSlicers[0]->GetInput()->GetWholeExtent()[2] && y_index <= mSlicers[0]->GetInput()->GetWholeExtent()[3] &&
     z_index >= mSlicers[0]->GetInput()->GetWholeExtent()[4] && z_index <= mSlicers[0]->GetInput()->GetWholeExtent()[5])
 #else
-  if (x_index >= mSlicers[0]->GetInput()->GetExtent()[0] && x_index <= mSlicers[0]->GetInput()->GetExtent()[1] &&
-    y_index >= mSlicers[0]->GetInput()->GetExtent()[2] && y_index <= mSlicers[0]->GetInput()->GetExtent()[3] &&
-    z_index >= mSlicers[0]->GetInput()->GetExtent()[4] && z_index <= mSlicers[0]->GetInput()->GetExtent()[5])
+  if (x_index >= currentExtent[0] && x_index <= currentExtent[1] &&
+    y_index >= currentExtent[2] && y_index <= currentExtent[3] &&
+    z_index >= currentExtent[4] && z_index <= currentExtent[5])
 #endif
   {
     if (mCurrentLandmarksType == LANDMARK_TYPE::DEFAULT)
@@ -1186,9 +1188,9 @@ void SlicerManager::AddLandmarkShift(float x, float y, float z)
   double z_index = (z - mOrigin[2] /*mSlicers[0]->GetInput()->GetOrigin()[2]*/) / mSlicers[0]->GetInput()->GetSpacing()[2];
   //
   // round up pixel values
-  x_index = ROUND(x_index);
-  y_index = ROUND(y_index);
-  z_index = ROUND(z_index);
+  x_index = std::abs(std::round(x_index));
+  y_index = std::abs(std::round(y_index));
+  z_index = std::abs(std::round(z_index));
   x = x_index * mSlicers[0]->GetInput()->GetSpacing()[0] + mOrigin[0] /*mSlicers[0]->GetInput()->GetOrigin()[0]*/;
   y = y_index * mSlicers[0]->GetInput()->GetSpacing()[1] + mOrigin[1] /*mSlicers[0]->GetInput()->GetOrigin()[1]*/;
   z = z_index * mSlicers[0]->GetInput()->GetSpacing()[2] + mOrigin[2] /*mSlicers[0]->GetInput()->GetOrigin()[2]*/;
