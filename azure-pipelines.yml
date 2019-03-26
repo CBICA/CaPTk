@@ -174,4 +174,4 @@ jobs:
   
   - bash: |
       make package
-    displayName: 'Package CaPTk'
+    displayName: 'Package CaPTk (.dmg)'
