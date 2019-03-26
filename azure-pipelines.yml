@@ -155,22 +155,20 @@ jobs:
     displayName: 'Configure and compile superbuild'
 
   - bash: |
+      cd bin
+
       rm CMakeCache.txt
 
       export CC=/usr/local/opt/llvm/bin/clang
       export CXX=/usr/local/opt/llvm/bin/clang++
       export LDFLAGS="-L/usr/local/opt/llvm/lib"
       export CPPFLAGS="-L/usr/local/opt/llvm/include"
-    displayName: 'Export variables for llvm'
-
-  - bash: |
-      cd bin
 
       cmake ../
       cmake ../
 
       make -j2
-    displayName: 'Configure and compile CaPTk'
+    displayName: 'Export variables for llvm then configure and compile CaPTk'
   
   - bash: |
       make package
