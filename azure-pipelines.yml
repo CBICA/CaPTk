@@ -171,5 +171,7 @@ jobs:
     displayName: 'Export variables for llvm then configure and compile CaPTk'
   
   - bash: |
+      cd bin 
+      
       make package
     displayName: 'Package CaPTk (.dmg)'
