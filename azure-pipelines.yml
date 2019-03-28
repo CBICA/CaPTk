@@ -85,6 +85,7 @@ jobs:
   # Build a package
   - bash: |
       ./scripts/captk-pkg
+      echo "done"
     displayName: 'Build a package'
 
 # - job: 'TestWindows'
