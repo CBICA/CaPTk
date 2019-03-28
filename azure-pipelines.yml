@@ -55,7 +55,7 @@ jobs:
 
   # Nuclear Option #1
   - bash: |
-      rm -rf binaries
+      rm -rf binaries/_*.zip
       # rm -rf data
       rm -rf history
       rm -rf src/applications/individualApps/libra/MCRInstaller.zip
