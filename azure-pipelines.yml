@@ -56,7 +56,7 @@ jobs:
   # Nuclear Option #1
   - bash: |
       rm -rf binaries
-      rm -rf data
+      # rm -rf data
       rm -rf history
       rm -rf src/applications/individualApps/libra/MCRInstaller.zip
     displayName: 'Take the nuclear option'
@@ -81,6 +81,11 @@ jobs:
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j2
     displayName: 'Configure and compile CaPTk'
+
+  # Build a package
+  - bash: |
+      ./scripts/captk-pkg
+    displayName: 'Build a package'
 
 # - job: 'TestWindows'
 #   displayName: "End-to-end Windows build"
