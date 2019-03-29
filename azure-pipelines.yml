@@ -59,9 +59,6 @@ jobs:
   # Set up Qt from Binaries
   - bash: |
       mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
-      export PATH=./bin/qt/5.12.1/gcc_64/bin:$PATH
-      export PATH=./bin/qt/5.12.1/gcc_64/libexec:$PATH
-      export PATH=./bin/qt/5.12.1/gcc_64/lib/cmake/Qt5:$PATH
     displayName: 'Set up Qt on Linux'
 
   # Create as much free memory as possible
@@ -94,6 +91,20 @@ jobs:
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j2
     displayName: 'Configure and compile CaPTk'
+
+  # Check qt
+  - bash: |
+      cd bin
+      ls -a
+      ls ./qt/
+    displayName: 'Check qt'
+  
+  # Set up environment variables for packager
+  - bash: |
+      export PATH=./bin/qt/5.12.1/gcc_64/bin:$PATH
+      export PATH=./bin/qt/5.12.1/gcc_64/libexec:$PATH
+      export PATH=./bin/qt/5.12.1/gcc_64/lib/cmake/Qt5:$PATH
+    displayName: 'Set up environment variables for packager'
 
   # Build a package
   - bash: |
