@@ -28,6 +28,11 @@ jobs:
   #     fi
   #   displayName: 'Checkout pull request HEAD'
 
+  # Pull LFS
+  - bash: |
+      git lfs pull binaries/MCR.zip
+    displayName: 'Pull LFS'
+
   # Dependency manager
   - bash: |
       sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix
@@ -55,8 +60,8 @@ jobs:
 
   # Nuclear Option #1
   - bash: |
-      rm -rf binaries
-      rm -rf data
+      rm -rf binaries/_*.zip
+      # rm -rf data
       rm -rf history
       rm -rf src/applications/individualApps/libra/MCRInstaller.zip
     displayName: 'Take the nuclear option'
@@ -81,6 +86,12 @@ jobs:
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j2
     displayName: 'Configure and compile CaPTk'
+
+  # Build a package
+  - bash: |
+      ./scripts/captk-pkg
+      echo "done"
+    displayName: 'Build a package'
 
 # - job: 'TestWindows'
 #   displayName: "End-to-end Windows build"
