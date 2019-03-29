@@ -30,7 +30,6 @@ src/applications/FeatureExtraction/data/output
 ibsi_phantom
 /src/applications/FeatureExtraction/runner.ps1
 
-mac-local-build.sh 
 mac-pkg.sh
 deepmedic
 itksnap
