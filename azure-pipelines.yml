@@ -89,8 +89,8 @@ jobs:
 
   # Build a package
   - bash: |
+      export PKG_FAST_MODE=1
       ./scripts/captk-pkg
-      echo "done"
     displayName: 'Build a package'
 
 # - job: 'TestWindows'
