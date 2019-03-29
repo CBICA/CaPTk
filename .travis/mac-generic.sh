@@ -28,7 +28,7 @@ echo "Run CaPTk Build"
 # export CMAKE_PREFIX_PATH="${TRAVIS_BUILD_DIR}/bin/install/lib/cmake/ITK-4.13:$CMAKE_PREFIX_PATH"
 cmake ../
 cmake ../
-cmake ../
+
 make -j 2
 
 make package
