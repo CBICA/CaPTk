@@ -30,7 +30,7 @@ jobs:
 
   # Pull LFS
   - bash: |
-      git lfs pull
+      git lfs pull binaries/MCR.zip
     displayName: 'Pull LFS'
 
   # Dependency manager
