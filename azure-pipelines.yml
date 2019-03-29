@@ -59,6 +59,7 @@ jobs:
   # Set up Qt from Binaries
   - bash: |
       mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
+      echo "Moved qt binaries"
     displayName: 'Set up Qt on Linux'
 
   # Create as much free memory as possible
