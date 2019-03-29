@@ -28,6 +28,11 @@ jobs:
   #     fi
   #   displayName: 'Checkout pull request HEAD'
 
+  # Pull LFS
+  - bash: |
+      git lfs pull
+    displayName: 'Pull LFS'
+
   # Dependency manager
   - bash: |
       sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix
