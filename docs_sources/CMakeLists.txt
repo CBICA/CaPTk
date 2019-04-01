@@ -43,7 +43,7 @@ IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in")
 	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in 
     ${CMAKE_CURRENT_BINARY_DIR}/doxy.config
     @ONLY )
-	
+    
 	# use (configured) doxy.config from (out of place) BUILD tree:
 	SET(DOXY_CONFIG "${CMAKE_CURRENT_BINARY_DIR}/doxy.config")
 ELSE (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in")
@@ -52,7 +52,7 @@ ELSE (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in")
 	MESSAGE(SEND_ERROR "Please create ${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in (or doxy.config as fallback)")
 ENDIF( )
 
-FILE(GLOB_RECURSE ALL_DOC_FILES "${PROJECT_SOURCE_DIR}/docs/tutorial/*.*")
+FILE(GLOB_RECURSE ALL_DOC_FILES "${PROJECT_SOURCE_DIR}/docs_sources/tutorial/*.*")
 FOREACH(docFiles ${ALL_DOC_FILES})
   
   #FILE(COPY ${docFiles}
@@ -66,7 +66,7 @@ FOREACH(docFiles ${ALL_DOC_FILES})
      
 ENDFOREACH()
 
-FILE(GLOB_RECURSE ALL_IMAGE_FILES "${PROJECT_SOURCE_DIR}/docs/images/*.png")
+FILE(GLOB_RECURSE ALL_IMAGE_FILES "${PROJECT_SOURCE_DIR}/docs_sources/images/*.png")
 FOREACH(imgFiles ${ALL_IMAGE_FILES})
   
   FILE(COPY ${imgFiles}

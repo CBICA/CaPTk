@@ -22,9 +22,10 @@
 #     export LD_LIBRARY_PATH=/home/${USER}/Qt/5.12.1/gcc_64/lib
 # ! NOTE: make sure to switch those directories with the relevant paths to your respective build locations. This is NOT a swap in addition!
 # - MCR folder is present in src/applications/individualAppls/libra that contains the extracted v84 MATLAB created from the MCRInstaller
+# ALTERNATIVELY, MCR.zip in the binaries folder can be extracted to the above location (in that libra folder) and everything should work out fine
 # - NOTE: This last thing should be put in via git-lfs otherwise you can install libra normally, move the folder back there, 
 # and then re-build CaPTk with this script. Hopefully LIBRA will be implemented in C++ sometime in the future.
-# - Have dos2unix installed (sudo apt-get install dos2unix)
+# - Have dos2unix, g++, make, cmake, and libgl-dev installed. They are all availible from aptitude
 # 
 # A final note:
 # Please make sure you read through this script before modifying it. Provided you have the following prerequisites, you should be able to build
@@ -61,6 +62,14 @@ shopt -s globstar
 
 # Store the root dir this is being run from
 SRC_DIR=`pwd`
+
+# Check to make sure MCR is present
+if [ ! -d "./src/applications/individualApps/libra/MCR" ]; then
+  echo "[!] MCR Not found, installing..."
+  unzip ./binaries/MCR.zip
+  mv MCR ./src/applications/individualApps/libra/
+  echo "[:] Done installing MCR component."
+fi
 
 # Run the fixes for linux, assume being ran from build folder (./bin)
 RUN_FIXES () {
@@ -140,8 +149,9 @@ RUN_DEPLOYQT () {
 
   # Download linuxdeployqt and mark it as executable
   echo "[:] Downloading linuxdeployqt..."
-  wget -nc https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
-  chmod +x linuxdeployqt-continuous-x86_64.AppImage
+  LDQT="linuxdeployqt-6-x86_64.AppImage"
+  wget -nc https://github.com/probonopd/linuxdeployqt/releases/download/6/${LDQT}
+  chmod +x ${LDQT}
 
   # Okay here's where it gets insane
   # So we need to run linuxdeployqt, and show it where our *.desktop files are so it can generate an AppImage that
@@ -155,7 +165,7 @@ RUN_DEPLOYQT () {
   # The issue is that linuxdeployqt cannot for the life of it process globstars (**) for some reason, meaning we cannot simply exclude MCR/** and be done,
   # no, we need to manually come up with a glob for EVERY possible directory hierarchy for MCR, leaving us with this.
   # Using continuous release as of 3/5/18, please change to version 5 or 6 if you are having issues with this.
-  ./linuxdeployqt-continuous-x86_64.AppImage ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
+  ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
   # But now we aren't even done. Normally, you could run linuxdeployqt with the -appimage flag which gives us our amazing AppImage file that can be ran anywhere.
   # However, we have started to see a lot of issues revolving around the $LD_LIBRARY_PATH since we want to arbitrarily run applications from the main CaPTk binary.
   # The solution is to wrap the entry of the AppImage according to this guide made by the guy who made AppImages: https://github.com/probonopd/linuxdeployqt/wiki/Custom-wrapper-script-instead-of-AppRun
@@ -209,6 +219,12 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 cd bin
 
+# Check for existing install folder, and trash it if it exists. We do this to make sure the binaries are overwritten
+if [ -d "install" ]; then
+  echo "[:] Cleaning up previous build..."
+  rm -rf ./install/
+fi
+
 # Superbuild
 # Configure cmake
 echo "[:] Running cmake command for superbuild..."
@@ -229,7 +245,7 @@ make -j2 install/strip
 
 # Install docs
 echo "[:] Installing docs..."
-cp -r docs install/appdir/usr/
+cp -r ../docs install/appdir/usr/
 
 # We need to fix the project first
 RUN_FIXES
@@ -260,9 +276,20 @@ cp ./licenses/Linux-Combined.txt ./pkg/
 # Move installer in
 cp ./scripts/linux-makeself ./pkg/
 chmod +x ./pkg/linux-makeself
+
 # Create version file
+# This should always create a file because the installer script needs the version number and won't have access to the cmake
 # Save version as variable
-ver=`./scripts/unix-version`
+
+# Get the version of CaPTk from cmake, assuming it is being ran with respect to a cmake file in the current directory
+# If you notice the version numbers start appearing as `..` or something dumb, make sure no one changed the CMake because I almost guarantee you that's the issue you're seeing
+MAJOR=`cat CMakeLists.txt | grep "( PROJECT_VERSION_MAJOR" | awk '{print $3}'`
+MINOR=`cat CMakeLists.txt | grep "( PROJECT_VERSION_MINOR" | awk '{print $3}'`
+PATCH=`cat CMakeLists.txt | grep "( PROJECT_VERSION_PATCH" | awk '{print $3}'`
+
+ver="${MAJOR}.${MINOR}.${PATCH}"
+
+# Should not be an issue to write to this file considering that pkg is created and destroyed in this script
 echo ${ver} >> ./pkg/version
 
 # Step 3: Wrap it all upp

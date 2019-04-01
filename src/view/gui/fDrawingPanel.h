@@ -63,6 +63,9 @@ public:
       }
     }
   }
+
+  int getCurrentOpacity() { return m_currentOpacity; };
+
 signals :
   void clearMask(int label=-1);
   void UndoButtonClicked();
@@ -72,6 +75,7 @@ signals :
   void CurrentDrawingLabelChanged(int); // multiLabel related change
   void CurrentMaskOpacityChanged(int); // multiLabel related change
   void helpClicked_Interaction(std::string);
+  void sig_ChangeLabelValuesClicked(const std::string, const std::string);
 
 
 public slots :
@@ -106,8 +110,13 @@ public slots :
   void shapeFreeHandButtonFunctionality();
   void shapesRectangleButtonFunctionality();
   void shapesCircleButtonFunctionality();
+  void shapesSphereButtonFunctionality();
   void helpClicked();
 
+  void ChangeLabelValuesClicked();
+
+private:
+  int m_currentOpacity = 1;
 };
 
 

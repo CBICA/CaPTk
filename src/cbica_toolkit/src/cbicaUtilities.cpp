@@ -785,7 +785,9 @@ namespace cbica
   {
     std::string path, base, ext;
     splitFileName(getFullPath(), path, base, ext);
-    std::cout << "===DEBUG path" << path << " base " << base << " ext " << ext << std::endl;
+  // #ifdef __APPLE__
+  //   return "/Applications/CaPTk_1.6.2.Beta.app/Contents/MacOS/";
+  // #endif
     return path;
   }
 
@@ -1254,8 +1256,6 @@ namespace cbica
 
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath)
   {
-    std::cout << "===DEBUG HIT" << std::endl;
-
     if (!cbica::directoryExists(dirName))
     {
       std::cerr << "Supplied directory name wasn't found: " << dirName << std::endl;
@@ -1954,6 +1954,7 @@ namespace cbica
         extension = tempExt + compressionFormats[i];
       }
     }
+
     if (!path.empty() && !baseName.empty() && !extension.empty())
     {
       return true;
@@ -1970,17 +1971,28 @@ namespace cbica
       char *basename_var, *path_name; 
 
       auto idx = dataFile_wrap.rfind('.');
+
+      // fun fact, replaceString(string, "", "") enters an infinite loop.
+      // can we not use std::replace? is that not an option?
+      if (extension != "") 
+        dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+      
       if (idx != std::string::npos)
       {
         extension = "." + dataFile_wrap.substr(idx + 1);
-        dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+        if (extension.find("/") != std::string::npos)
+          extension = "";
+        else {
+#ifndef __APPLE__
+          dataFile_wrap = replaceString(dataFile_wrap, extension, "");
+#endif
+        }
       }
       // else // there is no extension for file
 
       path_name = dirname(cbica::constCharToChar(dataFile_wrap.c_str()));
       basename_var = basename(cbica::constCharToChar(dataFile_wrap.c_str()));
 #endif
-
       //path sanity check
       if (path_name == NULL)
       {
@@ -2051,6 +2063,7 @@ namespace cbica
     for (size_t pos = 0;; pos += replaceWith.length())
     {
       pos = return_string.find(toReplace, pos);
+      // std::cout << "pos: " << pos << std::endl;
       if (pos == std::string::npos)
         break;
 

@@ -69,6 +69,8 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/QBorderWidget.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/OutputInteractorStyleNavigator.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ASyncAppManager.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/CheckOpenGLVersion.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/CheckOpenGLVersion.cpp"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
   #"${CMAKE_CURRENT_SOURCE_DIR}/ApplicationBase.h"

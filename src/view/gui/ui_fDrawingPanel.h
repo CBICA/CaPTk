@@ -41,6 +41,7 @@
 #include <QtWidgets/QWidget>
 #include <qcombobox.h>
 #include <QToolButton>
+#include "qlineedit.h"
 //#include <QPushButton.h>
 #include <qgroupbox.h>
 #include <qsize.h>
@@ -67,6 +68,7 @@ public:
   QPushButton *  shapesLineButton;
   QPushButton *  shapesRectangleButton;
   QPushButton *  shapesCircleButton;
+  QPushButton * shapesSphereButton;
   QPushButton *  shapeFillButton;
 
   QPushButton * UndoButton;
@@ -76,9 +78,12 @@ public:
 
   QVector<QPushButton*> shapeButtons;
 
+  QLineEdit* changeOldValues;
+  QLineEdit* changeNewValues;
+  QPushButton* changeButton;
+
   void setupUi(QWidget *parent)
   {
-    
     std::string iconDir = getCaPTkDataDir() + "/icons/";
 
     iconDir = getCaPTkDataDir() + "/icons/";
@@ -99,10 +104,12 @@ public:
     QIcon lineIcon = QIcon((iconDir + "line.png").c_str());
     QIcon rectangleIcon = QIcon((iconDir + "rectangle.png").c_str());
     QIcon circleIcon = QIcon((iconDir + "circle.png").c_str());
+    QIcon sphereIcon = QIcon((iconDir + "sphere.png").c_str());
     QIcon fillIcon = QIcon((iconDir + "fill.png").c_str());
 
     QSize iconSize = QSize(32,32);
     int buttonWidth = QLabel().fontMetrics().width("ButtonSize------------------");
+    auto constButtonWidth20 = buttonWidth + buttonWidth / 5;
 
     shapeNoneButton = new QPushButton(parent);
     shapeNoneButton->setText(QString("View Mode"));
@@ -128,6 +135,10 @@ public:
     shapesCircleButton->setIcon(circleIcon);
     shapesCircleButton->setText("Circle");
 
+    shapesSphereButton = new QPushButton(parent);
+    shapesSphereButton->setIcon(sphereIcon);
+    shapesSphereButton->setText("Sphere");
+
     shapeFillButton = new QPushButton(parent);
     shapeFillButton->setIcon(fillIcon);
     //fillButton->setIconSize(iconSize);
@@ -138,6 +149,7 @@ public:
     shapeButtons.push_back(shapeNoneButton);
     shapeButtons.push_back(shapeEracerButton);
     shapeButtons.push_back(shapeFreeHandButton);
+    shapeButtons.push_back(shapesSphereButton);
     shapeButtons.push_back(shapesLineButton);
     shapeButtons.push_back(shapesRectangleButton);
     shapeButtons.push_back(shapesCircleButton);
@@ -155,14 +167,14 @@ public:
     clearAllLabelButton->setIconSize(iconSize);
     clearAllLabelButton->setText(QString("Clear All Labels"));
     clearAllLabelButton->setToolTip(QString("Clear all label from the image"));
-    clearAllLabelButton->setFixedWidth(buttonWidth + buttonWidth / 5);
+    clearAllLabelButton->setFixedWidth(constButtonWidth20);
 
     clearSelectedLabelButton = new QPushButton(parent);
     clearSelectedLabelButton->setIcon(QIcon(eraseLabelIcon));
     clearSelectedLabelButton->setIconSize(iconSize);
     clearSelectedLabelButton->setText(QString("Clear Selected Label"));
     clearSelectedLabelButton->setToolTip(QString("Clear selected label from the image"));
-    clearSelectedLabelButton->setFixedWidth(buttonWidth + buttonWidth / 5);
+    clearSelectedLabelButton->setFixedWidth(constButtonWidth20);
 
 
 
@@ -171,7 +183,7 @@ public:
     UndoButton->setIconSize(iconSize);
     UndoButton->setText(QString("Undo"));
     UndoButton->setToolTip(QString("Undo previous actions"));
-    UndoButton->setFixedWidth(buttonWidth + buttonWidth / 5);
+    UndoButton->setFixedWidth(constButtonWidth20);
 
 
     sizeComboBox = new QComboBox(parent);
@@ -237,6 +249,7 @@ public:
     shapesLayout1->addWidget(shapeNoneButton);
     shapesLayout1->addWidget(shapeEracerButton);
     shapesLayout1->addWidget(shapeFreeHandButton);
+    shapesLayout1->addWidget(shapesSphereButton);
 
     QVBoxLayout* shapesLayout2 = new QVBoxLayout();
     shapesLayout2->addWidget(shapesLineButton);
@@ -248,12 +261,43 @@ public:
     shapesLayout->addLayout(shapesLayout2);
     shapesGroup->setLayout(shapesLayout);
 
-    QGroupBox* othersGroup = new QGroupBox("Other");
+    QGroupBox* othersGroup = new QGroupBox("Operations");
     QVBoxLayout* othersLayout = new QVBoxLayout();
     othersLayout->addWidget(clearSelectedLabelButton);
     othersLayout->addWidget(clearAllLabelButton);
     othersLayout->addWidget(UndoButton);
-  	othersLayout->addStretch();
+  	//othersLayout->addStretch();
+
+    changeOldValues = new QLineEdit("");
+    changeOldValues->setPlaceholderText("Old Values");
+    changeOldValues->setToolTip("Old values to change in format AxBxC");
+    changeOldValues->setObjectName(QString::fromUtf8("changeOldValues"));
+    changeOldValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    changeOldValues->setFixedWidth(constButtonWidth20);
+
+    changeNewValues = new QLineEdit("");
+    changeNewValues->setPlaceholderText("New Values");
+    changeNewValues->setToolTip("New values to change in format AxBxC");
+    changeNewValues->setObjectName(QString::fromUtf8("changeNewValues"));
+    changeNewValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    changeNewValues->setFixedWidth(constButtonWidth20);
+
+    changeButton = new QPushButton(parent);
+    changeButton->setText(QString("Proceed"));
+    changeButton->setToolTip(QString("Change the selected label sets"));
+    changeButton->setFixedWidth(constButtonWidth20);
+
+    auto changeGroup = new QGroupBox("Change Label Values");
+    auto changeLayout_V = new QVBoxLayout(changeGroup);
+    //auto changeLayout_H = new QHBoxLayout(changeGroup);
+    //changeLayout_H->addWidget(changeOldValues);
+    //changeLayout_H->addWidget(changeNewValues);
+    changeLayout_V->addWidget(changeOldValues);
+    changeLayout_V->addWidget(changeNewValues);
+    changeLayout_V->addWidget(changeButton);
+    changeGroup->setLayout(changeLayout_V);
+    changeGroup->setMaximumWidth(constButtonWidth20 + 15);
+    othersLayout->addWidget(changeGroup);
     othersGroup->setLayout(othersLayout);
 
     HelpButton = new QPushButton();

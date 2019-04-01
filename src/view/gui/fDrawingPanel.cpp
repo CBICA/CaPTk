@@ -30,12 +30,29 @@ fDrawingPanel::fDrawingPanel(QWidget * parent) : QWidget(parent)
   connect(shapesLineButton, SIGNAL(clicked()), this, SLOT(shapesLineButtonFunctionality()));
   connect(shapesRectangleButton, SIGNAL(clicked()), this, SLOT(shapesRectangleButtonFunctionality()));
   connect(shapesCircleButton, SIGNAL(clicked()), this, SLOT(shapesCircleButtonFunctionality()));
+  connect(shapesSphereButton, SIGNAL(clicked()), this, SLOT(shapesSphereButtonFunctionality()));
   connect(HelpButton, SIGNAL(clicked()), this, SLOT(helpClicked()));
+  connect(changeButton, SIGNAL(clicked()), this, SLOT(ChangeLabelValuesClicked()));
 }
 
 void fDrawingPanel::helpClicked()
 {
   emit helpClicked_Interaction("gs_drawing.html");
+}
+
+void fDrawingPanel::ChangeLabelValuesClicked()
+{
+  if (changeOldValues->text().isEmpty())
+  {
+    ShowErrorMessage("Old values cannot be empty: use format AxBxC with the same number of inputs as new values", this);
+    return;
+  }
+  if (changeNewValues->text().isEmpty())
+  {
+    ShowErrorMessage("New values cannot be empty: use format AxBxC with the same number of inputs as old values", this);
+    return;
+  }
+  emit sig_ChangeLabelValuesClicked(changeOldValues->text().toStdString(), changeNewValues->text().toStdString());
 }
 
 void fDrawingPanel::clearSelectedLabelButtonFunctionality()
@@ -58,6 +75,7 @@ void fDrawingPanel::CurrentLabelChanged(int size)
 
 void fDrawingPanel::CurrentOpacityChanged(int size)
 {
+  m_currentOpacity = size;
   emit CurrentMaskOpacityChanged(size);
 }
 void fDrawingPanel::UndoButtonFunctionality()
@@ -94,6 +112,11 @@ void fDrawingPanel::shapesCircleButtonFunctionality()
 {
   enableShapeButton(shapesCircleButton);
   emit shapesButtonClicked(SHAPE_MODE_CIRCLE);
+}
+void fDrawingPanel::shapesSphereButtonFunctionality()
+{
+  enableShapeButton(shapesSphereButton);
+  emit shapesButtonClicked(SHAPE_MODE_SPHERE);
 }
 
 void fDrawingPanel::FillButtonFunctionality()

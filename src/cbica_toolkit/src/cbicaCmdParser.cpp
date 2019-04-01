@@ -760,7 +760,7 @@ namespace cbica
 
       for (size_t i = 0; i < m_exampleUsageAndDescription.size(); i++)
       {
-        std::cout << " Command: " << m_exeName_wrap << " " << m_exampleUsageAndDescription[i].first << "\n\n";
+        std::cout << " Command: " << m_exeName_wrap << " " << m_exampleUsageAndDescription[i].first << "\n";
         std::cout << " Result : " << m_exampleUsageAndDescription[i].second << "\n\n";
       }
       std::cout << "\n";
@@ -928,7 +928,7 @@ namespace cbica
         //std::cout << "[DEBUG] m_exePath: "<< m_exePath << "\n";
         writeCWLFile(m_exePath, false);
         exit(EXIT_SUCCESS);
-        //return true;
+        return true;
       }
       if (!checkMaxLen)
       {
@@ -1282,9 +1282,9 @@ namespace cbica
 
     std::string cwlfileName = dirName_wrap + m_exeName + ".cwl";
 
-    //std::cout << "[DEBUG]dirName_wrap: " << dirName_wrap << std::endl;
-    //std::cout << "[DEBUG]m_exeName: " << m_exeName << std::endl;
-    //std::cout << "[DEBUG]cwlfileName: " << cwlfileName << std::endl;
+    // std::cout << "[DEBUG]dirName_wrap: " << dirName_wrap << std::endl;
+    // std::cout << "[DEBUG]m_exeName: " << m_exeName << std::endl;
+    // std::cout << "[DEBUG]cwlfileName: " << cwlfileName << std::endl;
     
     std::ofstream file;
     if (!cbica::fileExists(cwlfileName) || overwriteFile)

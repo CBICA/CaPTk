@@ -61,6 +61,7 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
 
     bool bCtrlKey = isi->GetInteractor()->GetControlKey();
     bool bShiftKey = isi->GetInteractor()->GetShiftKey();
+    bool bAltKey = isi->GetInteractor()->GetAltKey();
     std::string KeyPress;
 
     if (event == vtkCommand::KeyPressEvent) 
@@ -88,12 +89,106 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
 
       if (event == vtkCommand::KeyPressEvent)
       {
-        if (KeyPress == "l") {
+        if (bShiftKey || bAltKey)
+        {
+          if (KeyPress == "0")
+          {
+            this->SM->GetSlicer(0)->ResetMap();
+          }
+          if (KeyPress == "1")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(1);
+          }
+          if (KeyPress == "2")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(2);
+          }
+          if (KeyPress == "3")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(3);
+          }
+          if (KeyPress == "4")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(4);
+          }
+          if (KeyPress == "5")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(5);
+          }
+          if (KeyPress == "6")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(6);
+          }
+          if (KeyPress == "7")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(7);
+          }
+          if (KeyPress == "8")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(8);
+          }
+          if (KeyPress == "9")
+          {
+            this->SM->GetSlicer(0)->AddLabelToMap(9);
+          }
+          this->SM->GetSlicer(0)->mMask->Modified();
+          //this->SM->GetSlicer(0)->Render();
+          this->SM->Render();
+        }
+        if (bCtrlKey)
+        {
+          if (KeyPress == "0")
+          {
+            this->SM->GetSlicer(0)->ResetMap();
+          }
+          if (KeyPress == "1")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(1);
+          }
+          if (KeyPress == "2")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(2);
+          }
+          if (KeyPress == "3")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(3);
+          }
+          if (KeyPress == "4")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(4);
+          }
+          if (KeyPress == "5")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(5);
+          }
+          if (KeyPress == "6")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(6);
+          }
+          if (KeyPress == "7")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(7);
+          }
+          if (KeyPress == "8")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(8);
+          }
+          if (KeyPress == "9")
+          {
+            this->SM->GetSlicer(0)->ShowLabelOnMap(9);
+          }
+          this->SM->GetSlicer(0)->mMask->Modified();
+          //this->SM->GetSlicer(0)->Render();
+          this->SM->Render();
+        }
+        if (KeyPress == "l") 
+        {
           this->SM->ToggleInterpolation();
           this->SM->Render();
           return;
         }
-        if (KeyPress == "h") {
+        if (KeyPress == "h") 
+        {
           for (int i = 0; i < this->SM->GetNumberOfSlicers(); i++)
           {
             int s;
@@ -108,7 +203,8 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
         {
           mw->SetOpacity();
         }
-        if (KeyPress == "r") {
+        if (KeyPress == "r") 
+        {
           this->SM->GetSlicer(VisibleInWindow)->ResetCamera();
           //
           // adjust scale
@@ -859,6 +955,109 @@ std::vector<PointVal> SlicerManagerCommand::drawRectangle(PointVal startPt, Poin
 
   return undoBuffer;
 }
+std::vector<PointVal> SlicerManagerCommand::drawSphere(PointVal startPt, vtkSmartPointer<vtkImageData> image, int radius)
+{
+  std::vector<PointVal> undoBuffer;
+  auto dims = image->GetDimensions();
+
+  auto actualRadius = (radius * 2 + 1);
+  // Iterate through phi, theta then convert r,theta,phi to  XYZ
+  int x_max = 0, x_min = dims[0], y_max = 0, y_min = dims[1], z_max = 0, z_min = dims[2];
+  //double dtheta = 2 * M_PI / 8 / actualRadius;
+  //int n = 2 * M_PI / dtheta;
+  //auto deltaTheta = M_PI / 12;
+  //auto deltaPhi = 2 * M_PI / 10;
+  for (double phi = 0.; phi < 2 * M_PI; phi += M_PI / 10.) // Azimuth [0, 2PI]
+  {
+    for (double theta = 0.; theta < 2 * M_PI; theta += M_PI / 10.) // Elevation [0, PI]
+    {
+      PointVal tempPoint;
+      tempPoint.x = std::round(actualRadius * cos(phi) * sin(theta)) + startPt.x;
+      tempPoint.y = std::round(actualRadius * sin(phi) * sin(theta)) + startPt.y;
+      tempPoint.z = std::round(actualRadius * cos(theta)) + startPt.z;
+      tempPoint.value = startPt.value;
+      auto undoPt = drawPoint(tempPoint, image);
+      if (undoPt.isValid())
+      {
+        undoBuffer.push_back(tempPoint);
+        if (x_max < tempPoint.x)
+        {
+          x_max = tempPoint.x;
+        }
+        if (y_max < tempPoint.y)
+        {
+          y_max = tempPoint.y;
+        }
+        if (z_max < tempPoint.z)
+        {
+          z_max = tempPoint.z;
+        }
+        if (x_min > tempPoint.x)
+        {
+          x_min = tempPoint.x;
+        }
+        if (y_min > tempPoint.y)
+        {
+          y_min = tempPoint.y;
+        }
+        if (z_min > tempPoint.z)
+        {
+          z_min = tempPoint.z;
+        }
+      }
+    }
+  }
+
+  for (int x = x_min; x <= x_max; x++)
+  {
+    for (int y = y_min; y <= y_max; y++)
+    {
+      for (int z = z_min; z <= z_max; z++)
+      {
+        PointVal tempPoint;
+        tempPoint.x = x;
+        tempPoint.y = y;
+        tempPoint.z = z;
+        tempPoint.value = startPt.value;
+        if (tempPoint.getDistanceFrom(startPt) < actualRadius)
+        {
+          auto undoPt = drawPoint(tempPoint, image);
+          if (undoPt.isValid())
+          {
+            undoBuffer.push_back(tempPoint);
+          }
+        }
+      }
+    }
+  }
+  //for (int x = startPt.x - actualRadius; x <= startPt.x + actualRadius; x++)
+  //{
+  //  for (int y = startPt.y - actualRadius; y <= startPt.y + actualRadius; y++)
+  //  {
+  //    for (int z = startPt.z - actualRadius; z <= startPt.z + actualRadius; z++)
+  //    {
+  //      if ((x < dims[0]) && (y < dims[1]) && (z < dims[2]))
+  //      {
+  //        PointVal tempPoint;
+  //        tempPoint.x = x;
+  //        tempPoint.y = y;
+  //        tempPoint.z = z;
+  //        tempPoint.value = startPt.value;
+  //        if (tempPoint.getDistanceFrom(startPt) <= actualRadius) // remove this if to get a cube
+  //        {
+  //          auto undoPt = drawPoint(tempPoint, image);
+  //          if (undoPt.isValid())
+  //          {
+  //            undoBuffer.push_back(tempPoint);
+  //          }
+  //        }
+  //      }
+  //    }
+  //  }
+  //}
+
+  return undoBuffer;
+}
 std::vector<PointVal> SlicerManagerCommand::drawCircle(PointVal startPt, PointVal endPt, vtkSmartPointer<vtkImageData> image, const int orientation, const int slice, int width)
 {
   std::vector<PointVal> undoBuffer;
@@ -916,6 +1115,23 @@ std::vector<PointVal> SlicerManagerCommand::drawCircle(PointVal startPt, PointVa
   //}
   undoBuffer.insert(undoBuffer.end(), vec_fill.begin(), vec_fill.end());
   return undoBuffer;
+}
+PointVal SlicerManagerCommand::drawPoint(PointVal pt, vtkSmartPointer<vtkImageData> image)
+{
+  if (image == NULL)
+  {
+    return pt.getInvalidPt();
+  }
+  //Fix for crash check range before accessing pixel 
+  if (pt.isWithinRange(image->GetDimensions()))
+  {
+    float* pData = (float*)image->GetScalarPointer(pt.x, pt.y, pt.z);
+    int oldVal = *pData;
+    *pData = (float)pt.value;
+    pt.value = oldVal;
+    return pt;
+  }
+  return pt.getInvalidPt();
 }
 PointVal SlicerManagerCommand::drawPoint(PointVal pt, vtkSmartPointer<vtkImageData> image, const int orientation, const int slice, const int i, const int j)
 {
@@ -1030,6 +1246,23 @@ void SlicerManagerCommand::makeStroke(int VisibleInWindow, double x, double y)
     case SHAPE_MODE_FILL:
     {
       m_shapeBuffer = fillShape(centerPt, mw->getSelectedDrawLabel(), this->SM->mMask, orientation, slice);
+      break;
+    }
+    case SHAPE_MODE_SPHERE:
+    {
+      if (orientation == 2)//SLICE_ORIENTATION_XY
+      {
+        centerPt.z = slice;
+      }
+      else if (orientation == 1)//SLICE_ORIENTATION_XZ
+      {
+        centerPt.y = slice;
+      }
+      else//SLICE_ORIENTATION_YZ
+      {
+        centerPt.x = slice;
+      }
+      m_shapeBuffer = drawSphere(centerPt, this->SM->mMask, mw->getSelectedDrawSize());
       break;
     }
     default:

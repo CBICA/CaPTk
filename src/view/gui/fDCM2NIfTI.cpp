@@ -14,8 +14,8 @@ fDCM2NIfTIConverter::fDCM2NIfTIConverter()
   
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
-  connect(inputImageButton, SIGNAL(clicked()), this, SLOT(OpenInputImage()));
-  connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputImage()));
+  connect(inputDirButton, SIGNAL(clicked()), this, SLOT(OpenInputDir()));
+  connect(outputDirButton, SIGNAL(clicked()), this, SLOT(SelectOutputDir()));
 
 #if WIN32
   m_exe = "/dcm2nii.exe";
@@ -45,44 +45,46 @@ void fDCM2NIfTIConverter::CancelButtonPressed()
 
 void fDCM2NIfTIConverter::ConfirmButtonPressed()
 {
-  auto inputImageName_string = inputImageName->text().toStdString();
-  auto outputImageName_string = outputImageName->text().toStdString();
+  auto inputDirName_string = inputDirName->text().toStdString();
+  auto outputDirName_string = outputDirName->text().toStdString();
 
-  if ((inputImageName->text().isEmpty()) || !cbica::isFile(inputImageName_string))
+  if ((inputDirName->text().isEmpty()) || !cbica::isDir(inputDirName_string))
   {
-    ShowErrorMessage("Please specify the input Image.", this);
+    ShowErrorMessage("Please specify the input directory.", this);
     return;
   }
-  if (outputImageName->text().isEmpty())
+  if (outputDirName->text().isEmpty())
   {
-    ShowErrorMessage("Please specify the output file.", this);
+    ShowErrorMessage("Please specify the output directory.", this);
     return;
   }
 
-  emit RunDICOMConverter(inputImageName_string, outputImageName_string);
+  emit RunDICOMConverter(inputDirName_string, outputDirName_string);
   
   this->close();
 }
 
-void fDCM2NIfTIConverter::OpenInputImage()
+void fDCM2NIfTIConverter::OpenInputDir()
 {
-  auto inputImage = getExistingFile(this, mInputPathName, "DICOM Images (*.dcm *.dicom)");
+  //auto inputImage = getExistingFile(this, mInputPathName, "DICOM Images (*.dcm *.dicom *.ima *.IMA)");
+  auto inputDir = getExistingDirectory(this, mInputPathName);
 
-  if (inputImage.isNull() || inputImage.isEmpty())
+  if (inputDir.isNull() || inputDir.isEmpty())
     return;
   else
-    inputImageName->setText(inputImage);
+    inputDirName->setText(inputDir);
 
-  mInputPathName = inputImage;
+  mInputPathName = inputDir;
 }
 
-void fDCM2NIfTIConverter::SelectOutputImage()
+void fDCM2NIfTIConverter::SelectOutputDir()
 {
-  QString outputImage = getSaveFile(this, mInputPathName, mInputPathName + "dcm2nii.nii.gz");
-  if (outputImage.isNull() || outputImage.isEmpty())
+  //QString outputImage = getSaveFile(this, mInputPathName, mInputPathName + "dcm2nii.nii.gz");
+  QString dir = getExistingDirectory(this, mInputPathName);
+  if (dir.isNull() || dir.isEmpty())
     return;
   else
-    outputImageName->setText(outputImage);
+    outputDirName->setText(dir);
 
-  mInputPathName = outputImage;
+  mInputPathName = dir;
 }
