@@ -43,6 +43,8 @@ rm -rf _CPack*
 make package
 
 version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+pkgname="_Installer"
+pkgname="$version$pkgname"
 
 pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
@@ -68,7 +70,7 @@ xml='<?xml version="1.0" encoding="utf-8"?>
 
 echo $xml > "./distribution.xml"
 
-productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./Install_CaPTk_$version.pkg
+productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
 }
 
