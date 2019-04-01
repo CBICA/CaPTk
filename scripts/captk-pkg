@@ -44,7 +44,7 @@
 
 # HOW TO USE IT
 #
-# From the project root, run `pwd`/scripts/captk-pkg
+# From the project root, run ./scripts/captk-pkg
 # Make sure you are in the root. It won't work otherwise
 #
 
@@ -64,14 +64,14 @@ shopt -s globstar
 SRC_DIR=`pwd`
 
 # Check to make sure MCR is present
-if [ ! -d "`pwd`/src/applications/individualApps/libra/MCR" ]; then
+if [ ! -d "./src/applications/individualApps/libra/MCR" ]; then
   echo "[!] MCR Not found, installing..."
-  unzip `pwd`/binaries/MCR.zip
-  mv MCR `pwd`/src/applications/individualApps/libra/
+  unzip ./binaries/MCR.zip
+  mv MCR ./src/applications/individualApps/libra/
   echo "[:] Done installing MCR component."
 fi
 
-# Run the fixes for linux, assume being ran from build folder (`pwd`/bin)
+# Run the fixes for linux, assume being ran from build folder (./bin)
 RUN_FIXES () {
 
   # Save install dir location
@@ -79,7 +79,7 @@ RUN_FIXES () {
   INSTALL_DIR=`pwd`
 
   # Save the usr dir location
-  cd `pwd`/appdir/usr/
+  cd ./appdir/usr/
   USR_DIR=`pwd`
 
   echo "[:] Adding proper qmake to PATH..."
@@ -95,12 +95,12 @@ RUN_FIXES () {
   # to be marked as executable or else the whole thing WILL NOT work. We'll get to that in a second.
   echo "[:] Adding LIBRA..."
   cd ${SRC_DIR}
-  cp `pwd`/src/applications/individualApps/libra/bin/libra `pwd`/bin/install/appdir/usr/bin/
-  cp `pwd`/src/applications/individualApps/libra/libexec/libra `pwd`/bin/install/appdir/usr/libexec/
-  cp -r `pwd`/src/applications/individualApps/libra/MCR `pwd`/bin/install/appdir/usr/libexec/\
+  cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
+  cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
+  cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
 
   # Move into install
-  cd `pwd`/bin/install/appdir/usr
+  cd ./bin/install/appdir/usr
 
   # Fix 2: WebEngine stuff
   #
@@ -111,7 +111,7 @@ RUN_FIXES () {
   # but for SOME reason linuxdeployqt doesn't pull in. So we need to manually add these nss libraries in for the webengine
   # to work.
   echo "[:] Adding NSS libs..."
-  cp /usr/lib/x86_64-linux-gnu/nss/* `pwd`/lib
+  cp /usr/lib/x86_64-linux-gnu/nss/* ./lib
 
   # Fix 3: LIBRA was made on windows and none of the stuff is marked as executable by default
   # All of these need to be exec or else it flat out doesnt work.
@@ -120,7 +120,7 @@ RUN_FIXES () {
   echo "[:] Marking MATLAB binaries as executable..."
 
   # The magic file that we need to be executable from earlier
-  cd `pwd`/libexec/MCR/v84/bin/glnxa64
+  cd ./libexec/MCR/v84/bin/glnxa64
   chmod +x matlab_helper
 
   # Go back up to /bin
@@ -138,7 +138,7 @@ RUN_FIXES () {
   dos2unix ConfettiGUI.py
   chmod +x ConfettiGUI.py
   # And also the files in libexec
-  cd .`pwd`/libexec
+  cd ../libexec
   dos2unix ConfettiCore.py
   chmod +x ConfettiCore.py
   chmod +x libra
@@ -168,27 +168,27 @@ RUN_DEPLOYQT () {
   # The issue is that linuxdeployqt cannot for the life of it process globstars (**) for some reason, meaning we cannot simply exclude MCR/** and be done,
   # no, we need to manually come up with a glob for EVERY possible directory hierarchy for MCR, leaving us with this.
   # Using continuous release as of 3/5/18, please change to version 5 or 6 if you are having issues with this.
-  `pwd`/${LDQT} `pwd`/appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
+  ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
   # But now we aren't even done. Normally, you could run linuxdeployqt with the -appimage flag which gives us our amazing AppImage file that can be ran anywhere.
   # However, we have started to see a lot of issues revolving around the $LD_LIBRARY_PATH since we want to arbitrarily run applications from the main CaPTk binary.
   # The solution is to wrap the entry of the AppImage according to this guide made by the guy who made AppImages: https://github.com/probonopd/linuxdeployqt/wiki/Custom-wrapper-script-instead-of-AppRun
   
   # Replace AppRun
-  rm `pwd`/appdir/AppRun
-  cp .`pwd`/.`pwd`/data/applications/AppRun `pwd`/appdir/
+  rm ./appdir/AppRun
+  cp ../../data/applications/AppRun ./appdir/
 
   # Download and mark executable appimagetool. Using release 11 as of 3/5/18
   wget -nc https://github.com/AppImage/AppImageKit/releases/download/11/appimagetool-x86_64.AppImage
   chmod +x appimagetool-x86_64.AppImage
 
   # Build the AppImage
-  `pwd`/appimagetool-x86_64.AppImage `pwd`/appdir
+  ./appimagetool-x86_64.AppImage ./appdir
 
   # Move the appimage up to the root
-  mv `pwd`/CaPTk*.AppImage .`pwd`/.`pwd`/CaPTk.bin
+  mv ./CaPTk*.AppImage ../../CaPTk.bin
 
   # And likewise move there as well
-  cd .`pwd`/.`pwd`/
+  cd ../../
 
 }
 
@@ -228,13 +228,13 @@ if [ -z "$PKG_FAST_MODE" ]; then
   # Check for existing install folder, and trash it if it exists. We do this to make sure the binaries are overwritten
   if [ -d "install" ]; then
     echo "[:] Cleaning up previous build..."
-    rm -rf `pwd`/install/
+    rm -rf ./install/
   fi
 
   # Superbuild
   # Configure cmake
   echo "[:] Running cmake command for superbuild..."
-  bash .`pwd`/scripts/linux-cmake-conf
+  bash ../scripts/linux-cmake-conf
 
   # Make install/strip
   echo "[:] Building superbuild..."
@@ -243,7 +243,7 @@ if [ -z "$PKG_FAST_MODE" ]; then
   # CaPTk
   # Configure cmake
   echo "[:] Running cmake command for CaPTk..."
-  bash .`pwd`/scripts/linux-cmake-conf
+  bash ../scripts/linux-cmake-conf
 
   # Make install/strip
   echo "[:] Building CaPTk..."
@@ -261,7 +261,7 @@ fi
 
 # Install docs
 echo "[:] Installing docs..."
-cp -r .`pwd`/docs install/appdir/usr/
+cp -r ../docs install/appdir/usr/
 
 # We need to fix the project first
 RUN_FIXES
@@ -277,21 +277,21 @@ echo "[:] Building Installer..."
 
 # Step 1: Get makeself, and extract it
 wget -nc https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
-chmod +x `pwd`/makeself-2.4.0.run
-`pwd`/makeself-2.4.0.run
+chmod +x ./makeself-2.4.0.run
+./makeself-2.4.0.run
 rm makeself-2.4.0.run
 
 # Step 2: Create a package directory for makeself to package
 mkdir pkg
 # We package the AppImage, the license, and a script to display the agreement and install the AppImage
-mv CaPTk.bin `pwd`/pkg/
+mv CaPTk.bin ./pkg/
 # Move cwl in
-cp `pwd`/bin/install/appdir/usr/bin/*.cwl `pwd`/pkg/
+cp ./bin/install/appdir/usr/bin/*.cwl ./pkg/
 # Move liscense in
-cp `pwd`/licenses/Linux-Combined.txt `pwd`/pkg/
+cp ./licenses/Linux-Combined.txt ./pkg/
 # Move installer in
-cp `pwd`/scripts/linux-makeself `pwd`/pkg/
-chmod +x `pwd`/pkg/linux-makeself
+cp ./scripts/linux-makeself ./pkg/
+chmod +x ./pkg/linux-makeself
 
 # Create version file
 # This should always create a file because the installer script needs the version number and won't have access to the cmake
@@ -306,16 +306,16 @@ PATCH=`cat CMakeLists.txt | grep "( PROJECT_VERSION_PATCH" | awk '{print $3}'`
 ver="${MAJOR}.${MINOR}.${PATCH}"
 
 # Should not be an issue to write to this file considering that pkg is created and destroyed in this script
-echo ${ver} >> `pwd`/pkg/version
+echo ${ver} >> ./pkg/version
 
 # Step 3: Wrap it all upp
 
 # Create the installer
-`pwd`/makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" `pwd`/linux-makeself
+./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./linux-makeself
 
 # Cleanup
-rm -rf `pwd`/pkg
-rm -rf `pwd`/makeself-2.4.0*
+rm -rf ./pkg
+rm -rf ./makeself-2.4.0*
 
 # Done
 echo "[:] Done. Created installer"
