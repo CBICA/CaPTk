@@ -238,10 +238,12 @@ jobs:
       
     displayName: 'Package CaPTk (.dmg and .pkg)'
   
-- task: DownloadPipelineArtifact@1
-  inputs:
-    buildType: 'current'
-    buildVersionToDownload: 'latest'
-    artifactName: '*.pkg'
-    itemPattern: '**'
-    downloadPath: '$(System.DefaultWorkingDirectory)'
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: '*Installer.pkg'
+      targetPath: 'bin'
+  
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: '*Installer.pkg'
+      targetPath: $(System.DefaultWorkingDirectory)
