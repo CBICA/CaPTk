@@ -44,6 +44,10 @@ IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in")
     ${CMAKE_CURRENT_BINARY_DIR}/doxy.config
     @ONLY )
     
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/html_footer.html 
+    ${CMAKE_CURRENT_BINARY_DIR}/html_footer.html
+    @ONLY )
+    
 	# use (configured) doxy.config from (out of place) BUILD tree:
 	SET(DOXY_CONFIG "${CMAKE_CURRENT_BINARY_DIR}/doxy.config")
 ELSE (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in")
@@ -94,7 +98,7 @@ IF(WIN32)
     # determine useful name for output file 
     # should be project and version unique to allow installing 
     # multiple projects into one global directory      
-    IF   (EXISTS "${PROJECT_BINARY_DIR}/Documentation/html/index.chm")
+    IF   (EXISTS "${CURRENT_BINARY_DIR}/html/index.chm")
       IF   (PROJECT_NAME)
         SET(OUT "${PROJECT_NAME}")
       ELSE (PROJECT_NAME)
@@ -114,11 +118,11 @@ IF(WIN32)
       
       #MESSAGE("DBG ${PROJECT_BINARY_DIR}/Documentation/html/index.chm \n${OUT}")
       # create target used by install and package commands 
-      INSTALL(FILES "${PROJECT_BINARY_DIR}/Documentation/html/index.chm"
-        DESTINATION "Documentation"
+      INSTALL(FILES "${CURRENT_BINARY_DIR}/html/index.chm"
+        DESTINATION Share/docs
         RENAME "${OUT}"
       )
-    ENDIF(EXISTS "${PROJECT_BINARY_DIR}/Documentation/html/index.chm")
+    ENDIF(EXISTS "${CURRENT_BINARY_DIR}/html/index.chm")
     ENDIF(NOT TARGET_DOC_SKIP_INSTALL)
 
   ENDIF(HTML_HELP_COMPILER)
