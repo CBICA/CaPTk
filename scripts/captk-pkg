@@ -219,29 +219,42 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 cd bin
 
-# Check for existing install folder, and trash it if it exists. We do this to make sure the binaries are overwritten
-if [ -d "install" ]; then
-  echo "[:] Cleaning up previous build..."
-  rm -rf ./install/
+# Optional flag one can set in the terminal to skip the double build process, used in Azure
+if [ -z "$PKG_FAST_MODE" ]; then
+
+  # Check for existing install folder, and trash it if it exists. We do this to make sure the binaries are overwritten
+  if [ -d "install" ]; then
+    echo "[:] Cleaning up previous build..."
+    rm -rf ./install/
+  fi
+
+  # Superbuild
+  # Configure cmake
+  echo "[:] Running cmake command for superbuild..."
+  bash ../scripts/linux-cmake-conf
+
+  # Make install/strip
+  echo "[:] Building superbuild..."
+  make -j2
+
+  # CaPTk
+  # Configure cmake
+  echo "[:] Running cmake command for CaPTk..."
+  bash ../scripts/linux-cmake-conf
+
+  # Make install/strip
+  echo "[:] Building CaPTk..."
+  make -j2 install/strip
+
+else
+
+  echo "[!] Fast mode enabled!"
+
+  # Make install/strip
+  echo "[:] Installing CaPTk..."
+  make -j2 install/strip
+
 fi
-
-# Superbuild
-# Configure cmake
-echo "[:] Running cmake command for superbuild..."
-bash ../scripts/linux-cmake-conf
-
-# Make install/strip
-echo "[:] Building superbuild..."
-make -j2
-
-# CaPTk
-# Configure cmake
-echo "[:] Running cmake command for CaPTk..."
-bash ../scripts/linux-cmake-conf
-
-# Make install/strip
-echo "[:] Building CaPTk..."
-make -j2 install/strip
 
 # Install docs
 echo "[:] Installing docs..."
