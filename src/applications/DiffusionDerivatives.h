@@ -847,9 +847,9 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
       if (writeSkew)
       {
         ScalarPixelType m1, m3, l1, l2, l3;
-        l1 = abs(lambda[0]);
-        l2 = abs(lambda[1]);
-        l3 = abs(lambda[2]);
+        l1 = std::abs(lambda[0]);
+        l2 = std::abs(lambda[1]);
+        l3 = std::abs(lambda[2]);
         m1 = (l1 + l2 + l3) / 3.0;
 
         if (m1 > 0)
