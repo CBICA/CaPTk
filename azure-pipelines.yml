@@ -102,11 +102,16 @@ jobs:
   
   # Set up environment variables for packager
   - bash: |
-      export PATH=./bin/qt/5.12.1/gcc_64/bin:$PATH
-      export PATH=./bin/qt/5.12.1/gcc_64/libexec:$PATH
-      export PATH=./bin/qt/5.12.1/gcc_64/lib/cmake/Qt5:$PATH
+      export PATH=`pwd`/bin/qt/5.12.1/gcc_64/bin:$PATH
+      export PATH=`pwd`/bin/qt/5.12.1/gcc_64/libexec:$PATH
+      export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
     displayName: 'Set up environment variables for packager'
 
+  - bash: |
+      echo $PATH
+      echo $CMAKE_PREFIX_PATH
+    displayName: 'Checking the paths'
+    
   # Build a package
   - bash: |
       export PKG_FAST_MODE=1
