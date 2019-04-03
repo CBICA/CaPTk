@@ -63,6 +63,10 @@ public:
     return mLastError;
   }
 
+  //! Get/Set Comparison mode
+  void SetComparisonMode(bool mode);
+  bool GetComparisonMode();
+
   void UpdateVtkImage();
 
   void SetImage(ImageTypeFloat3D::Pointer t1ceimage);
@@ -276,6 +280,7 @@ public:
   int mOrder;
   double mThresholdIndex;
   double mThreshold;
+  bool m_ComparisonMode; //! comparison mode
 
 };
 #if __GNUC__
