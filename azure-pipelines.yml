@@ -102,9 +102,9 @@ jobs:
   
   ## Set up environment variables for packager
   #- bash: |
-  #    export PATH=`pwd`/bin/qt/5.12.1/gcc_64/bin:$PATH
-  #    export PATH=`pwd`/bin/qt/5.12.1/gcc_64/libexec:$PATH
-  #    export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+  #    export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
+  #    export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+  #    export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
   #  displayName: 'Set up environment variables for packager'
   #
   #- bash: |
@@ -114,12 +114,13 @@ jobs:
     
   # Build a package
   - bash: |
-      export PATH=`pwd`/bin/qt/5.12.1/gcc_64/bin:$PATH
-      export PATH=`pwd`/bin/qt/5.12.1/gcc_64/libexec:$PATH
-      export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+      export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
+      export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+      export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
       echo $PATH
       echo $CMAKE_PREFIX_PATH
       export PKG_FAST_MODE=1
+      which qmake
       ./scripts/captk-pkg
     displayName: 'Set up environment variables for packager and build a package'
 
@@ -250,7 +251,7 @@ jobs:
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
-      contents: '**/*Installer.pkg'
+      contents: 'bin/*Installer.pkg'
   
   - task: PublishBuildArtifacts@1
     inputs:
