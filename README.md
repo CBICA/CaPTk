@@ -30,7 +30,7 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 ## Disclaimer
 - The software has been designed for research purposes only and has neither been reviewed nor approved for clinical use by the Food and Drug Administration (FDA) or by any other federal/state agency.
 - This code (excluding dependent libraries) is governed by the license provided in http://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
-- The minimum recommended resolution is 1024x768. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
+- The minimum recommended resolution is 1200x1024. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
 
 ## Download Latest Release (1.6.1)
 
