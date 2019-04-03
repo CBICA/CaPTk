@@ -153,6 +153,7 @@ jobs:
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
         contents: '*.txt'
     
     - task: PublishBuildArtifacts@1
