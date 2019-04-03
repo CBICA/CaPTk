@@ -44,15 +44,15 @@ public:
 
   QGroupBox *inputGroupBox;
   QGridLayout *inputGridLayout;
-  QLabel *inputImageLabel;
-  QLineEdit *inputImageName;
-  QPushButton *inputImageButton;
+  QLabel *inputDirLabel;
+  QLineEdit *inputDirName;
+  QPushButton *inputDirButton;
 
   QGroupBox *outputGroupBox;
   QGridLayout *outputGridLayout;
-  QLineEdit *outputImageName;
-  QLabel *outputImageLabel;
-  QPushButton *outputImageButton;
+  QLineEdit *outputDirName;
+  QLabel *outputDirLabel;
+  QPushButton *outputDirButton;
 
   QPushButton *confirmButton;
   QPushButton *cancelButton;
@@ -81,55 +81,55 @@ public:
 
     // input
     inputGroupBox = new QGroupBox(fDCM2NIfTIConverter);
-    inputGroupBox->setTitle(QString::fromStdString("First Image in Series"));
+    inputGroupBox->setTitle(QString::fromStdString("Input Directory"));
 
     inputGridLayout = new QGridLayout(inputGroupBox);
     inputGridLayout->setObjectName(QString::fromUtf8("inputGridLayout"));
 
-    inputImageLabel = new QLabel(inputGroupBox);
-    sizePolicy.setHeightForWidth(inputImageLabel->sizePolicy().hasHeightForWidth());
-    inputImageLabel->setSizePolicy(sizePolicy);
+    inputDirLabel = new QLabel(inputGroupBox);
+    sizePolicy.setHeightForWidth(inputDirLabel->sizePolicy().hasHeightForWidth());
+    inputDirLabel->setSizePolicy(sizePolicy);
 
-    inputImageName = new QLineEdit(" ");
-    inputImageName->setObjectName(QString::fromUtf8("inputImageName"));
-    sizePolicy.setHeightForWidth(inputImageName->sizePolicy().hasHeightForWidth());
-    inputImageName->setSizePolicy(sizePolicy);
-    inputImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputDirName = new QLineEdit("");
+    inputDirName->setObjectName(QString::fromUtf8("inputImageName"));
+    sizePolicy.setHeightForWidth(inputDirName->sizePolicy().hasHeightForWidth());
+    inputDirName->setSizePolicy(sizePolicy);
+    inputDirName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-    inputImageButton = new QPushButton(inputGroupBox);
-    inputImageButton->setObjectName(QString::fromUtf8("inputImageButton"));
-    inputImageButton->setText(QString("Browse"));
+    inputDirButton = new QPushButton(inputGroupBox);
+    inputDirButton->setObjectName(QString::fromUtf8("inputImageButton"));
+    inputDirButton->setText(QString("Browse"));
 
-    inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
-    inputGridLayout->addWidget(inputImageName, 1, 0, 1, 1);
-    inputGridLayout->addWidget(inputImageButton, 1, 1, 1, 1);
+    inputGridLayout->addWidget(inputDirLabel, 0, 0, 1, 1);
+    inputGridLayout->addWidget(inputDirName, 1, 0, 1, 1);
+    inputGridLayout->addWidget(inputDirButton, 1, 1, 1, 1);
 
     // output
     outputGroupBox = new QGroupBox(fDCM2NIfTIConverter);
-    outputGroupBox->setTitle(QString::fromStdString("Output File Name"));
+    outputGroupBox->setTitle(QString::fromStdString("Output Directory"));
 
     outputGridLayout = new QGridLayout(outputGroupBox);
     outputGridLayout->setObjectName(QString::fromUtf8("outputGridLayout"));
 
-    outputImageLabel = new QLabel(outputGroupBox);
-    sizePolicy.setHeightForWidth(outputImageLabel->sizePolicy().hasHeightForWidth());
-    outputImageLabel->setSizePolicy(sizePolicy);
+    outputDirLabel = new QLabel(outputGroupBox);
+    sizePolicy.setHeightForWidth(outputDirLabel->sizePolicy().hasHeightForWidth());
+    outputDirLabel->setSizePolicy(sizePolicy);
 
-    outputImageName = new QLineEdit(" ");
-    outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
-    sizePolicy.setHeightForWidth(outputImageName->sizePolicy().hasHeightForWidth());
-    outputImageName->setSizePolicy(sizePolicy);
-    outputImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    outputDirName = new QLineEdit("");
+    outputDirName->setObjectName(QString::fromUtf8("outputDirName"));
+    sizePolicy.setHeightForWidth(outputDirName->sizePolicy().hasHeightForWidth());
+    outputDirName->setSizePolicy(sizePolicy);
+    outputDirName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-    outputImageButton = new QPushButton(outputGroupBox);
-    outputImageButton->setObjectName(QString::fromUtf8("outputImageButton"));
+    outputDirButton = new QPushButton(outputGroupBox);
+    outputDirButton->setObjectName(QString::fromUtf8("outputImageButton"));
     //outputImageButton->setIcon(ButtonIcon);
     //outputImageButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent
-    outputImageButton->setText(QString("Browse"));
+    outputDirButton->setText(QString("Browse"));
 
-    outputGridLayout->addWidget(outputImageLabel, 0, 0, 1, 1);
-    outputGridLayout->addWidget(outputImageName, 1, 0, 1, 1);
-    outputGridLayout->addWidget(outputImageButton, 1, 1, 1, 1);
+    outputGridLayout->addWidget(outputDirLabel, 0, 0, 1, 1);
+    outputGridLayout->addWidget(outputDirName, 1, 0, 1, 1);
+    outputGridLayout->addWidget(outputDirButton, 1, 1, 1, 1);
 
     // put the layout in perspective
     gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);

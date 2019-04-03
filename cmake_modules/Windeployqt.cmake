@@ -26,7 +26,11 @@ find_package(Qt5Core REQUIRED)
 # the windeployqt binary
 get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
+find_program(WINDEPLOYQT_EXECUTABLE windeployqt 
+#HINTS "${_qt_bin_dir}"
+)
+
+MESSAGE( AUTHOR_WARNING "WINDEPLOYQT_EXECUTABLE == ${WINDEPLOYQT_EXECUTABLE}" )
 
 # Running this with MSVC 2015 requires CMake 3.6+
 if((MSVC_VERSION VERSION_EQUAL 1900 OR MSVC_VERSION VERSION_GREATER 1900)
@@ -42,10 +46,6 @@ function(windeployqt target directory)
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E
             env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
-                --verbose 0
-                --no-compiler-runtime
-                --no-angle
-                --no-opengl-sw
                 \"$<TARGET_FILE:${target}>\"
     )
 
@@ -64,9 +64,6 @@ function(windeployqt target directory)
             COMMAND \"${CMAKE_COMMAND}\" -E
                 env PATH=\"${_qt_bin_dir}\" \"${WINDEPLOYQT_EXECUTABLE}\"
                     --dry-run
-                    --no-compiler-runtime
-                    --no-angle
-                    --no-opengl-sw
                     --list mapping
                     \${_file}
             OUTPUT_VARIABLE _output

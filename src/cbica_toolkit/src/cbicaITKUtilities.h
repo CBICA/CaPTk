@@ -43,6 +43,8 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkLinearInterpolateImageFunction.h"
 #include "itkBSplineInterpolateImageFunction.h"
 #include "itkNearestNeighborInterpolateImageFunction.h"
+//#include "itkWindowedSincInterpolateImageFunction.h"
+
 #include "itkTestingComparisonImageFilter.h"
 
 #include "itkStripTsImageFilter.h"
@@ -300,7 +302,7 @@ namespace cbica
     diff->UpdateLargestPossibleRegion();
 
     // check for different conditions 
-    if (static_cast< typename TImageType::PixelType >(diff->GetTotalDifference()) > averageIntensityDifference)
+    if (static_cast<typename TImageType::PixelType>(diff->GetTotalDifference()) > averageIntensityDifference)
     {
       // if there is an appreciable intensity difference between the images, check the number of difference pixels
       if (diff->GetNumberOfPixelsWithDifferences() > numberOfPixelsTolerance)
@@ -313,7 +315,44 @@ namespace cbica
   }
 
   /**
-  \brief Check properties of 2 images to see if they are defined in the same space, etc.
+  \brief Check properties of 2 images to see if they are defined in the same space.
+  */
+  template< typename TImageType >
+  inline bool ImageSanityCheck(const typename TImageType::Pointer image1, const typename TImageType::Pointer image2)
+  {
+    auto size_1 = image1->GetLargestPossibleRegion().GetSize();
+    auto size_2 = image2->GetLargestPossibleRegion().GetSize();
+
+    auto origin_1 = image1->GetOrigin();
+    auto origin_2 = image2->GetOrigin();
+
+    auto spacing_1 = image1->GetSpacing();
+    auto spacing_2 = image2->GetSpacing();
+
+    for (size_t i = 0; i < TImageType::ImageDimension; i++)
+    {
+      if (size_1[i] != size_2[i])
+      {
+        std::cerr << "Size mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+      if (origin_1[i] != origin_2[i])
+      {
+        std::cerr << "Origin mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+      if (spacing_1[i] != spacing_2[i])
+      {
+        std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+  \brief Check properties of 2 images to see if they are defined in the same space.
 
   Checks are done based on cbica::ImageInfo class
   */
@@ -339,7 +378,7 @@ namespace cbica
 
     auto imageOrigin1 = imageInfo1.GetImageOrigins();
     auto imageOrigin2 = imageInfo2.GetImageOrigins();
-    
+
     for (size_t d = 0; d < dims; d++)
     {
       if (imageSize1[d] != imageSize2[d])
@@ -925,6 +964,43 @@ namespace cbica
   }
 
   /**
+  \brief Create an empty (optionally pass a value) ITK image based on an input image with same properties
+
+  \param inputImage The image to base the output on
+  \param oldValues Values separated by 'x'
+  \param newValues Values separated by 'x'
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  typename TImageType::Pointer ChangeImageValues(const typename TImageType::Pointer inputImage, const std::string &oldValues, const std::string &newValues)
+  {
+    auto oldValues_split = cbica::stringSplit(oldValues, "x");
+    auto newValues_split = cbica::stringSplit(newValues, "x");
+    if (oldValues_split.size() != newValues_split.size())
+    {
+      std::cerr << "Change values needs the old and new values to be of same size, for example '-cv 1x2,2x3.\n";
+      return nullptr;
+    }
+
+    itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
+    auto outputImage = inputImage;
+    outputImage->DisconnectPipeline();
+    itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetBufferedRegion());
+    outputIterator.GoToBegin();
+    for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++outputIterator)
+    {
+      for (size_t i = 0; i < oldValues_split.size(); i++)
+      {
+        if (iterator.Get() == std::atof(oldValues_split[i].c_str()))
+        {
+          outputIterator.Set(std::atof(newValues_split[i].c_str()));
+        }
+      }
+    }
+
+    return outputImage;
+  }
+
+  /**
   \brief Get distances in world coordinates across axes for an image
 
   \param inputImage
@@ -957,37 +1033,52 @@ namespace cbica
   }
 
   /**
-  \brief Resize an input image by a factor (expressed as a percentage)
+  \brief Resample an image to an isotropic resolution using the specified output spacing vector
 
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
-  \param resizeFactor The resize factor; can be greater than 100 (which causes an expanded image to be written) but can never be less than zero
-  \param interpolator The type of interpolator to use; can be Linear, BSpline, BiCubic or NearestNeighbor
+  \param outputSpacing The output spacing, always isotropic
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResizeImage(const typename TImageType::Pointer inputImage, const size_t resizeFactor, const std::string &interpolator = "Linear")
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > &outputSpacing, const std::string interpolator = "Linear")
   {
-    const float factor = static_cast<float>(resizeFactor) / 100;
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
-    auto outputSpacing = inputImage->GetSpacing();
+    auto outputSpacingVector = outputSpacing;
+    auto inputSpacing = inputImage->GetSpacing();
     if (TImageType::ImageDimension != 4)
     {
       for (size_t i = 0; i < TImageType::ImageDimension; i++)
       {
-        outputSize[i] = outputSize[i] * factor;
-        outputSpacing[i] = outputSpacing[i] / factor;
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
       }
     }
     else // preserve all time points of a time series image
     {
       for (size_t i = 0; i < 3; i++)
       {
-        outputSize[i] = outputSize[i] * factor;
-        outputSpacing[i] = outputSpacing[i] / factor;
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
       }
     }
 
+    return ResampleImage< TImageType >(inputImage, outputSpacingVector, outputSize, interpolator);
+
+  }
+
+  /**
+  \brief Resample an image to an isotropic resolution using the specified output spacing vector
+
+  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
+  \param inputImage The input image to process
+  \param outputSpacing The output spacing, always isotropic
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \return The resized image
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const typename TImageType::SpacingType outputSpacing,
+    typename TImageType::SizeType outputSize, const std::string interpolator = "Linear")
+  {
     std::string interpolator_wrap = interpolator;
     std::transform(interpolator_wrap.begin(), interpolator_wrap.end(), interpolator_wrap.begin(), ::tolower);
 
@@ -1001,7 +1092,7 @@ namespace cbica
     resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
     if (interpolator_wrap == "bspline")
     {
-      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType >::New();
+      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
     else if (interpolator_wrap.find("bicubic") != std::string::npos)
@@ -1015,6 +1106,16 @@ namespace cbica
       auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
       resampler->SetInterpolator(interpolatorFunc);
     }
+    //else if (interpolator_wrap.find("window") != std::string::npos)
+    //{
+    //  constexpr unsigned int WindowRadius = 5; // pass as parameter
+    //  auto interpolatorFunc = itk::WindowedSincInterpolateImageFunction< TImageType, 
+    //    WindowRadius,  // pass as parameter
+    //    itk::Function::HammingWindowFunction< WindowRadius >, // pass as parameter
+    //    itk::ConstantBoundaryCondition< TImageType >, // pass as parameter
+    //    double  >::New();
+    //  resampler->SetInterpolator(interpolatorFunc);
+    //}
     else
     {
       auto interpolatorFunc = itk::LinearInterpolateImageFunction< TImageType, double >::New();
@@ -1058,104 +1159,44 @@ namespace cbica
       outputSpacingVector[3] = inputSpacing[3];
     }
 
-    std::string interpolator_wrap = interpolator;
-    std::transform(interpolator_wrap.begin(), interpolator_wrap.end(), interpolator_wrap.begin(), ::tolower);
-
-    auto resampler = itk::ResampleImageFilter< TImageType, TImageType >::New();
-    resampler->SetInput(inputImage);
-    resampler->SetSize(outputSize);
-    resampler->SetOutputSpacing(outputSpacingVector);
-    resampler->SetOutputOrigin(inputImage->GetOrigin());
-    resampler->SetOutputDirection(inputImage->GetDirection());
-    resampler->SetOutputStartIndex(inputImage->GetLargestPossibleRegion().GetIndex());
-    resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
-    if (interpolator_wrap == "bspline")
-    {
-      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
-      resampler->SetInterpolator(interpolatorFunc);
-    }
-    else if (interpolator_wrap.find("nearest") != std::string::npos)
-    {
-      auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
-      resampler->SetInterpolator(interpolatorFunc);
-    }
-    else
-    {
-      auto interpolatorFunc = itk::LinearInterpolateImageFunction< TImageType, double >::New();
-      resampler->SetInterpolator(interpolatorFunc);
-    }
-    resampler->UpdateLargestPossibleRegion();
-
-    return resampler->GetOutput();
-    //return ResampleImage< TImageType >(inputImage, outputSpacingVector, interpolator); // this does not work on gcc travis
+    return ResampleImage< TImageType >(inputImage, outputSpacingVector, outputSize, interpolator);
 
   }
 
   /**
-  \brief Resample an image to an isotropic resolution using the specified output spacing vector
+  \brief Resize an input image by a factor (expressed as a percentage)
 
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
-  \param outputSpacing The output spacing, always isotropic
-  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \param resizeFactor The resize factor; can be greater than 100 (which causes an expanded image to be written) but can never be less than zero
+  \param interpolator The type of interpolator to use; can be Linear, BSpline, BiCubic or NearestNeighbor
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > &outputSpacing, const std::string interpolator = "Linear")
+  typename TImageType::Pointer ResizeImage(const typename TImageType::Pointer inputImage, const size_t resizeFactor, const std::string &interpolator = "Linear")
   {
+    const float factor = static_cast<float>(resizeFactor) / 100;
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
-    auto outputSpacingVector = outputSpacing;
-    auto inputSpacing = inputImage->GetSpacing();
+    auto outputSpacing = inputImage->GetSpacing();
     if (TImageType::ImageDimension != 4)
     {
       for (size_t i = 0; i < TImageType::ImageDimension; i++)
       {
-        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
+        outputSize[i] = outputSize[i] * factor;
+        outputSpacing[i] = outputSpacing[i] / factor;
       }
     }
     else // preserve all time points of a time series image
     {
       for (size_t i = 0; i < 3; i++)
       {
-        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
+        outputSize[i] = outputSize[i] * factor;
+        outputSpacing[i] = outputSpacing[i] / factor;
       }
     }
 
-    std::string interpolator_wrap = interpolator;
-    std::transform(interpolator_wrap.begin(), interpolator_wrap.end(), interpolator_wrap.begin(), ::tolower);
+    return ResampleImage < TImageType >(inputImage, outputSpacing, outputSize, interpolator);
 
-    auto resampler = itk::ResampleImageFilter< TImageType, TImageType >::New();
-    resampler->SetInput(inputImage);
-    resampler->SetSize(outputSize);
-    resampler->SetOutputSpacing(outputSpacingVector);
-    resampler->SetOutputOrigin(inputImage->GetOrigin());
-    resampler->SetOutputDirection(inputImage->GetDirection());
-    resampler->SetOutputStartIndex(inputImage->GetLargestPossibleRegion().GetIndex());
-    resampler->SetTransform(itk::IdentityTransform< double, TImageType::ImageDimension >::New());
-    if (interpolator_wrap == "bspline")
-    {
-      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType, double >::New();
-      resampler->SetInterpolator(interpolatorFunc);
-    }
-    else if (interpolator_wrap.find("bicubic") != std::string::npos)
-    {
-      auto interpolatorFunc = itk::BSplineInterpolateImageFunction< TImageType >::New();
-      interpolatorFunc->SetSplineOrder(3);
-      resampler->SetInterpolator(interpolatorFunc);
-    }
-    else if (interpolator_wrap.find("nearest") != std::string::npos)
-    {
-      auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
-      resampler->SetInterpolator(interpolatorFunc);
-    }
-    else
-    {
-      auto interpolatorFunc = itk::LinearInterpolateImageFunction< TImageType, double >::New();
-      resampler->SetInterpolator(interpolatorFunc);
-    }
-    resampler->UpdateLargestPossibleRegion();
-
-    return resampler->GetOutput();
   }
 
   /**
@@ -1206,80 +1247,5 @@ namespace cbica
     }
     return outputIndeces;
   }
-
-  /**
-  \brief This function gets the value of the DICOM tag from the key provided for the DICOM file
-
-  See ${DCMTK_source}/dcmdata/include/dcmtk/dcmdata/dcdeftag.h for a list all supported tags
-
-  \param dicomFile This can be any of the files in the DICOM folder
-  \param dicomKey_group Needs to be in format '0x0010' for 'group' as unsigned short (no parentheses)
-  \param dicomKey_element Needs to be in format '0x0020' for 'element' as unsigned short (no parentheses)
-  */
-  //inline std::string GetDICOMTagValue(const std::string &dicomFile, const unsigned short dicomKey_group, const unsigned short dicomKey_element)
-  //{
-  //  OFString tagValue = "";
-  //  DcmFileFormat fileformat;
-  //  OFCondition status = fileformat.loadFile(dicomFile.c_str());
-  //  if (status.good())
-  //  {
-  //    if (!fileformat.getDataset()->findAndGetOFString(DcmTagKey(dicomKey_group, dicomKey_element), tagValue).good())
-  //    {
-  //      std::cerr << "Error reading DICOM key '" << std::to_string(dicomKey_group) << "," << std::to_string(dicomKey_element) << "'\n";
-  //    }
-  //  }
-  //  else
-  //  {
-  //    std::cerr << "Error reading DICOM file '" << dicomFile << "'\n";
-  //  }
-
-  //  return tagValue.c_str();
-  //}
-
-  ///**
-  //\brief This function gets the value of the DICOM tag from the key provided for the DICOM file
-
-  //See ${DCMTK_source}/dcmdata/include/dcmtk/dcmdata/dcdeftag.h for a list all supported tags
-
-  //\param dicomFile This can be any of the files in the DICOM folder
-  //\param dicomKey Needs to be in format '0x0010|0x0020' for 'group|element' as unsigned short (no parentheses)
-  //*/
-  //inline std::string GetDICOMTagValue(const std::string &dicomFile, const std::vector< unsigned short > &dicomKey)
-  //{
-  //  return GetDICOMTagValue(dicomFile, dicomKey[0], dicomKey[1]);
-  //}
-
-  ///**
-  //\brief This function gets the value of the DICOM tag from the key provided for the DICOM file
-
-  //See ${DCMTK_source}/dcmdata/include/dcmtk/dcmdata/dcdeftag.h for a list all supported tags
-
-  //\param dicomFile This can be any of the files in the DICOM folder
-  //\param dicomKey Needs to be in format '0x0010|0x0020' for 'group|element' as unsigned short (no parentheses)
-  //*/
-  //inline std::string GetDICOMTagValue(const std::string &dicomFile, const std::string &dicomKey)
-  //{
-  //  auto tags = cbica::stringSplit(dicomKey, "|");
-
-  //  return GetDICOMTagValue(dicomFile, 
-  //    static_cast<unsigned short>(std::stoul(tags[0].c_str(), nullptr, 16)), static_cast<unsigned short>(std::stoul(tags[1].c_str(), nullptr, 16))
-  //    );
-  //}
-
-  ///**
-  //\brief This function gets the value of the DICOM tag from the key provided for the DICOM file
-
-  //See ${DCMTK_source}/dcmdata/include/dcmtk/dcmdata/dcdeftag.h for a list all supported tags
-
-  //\param dicomFile This can be any of the files in the DICOM folder
-  //\param dicomKey_group Needs to be in format '0x0010' for 'group' as unsigned short (no parentheses)
-  //\param dicomKey_element Needs to be in format '0x0020' for 'element' as unsigned short (no parentheses)
-  //*/
-  //inline std::string GetDICOMTagValue(const std::string &dicomFile, const std::string &dicomKey_group, const std::string &dicomKey_element)
-  //{
-  //  return GetDICOMTagValue(dicomFile,
-  //    static_cast<unsigned short>(std::atoi(dicomKey_group.c_str())), static_cast<unsigned short>(std::atoi(dicomKey_element.c_str()))
-  //    );
-  //}
 
 }

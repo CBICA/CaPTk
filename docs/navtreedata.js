@@ -25,63 +25,13 @@ var NAVTREE =
 [
   [ "Cancer Imaging Phenomics Toolkit (CaPTk)", "index.html", [
     [ "Overview", "index.html", null ],
-    [ "Getting Started", "Getting_Started.html", [
-      [ "Components", "gs_components.html", null ],
-      [ "Supported Images", "gs_supportedImages.html", null ],
-      [ "Image Loading", "gs_imageLoading.html", null ],
-      [ "Image Visualization", "gs_imageVisualization.html", null ],
-      [ "Tab Docking", "gs_tabDocking.html", null ],
-      [ "Coordinate Definition", "gs_seedpoints.html", null ],
-      [ "Label Annotation/Drawing Panel", "gs_drawing.html", null ],
-      [ "Pre-processing Algorithms", "gs_preprocessing.html", null ],
-      [ "Segmentation", "gs_segmentation.html", null ],
-      [ "Feature Extraction", "gs_features.html", null ],
-      [ "Specialized Applications", "gs_specializedApps.html", null ]
-    ] ],
-    [ "How-To Guides", "How_To_Guides.html", [
-      [ "Pre-processing", "ht_Preprocessing.html", [
-        [ "DICOM to NIfTI conversion", "preprocessing_dcm2nii.html", null ],
-        [ "Registration", "preprocessing_reg.html", null ],
-        [ "Denoise-SUSAN (ITK filter)", "preprocessing_susan.html", null ],
-        [ "N4 Bias Correction (ITK filter)", "preprocessing_biasN4.html", null ],
-        [ "Histogram Matching", "preprocessing_histoMatch.html", null ],
-        [ "DeepMedic Normalizer", "preprocessing_dmNorm.html", null ]
-      ] ],
-      [ "Segmentation", "ht_Segmentation.html", null ],
-      [ "Feature Extraction", "ht_FeatureExtraction.html", null ],
-      [ "Specialized Applications Usage", "ht_SpecialApps.html", [
-        [ "Brain Cancer: WhiteStripe Normalization", "Glioblastoma_WhiteStripe.html", null ],
-        [ "Brain Cancer: Population Atlas", "Glioblastoma_Atlas.html", null ],
-        [ "Brain Cancer: Confetti", "Glioblastoma_Confetti.html", null ],
-        [ "Brain Cancer: Glioblastoma Infiltration Index (Recurrence)", "Glioblastoma_Recurrence.html", null ],
-        [ "Brain Cancer: Pseudoprogression Infiltration Index", "Glioblastoma_Pseudoprogression.html", null ],
-        [ "Brain Cancer: Glioblastoma Survival Prediction Index", "Glioblastoma_Survival.html", null ],
-        [ "Brain Cancer: Glioblastoma Molecular Subtype Prediction", "Glioblastoma_Molecular.html", null ],
-        [ "Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)", "Glioblastoma_PHI.html", null ],
-        [ "Brain Cancer: Glioblastoma EGFRvIII SVM Index", "Glioblastoma_EGFRvIII.html", null ],
-        [ "Breast Cancer: Breast Density Estimation (LIBRA)", "BreastCancer_LIBRA.html", null ],
-        [ "Lung Cancer: Radiomics Analysis of Lung Cancer (SBRT Lung)", "LungCancer_SBRT.html", null ],
-        [ "Miscellaneous: Directionality Estimator", "Glioblastoma_Directionality.html", null ],
-        [ "Miscellaneous: Perfusion Derivatives", "Perfusion_Derivatives.html", null ],
-        [ "Miscellaneous: Diffusion Derivatives", "Diffusion_Derivatives.html", null ],
-        [ "Miscellaneous: Training Module", "Training_Module.html", null ],
-        [ "Miscellaneous: PCA Volume Extraction", "PCA_Extraction.html", null ]
-      ] ]
-    ] ],
-    [ "Scientific Findings", "Science.html", [
-      [ "Imaging Biomarker of EGFRvIII in GBM", "phiEstimator.html", null ],
-      [ "Overall Survival Prediction in GBM", "survivalPredictor.html", null ],
-      [ "Recurrence Prediction in GBM", "recurrencePredictor.html", null ],
-      [ "Breast Cancer Imaging Biomarkers", "libraPapers.html", null ]
-    ] ],
-    [ "Technical Reference", "Technical_Reference.html", [
-      [ "Further Application Details and Assumptions", "tr_Apps.html", null ],
-      [ "Build CaPTk from Source", "tr_buildFromSource.html", null ],
-      [ "For Developers", "tr_forDeves.html", null ]
-    ] ],
-    [ "Download Instructions", "Download.html", null ],
     [ "Installation Instructions", "Installation.html", null ],
-    [ "Release Notes", "ReleaseNotes.html", null ],
+    [ "Getting Started", "Getting_Started.html", "Getting_Started" ],
+    [ "How To Guides", "How_To_Guides.html", "How_To_Guides" ],
+    [ "Scientific Findings using CaPTk", "Science.html", "Science" ],
+    [ "Technical Reference", "Technical_Reference.html", "Technical_Reference" ],
+    [ "Download Instructions", "Download.html", null ],
+    [ "Changelog: Release Notes", "ReleaseNotes.html", null ],
     [ "People (Credits)", "People.html", null ]
   ] ]
 ];

@@ -937,10 +937,6 @@ MultiImageOpticalFlowImageFilter<TInputImage,TOutputImage,TTransformTraits>
     float mask;
     this->OpticalFlowFastInterpolateWithMask(
           Dispatch<ImageDimension>(),
-//<<<<<<< HEAD
-          bMov, kMoving, stride, mov_size.data_block(), zeros.data_block(),
-          cix.data_block(), interp_mov.data_block(), mask);
-//=======
 //          bMov, kMoving, stride, mov_size.data_block(), zeroPtr,
 //          cix.data_block(), interp_mov.data_block());
 //>>>>>>> 43ef7496f075d647d8e516d0c8c81fc86f04a1ae

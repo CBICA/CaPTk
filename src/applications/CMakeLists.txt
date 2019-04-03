@@ -19,7 +19,8 @@ SET( INCLUDES "")
 SET( CAPTK_MACOSX_BUNDLE_FILES "")
 
 SET( APPLICATIONS
-  WhiteStripe
+  WhiteStripe  
+  PerfusionAlignment
   GeodesicSegmentation
   GeodesicTraining
   EGFRvIIISurrogateIndex
@@ -53,12 +54,14 @@ ADD_SUBDIRECTORY( FeatureExtraction )
 ADD_SUBDIRECTORY( GeodesicTraining )
 ADD_SUBDIRECTORY( Preprocessing )
 ADD_SUBDIRECTORY( Utilities )
+#ADD_SUBDIRECTORY( PerfusionAlignment )
 
 INCLUDE_DIRECTORIES( 
   ${CMAKE_CURRENT_SOURCE_DIR}/FeatureExtraction/src/depends 
   ${CMAKE_CURRENT_SOURCE_DIR}/FeatureExtraction/src 
   ${CMAKE_CURRENT_SOURCE_DIR}/Preprocessing/src/depends
   ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/src/depends
+  ${CMAKE_CURRENT_SOURCE_DIR}/PerfusionAlignment/src/depends
   ${GEODESIC_TRAINING_INCLUDE_DIRS}
 )
 
@@ -114,6 +117,11 @@ FOREACH(application ${APPLICATIONS})
   ENDIF()
 
   IF ( BUILD_PDERIVATIVES AND (${application} STREQUAL PerfusionDerivatives))
+    ADD_APPLICATION( ${application} )
+  ENDIF()
+  
+  IF ( BUILD_ALIGNMENT AND (${application} STREQUAL PerfusionAlignment))
+    #ADD_SUBDIRECTORY( PerfusionAlignment )
     ADD_APPLICATION( ${application} )
   ENDIF()
 

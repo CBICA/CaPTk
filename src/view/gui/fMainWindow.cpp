@@ -349,7 +349,7 @@ fMainWindow::fMainWindow()
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
-  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionDerivatives PerfusionPCA TrainingModule";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation";
 #ifdef WIN32
   segAppList += " deepmedic";
@@ -660,7 +660,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionPCA") != std::string::npos)
     {
-      vectorOfMiscApps[i].action->setText("  PCA Volume Extraction"); //TBD set at source
+      vectorOfMiscApps[i].action->setText("  Perfusion PCA"); //TBD set at source
       connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPCA()));
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionDerivatives") != std::string::npos)
@@ -670,7 +670,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionAlignment") != std::string::npos)
     {
-      vectorOfMiscApps[i].action->setText("  Perfusion Alignment");
+      vectorOfMiscApps[i].action->setText("  Perfusion Alignment"); //TBD set at source
       connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(PerfusionAlignmentCalculation()));
     }
     else if (vectorOfMiscApps[i].name.find("DiffusionDerivatives") != std::string::npos)
@@ -756,6 +756,7 @@ fMainWindow::fMainWindow()
   connect(drawingPanel, SIGNAL(CurrentDrawingLabelChanged(int)), this, SLOT(updateDrawMode()));
   connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity(int)));
   connect(drawingPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
+  connect(drawingPanel, SIGNAL(sig_ChangeLabelValuesClicked(const std::string, const std::string)), this, SLOT(CallLabelValuesChange(const std::string, const std::string)));
 
 
   connect(&recurrencePanel, SIGNAL(SubjectBasedRecurrenceEstimate(std::string, bool, bool, bool, bool)), this, SLOT(StartRecurrenceEstimate(const std::string &, bool, bool, bool, bool)));
@@ -1443,7 +1444,12 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
       return;
     }
-    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    if ((extension == ".dcm") || 
+      (extension == ".DCM") ||
+      (extension == ".dicom") || 
+      (extension == "") || 
+      (extension == ".ima") ||
+      (extension == ".IMA"))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       fname = d.absolutePath().toStdString();
@@ -1466,47 +1472,56 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     else if (!bFirstLoad)
     {
       {
-        auto temp = cbica::normPath(m_tempFolderLocation + "/temp.nii.gz");
-        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp);
-        auto imageInfoPrev = cbica::ImageInfo(temp);
-        auto sizePrev = imageInfoPrev.GetImageSize();
-        auto size = imageInfo.GetImageSize();
-        const std::string errorMsg = " not matching. Please register the image(s). Skipping file: ";
-        for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+        auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
+        if (!cbica::ImageSanityCheck(fname, temp_prev))
         {
-          if (sizePrev[i] != size[i])
-          {
-            updateProgress(0, "Size" + errorMsg + fname);
-            ShowErrorMessage("Size" + errorMsg + fname);
-            return; //
-          }
-        }
-        auto spacingPrev = imageInfoPrev.GetImageSpacings();
-        auto spacing = imageInfo.GetImageSpacings();
-        for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
-        {
-          if (spacing[i] != spacingPrev[i])
-          {
-            updateProgress(0, "Spacing" + errorMsg + fname);
-            ShowErrorMessage("Spacing" + errorMsg + fname);
-            return; //
-          }
-        }
-        auto originPrev = imageInfoPrev.GetImageOrigins();
-        auto origin = imageInfo.GetImageOrigins();
-        if (!m_advancedVisualizer)
-        {
-          for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
-          {
-            if (origin[i] != originPrev[i])
-            {
-              updateProgress(0, "Origin" + errorMsg + fname);
-              ShowErrorMessage("Origin" + errorMsg + fname);
-              return; //
-            }
-          }
+          ShowErrorMessage("The physical dimensions of the previously loaded image and current image are inconsistent; cannot load");
+          return;
         }
       }
+      //{
+      //  auto temp = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+      //  cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp);
+      //  auto imageInfoPrev = cbica::ImageInfo(temp);
+      //  auto sizePrev = imageInfoPrev.GetImageSize();
+      //  auto size = imageInfo.GetImageSize();
+      //  const std::string errorMsg = " not matching. Please register the image(s). Skipping file: ";
+      //  for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+      //  {
+      //    if (sizePrev[i] != size[i])
+      //    {
+      //      updateProgress(0, "Size" + errorMsg + fname);
+      //      ShowErrorMessage("Size" + errorMsg + fname);
+      //      return; //
+      //    }
+      //  }
+      //  auto spacingPrev = imageInfoPrev.GetImageSpacings();
+      //  auto spacing = imageInfo.GetImageSpacings();
+      //  for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+      //  {
+      //    if (spacing[i] != spacingPrev[i])
+      //    {
+      //      updateProgress(0, "Spacing" + errorMsg + fname);
+      //      ShowErrorMessage("Spacing" + errorMsg + fname);
+      //      return; //
+      //    }
+      //  }
+      //  auto originPrev = imageInfoPrev.GetImageOrigins();
+      //  auto origin = imageInfo.GetImageOrigins();
+      //  if (!m_advancedVisualizer)
+      //  {
+      //    for (size_t i = 0; i < ImageTypeFloat3D::ImageDimension; i++)
+      //    {
+      //      if (origin[i] != originPrev[i])
+      //      {
+      //        updateProgress(0, "Origin" + errorMsg + fname);
+      //        ShowErrorMessage("Origin" + errorMsg + fname);
+      //        return; //
+      //      }
+      //    }
+      //  }
+      //}
 
       if (bSkipDup)
       {
@@ -2896,6 +2911,15 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     else
     {
+      {
+        auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
+        if (!cbica::ImageSanityCheck(maskFileName, temp_prev))
+        {
+          ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
+          return;
+        }
+      }
       using ImageType = itk::Image<unsigned int, 3>;
       auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName);
       inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
@@ -4079,6 +4103,21 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
 }
 void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputdirectory)
 {
+  if (!cbica::isDir(inputdirectory))
+  {
+    ShowErrorMessage("Input directory passed is not a valid directory, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputlabel))
+  {
+    ShowErrorMessage("Input Label passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputatlas))
+  {
+    ShowErrorMessage("Input Atlas passed is not a valid file, please re-check", this);
+    return;
+  }
   std::vector<typename ImageTypeFloat3D::Pointer> atlases = mPopulationAtlas.GeneratePopualtionAtlas(inputdirectory, inputlabel, inputatlas, outputdirectory);
   if (mPopulationAtlas.mLastErrorMessage.empty() && atlases.size() > 0)
   {
@@ -4322,7 +4361,7 @@ void fMainWindow::CallForSurvivalPredictionOnExistingModelFromMain(const std::st
     msg = msg + "SPI index saved in 'results.csv' file in the output directory. \n\n";
 
     msg = msg + "Input Directory = " + QString::fromStdString(inputdirectory) + "\nOutput Directory = " + QString::fromStdString(outputdirectory) + "\nModel Directory = " + QString::fromStdString(modeldirectory);
-    ShowErrorMessage(msg.toStdString(), this);
+    ShowMessage(msg.toStdString(), this);
   }
 }
 
@@ -4966,7 +5005,9 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     fileName = cbica::normPath(fileName);
     updateProgress(i + 1, "Opening " + fileName, files.size());
     auto extension = cbica::getFilenameExtension(fileName);
-    if ((extension == ".dcm") || (extension == ".dicom") || (extension == ""))
+    if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+      (extension == ".ima") ||
+      (extension == ".IMA"))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       QString fname = d.absolutePath();
@@ -5018,6 +5059,7 @@ void fMainWindow::openDicomImages(QString dir)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   imageManager->SetImage(currentImage);
+  imageManager->SetOriginalDirection(currentImage->GetDirection());
   //imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
   //delete dicomSeriesReader; 
@@ -6569,10 +6611,10 @@ void fMainWindow::DCM2NIfTIConversion()
   dcmConverter.exec();
 }
 
-void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, bool loadAsImage)
+void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, bool loadAsImage)
 {
   std::string saveFolder = m_tempFolderLocation + "/dcmConv/";
-  CallDCM2NIfTIConversion(firstImageInSeries, saveFolder);
+  CallDCM2NIfTIConversion(inputDir, saveFolder);
 
   auto vectorOfFiles = cbica::filesInDirectory(saveFolder);
 
@@ -6587,31 +6629,9 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, 
 
 }
 
-void fMainWindow::CallDCM2NIfTIConversion(const std::string firstImageInSeries, const std::string outputFileName)
+void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, const std::string outputDir)
 {
-  const std::string inputDataDir = cbica::getFilenamePath(firstImageInSeries);
-
-  auto vectorOfFiles = cbica::filesInDirectory(inputDataDir);
-
-  std::string filesInDir = "" /*+ vectorOfFiles[0]*/;
-
-  for (size_t i = 0; i < vectorOfFiles.size(); i++)
-  {
-    if ((vectorOfFiles[i] != ".") || (vectorOfFiles[i] != ".."))
-    {
-      filesInDir += " " + vectorOfFiles[i];
-    }
-  }
-
-  std::string outputDir = cbica::getFilenamePath(outputFileName, false);
-  outputDir = outputDir.substr(0, outputDir.size() - 1);
-
-  if (!cbica::isDir(outputDir))
-  {
-    cbica::createDir(outputDir);
-  }
-
-  std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + filesInDir;
+  std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
 
   if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
   {
@@ -6628,6 +6648,21 @@ void fMainWindow::CallImageSkullStripping(const std::string referenceAtlas, cons
   const std::string inputImageFile, const std::string outputImageFile)
 {
   ShowErrorMessage("Skull Stripping takes a long time to run, during which CaPTk will not be responsive.", this, "Long Running Application");
+  if (!cbica::isFile(referenceAtlas))
+  {
+    ShowErrorMessage("Reference Atlas is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(referenceMask))
+  {
+    ShowErrorMessage("Reference Mask is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputImageFile))
+  {
+    ShowErrorMessage("Input Image is not a valid file, please re-check", this);
+    return;
+  }
   auto referenceAtlasImage = cbica::ReadImage< ImageTypeFloat3D >(referenceAtlas);
   auto referenceAtlasMaskImage = cbica::ReadImage< ImageTypeFloat3D >(referenceMask);
   auto inputImageImage = cbica::ReadImage< ImageTypeFloat3D >(inputImageFile);
@@ -7247,10 +7282,49 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   }
 }
 
+void fMainWindow::CallLabelValuesChange(const std::string oldValues, const std::string newValues)
+{
+  if (!isMaskDefined())
+  {
+    ShowErrorMessage("A valid mask needs to be loaded");
+    return;
+  }
+  auto oldValues_string_split = cbica::stringSplit(oldValues, "x");
+  auto newValues_string_split = cbica::stringSplit(newValues, "x");
+
+  if (oldValues_string_split.size() != newValues_string_split.size())
+  {
+    ShowErrorMessage("Old and New values have the same number of inputs", this);
+    return;
+  }
+
+  auto output = cbica::ChangeImageValues< ImageTypeFloat3D >(getMaskImage(), oldValues, newValues);
+
+  if (output.IsNull())
+  {
+    ShowErrorMessage("Changing values did not work as expected, please try again with correct syntax");
+    return;
+  }
+
+  std::string tempFile = m_tempFolderLocation + "/mask_changedValues.nii.gz";
+  cbica::WriteImage< ImageTypeFloat3D >(output, tempFile);
+  readMaskFile(tempFile);
+}
+
 void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile)
 {
   if (!referenceImage.empty() && !inputImageFile.empty() && !outputImageFile.empty())
   {
+    if (!cbica::isFile(referenceImage))
+    {
+      ShowErrorMessage("Reference Image is not a valid file, please re-check", this);
+      return;
+    }
+    if (!cbica::isFile(inputImageFile))
+    {
+      ShowErrorMessage("Input Image is not a valid file, please re-check", this);
+      return;
+    }
     auto referenceAtlasImage = cbica::ReadImage< ImageTypeFloat3D >(referenceImage);
     auto inputImageImage = cbica::ReadImage< ImageTypeFloat3D >(inputImageFile);
 
@@ -7274,6 +7348,16 @@ void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, con
 {
   if (!inputImage.empty() && !maskImage.empty() && !outputImageFile.empty())
   {
+    if (!cbica::isFile(maskImage))
+    {
+      ShowErrorMessage("Mask Image passed is not a valid file, please re-check", this);
+      return;
+    }
+    if (!cbica::isFile(inputImage))
+    {
+      ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
+      return;
+    }
     auto input = cbica::ReadImage< ImageTypeFloat3D >(inputImage);
     auto mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
 
@@ -7311,6 +7395,26 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
   typedef itk::Image<float, 3> ScalarImageType;
   std::vector<ScalarImageType::Pointer> diffusionDerivatives;
 
+  if (!cbica::isFile(BVecFile))
+  {
+    ShowErrorMessage("BVec passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(BValFile))
+  {
+    ShowErrorMessage("BVal passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(maskImage))
+  {
+    ShowErrorMessage("Mask Image is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputImage))
+  {
+    ShowErrorMessage("Input Image is not a valid file, please re-check", this);
+    return;
+  }
   diffusionDerivatives = m_diffusionderivatives.Run(inputImage, maskImage, BValFile, BVecFile, outputFolder);
   //fa,tr, rad , ax
   if (fa == true)
@@ -7328,6 +7432,11 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
 }
 void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
 {
+  if (!cbica::isFile(inputfilename))
+  {
+    ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
+    return;
+  }
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
@@ -7358,13 +7467,13 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder, int classifier, int conf, int folds)
 {
-  TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf))
-  {
-    QString msg;
-    msg = "Training model has been saved at the specified location.";
-    ShowMessage(msg.toStdString(), this);
-  }
+  //TrainingModule m_trainingsimulator;
+  //if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf))
+  //{
+  //  QString msg;
+  //  msg = "Training model has been saved at the specified location.";
+  //  ShowMessage(msg.toStdString(), this);
+  //}
 }
 
 void fMainWindow::CallPCACalculation(const int number, const std::string inputdirectory, const std::string outputdirectory)
@@ -7487,13 +7596,21 @@ void fMainWindow::ChangeBrushSize(int size)
 
 void fMainWindow::ChangeMaskOpacity(int newMaskOpacity) // multiLabel uncomment this function
 {
-  double test = newMaskOpacity * 0.1;
+  double tempOpacity;
+  if ((newMaskOpacity > 1) || (newMaskOpacity == 1))
+  {
+    tempOpacity = 1.0;
+  }
+  else
+  {
+    tempOpacity = newMaskOpacity * 0.1;
+  }
   for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
   {
     for (size_t j = 0; j < 3; j++)
     {
-      this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = test;
-      this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(test);
+      this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = tempOpacity;
+      this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(tempOpacity);
       this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
     }
   }
@@ -7765,18 +7882,10 @@ void fMainWindow::UndoFunctionality()
 
 void fMainWindow::SetOpacity()
 {
-  for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
-  {
-    for (int i = 0; i < 3; i++)
-    {
-      if (this->mSlicerManagers[index]->GetSlicer(i)->GetMaskOpacity() == 0)
-        this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(1);
-      else
-        this->mSlicerManagers[index]->GetSlicer(i)->SetMaskOpacity(0);
-    }
-  }
-  this->mSlicerManagers[0]->GetSlicer(0)->mMask->Modified();
-  this->mSlicerManagers[0]->Render();
+  if (this->mSlicerManagers[0]->GetSlicer(0)->GetMaskOpacity() == 0)
+    ChangeMaskOpacity(drawingPanel->getCurrentOpacity());
+  else
+    ChangeMaskOpacity(0);
 }
 
 void fMainWindow::closeEvent(QCloseEvent* event)

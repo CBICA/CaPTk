@@ -231,7 +231,7 @@ public:
 
 
 
-		outputDirectoryName = new QLineEdit(" ");
+		outputDirectoryName = new QLineEdit("");
 		outputDirectoryName->setObjectName(QString::fromUtf8("outputDirectoryName"));
 		sizePolicy13.setHeightForWidth(outputDirectoryName->sizePolicy().hasHeightForWidth());
 		outputDirectoryName->setSizePolicy(sizePolicy13);

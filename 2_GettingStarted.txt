@@ -5,6 +5,7 @@ The following sections give a high-level overview of CaPTk, with the intention o
 
 Table of Contents
 
+  - \subpage gs_keyboard "Keyboard Shortcuts"
   - \subpage gs_components "Components"
   - \subpage gs_supportedImages "Supported Images"
   - \subpage gs_imageLoading "Image Loading"
@@ -16,6 +17,27 @@ Table of Contents
   - \subpage gs_segmentation "Segmentation"
   - \subpage gs_features "Feature Extraction"
   - \subpage gs_specializedApps "Specialized Applications"
+
+--------
+*/
+
+/**
+\page gs_keyboard Keyboard Shortcuts
+
+These are the keyboard shortcuts available on CaPTk:
+
+<table border="0">
+  <tr><th>Key Stroke <th>Function
+  <tr><td align="center" width="100px">1-9 <td align="center">[IMAGES] Show selected image from table
+  <tr><td align="center" width="100px">"m" <td align="center">[DRAWING] Show/Hide all regions; picks up last used opacity
+  <tr><td align="center" width="100px">Control + 1-9 <td align="center">[DRAWING] Only show selected label
+  <tr><td align="center" width="100px">Alt + 1-9 <td align="center">[DRAWING] Add selected label to visualization
+  <tr><td align="center" width="100px">Control/Alt + 0 <td align="center">[DRAWING] Reset label visualization; i.e., show all
+  <tr><td align="center" width="100px">Shift + Space <td align="center">[SEED POINT] Set initial tumor center
+  <tr><td align="center">Ctrl + Space <td align="center">[SEED POINT] Update tumor radius; on macOS, this is "Fn + Command + Space"
+  <tr><td align="center">Space <td align="center">[SEED POINT] Update tumor center
+</table>
+
 
 --------
 */
@@ -230,6 +252,10 @@ This panel provides the ability to annotate Regions of Interest (ROIs) and save 
 
 While drawing, you can switch across the image volumes loaded in CaPTk, by pressing the numbers 1-9 on your keyboard.
 
+Toggle between non-zero (taken from the opacity box) and zero opacity of the entire annotated mask by using the keyboard key "m".
+
+Visualize a single label using "Control + <label number>" and add labels to the visualization using "Alt + <label number>". To reset, press "Control/Alt + 0".
+
 There are the following controls underneath the <b>Drawing</b> tab:
  
 <table border="0">
@@ -247,6 +273,7 @@ There are the following controls underneath the <b>Drawing</b> tab:
   <tr><td align="center">Clear Selected Label <td>Remove selected label completely from the mask.
   <tr><td align="center">Clear All Labels <td>Remove all labels completely from the mask.
   <tr><td align="center">Undo <td>Undo last drawing action.
+  <tr><td align="center">Change Values <td>By providing the same number of old and new values in the format <b>AxBxC</b>, the values of the annotated region can be quickly changed.
 </table>
 
 --------

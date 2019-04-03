@@ -160,8 +160,8 @@ public:
                 for (int l = 0; l < scale; l++)
                 {
                   // square_sum1 and square_sum2 are part of box-counting equation 2 in the reference
-                  square_sum1 += abs(image_matrix[i + k][j + l] - image_matrix[i + k + scale][j + l]);
-                  square_sum2 += abs(image_matrix[i + k][j + l] - image_matrix[i + k][j + l + scale]);
+                  square_sum1 += std::abs(image_matrix[i + k][j + l] - image_matrix[i + k + scale][j + l]);
+                  square_sum2 += std::abs(image_matrix[i + k][j + l] - image_matrix[i + k][j + l + scale]);
                 }
               }
             }
@@ -191,7 +191,7 @@ public:
             }
           }
           // equation 2
-          sum = sum + scale * scale + (abs(square_sum1) + abs(square_sum2)) * scale;
+          sum = sum + scale * scale + (std::abs(square_sum1) + std::abs(square_sum2)) * scale;
 
           // box counting
           area_sum.push_back(sum);

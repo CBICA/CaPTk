@@ -97,7 +97,7 @@ enum DRAW_MODE
 
 enum SHAPE_MODE
 {
-  SHAPE_MODE_NONE = 0, SHAPE_MODE_ERASER, SHAPE_MODE_FREE_HAND, SHAPE_MODE_LINE, SHAPE_MODE_RECTANGLE, SHAPE_MODE_CIRCLE, SHAPE_MODE_FILL
+  SHAPE_MODE_NONE = 0, SHAPE_MODE_ERASER, SHAPE_MODE_FREE_HAND, SHAPE_MODE_LINE, SHAPE_MODE_RECTANGLE, SHAPE_MODE_CIRCLE, SHAPE_MODE_FILL, SHAPE_MODE_SPHERE
 };
 
 //TBD move all this to util class 
@@ -773,6 +773,11 @@ signals:
   \brief Call Histogram Matching module of ITK
   */
   void CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile);
+
+  /**
+  \brief Call Histogram Matching module of ITK
+  */
+  void CallLabelValuesChange(const std::string oldValues, const std::string newValues);
 
   /**
   \brief Call Deep Medic Normalization module

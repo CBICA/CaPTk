@@ -221,7 +221,7 @@ N3MRIBiasFieldCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>
         && ( !this->GetConfidenceImage() ||
              this->GetConfidenceImage()->GetPixel( It.GetIndex() ) > 0.0 ) )
       {
-      if( isnan( It.Get() ) || isinf( It.Get() )
+      if( std::isnan( It.Get() ) || std::isinf( It.Get() )
           || It.Get() < 0.0 )
         {
         It.Set( 0.0 );
@@ -491,7 +491,7 @@ N3MRIBiasFieldCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>
   for( unsigned int n = 0; n < paddedHistogramSize; n++ )
     {
     E[n] = numerator[n].real() / denominator[n].real();
-    if( isinf( E[n] ) || isnan( E[n] ) )
+    if( std::isinf( E[n] ) || std::isnan( E[n] ) )
       {
       E[n] = 0.0;
       }

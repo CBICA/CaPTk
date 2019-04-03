@@ -5,10 +5,14 @@ SET( PROJECT_NAME CaPTk )
 PROJECT( CaPTk )
 SET( ${PROJECT_NAME} )
 SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Neuro/Torso/Viewer)
+
+# WARNING: captk-pkg (the linux packager) directly tries to pattern match these lines (excluding the actual number/patch text)
+# to read the version number.
+# So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 6 )
-SET( PROJECT_VERSION_PATCH 2.RC1 )
-SET( PROJECT_VERSION_TWEAK b )
+SET( PROJECT_VERSION_PATCH 2 )
+SET( PROJECT_VERSION_TWEAK RC )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -59,18 +63,26 @@ ELSE()
 
     ENDIF()
   ENDIF()
-    # org_cmake_prefix_path=/usr/local/opt/qt/bin:/usr/local/opt/qt/lib/cmake/Qt5:/Library/TeX/texbin:/Users/phucngo/Desktop/CaPTk/bin/ITK-build:
-  # org_path=/usr/local/opt/make/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/usr/local/opt/make/libexec/gnubin:/System/Library/Frameworks:/System/Library/Frameworks:/usr/local/opt/qt/bin:/usr/local/opt/qt/lib/cmake/Qt5:
+  
   IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
     SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
-    SET( ENV{CMAKE_PREFIX_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:${PROJECT_BINARY_DIR}/ITK-build/:${PROJECT_BINARY_DIR}/OpenCV-build/:${PROJECT_BINARY_DIR}/VTK-build:$ENV{CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE )
-    SET( ENV{CMAKE_PROGRAM_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{CMAKE_PROGRAM_PATH}" CACHE PATH "" FORCE )
-    SET( ENV{PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{PATH}" CACHE PATH "" FORCE)
-    #MESSAGE( AUTHOR_WARNING "=== [DEBUG] CMAKE_PREFIX_PATH=$ENV{CMAKE_PREFIX_PATH}" )
+
+    IF (APPLE) # THIS QT FOLDER STRUCTURE WAS NOT REQUIRED FOR 5.11.2 
+      SET( ENV{PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/bin:$ENV{PATH}" CACHE PATH "" FORCE)
+      SET( ENV{CMAKE_PREFIX_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/bin:${PROJECT_BINARY_DIR}/ITK-build/:${PROJECT_BINARY_DIR}/OpenCV-build/:${PROJECT_BINARY_DIR}/VTK-build:$ENV{CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE )
+      SET( ENV{CMAKE_PROGRAM_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/bin:$ENV{CMAKE_PROGRAM_PATH}" CACHE PATH "" FORCE )
+    ELSE()
+      SET( ENV{CMAKE_PREFIX_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:${PROJECT_BINARY_DIR}/ITK-build/:${PROJECT_BINARY_DIR}/OpenCV-build/:${PROJECT_BINARY_DIR}/VTK-build:$ENV{CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE )
+      SET( ENV{CMAKE_PROGRAM_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{CMAKE_PROGRAM_PATH}" CACHE PATH "" FORCE )
+      SET( ENV{PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{PATH}" CACHE PATH "" FORCE)
+    ENDIF()
+
+    MESSAGE( AUTHOR_WARNING "=== [DEBUG] ENV{CMAKE_PREFIX_PATH}=$ENV{CMAKE_PREFIX_PATH}" )
+
   ENDIF()
 ENDIF()
 
-SET( PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+SET( PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" CACHE STRING "The project version" FORCE )
 
 IF (APPLE)
   SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
@@ -138,7 +150,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF()
 
     if(APPLE)
-      list(APPEND CMAKE_CXX_FLAGS "-std=c++11 -Wno-narrowing -Wall ${CMAKE_CXX_FLAGS}")
 
       SET (CAPTK_MACOSX_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${PROJECT}" )
@@ -306,6 +317,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_ISUBTYPE OFF CACHE BOOL "Do you want to build Imaging Subtype Estimation?" )
   SET( BUILD_MSUBTYPE ON CACHE BOOL "Do you want to build Molecular Subtype Estimation?" )
   SET( BUILD_ATLAS ON CACHE BOOL "Do you want to build Population Atlas?" )
+  SET( BUILD_ALIGNMENT ON CACHE BOOL "Do you want to build Perfusion Alignment?" )
   SET( BUILD_GEODESIC ON CACHE BOOL "Do you want to build Geodesic Segmentation?" )
   SET( BUILD_GEODESICTRAINING ON CACHE BOOL "Do you want to build Geodesic Training Segmentation?" )
   SET( BUILD_SBRT ON CACHE BOOL "Do you want to build SBRT Lung?" )
@@ -327,6 +339,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   IF(BUILD_EGFRvIIISVM)
     ADD_DEFINITIONS(-DBUILD_EGFRvIIISVM)
+  ENDIF()
+  
+  IF(BUILD_ALIGNMENT)
+    ADD_DEFINITIONS(-DBUILD_ALIGNMENT)
   ENDIF()
 
   IF(BUILD_RECURRENCE)
@@ -979,31 +995,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-      # INCLUDE(CopyToMACOSX)
-      INCLUDE(ChmodFile)
-
-      # list(REVERSE STANDALONE_APPS_LIST)
-      # FOREACH(APPLICATION ${STANDALONE_APPS_LIST})
-      #   message(STATUS ${APPLICATION})
-      #   IF(EXISTS ${APPLICATION})
-      #     message(STATUS "COPY")
-
-      #     copyToMacOSX(${EXE_NAME} ${APPLICATION})
-      #   ELSE()
-      #     list(APPEND STANDALONE_APPS_LIST ${APPLICATION})
-      #   ENDIF()
-      # ENDFOREACH()
+      # INCLUDE(ChmodFile)
 
       # chmodFile(${EXE_NAME} dcm2nii)
       # chmodFile(${EXE_NAME} ITK-SNAP)
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
-
-      # install(CODE "set(deployqt \"${MACDEPLOYQT_EXECUTABLE}\")" COMPONENT Runtime)
-      # install(CODE [===[
-      # execute_process(COMMAND "${deployqt}" "${PROJECT_BINARY_DIR}/CaPTk_1.6.2.Beta.app")
-      # ]===] COMPONENT Runtime)
     ELSE()
       # ITK HERE
     ENDIF()

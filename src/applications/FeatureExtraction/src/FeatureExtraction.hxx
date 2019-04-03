@@ -247,12 +247,6 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   double double_Coarsness = calculator.GetCoarsness();
   double double_Contrast = calculator.GetContrast();
   double double_Busyness = calculator.GetBusyness();
-  std::cout << "\n" << std::endl;
-  std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateNGTDM - Strength =" << double_Strength << std::endl;
-  std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateNGTDM - Complexity =" << double_Complexity << std::endl;
-  std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateNGTDM - Coarsness =" << double_Coarsness << std::endl;
-  std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateNGTDM - Contrast =" << double_Contrast << std::endl;
-  std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateNGTDM - Busyness =" << double_Busyness << std::endl;
 
   featurevec["Strength"] = calculator.GetStrength();
   featurevec["Complexity"] = calculator.GetComplexity();
@@ -505,7 +499,7 @@ void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer 
   {
     featurevec[f.first] = f.second;
     //TBD - for debugging GLSZM features
-    std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLSZM - Feature '" << f.first << "' = " << f.second << "\n";
+    //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLSZM - Feature '" << f.first << "' = " << f.second << "\n";
     //TBD - for debugging GLSZM features
   }
   //using FilterType = itk::Statistics::EnhancedScalarImageToSizeZoneFeaturesFilter< TImage >;
@@ -688,7 +682,7 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
   using HistogramFilterType = itk::Statistics::MaskedImageToHistogramFilter< TImage, TImage >;
   using HistogramMeasurementType = typename HistogramFilterType::HistogramType::MeasurementVectorType;
 
-  HistogramMeasurementType lowerBound(m_Bins), upperBound(m_Bins);
+  HistogramMeasurementType lowerBound(1), upperBound(1);
   lowerBound.Fill(min);
   upperBound.Fill(max);
 
@@ -943,19 +937,19 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   }
 
   // this defaults to the full dynamic range of double according to ITK's documentation
-  std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [m_minimumToConsider, m_maximumToConsider] = [" << m_minimumToConsider << ", " << m_maximumToConsider << "]" << std::endl;
+  //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [m_minimumToConsider, m_maximumToConsider] = [" << m_minimumToConsider << ", " << m_maximumToConsider << "]" << std::endl;
 
   //matrix_generator->SetDistanceValueMinMax(m_minimumToConsider, m_maximumToConsider); // TBD: TOCHECK - how is this affecting the computation?
 
-  std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [0, m_Range] = [" << 0 << ", " << m_Range << "]" << std::endl;
+  //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [0, m_Range] = [" << 0 << ", " << m_Range << "]" << std::endl;
 
   matrix_generator->SetDistanceValueMinMax(0, m_Range);
-  std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - SetDistanceValueMinMax(0, " << m_Range << ")" << std::endl;
+  //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - SetDistanceValueMinMax(0, " << m_Range << ")" << std::endl;
 
 
   //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
-  std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - m_Bins = " << m_Bins << std::endl;
+  //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - m_Bins = " << m_Bins << std::endl;
 
   //TBD
   //typename RunLengthFilterType::FeatureNameVectorPointer requestedFeatures = RunLengthFilterType::FeatureNameVector::New();
@@ -987,7 +981,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   size_t offsetNum = 0;
 
 
-  std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set offsetNum = " << offsetNum << std::endl;
+  //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set offsetNum = " << offsetNum << std::endl;
 
   auto size = image->GetBufferedRegion().GetSize();
   double size_total = size[0];
@@ -996,7 +990,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     size_total *= size[d];
   }
   //TBD
-  std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set size_total = " << size_total << std::endl;
+  //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set size_total = " << size_total << std::endl;
   //TBD
 
   //TBD - Testing
@@ -1013,23 +1007,23 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
 
     //TBD
     int count_offset = 0;
-    std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - Set count_offset = " << count_offset << std::endl;
+    //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - Set count_offset = " << count_offset << std::endl;
     //TBD
 
     for (offsetIt = offset->Begin(); offsetIt != offset->End(); offsetIt++, offsetNum++)
     {
       //TBD
-      std::cout << "\n\n";
-      std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
+      //std::cout << "\n\n";
+      //std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
       //TBD
 
       matrix_generator->SetOffset(offsetIt.Value());
       matrix_generator->Update();
 
       //TBD
-      std::cout << "\n\n";
+      //std::cout << "\n\n";
       //std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
-      auto temp = matrix_generator->GetOutput();
+      //auto temp = matrix_generator->GetOutput();
       //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
       //{
       //  std::cout << "\tMeasurement vectors = " << iter.GetMeasurementVector()
@@ -1042,7 +1036,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       //{
       //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
       //}
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - GLRLM Matrix: Offset: " << offsetIt.Value() << " | Distance[" << matrix_generator->GetMinDistance() << ", " << matrix_generator->GetMaxDistance() << "] | Pixel [" << m_minimumToConsider << ", " << m_maximumToConsider << "] \n" << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - GLRLM Matrix: Offset: " << offsetIt.Value() << " | Distance[" << matrix_generator->GetMinDistance() << ", " << matrix_generator->GetMaxDistance() << "] | Pixel [" << m_minimumToConsider << ", " << m_maximumToConsider << "] \n" << std::endl;
       //TBD
 
 
@@ -1050,15 +1044,15 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       //std::cout << "\tGLRLM Measurement Vectors -> intensity[]\t|\trunLength[] = midpoint[int,run]\t|\tfrenquency" << std::endl;
 
       //TBD
-      for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
-      {
-        auto temp_index = iter.GetIndex();
-        auto temp_min_vector = temp->GetHistogramMinFromIndex(temp_index);
-        auto temp_max_vector = temp->GetHistogramMaxFromIndex(temp_index);
-        //std::cout << " \tGLRLM Measurement Vectors -> Intensity[" << temp_min_vector[0] << ", " << temp_max_vector[0] << "]\t|\tRun[" << temp_min_vector[1] << ", " << temp_max_vector[1] << "] = [" << temp->GetMeasurementVector(temp_index) << "]\t|\tFrequency = " << temp->GetFrequency(temp_index) << std::endl;
-        //std::cout << "\tGLRLM Measurement vectors = " << iter.GetMeasurementVector()
-          //<< "; Frequency = " << iter.GetFrequency() << std::endl;
-      }
+      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
+      //{
+      //  auto temp_index = iter.GetIndex();
+      //  auto temp_min_vector = temp->GetHistogramMinFromIndex(temp_index);
+      //  auto temp_max_vector = temp->GetHistogramMaxFromIndex(temp_index);
+      //  //std::cout << " \tGLRLM Measurement Vectors -> Intensity[" << temp_min_vector[0] << ", " << temp_max_vector[0] << "]\t|\tRun[" << temp_min_vector[1] << ", " << temp_max_vector[1] << "] = [" << temp->GetMeasurementVector(temp_index) << "]\t|\tFrequency = " << temp->GetFrequency(temp_index) << std::endl;
+      //  //std::cout << "\tGLRLM Measurement vectors = " << iter.GetMeasurementVector()
+      //    //<< "; Frequency = " << iter.GetFrequency() << std::endl;
+      //}
       //TBD
 
       runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
@@ -1085,12 +1079,12 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       //}
       //TBD - Only prints out first set, may not be complete
 
-      std::cout << "\tLowGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
-      std::cout << "\tHighGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis() << std::endl;
-      std::cout << "\tShortRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis() << std::endl;
-      std::cout << "\tShortRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis() << std::endl;
-      std::cout << "\tLongRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
-      std::cout << "\tLongRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
+      //std::cout << "\tLowGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
+      //std::cout << "\tHighGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis() << std::endl;
+      //std::cout << "\tShortRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis() << std::endl;
+      //std::cout << "\tShortRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis() << std::endl;
+      //std::cout << "\tLongRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
+      //std::cout << "\tLongRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
       //TBD - print out matrix
 
       //TBD
@@ -1143,7 +1137,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     if (m_offsetSelect == "Average")
     {
       //TBD
-      std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - offset->size() = " << offset->size() << std::endl;
+      //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - offset->size() = " << offset->size() << std::endl;
       //TBD
 
       sre /= offset->size();
@@ -1183,12 +1177,12 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       featurevec["RunEntropy"] = re;
 
       //TBD
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LowGreyLevelRunEmphasis = " << lglre << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - HighGreyLevelRunEmphasis = " << hglre << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - ShortRunLowGreyLevelEmphasis = " << srlgle << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - ShortRunHighGreyLevelEmphasis = " << srhgle << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LongRunLowGreyLevelEmphasis = " << lrlgle << std::endl;
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LongRunHighGreyLevelEmphasis = " << lrhgle << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LowGreyLevelRunEmphasis = " << lglre << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - HighGreyLevelRunEmphasis = " << hglre << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - ShortRunLowGreyLevelEmphasis = " << srlgle << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - ShortRunHighGreyLevelEmphasis = " << srhgle << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LongRunLowGreyLevelEmphasis = " << lrlgle << std::endl;
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LongRunHighGreyLevelEmphasis = " << lrhgle << std::endl;
       //TBD
 
     }
@@ -1403,7 +1397,7 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
       featureCalc->Update();
 
       //TBD - to debug and compare vs GLRLM
-      std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLCM - GLCM Matrix: Offset: " << offset->at(i) << "\n";
+      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLCM - GLCM Matrix: Offset: " << offset->at(i) << "\n";
 
       //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
       //auto temp = glcmGenerator->GetOutput();
@@ -1704,7 +1698,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         }
         else if (outer_key == ParamsString[ResamplingInterpolator_Mask])
         {
-        m_resamplingInterpolator_Mask = currentValue;
+          m_resamplingInterpolator_Mask = currentValue;
         }
         else if (outer_key == ParamsString[LBPStyle])
         {
@@ -2024,553 +2018,655 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
     }
   }
 
-  if (m_outputVerticallyConcatenated)
-  {
-#ifndef WIN32
-    myfile.flush();
-#endif
-    myfile.close();
-}
-
-
-template< class TImage >
-void FeatureExtraction< TImage >::SetInputImages(std::vector< typename TImage::Pointer > images, std::string modality)
-{
-  m_inputImages = images;
-
-  if (!modality.empty())
-  {
-    m_modality = cbica::stringSplit(modality, "|");
+//  if (m_outputVerticallyConcatenated)
+//  {
+//#ifndef WIN32
+//    myfile.flush();
+//#endif
+//    myfile.close();
   }
-  m_algorithmDone = false;
-}
 
 
-template< class TImage >
-void FeatureExtraction< TImage >::SetNewLogFile(const std::string &logFile)
-{
-  m_logger.UseNewFile(logFile);
-}
-
-
-template< class TImage >
-void FeatureExtraction< TImage >::SetInputImages(std::vector< typename TImage::Pointer > images, std::vector< std::string >& modality)
-{
-  if (images.size() != modality.size())
+  template< class TImage >
+  void FeatureExtraction< TImage >::SetInputImages(std::vector< typename TImage::Pointer > images, std::string modality)
   {
-    m_logger.Write("Number of Images and number of modalities are not same; SubjectID: " + m_patientID);
-    WriteErrorFile("Number of Images and number of modalities are not same");
-    //exit(EXIT_FAILURE);
-    return;
-  }
-  m_inputImages = images;
-  m_modality = modality;
-  m_algorithmDone = false;
-}
+    m_inputImages = images;
 
-
-template< class TImage >
-typename TImage::Pointer FeatureExtraction< TImage >::GetSelectedSlice(typename TImage::Pointer mask, std::string axis)
-{
-  std::vector< typename TImage::Pointer > maxImageSlices;
-
-  maxImageSlices.resize(TImage::ImageDimension);
-  for (size_t dim = 0; dim < TImage::ImageDimension; dim++)
-  {
-    maxImageSlices[dim] = cbica::CreateImage< TImage >(mask);
-  }
-  typename TImage::SizeType originalSize = mask->GetLargestPossibleRegion().GetSize();
-  auto maxVoxels = originalSize;
-  maxVoxels.Fill(0);
-  typename TImage::IndexType desiredIndexFinal;
-
-  //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - started" << std::endl;
-  if (originalSize.Dimension == 3)
-  {
-    for (int dim = 0; dim < TImage::ImageDimension; dim++) // dimension-loop
+    if (!modality.empty())
     {
-      maxVoxels[dim] = 0;
-      for (size_t i = 0; i < originalSize[dim]; i++)
+      m_modality = cbica::stringSplit(modality, "|");
+    }
+    m_algorithmDone = false;
+  }
+
+
+  template< class TImage >
+  void FeatureExtraction< TImage >::SetNewLogFile(const std::string &logFile)
+  {
+    m_logger.UseNewFile(logFile);
+  }
+
+
+  template< class TImage >
+  void FeatureExtraction< TImage >::SetInputImages(std::vector< typename TImage::Pointer > images, std::vector< std::string >& modality)
+  {
+    if (images.size() != modality.size())
+    {
+      m_logger.Write("Number of Images and number of modalities are not same; SubjectID: " + m_patientID);
+      WriteErrorFile("Number of Images and number of modalities are not same");
+      //exit(EXIT_FAILURE);
+      return;
+    }
+    m_inputImages = images;
+    m_modality = modality;
+    m_algorithmDone = false;
+  }
+
+
+  template< class TImage >
+  typename TImage::Pointer FeatureExtraction< TImage >::GetSelectedSlice(typename TImage::Pointer mask, std::string axis)
+  {
+    std::vector< typename TImage::Pointer > maxImageSlices;
+
+    maxImageSlices.resize(TImage::ImageDimension);
+    for (size_t dim = 0; dim < TImage::ImageDimension; dim++)
+    {
+      maxImageSlices[dim] = cbica::CreateImage< TImage >(mask);
+    }
+    typename TImage::SizeType originalSize = mask->GetLargestPossibleRegion().GetSize();
+    auto maxVoxels = originalSize;
+    maxVoxels.Fill(0);
+    typename TImage::IndexType desiredIndexFinal;
+
+    //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - started" << std::endl;
+    if (originalSize.Dimension == 3)
+    {
+      for (int dim = 0; dim < TImage::ImageDimension; dim++) // dimension-loop
       {
-        //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - Checking axis [" << dim << "] - slice [" << i << "]" << std::endl;
-        typename TImage::RegionType desiredRegion;
-        typename TImage::SizeType desiredSize = originalSize;
-        desiredSize[dim] = 0;
-        typename TImage::IndexType desiredIndex;
-        desiredIndex.Fill(0);
-        desiredIndex[dim] = i;
-
-        desiredRegion.SetIndex(desiredIndex);
-        desiredRegion.SetSize(desiredSize);
-        auto extractor = itk::ExtractImageFilter< TImage, ImageType2D >::New();
-        extractor->SetInput(mask);
-        extractor->SetDirectionCollapseToIdentity();
-        extractor->SetExtractionRegion(desiredRegion);
-        extractor->Update();
-
-        itk::ImageRegionConstIterator< ImageType2D > iterator(extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion());
-        size_t currentNonZero = 0;
-        for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator)
+        maxVoxels[dim] = 0;
+        for (size_t i = 0; i < originalSize[dim]; i++)
         {
-          if (iterator.Get() != 0)
+          //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - Checking axis [" << dim << "] - slice [" << i << "]" << std::endl;
+          typename TImage::RegionType desiredRegion;
+          typename TImage::SizeType desiredSize = originalSize;
+          desiredSize[dim] = 0;
+          typename TImage::IndexType desiredIndex;
+          desiredIndex.Fill(0);
+          desiredIndex[dim] = i;
+
+          desiredRegion.SetIndex(desiredIndex);
+          desiredRegion.SetSize(desiredSize);
+          auto extractor = itk::ExtractImageFilter< TImage, ImageType2D >::New();
+          extractor->SetInput(mask);
+          extractor->SetDirectionCollapseToIdentity();
+          extractor->SetExtractionRegion(desiredRegion);
+          extractor->Update();
+
+          itk::ImageRegionConstIterator< ImageType2D > iterator(extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion());
+          size_t currentNonZero = 0;
+          for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator)
           {
-            currentNonZero++;
+            if (iterator.Get() != 0)
+            {
+              currentNonZero++;
+            }
+          }
+
+          if (currentNonZero > maxVoxels[dim])
+          {
+            maxVoxels[dim] = currentNonZero;
+            desiredIndexFinal[dim] = i;
+            //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - slice [" << i << "] -> maxVoxels[" << dim << "] = " << currentNonZero << std::endl;
+            //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - maxVoxels[" << dim << "] = " << maxVoxels[dim] << std::endl;
+            //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - desiredIndexFinal[" << dim << "] = " << desiredIndexFinal[dim] << std::endl;
+            // auto duplicator = itk::ImageDuplicator< ImageType2D >::New();
+            // duplicator->SetInputImage(extractor->GetOutput());
+            // duplicator->Update();
+            // maxImageSlices[dim] = duplicator->GetOutput(); // TBD: duplicator->GetOutput() changed to fix compilation issue using vcpkg-cbica
           }
         }
+      }
+    }
 
-        if (currentNonZero > maxVoxels[dim])
+    if (originalSize.Dimension == 3)
+    {
+      for (int dim = 0; dim < TImage::ImageDimension; dim++) // dimension-loop
+      {
+        //typename TImage::RegionType desiredRegion;
+        //typename TImage::SizeType desiredSize = originalSize;
+        ////desiredSize[dim] = 0;
+        //typename TImage::IndexType desiredIndex;
+        ////desiredIndex.Fill(0);
+        ////desiredIndex[dim] = desiredIndexFinal[dim];
+        ////desiredIndex = desiredIndexFinal;
+        //desiredIndex.Fill(0);
+        //desiredIndex[dim] = desiredIndexFinal[dim];
+
+        //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - maxVoxels[" << dim << "] = " << maxVoxels[dim] << std::endl;
+        //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - desiredIndex[" << dim << "] = " << desiredIndex[dim] << std::endl;
+        //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - axis [" << dim << "] - searching for max region slice. - slice = " << desiredIndex[dim] << std::endl;
+        //desiredRegion.SetIndex(desiredIndex);
+        //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetIndex(" << desiredIndex << ")" << std::endl;
+        //desiredRegion.SetSize(desiredSize);
+        //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetSize(" << desiredSize << ")" << std::endl;
+        ////auto extractor = itk::ExtractImageFilter< TImage, ImageType2D >::New();
+        //auto extractor = itk::ExtractImageFilter< TImage, TImage >::New();
+        //extractor->SetInput(mask);
+        //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetInput Finished." << std::endl;
+        //extractor->SetDirectionCollapseToIdentity();
+        //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetDirectionCollapseToIdentity Finished." << std::endl;
+        //extractor->SetExtractionRegion(desiredRegion);
+        //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetExtractionRegion Finished." << std::endl;
+        //extractor->Update();
+        //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - Update Finished." << std::endl;
+
+        //maxImageSlices[dim] = extractor->GetOutput();
+
+        itk::ImageRegionIteratorWithIndex< TImage > iteratorExtractor(mask, mask->GetLargestPossibleRegion());
+        itk::ImageRegionIteratorWithIndex< TImage > iteratormaxImageSlices(maxImageSlices[dim], maxImageSlices[dim]->GetLargestPossibleRegion());
+        // itk::ImageRegionConstIterator< ImageType2D > iterator(extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion());
+        for (iteratormaxImageSlices.GoToBegin(); !iteratormaxImageSlices.IsAtEnd(); ++iteratormaxImageSlices)
         {
-          maxVoxels[dim] = currentNonZero;
-          desiredIndexFinal[dim] = i;
-          //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - slice [" << i << "] -> maxVoxels[" << dim << "] = " << currentNonZero << std::endl;
-          //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - maxVoxels[" << dim << "] = " << maxVoxels[dim] << std::endl;
-          //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - desiredIndexFinal[" << dim << "] = " << desiredIndexFinal[dim] << std::endl;
-          // auto duplicator = itk::ImageDuplicator< ImageType2D >::New();
-          // duplicator->SetInputImage(extractor->GetOutput());
-          // duplicator->Update();
-          // maxImageSlices[dim] = duplicator->GetOutput(); // TBD: duplicator->GetOutput() changed to fix compilation issue using vcpkg-cbica
+          auto idx = iteratormaxImageSlices.GetIndex();
+          if (idx[dim] == desiredIndexFinal[dim]) {
+            iteratorExtractor.SetIndex(idx);
+            //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - index[" << idx << "] = " << iteratorExtractor.Get() << std::endl;
+            iteratormaxImageSlices.Set(iteratorExtractor.Get());
+          }
+          //if (iteratorExtractor.Get() > 0) {
+          //  std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - index[" << idx << "] = " << iteratorExtractor.Get() << std::endl;
+          //  iteratormaxImageSlices.Set(iteratorExtractor.Get());
+          //}
+          //std::cout << " - iteratormaxImageSlices - index[" << idx << "] = " << iteratormaxImageSlices.Get() << std::endl;
         }
       }
     }
+
+    //return the correct element of the 3 element vector depending on axis defined by input
+    if (axis == "x")
+    {
+      return maxImageSlices[0];
+    }
+    else if (axis == "y")
+    {
+      return maxImageSlices[1];
+    }
+    else
+    {
+      return maxImageSlices[2];
+    }
   }
 
-  if (originalSize.Dimension == 3)
+
+  template< class TImage >
+  void FeatureExtraction< TImage >::Update()
   {
-    for (int dim = 0; dim < TImage::ImageDimension; dim++) // dimension-loop
+    if (!m_algorithmDone)
     {
-      //typename TImage::RegionType desiredRegion;
-      //typename TImage::SizeType desiredSize = originalSize;
-      ////desiredSize[dim] = 0;
-      //typename TImage::IndexType desiredIndex;
-      ////desiredIndex.Fill(0);
-      ////desiredIndex[dim] = desiredIndexFinal[dim];
-      ////desiredIndex = desiredIndexFinal;
-      //desiredIndex.Fill(0);
-      //desiredIndex[dim] = desiredIndexFinal[dim];
+      auto t1 = std::chrono::high_resolution_clock::now();
 
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - maxVoxels[" << dim << "] = " << maxVoxels[dim] << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - desiredIndex[" << dim << "] = " << desiredIndex[dim] << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - axis [" << dim << "] - searching for max region slice. - slice = " << desiredIndex[dim] << std::endl;
-      //desiredRegion.SetIndex(desiredIndex);
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetIndex(" << desiredIndex << ")" << std::endl;
-      //desiredRegion.SetSize(desiredSize);
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetSize(" << desiredSize << ")" << std::endl;
-      ////auto extractor = itk::ExtractImageFilter< TImage, ImageType2D >::New();
-      //auto extractor = itk::ExtractImageFilter< TImage, TImage >::New();
-      //extractor->SetInput(mask);
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetInput Finished." << std::endl;
-      //extractor->SetDirectionCollapseToIdentity();
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetDirectionCollapseToIdentity Finished." << std::endl;
-      //extractor->SetExtractionRegion(desiredRegion);
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetExtractionRegion Finished." << std::endl;
-      //extractor->Update();
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - Update Finished." << std::endl;
-
-      //maxImageSlices[dim] = extractor->GetOutput();
-
-      itk::ImageRegionIteratorWithIndex< TImage > iteratorExtractor(mask, mask->GetLargestPossibleRegion());
-      itk::ImageRegionIteratorWithIndex< TImage > iteratormaxImageSlices(maxImageSlices[dim], maxImageSlices[dim]->GetLargestPossibleRegion());
-      // itk::ImageRegionConstIterator< ImageType2D > iterator(extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion());
-      for (iteratormaxImageSlices.GoToBegin(); !iteratormaxImageSlices.IsAtEnd(); ++iteratormaxImageSlices)
+      if (m_debug)
       {
-        auto idx = iteratormaxImageSlices.GetIndex();
-        if (idx[dim] == desiredIndexFinal[dim]) {
-          iteratorExtractor.SetIndex(idx);
-          //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - index[" << idx << "] = " << iteratorExtractor.Get() << std::endl;
-          iteratormaxImageSlices.Set(iteratorExtractor.Get());
-        }
-        //if (iteratorExtractor.Get() > 0) {
-        //  std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - index[" << idx << "] = " << iteratorExtractor.Get() << std::endl;
-        //  iteratormaxImageSlices.Set(iteratorExtractor.Get());
-        //}
-        //std::cout << " - iteratormaxImageSlices - index[" << idx << "] = " << iteratormaxImageSlices.Get() << std::endl;
+        m_logger.Write("Checking mask validity (whether it is empty or not)");
       }
-    }
-  }
 
-  //return the correct element of the 3 element vector depending on axis defined by input
-  if (axis == "x")
-  {
-    return maxImageSlices[0];
-  }
-  else if (axis == "y")
-  {
-    return maxImageSlices[1];
-  }
-  else
-  {
-    return maxImageSlices[2];
-  }
-}
-
-
-template< class TImage >
-void FeatureExtraction< TImage >::Update()
-{
-  if (!m_algorithmDone)
-  {
-    auto t1 = std::chrono::high_resolution_clock::now();
-
-    if (m_debug)
-    {
-      m_logger.Write("Checking mask validity (whether it is empty or not)");
-    }
-
-    if (!m_maskValidated)
-    {
-      TConstIteratorType maskIt(m_Mask, m_Mask->GetBufferedRegion());
-      if (m_roi.size() != 0)
+      if (!m_maskValidated)
       {
-        for (size_t x = 0; x < m_roi.size(); x++)
+        TConstIteratorType maskIt(m_Mask, m_Mask->GetBufferedRegion());
+        if (m_roi.size() != 0)
         {
-          maskIt.GoToBegin();
-          while (!maskIt.IsAtEnd())
+          for (size_t x = 0; x < m_roi.size(); x++)
           {
-            if (maskIt.Get() == m_roi[x])
-              break;
-            ++maskIt;
-            if (maskIt.IsAtEnd())
+            maskIt.GoToBegin();
+            while (!maskIt.IsAtEnd())
             {
-              std::cerr << "The ROI for calculation, '" << std::to_string(m_roi[x]) << "' does not exist in the mask; SubjectID: " << m_patientID << "\n";
-              WriteErrorFile("The ROI for calculation, '" + std::to_string(m_roi[x]) + "' does not exist in the mask.");
-              //exit(EXIT_FAILURE);
-              return;
+              if (maskIt.Get() == m_roi[x])
+                break;
+              ++maskIt;
+              if (maskIt.IsAtEnd())
+              {
+                std::cerr << "The ROI for calculation, '" << std::to_string(m_roi[x]) << "' does not exist in the mask; SubjectID: " << m_patientID << "\n";
+                WriteErrorFile("The ROI for calculation, '" + std::to_string(m_roi[x]) + "' does not exist in the mask.");
+                //exit(EXIT_FAILURE);
+                return;
+              }
+            }
+          }
+        }
+        m_maskValidated = true;
+      }
+
+      bool imagesAreOkay = true;
+      if (!m_inputImages.empty())
+      {
+        auto tempSize = m_inputImages[0]->GetBufferedRegion().GetSize();
+        for (size_t i = 1; i < m_inputImages.size(); i++)
+        {
+          auto currentSize = m_inputImages[i]->GetBufferedRegion().GetSize();
+          for (size_t d = 0; d < TImage::ImageDimension; d++)
+          {
+            if (tempSize[d] != currentSize[d])
+            {
+              m_logger.WriteError("Size Mismatch with images, cannot process.");
+              imagesAreOkay = false;
             }
           }
         }
       }
-      m_maskValidated = true;
-    }
 
-    bool imagesAreOkay = true;
-    if (!m_inputImages.empty())
-    {
-      auto tempSize = m_inputImages[0]->GetBufferedRegion().GetSize();
-      for (size_t i = 1; i < m_inputImages.size(); i++)
+      if (imagesAreOkay)
       {
-        auto currentSize = m_inputImages[i]->GetBufferedRegion().GetSize();
-        for (size_t d = 0; d < TImage::ImageDimension; d++)
+        // Check if input mask is not null
+        auto minMaxCal = itk::MinimumMaximumImageCalculator< TImage >::New();
+        minMaxCal->SetImage(m_Mask);
+        minMaxCal->ComputeMaximum();
+        if (minMaxCal->GetMaximum() == 0)
         {
-          if (tempSize[d] != currentSize[d])
+          std::string errorString = "Mask hasn't been initialized";
+
+          auto exeName = cbica::getExecutableName();
+          std::transform(exeName.begin(), exeName.end(), exeName.begin(), ::tolower);
+          ////ShowErrorMessage("exeName = " + exeName);
+
+          if (exeName.find("captk") != std::string::npos) // TBD this needs a better check than simply "captk", preferably related to qt
           {
-            m_logger.WriteError("Size Mismatch with images, cannot process.");
-            imagesAreOkay = false;
+            //  ShowErrorMessage(errorString);
+            //  return m_outputFeatureVector;
+          }
+          else
+          {
+            m_logger.WriteError(errorString);
+            WriteErrorFile(errorString);
+            //exit(EXIT_FAILURE);
+            return;
           }
         }
-      }
-    }
 
-    if (imagesAreOkay)
-    {
-      // Check if input mask is not null
-      auto minMaxCal = itk::MinimumMaximumImageCalculator< TImage >::New();
-      minMaxCal->SetImage(m_Mask);
-      minMaxCal->ComputeMaximum();
-      if (minMaxCal->GetMaximum() == 0)
-      {
-        std::string errorString = "Mask hasn't been initialized";
-
-        auto exeName = cbica::getExecutableName();
-        std::transform(exeName.begin(), exeName.end(), exeName.begin(), ::tolower);
-        ////ShowErrorMessage("exeName = " + exeName);
-
-        if (exeName.find("captk") != std::string::npos) // TBD this needs a better check than simply "captk", preferably related to qt
+        // get the lattice properties, if any
         {
-          //  ShowErrorMessage(errorString);
-          //  return m_outputFeatureVector;
-        }
-        else
-        {
-          m_logger.WriteError(errorString);
-          WriteErrorFile(errorString);
-          //exit(EXIT_FAILURE);
-          return;
-        }
-      }
-
-      // get the lattice properties, if any
-      {
-        auto temp = m_Features.find(FeatureFamilyString[Lattice]);
-        if (temp != m_Features.end())
-        {
-          if (std::get<0>(temp->second)) // if the feature family has been selected in the GUI
+          auto temp = m_Features.find(FeatureFamilyString[Lattice]);
+          if (temp != m_Features.end())
           {
-            m_LatticeComputation = true;
-            SetFeatureParam(FeatureFamilyString[Lattice]);
-            // all the computation is happening in m_roiConstructor
+            if (std::get<0>(temp->second)) // if the feature family has been selected in the GUI
+            {
+              m_LatticeComputation = true;
+              SetFeatureParam(FeatureFamilyString[Lattice]);
+              // all the computation is happening in m_roiConstructor
+            }
           }
         }
-      }
 
-      // get the quantization properties, if any
-      {
-        auto temp = m_Features.find(FeatureFamilyString[Generic]);
-        if (temp != m_Features.end())
+        // get the quantization properties, if any
         {
-          if (std::get<0>(temp->second)) // if the feature family has been selected in the GUI
+          auto temp = m_Features.find(FeatureFamilyString[Generic]);
+          if (temp != m_Features.end())
           {
-            SetFeatureParam(FeatureFamilyString[Generic]);
+            if (std::get<0>(temp->second)) // if the feature family has been selected in the GUI
+            {
+              SetFeatureParam(FeatureFamilyString[Generic]);
+            }
           }
         }
-      }
 
-      if (m_resamplingResolution > 0)
-      {
-        for (size_t i = 0; i < m_inputImages.size(); i++)
+        if (m_resamplingResolution > 0)
         {
-          m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator_Image);
+          for (size_t i = 0; i < m_inputImages.size(); i++)
+          {
+            m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator_Image);
+            if (m_debug)
+            {
+              cbica::WriteImage< TImage >(m_inputImages[i], m_outputPath + "/" + m_modality[i] +
+                "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image + ".nii.gz");
+            }
+          }
+          m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator_Mask);
+          if (m_resamplingInterpolator_Mask.find("Nearest") == std::string::npos)
+          {
+            auto roundingFilter = itk::RoundImageFilter< TImage, TImage >::New();
+            roundingFilter->SetInput(m_Mask);
+            roundingFilter->Update();
+            m_Mask = roundingFilter->GetOutput();
+          }
           if (m_debug)
           {
-            cbica::WriteImage< TImage >(m_inputImages[i], m_outputPath + "/" + m_modality[i] +
-              "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image + ".nii.gz");
+            cbica::WriteImage< TImage >(m_Mask, m_outputPath +
+              "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + ".nii.gz");
           }
         }
-        m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator_Mask);
-        if (m_resamplingInterpolator_Mask.find("Nearest") == std::string::npos)
-        {
-          auto roundingFilter = itk::RoundImageFilter< TImage, TImage >::New();
-          roundingFilter->SetInput(m_Mask);
-          roundingFilter->Update();
-          m_Mask = roundingFilter->GetOutput();
-        }
+
         if (m_debug)
         {
-          cbica::WriteImage< TImage >(m_Mask, m_outputPath + 
-            "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + ".nii.gz");
-        }
-      }
-
-      if (m_debug)
-      {
-        m_logger.Write("Started Construction of ROIs");
-      }
-
-      // set the ROIConstructor up
-      m_roiConstructor.SetInputMask(m_Mask);
-      m_roiConstructor.SetNewLogFile(m_logger.getLoggingFileName());
-      m_roiConstructor.SetSelectedROIsAndLabels(m_roi, m_roiLabels);
-      m_roiConstructor.SetLatticeGridStep(m_latticeStep); // if lattice features have not been requested, this gets initialized as zero and no patches are computed
-      m_roiConstructor.SetLatticeWindowSize(m_latticeWindow); // if lattice features have not been requested, this gets initialized as zero and no patches are computed
-      m_roiConstructor.SetBoundaryCondition(m_fluxNeumannEnabled);
-      m_roiConstructor.SetPatchConstructionConditionROI(m_patchOnRoiEnabled);
-      m_roiConstructor.SetPatchConstructionConditionNone(m_patchBoundaryDisregarded);
-      m_roiConstructor.Update();
-      auto allROIs = m_roiConstructor.GetOutput();
-      m_LatticeComputation = m_roiConstructor.IsLatticeEnabled(); // checking whether lattice has been enabled or not
-      m_latticeStepImage = m_roiConstructor.GetLatticeStepImage();
-      auto temp = m_roiConstructor.GetLatticeRadius();
-
-      for (size_t d = 0; d < TImage::ImageDimension; d++)
-      {
-        m_latticeSizeImage[d] = temp[d] * 2 + 1;
-      }
-
-      auto featureMapImageSize = m_Mask->GetBufferedRegion().GetSize(); // size of the (down-sampled) feature map
-      auto inputImageSize = m_Mask->GetBufferedRegion().GetSize(); // size of the (down-sampled) feature map
-      auto featureMapImageSpacing = m_Mask->GetSpacing(); // spacing of the (down-sampled) feature map
-                                                          //auto featureMapImageSize_world = cbica::GetDistances< TImage >(m_Mask); // size of the (down-sampled) feature map in world coordinates
-
-      if (m_LatticeComputation && m_writeFeatureMaps) // check if writing of feature maps has been requested or not
-      {
-        if (m_debug)
-        {
-          m_logger.Write("Initializing output base image for feature maps");
+          m_logger.Write("Started Construction of ROIs");
         }
 
-        for (size_t i = 0; i < TImage::ImageDimension; i++)
+        // set the ROIConstructor up
+        m_roiConstructor.SetInputMask(m_Mask);
+        m_roiConstructor.SetNewLogFile(m_logger.getLoggingFileName());
+        m_roiConstructor.SetSelectedROIsAndLabels(m_roi, m_roiLabels);
+        m_roiConstructor.SetLatticeGridStep(m_latticeStep); // if lattice features have not been requested, this gets initialized as zero and no patches are computed
+        m_roiConstructor.SetLatticeWindowSize(m_latticeWindow); // if lattice features have not been requested, this gets initialized as zero and no patches are computed
+        m_roiConstructor.SetBoundaryCondition(m_fluxNeumannEnabled);
+        m_roiConstructor.SetPatchConstructionConditionROI(m_patchOnRoiEnabled);
+        m_roiConstructor.SetPatchConstructionConditionNone(m_patchBoundaryDisregarded);
+        m_roiConstructor.Update();
+        auto allROIs = m_roiConstructor.GetOutput();
+        m_LatticeComputation = m_roiConstructor.IsLatticeEnabled(); // checking whether lattice has been enabled or not
+        m_latticeStepImage = m_roiConstructor.GetLatticeStepImage();
+        auto temp = m_roiConstructor.GetLatticeRadius();
+
+        for (size_t d = 0; d < TImage::ImageDimension; d++)
         {
-          auto temp = static_cast<float>(featureMapImageSize[i]) / static_cast<float>(m_latticeStepImage[i]);
-          if (fmodf(temp, 1) == 0)
+          m_latticeSizeImage[d] = temp[d] * 2 + 1;
+        }
+
+        auto featureMapImageSize = m_Mask->GetBufferedRegion().GetSize(); // size of the (down-sampled) feature map
+        auto inputImageSize = m_Mask->GetBufferedRegion().GetSize(); // size of the (down-sampled) feature map
+        auto featureMapImageSpacing = m_Mask->GetSpacing(); // spacing of the (down-sampled) feature map
+                                                            //auto featureMapImageSize_world = cbica::GetDistances< TImage >(m_Mask); // size of the (down-sampled) feature map in world coordinates
+
+        if (m_LatticeComputation && m_writeFeatureMaps) // check if writing of feature maps has been requested or not
+        {
+          if (m_debug)
           {
-            featureMapImageSize[i] = temp + 1;
+            m_logger.Write("Initializing output base image for feature maps");
           }
-          else
+
+          for (size_t i = 0; i < TImage::ImageDimension; i++)
           {
-            featureMapImageSize[i] = std::floor(temp);
-          }
-          featureMapImageSpacing[i] = inputImageSize[i] / featureMapImageSize[i] * featureMapImageSpacing[i];
-        }
-
-        // initialize the feature map output -- this is only used for the lattice feature maps
-        m_featureMapBaseImage = cbica::CreateImage< TImage >(m_Mask);
-        auto tempDir1 = m_featureMapBaseImage->GetDirection();
-
-        auto resampler = itk::ResampleImageFilter< TImage, TImage >::New();
-        resampler->SetInput(m_featureMapBaseImage);
-        resampler->SetSize(featureMapImageSize);
-        resampler->SetTransform(itk::IdentityTransform< double, TImage::ImageDimension >::New());
-        resampler->SetOutputDirection(m_featureMapBaseImage->GetDirection());
-        resampler->SetOutputSpacing(featureMapImageSpacing);
-        resampler->UpdateLargestPossibleRegion();
-        m_featureMapBaseImage = resampler->GetOutput();
-      }
-
-      if (m_debug)
-      {
-        m_logger.Write("Starting feature extraction for every image and every ROI");
-      }
-
-      if (m_threads == -1)
-      {
-        m_threads = omp_get_max_threads();
-      }
-
-      size_t j = 0;
-      if (!m_LatticeComputation)
-      {
-        m_threads = 1; // no need for multi-threading if lattice is disabled
-      }
-      else
-      {
-        if (!m_patchFullImageComputation)
-        {
-          j += m_roi.size();
-        }
-      }
-
-      //#pragma omp parallel for num_threads(m_threads)
-      for (/*j has been initialized earlier*/; j < allROIs.size(); j++)
-      {
-        bool volumetricFeaturesExtracted = false, morphologicFeaturesExtracted = false;
-        for (size_t i = 0; i < m_inputImages.size(); i++)
-        {
-          auto writeFeatureMapsAndLattice = m_LatticeComputation && allROIs[j].latticeGridPoint;
-          // construct the mask and the non-zero image values for each iteration - saves a *lot* of memory
-          auto currentMask = cbica::CreateImage< TImage >(m_Mask), currentMask_patch = cbica::CreateImage< TImage >(m_Mask);
-          auto currentInputImage = m_inputImages[i], currentInputImage_patch = m_inputImages[i];
-          m_currentLatticeCenter = allROIs[j].centerIndex;
-          m_currentLatticeStart = m_currentLatticeCenter;
-          if (allROIs[j].latticeGridPoint)
-          {
-            for (size_t d = 0; d < TImage::ImageDimension; d++)
+            auto temp = static_cast<float>(featureMapImageSize[i]) / static_cast<float>(m_latticeStepImage[i]);
+            if (fmodf(temp, 1) == 0)
             {
-              m_currentLatticeStart[d] = m_currentLatticeStart[d] - std::floor(m_latticeSizeImage[d] / 2); // floor is done because m_latticeSizeImage has a '1' which has been added
-            }
-          }
-          m_currentROIValue = allROIs[j].value;
-          m_centerIndexString = "(" + std::to_string(m_currentLatticeCenter[0]);
-          for (size_t d = 1; d < TImage::ImageDimension; d++)
-          {
-            m_centerIndexString += "|" + std::to_string(m_currentLatticeCenter[d]);
-          }
-          m_centerIndexString += ")";
-
-          if (allROIs[j].latticeGridPoint)
-          {
-            currentInputImage_patch = GetPatchedImage(m_inputImages[i]);
-            currentMask_patch = cbica::CreateImage< TImage >(currentInputImage_patch, 1);
-          }
-          TIteratorType currentMaskIterator(currentMask_patch, currentMask_patch->GetBufferedRegion()); // LargestRegion is apparently not defined for 2D images
-          TConstIteratorType currentImageIterator(m_inputImages[i], m_inputImages[i]->GetBufferedRegion());
-
-          if (allROIs[j].latticeGridPoint)
-          {
-            auto temp = static_cast<float>(j + i) / static_cast<float>(allROIs.size() + m_inputImages.size());
-            m_logger.Write("Percentage done: " + std::to_string(temp * 100));
-            //auto totalMemory = static_cast< float >(cbica::getTotalMemory()) / 10e8;
-            //auto usedMemory = static_cast< float >(cbica::getCurrentlyUsedMemory());
-            //auto freeMem = totalMemory - usedMemory;
-            //m_logger.Write("Approximate free memory on machine: '" + std::to_string(freeMem / 10e8) + "' Gb.'");
-          }
-          else
-          {
-            m_logger.Write("Calculating Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "'");
-          }
-
-          m_currentNonZeroImageValues.clear();
-          // initialize the mask of the current ROI and get the non-zero pixel/voxel values from the current image
-          for (size_t m = 0; m < allROIs[j].nonZeroIndeces.size(); m++)
-          {
-            currentMaskIterator.SetIndex(allROIs[j].nonZeroIndeces[m]);
-            currentMaskIterator.Set(1);
-
-            currentImageIterator.SetIndex(allROIs[j].nonZeroIndeces[m]);
-            m_currentNonZeroImageValues.push_back(currentImageIterator.Get());
-          }
-
-          // calculate intensity features are always calculated 
-          {
-            auto tempT1 = std::chrono::high_resolution_clock::now();
-
-            if (m_QuantizationType == "Image")
-            {
-              if (!allROIs[j].latticeGridPoint)
-              {
-                m_statistics_global[m_currentROIValue].SetInput(m_currentNonZeroImageValues);
-              }
+              featureMapImageSize[i] = temp + 1;
             }
             else
             {
-              m_statistics_local.SetInput(m_currentNonZeroImageValues);
+              featureMapImageSize[i] = std::floor(temp);
             }
-
-            auto temp = m_Features.find(FeatureFamilyString[Intensity]);
-            std::get<2>(temp->second) = m_modality[i];
-            std::get<3>(temp->second) = allROIs[j].label;
-            CalculateIntensity(m_currentNonZeroImageValues, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-            if (std::get<4>(temp->second).empty())
-            {
-              return;
-            }
-            WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[Intensity], std::get<4>(temp->second), "N.A.", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
-            if (m_debug)
-            {
-              auto tempT2 = std::chrono::high_resolution_clock::now();
-              m_logger.Write("Intensity Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-            }
+            featureMapImageSpacing[i] = inputImageSize[i] / featureMapImageSize[i] * featureMapImageSpacing[i];
           }
 
-          // iterate over the entire feature family enum
-          for (size_t f = 1/*Intensity features already calculated*/; f < FeatureMax; ++f)
+          // initialize the feature map output -- this is only used for the lattice feature maps
+          m_featureMapBaseImage = cbica::CreateImage< TImage >(m_Mask);
+          auto tempDir1 = m_featureMapBaseImage->GetDirection();
+
+          auto resampler = itk::ResampleImageFilter< TImage, TImage >::New();
+          resampler->SetInput(m_featureMapBaseImage);
+          resampler->SetSize(featureMapImageSize);
+          resampler->SetTransform(itk::IdentityTransform< double, TImage::ImageDimension >::New());
+          resampler->SetOutputDirection(m_featureMapBaseImage->GetDirection());
+          resampler->SetOutputSpacing(featureMapImageSpacing);
+          resampler->UpdateLargestPossibleRegion();
+          m_featureMapBaseImage = resampler->GetOutput();
+        }
+
+        if (m_debug)
+        {
+          m_logger.Write("Starting feature extraction for every image and every ROI");
+        }
+
+        if (m_threads == -1)
+        {
+          m_threads = omp_get_max_threads();
+        }
+
+        size_t j = 0;
+        if (!m_LatticeComputation)
+        {
+          m_threads = 1; // no need for multi-threading if lattice is disabled
+        }
+        else
+        {
+          if (!m_patchFullImageComputation)
           {
-            SetFeatureParam(FeatureFamilyString[f]);
-            switch (f)
+            j += m_roi.size();
+          }
+        }
+
+        //#pragma omp parallel for num_threads(m_threads)
+        for (/*j has been initialized earlier*/; j < allROIs.size(); j++)
+        {
+          bool volumetricFeaturesExtracted = false, morphologicFeaturesExtracted = false;
+          for (size_t i = 0; i < m_inputImages.size(); i++)
+          {
+            auto writeFeatureMapsAndLattice = m_LatticeComputation && allROIs[j].latticeGridPoint;
+            // construct the mask and the non-zero image values for each iteration - saves a *lot* of memory
+            auto currentMask = cbica::CreateImage< TImage >(m_Mask), currentMask_patch = cbica::CreateImage< TImage >(m_Mask);
+            auto currentInputImage = m_inputImages[i], currentInputImage_patch = m_inputImages[i];
+            m_currentLatticeCenter = allROIs[j].centerIndex;
+            m_currentLatticeStart = m_currentLatticeCenter;
+            if (allROIs[j].latticeGridPoint)
             {
-              // case Intensity is not needed since it always calculated
-            case Histogram:
-            {
-              auto temp = m_Features.find(FeatureFamilyString[f]);
-              if (temp != m_Features.end())
+              for (size_t d = 0; d < TImage::ImageDimension; d++)
               {
-                if (std::get<0>(temp->second))
+                m_currentLatticeStart[d] = m_currentLatticeStart[d] - std::floor(m_latticeSizeImage[d] / 2); // floor is done because m_latticeSizeImage has a '1' which has been added
+              }
+            }
+            m_currentROIValue = allROIs[j].value;
+            m_centerIndexString = "(" + std::to_string(m_currentLatticeCenter[0]);
+            for (size_t d = 1; d < TImage::ImageDimension; d++)
+            {
+              m_centerIndexString += "|" + std::to_string(m_currentLatticeCenter[d]);
+            }
+            m_centerIndexString += ")";
+
+            if (allROIs[j].latticeGridPoint)
+            {
+              currentInputImage_patch = GetPatchedImage(m_inputImages[i]);
+              currentMask_patch = cbica::CreateImage< TImage >(currentInputImage_patch, 1);
+            }
+            TIteratorType currentMaskIterator(currentMask_patch, currentMask_patch->GetBufferedRegion()); // LargestRegion is apparently not defined for 2D images
+            TConstIteratorType currentImageIterator(m_inputImages[i], m_inputImages[i]->GetBufferedRegion());
+
+            if (allROIs[j].latticeGridPoint)
+            {
+              auto temp = static_cast<float>(j + i) / static_cast<float>(allROIs.size() + m_inputImages.size());
+              m_logger.Write("Percentage done: " + std::to_string(temp * 100));
+              //auto totalMemory = static_cast< float >(cbica::getTotalMemory()) / 10e8;
+              //auto usedMemory = static_cast< float >(cbica::getCurrentlyUsedMemory());
+              //auto freeMem = totalMemory - usedMemory;
+              //m_logger.Write("Approximate free memory on machine: '" + std::to_string(freeMem / 10e8) + "' Gb.'");
+            }
+            else
+            {
+              m_logger.Write("Calculating Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "'");
+            }
+
+            m_currentNonZeroImageValues.clear();
+            // initialize the mask of the current ROI and get the non-zero pixel/voxel values from the current image
+            for (size_t m = 0; m < allROIs[j].nonZeroIndeces.size(); m++)
+            {
+              currentMaskIterator.SetIndex(allROIs[j].nonZeroIndeces[m]);
+              currentMaskIterator.Set(1);
+
+              currentImageIterator.SetIndex(allROIs[j].nonZeroIndeces[m]);
+              m_currentNonZeroImageValues.push_back(currentImageIterator.Get());
+            }
+
+            // calculate intensity features are always calculated 
+            {
+              auto tempT1 = std::chrono::high_resolution_clock::now();
+
+              if (m_QuantizationType == "Image")
+              {
+                if (!allROIs[j].latticeGridPoint)
                 {
-                  auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                  //auto local_map = std::get<1>(temp->second);
-                  std::get<2>(temp->second) = m_modality[i];
-                  std::get<3>(temp->second) = allROIs[j].label;
-                  CalculateHistogram(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
-                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    "Bins=" + std::to_string(m_Bins), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
-                  if (m_debug)
-                  {
-                    auto tempT2 = std::chrono::high_resolution_clock::now();
-                    m_logger.Write("Histogram Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-                  }
+                  m_statistics_global[m_currentROIValue].SetInput(m_currentNonZeroImageValues);
                 }
               }
-              break;
-            }
-            case Morphologic:
-            {
-              auto temp = m_Features.find(FeatureFamilyString[f]);
-              if (temp != m_Features.end())
+              else
               {
-                if (std::get<0>(temp->second))
+                m_statistics_local.SetInput(m_currentNonZeroImageValues);
+              }
+
+              auto temp = m_Features.find(FeatureFamilyString[Intensity]);
+              std::get<2>(temp->second) = m_modality[i];
+              std::get<3>(temp->second) = allROIs[j].label;
+              CalculateIntensity(m_currentNonZeroImageValues, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+              if (std::get<4>(temp->second).empty())
+              {
+                return;
+              }
+              WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[Intensity], std::get<4>(temp->second), "N.A.", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+              if (m_debug)
+              {
+                auto tempT2 = std::chrono::high_resolution_clock::now();
+                m_logger.Write("Intensity Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+              }
+            }
+
+            // iterate over the entire feature family enum
+            for (size_t f = 1/*Intensity features already calculated*/; f < FeatureMax; ++f)
+            {
+              SetFeatureParam(FeatureFamilyString[f]);
+              switch (f)
+              {
+                // case Intensity is not needed since it always calculated
+              case Histogram:
+              {
+                auto temp = m_Features.find(FeatureFamilyString[f]);
+                if (temp != m_Features.end())
                 {
-                  if (!morphologicFeaturesExtracted) // because this feature is to be extracted per ROI and not per ROI & modality
+                  if (std::get<0>(temp->second))
                   {
                     auto tempT1 = std::chrono::high_resolution_clock::now();
 
-                    std::get<2>(temp->second) = "ALL";
+                    //auto local_map = std::get<1>(temp->second);
+                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<3>(temp->second) = allROIs[j].label;
+                    CalculateHistogram(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                    if (std::get<4>(temp->second).empty())
+                    {
+                      return;
+                    }
+                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      "Bins=" + std::to_string(m_Bins), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                    if (m_debug)
+                    {
+                      auto tempT2 = std::chrono::high_resolution_clock::now();
+                      m_logger.Write("Histogram Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    }
+                  }
+                }
+                break;
+              }
+              case Morphologic:
+              {
+                auto temp = m_Features.find(FeatureFamilyString[f]);
+                if (temp != m_Features.end())
+                {
+                  if (std::get<0>(temp->second))
+                  {
+                    if (!morphologicFeaturesExtracted) // because this feature is to be extracted per ROI and not per ROI & modality
+                    {
+                      auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                      std::get<2>(temp->second) = "ALL";
+                      std::get<3>(temp->second) = allROIs[j].label;
+
+                      /* this dimensionality reduction applies only to shape and Volumetric features */
+                      if (TImage::ImageDimension == 3)
+                      {
+                        if (m_Dimension == 2) // extracts slice with maximum area along the specified axis
+                        {
+                          //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
+                          auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
+                          //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
+                          //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
+                          CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
+                        }
+                        else
+                        {
+                          CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
+                        }
+                      }
+                      else
+                      {
+                        CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
+                      }
+                      if (std::get<4>(temp->second).empty())
+                      {
+                        return;
+                      }
+                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                        "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                      if (m_debug)
+                      {
+                        auto tempT2 = std::chrono::high_resolution_clock::now();
+                        m_logger.Write("Morphologic Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                      }
+                      morphologicFeaturesExtracted = true;
+                    }
+                  }
+                }
+                break;
+              }
+              case Volumetric:
+              {
+                auto temp = m_Features.find(FeatureFamilyString[f]);
+                if (temp != m_Features.end())
+                {
+                  if (std::get<0>(temp->second))
+                  {
+                    if (!volumetricFeaturesExtracted) // because this feature is to be extracted per ROI and not per ROI & modality
+                    {
+                      auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                      std::get<2>(temp->second) = "ALL";
+                      std::get<3>(temp->second) = allROIs[j].label;
+
+                      /* this dimensionality reduction applies only to shape and Volumetric features */
+                      if (TImage::ImageDimension == 3)
+                      {
+                        if (m_Dimension == 2)
+                        {
+                          //ImageType2D::Pointer selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
+                          //CalculateVolumetric<ImageType2D>(selected_axis_image, std::get<4>(temp->second));
+                          auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
+                          CalculateVolumetric<TImage>(selected_axis_image, std::get<4>(temp->second));
+                        }
+                        else
+                        {
+                          CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
+                        }
+                      }
+                      else
+                      {
+                        CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
+                      }
+                      if (std::get<4>(temp->second).empty())
+                      {
+                        return;
+                      }
+                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                        "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                      if (m_debug)
+                      {
+                        auto tempT2 = std::chrono::high_resolution_clock::now();
+                        m_logger.Write("Volumetric Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                      }
+                      volumetricFeaturesExtracted = true;
+                    }
+                  }
+                }
+                break;
+              }
+              case GLCM:
+              {
+                auto temp = m_Features.find(FeatureFamilyString[f]);
+                if (temp != m_Features.end())
+                {
+                  if (std::get<0>(temp->second))
+                  {
+                    auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                    std::get<2>(temp->second) = m_modality[i];
                     std::get<3>(temp->second) = allROIs[j].label;
 
+                    auto offsets = GetOffsetVector(m_Radius, m_Direction);
                     /* this dimensionality reduction applies only to shape and Volumetric features */
                     if (TImage::ImageDimension == 3)
                     {
@@ -2578,668 +2674,566 @@ void FeatureExtraction< TImage >::Update()
                       {
                         //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
                         auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
+                        offsets = GetOffsetVector(m_Radius, 26); // because anything other than 26 doesn't work properly for GLSZM computation
+                        //cbica::WriteImage< TImage >(selected_axis_image, "tmp.nii.gz");
                         //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
                         //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
-                        CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
+                        //CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
+                        CalculateGLCM(currentInputImage_patch, selected_axis_image, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
                       }
                       else
                       {
-                        CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
+                        CalculateGLCM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
                       }
-                    }
-                    else
-                    {
-                      CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
-                    }
-                    if (std::get<4>(temp->second).empty())
-                    {
-                      return;
-                    }
-                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
-                    if (m_debug)
-                    {
-                      auto tempT2 = std::chrono::high_resolution_clock::now();
-                      m_logger.Write("Morphologic Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-                    }
-                    morphologicFeaturesExtracted = true;
-                  }
-                }
-              }
-              break;
-            }
-            case Volumetric:
-            {
-              auto temp = m_Features.find(FeatureFamilyString[f]);
-              if (temp != m_Features.end())
-              {
-                if (std::get<0>(temp->second))
-                {
-                  if (!volumetricFeaturesExtracted) // because this feature is to be extracted per ROI and not per ROI & modality
-                  {
-                    auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                    std::get<2>(temp->second) = "ALL";
-                    std::get<3>(temp->second) = allROIs[j].label;
-
-                    /* this dimensionality reduction applies only to shape and Volumetric features */
-                    if (TImage::ImageDimension == 3)
-                    {
-                      if (m_Dimension == 2)
-                      {
-                        //ImageType2D::Pointer selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
-                        //CalculateVolumetric<ImageType2D>(selected_axis_image, std::get<4>(temp->second));
-                        auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
-                        CalculateVolumetric<TImage>(selected_axis_image, std::get<4>(temp->second));
-                      }
-                      else
-                      {
-                        CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
-                      }
-                    }
-                    else
-                    {
-                      CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
-                    }
-                    if (std::get<4>(temp->second).empty())
-                    {
-                      return;
-                    }
-                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
-                    if (m_debug)
-                    {
-                      auto tempT2 = std::chrono::high_resolution_clock::now();
-                      m_logger.Write("Volumetric Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-                    }
-                    volumetricFeaturesExtracted = true;
-                  }
-                }
-              }
-              break;
-            }
-            case GLCM:
-            {
-              auto temp = m_Features.find(FeatureFamilyString[f]);
-              if (temp != m_Features.end())
-              {
-                if (std::get<0>(temp->second))
-                {
-                  auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                  std::get<2>(temp->second) = m_modality[i];
-                  std::get<3>(temp->second) = allROIs[j].label;
-
-                  auto offsets = GetOffsetVector(m_Radius, m_Direction);
-                  /* this dimensionality reduction applies only to shape and Volumetric features */
-                  if (TImage::ImageDimension == 3)
-                  {
-                    if (m_Dimension == 2) // extracts slice with maximum area along the specified axis
-                    {
-                      //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
-                      auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
-                      offsets = GetOffsetVector(m_Radius, 26); // because anything other than 26 doesn't work properly for GLSZM computation
-                      //cbica::WriteImage< TImage >(selected_axis_image, "tmp.nii.gz");
-                      //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
-                      //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
-                      //CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
-                      CalculateGLCM(currentInputImage_patch, selected_axis_image, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
                     }
                     else
                     {
                       CalculateGLCM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
                     }
-                  }
-                  else
-                  {
-                    CalculateGLCM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                  }
 
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
-                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                    ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
+                    if (std::get<4>(temp->second).empty())
+                    {
+                      return;
+                    }
+                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
 
-                  if (m_debug)
-                  {
-                    auto tempT2 = std::chrono::high_resolution_clock::now();
-                    m_logger.Write("GLCM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    if (m_debug)
+                    {
+                      auto tempT2 = std::chrono::high_resolution_clock::now();
+                      m_logger.Write("GLCM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    }
                   }
                 }
+                break;
               }
-              break;
-            }
-            case GLRLM:
-            {
-              auto temp = m_Features.find(FeatureFamilyString[f]);
-              if (temp != m_Features.end())
+              case GLRLM:
               {
-                if (std::get<0>(temp->second))
+                auto temp = m_Features.find(FeatureFamilyString[f]);
+                if (temp != m_Features.end())
                 {
-                  auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                  std::get<2>(temp->second) = m_modality[i];
-                  std::get<3>(temp->second) = allROIs[j].label;
-
-                  auto offsets = GetOffsetVector(m_Radius, m_Direction);
-                  /* this dimensionality reduction applies only to shape and Volumetric features */
-                  if (TImage::ImageDimension == 3)
+                  if (std::get<0>(temp->second))
                   {
-                    if (m_Dimension == 2) // extracts slice with maximum area along the specified axis
+                    auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<3>(temp->second) = allROIs[j].label;
+
+                    auto offsets = GetOffsetVector(m_Radius, m_Direction);
+                    /* this dimensionality reduction applies only to shape and Volumetric features */
+                    if (TImage::ImageDimension == 3)
                     {
-                      //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
-                      auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
-                      offsets = GetOffsetVector(m_Radius, 26); // because anything other than 26 doesn't work properly for GLSZM computation
-                      //cbica::WriteImage< TImage >(selected_axis_image, "tmp.nii.gz");
-                      //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
-                      //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
-                      //CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
-                      CalculateGLRLM(currentInputImage_patch, selected_axis_image, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                      if (m_Dimension == 2) // extracts slice with maximum area along the specified axis
+                      {
+                        //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
+                        auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
+                        offsets = GetOffsetVector(m_Radius, 26); // because anything other than 26 doesn't work properly for GLSZM computation
+                        //cbica::WriteImage< TImage >(selected_axis_image, "tmp.nii.gz");
+                        //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
+                        //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
+                        //CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
+                        CalculateGLRLM(currentInputImage_patch, selected_axis_image, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                      }
+                      else
+                      {
+                        CalculateGLRLM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                      }
                     }
                     else
                     {
                       CalculateGLRLM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
                     }
-                  }
-                  else
-                  {
-                    CalculateGLRLM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                  }
 
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
-                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                    ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    if (std::get<4>(temp->second).empty())
+                    {
+                      return;
+                    }
+                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                  if (m_debug)
-                  {
-                    auto tempT2 = std::chrono::high_resolution_clock::now();
-                    m_logger.Write("GLRLM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    if (m_debug)
+                    {
+                      auto tempT2 = std::chrono::high_resolution_clock::now();
+                      m_logger.Write("GLRLM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    }
                   }
                 }
+                break;
               }
-              break;
-            }
-            case GLSZM:
-            {
-              auto temp = m_Features.find(FeatureFamilyString[f]);
-              if (temp != m_Features.end())
+              case GLSZM:
               {
-                if (std::get<0>(temp->second))
+                auto temp = m_Features.find(FeatureFamilyString[f]);
+                if (temp != m_Features.end())
                 {
-                  auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                  std::get<2>(temp->second) = m_modality[i];
-                  std::get<3>(temp->second) = allROIs[j].label;
-
-                  auto offsets = GetOffsetVector(m_Radius, m_Direction);
-                  /* this dimensionality reduction applies only to shape and Volumetric features */
-                  if (TImage::ImageDimension == 3)
+                  if (std::get<0>(temp->second))
                   {
-                    if (m_Dimension == 2) // extracts slice with maximum area along the specified axis
+                    auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<3>(temp->second) = allROIs[j].label;
+
+                    auto offsets = GetOffsetVector(m_Radius, m_Direction);
+                    /* this dimensionality reduction applies only to shape and Volumetric features */
+                    if (TImage::ImageDimension == 3)
                     {
-                      //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
-                      offsets = GetOffsetVector(m_Radius, 26);
-                      auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
-                      offsets = GetOffsetVector(m_Radius, 26); // because anything other than 26 doesn't work properly for GLSZM computation
-                      //cbica::WriteImage< TImage >(selected_axis_image, "tmp.nii.gz");
-                      //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
-                      //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
-                      //CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
-                      CalculateGLSZM(currentInputImage_patch, selected_axis_image, offsets, std::get<4>(temp->second));
+                      if (m_Dimension == 2) // extracts slice with maximum area along the specified axis
+                      {
+                        //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
+                        offsets = GetOffsetVector(m_Radius, 26);
+                        auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
+                        offsets = GetOffsetVector(m_Radius, 26); // because anything other than 26 doesn't work properly for GLSZM computation
+                        //cbica::WriteImage< TImage >(selected_axis_image, "tmp.nii.gz");
+                        //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
+                        //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
+                        //CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
+                        CalculateGLSZM(currentInputImage_patch, selected_axis_image, offsets, std::get<4>(temp->second));
+                      }
+                      else
+                      {
+                        CalculateGLSZM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
+                      }
                     }
                     else
                     {
                       CalculateGLSZM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
                     }
-                  }
-                  else
-                  {
-                    CalculateGLSZM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
-                  }
 
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
-                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                    ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    if (std::get<4>(temp->second).empty())
+                    {
+                      return;
+                    }
+                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                  if (m_debug)
-                  {
-                    auto tempT2 = std::chrono::high_resolution_clock::now();
-                    m_logger.Write("GLSZM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    if (m_debug)
+                    {
+                      auto tempT2 = std::chrono::high_resolution_clock::now();
+                      m_logger.Write("GLSZM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    }
                   }
                 }
+                break;
               }
-              break;
-            }
-            case NGTDM:
-            {
-              auto temp = m_Features.find(FeatureFamilyString[f]);
-              if (temp != m_Features.end())
+              case NGTDM:
               {
-                if (std::get<0>(temp->second))
+                auto temp = m_Features.find(FeatureFamilyString[f]);
+                if (temp != m_Features.end())
                 {
-                  auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                  std::get<2>(temp->second) = m_modality[i];
-                  std::get<3>(temp->second) = allROIs[j].label;
-
-                  auto offsets = GetOffsetVector(m_Radius, m_Direction);
-                  /* this dimensionality reduction applies only to shape and Volumetric features */
-                  if (TImage::ImageDimension == 3)
+                  if (std::get<0>(temp->second))
                   {
-                    if (m_Dimension == 2) // extracts slice with maximum area along the specified axis
+                    auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<3>(temp->second) = allROIs[j].label;
+
+                    auto offsets = GetOffsetVector(m_Radius, m_Direction);
+                    /* this dimensionality reduction applies only to shape and Volumetric features */
+                    if (TImage::ImageDimension == 3)
                     {
-                      //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
-                      auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
-                      offsets = GetOffsetVector(m_Radius, 26); // because anything other than 26 doesn't work properly for GLSZM computation
-                      //cbica::WriteImage< TImage >(selected_axis_image, "tmp.nii.gz");
-                      //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
-                      //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
-                      //CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
-                      CalculateNGTDM(currentInputImage_patch, selected_axis_image, offsets, std::get<4>(temp->second));
+                      if (m_Dimension == 2) // extracts slice with maximum area along the specified axis
+                      {
+                        //std::cout << "[DEBUG] FeatureExtraction.hxx - calling GetSelectedSlice" << std::endl;
+                        auto selected_axis_image = GetSelectedSlice(currentMask_patch, m_Axis);
+                        offsets = GetOffsetVector(m_Radius, 26); // because anything other than 26 doesn't work properly for GLSZM computation
+                        //cbica::WriteImage< TImage >(selected_axis_image, "tmp.nii.gz");
+                        //std::cout << "[DEBUG] FeatureExtraction.hxx - called GetSelectedSlice" << std::endl;
+                        //CalculateMorphologic<ImageType2D>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second)); //old with 2D
+                        //CalculateMorphologic<TImage>(currentInputImage_patch, selected_axis_image, currentMask_patch, std::get<4>(temp->second));
+                        CalculateNGTDM(currentInputImage_patch, selected_axis_image, offsets, std::get<4>(temp->second));
+                      }
+                      else
+                      {
+                        CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
+                      }
                     }
                     else
                     {
                       CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
                     }
-                  }
-                  else
-                  {
-                    CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
-                  }
 
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
-                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                    ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    if (std::get<4>(temp->second).empty())
+                    {
+                      return;
+                    }
+                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                  if (m_debug)
-                  {
-                    auto tempT2 = std::chrono::high_resolution_clock::now();
-                    m_logger.Write("NGTDM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    if (m_debug)
+                    {
+                      auto tempT2 = std::chrono::high_resolution_clock::now();
+                      m_logger.Write("NGTDM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    }
                   }
                 }
+                break;
               }
-              break;
-            }
-            case FractalDimension:
-            {
-              if (TImage::ImageDimension == 2)
+              case FractalDimension:
+              {
+                if (TImage::ImageDimension == 2)
+                {
+                  auto temp = m_Features.find(FeatureFamilyString[f]);
+                  if (temp != m_Features.end())
+                  {
+                    if (std::get<0>(temp->second))
+                    {
+                      /// TBD: this is only for lattice points because the computation class has not been optimized (memory usage is going into the Gb range)
+                      if (allROIs[j].latticeGridPoint)
+                      {
+                        auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                        std::get<2>(temp->second) = m_modality[i];
+                        std::get<3>(temp->second) = allROIs[j].label;
+
+                        CalculateFractalDimensions(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                        if (std::get<4>(temp->second).empty())
+                        {
+                          return;
+                        }
+                        WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second), "",
+                          m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                        if (m_debug)
+                        {
+                          auto tempT2 = std::chrono::high_resolution_clock::now();
+                          m_logger.Write("Fractal Dimension Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                        }
+                      }
+                    }
+                  }
+                }
+                break;
+              }
+              case Gabor:
+              {
+                if (TImage::ImageDimension == 2)
+                {
+                  auto temp = m_Features.find(FeatureFamilyString[f]);
+                  if (temp != m_Features.end())
+                  {
+                    if (std::get<0>(temp->second))
+                    {
+                      /// TBD: this is only for lattice points because the computation class has not been optimized (memory usage is going into the Gb range)
+                      if (allROIs[j].latticeGridPoint)
+                      {
+                        auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                        std::get<2>(temp->second) = m_modality[i];
+                        std::get<3>(temp->second) = allROIs[j].label;
+
+                        CalculateGaborWavelets(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                        if (std::get<4>(temp->second).empty())
+                        {
+                          return;
+                        }
+                        WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                          "Radius=" + std::to_string(m_Radius) + ";FMax=" + std::to_string(m_gaborFMax) + ";Gamma=" + std::to_string(m_gaborGamma) +
+                          ";Directions=" + std::to_string(m_Direction) + ";Level=" + std::to_string(m_gaborLevel), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                        if (m_debug)
+                        {
+                          auto tempT2 = std::chrono::high_resolution_clock::now();
+                          m_logger.Write("Gabor Wavelet Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                        }
+                      }
+                    }
+                  }
+                }
+                break;
+              }
+              case Laws:
+              {
+                if (TImage::ImageDimension == 2)
+                {
+                  auto temp = m_Features.find(FeatureFamilyString[f]);
+                  if (temp != m_Features.end())
+                  {
+                    if (std::get<0>(temp->second))
+                    {
+                      /// TBD: this is only for lattice points because the computation class has not been optimized (memory usage is going into the Gb range)
+                      if (allROIs[j].latticeGridPoint)
+                      {
+                        auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                        std::get<2>(temp->second) = m_modality[i];
+                        std::get<3>(temp->second) = allROIs[j].label;
+
+                        CalculateLawsMeasures(currentInputImage_patch, std::get<4>(temp->second));
+                        if (std::get<4>(temp->second).empty())
+                        {
+                          return;
+                        }
+                        WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second), "",
+                          m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                        if (m_debug)
+                        {
+                          auto tempT2 = std::chrono::high_resolution_clock::now();
+                          m_logger.Write("Law Measurement Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                        }
+                      }
+                    }
+                  }
+                }
+                break;
+              }
+              case Edges:
+              {
+                if (TImage::ImageDimension == 2)
+                {
+                  auto temp = m_Features.find(FeatureFamilyString[f]);
+                  if (temp != m_Features.end())
+                  {
+                    if (std::get<0>(temp->second))
+                    {
+                      /// TBD: this is only for lattice points because the computation class has not been optimized (memory usage is going into the Gb range)
+                      if (allROIs[j].latticeGridPoint)
+                      {
+                        auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                        std::get<2>(temp->second) = m_modality[i];
+                        std::get<3>(temp->second) = allROIs[j].label;
+
+                        CalculateEdgeEnhancement(currentInputImage_patch, std::get<4>(temp->second));
+                        if (std::get<4>(temp->second).empty())
+                        {
+                          return;
+                        }
+                        WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                          "ETA=" + std::to_string(m_edgesETA) + ";Epsilon=" + std::to_string(m_edgesEpsilon) + ";Radius=" + std::to_string(m_Radius),
+                          m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                        if (m_debug)
+                        {
+                          auto tempT2 = std::chrono::high_resolution_clock::now();
+                          m_logger.Write("Edge EnhancementFeatures for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                        }
+                      }
+                    }
+                  }
+                }
+                break;
+              }
+              case Power:
+              {
+                if (TImage::ImageDimension == 2)
+                {
+                  auto temp = m_Features.find(FeatureFamilyString[f]);
+                  if (temp != m_Features.end())
+                  {
+                    if (std::get<0>(temp->second))
+                    {
+                      /// TBD: this is only for lattice points because the computation class has not been optimized (memory usage is going into the Gb range)
+                      if (allROIs[j].latticeGridPoint)
+                      {
+                        auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                        std::get<2>(temp->second) = m_modality[i];
+                        std::get<3>(temp->second) = allROIs[j].label;
+
+                        CalculatePowerSpectrum(currentInputImage_patch, std::get<4>(temp->second));
+                        if (std::get<4>(temp->second).empty())
+                        {
+                          return;
+                        }
+                        WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second), "",
+                          m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                        if (m_debug)
+                        {
+                          auto tempT2 = std::chrono::high_resolution_clock::now();
+                          m_logger.Write("Power Spectrum Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                        }
+                      }
+                    }
+                  }
+                }
+                break;
+              }
+              case LBP:
               {
                 auto temp = m_Features.find(FeatureFamilyString[f]);
                 if (temp != m_Features.end())
                 {
                   if (std::get<0>(temp->second))
                   {
-                    /// TBD: this is only for lattice points because the computation class has not been optimized (memory usage is going into the Gb range)
-                    if (allROIs[j].latticeGridPoint)
+                    auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<3>(temp->second) = allROIs[j].label;
+
+                    CalculateLBP(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+                    if (std::get<4>(temp->second).empty())
                     {
-                      auto tempT1 = std::chrono::high_resolution_clock::now();
+                      return;
+                    }
+                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      "Neighborhood=" + std::to_string(m_neighborhood) + ";Radius=" + std::to_string(m_Radius) + ";Style=" + std::to_string(m_LBPStyle), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      std::get<2>(temp->second) = m_modality[i];
-                      std::get<3>(temp->second) = allROIs[j].label;
-
-                      CalculateFractalDimensions(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                      if (std::get<4>(temp->second).empty())
-                      {
-                        return;
-                      }
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second), "",
-                        m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
-                      if (m_debug)
-                      {
-                        auto tempT2 = std::chrono::high_resolution_clock::now();
-                        m_logger.Write("Fractal Dimension Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-                      }
+                    if (m_debug)
+                    {
+                      auto tempT2 = std::chrono::high_resolution_clock::now();
+                      m_logger.Write("GLRLM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
                     }
                   }
                 }
+                break;
               }
-              break;
-            }
-            case Gabor:
-            {
-              if (TImage::ImageDimension == 2)
-              {
-                auto temp = m_Features.find(FeatureFamilyString[f]);
-                if (temp != m_Features.end())
-                {
-                  if (std::get<0>(temp->second))
-                  {
-                    /// TBD: this is only for lattice points because the computation class has not been optimized (memory usage is going into the Gb range)
-                    if (allROIs[j].latticeGridPoint)
-                    {
-                      auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                      std::get<2>(temp->second) = m_modality[i];
-                      std::get<3>(temp->second) = allROIs[j].label;
-
-                      CalculateGaborWavelets(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                      if (std::get<4>(temp->second).empty())
-                      {
-                        return;
-                      }
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                        "Radius=" + std::to_string(m_Radius) + ";FMax=" + std::to_string(m_gaborFMax) + ";Gamma=" + std::to_string(m_gaborGamma) +
-                        ";Directions=" + std::to_string(m_Direction) + ";Level=" + std::to_string(m_gaborLevel), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
-                      if (m_debug)
-                      {
-                        auto tempT2 = std::chrono::high_resolution_clock::now();
-                        m_logger.Write("Gabor Wavelet Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-                      }
-                    }
-                  }
-                }
+              default: // undefined Feature
+                break;
               }
-              break;
-            }
-            case Laws:
-            {
-              if (TImage::ImageDimension == 2)
-              {
-                auto temp = m_Features.find(FeatureFamilyString[f]);
-                if (temp != m_Features.end())
-                {
-                  if (std::get<0>(temp->second))
-                  {
-                    /// TBD: this is only for lattice points because the computation class has not been optimized (memory usage is going into the Gb range)
-                    if (allROIs[j].latticeGridPoint)
-                    {
-                      auto tempT1 = std::chrono::high_resolution_clock::now();
+            } // end of feature iteration   
+          } // End of image iteration loop
 
-                      std::get<2>(temp->second) = m_modality[i];
-                      std::get<3>(temp->second) = allROIs[j].label;
+        } // end of allROIs iteration
 
-                      CalculateLawsMeasures(currentInputImage_patch, std::get<4>(temp->second));
-                      if (std::get<4>(temp->second).empty())
-                      {
-                        return;
-                      }
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second), "",
-                        m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+        // calculate 1st order statistics of the different lattice features
+        for (auto const &entry : m_LatticeFeatures)
+        {
+          auto currentPatientModalityROIFeatureFamilyFeature = m_patientID + "_" + entry.first + "_";
+          auto currentFeatureValues = entry.second;
 
-                      if (m_debug)
-                      {
-                        auto tempT2 = std::chrono::high_resolution_clock::now();
-                        m_logger.Write("Law Measurement Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-                      }
-                    }
-                  }
-                }
-              }
-              break;
-            }
-            case Edges:
-            {
-              if (TImage::ImageDimension == 2)
-              {
-                auto temp = m_Features.find(FeatureFamilyString[f]);
-                if (temp != m_Features.end())
-                {
-                  if (std::get<0>(temp->second))
-                  {
-                    /// TBD: this is only for lattice points because the computation class has not been optimized (memory usage is going into the Gb range)
-                    if (allROIs[j].latticeGridPoint)
-                    {
-                      auto tempT1 = std::chrono::high_resolution_clock::now();
+          cbica::Statistics< double > firstOrderCalculator(currentFeatureValues);
+          auto currentMax = cbica::to_string_precision(firstOrderCalculator.GetMaximum());
+          auto currentMin = cbica::to_string_precision(firstOrderCalculator.GetMinimum());
+          auto currentVar = cbica::to_string_precision(firstOrderCalculator.GetVariance());
+          auto currentStdDev = cbica::to_string_precision(firstOrderCalculator.GetStandardDeviation());
+          auto currentSkew = cbica::to_string_precision(firstOrderCalculator.GetSkewness());
+          auto currentKurt = cbica::to_string_precision(firstOrderCalculator.GetKurtosis());
+          auto currentMean = cbica::to_string_precision(firstOrderCalculator.GetMean());
+          auto currentMedian = cbica::to_string_precision(firstOrderCalculator.GetMedian());
 
-                      std::get<2>(temp->second) = m_modality[i];
-                      std::get<3>(temp->second) = allROIs[j].label;
+          // write the above features into m_output
+          if (m_outputVerticallyConcatenated)
+          {
+            std::ofstream myfile;
+            myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
 
-                      CalculateEdgeEnhancement(currentInputImage_patch, std::get<4>(temp->second));
-                      if (std::get<4>(temp->second).empty())
-                      {
-                        return;
-                      }
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                        "ETA=" + std::to_string(m_edgesETA) + ";Epsilon=" + std::to_string(m_edgesEpsilon) + ";Radius=" + std::to_string(m_Radius),
-                        m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+            myfile << currentPatientModalityROIFeatureFamilyFeature + "Max" +
+              "," + currentMax + "," + "\n";
+            myfile << currentPatientModalityROIFeatureFamilyFeature + "Min" +
+              "," + currentMin + "," + "\n";
+            myfile << currentPatientModalityROIFeatureFamilyFeature + "Variance" +
+              "," + currentVar + "," + "\n";
+            myfile << currentPatientModalityROIFeatureFamilyFeature + "StdDev" +
+              "," + currentStdDev + "," + "\n";
+            myfile << currentPatientModalityROIFeatureFamilyFeature + "Skewness" +
+              "," + currentSkew + "," + "\n";
+            myfile << currentPatientModalityROIFeatureFamilyFeature + "Kurtosis" +
+              "," + currentKurt + "," + "\n";
+            myfile << currentPatientModalityROIFeatureFamilyFeature + "Mean" +
+              "," + currentMean + "," + "\n";
+            myfile << currentPatientModalityROIFeatureFamilyFeature + "Median" +
+              "," + currentMedian + "," + "\n";
+          }
+          else
+          {
+            m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Max" + ",";
+            m_trainingFile_features += currentMax + ",";
+            m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Min" + ",";
+            m_trainingFile_features += currentMin + ",";
+            m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Variance" + ",";
+            m_trainingFile_features += currentVar + ",";
+            m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "StdDev" + ",";
+            m_trainingFile_features += currentStdDev + ",";
+            m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Skewness" + ",";
+            m_trainingFile_features += currentSkew + ",";
+            m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Kurtosis" + ",";
+            m_trainingFile_features += currentKurt + ",";
+            m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Mean" + ",";
+            m_trainingFile_features += currentMean + ",";
+            m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Median" + ",";
+            m_trainingFile_features += currentMedian + ",";
+          }
+        } // end of lattice features loop
 
-                      if (m_debug)
-                      {
-                        auto tempT2 = std::chrono::high_resolution_clock::now();
-                        m_logger.Write("Edge EnhancementFeatures for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-                      }
-                    }
-                  }
-                }
-              }
-              break;
-            }
-            case Power:
-            {
-              if (TImage::ImageDimension == 2)
-              {
-                auto temp = m_Features.find(FeatureFamilyString[f]);
-                if (temp != m_Features.end())
-                {
-                  if (std::get<0>(temp->second))
-                  {
-                    /// TBD: this is only for lattice points because the computation class has not been optimized (memory usage is going into the Gb range)
-                    if (allROIs[j].latticeGridPoint)
-                    {
-                      auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                      std::get<2>(temp->second) = m_modality[i];
-                      std::get<3>(temp->second) = allROIs[j].label;
-
-                      CalculatePowerSpectrum(currentInputImage_patch, std::get<4>(temp->second));
-                      if (std::get<4>(temp->second).empty())
-                      {
-                        return;
-                      }
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second), "",
-                        m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
-                      if (m_debug)
-                      {
-                        auto tempT2 = std::chrono::high_resolution_clock::now();
-                        m_logger.Write("Power Spectrum Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-                      }
-                    }
-                  }
-                }
-              }
-              break;
-            }
-            case LBP:
-            {
-              auto temp = m_Features.find(FeatureFamilyString[f]);
-              if (temp != m_Features.end())
-              {
-                if (std::get<0>(temp->second))
-                {
-                  auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                  std::get<2>(temp->second) = m_modality[i];
-                  std::get<3>(temp->second) = allROIs[j].label;
-
-                  CalculateLBP(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
-                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    "Neighborhood=" + std::to_string(m_neighborhood) + ";Radius=" + std::to_string(m_Radius) + ";Style=" + std::to_string(m_LBPStyle), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
-                  if (m_debug)
-                  {
-                    auto tempT2 = std::chrono::high_resolution_clock::now();
-                    m_logger.Write("GLRLM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-                  }
-                }
-              }
-              break;
-            }
-            default: // undefined Feature
-              break;
-            }
-          } // end of feature iteration   
-        } // End of image iteration loop
-
-      } // end of allROIs iteration
-
-      // calculate 1st order statistics of the different lattice features
-      for (auto const &entry : m_LatticeFeatures)
-      {
-        auto currentPatientModalityROIFeatureFamilyFeature = m_patientID + "_" + entry.first + "_";
-        auto currentFeatureValues = entry.second;
-
-        cbica::Statistics< double > firstOrderCalculator(currentFeatureValues);
-        auto currentMax = cbica::to_string_precision(firstOrderCalculator.GetMaximum());
-        auto currentMin = cbica::to_string_precision(firstOrderCalculator.GetMinimum());
-        auto currentVar = cbica::to_string_precision(firstOrderCalculator.GetVariance());
-        auto currentStdDev = cbica::to_string_precision(firstOrderCalculator.GetStandardDeviation());
-        auto currentSkew = cbica::to_string_precision(firstOrderCalculator.GetSkewness());
-        auto currentKurt = cbica::to_string_precision(firstOrderCalculator.GetKurtosis());
-        auto currentMean = cbica::to_string_precision(firstOrderCalculator.GetMean());
-        auto currentMedian = cbica::to_string_precision(firstOrderCalculator.GetMedian());
-
-        // write the above features into m_output
+        // write the features for training
         if (m_outputVerticallyConcatenated)
         {
+          if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
+          {
+            m_finalOutputToWrite = "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n" + m_finalOutputToWrite;
+          }
           std::ofstream myfile;
-          myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
-
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Max" +
-            "," + currentMax + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Min" +
-            "," + currentMin + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Variance" +
-            "," + currentVar + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "StdDev" +
-            "," + currentStdDev + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Skewness" +
-            "," + currentSkew + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Kurtosis" +
-            "," + currentKurt + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Mean" +
-            "," + currentMean + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Median" +
-            "," + currentMedian + "," + "\n";
+          myfile.open(m_outputFile, std::ios_base::app);
+          // check for locks in a cluster environment
+          while (!myfile.is_open())
+          {
+            cbica::sleep(100);
+            myfile.open(m_outputFile, std::ios_base::app);
+          }
+          myfile << m_finalOutputToWrite;
+#ifndef WIN32
+          myfile.flush();
+#endif
+          myfile.close();
         }
         else
         {
-          m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Max" + ",";
-          m_trainingFile_features += currentMax + ",";
-          m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Min" + ",";
-          m_trainingFile_features += currentMin + ",";
-          m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Variance" + ",";
-          m_trainingFile_features += currentVar + ",";
-          m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "StdDev" + ",";
-          m_trainingFile_features += currentStdDev + ",";
-          m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Skewness" + ",";
-          m_trainingFile_features += currentSkew + ",";
-          m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Kurtosis" + ",";
-          m_trainingFile_features += currentKurt + ",";
-          m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Mean" + ",";
-          m_trainingFile_features += currentMean + ",";
-          m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Median" + ",";
-          m_trainingFile_features += currentMedian + ",";
-        }
-      } // end of lattice features loop
+          m_trainingFile_featureNames.pop_back(); // since the last character is always a ","
+          m_trainingFile_features.pop_back(); // since the last character is always a ","
+          auto featureNamesVec = cbica::stringSplit(m_trainingFile_featureNames, ",");
+          auto featureVec = cbica::stringSplit(m_trainingFile_features, ",");
+          if (featureNamesVec.size() != featureVec.size())
+          {
+            m_logger.WriteError("Something went wrong and the featureNames (" + std::to_string(featureNamesVec.size()) +
+              ") and featureVec (" + std::to_string(featureVec.size()) + ") are not of same size.");
+            //exit(EXIT_FAILURE);
+            WriteErrorFile("featureNames and featureVector are not of the same size");
+            return;
+          }
 
-      // write the features for training
-      if (m_outputVerticallyConcatenated)
-      {
-        if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
-        {
-          m_finalOutputToWrite = "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n" + m_finalOutputToWrite;
-        }
-        std::ofstream myfile;
-        myfile.open(m_outputFile, std::ios_base::app);
-        // check for locks in a cluster environment
-        while (!myfile.is_open())
-        {
-          cbica::sleep(100);
+          bool firstRun = true;
+          if (cbica::isFile(m_outputFile))
+          {
+            firstRun = false;
+
+            //m_logger.Write("Training File detected from previous run, writing a new one.");
+            //auto temp = cbica::replaceString(cbica::getCurrentLocalDateAndTime(), ",", "");
+            //temp = cbica::replaceString(temp, ":", "");
+            //m_outputFile = m_outputPath + cbica::getFilenameBase(m_outputFile) + temp + "_forTraining.csv";
+          }
+
+          std::ofstream myfile;
           myfile.open(m_outputFile, std::ios_base::app);
-        }
-        myfile << m_finalOutputToWrite;
-#ifndef WIN32
-        myfile.flush();
-#endif
-        myfile.close();
-      }
-      else
-      {
-        m_trainingFile_featureNames.pop_back(); // since the last character is always a ","
-        m_trainingFile_features.pop_back(); // since the last character is always a ","
-        auto featureNamesVec = cbica::stringSplit(m_trainingFile_featureNames, ",");
-        auto featureVec = cbica::stringSplit(m_trainingFile_features, ",");
-        if (featureNamesVec.size() != featureVec.size())
-        {
-          m_logger.WriteError("Something went wrong and the featureNames (" + std::to_string(featureNamesVec.size()) +
-            ") and featureVec (" + std::to_string(featureVec.size()) + ") are not of same size.");
-          //exit(EXIT_FAILURE);
-          WriteErrorFile("featureNames and featureVector are not of the same size");
-          return;
-        }
+          // check for locks in a cluster environment
+          while (!myfile.is_open())
+          {
+            cbica::sleep(100);
+            myfile.open(m_outputFile, std::ios_base::app);
+          }
 
-        bool firstRun = true;
-        if (cbica::isFile(m_outputFile))
-        {
-          firstRun = false;
-
-          //m_logger.Write("Training File detected from previous run, writing a new one.");
-          //auto temp = cbica::replaceString(cbica::getCurrentLocalDateAndTime(), ",", "");
-          //temp = cbica::replaceString(temp, ":", "");
-          //m_outputFile = m_outputPath + cbica::getFilenameBase(m_outputFile) + temp + "_forTraining.csv";
-        }
-
-        std::ofstream myfile;
-        myfile.open(m_outputFile, std::ios_base::app);
-        // check for locks in a cluster environment
-        while (!myfile.is_open())
-        {
-          cbica::sleep(100);
+          if (firstRun) // write the feature names if this is the first run of the file
+          {
+            myfile << "SubjectID," + m_trainingFile_featureNames + "\n"; // the assumption is that the filename for m_outputFile is used in the same study, i.e., has same # of features
+          }
+          myfile.close();
           myfile.open(m_outputFile, std::ios_base::app);
-        }
-
-        if (firstRun) // write the feature names if this is the first run of the file
-        {
-          myfile << "SubjectID," + m_trainingFile_featureNames + "\n"; // the assumption is that the filename for m_outputFile is used in the same study, i.e., has same # of features
-        }
-        myfile.close();
-        myfile.open(m_outputFile, std::ios_base::app);
-        myfile << m_patientID + "," + m_trainingFile_features + "\n";
+          myfile << m_patientID + "," + m_trainingFile_features + "\n";
 #ifndef WIN32
-        myfile.flush();
+          myfile.flush();
 #endif
-        myfile.close();
-      }
-
-      if (m_writeFeatureMaps && !m_downscaledFeatureMaps.empty())
-      {
-        m_logger.Write("Writing Feature Maps");
-
-        for (auto const &entry : m_downscaledFeatureMaps)
-        {
-          auto currentDownscaledFileName = entry.first;
-          cbica::WriteImage< TImage >(entry.second, m_outputPath + "/" + currentDownscaledFileName + ".nii.gz");
+          myfile.close();
         }
+
+        if (m_writeFeatureMaps && !m_downscaledFeatureMaps.empty())
+        {
+          m_logger.Write("Writing Feature Maps");
+
+          for (auto const &entry : m_downscaledFeatureMaps)
+          {
+            auto currentDownscaledFileName = entry.first;
+            cbica::WriteImage< TImage >(entry.second, m_outputPath + "/" + currentDownscaledFileName + ".nii.gz");
+          }
+        }
+
+        m_algorithmDone = true;
+
+        auto t2 = std::chrono::high_resolution_clock::now();
+        std::cout << "FE took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << " milliseconds\n";
       }
-
-      m_algorithmDone = true;
-
-      auto t2 = std::chrono::high_resolution_clock::now();
-      std::cout << "FE took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << " milliseconds\n";
     }
   }
-}

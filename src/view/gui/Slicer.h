@@ -70,6 +70,11 @@ public:
   double GetMaskOpacity();
   void RemoveMask();
 
+  void ResetMap();
+
+  void AddLabelToMap(int label);
+  void ShowLabelOnMap(int label);
+
   void SetLandmarks(Landmarks* landmarks, int type);
   void SetSliceOrientation(int orientation);
   void SetSlice(int s);
@@ -124,10 +129,11 @@ public:
 
   vtkSmartPointer<vtkImageData> mImage;
   vtkSmartPointer<vtkImageData> mOverlay;
-  vtkSmartPointer<vtkImageData> mMask;
+  vtkSmartPointer<vtkImageData> mMask, mMaskOriginal; // mMaskOriginal is used only when the mask manipulation needs to happen
   vtkSmartPointer<vtkTransform> mTransform;
   Landmarks* mLandmarks;
   int mLandmarksType;
+  bool mOriginalMaskSaved = false;
 
   vtkSmartPointer<vtkImageReslice> mImageReslice;
   vtkSmartPointer<vtkCursor2D> crossCursor;

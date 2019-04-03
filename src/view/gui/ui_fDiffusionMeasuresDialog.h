@@ -109,7 +109,7 @@ public:
 		sizePolicy.setHeightForWidth(inputImageLabel->sizePolicy().hasHeightForWidth());
 		inputImageLabel->setSizePolicy(sizePolicy);
 
-		inputImageName = new QLineEdit(" ");
+		inputImageName = new QLineEdit("");
 		inputImageName->setObjectName(QString::fromUtf8("inputImageName"));
 		sizePolicy.setHeightForWidth(inputImageName->sizePolicy().hasHeightForWidth());
 		inputImageName->setSizePolicy(sizePolicy);
@@ -124,7 +124,7 @@ public:
 		sizePolicy.setHeightForWidth(inputMaskLabel->sizePolicy().hasHeightForWidth());
 		inputMaskLabel->setSizePolicy(sizePolicy);
 
-		inputMaskName = new QLineEdit(" ");
+		inputMaskName = new QLineEdit("");
 		inputMaskName->setObjectName(QString::fromUtf8("inputMaskName"));
 		sizePolicy.setHeightForWidth(inputMaskName->sizePolicy().hasHeightForWidth());
 		inputMaskName->setSizePolicy(sizePolicy);
@@ -141,7 +141,7 @@ public:
 		sizePolicy.setHeightForWidth(inputBvalLabel->sizePolicy().hasHeightForWidth());
 		inputBvalLabel->setSizePolicy(sizePolicy);
 
-		inputBvalName = new QLineEdit(" ");
+		inputBvalName = new QLineEdit("");
 		inputBvalName->setObjectName(QString::fromUtf8("inputBvalName"));
 		sizePolicy.setHeightForWidth(inputBvalName->sizePolicy().hasHeightForWidth());
 		inputBvalName->setSizePolicy(sizePolicy);
@@ -158,7 +158,7 @@ public:
 		sizePolicy.setHeightForWidth(inputBvecLabel->sizePolicy().hasHeightForWidth());
 		inputBvecLabel->setSizePolicy(sizePolicy);
 
-		inputBvecName = new QLineEdit(" ");
+		inputBvecName = new QLineEdit("");
 		inputBvecName->setObjectName(QString::fromUtf8("inputBvecName"));
 		sizePolicy.setHeightForWidth(inputBvecName->sizePolicy().hasHeightForWidth());
 		inputBvecName->setSizePolicy(sizePolicy);
@@ -215,7 +215,7 @@ public:
 		//sizePolicy.setHeightForWidth(outputImageLabel->sizePolicy().hasHeightForWidth());
 		//outputImageLabel->setSizePolicy(sizePolicy);
 
-		outputImageName = new QLineEdit(" ");
+		outputImageName = new QLineEdit("");
 		outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
 		sizePolicy.setHeightForWidth(outputImageName->sizePolicy().hasHeightForWidth());
 		outputImageName->setSizePolicy(sizePolicy);
