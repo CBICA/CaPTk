@@ -150,110 +150,109 @@ jobs:
     vmImage: 'MacOS-10.13'
 
   steps:
-    - task: CopyFiles@2
-      inputs:
-        sourceFolder: '$(Build.SourcesDirectory)'
-        targetFolder: '$(Build.ArtifactStagingDirectory)'
-        contents: '*.txt'
-    
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: drop
-
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'drop'
-        downloadPath: '$(System.ArtifactsDirectory)'
-
-
-  # - bash: |
-  #     brew install caskroom/cask/mactex make git-lfs doxygen llvm
-  #   displayName: 'Brew dependencies'
+  - bash: |
+      brew install caskroom/cask/mactex make git-lfs doxygen llvm
+    displayName: 'Brew dependencies'
   
-  # - bash: |
-  #     rm -rf history
-  #     rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-  #   displayName: 'Take the nuclear option'
+  - bash: |
+      rm -rf history
+      rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    displayName: 'Take the nuclear option'
 
-  # - bash: |
-  #     export CC=""
-  #     export CXX=""
-  #     export LDFLAGS=""
-  #     export CPPFLAGS=""
+  - bash: |
+      export CC=""
+      export CXX=""
+      export LDFLAGS=""
+      export CPPFLAGS=""
 
-  #     git lfs install && git lfs fetch --all
+      git lfs install && git lfs fetch --all
 
-  #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-  #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-  #   displayName: 'Export variables'
+      export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+      export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+    displayName: 'Export variables'
 
-  # - bash: |
-  #     mkdir bin
-  #   displayName: 'Create build directory'
+  - bash: |
+      mkdir bin
+    displayName: 'Create build directory'
   
-  # - bash: |
-  #     cd bin
+  - bash: |
+      cd bin
 
-  #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-  #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+      cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+      cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
-  #     make -j2
-  #   displayName: 'Configure and compile superbuild'
+      make -j2
+    displayName: 'Configure and compile superbuild'
 
-  # - bash: |
-  #     cd bin
+  - bash: |
+      cd bin
 
-  #     rm CMakeCache.txt
+      rm CMakeCache.txt
 
-  #     export CC=/usr/local/opt/llvm/bin/clang
-  #     export CXX=/usr/local/opt/llvm/bin/clang++
-  #     export LDFLAGS="-L/usr/local/opt/llvm/lib"
-  #     export CPPFLAGS="-L/usr/local/opt/llvm/include"
+      export CC=/usr/local/opt/llvm/bin/clang
+      export CXX=/usr/local/opt/llvm/bin/clang++
+      export LDFLAGS="-L/usr/local/opt/llvm/lib"
+      export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-  #     cmake ../
-  #     cmake ../
+      cmake ../
+      cmake ../
 
-  #     make -j2
-  #   displayName: 'Export variables for llvm then configure and compile CaPTk'
+      make -j2
+    displayName: 'Export variables for llvm then configure and compile CaPTk'
   
-  # - bash: |
-  #     cd bin 
+  - bash: |
+      cd bin 
       
-  #     make package
+      make package
 
-  #     version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-  #     pkgname="_Installer"
-  #     pkgname="$version$pkgname"
+      version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+      pkgname="_Installer"
+      pkgname="$version$pkgname"
 
-  #     pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
+      pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
-  #     productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
+      productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
 
-  #     xml='<?xml version="1.0" encoding="utf-8"?>
-  #     <installer-gui-script minSpecVersion="1">
-  #         <title>CaPTk_'"$version"'</title>
-  #         <license file="Combined.txt"></license>
-  #         <pkg-ref id="com.cbica.captk"/>
-  #         <options customize="never" require-scripts="false"/>
-  #         <choices-outline>
-  #             <line choice="default">
-  #                 <line choice="com.cbica.captk"/>
-  #             </line>
-  #         </choices-outline>
-  #         <choice id="default"/>
-  #         <choice id="com.cbica.captk" visible="false">
-  #             <pkg-ref id="com.cbica.captk"/>
-  #         </choice>
-  #         <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
-  #     </installer-gui-script>' 
+      xml='<?xml version="1.0" encoding="utf-8"?>
+      <installer-gui-script minSpecVersion="1">
+          <title>CaPTk_'"$version"'</title>
+          <license file="Combined.txt"></license>
+          <pkg-ref id="com.cbica.captk"/>
+          <options customize="never" require-scripts="false"/>
+          <choices-outline>
+              <line choice="default">
+                  <line choice="com.cbica.captk"/>
+              </line>
+          </choices-outline>
+          <choice id="default"/>
+          <choice id="com.cbica.captk" visible="false">
+              <pkg-ref id="com.cbica.captk"/>
+          </choice>
+          <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
+      </installer-gui-script>' 
 
-  #     echo $xml > "./distribution.xml"
+      echo $xml > "./distribution.xml"
 
-  #     productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
+      productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
       
-  #   displayName: 'Package CaPTk (.dmg and .pkg)'
+    displayName: 'Package CaPTk (.dmg and .pkg)'
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)/bin'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+      contents: '*Installer.pkg'
+  
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: drop
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'drop'
+      downloadPath: '$(System.ArtifactsDirectory)'
   
   
