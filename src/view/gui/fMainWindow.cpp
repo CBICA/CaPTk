@@ -8596,6 +8596,16 @@ bool fMainWindow::isMaskDefined()
   return false;
 }
 
+void fMainWindow::SetComparisonMode(bool mode)
+{
+  this->m_ComparisonMode = mode;
+}
+
+bool fMainWindow::GetComparisonMode()
+{
+  return this->m_ComparisonMode;
+}
+
 void fMainWindow::help_contextual(const std::string startPage)
 {
   mHelpDlg->setNewStartPage(startPage);

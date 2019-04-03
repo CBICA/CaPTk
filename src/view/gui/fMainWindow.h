@@ -369,6 +369,10 @@ public:
   //! Check if a valid mask is defined for the current instance of the 
   bool isMaskDefined();
 
+  //! Get/Set Comparison Mode
+  void SetComparisonMode(bool mode);
+  bool GetComparisonMode();
+
   /*
   \brief Change direction cosine of image to identity
   \param image The image whose direction is altered
@@ -1412,6 +1416,7 @@ private:
   ImageTypeShort3D::Pointer m_imgGeodesicOutNegative;
   std::map<std::string, float> m_fetalbrainfeatures;
   int m_fetalslice;
+  bool m_ComparisonMode; //! comparison mode
 
   // GeodesicTraining private variables
 	GeodesicTrainingCaPTkApp<2>* m_GeodesicTrainingCaPTkApp2D;
