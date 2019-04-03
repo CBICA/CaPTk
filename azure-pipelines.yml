@@ -250,7 +250,7 @@ jobs:
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
-      contents: '**/Installer.pkg'
+      contents: '**/*Installer.pkg'
   
   - task: PublishBuildArtifacts@1
     inputs:
