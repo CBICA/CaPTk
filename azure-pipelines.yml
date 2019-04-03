@@ -99,47 +99,43 @@ jobs:
       ls -a
       ls ./qt/
     displayName: 'Check qt'
-  
-  # Set up environment variables for packager
+
+  # Build a package
   - bash: |
       export PATH=./bin/qt/5.12.1/gcc_64/bin:$PATH
       export PATH=./bin/qt/5.12.1/gcc_64/libexec:$PATH
       export PATH=./bin/qt/5.12.1/gcc_64/lib/cmake/Qt5:$PATH
-    displayName: 'Set up environment variables for packager'
 
-  # Build a package
-  - bash: |
       export PKG_FAST_MODE=1
       ./scripts/captk-pkg
-    displayName: 'Build a package'
+    displayName: 'Set up environment variables for packager and build a package'
 
-- job: 'TestWindows'
-  displayName: "End-to-end Windows build"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
+# - job: 'TestWindows'
+#   displayName: "End-to-end Windows build"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 300
 
-  pool:
-    vmImage: 'Windows-2019'
+#   pool:
+#     vmImage: 'Windows-2019'
 
-  steps:
+#   steps:
   
-  - bash: |
-      rm -rf data
-      rm -rf history
-      rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-    displayName: 'Take the nuclear option'
+#   - bash: |
+#       rm -rf history
+#       rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+#     displayName: 'Take the nuclear option'
 
-  - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-      cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
-      cmake --build . --target ALL_BUILD --config Release
-    displayName: 'Configure and compile superbuild'
+#   - script: |
+#       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+#       cmake --build . --target ALL_BUILD --config Release
+#     displayName: 'Configure and compile superbuild'
 
-  - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-      cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
-      cmake --build . --target ALL_BUILD --config Release
-    displayName: 'Configure and compile CaPTk'
+#   - script: |
+#       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+#       cmake --build . --target ALL_BUILD --config Release
+#     displayName: 'Configure and compile CaPTk'
 
 - job: 'TestMacOS'
   displayName: "End-to-end MacOS build & package"
@@ -239,9 +235,9 @@ jobs:
 
   - task: CopyFiles@2
     inputs:
-      sourceFolder: '$(Build.SourcesDirectory)/bin'
+      sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
-      contents: '*Installer.pkg'
+      contents: '**/Installer.pkg'
   
   - task: PublishBuildArtifacts@1
     inputs:
