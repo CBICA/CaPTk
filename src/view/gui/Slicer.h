@@ -88,6 +88,10 @@ public:
   void Render();
   void ResetCamera();
 
+  //! Get/Set Comparison mode
+  void SetComparisonMode(bool mode);
+  bool GetComparisonMode();
+
   void SetInitPosition();
   void SetCurrentPosition(double x, double y, double z);
   double* GetCurrentPosition() {
@@ -175,6 +179,8 @@ public:
   vtkSmartPointer<vtkBorderWidget> borderWidget;
   vtkBorderCallback * borderCallback;
 
+  //!slicer knows if the viewing mode is comparison mode or not
+  bool m_ComparisonMode; 
 };
 
 

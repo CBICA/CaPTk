@@ -1228,3 +1228,13 @@ void Slicer::RemoveOverlay()
     mOverlayMapper = NULL;
   }
 }
+
+void Slicer::SetComparisonMode(bool mode)
+{
+  this->m_ComparisonMode = mode;
+}
+
+bool Slicer::GetComparisonMode()
+{
+  return this->m_ComparisonMode;
+}
