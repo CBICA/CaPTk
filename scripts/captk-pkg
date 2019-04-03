@@ -82,6 +82,9 @@ RUN_FIXES () {
   cd ./appdir/usr/
   USR_DIR=`pwd`
 
+  echo "[:] Adding proper qmake to PATH..."
+  export PATH=$PATH:`pwd`/bin/qt/5.12.1/bin
+
   echo "[:] Running Linux Fixes..."
 
   # Fix 1: LIBRA is awful on linux, and it only gets worse from here
