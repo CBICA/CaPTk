@@ -124,23 +124,23 @@ jobs:
       ./scripts/captk-pkg
     displayName: 'Set up environment variables for packager and build a package'
   
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: '$(Build.SourcesDirectory)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
-      contents: '**/*Installer*'
+  #- task: CopyFiles@2
+   # inputs:
+ #     sourceFolder: '$(Build.SourcesDirectory)'
+ #     targetFolder: '$(Build.ArtifactStagingDirectory)'
+ #     contents: '**/*Installer*'
   
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: drop
+ # - task: PublishBuildArtifacts@1
+ #   inputs:
+ #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+ #     artifactName: drop
 
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: 'drop'
-      downloadPath: '$(System.ArtifactsDirectory)'
+#  - task: DownloadBuildArtifacts@0
+#    inputs:
+#      buildType: 'current'
+#      downloadType: 'single'
+#      artifactName: 'drop'
+#      downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'TestWindows'
   displayName: "End-to-end Windows build"
