@@ -84,7 +84,7 @@ jobs:
       cd bin
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j2
-    displayName: 'Configure and compile superbuild'
+    displayName: 'Configure and compile Superbuild'
 
   # Configure and build CaPTk
   - bash: |
@@ -145,7 +145,7 @@ jobs:
   #    downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'TestWindows'
-  displayName: "End-to-end Windows build"
+  displayName: "End-to-end Windows build & package"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
@@ -163,13 +163,19 @@ jobs:
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       cmake --build . --target ALL_BUILD --config Release
-    displayName: 'Configure and compile superbuild'
+    displayName: 'Configure and compile Superbuild'
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       cmake --build . --target ALL_BUILD --config Release
     displayName: 'Configure and compile CaPTk'
+
+  - script: |
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+      cmake --build . --target PACKAGE --config Release
+    displayName: 'Package CaPTk'
 
   #- task: CopyFiles@2
   #  inputs:
@@ -230,7 +236,7 @@ jobs:
       cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
       make -j2
-    displayName: 'Configure and compile superbuild'
+    displayName: 'Configure and compile Superbuild'
 
   - bash: |
       cd bin
