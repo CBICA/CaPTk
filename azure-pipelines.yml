@@ -35,7 +35,7 @@ jobs:
 
   # Dependency manager
   - bash: |
-      sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix
+      sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0
     displayName: 'Install dependencies from Aptitude'
 
   # Debug info before main scripts start
@@ -251,7 +251,7 @@ jobs:
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
-      contents: 'bin/*Installer.pkg'
+      contents: '*.txt'
   
   - task: PublishBuildArtifacts@1
     inputs:
