@@ -123,6 +123,24 @@ jobs:
       which qmake
       ./scripts/captk-pkg
     displayName: 'Set up environment variables for packager and build a package'
+  
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+      contents: '**/*_Installer.bin'
+  
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: drop
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'drop'
+      downloadPath: '$(System.ArtifactsDirectory)'
 
 # - job: 'TestWindows'
 #   displayName: "End-to-end Windows build"
@@ -245,7 +263,7 @@ jobs:
 
       productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
       
-      mv *Installer.pgk ../
+      mv *Installer.pkg ../
       rm -rf *
     displayName: 'Package CaPTk (.dmg and .pkg)'
 
@@ -253,7 +271,7 @@ jobs:
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
-      contents: '**/*.pkg'
+      contents: '*.pkg'
   
   - task: PublishBuildArtifacts@1
     inputs:
