@@ -20,114 +20,117 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-  # # Checkout validator.
-  # # - bash: |
-  # #     set -x
-  # #     if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
-  # #       git checkout $(System.PullRequest.SourceCommitId)
-  # #     fi
-  # #   displayName: 'Checkout pull request HEAD'
-
-  # # Pull LFS
+  # Checkout validator.
   # - bash: |
-  #     git lfs pull
-  #   displayName: 'Pull LFS'
+  #     set -x
+  #     if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
+  #       git checkout $(System.PullRequest.SourceCommitId)
+  #     fi
+  #   displayName: 'Checkout pull request HEAD'
 
-  # # Dependency manager
+  # Pull LFS
+  - bash: |
+      git lfs pull
+    displayName: 'Pull LFS'
+
+  # Dependency manager
+  - bash: |
+      sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0
+    displayName: 'Install dependencies from Aptitude'
+
+  # Debug info before main scripts start
   # - bash: |
-  #     sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0
-  #   displayName: 'Install dependencies from Aptitude'
+  #     ls -al
+  #   displayName: 'Get debugging information'
 
-  # # Debug info before main scripts start
-  # # - bash: |
-  # #     ls -al
-  # #   displayName: 'Get debugging information'
+  # Create build dir
+  - bash: |
+      mkdir -p bin
+    displayName: 'Create build directory'
 
-  # # Create build dir
+  # This is here in case if either Qt or External apps needs to be overridden
   # - bash: |
-  #     mkdir -p bin
-  #   displayName: 'Create build directory'
+  #       mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
+  #       mv ./binaries/externalApps.zip ./bin/
+  #       cd bin
+  #       unzip externalApps.zip &> /dev/null
+  #   displayName: 'Install Qt & external applications'
 
-  # # This is here in case if either Qt or External apps needs to be overridden
-  # # - bash: |
-  # #       mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
-  # #       mv ./binaries/externalApps.zip ./bin/
-  # #       cd bin
-  # #       unzip externalApps.zip &> /dev/null
-  # #   displayName: 'Install Qt & external applications'
+  # Set up Qt from Binaries
+  - bash: |
+      mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
+      echo "Moved qt binaries"
+    displayName: 'Set up Qt on Linux'
 
-  # # Set up Qt from Binaries
-  # - bash: |
-  #     mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
-  #     echo "Moved qt binaries"
-  #   displayName: 'Set up Qt on Linux'
+  # Create as much free memory as possible
 
-  # # Create as much free memory as possible
+  # Nuclear Option #1
+  - bash: |
+      rm -rf binaries/_*.zip
+      # rm -rf data
+      rm -rf history
+      rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    displayName: 'Take the nuclear option'
 
-  # # Nuclear Option #1
-  # - bash: |
-  #     rm -rf binaries/_*.zip
-  #     # rm -rf data
-  #     rm -rf history
-  #     rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-  #   displayName: 'Take the nuclear option'
-
-  # # Create fake test dirs. Can be removed.
-  # # - bash: |   
-  # #     cd bin
-  # #     mkdir -p testing
-  # #     mkdir -p ./testing/TestData
-  # #   displayName: 'Create phony tests'
-
-  # # Configure and build superbuild
-  # - bash: |
+  # Create fake test dirs. Can be removed.
+  # - bash: |   
   #     cd bin
-  #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
-  #     make -j2
-  #   displayName: 'Configure and compile superbuild'
+  #     mkdir -p testing
+  #     mkdir -p ./testing/TestData
+  #   displayName: 'Create phony tests'
 
-  # # Configure and build CaPTk
-  # - bash: |
-  #     cd bin
-  #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
-  #     make -j2
-  #   displayName: 'Configure and compile CaPTk'
+  # Configure and build superbuild
+  - bash: |
+      cd bin
+      cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
+      make -j2
+    displayName: 'Configure and compile superbuild'
 
-  # # Check qt
-  # - bash: |
-  #     cd bin
-  #     ls -a
-  #     ls ./qt/
-  #   displayName: 'Check qt'
+  # Configure and build CaPTk
+  - bash: |
+      cd bin
+      cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
+      make -j2
+    displayName: 'Configure and compile CaPTk'
+
+  # Check qt
+  - bash: |
+      cd bin
+      ls -a
+      ls ./qt/
+    displayName: 'Check qt'
   
-  # ## Set up environment variables for packager
-  # #- bash: |
-  # #    export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
-  # #    export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
-  # #    export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-  # #  displayName: 'Set up environment variables for packager'
-  # #
-  # #- bash: |
-  # #    echo $PATH
-  # #    echo $CMAKE_PREFIX_PATH
-  # #  displayName: 'Checking the paths'
+  ## Set up environment variables for packager
+  #- bash: |
+  #    export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
+  #    export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+  #    export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+  #  displayName: 'Set up environment variables for packager'
+  #
+  #- bash: |
+  #    echo $PATH
+  #    echo $CMAKE_PREFIX_PATH
+  #  displayName: 'Checking the paths'
     
-  # # Build a package
-  # - bash: |
-  #     export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
-  #     export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
-  #     export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-  #     export PKG_FAST_MODE=1
-  #     ./scripts/captk-pkg
-  #     find ./ -name "*Installer*"
+  # Build a package
+  - bash: |
+      export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
+      export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+      export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+      export PKG_FAST_MODE=1
+      ./scripts/captk-pkg
+      find ./ -name "*Installer*"
 
-  #   displayName: 'Set up environment variables for packager and build a package'
+      shopt -s globstar
+      mv **/*.bin .
+
+    displayName: 'Set up environment variables for packager and build a package'
   
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
-      contents: '**/*.cpp'
+      contents: '*.bin'
   
   - task: PublishBuildArtifacts@1
     inputs:
