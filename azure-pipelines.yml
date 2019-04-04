@@ -126,23 +126,23 @@ jobs:
 
     displayName: 'Set up environment variables for packager and build a package'
   
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: '$(Build.SourcesDirectory)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
-      contents: '*.bin'
+  #- task: CopyFiles@2
+  #  inputs:
+  #    sourceFolder: '$(Build.SourcesDirectory)'
+  #    targetFolder: '$(Build.ArtifactStagingDirectory)'
+  #    contents: '*.bin'
   
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: drop
+  #- task: PublishBuildArtifacts@1
+  #  inputs:
+  #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+  #    artifactName: drop
 
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: 'drop'
-      downloadPath: '$(System.ArtifactsDirectory)'
+  #- task: DownloadBuildArtifacts@0
+  #  inputs:
+  #    buildType: 'current'
+  #    downloadType: 'single'
+  #    artifactName: 'drop'
+  #    downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'TestWindows'
   displayName: "End-to-end Windows build"
@@ -171,23 +171,23 @@ jobs:
       cmake --build . --target ALL_BUILD --config Release
     displayName: 'Configure and compile CaPTk'
 
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: '$(Build.SourcesDirectory)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
-      contents: '**/*.cpp'
+  #- task: CopyFiles@2
+  #  inputs:
+  #    sourceFolder: '$(Build.SourcesDirectory)'
+  #    targetFolder: '$(Build.ArtifactStagingDirectory)'
+  #    contents: '**/*.cpp'
   
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: drop
+  #- task: PublishBuildArtifacts@1
+  #  inputs:
+  #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+  #    artifactName: drop
 
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: 'drop'
-      downloadPath: '$(System.ArtifactsDirectory)'
+  #- task: DownloadBuildArtifacts@0
+  #  inputs:
+  #    buildType: 'current'
+  #    downloadType: 'single'
+  #    artifactName: 'drop'
+  #    downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'TestMacOS'
   displayName: "End-to-end MacOS build & package"
