@@ -126,10 +126,11 @@ jobs:
   
   - task: CopyFiles@2
     inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
       overWrite: true
-      contents: '/home/**/*_Installer*'
+      contents: '(CaPTk_1.6.2_Installer.bin | /home/**/CaPTk_1.6.2_Installer.bin)'
   
   - task: PublishBuildArtifacts@1
     inputs:
