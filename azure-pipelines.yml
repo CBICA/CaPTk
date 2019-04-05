@@ -11,7 +11,7 @@ trigger:
 
 jobs:
 
-- job: 'TestXenial'
+- job: 'XenialBuild'
   displayName: "End-to-end Xenial build"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
@@ -144,7 +144,7 @@ jobs:
   #    artifactName: 'drop'
   #    downloadPath: '$(System.ArtifactsDirectory)'
 
-- job: 'TestWindows'
+- job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
@@ -165,11 +165,11 @@ jobs:
       cmake --build . --target ALL_BUILD --config Release
     displayName: 'Configure and compile Superbuild'
 
-  - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-      cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
-      cmake --build . --target ALL_BUILD --config Release
-    displayName: 'Configure and compile CaPTk'
+  #- script: |
+  #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+  #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+  #    cmake --build . --target ALL_BUILD --config Release
+  #  displayName: 'Configure and compile CaPTk'
 
   #- script: |
   #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
@@ -195,7 +195,7 @@ jobs:
   #    artifactName: 'drop'
   #    downloadPath: '$(System.ArtifactsDirectory)'
 
-- job: 'TestMacOS'
+- job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
