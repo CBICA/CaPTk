@@ -119,10 +119,10 @@ jobs:
       export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
       export PKG_FAST_MODE=1
       ./scripts/captk-pkg
-      find ./ -name "*Installer*"
-
-      shopt -s globstar
-      mv **/*.bin .
+      #find ./ -name "*Installer*"
+      #
+      #shopt -s globstar
+      #mv **/*.bin .
 
     displayName: 'Set up environment variables for packager and build a package'
   
@@ -161,21 +161,21 @@ jobs:
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-      cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+      cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       cmake --build . --target ALL_BUILD --config Release
     displayName: 'Configure and compile Superbuild'
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-      cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+      cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       cmake --build . --target ALL_BUILD --config Release
     displayName: 'Configure and compile CaPTk'
 
-  - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-      cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
-      cmake --build . --target PACKAGE --config Release
-    displayName: 'Package CaPTk'
+  #- script: |
+  #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+  #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+  #    cmake --build . --target PACKAGE --config Release
+  #  displayName: 'Package CaPTk'
 
   #- task: CopyFiles@2
   #  inputs:
