@@ -124,7 +124,6 @@ jobs:
   
   - task: CopyFiles@2
     inputs:
-      sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
       overWrite: true
