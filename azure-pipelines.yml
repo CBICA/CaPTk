@@ -126,19 +126,19 @@ jobs:
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
-      contents: '*_Installer.bin'
+      contents: 'CaPTk*'
   
-  #- task: PublishBuildArtifacts@1
-  #  inputs:
-  #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-  #    artifactName: drop
+  - task: PublishBuildArtifacts@1
+   inputs:
+     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+     artifactName: drop
 
-  #- task: DownloadBuildArtifacts@0
-  #  inputs:
-  #    buildType: 'current'
-  #    downloadType: 'single'
-  #    artifactName: 'drop'
-  #    downloadPath: '$(System.ArtifactsDirectory)'
+  - task: DownloadBuildArtifacts@0
+   inputs:
+     buildType: 'current'
+     downloadType: 'single'
+     artifactName: 'drop'
+     downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'TestWindows'
   displayName: "End-to-end Windows build & package"
