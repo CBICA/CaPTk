@@ -122,6 +122,7 @@ jobs:
       find ./ -name "*Installer*"
 
       shopt -s globstar
+      rm -rf *Installer*
       cp -n **/*Installer* .
 
     displayName: 'Set up environment variables for packager and build a package'
