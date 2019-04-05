@@ -120,15 +120,16 @@ jobs:
       export PKG_FAST_MODE=1
       ./scripts/captk-pkg
 
+      ls
+
     displayName: 'Set up environment variables for packager and build a package'
   
   - task: CopyFiles@2
     inputs:
-      sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
       overWrite: true
-      contents: '../../../../../../../../../../**/*_Installer*'
+      contents: '/home/**/*_Installer*'
   
   - task: PublishBuildArtifacts@1
     inputs:
