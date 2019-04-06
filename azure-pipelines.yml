@@ -120,8 +120,7 @@ jobs:
       export PKG_FAST_MODE=1
       ./scripts/captk-pkg
 
-      ls
-
+      rm !(CaPTk*Installer.bin) -rf * 
     displayName: 'Set up environment variables for packager and build a package'
   
   - task: CopyFiles@2
@@ -130,7 +129,7 @@ jobs:
       targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
       overWrite: true
-      contents: '(CaPTk_1.6.2_Installer.bin | /home/**/CaPTk_1.6.2_Installer.bin)'
+      contents: 'CaPTk_1.6.2_Installer.bin'
   
   - task: PublishBuildArtifacts@1
     inputs:
@@ -144,32 +143,32 @@ jobs:
       artifactName: 'drop'
       downloadPath: '$(System.ArtifactsDirectory)'
 
-- job: 'TestWindows'
-  displayName: "End-to-end Windows build & package"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
+# - job: 'TestWindows'
+#   displayName: "End-to-end Windows build & package"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 300
 
-  pool:
-    vmImage: 'vs2017-win2016'
+#   pool:
+#     vmImage: 'vs2017-win2016'
 
-  steps:
+#   steps:
   
-  - bash: |
-      rm -rf history
-      rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-    displayName: 'Take the nuclear option'
+#   - bash: |
+#       rm -rf history
+#       rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+#     displayName: 'Take the nuclear option'
 
-  - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-      cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
-      cmake --build . --target ALL_BUILD --config Release
-    displayName: 'Configure and compile Superbuild'
+#   - script: |
+#       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#       cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+#       cmake --build . --target ALL_BUILD --config Release
+#     displayName: 'Configure and compile Superbuild'
 
-  - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-      cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
-      cmake --build . --target ALL_BUILD --config Release
-    displayName: 'Configure and compile CaPTk'
+#   - script: |
+#       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#       cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+#       cmake --build . --target ALL_BUILD --config Release
+#     displayName: 'Configure and compile CaPTk'
 
   #- script: |
   #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
