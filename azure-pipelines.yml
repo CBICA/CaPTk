@@ -122,6 +122,10 @@ jobs:
 
       shopt -s extglob
       rm -rf *.!(CaPTk*Installer.bin)
+
+      echo $(Build.SourcesDirectory)
+      pwd
+      ls
     displayName: 'Set up environment variables for packager and build a package'
   
   - task: CopyFiles@2
