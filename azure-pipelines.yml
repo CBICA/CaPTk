@@ -163,14 +163,14 @@ jobs:
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-      cmake --build . --target ALL_BUILD --config Release
+      cmake --build . --target ALL_BUILD --config Debug
     displayName: 'Configure and compile Superbuild'
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-      cmake --build . --target ALL_BUILD --config Release
+      cmake --build . --target ALL_BUILD --config Debug
     displayName: 'Configure and compile CaPTk'
 
   #- script: |
