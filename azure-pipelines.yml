@@ -121,10 +121,7 @@ jobs:
       ./scripts/captk-pkg
 
       find . -type f -not -name 'CaPTk*Installer.bin' -print0 | xargs -0 rm --
-
-      echo $(Build.SourcesDirectory)
-      pwd
-      ls
+      rm -rf bin
     displayName: 'Set up environment variables for packager and build a package'
   
   - task: CopyFiles@2
