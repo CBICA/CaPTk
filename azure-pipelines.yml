@@ -121,7 +121,7 @@ jobs:
       ./scripts/captk-pkg
 
       shopt -s extglob
-      rm -rf *.!(CaPTk*Installer.bin)
+      rm !(CaPTk*Installer.bin)
 
       echo $(Build.SourcesDirectory)
       pwd
