@@ -120,7 +120,8 @@ jobs:
       export PKG_FAST_MODE=1
       ./scripts/captk-pkg
 
-      rm !(CaPTk*Installer.bin) -rf * 
+      shopt -s extglob
+      rm -rf *.!(CaPTk*Installer.bin)
     displayName: 'Set up environment variables for packager and build a package'
   
   - task: CopyFiles@2
