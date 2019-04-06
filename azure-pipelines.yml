@@ -120,8 +120,7 @@ jobs:
       export PKG_FAST_MODE=1
       ./scripts/captk-pkg
 
-      shopt -s extglob
-      rm !(CaPTk*Installer.bin)
+      find . -type f -not -name 'CaPTk*Installer.bin' -print0 | xargs -0 rm --
 
       echo $(Build.SourcesDirectory)
       pwd
