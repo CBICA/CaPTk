@@ -120,8 +120,15 @@ jobs:
       export PKG_FAST_MODE=1
       ./scripts/captk-pkg
 
-      find . -type f -not -name 'CaPTk*Installer.bin' -print0 | xargs -0 rm --
       rm -rf bin
+      rm -rf src
+      rm -rf binaries
+      rm -rf data
+      rm -rf docs*
+      rm -rf regression
+      rm -rf scripts
+      rm -rf testing
+      ls
     displayName: 'Set up environment variables for packager and build a package'
   
   - task: CopyFiles@2
