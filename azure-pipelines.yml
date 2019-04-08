@@ -125,7 +125,7 @@ jobs:
       targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
       overWrite: true
-      contents: 'CaPTk_1.6.2_Installer.bin'
+      contents: 'CaPTk_*_Installer.bin'
   
   - task: PublishBuildArtifacts@1
     inputs:
@@ -296,7 +296,7 @@ jobs:
       targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
       overWrite: true
-      contents: '*.pkg'
+      contents: 'CaPTk_*_Installer.pkg'
   
   - task: PublishBuildArtifacts@1
     inputs:
