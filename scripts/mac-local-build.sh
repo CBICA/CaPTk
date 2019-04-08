@@ -4,26 +4,26 @@
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
-rm -rf *
+# rm -rf *
 
-export CC=""
-export CXX=""
-export LDFLAGS=""
-export CPPFLAGS=""
+# export CC=""
+# export CXX=""
+# export LDFLAGS=""
+# export CPPFLAGS=""
 
-git lfs install && git lfs fetch --all
+# git lfs install && git lfs fetch --all
 
-### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
-echo "Run Dependency Manager"
-echo $CC
+# ### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
+# echo "Run Dependency Manager"
+# echo $CC
 
-export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+# export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+# export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
-cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
+# cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
+# cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
 
-make -j 2
+# make -j 2
 
 rm CMakeCache.txt
 
@@ -43,6 +43,8 @@ rm -rf _CPack*
 make package
 
 version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+pkgname="_Installer"
+pkgname="$version$pkgname"
 
 pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
@@ -68,7 +70,7 @@ xml='<?xml version="1.0" encoding="utf-8"?>
 
 echo $xml > "./distribution.xml"
 
-productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./Install_CaPTk_$version.pkg
+productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
 }
 
