@@ -183,13 +183,13 @@ jobs:
   #- task: PublishBuildArtifacts@1
   #  inputs:
   #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-  #    artifactName: drop
+  #    artifactName: 'installer_Windows'
 
   #- task: DownloadBuildArtifacts@0
   #  inputs:
   #    buildType: 'current'
   #    downloadType: 'single'
-  #    artifactName: 'drop'
+  #    artifactName: 'installer_Windows'
   #    downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'MacOSBuild'
