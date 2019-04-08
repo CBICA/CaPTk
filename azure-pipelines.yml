@@ -122,14 +122,14 @@ jobs:
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)/linux'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
       overWrite: true
       contents: 'CaPTk_*_Installer.bin'
   
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)/linux'
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: 'installer_Linux'
 
   - task: DownloadBuildArtifacts@0
@@ -137,7 +137,7 @@ jobs:
       buildType: 'current'
       downloadType: 'single'
       artifactName: 'installer_Linux'
-      downloadPath: '$(System.ArtifactsDirectory)/linux'
+      downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
@@ -177,12 +177,12 @@ jobs:
   #- task: CopyFiles@2
   #  inputs:
   #    sourceFolder: '$(Build.SourcesDirectory)'
-  #    targetFolder: '$(Build.ArtifactStagingDirectory)/windows'
+  #    targetFolder: '$(Build.ArtifactStagingDirectory)'
   #    contents: '**/*.cpp'
   
   #- task: PublishBuildArtifacts@1
   #  inputs:
-  #    pathtoPublish: '$(Build.ArtifactStagingDirectory)/windows'
+  #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
   #    artifactName: 'installer_Windows'
 
   #- task: DownloadBuildArtifacts@0
@@ -190,7 +190,7 @@ jobs:
   #    buildType: 'current'
   #    downloadType: 'single'
   #    artifactName: 'installer_Windows'
-  #    downloadPath: '$(System.ArtifactsDirectory)/windows'
+  #    downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
@@ -293,14 +293,14 @@ jobs:
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)/macos'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
       overWrite: true
       contents: 'CaPTk_*_Installer.pkg'
   
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)/macos'
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: 'installer_macOS'
 
   - task: DownloadBuildArtifacts@0
@@ -308,6 +308,6 @@ jobs:
       buildType: 'current'
       downloadType: 'single'
       artifactName: 'installer_macOS'
-      downloadPath: '$(System.ArtifactsDirectory)/macos'
+      downloadPath: '$(System.ArtifactsDirectory)'
   
   
