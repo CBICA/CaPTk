@@ -130,13 +130,13 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: drop
+      artifactName: 'installer_Linux'
 
   - task: DownloadBuildArtifacts@0
     inputs:
       buildType: 'current'
       downloadType: 'single'
-      artifactName: 'drop'
+      artifactName: 'installer_Linux'
       downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'WindowsBuild'
@@ -301,13 +301,13 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: drop
+      artifactName: 'installer_macOS'
 
   - task: DownloadBuildArtifacts@0
     inputs:
       buildType: 'current'
       downloadType: 'single'
-      artifactName: 'drop'
+      artifactName: 'installer_macOS'
       downloadPath: '$(System.ArtifactsDirectory)'
   
   
