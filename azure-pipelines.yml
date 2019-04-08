@@ -99,18 +99,6 @@ jobs:
       ls -a
       ls ./qt/
     displayName: 'Check qt'
-  
-  ## Set up environment variables for packager
-  #- bash: |
-  #    export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
-  #    export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
-  #    export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-  #  displayName: 'Set up environment variables for packager'
-  #
-  #- bash: |
-  #    echo $PATH
-  #    echo $CMAKE_PREFIX_PATH
-  #  displayName: 'Checking the paths'
     
   # Build a package
   - bash: |
@@ -119,30 +107,37 @@ jobs:
       export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
       export PKG_FAST_MODE=1
       ./scripts/captk-pkg
-      #find ./ -name "*Installer*"
-      #
-      #shopt -s globstar
-      #mv **/*.bin .
 
+      rm -rf bin
+      rm -rf src
+      rm -rf binaries
+      rm -rf data
+      rm -rf docs*
+      rm -rf regression
+      rm -rf scripts
+      rm -rf testing
+      ls
     displayName: 'Set up environment variables for packager and build a package'
   
-  #- task: CopyFiles@2
-  #  inputs:
-  #    sourceFolder: '$(Build.SourcesDirectory)'
-  #    targetFolder: '$(Build.ArtifactStagingDirectory)'
-  #    contents: '*.bin'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+      cleanTargetFolder: true
+      overWrite: true
+      contents: 'CaPTk_1.6.2_Installer.bin'
   
-  #- task: PublishBuildArtifacts@1
-  #  inputs:
-  #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-  #    artifactName: drop
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: drop
 
-  #- task: DownloadBuildArtifacts@0
-  #  inputs:
-  #    buildType: 'current'
-  #    downloadType: 'single'
-  #    artifactName: 'drop'
-  #    downloadPath: '$(System.ArtifactsDirectory)'
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'drop'
+      downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
@@ -163,14 +158,14 @@ jobs:
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-      cmake --build . --target ALL_BUILD --config Release
+      cmake --build . --target ALL_BUILD --config Debug
     displayName: 'Configure and compile Superbuild'
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
       setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-      cmake --build . --target ALL_BUILD --config Release
+      cmake --build . --target ALL_BUILD --config Debug
     displayName: 'Configure and compile CaPTk'
 
   #- script: |
@@ -299,6 +294,8 @@ jobs:
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
+      cleanTargetFolder: true
+      overWrite: true
       contents: '*.pkg'
   
   - task: PublishBuildArtifacts@1
