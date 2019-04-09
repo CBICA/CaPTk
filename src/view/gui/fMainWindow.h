@@ -767,7 +767,7 @@ signals:
   /**
   \brief Call the Deep Medic Segmentation dialog
   */
-  void CallDeepMedicSegmentation(const std::string outputDirectory);
+  void CallDeepMedicSegmentation(const std::string modelDirectory, const std::string outputDirectory);
 
   /**
   \brief Call Histogram Matching module of ITK
