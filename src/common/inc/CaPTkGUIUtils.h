@@ -216,7 +216,7 @@ inline std::string getApplicationPath(std::string appName)
 
   auto appName_wrap = appName;
 
-  if (appName_wrap.find("libra") != std::string::npos)
+  if ((appName_wrap.find("libra") != std::string::npos) || (appName_wrap.find("itksnap") != std::string::npos))
   {
 #if WIN32
     winExt = ".bat";
@@ -237,13 +237,6 @@ inline std::string getApplicationPath(std::string appName)
     winExt = ".py";
 #endif
   }
-  else if (appName_wrap.find("deepMedicRun") != std::string::npos)
-  {
-    appName_wrap = "deepMedicRun";
-#ifndef _WIN32
-    winExt = ".py";
-#endif
-  }
 
 #ifdef CAPTK_PACKAGE_PROJECT
 #ifndef __APPLE__
@@ -257,13 +250,14 @@ inline std::string getApplicationPath(std::string appName)
     return captk_currentApplicationPath + appName_wrap + winExt;
   }
   auto individualAppDir = cbica::normPath(captk_currentApplicationPath + "../../src/applications/individualApps/" + appName + "/");
-  if (appName_wrap.find("itksnap") != std::string::npos)
+  if (cbica::isFile(individualAppDir + "/" + appName_wrap + winExt))
   {
-    return individualAppDir + "/bin/itksnap" + winExt;
+    return individualAppDir + "/" + appName_wrap + winExt;
   }
   else
   {
-    return individualAppDir + "/" + appName_wrap + winExt;
+    ShowErrorMessage("Specified application was not found, please check");
+    return "";
   }
 #endif 
 }
