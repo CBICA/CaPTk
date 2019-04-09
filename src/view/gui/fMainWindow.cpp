@@ -2911,6 +2911,47 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     else
     {
+      auto maskInfo = cbica::ImageInfo(maskFileName);
+      if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) && (maskInfo.GetImageDimensions() == 2))
+      {
+        // this is actually a 2D image which has been loaded in CaPTk as a pseudo-3D image
+        auto origin_image = mSlicerManagers[0]->mOrigin;
+        auto spacings_image = mSlicerManagers[0]->mITKImage->GetSpacing();
+        auto size_image = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
+
+        auto origin_mask = maskInfo.GetImageOrigins();
+        auto spacings_mask = maskInfo.GetImageSpacings();
+        auto size_mask = maskInfo.GetImageSize();
+        //ImageType::DirectionType directions_image;
+        //directions_image[0][0] = mSlicerManagers[0]->mDirection(0, 0);
+        //directions_image[0][1] = mSlicerManagers[0]->mDirection(0, 1);
+        //directions_image[0][2] = mSlicerManagers[0]->mDirection(0, 2);
+        //directions_image[1][0] = mSlicerManagers[0]->mDirection(1, 0);
+        //directions_image[1][1] = mSlicerManagers[0]->mDirection(1, 1);
+        //directions_image[1][2] = mSlicerManagers[0]->mDirection(1, 2);
+        //directions_image[2][0] = mSlicerManagers[0]->mDirection(2, 0);
+        //directions_image[2][1] = mSlicerManagers[0]->mDirection(2, 1);
+        //directions_image[2][2] = mSlicerManagers[0]->mDirection(2, 2);
+        for (size_t i = 0; i < 2; i++)
+        {
+          if (origin_image[i] != origin_mask[i])
+          {
+            ShowErrorMessage("The origins of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+          if (spacings_image[i] != spacings_mask[i])
+          {
+            ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+          if (size_image[i] != size_mask[i])
+          {
+            ShowErrorMessage("The sizes of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+        }
+        ConversionFrom2Dto3D(maskFileName, false); // all sanity checks passed; load the mask 
+      }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
         cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
