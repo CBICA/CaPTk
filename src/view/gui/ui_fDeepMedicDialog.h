@@ -27,10 +27,14 @@ public:
   QGridLayout *gridLayout;
   QVBoxLayout * verticalLayout;
 
+  QGroupBox *modelGroupBox;
+  QGridLayout *modelGridLayout;
+  QLineEdit *modelDirName;
+  QPushButton *modelImageButton;
+
   QGroupBox *outputGroupBox;
   QGridLayout *outputGridLayout;
   QLineEdit *outputDirName;
-  QLabel *outputImageLabel;
   QPushButton *outputImageButton;
 
   QPushButton *confirmButton;
@@ -55,6 +59,25 @@ public:
     //fDeepMedicDialog->setModal(true);
     gridLayout = new QGridLayout(fDeepMedicDialog);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+
+    // existing model 
+    modelGroupBox = new QGroupBox(fDeepMedicDialog);
+    modelGroupBox->setTitle(QString::fromStdString("Existing Model Directory Name"));
+
+    modelGridLayout = new QGridLayout(modelGroupBox);
+    modelGridLayout->setObjectName(QString::fromUtf8("modelGridLayout"));
+
+    auto currentModelDir = getCaPTkDataDir() + "/deepMedic/saved_models/brainSegmentation/";
+    modelDirName = new QLineEdit(currentModelDir.c_str());
+    modelDirName->setObjectName(QString::fromUtf8("modelDirName"));
+    sizePolicy.setHeightForWidth(modelDirName->sizePolicy().hasHeightForWidth());
+    modelDirName->setSizePolicy(sizePolicy);
+    modelDirName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    modelImageButton = new QPushButton(modelGroupBox);
+    modelImageButton->setObjectName(QString::fromUtf8("modelDirButton"));
+    modelImageButton->setText("Browse");
+    modelImageButton->setToolTip("Location of 'modelConfig.txt' and 'model.ckpt'");
 
     // output 
     outputGroupBox = new QGroupBox(fDeepMedicDialog);
@@ -84,12 +107,12 @@ public:
     outputGridLayout->addWidget(outputImageButton, 0, 1, 1, 1);
 
     // put the layout in perspective
-    //gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);
-    gridLayout->addWidget(outputGroupBox, 1, 0, 1, 2);
+    gridLayout->addWidget(modelGroupBox, 1, 0, 1, 2);
+    gridLayout->addWidget(outputGroupBox, 2, 0, 1, 2);
 
 
     confirmButton = new QPushButton(fDeepMedicDialog);
-    confirmButton->setObjectName(QString::fromUtf8("confirm"));
+    confirmButton->setObjectName(QString::fromUtf8("Confirm"));
     //confirmButton->setIcon(ButtonIcon);
     //confirmButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent 
 
