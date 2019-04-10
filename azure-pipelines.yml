@@ -21,11 +21,11 @@ jobs:
 
   steps:
     - bash: |
-      echo "Build.DefinitionName=" $(Build.DefinitionName)
-      echo "Build.Repository.Name=" $(Build.Repository.Name)
-      echo "System.TeamProject=" $(System.TeamProject)
-      echo "System.CollectionId=" $(System.CollectionId)
-    displayName: 'Test Names'
+        echo "Build.DefinitionName=" $(Build.DefinitionName)
+        echo "Build.Repository.Name=" $(Build.Repository.Name)
+        echo "System.TeamProject=" $(System.TeamProject)
+        echo "System.CollectionId=" $(System.CollectionId)
+      displayName: 'Test Names'
 
 #   # Checkout validator.
 #   # - bash: |
@@ -35,10 +35,10 @@ jobs:
 #   #     fi
 #   #   displayName: 'Checkout pull request HEAD'
 
-#   # Pull LFS
-#   - bash: |
-#       git lfs pull
-#     displayName: 'Pull LFS'
+  # Pull LFS
+  - bash: |
+      git lfs pull
+    displayName: 'Pull LFS'
 
 #   # Dependency manager
 #   - bash: |
