@@ -7639,15 +7639,7 @@ void fMainWindow::ChangeBrushSize(int size)
 
 void fMainWindow::ChangeMaskOpacity(int newMaskOpacity) // multiLabel uncomment this function
 {
-  double tempOpacity;
-  if ((newMaskOpacity > 1) || (newMaskOpacity == 1))
-  {
-    tempOpacity = 1.0;
-  }
-  else
-  {
-    tempOpacity = newMaskOpacity * 0.1;
-  }
+  double tempOpacity = newMaskOpacity * 0.1;
   for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
   {
     for (size_t j = 0; j < 3; j++)
