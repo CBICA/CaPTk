@@ -81,6 +81,9 @@ public:
     modelImageButton->setText("Browse");
     modelImageButton->setToolTip("Location of 'modelConfig.txt' and 'model.ckpt'");
 
+    modelGridLayout->addWidget(modelDirName, 0, 0, 1, 1);
+    modelGridLayout->addWidget(modelImageButton, 0, 1, 1, 1);
+
     // output 
     outputGroupBox = new QGroupBox(fDeepMedicDialog);
     outputGroupBox->setTitle(QString::fromStdString("Output Directory Name"));
