@@ -36,9 +36,9 @@ jobs:
 #   #   displayName: 'Checkout pull request HEAD'
 
   # Pull LFS
-  - bash: |
-      git lfs pull
-    displayName: 'Pull LFS'
+  # - bash: |
+  #     git lfs pull
+  #   displayName: 'Pull LFS'
 
 #   # Dependency manager
 #   - bash: |
