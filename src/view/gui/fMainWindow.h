@@ -17,6 +17,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "NiftiDataManager.h"
 #include "RecurrenceEstimator.h"
 #include "PseudoProgressionEstimator.h"
+#include "PerfusionPCA.h"
 #include "SurvivalPredictor.h"
 #include "EGFRvIIIIndexPredictor.h"
 #include "ui_fMainWindow.h"
@@ -243,7 +244,7 @@ private:
   fSBRTAnalysisDialog analysisPanel;
 
   fSkullStripper skullStrippingPanel;
-  fPCAEstimator pcaPanel;
+  fPCADialog pcaPanel;
   fTrainingSimulator trainingPanel;
   fPerfusionEstimator perfmeasuresPanel;
   fDiffusionEstimator diffmeasuresPanel;
@@ -717,6 +718,17 @@ signals:
   void CallForNewEGFRvIIIPredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory);
 
   
+  void PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
+  void TrainNewPCAModelOnGivenData(const std::string &, const std::string &);
+
+
+
+
+
+
+
+
+
   /**
   \brief MolecularSubtype using Existing model
 
@@ -1204,6 +1216,7 @@ signals:
   */
   void MoveSlicerCursor(double x, double y, double z, int mode = 0);
 
+
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForSurvival (const std::string directoryname);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useConventionalData, const bool &useDTIData, const bool &usePerfData, const bool &useDistData);
@@ -1388,6 +1401,7 @@ public:
   ImagingSubtypePredictor mImagingSubtype;
   MolecularSubtypePredictor mMolecularSubtype;
   Fetalbrain mfetalbrain;
+  PerfusionPCA mPCAEstimator;
 
   fHelpDialog* mHelpDlg;
   fHelpTutorial mHelpTutorial;

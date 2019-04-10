@@ -32,6 +32,11 @@ See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
 
 #define NO_OF_PCS 5 // total number of principal components used 
 
+#include <cstdio>
+#include <cstdlib>
+#include <vector>
+#include "spline.h"
+
 
 /**
 \class PerfusionAlignment
@@ -73,12 +78,13 @@ public:
   ~PerfusionAlignment() {};
   NiftiDataManager mNiftiLocalPtr;
 
+  void GetParametersFromTheCurve(std::vector<double> curve, double &base, double&drop, double &maxval, double &minval);
 
   std::string ReadMetaDataTags(std::string filepath,std::string tagstrng);
   std::vector<double> GetInterpolatedCurve(std::vector<double> averagecurve, double timeinseconds, double totaltimeduration);
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, std::string dicomFile);
+  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, std::string dicomFile, std::string t1ceFile, int pointsbeforedrop, int pointsafterdrop);
 
 
   template< class ImageType, class PerfusionImageType >
@@ -95,14 +101,11 @@ public:
 };
 
 template< class ImageType, class PerfusionImageType >
-std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, std::string dicomFile)
+std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, std::string dicomFile, std::string t1ceFile, int pointsbeforedrop,int pointsafterdrop)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
-  PerfusionAlignment.push_back(NULL);
-  PerfusionAlignment.push_back(NULL);
-  PerfusionAlignment.push_back(NULL);
-
   typename PerfusionImageType::Pointer perfImagePointerNifti;
+  typename ImageType::Pointer t1ceImagePointer;
   try
   {
     perfImagePointerNifti = mNiftiLocalPtr.Read4DNiftiImage(perfusionFile);
@@ -113,34 +116,125 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     return PerfusionAlignment;
   }
 
-  typedef itk::ImageDuplicator< PerfusionImageType > DuplicatorType;
-  typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
-  duplicator->SetInputImage(perfImagePointerNifti);
-  duplicator->Update();
-  typename PerfusionImageType::Pointer FirstCopyImage = duplicator->GetOutput();
-
-  typename DuplicatorType::Pointer duplicator1 = DuplicatorType::New();
-  duplicator1->SetInputImage(perfImagePointerNifti);
-  duplicator1->Update();
-  typename PerfusionImageType::Pointer SecondCopyImage = duplicator1->GetOutput();
-
   try
   {
-    typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, 0, 9); //values do not matter here
-    std::vector<double> averagecurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
-    std::string timeinseconds = ReadMetaDataTags(dicomFile, "tagtype");
-    typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
-    double totaltimeduration = std::stof(timeinseconds) * region.GetSize()[3];
-
-    std::vector<double> interpolatedcurve = GetInterpolatedCurve(averagecurve,std::stof(timeinseconds),totaltimeduration);
-
-
-
-    //PerfusionAlignment[2] = this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti, TE);
+    t1ceImagePointer = cbica::ReadImage< ImageType >(t1ceFile);
   }
   catch (const std::exception& e1)
   {
-    logger.WriteError("Unable to calculate perfusion derivatives. Error code : " + std::string(e1.what()));
+    logger.WriteError("Unable to open the given T1 post-contrast enhanced image file. Error code : " + std::string(e1.what()));
+    return PerfusionAlignment;
+  }
+
+
+  try
+  {
+    //get original curve
+    typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, 0, 9); //values do not matter here
+    std::vector<double> averagecurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
+    
+    //read dicom to get values of tags 
+    std::string timeinseconds = ReadMetaDataTags(dicomFile, "0018|0080");
+    typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
+
+    ////get interpolated curve
+    //std::vector<double> interpolatedcurve = GetInterpolatedCurve(averagecurve,std::stof(timeinseconds),totaltimeduration);
+
+    std::ofstream myfile;
+    myfile.open("E:/original_curve.csv");
+    for (unsigned int index1 = 0; index1 < averagecurve.size(); index1++)
+          myfile << std::to_string(averagecurve[index1])<< "\n";
+    myfile.close();
+
+    // Resize
+    PerfusionImageType::SizeType inputSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
+    typename PerfusionImageType::SizeType outputSize;
+    outputSize[0] = inputSize[0];
+    outputSize[1] = inputSize[1];
+    outputSize[2] = inputSize[2];
+    outputSize[3] = (std::stof(timeinseconds) * 2 / 1000) * region.GetSize()[3];
+
+    PerfusionImageType::SpacingType outputSpacing;
+    outputSpacing[0] = perfImagePointerNifti->GetSpacing()[0];
+    outputSpacing[1] = perfImagePointerNifti->GetSpacing()[1];
+    outputSpacing[2] = perfImagePointerNifti->GetSpacing()[2];
+    outputSpacing[3] = perfImagePointerNifti->GetSpacing()[3] * (static_cast<double>(inputSize[3]) / static_cast<double>(outputSize[3]));
+    
+
+    typedef itk::IdentityTransform<double, 4> TransformType;
+    TransformType::Pointer _pTransform = TransformType::New();
+    _pTransform->SetIdentity();
+
+
+    typedef itk::ResampleImageFilter<PerfusionImageType, PerfusionImageType> ResampleImageFilterType;
+    ResampleImageFilterType::Pointer resample = ResampleImageFilterType::New();
+    resample->SetInput(perfImagePointerNifti);
+    resample->SetSize(outputSize);
+    resample->SetOutputSpacing(outputSpacing);
+    resample->SetOutputOrigin(perfImagePointerNifti->GetOrigin());
+    resample->SetOutputDirection(perfImagePointerNifti->GetDirection());
+    resample->SetTransform(_pTransform);
+    resample->UpdateLargestPossibleRegion();
+
+    averagecurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resample->GetOutput(), MASK, 0, 9); //values do not matter here
+    double base, drop, maxcurve, mincurve;
+    GetParametersFromTheCurve(averagecurve, base, drop, maxcurve, mincurve);
+
+    std::cout << "base: " << base << " drop: " << drop << " min: " << mincurve << " max: " << maxcurve << std::endl;
+    //write the corresponding perfusion 3D images
+    PerfusionImageType::RegionType region1 = resample->GetOutput()->GetLargestPossibleRegion();
+    PerfusionImageType::IndexType regionIndex;
+    PerfusionImageType::SizeType regionSize;
+    regionSize[0] = region1.GetSize()[0];
+    regionSize[1] = region1.GetSize()[1];
+    regionSize[2] = region1.GetSize()[2];
+    regionSize[3] = 0;
+    regionIndex[0] = 0;
+    regionIndex[1] = 0;
+    regionIndex[2] = 0;
+
+
+    for (int index = drop - pointsbeforedrop; index < drop + pointsafterdrop; index++)
+    {
+      typename ImageType::Pointer NewImage = ImageType::New();
+      NewImage->CopyInformation(t1ceImagePointer);
+      NewImage->SetRequestedRegion(t1ceImagePointer->GetLargestPossibleRegion());
+      NewImage->SetBufferedRegion(t1ceImagePointer->GetBufferedRegion());
+      NewImage->Allocate();
+      NewImage->FillBuffer(0);
+    
+      regionIndex[3] = index;
+      PerfusionImageType::RegionType desiredRegion(regionIndex, regionSize);
+      auto filter = itk::ExtractImageFilter< PerfusionImageType, ImageType >::New();
+      filter->SetExtractionRegion(desiredRegion);
+      filter->SetInput(resample->GetOutput());
+      filter->SetDirectionCollapseToIdentity();
+      filter->Update();
+      ImageType::Pointer CurrentTimePoint = filter->GetOutput();
+
+      itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
+      itk::ImageRegionIteratorWithIndex <ImageType> newIt(NewImage, NewImage->GetLargestPossibleRegion());
+      imageIt.GoToBegin(); newIt.GoToBegin();
+      while (!imageIt.IsAtEnd())
+      {
+        newIt.Set(imageIt.Get());
+        ++imageIt;
+        ++newIt;
+      }
+      PerfusionAlignment.push_back(NewImage);
+    }
+
+    //myfile.open("E:/revised_curve.csv");
+    //for (unsigned int index1 = 0; index1 < averagecurve.size(); index1++)
+    //  myfile << std::to_string(averagecurve[index1]) << "\n";
+
+    //myfile.close();
+    ////resampling image 
+    //cbica::WriteImage<PerfusionImageType>(output, "E:/revised_perf.nii.gz");
+  }
+  catch (const std::exception& e1)
+  {
+    logger.WriteError("Unable to perform perfusion alignment. Error code : " + std::string(e1.what()));
     return PerfusionAlignment;
   }
   return PerfusionAlignment;
@@ -628,14 +722,14 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
 std::string PerfusionAlignment::ReadMetaDataTags(std::string filepaths,std::string tag)
 {
   DicomMetadataReader *dcmMetaReader = new DicomMetadataReader();
-  dcmMetaReader->SetFilePath("");
+  dcmMetaReader->SetFilePath(filepaths);
   bool readstatus = dcmMetaReader->ReadMetaData();
   std::string label;
   std::string value;
 
   if (readstatus)
   {
-    bool tagFound = dcmMetaReader->GetTagValue("0000|0000", label, value);
+    bool tagFound = dcmMetaReader->GetTagValue(tag, label, value);
     if (tagFound)
       return value;
   }
@@ -644,6 +738,40 @@ std::string PerfusionAlignment::ReadMetaDataTags(std::string filepaths,std::stri
 std::vector<double> PerfusionAlignment::GetInterpolatedCurve(std::vector<double> averagecurve, double timeinseconds, double totaltimeduration)
 {
   return averagecurve;
+}
+void PerfusionAlignment::GetParametersFromTheCurve(std::vector<double> curve, double &base, double&drop, double &maxval, double &minval)
+{
+  std::vector<double> CER;
+  //curve = vq1;
+  //CER = curve * 100 / (mean(curve(4:8)) - min(curve));
+  //MAX(i) = mean(curve(4:8));
+  //MIN(i) = min(curve);
+  //Base1(i) = mean(curve(4:8));
+
+  //Base2(i) = mean(CER(4:8));
+  //CER = CER - (mean(CER(4:8))) + 300;
+
+  //Drop = find(CER == min(CER));
+  //SP_Drop(i) = Drop;
+  //CER = CER(Drop - 17:Drop + 36);
+  //plot(CER);      hold on;
+  //CERData(i, :) = CER;
+  float max = *max_element(curve.begin(), curve.end());
+  float min = *min_element(curve.begin(), curve.end());
+
+
+  for (int index = 0; index < curve.size(); index++)
+    CER.push_back((curve[index] * 100) / (((curve[3] + curve[4] + curve[5] + curve[6] + curve[7]) / 5) - min));
+
+  maxval = (curve[3] + curve[4] + curve[5] + curve[6] + curve[7]) / 5;
+  minval = min;
+  base = (curve[3] + curve[4] + curve[5] + curve[6] + curve[7]) / 5;
+
+  double average_new_cer = (CER[3] + CER[4] + CER[5] + CER[6] + CER[7]) / 5;
+  for (int index = 0; index < CER.size(); index++)
+    CER[index] = CER[index] - average_new_cer + 300;
+
+  drop = std::min_element(CER.begin(), CER.end()) - CER.begin();
 }
 #endif
 

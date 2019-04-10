@@ -1,22 +1,7 @@
-#ifndef ui_fPCAEstimator_H
-#define ui_fPCAEstimator_H
+#ifndef ui_fPCADialog_H
+#define ui_fPCADialog_H
 
 #include <QtCore/QVariant>
-// #include <QtGui/QAction>
-// #include <QtGui/QApplication>
-// #include <QtGui/QButtonGroup>
-// #include <QtGui/QCheckBox>
-// #include <QtGui/QDialog>
-// #include <QtGui/QFrame>
-// #include <QtGui/QGridLayout>
-// #include <QtGui/QHBoxLayout>
-// #include <QtGui/QHeaderView>
-// #include <QtGui/QLabel>
-// #include <QtGui/QLineEdit>
-// #include <QtGui/QPushButton>
-// #include <QtGui/QSpacerItem>
-// #include <QtGui/QSpinBox>
-// NEW CHANGES
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
@@ -33,163 +18,381 @@
 #include <QtWidgets/QSpinBox>
 #include <QGroupBox>
 #include <QtWidgets/QRadioButton>
-#include "CaPTkGUIUtils.h"
-#include <QDir>
 
 QT_BEGIN_NAMESPACE
 
-class ui_fPCAEstimator
+class ui_fPCADialog
 {
 public:
-  QGridLayout *gridLayout;
+  //fDisclaimerDialog disclaimer_dialog;
+  QGridLayout * gridLayout_3;
   QVBoxLayout * verticalLayout;
-
-  QGroupBox *referenceGroupBox;
-  QGridLayout *referenceGridLayout;
-  QLabel *referenceImageLabel;
-  QLineEdit *referenceImageName;
-  QPushButton *referenceImageButton;
-  QLineEdit *referenceMaskName;
-  QPushButton *referenceMaskButton;
-
-  QGroupBox *inputGroupBox;
-  QGridLayout *inputGridLayout;
-  QLabel *inputImageLabel;
-  QLineEdit *inputImageName;
-
+  QGroupBox *classificationGroupBox;
+  QGroupBox *trainingGroupBox;
+  QGridLayout * classificationGridLayout;
   QGroupBox *outputGroupBox;
+  //QRadioButton * rdNewClassification;
+  QRadioButton * rdLoadedClassification;
+  QRadioButton * rdExistingClassification;
+  QRadioButton *rdCreateModel;
+  QLineEdit * svmModelFileName1;
+  QLineEdit * svmModelFileName2;
+  QPushButton * svmModelButton1;
+  QPushButton * svmModelButton2;
+  QLineEdit * testSubjectsDirectoryName;
+  QPushButton * testSubjectsDirectoryButton;
+
+  QLabel *numberPCALabelCreate; 
+  QLineEdit * numberPCANameCreate;
+  QLabel *numberPCALabelApply;
+  QLineEdit * numberPCANameApply;
+
+
+  QLabel *longRunningWarning;
+
+
+  QLineEdit   * existingMaskDirectoryName;
+  QPushButton * existingMasksButton;
+  QPushButton * disclaimerButton;
+
   QGridLayout *outputGridLayout;
-  QLineEdit *outputImageName;
-  QLabel *outputImageLabel;
-  QPushButton *outputImageButton;
+  QLabel	*outputDirectoryLabel;
+  QLabel     *disclaimerLabel;
+  QLabel     *linkLabel;
+  QLabel	*trainingDirectoryLabel;
+  QLabel	*testDirectoryLabel;
+  QLabel	*modelDirectoryLabel1;
+  QLabel	*modelDirectoryLabel2;
 
-  QPushButton *confirmButton;
-  QPushButton *cancelButton;
 
-  QFrame *line_3;
+  QLineEdit *outputDirectoryName;
+  QPushButton *outputDirectoryButton;
+
+  QPushButton * confirmButton;
+  QPushButton * cancelButton;
+
+  QCheckBox * cbT1Data;
+  QCheckBox * cbDTIData;
+  QCheckBox * cbPerfData;
+  QCheckBox * cbDistanceData;
 
   QHBoxLayout * horizontalLayout;
 
-  void setupUi(QDialog *fPCAEstimator)
+  void setupUi(QDialog *fPCADialog)
   {
-    std::string dataDir;
 
-    if (QDir((getCaPTkDataDir() + "/sri24/").c_str()).exists()) // packaged binary
-    {
-      dataDir = getCaPTkDataDir() + "/sri24/";
-    }
-    else if (QDir(QApplication::applicationDirPath() + "/../../data/sri24/").exists()) // developer_mode
-    {
-      dataDir = captk_currentApplicationPath + "/../../data/sri24/";
-    }
-
-
-    if (fPCAEstimator->objectName().isEmpty())
-      fPCAEstimator->setObjectName(QString::fromUtf8("fPCAEstimator"));
-    //fPCAEstimator->setWindowModality(Qt::NonModal);
-    fPCAEstimator->resize(400, 200); // needs to be screenSize dependent
+    if (fPCADialog->objectName().isEmpty())
+      fPCADialog->setObjectName(QString::fromUtf8("fPCADialog"));
+    fPCADialog->setWindowModality(Qt::ApplicationModal);
+    fPCADialog->resize(400, 200); // needs to be screenSize dependent 
     QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     sizePolicy.setHorizontalStretch(0);
     sizePolicy.setVerticalStretch(0);
-    sizePolicy.setHeightForWidth(fPCAEstimator->sizePolicy().hasHeightForWidth());
-    fPCAEstimator->setSizePolicy(sizePolicy);
-    fPCAEstimator->setMinimumSize(QSize(0, 0));
+    sizePolicy.setHeightForWidth(fPCADialog->sizePolicy().hasHeightForWidth());
+    fPCADialog->setSizePolicy(sizePolicy);
+    fPCADialog->setMinimumSize(QSize(0, 0));
 
-    //fPCAEstimator->setModal(true);
-    gridLayout = new QGridLayout(fPCAEstimator);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+    //fPCADialog->setModal(true);
+    gridLayout_3 = new QGridLayout(fPCADialog);
+    gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
 
-    // input
-    inputGroupBox = new QGroupBox(fPCAEstimator);
-    inputGroupBox->setTitle(QString::fromStdString("Input Data"));
+    //--------------------------------------------------------------------
 
-    inputGridLayout = new QGridLayout(inputGroupBox);
-    inputGridLayout->setObjectName(QString::fromUtf8("inputGridLayout"));
+    classificationGroupBox = new QGroupBox(fPCADialog);
+    classificationGroupBox->setTitle(QString::fromStdString("PCA Estimation"));
+    classificationGridLayout = new QGridLayout(classificationGroupBox);
+    classificationGridLayout->setObjectName(QString::fromUtf8("imagestabgridLayout3"));
 
-    inputImageLabel = new QLabel(inputGroupBox);
-    sizePolicy.setHeightForWidth(inputImageLabel->sizePolicy().hasHeightForWidth());
-    inputImageLabel->setSizePolicy(sizePolicy);
+    //rdNewClassification = new QRadioButton(classificationGroupBox);
+    //rdNewClassification->setObjectName(QString::fromUtf8("newClassification"));
 
-    inputImageName = new QLineEdit("");
-    inputImageName->setObjectName(QString::fromUtf8("inputImageName"));
-    sizePolicy.setHeightForWidth(inputImageName->sizePolicy().hasHeightForWidth());
-    inputImageName->setSizePolicy(sizePolicy);
-    inputImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    rdLoadedClassification = new QRadioButton(classificationGroupBox);
+    rdLoadedClassification->setObjectName(QString::fromUtf8("loadedClassification"));
+    rdExistingClassification = new QRadioButton(classificationGroupBox);
+    rdExistingClassification->setObjectName(QString::fromUtf8("existingClassification"));
+    rdCreateModel = new QRadioButton(classificationGroupBox);
+    rdCreateModel->setObjectName(QString::fromUtf8("createModel"));
 
 
-    inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
-    inputGridLayout->addWidget(inputImageName, 1, 0, 1, 1);
-    //inputGridLayout->addWidget(inputImageButton, 1, 1, 1, 1);
 
-    // output
-    outputGroupBox = new QGroupBox(fPCAEstimator);
-    outputGroupBox->setTitle(QString::fromStdString("Output"));
+    svmModelFileName1 = new QLineEdit(classificationGroupBox);
+    svmModelFileName1->setObjectName(QString::fromUtf8("svmModeFileName1"));
+    QSizePolicy sizePolicy13(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    sizePolicy13.setHorizontalStretch(0);
+    sizePolicy13.setVerticalStretch(0);
+    sizePolicy13.setHeightForWidth(svmModelFileName1->sizePolicy().hasHeightForWidth());
+    svmModelFileName1->setSizePolicy(sizePolicy13);
+    svmModelFileName1->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    svmModelFileName1->setText("");
+
+
+    svmModelFileName2 = new QLineEdit(classificationGroupBox);
+    svmModelFileName2->setObjectName(QString::fromUtf8("svmModeFileName2"));
+    sizePolicy13.setHeightForWidth(svmModelFileName2->sizePolicy().hasHeightForWidth());
+    svmModelFileName2->setSizePolicy(sizePolicy13);
+    svmModelFileName2->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    svmModelFileName2->setText("");
+
+
+
+
+
+
+    testSubjectsDirectoryName = new QLineEdit(classificationGroupBox);
+    testSubjectsDirectoryName->setObjectName(QString::fromUtf8("testSubjectsDirectoryName"));
+    sizePolicy13.setHeightForWidth(testSubjectsDirectoryName->sizePolicy().hasHeightForWidth());
+    testSubjectsDirectoryName->setSizePolicy(sizePolicy13);
+    testSubjectsDirectoryName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    existingMaskDirectoryName = new QLineEdit(classificationGroupBox);
+    existingMaskDirectoryName->setObjectName(QString::fromUtf8("existingMaskDirectoryName"));
+    sizePolicy13.setHeightForWidth(existingMaskDirectoryName->sizePolicy().hasHeightForWidth());
+    existingMaskDirectoryName->setSizePolicy(sizePolicy13);
+    existingMaskDirectoryName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    svmModelButton1 = new QPushButton(classificationGroupBox);
+    svmModelButton1->setObjectName(QString::fromUtf8("svmModelButton1"));
+    svmModelButton1->setText(QString("Browse"));
+
+    svmModelButton2 = new QPushButton(classificationGroupBox);
+    svmModelButton2->setObjectName(QString::fromUtf8("svmModelButton2"));
+    svmModelButton2->setText(QString("Browse"));
+
+    testSubjectsDirectoryButton = new QPushButton(classificationGroupBox);
+    testSubjectsDirectoryButton->setObjectName(QString::fromUtf8("testSubjectsDirectoryButton"));
+    //testSubjectsDirectoryButton->setIcon(ButtonIcon);
+    //testSubjectsDirectoryButton->setIconSize(QSize(20, 20));
+    testSubjectsDirectoryButton->setText(QString("Browse"));
+    testSubjectsDirectoryButton->setToolTip(QString("Directory containing Test subjects"));
+
+    existingMasksButton = new QPushButton(classificationGroupBox);
+    existingMasksButton->setObjectName(QString::fromUtf8("existingMasksButton"));
+    //existingMasksButton->setIcon(ButtonIcon);
+    //existingMasksButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent 
+    existingMasksButton->setText(QString("Browse"));
+    // existingMasksButton->setToolTip(QString("Directory containing Training subjects"));
+    existingMasksButton->setWhatsThis(QString("&nbsp;The meaning of the Source field depends "
+      "on the Type field:"
+      "<ul>"
+      "<li><b>Books</b> have a Publisher"
+      "<li><b>Articles</b> have a Journal name with "
+      "volume and issue number"
+      "<li><b>Theses</b> have an Institution name "
+      "and a Department name"
+      "</ul>"));
+
+    trainingDirectoryLabel = new QLabel(classificationGroupBox);
+    sizePolicy13.setHeightForWidth(trainingDirectoryLabel->sizePolicy().hasHeightForWidth());
+    trainingDirectoryLabel->setSizePolicy(sizePolicy13);
+    trainingDirectoryLabel->setAlignment(Qt::AlignRight);
+
+    testDirectoryLabel = new QLabel(classificationGroupBox);
+    sizePolicy13.setHeightForWidth(testDirectoryLabel->sizePolicy().hasHeightForWidth());
+    testDirectoryLabel->setSizePolicy(sizePolicy13);
+    testDirectoryLabel->setAlignment(Qt::AlignRight);
+
+    modelDirectoryLabel1 = new QLabel(classificationGroupBox);
+    sizePolicy13.setHeightForWidth(modelDirectoryLabel1->sizePolicy().hasHeightForWidth());
+    modelDirectoryLabel1->setSizePolicy(sizePolicy13);
+    modelDirectoryLabel1->setAlignment(Qt::AlignRight);
+
+    modelDirectoryLabel2 = new QLabel(classificationGroupBox);
+    sizePolicy13.setHeightForWidth(modelDirectoryLabel2->sizePolicy().hasHeightForWidth());
+    modelDirectoryLabel2->setSizePolicy(sizePolicy13);
+    modelDirectoryLabel2->setAlignment(Qt::AlignRight);
+
+    disclaimerLabel = new QLabel(classificationGroupBox);
+    sizePolicy13.setHeightForWidth(disclaimerLabel->sizePolicy().hasHeightForWidth());
+    disclaimerLabel->setSizePolicy(sizePolicy13);
+    disclaimerLabel->setAlignment(Qt::AlignRight);
+
+    disclaimerButton = new QPushButton(classificationGroupBox);
+    disclaimerButton->setObjectName(QString::fromUtf8("disclaimerButton"));
+    //testSubjectsDirectoryButton->setIcon(ButtonIcon);
+    //testSubjectsDirectoryButton->setIconSize(QSize(20, 20));
+    disclaimerButton->setText(QString("here."));
+    disclaimerButton->setToolTip(QString("disclaimerButton"));
+    disclaimerButton->setFlat(true);
+    disclaimerButton->setStyleSheet("Text-align:left");
+
+
+    QPalette* palette1 = new QPalette();
+    palette1->setColor(QPalette::ButtonText, Qt::blue);
+    disclaimerButton->setPalette(*palette1);
+
+    QFont font("Bavaria");
+    font.setPointSize(8);
+    font.setWeight(QFont::Bold);
+    font.setUnderline(true);
+    disclaimerButton->setFont(font);
+
+
+
+    //linkLabel = new QLabel(classificationGroupBox);
+    //sizePolicy13.setHeightForWidth(disclaimerLabel->sizePolicy().hasHeightForWidth());
+    //linkLabel->setSizePolicy(sizePolicy13);
+    //linkLabel->setAlignment(Qt::AlignRight);
+    //linkLabel->setText("<a href=\"ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/RecurrenceEstimator.zip\">Click Here!</a>");
+    //linkLabel->setTextFormat(Qt::RichText);
+    //linkLabel->setTextInteractionFlags(Qt:::TextBrowserInteraction);
+    //linkLabel->setOpenExternalLinks(true);
+
+
+
+
+    //    classificationGridLayout->addWidget(rdNewClassification, 0, 0, 1, 6);
+    //classificationGridLayout->addWidget(rdLoadedClassification, 1, 0, 1, 6);
+    //classificationGridLayout->addWidget(modelDirectoryLabel1, 2, 0, 1, 1);
+    //classificationGridLayout->addWidget(svmModelFileName1, 2, 1, 1, 4);
+    //classificationGridLayout->addWidget(svmModelButton1, 2, 5, 1, 1);
+
+    classificationGridLayout->addWidget(rdExistingClassification, 3, 0, 1, 6);
+    classificationGridLayout->addWidget(modelDirectoryLabel2, 4, 0, 1, 1);
+    classificationGridLayout->addWidget(svmModelFileName2, 4, 1, 1, 4);
+    classificationGridLayout->addWidget(svmModelButton2, 4, 5, 1, 1);
+
+
+    classificationGridLayout->addWidget(testDirectoryLabel, 5, 0, 1, 1);
+    classificationGridLayout->addWidget(testSubjectsDirectoryName, 5, 1, 1, 4);
+    classificationGridLayout->addWidget(testSubjectsDirectoryButton, 5, 5, 1, 1);
+    classificationGridLayout->addWidget(numberPCALabelApply, 6, 0, 1, 1);
+    classificationGridLayout->addWidget(numberPCANameApply, 6, 1, 1, 4);
+
+    classificationGridLayout->addWidget(disclaimerLabel, 7, 1, 1, 4);
+    classificationGridLayout->addWidget(disclaimerButton, 7, 5, 1, 1);
+
+
+    QFrame* line = new QFrame();
+    line->setGeometry(QRect(1, 1, 10, 10));
+    line->setFrameShape(QFrame::HLine); // Replace by VLine for vertical line
+    line->setFrameShadow(QFrame::Sunken);
+    classificationGridLayout->addWidget(line, 9, 0, 1, 6);
+
+    classificationGridLayout->addWidget(rdCreateModel, 10, 0, 1, 6);
+    classificationGridLayout->addWidget(trainingDirectoryLabel, 11, 0, 1, 1);
+    classificationGridLayout->addWidget(existingMaskDirectoryName, 11, 1, 1, 4);
+    classificationGridLayout->addWidget(existingMasksButton, 11, 5, 1, 1);
+
+    classificationGridLayout->addWidget(numberPCALabelCreate, 12, 0, 1, 1);
+    classificationGridLayout->addWidget(numberPCANameCreate, 12, 1, 1, 4);
+
+
+    // classificationGridLayout->addWidget(line_3, 4, 1, 1, 2);
+
+    cbT1Data = new QCheckBox(classificationGroupBox);
+    cbT1Data->setObjectName(QString::fromUtf8("cbT1Data"));
+    cbDTIData = new QCheckBox(classificationGroupBox);
+    cbDTIData->setObjectName(QString::fromUtf8("cbDTIData"));
+    cbPerfData = new QCheckBox(classificationGroupBox);
+    cbPerfData->setObjectName(QString::fromUtf8("cbPerfData"));
+    cbDistanceData = new QCheckBox(classificationGroupBox);
+    cbDistanceData->setObjectName(QString::fromUtf8("cbDistanceData"));
+
+
+    horizontalLayout = new QHBoxLayout();
+    horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+
+    horizontalLayout->addWidget(cbT1Data);
+    //horizontalLayout->addWidget(cbT2Data);
+    //horizontalLayout->addWidget(cbT1ceData);
+    //horizontalLayout->addWidget(cbT2FlairData);
+    horizontalLayout->addWidget(cbDTIData);
+    horizontalLayout->addWidget(cbPerfData);
+    horizontalLayout->addWidget(cbDistanceData);
+
+    classificationGridLayout->addLayout(horizontalLayout, 8, 0, 1, 3);
+    //--------------------------output-------------------------------------------------------
+
+
+    outputGroupBox = new QGroupBox(fPCADialog);
+    outputGroupBox->setTitle(QString::fromStdString("Output Directory"));
+
+    longRunningWarning = new QLabel(outputGroupBox);
+    sizePolicy.setHeightForWidth(longRunningWarning->sizePolicy().hasHeightForWidth());
+    longRunningWarning->setSizePolicy(sizePolicy);
+    longRunningWarning->setAlignment(Qt::AlignRight);
+    longRunningWarning->setText("NOTE: CaPTk will not let you interact with the UI while this application runs.");
 
     outputGridLayout = new QGridLayout(outputGroupBox);
     outputGridLayout->setObjectName(QString::fromUtf8("outputGridLayout"));
 
-    //outputImageLabel = new QLabel(outputGroupBox);
-    //sizePolicy.setHeightForWidth(outputImageLabel->sizePolicy().hasHeightForWidth());
-    //outputImageLabel->setSizePolicy(sizePolicy);
-
-    outputImageName = new QLineEdit("");
-    outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
-    sizePolicy.setHeightForWidth(outputImageName->sizePolicy().hasHeightForWidth());
-    outputImageName->setSizePolicy(sizePolicy);
-    outputImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
-
-    outputImageButton = new QPushButton(outputGroupBox);
-    outputImageButton->setObjectName(QString::fromUtf8("outputImageButton"));
-    //outputImageButton->setIcon(ButtonIcon);
-    //outputImageButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent
-    outputImageButton->setText(QString("Browse"));
-
-    //outputGridLayout->addWidget(outputImageLabel, 0, 0, 1, 1);
-    outputGridLayout->addWidget(outputImageName, 0, 0, 1, 1);
-    outputGridLayout->addWidget(outputImageButton, 0, 1, 1, 1);
-
-    // put the layout in perspective
-    gridLayout->addWidget(inputGroupBox, 0, 0, 1, 2);
-    gridLayout->addWidget(outputGroupBox, 1, 0, 1, 2);
+    outputDirectoryLabel = new QLabel(outputGroupBox);
+    sizePolicy13.setHeightForWidth(outputDirectoryLabel->sizePolicy().hasHeightForWidth());
+    outputDirectoryLabel->setSizePolicy(sizePolicy13);
+    outputDirectoryLabel->setAlignment(Qt::AlignRight);
 
 
-    confirmButton = new QPushButton(fPCAEstimator);
+
+
+    outputDirectoryName = new QLineEdit(outputGroupBox);
+    outputDirectoryName->setObjectName(QString::fromUtf8("outputDirectoryName"));
+    sizePolicy13.setHeightForWidth(outputDirectoryName->sizePolicy().hasHeightForWidth());
+    outputDirectoryName->setSizePolicy(sizePolicy13);
+    outputDirectoryName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    outputDirectoryButton = new QPushButton(outputGroupBox);
+    outputDirectoryButton->setObjectName(QString::fromUtf8("outputDirectoryButton"));
+    //outputDirectoryButton->setIcon(ButtonIcon);
+    //outputDirectoryButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent 
+    outputDirectoryButton->setText(QString("Browse"));
+
+    outputGridLayout->addWidget(outputDirectoryLabel, 0, 0, 1, 1);
+    outputGridLayout->addWidget(outputDirectoryName, 0, 1, 1, 4);
+    outputGridLayout->addWidget(outputDirectoryButton, 0, 5, 1, 1);
+    outputGridLayout->addWidget(longRunningWarning, 1, 0, 1, 2);
+
+    gridLayout_3->addWidget(classificationGroupBox, 0, 0, 1, 2);
+    gridLayout_3->addWidget(outputGroupBox, 1, 0, 1, 2);
+
+
+    confirmButton = new QPushButton(fPCADialog);
     confirmButton->setObjectName(QString::fromUtf8("confirm"));
     //confirmButton->setIcon(ButtonIcon);
-    //confirmButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent
+    confirmButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent 
 
-    cancelButton = new QPushButton(fPCAEstimator);
+    cancelButton = new QPushButton(fPCADialog);
     cancelButton->setObjectName(QString::fromUtf8("Cancel"));
     //cancelButton->setIcon(ButtonIcon);
-    //cancelButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent
+    cancelButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent 
 
-    gridLayout->addWidget(confirmButton, 2, 0, 1, 1);
-    gridLayout->addWidget(cancelButton, 2, 1, 1, 1);
+    gridLayout_3->addWidget(confirmButton, 2, 0, 1, 1);
+    gridLayout_3->addWidget(cancelButton, 2, 1, 1, 1);
 
-    retranslateUi(fPCAEstimator);
+    retranslateUi(fPCADialog);
 
-    QMetaObject::connectSlotsByName(fPCAEstimator);
+    QMetaObject::connectSlotsByName(fPCADialog);
   } // setupUi
 
-  void retranslateUi(QDialog *fPCAEstimator)
+  void retranslateUi(QDialog *fPCADialog)
   {
-   //  fPCAEstimator->setWindowTitle(QApplication::translate("fPCAEstimator", "Principal component analysis", 0, QApplication::UnicodeUTF8));
-   //  confirmButton->setText(QApplication::translate("fPCAEstimator", "Confirm", 0, QApplication::UnicodeUTF8));
-	// inputImageLabel->setText(QApplication::translate("fPCAEstimator", "Number of PCAs", 0, QApplication::UnicodeUTF8));
-   //  cancelButton->setText(QApplication::translate("fPCAEstimator", "Cancel", 0, QApplication::UnicodeUTF8));
-   // NEW CHANGES
-   fPCAEstimator->setWindowTitle(QApplication::translate("fPCAEstimator", "Principal component analysis", 0));
-   confirmButton->setText(QApplication::translate("fPCAEstimator", "Confirm", 0));
-    inputImageLabel->setText(QApplication::translate("fPCAEstimator", "Number of Principal Components", 0));
-   cancelButton->setText(QApplication::translate("fPCAEstimator", "Cancel", 0));
+    fPCADialog->setWindowTitle(QApplication::translate("fPCADialog", "PCA Estimator", 0));
+    //rdNewClassification->setText(QApplication::translate("fPCADialog", "Loaded subject: Near&Far", 0));
+    rdExistingClassification->setText(QApplication::translate("fPCADialog", "PCA estimation on a batch of subjects", 0));
+    rdCreateModel->setText(QApplication::translate("fPCADialog", "Train new model", 0));
+    confirmButton->setText(QApplication::translate("fPCADialog", "Confirm", 0));
+    cancelButton->setText(QApplication::translate("fPCADialog", "Cancel", 0));
+
+    modelDirectoryLabel1->setText(QApplication::translate("fPCADialog", "Model Directory:", 0));
+    modelDirectoryLabel2->setText(QApplication::translate("fPCADialog", "Model Directory:", 0));
+    trainingDirectoryLabel->setText(QApplication::translate("fPCADialog", "Selected Subjects:", 0));
+    testDirectoryLabel->setText(QApplication::translate("fPCADialog", "Test Directory:", 0));
+    outputDirectoryLabel->setText(QApplication::translate("fPCADialog", "Output Directory:", 0));
+
+
   } // retranslateUi
 
 };
 
 namespace Ui {
-  class fPCAEstimator : public ui_fPCAEstimator {};
+  class fPCADialog : public ui_fPCADialog {};
 } // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif // ui_fPCAEstimator_H
+#endif // ui_fPCADialog_H
+
+
+
+
+
+

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// fPCAEstimator.h
+// fPCADialog.h
 //
 // Copyright (c) 2018. All rights reserved.
 // Section of Biomedical Image Analysis
@@ -20,30 +20,59 @@
 //#include "CAPTk.h"
 #include "ui_fPCADialog.h"
 
+#define SUBJECT_CLASSIFICATION 0
+#define EXISTING_CLASSIFICATION 1
+#define TRAIN_MODEL 2
+
 /**
-\class fPCAEstimator
+\class fPCADialog
 
 \brief This class controls the elements in the recurrence dialog
 */
-class fPCAEstimator : public QDialog, private Ui::fPCAEstimator
+class fPCADialog : public QDialog, private Ui::fPCADialog
 {
   Q_OBJECT
 
 public:
-  fPCAEstimator();
-  ~fPCAEstimator();
+  fPCADialog();
+  ~fPCADialog();
+  int mode;
+
+  void SetCurrentImagePath(const QString &inputPath)
+  {
+    mInputPathName = inputPath;
+  }
+  void SetCurrentLoggerPath(std::string loggerPath)
+  {
+    mLoggerFile = loggerPath;
+  }
 
   QString mInputPathName;
-  QString mOutputPathName;
+  std::string mLoggerFile;
+
 public slots:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
-  void OpenInputImage();
-  void SelectOutputImage();
+  void OpenSVMModelFile1();
+  void OpenSVMModelFile2();
+  void OpenExistingMasksDirectory();
+  void SelectOutputDirectory();
+  void ExistingClassificationRadioButtonChecked();
+  void LoadedClassificationRadioButtonChecked();
+  void NewModelRadioButtonChecked();
+  void OpenTestSubjectsDirectory();
+  void CurrentSubjectRadioButtonChecked();
+  void CheckForDisclaimer();
 
 signals:
-  void RunPCAEstimation(const int numberOfPCAs, const std::string outputFolder);
+  void ExistingModelBasedPCAEstimate(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
+  void TrainNewPCAModel(std::string directory, std::string outputdirectory);
 };
 
 
 #endif
+
+
+
+
+

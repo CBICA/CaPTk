@@ -33,6 +33,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "CaPTkEnums.h"
 #include "CaPTkClassifierUtils.h"
 #include "cbicaLogging.h"
+#include "itkEnhancedScalarImageToRunLengthFeaturesFilter.h"
 
 #define RECURRENCE_MODEL_G 0.5
 #define RECURRENCE_MODEL_RHO 0.0896
@@ -1561,41 +1562,11 @@ std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble>
     ROIIntensities.push_back(std::round(image.GetPointer()->GetPixel(roiIndices[i])));
 
   VectorDouble HistogramFeatures = GetHistogramFeatures(ROIIntensities, 10);
-  VectorDouble HistogramFeatures1 = GetHistogramFeaturesWhole(ROIIntensities);
+  VectorDouble HistogramFeatures1 = GetHistogramFeatures(ROIIntensities, 20);
+  //VectorDouble HistogramFeatures1 = GetHistogramFeaturesWhole(ROIIntensities);
   VectorDouble IntensityFeatures = GetIntensityFeatures(ROIIntensities);
   VectorDouble GLCMFeatures = GetGLCMFeatures<ImageType>(image, mask);
   VectorDouble GLRLMFeatures = GetRunLengthFeatures<ImageType>(image, mask);
-
-  //VectorDouble IntensityFeatures;
-  //IntensityFeatures.push_back(100);
-  //IntensityFeatures.push_back(100);
-  //IntensityFeatures.push_back(100);
-  //IntensityFeatures.push_back(100);
-  //IntensityFeatures.push_back(100);
-  //IntensityFeatures.push_back(100);
-  //IntensityFeatures.push_back(100);
-
-  /* VectorDouble GLCMFeatures;
-  GLCMFeatures.push_back(100);
-  GLCMFeatures.push_back(100);
-  GLCMFeatures.push_back(100);
-  GLCMFeatures.push_back(100);
-  GLCMFeatures.push_back(100);
-  GLCMFeatures.push_back(100);
-  GLCMFeatures.push_back(100);
-  GLCMFeatures.push_back(100);
-
-  VectorDouble GLRLMFeatures;
-  GLRLMFeatures.push_back(100);
-  GLRLMFeatures.push_back(100);
-  GLRLMFeatures.push_back(100);
-  GLRLMFeatures.push_back(100);
-  GLRLMFeatures.push_back(100);
-  GLRLMFeatures.push_back(100);
-  GLRLMFeatures.push_back(100);
-  GLRLMFeatures.push_back(100);
-  GLRLMFeatures.push_back(100);
-  GLRLMFeatures.push_back(100);*/
 
   std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble> new_tuple(HistogramFeatures, IntensityFeatures, GLCMFeatures, GLRLMFeatures, HistogramFeatures1);
   return new_tuple;
@@ -1762,19 +1733,17 @@ VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Poi
 template<class ImageType>
 VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask)
 {
-  using FeatureextractionImageType = typename ImageType::Pointer;
-  using Image2CoOccuranceType = itk::Statistics::ScalarImageToCooccurrenceMatrixFilter<ImageType>;
-  using HistogramType = typename Image2CoOccuranceType::HistogramType;
-  using Hist2FeaturesType = itk::Statistics::HistogramToTextureFeaturesFilter<HistogramType>;
+  using HistogramFrequencyContainerType = itk::Statistics::DenseFrequencyContainer2;
+  using RunLengthFilterType = itk::Statistics::EnhancedScalarImageToRunLengthFeaturesFilter< ImageType, HistogramFrequencyContainerType >;
+  using RunLengthMatrixGenerator = typename RunLengthFilterType::RunLengthMatrixFilterType;
+  using RunLengthFeatures = typename RunLengthFilterType::RunLengthFeaturesFilterType;
   using OffsetType = typename ImageType::OffsetType;
-  using Offsets = OffsetType;
   using OffsetVector = itk::VectorContainer< unsigned char, OffsetType >;
 
-  double m_Bins = 16;
-  double inputRadius = 1;
-  double inputDirections = 13;
+  //offset calculation
+  double inputDirections = 26;
   itk::Neighborhood< typename ImageType::PixelType, ImageType::ImageDimension > neighborhood;
-  neighborhood.SetRadius(inputRadius);
+  neighborhood.SetRadius(1);
   auto size = neighborhood.GetSize();
   auto directionsToCompute = 1;
   for (size_t sizeCount = 0; sizeCount < ImageType::ImageDimension; sizeCount++)
@@ -1785,69 +1754,72 @@ VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType
   {
     directionsToCompute = inputDirections;
   }
-
   typename OffsetVector::Pointer offsets = OffsetVector::New();
-
-  for (int d = 0; d < directionsToCompute; d++)
+  auto centerIndex = neighborhood.GetCenterNeighborhoodIndex();
+  for (int d = directionsToCompute - 1; d >= 0; d--)
   {
-    offsets->push_back(neighborhood.GetOffset(d));
+    if (d != static_cast<int>(centerIndex))
+    {
+      offsets->push_back(neighborhood.GetOffset(d));
+    }
   }
-  //---------------------------------------------
-  using HistogramFrequencyContainerType = itk::Statistics::DenseFrequencyContainer2;
-  using RunLengthFilterType = itk::Statistics::ScalarImageToRunLengthFeaturesFilter< ImageType, HistogramFrequencyContainerType >;
-  using RunLengthMatrixGenerator = typename RunLengthFilterType::RunLengthMatrixFilterType;
-  using RunLengthFeatures = typename RunLengthFilterType::RunLengthFeaturesFilterType;
-  using InternalRunLengthFeatureName = typename RunLengthFeatures::RunLengthFeatureName;
 
+  //matrix generation
   typename  RunLengthMatrixGenerator::Pointer matrix_generator = RunLengthMatrixGenerator::New();
-  matrix_generator->SetMaskImage(mask);
   matrix_generator->SetInput(image);
+  matrix_generator->SetMaskImage(mask);
   matrix_generator->SetInsidePixelValue(1);
   matrix_generator->SetPixelValueMinMax(0, 255);
-  //removed SetDistanceValueMinMax
-  //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TOCHECK - why is this only between 0-4? P
-  matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
 
+  matrix_generator->SetDistanceValueMinMax(0, 4);
+  matrix_generator->SetNumberOfBinsPerAxis(16);
   typename  RunLengthFeatures::Pointer runLengthMatrixCalculator = RunLengthFeatures::New();
-
-  typename  RunLengthFilterType::FeatureNameVectorPointer requestedFeatures = RunLengthFilterType::FeatureNameVector::New();
-  requestedFeatures->push_back(RunLengthFeatures::ShortRunEmphasis);
-  requestedFeatures->push_back(RunLengthFeatures::LongRunEmphasis);
-  requestedFeatures->push_back(RunLengthFeatures::GreyLevelNonuniformity);
-  requestedFeatures->push_back(RunLengthFeatures::RunLengthNonuniformity);
-  requestedFeatures->push_back(RunLengthFeatures::LowGreyLevelRunEmphasis);
-  requestedFeatures->push_back(RunLengthFeatures::HighGreyLevelRunEmphasis);
-  requestedFeatures->push_back(RunLengthFeatures::ShortRunLowGreyLevelEmphasis);
-  requestedFeatures->push_back(RunLengthFeatures::ShortRunHighGreyLevelEmphasis);
-  requestedFeatures->push_back(RunLengthFeatures::LongRunLowGreyLevelEmphasis);
-  requestedFeatures->push_back(RunLengthFeatures::LongRunHighGreyLevelEmphasis);
-
-  std::vector<double> features;
+  typename  RunLengthFeatures::Pointer runLengthFeaturesCalculator = RunLengthFeatures::New();
   typename  OffsetVector::ConstIterator offsetIt;
-  size_t offsetNum = 0, featureNum = 0;
+  size_t offsetNum = 0;
 
-  std::vector<double> tempfeatures/*(requestedFeatures->size(), 0)*/;
-  tempfeatures.resize(requestedFeatures->size());
+  double sre = 0, lre = 0, gln = 0, glnn = 0, rln = 0, rlnn = 0, rp = 0, lglre = 0, hglre = 0, srlgle = 0, srhgle = 0, lrlgle = 0, lrhgle = 0;
+  std::vector<double> features;
+
   for (offsetIt = offsets->Begin(); offsetIt != offsets->End(); offsetIt++, offsetNum++)
   {
     matrix_generator->SetOffset(offsetIt.Value());
     matrix_generator->Update();
+    runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
+    runLengthFeaturesCalculator->Update();
+    sre += runLengthFeaturesCalculator->GetShortRunEmphasis();
+    lre += runLengthFeaturesCalculator->GetLongRunEmphasis();
+    gln += runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+    rln += runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+    lglre += runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
+    hglre += runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
+    srlgle += runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
+    srhgle += runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
+    lrlgle += runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+    lrhgle += runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+  }
+  sre /= offsets->size();
+  lre /= offsets->size();
+  gln /= offsets->size();
+  rln /= offsets->size();
+  lglre /= offsets->size();
+  hglre /= offsets->size();
+  srlgle /= offsets->size();
+  srhgle /= offsets->size();
+  lrlgle /= offsets->size();
+  lrhgle /= offsets->size();
 
-    runLengthMatrixCalculator->SetInput(matrix_generator->GetOutput());
-    runLengthMatrixCalculator->Update();
-    typename RunLengthFilterType::FeatureNameVector::ConstIterator fnameIt;
-    //std::ostringstream ss;
-    featureNum = 0;
-    for (fnameIt = requestedFeatures->Begin(); fnameIt != requestedFeatures->End(); ++fnameIt, featureNum++)
-    {
-      tempfeatures[featureNum] = tempfeatures[featureNum] + runLengthMatrixCalculator->GetFeature((InternalRunLengthFeatureName)fnameIt.Value());
-    }
-  }
-  for (size_t i = 0; i < tempfeatures.size(); i++)
-  {
-    tempfeatures[i] = tempfeatures[i] / offsets->size();
-    features.push_back(tempfeatures[i]);
-  }
+  features.push_back(sre);
+  features.push_back(lre);
+  features.push_back(gln);
+  features.push_back(rln);
+  features.push_back(lglre);
+  features.push_back(hglre);
+  features.push_back(srlgle);
+  features.push_back(srhgle);
+  features.push_back(lrlgle);
+  features.push_back(lrhgle);
+
   return features;
 }
 template<class ImageType>

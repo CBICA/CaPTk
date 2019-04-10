@@ -1,5 +1,4 @@
 #include "PseudoProgressionEstimator.h"
-#include "PseudoProgressionEstimator.h"
 #include "fMainWindow.h"
 #include "cbicaStatistics.h"
 #include "CaPTkEnums.h"
@@ -2071,130 +2070,125 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
     logger.WriteError("Error in writing PC10 reduced intensity histogram. Error code : " + std::string(e1.what()));
   }
 
-
-
-
   VariableSizeMatrixType AllPCAs;
   VariableSizeMatrixType AllMeans;
-  AllPCAs.SetSize(23 * 255, 255);
-  AllMeans.SetSize(23, 255);
+  AllPCAs.SetSize(23 * 20, 20);
+  AllMeans.SetSize(23, 20);
 
   int start_counter = 0;
   for (unsigned int i = 0; i <PCA_T1.Rows(); i++)
     for (unsigned int j = 0; j < PCA_T1.Cols(); j++)
       AllPCAs(i+start_counter, j) = PCA_T1(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_T1CE.Rows(); i++)
     for (unsigned int j = 0; j < PCA_T1CE.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_T1CE(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_T2.Rows(); i++)
     for (unsigned int j = 0; j < PCA_T2.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_T2(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_FL.Rows(); i++)
     for (unsigned int j = 0; j < PCA_FL.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_FL(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_T1T1CE.Rows(); i++)
     for (unsigned int j = 0; j < PCA_T1T1CE.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_T1T1CE(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_T2FL.Rows(); i++)
     for (unsigned int j = 0; j < PCA_T2FL.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_T2FL(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_AX.Rows(); i++)
     for (unsigned int j = 0; j < PCA_AX.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_AX(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_FA.Rows(); i++)
     for (unsigned int j = 0; j < PCA_FA.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_FA(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_RAD.Rows(); i++)
     for (unsigned int j = 0; j < PCA_RAD.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_RAD(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_TR.Rows(); i++)
     for (unsigned int j = 0; j < PCA_TR.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_TR(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PH.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PH.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PH(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PSR.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PSR.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PSR(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_RCBV.Rows(); i++)
     for (unsigned int j = 0; j < PCA_RCBV.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_RCBV(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PC1.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC1.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC1(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PC2.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC2.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC2(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PC3.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC3.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC3(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PC4.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC4.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC4(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PC5.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC5.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC5(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PC6.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC6.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC6(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PC7.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC7.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC7(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PC8.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC8.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC8(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PC9.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC9.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC9(i, j);
 
-  start_counter = start_counter + 255;
+  start_counter = start_counter + 20;
   for (unsigned int i = 0; i <PCA_PC10.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC10.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC10(i, j);
-
-
 
   for (unsigned int i = 0; i < Mean_T1.Size(); i++)
   {
@@ -2222,7 +2216,6 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
     AllMeans(21, i) = Mean_PC9[i];
     AllMeans(22, i) = Mean_PC10[i];
   }
-
   WriteCSVFiles(AllPCAs, outputdirectory + "/PCA_Others.csv");
   WriteCSVFiles(AllMeans, outputdirectory + "/Mean_Others.csv");
 
@@ -2622,12 +2615,8 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
   for (unsigned int i = 0; i < dataMatrix.size(); i++)
     Mean_PERF[i] = dataMatrix(0, i);
 
-
-
-
-
   //-------------others related data reading------------------
-  int PCA_Others_Size = 255;
+  int PCA_Others_Size = 20;
   reader->SetFileName(modeldirectory + "/PCA_Others.csv");
   reader->Parse();
   dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
@@ -2681,135 +2670,139 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
   Mean_PC10.SetSize(PCA_Others_Size);
 
   int start_counter = 0;
-  int end_counter = 254;
+  int end_counter = 19;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1(i, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1CE(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T2(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_FL(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1T1CE(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T2FL(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_AX(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_FA(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_RAD(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_TR(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PH(i - start_counter, j) = dataMatrix(i, j);
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PSR(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_RCBV(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC1(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC2(i - start_counter, j) = dataMatrix(i, j);
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC3(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC4(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC5(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC6(i - start_counter, j) = dataMatrix(i, j);
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC7(i - start_counter, j) = dataMatrix(i, j);
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC8(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC9(i - start_counter, j) = dataMatrix(i, j);
 
-  start_counter = start_counter + 255;
-  end_counter = end_counter + 255;
+  start_counter = start_counter + PCA_Others_Size;
+  end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC10(i - start_counter, j) = dataMatrix(i, j);
