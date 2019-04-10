@@ -21,7 +21,6 @@ jobs:
 
   steps:
   - bash: |
-    echo "123"  
     echo "Build.DefinitionName: $(Build.DefinitionName)"
     echo "Build.Repository.Name: $(Build.Repository.Name)"
     echo "System.TeamProject: $(System.TeamProject)"
