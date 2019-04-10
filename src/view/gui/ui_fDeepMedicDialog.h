@@ -19,6 +19,8 @@
 #include <QGroupBox>
 #include <QtWidgets/QRadioButton>
 
+#include "CaPTkGUIUtils.h"
+
 QT_BEGIN_NAMESPACE
 
 class ui_fDeepMedicDialog
