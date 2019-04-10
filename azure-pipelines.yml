@@ -20,12 +20,12 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-  - bash: |
-    echo "Build.DefinitionName:" $(Build.DefinitionName)
-    echo "Build.Repository.Name:" $(Build.Repository.Name)
-    echo "System.TeamProject:" $(System.TeamProject)
-    echo "System.CollectionId:" $(System.CollectionId)
-  displayName: 'Test Names'
+    - bash: |
+      echo "Build.DefinitionName=" $(Build.DefinitionName)
+      echo "Build.Repository.Name=" $(Build.Repository.Name)
+      echo "System.TeamProject=" $(System.TeamProject)
+      echo "System.CollectionId=" $(System.CollectionId)
+    displayName: 'Test Names'
 
 #   # Checkout validator.
 #   # - bash: |
