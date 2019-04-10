@@ -350,10 +350,7 @@ fMainWindow::fMainWindow()
 
   auto lungAppList = " LungField Nodule Analysis";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
-  std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation";
-#ifdef WIN32
-  segAppList += " deepmedic";
-#endif
+  std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic";
   auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer";
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
