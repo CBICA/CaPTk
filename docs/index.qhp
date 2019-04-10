@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.6.2" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.0.PreAlpha" ref="index.html">
         <section title="Overview" ref="index.html" />
         <section title="Installation Instructions" ref="Installation.html" />
         <section title="Getting Started" ref="Getting_Started.html">
@@ -139,8 +139,6 @@
       <file>sync_on.png</file>
       <file>sync_off.png</file>
       <file>doxygen.css</file>
-      <file>jquery.js</file>
-      <file>dynsections.js</file>
       <file>Installation.html</file>
       <file>Getting_Started.html</file>
       <file>gs_keyboard.html</file>

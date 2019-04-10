@@ -33,7 +33,7 @@ public:
   fDeepMedicDialog();
   ~fDeepMedicDialog();
 
-  QString m_exe, m_dataDir; // contains full path and exe name of dcm2nii
+  QString m_exe, m_dataDir, m_modelDir; // contains full path and exe name of dcm2nii
 
   void SetCurrentImagePath(const QString &inputPath)
   {
@@ -47,10 +47,11 @@ public:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
 
+  void SelectModelDirectory();
   void SelectOutputDirectory();
 
 signals:
-  void RunDeepMedic(const std::string outputDirectory);
+  void RunDeepMedic(const std::string modelDirectory, const std::string outputDirectory);
 };
 
 

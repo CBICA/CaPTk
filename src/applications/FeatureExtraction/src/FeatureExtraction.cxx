@@ -388,6 +388,51 @@ int main(int argc, char** argv)
     case 3:
     {
       using ImageType = itk::Image < float, 3 >;
+      if (genericImageInfo.GetImageSize()[2] == 1)
+      {
+        // this is actually a 2D image so re-process accordingly
+
+        auto m_tempFolderLocation = cbica::getUserHomeDirectory() + "/.CaPTk/tmp_" + cbica::getCurrentProcessID() + "/";
+        cbica::createDir(m_tempFolderLocation);
+
+        ImageType::IndexType regionIndex;
+        ImageType::SizeType regionSize;
+
+        auto currentSize = genericImageInfo.GetImageSize();
+        auto currentOrigin = genericImageInfo.GetImageOrigins();
+        regionSize[0] = currentSize[0];
+        regionSize[1] = currentSize[1];
+        regionSize[2] = 0;
+        for (size_t d = 0; d < 3; d++)
+        {
+          regionIndex[d] = /*currentOrigin[d]*/0;
+        }
+
+        using ActualImageType = itk::Image< float, 2 >;
+        ImageType::RegionType desiredRegion(regionIndex, regionSize);
+        auto filter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
+        filter->SetExtractionRegion(desiredRegion);
+        for (size_t i = 0; i < image_paths.size(); i++)
+        {
+          filter->SetInput(cbica::ReadImage< ImageType >(image_paths[i]));
+          filter->SetDirectionCollapseToIdentity(); // This is required.
+          filter->Update();
+
+          auto currentFileBase = cbica::getFilenameBase(image_paths[i]);
+          image_paths[i] = m_tempFolderLocation + currentFileBase + "_2D.nii.gz";
+          cbica::WriteImage< ActualImageType >(filter->GetOutput(), image_paths[i]);
+        }
+        filter->SetInput(cbica::ReadImage< ImageType >(maskfilename));
+        filter->SetDirectionCollapseToIdentity(); // This is required.
+        filter->Update();
+
+        auto currentFileBase = cbica::getFilenameBase(maskfilename);
+        maskfilename = m_tempFolderLocation + currentFileBase + "_2D.nii.gz";
+        cbica::WriteImage< ActualImageType >(filter->GetOutput(), maskfilename);
+        algorithmRunner< ActualImageType >();
+      }
+
+      // otherwise, it actually is a 3D image
       algorithmRunner< ImageType >();
       break;
     }

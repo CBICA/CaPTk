@@ -350,10 +350,7 @@ fMainWindow::fMainWindow()
 
   auto lungAppList = " LungField Nodule Analysis";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
-  std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation";
-#ifdef WIN32
-  segAppList += " deepmedic";
-#endif
+  std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic";
   auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer";
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
@@ -797,7 +794,7 @@ fMainWindow::fMainWindow()
 
   connect(&nodulePanel, SIGNAL(SBRTNoduleParamReady(const std::string, const int)), this, SLOT(CallSBRTNodule(const std::string, const int)));
 
-  connect(&deepMedicDialog, SIGNAL(RunDeepMedic(const std::string)), this, SLOT(CallDeepMedicSegmentation(const std::string)));
+  connect(&deepMedicDialog, SIGNAL(RunDeepMedic(const std::string, const std::string)), this, SLOT(CallDeepMedicSegmentation(const std::string, const std::string)));
 
   connect(this, SIGNAL(SeedPointsFocused(bool)), tumorPanel, SLOT(sTableFocused(bool)));
   connect(this, SIGNAL(TissuePointsFocused(bool)), tumorPanel, SLOT(tTableFocused(bool)));
@@ -2911,6 +2908,47 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     else
     {
+      auto maskInfo = cbica::ImageInfo(maskFileName);
+      if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) && (maskInfo.GetImageDimensions() == 2))
+      {
+        // this is actually a 2D image which has been loaded in CaPTk as a pseudo-3D image
+        auto origin_image = mSlicerManagers[0]->mOrigin;
+        auto spacings_image = mSlicerManagers[0]->mITKImage->GetSpacing();
+        auto size_image = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
+
+        auto origin_mask = maskInfo.GetImageOrigins();
+        auto spacings_mask = maskInfo.GetImageSpacings();
+        auto size_mask = maskInfo.GetImageSize();
+        //ImageType::DirectionType directions_image;
+        //directions_image[0][0] = mSlicerManagers[0]->mDirection(0, 0);
+        //directions_image[0][1] = mSlicerManagers[0]->mDirection(0, 1);
+        //directions_image[0][2] = mSlicerManagers[0]->mDirection(0, 2);
+        //directions_image[1][0] = mSlicerManagers[0]->mDirection(1, 0);
+        //directions_image[1][1] = mSlicerManagers[0]->mDirection(1, 1);
+        //directions_image[1][2] = mSlicerManagers[0]->mDirection(1, 2);
+        //directions_image[2][0] = mSlicerManagers[0]->mDirection(2, 0);
+        //directions_image[2][1] = mSlicerManagers[0]->mDirection(2, 1);
+        //directions_image[2][2] = mSlicerManagers[0]->mDirection(2, 2);
+        for (size_t i = 0; i < 2; i++)
+        {
+          if (origin_image[i] != origin_mask[i])
+          {
+            ShowErrorMessage("The origins of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+          if (spacings_image[i] != spacings_mask[i])
+          {
+            ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+          if (size_image[i] != size_mask[i])
+          {
+            ShowErrorMessage("The sizes of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+        }
+        ConversionFrom2Dto3D(maskFileName, false); // all sanity checks passed; load the mask 
+      }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
         cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
@@ -5993,19 +6031,10 @@ void fMainWindow::ApplicationITKSNAP()
 
   r.WriteToXMLFile(std::string(m_tempFolderLocation + "/testXML.itksnap").c_str());
 
-  std::string scriptToCall = captk_currentApplicationPath +
-#ifdef Q_OS_WIN32
-    "/itksnap.exe"
-#else
-    "/itksnap"
-#endif
-    ;
-
-  QString itkSnapLocation = scriptToCall.c_str();
+  QString itkSnapLocation = getApplicationPath("itksnap").c_str();
   QStringList itkSnapArgs;
   itkSnapArgs << "-w" << std::string(m_tempFolderLocation + "/testXML.itksnap").c_str();
   startExternalProcess(itkSnapLocation, itkSnapArgs);
-  //  std::system((scriptToCall + "-w " + m_tempFolderLocation + "/testXML.itksnap").c_str());
   readMaskFile(maskFile);
   updateProgress(0, "Mask saved from ITK-SNAP loaded");
 }
@@ -6506,11 +6535,9 @@ void fMainWindow::ApplicationDeepMedicSegmentation()
   deepMedicDialog.exec();
 }
 
-void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
+void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, const std::string outputDirectory)
 {
   std::string file_t1ce, file_t1, file_flair, file_t2;
-  auto statsCalculator = itk::StatisticsImageFilter< ImageTypeFloat3D >::New();
-  bool noMaskNorm = false;
 
   cbica::createDir(outputDirectory);
 
@@ -6523,6 +6550,25 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
   {
     cbica::WriteImage< TImageType >(getMaskImage(), file_mask);
   }
+
+  if (!cbica::isDir(modelDirectory))
+  {
+    ShowErrorMessage("Model directory was not found, please try with another");
+    return;
+  }
+  if (!cbica::isFile(modelDirectory + "/modelConfig.txt"))
+  {
+    ShowErrorMessage("'modelConfig.txt' was not found in the directory, please check");
+    return;
+  }
+  if (!cbica::isFile(modelDirectory + "/model.ckpt"))
+  {
+    ShowErrorMessage("'model.ckpt' was not found in the directory, please check");
+    return;
+  }
+
+  auto modelConfigFile = modelDirectory + "/modelConfig.txt",
+    modelCkptFile = modelDirectory + "/model.ckpt";
 
   int progressBar = 0;
   for (size_t i = 0; i < mSlicerManagers.size(); i++)
@@ -6563,10 +6609,8 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     }
   }
 
-  std::string dataDir = getCaPTkDataDir() + "deepMedic/";
-
   QStringList args;
-  args /*<< "-model" << (dataDir + "to_use/modelConfig.txt").c_str()*/
+  args << "-md" << modelDirectory.c_str()
     << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
 
   if (!file_mask.empty())
@@ -6576,7 +6620,6 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
   updateProgress(5, "Starting DeepMedic Segmentation");
 
   auto dmExe = getApplicationPath("DeepMedic");
-  auto temp = args.join(" ").toStdString();
   if (!cbica::exists(dmExe))
   {
     ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
@@ -6584,7 +6627,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     return;
   }
 
-  if (std::system((dmExe + " " + temp).c_str()) != 0)
+  if (startExternalProcess(dmExe.c_str(), args) != 0)
   {
     ShowErrorMessage("DeepMedic returned with exit code != 0");
     updateProgress(0, "");
@@ -7596,15 +7639,7 @@ void fMainWindow::ChangeBrushSize(int size)
 
 void fMainWindow::ChangeMaskOpacity(int newMaskOpacity) // multiLabel uncomment this function
 {
-  double tempOpacity;
-  if ((newMaskOpacity > 1) || (newMaskOpacity == 1))
-  {
-    tempOpacity = 1.0;
-  }
-  else
-  {
-    tempOpacity = newMaskOpacity * 0.1;
-  }
+  double tempOpacity = newMaskOpacity * 0.1;
   for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
   {
     for (size_t j = 0; j < 3; j++)
