@@ -760,7 +760,7 @@ namespace cbica
 
       for (size_t i = 0; i < m_exampleUsageAndDescription.size(); i++)
       {
-        std::cout << " Command: " << m_exeName_wrap << " " << m_exampleUsageAndDescription[i].first << "\n\n";
+        std::cout << " Command: " << m_exeName_wrap << " " << m_exampleUsageAndDescription[i].first << "\n";
         std::cout << " Result : " << m_exampleUsageAndDescription[i].second << "\n\n";
       }
       std::cout << "\n";

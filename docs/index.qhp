@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.6.2.RC" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.6.2" ref="index.html">
         <section title="Overview" ref="index.html" />
         <section title="Installation Instructions" ref="Installation.html" />
         <section title="Getting Started" ref="Getting_Started.html">
@@ -64,7 +64,7 @@
           <section title="For Developers" ref="tr_forDeves.html" />
         </section>
         <section title="Download Instructions" ref="Download.html" />
-        <section title="Release Notes" ref="ReleaseNotes.html" />
+        <section title="Changelog: Release Notes" ref="ReleaseNotes.html" />
         <section title="People (Credits)" ref="People.html" />
       </section>
     </toc>
@@ -120,7 +120,7 @@
       <keyword name="Build CaPTk from Source" id="Build CaPTk from Source" ref="tr_buildFromSource.html" />
       <keyword name="For Developers" id="For Developers" ref="tr_forDeves.html" />
       <keyword name="Download Instructions" id="Download Instructions" ref="Download.html" />
-      <keyword name="Release Notes" id="Release Notes" ref="ReleaseNotes.html" />
+      <keyword name="Changelog: Release Notes" id="Changelog: Release Notes" ref="ReleaseNotes.html" />
       <keyword name="People (Credits)" id="People (Credits)" ref="People.html" />
     </keywords>
     <files>

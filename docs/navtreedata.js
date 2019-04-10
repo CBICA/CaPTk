@@ -31,7 +31,7 @@ var NAVTREE =
     [ "Scientific Findings using CaPTk", "Science.html", "Science" ],
     [ "Technical Reference", "Technical_Reference.html", "Technical_Reference" ],
     [ "Download Instructions", "Download.html", null ],
-    [ "Release Notes", "ReleaseNotes.html", null ],
+    [ "Changelog: Release Notes", "ReleaseNotes.html", null ],
     [ "People (Credits)", "People.html", null ]
   ] ]
 ];

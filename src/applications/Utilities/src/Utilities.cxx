@@ -3,6 +3,7 @@
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
+#include "DicomMetadataReader.h"
 
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
@@ -112,46 +113,45 @@ int algorithmsRunner()
     diffFilter->SetValidInput(inputNiftiImage);
     diffFilter->SetTestInput(readDicomImage);
     auto size = inputNiftiImage->GetBufferedRegion().GetSize();
-      diffFilter->VerifyInputInformationOn();
-      diffFilter->SetDifferenceThreshold(testThresh);
-      diffFilter->SetToleranceRadius(testRadius);
-      diffFilter->UpdateLargestPossibleRegion();
+    diffFilter->VerifyInputInformationOn();
+    diffFilter->SetDifferenceThreshold(testThresh);
+    diffFilter->SetToleranceRadius(testRadius);
+    diffFilter->UpdateLargestPossibleRegion();
 
-      size_t totalSize = 1;
-      for (size_t d = 0; d < TImageType::ImageDimension; d++)
+    size_t totalSize = 1;
+    for (size_t d = 0; d < TImageType::ImageDimension; d++)
+    {
+      totalSize *= size[d];
+    }
+
+    const double averageIntensityDifference = diffFilter->GetTotalDifference();
+    const unsigned long numberOfPixelsWithDifferences = diffFilter->GetNumberOfPixelsWithDifferences();
+
+    std::cout << "Total Voxels in Image       : " << totalSize << "\n";
+    std::cout << "Number of Difference Voxels : " << diffFilter->GetNumberOfPixelsWithDifferences() << "\n";
+    std::cout << "Percentage of Diff Voxels   : " << diffFilter->GetNumberOfPixelsWithDifferences() * 100 / totalSize << "\n";
+    std::cout << "Minimum Intensity Difference: " << diffFilter->GetMinimumDifference() << "\n";
+    std::cout << "Maximum Intensity Difference: " << diffFilter->GetMaximumDifference() << "\n";
+    std::cout << "Average Intensity Difference: " << diffFilter->GetMeanDifference() << "\n";
+    std::cout << "Overall Intensity Difference: " << diffFilter->GetTotalDifference() << "\n";
+
+    int numberOfPixelsTolerance = 70;
+    if (averageIntensityDifference > 0.0)
+    {
+      if (static_cast<int>(numberOfPixelsWithDifferences) >
+        numberOfPixelsTolerance)
       {
-        totalSize *= size[d];
-      }
-
-      std::cout << "Minimum Intensity Difference: " << diffFilter->GetMinimumDifference() << "\n";
-      std::cout << "Maximum Intensity Difference: " << diffFilter->GetMaximumDifference() << "\n";
-      std::cout << "Average Intensity Difference: " << diffFilter->GetMeanDifference() << "\n";
-      std::cout << "Overall Intensity Difference: " << diffFilter->GetTotalDifference() << "\n";
-
-      const double averageIntensityDifference = diffFilter->GetTotalDifference();
-      const unsigned long numberOfPixelsWithDifferences = diffFilter->GetNumberOfPixelsWithDifferences();
-
-      std::cout << "Number of Difference Voxels : " << diffFilter->GetNumberOfPixelsWithDifferences() << "\n";
-      std::cout << "Total Voxels in Image       : " << totalSize << "\n";
-      std::cout << "Percentage of Diff Voxels   : " << diffFilter->GetNumberOfPixelsWithDifferences() * 100 / totalSize << "\n";
-
-      int numberOfPixelsTolerance = 70;
-      if (averageIntensityDifference > 0.0)
-      {
-        if (static_cast<int>(numberOfPixelsWithDifferences) >
-          numberOfPixelsTolerance)
-        {
-          differenceFailed = true;
-        }
-        else
-        {
-          differenceFailed = false;
-        }
+        differenceFailed = true;
       }
       else
       {
         differenceFailed = false;
       }
+    }
+    else
+    {
+      differenceFailed = false;
+    }
     return differenceFailed;
     //return EXIT_FAILURE;
   }
@@ -174,9 +174,35 @@ int algorithmsRunner()
         std::cerr << "Input image and target image physical space mismatch.\n";
         return EXIT_FAILURE;
       }
-    }
+      else
+      {
+        auto diffFilter = itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
+        auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+        auto size = inputImage->GetBufferedRegion().GetSize();
+        diffFilter->SetValidInput(cbica::ReadImage< TImageType >(targetImageFile));
+        diffFilter->SetTestInput(inputImage);
+        diffFilter->VerifyInputInformationOn();
+        diffFilter->SetDifferenceThreshold(testThresh);
+        diffFilter->SetToleranceRadius(testRadius);
+        diffFilter->UpdateLargestPossibleRegion();
 
-    return EXIT_SUCCESS;
+        size_t totalSize = 1;
+        for (size_t d = 0; d < TImageType::ImageDimension; d++)
+        {
+          totalSize *= size[d];
+        }
+
+        std::cout << "Total Voxels/Pixels in Image: " << totalSize << "\n";
+        std::cout << "Number of Difference Voxels : " << diffFilter->GetNumberOfPixelsWithDifferences() << "\n";
+        std::cout << "Percentage of Diff Voxels   : " << diffFilter->GetNumberOfPixelsWithDifferences() * 100 / totalSize << "\n";
+        std::cout << "Minimum Intensity Difference: " << diffFilter->GetMinimumDifference() << "\n";
+        std::cout << "Maximum Intensity Difference: " << diffFilter->GetMaximumDifference() << "\n";
+        std::cout << "Average Intensity Difference: " << diffFilter->GetMeanDifference() << "\n";
+        std::cout << "Overall Intensity Difference: " << diffFilter->GetTotalDifference() << "\n";
+      }
+
+      return EXIT_SUCCESS;
+    }
   }
 
   if (requestedAlgorithm == ChangeValue)
@@ -281,20 +307,19 @@ int algorithmsRunner()
       diffFilter->SetToleranceRadius(testRadius);
       diffFilter->UpdateLargestPossibleRegion();
 
-      std::cout << "Minimum Intensity Difference: " << diffFilter->GetMinimumDifference() << "\n";
-      std::cout << "Maximum Intensity Difference: " << diffFilter->GetMaximumDifference() << "\n";
-      std::cout << "Average Intensity Difference: " << diffFilter->GetMeanDifference() << "\n";
-      std::cout << "Overall Intensity Difference: " << diffFilter->GetTotalDifference() << "\n";
-      
       size_t totalSize = 1;
       for (size_t d = 0; d < TImageType::ImageDimension; d++)
       {
         totalSize *= size[d];
       }
-      
+
+      std::cout << "Total Voxels/Pixels in Image: " << totalSize << "\n";
       std::cout << "Number of Difference Voxels : " << diffFilter->GetNumberOfPixelsWithDifferences() << "\n";
-      std::cout << "Total Voxels in Image       : " << totalSize << "\n";
       std::cout << "Percentage of Diff Voxels   : " << diffFilter->GetNumberOfPixelsWithDifferences() * 100 / totalSize << "\n";
+      std::cout << "Minimum Intensity Difference: " << diffFilter->GetMinimumDifference() << "\n";
+      std::cout << "Maximum Intensity Difference: " << diffFilter->GetMaximumDifference() << "\n";
+      std::cout << "Average Intensity Difference: " << diffFilter->GetMeanDifference() << "\n";
+      std::cout << "Overall Intensity Difference: " << diffFilter->GetTotalDifference() << "\n";
     }
     else
     {
@@ -448,7 +473,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::FLOAT, "0-10", "[Resample] Isotropic resolution of the voxels/pixels to change to", "Resize value needs to be 100", "Defaults to 1.0");
   parser.addOptionalParameter("ri", "resizeInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE:BICUBIC", "The interpolation type to use for resampling or resizing", "Defaults to LINEAR");
   parser.addOptionalParameter("s", "sanityCheck", cbica::Parameter::FILE, "NIfTI Reference", "Do sanity check of inputImage with the file provided in with this parameter", "Performs checks on size, origin & spacing", "Pass the target image after '-s'");
-  parser.addOptionalParameter("inf", "information", cbica::Parameter::BOOLEAN, "true or false", "Output the information in inputImage");
+  parser.addOptionalParameter("inf", "information", cbica::Parameter::BOOLEAN, "true or false", "Output the information in inputImage", "If DICOM file is detected, the tags are written out");
   parser.addOptionalParameter("c", "cast", cbica::Parameter::STRING, "(u)char, (u)int, (u)long, (u)longlong, float, double", "Change the input image type", "Examples: '-c uchar', '-c float', '-c longlong'");
   parser.addOptionalParameter("un", "uniqueVals", cbica::Parameter::BOOLEAN, "true or false", "Output the unique values in the inputImage", "Pass value '1' for ascending sort or '0' for no sort", "Defaults to '1'");
   parser.addOptionalParameter("b", "boundingBox", cbica::Parameter::FILE, "NIfTI Mask", "Extracts the smallest bounding box around the mask file", "With respect to inputImage", "Writes to outputImage");
@@ -456,22 +481,16 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("tb", "testBase", cbica::Parameter::FILE, "NIfTI Reference", "Baseline image to compare inputImage with");
   parser.addOptionalParameter("tr", "testRadius", cbica::Parameter::INTEGER, "0-10", "Maximum distance away to look for a matching pixel", "Defaults to 0");
   parser.addOptionalParameter("tt", "testThresh", cbica::Parameter::FLOAT, "0-5", "Minimum threshold for pixels to be different", "Defaults to 0.0");
-  parser.addOptionalParameter("utB", "unitTestBuffer", cbica::Parameter::STRING, "N.A.", "Buffer test of application");
-  parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
   parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
 
-  /// unit testing
-  if (parser.isPresent("utB"))
-  {
-    char buff[100];
-    sprintf(buff, "This is a testing scenario.\n");
-    buff[0] = '\0';
-    cbica::sleep();
-    return EXIT_SUCCESS;
-  }
-  /// unit testing
+  parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
+  parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
+  parser.addExampleUsage("-i C:/test.nii.gz -inf", "Prints out image information to console (for DICOMs, this does a full dump of the tags)");
+  parser.addExampleUsage("-i C:/test/1.dcm -o C:/test.nii.gz -d2n C:/test_reference.nii.gz", "DICOM to NIfTI conversion and do sanity check of the converted image with the reference image");
+
+  parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
 
   if (parser.isPresent("i"))
   {
@@ -614,28 +633,57 @@ int main(int argc, char** argv)
 
   if (requestedAlgorithm == Information)
   {
-    auto dims = inputImageInfo.GetImageDimensions();
-    auto size = inputImageInfo.GetImageSize();
-    auto origin = inputImageInfo.GetImageOrigins();
-    auto spacing = inputImageInfo.GetImageSpacings();
-    auto size_string = std::to_string(size[0]);
-    auto origin_string = std::to_string(origin[0]);
-    auto spacing_string = std::to_string(spacing[0]);
-    size_t totalSize = size[0];
-    for (size_t i = 1; i < dims; i++)
+    auto gdcmIO = itk::GDCMImageIO::New();
+    if (gdcmIO->CanReadFile(inputImageFile.c_str())) // if dicom file
     {
-      size_string += "x" + std::to_string(size[i]);
-      origin_string += "x" + std::to_string(origin[i]);
-      spacing_string += "x" + std::to_string(spacing[i]);
-      totalSize *= size[i];
+      std::cout << "DICOM file detected, will print out all tags.\n";
+      DicomMetadataReader reader;
+      reader.SetFilePath(inputImageFile);
+      bool readStatus = reader.ReadMetaData();
+      if (!readStatus)
+      {
+        std::cout << "Could not read dicom image.\n";
+        return EXIT_FAILURE;
+      }
+
+      auto readMap = reader.GetMetaDataMap();
+      std::pair<std::string, std::string> labelValuePair;
+      std::cout << "Tag" << "," << "Description" << "," << "Value" << std::endl;
+      for (auto itr = readMap.begin(); itr != readMap.end(); ++itr)
+      {
+        labelValuePair = itr->second;
+        std::cout << itr->first.c_str() << ","
+          << labelValuePair.first.c_str() << ","
+          << labelValuePair.second.c_str() << "\n";
+      }
     }
-    std::cout << "Dimensions: " << dims << "\n";
-    std::cout << "Size      : " << size_string << "\n";
-    std::cout << "Total     : " << totalSize << "\n";
-    std::cout << "Origin    : " << origin_string << "\n";
-    std::cout << "Spacing   : " << spacing_string << "\n";
-    std::cout << "Component : " << inputImageInfo.GetComponentTypeAsString() << "\n";
-    std::cout << "Pixel Type: " << inputImageInfo.GetPixelTypeAsString() << "\n";
+    else
+    {
+      std::cout << "Non-DICOM file detected, will print out ITK Image information.\n";
+      auto dims = inputImageInfo.GetImageDimensions();
+      auto size = inputImageInfo.GetImageSize();
+      auto origin = inputImageInfo.GetImageOrigins();
+      auto spacing = inputImageInfo.GetImageSpacings();
+      auto size_string = std::to_string(size[0]);
+      auto origin_string = std::to_string(origin[0]);
+      auto spacing_string = std::to_string(spacing[0]);
+      size_t totalSize = size[0];
+      for (size_t i = 1; i < dims; i++)
+      {
+        size_string += "x" + std::to_string(size[i]);
+        origin_string += "x" + std::to_string(origin[i]);
+        spacing_string += "x" + std::to_string(spacing[i]);
+        totalSize *= size[i];
+      }
+      std::cout << "Property,Value\n";
+      std::cout << "Dimensions," << dims << "\n";
+      std::cout << "Size," << size_string << "\n";
+      std::cout << "Total," << totalSize << "\n";
+      std::cout << "Origin," << origin_string << "\n";
+      std::cout << "Spacing," << spacing_string << "\n";
+      std::cout << "Component," << inputImageInfo.GetComponentTypeAsString() << "\n";
+      std::cout << "Pixel Type," << inputImageInfo.GetPixelTypeAsString() << "\n"; 
+    }
     return EXIT_SUCCESS;
   }
 
