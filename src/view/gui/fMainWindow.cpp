@@ -2278,6 +2278,28 @@ void fMainWindow::ChangeImageWithOrder(SlicerManager *sm, int order)
   DisplayChanged(item);
 }
 
+void fMainWindow::OnSliderMovedInComparisonMode(int value)
+{
+  if (AxialViewSlider->value() != value)
+  {
+    AxialViewSlider->setValue(value);
+    CoronalViewSlider->setValue(value);
+    SaggitalViewSlider->setValue(value);
+
+  }
+  if (m_ComparisonViewerLeft->GetSlice() != value)
+  {
+    m_ComparisonViewerLeft->SetSlice(value);
+    m_ComparisonViewerCenter->SetSlice(value);
+    m_ComparisonViewerRight->SetSlice(value);
+
+    m_ComparisonViewerLeft->Render();
+    m_ComparisonViewerCenter->Render();
+    m_ComparisonViewerRight->Render();
+  }
+
+}
+
 void fMainWindow::AxialViewSliderChanged()
 {
   static int value = -1;
@@ -6513,13 +6535,14 @@ void fMainWindow::EnableComparisonMode(bool enable)
       m_ComparisonViewerCenter.GetPointer() == nullptr &&
       m_ComparisonViewerRight.GetPointer() == nullptr)
     {
-      m_ComparisonViewerLeft    = vtkSmartPointer<Slicer>::New();
-      m_ComparisonViewerCenter  = vtkSmartPointer<Slicer>::New();
-      m_ComparisonViewerRight   = vtkSmartPointer<Slicer>::New();
+      m_ComparisonViewerLeft = vtkSmartPointer<Slicer>::New();
+      m_ComparisonViewerCenter = vtkSmartPointer<Slicer>::New();
+      m_ComparisonViewerRight = vtkSmartPointer<Slicer>::New();
 
       m_ComparisonViewerLeft->SetComparisonMode(true);
       m_ComparisonViewerCenter->SetComparisonMode(true);
       m_ComparisonViewerRight->SetComparisonMode(true);
+    }
 
       m_ComparisonViewerLeft->SetImage(mSlicerManagers[0]->GetSlicer(0)->GetImage(), mSlicerManagers[0]->GetSlicer(0)->GetTransform());
       m_ComparisonViewerCenter->SetImage(mSlicerManagers[1]->GetSlicer(0)->GetImage(), mSlicerManagers[1]->GetSlicer(0)->GetTransform());
@@ -6549,10 +6572,41 @@ void fMainWindow::EnableComparisonMode(bool enable)
       m_ComparisonViewerLeft->Render();
       m_ComparisonViewerCenter->Render();
       m_ComparisonViewerRight->Render();
-    }
   }
   else
   {
+    vtkImageData *img1 = mSlicerManagers[0]->GetSlicer(0)->GetImage();
+    vtkImageData *img2 = mSlicerManagers[1]->GetSlicer(0)->GetImage();
+    vtkImageData *img3 = mSlicerManagers[2]->GetSlicer(0)->GetImage();
+
+    mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
+    mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
+    mSlicerManagers[2]->SetImage(mSlicerManagers[2]->GetITKImage());
+
+    mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+    mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+    mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+
+    mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+    mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+    mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+
+    connect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
+    connect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(CoronalViewSliderChanged()));
+    connect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(SaggitalViewSliderChanged()));
+
+    disconnect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+    disconnect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+    disconnect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+
+    m_ComparisonViewerLeft->SetDisplayMode(false);
+    m_ComparisonViewerCenter->SetDisplayMode(false);
+    m_ComparisonViewerRight->SetDisplayMode(false);
+
+    this->InitDisplay();
+
+    mSlicerManagers[0]->Render();
+
   }
 }
 

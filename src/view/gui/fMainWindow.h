@@ -555,6 +555,8 @@ signals:
   void TissuePointsFocused(bool bFocused);
 
   public slots:
+    void OnSliderMovedInComparisonMode(int);
+
   /**
   \brief Updates draw mode when drawing panel changes
   */
