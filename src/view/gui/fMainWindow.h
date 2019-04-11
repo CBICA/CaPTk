@@ -1319,6 +1319,9 @@ signals:
   void ApplicationDeepMedicSegmentation();
   void ApplicationTheia();
 
+  //! Enable/Disable comparison mode
+  void EnableComparisonMode(bool);
+
   void GeodesicTrainingFinishedHandler();
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
@@ -1417,6 +1420,7 @@ private:
   std::map<std::string, float> m_fetalbrainfeatures;
   int m_fetalslice;
   bool m_ComparisonMode; //! comparison mode
+  vtkSmartPointer<Slicer> m_ComparisonViewerLeft, m_ComparisonViewerCenter, m_ComparisonViewerRight;
 
   // GeodesicTraining private variables
 	GeodesicTrainingCaPTkApp<2>* m_GeodesicTrainingCaPTkApp2D;

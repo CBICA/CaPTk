@@ -757,14 +757,19 @@ void Slicer::SetOpacity(double s)
 
 void Slicer::SetRenderWindow(int orientation, vtkRenderWindow * rw)
 {
-  this->Superclass::SetRenderWindow(rw);
-  this->SetupInteractor(rw->GetInteractor());
-  this->GetRenderer()->AddActor(pdmA);
-  this->GetRenderer()->ResetCamera();
-  SetSliceOrientation(2 - (orientation % 3));
-  ResetCamera();
-  vtkCamera *camera = this->GetRenderer()->GetActiveCamera();
-  camera->SetParallelScale(camera->GetParallelScale() * 0.8);
+  if (rw == nullptr)
+    this->Superclass::SetRenderWindow(rw);
+  else
+  {
+    this->Superclass::SetRenderWindow(rw);
+    this->SetupInteractor(rw->GetInteractor());
+    this->GetRenderer()->AddActor(pdmA);
+    this->GetRenderer()->ResetCamera();
+    SetSliceOrientation(2 - (orientation % 3));
+    ResetCamera();
+    vtkCamera *camera = this->GetRenderer()->GetActiveCamera();
+    camera->SetParallelScale(camera->GetParallelScale() * 0.8);
+  }
 }
 
 void Slicer::ResetCamera()

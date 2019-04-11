@@ -493,6 +493,7 @@ fMainWindow::fMainWindow()
   connect(imagesPanel, SIGNAL(sigOverlaySliderChanged(int)), this, SLOT(overlaySliderChanged(int)));
   connect(imagesPanel, SIGNAL(sigOverlayChanged()), this, SLOT(overlayChanged()));
   connect(imagesPanel, SIGNAL(sigTheiaClicked()), this, SLOT(ApplicationTheia()));
+  connect(imagesPanel, SIGNAL(CompareModeToggled(bool)), this, SLOT(EnableComparisonMode(bool)));
   connect(imagesPanel, SIGNAL(sigImageModalityChanged(int)), this, SLOT(imageModalityChanged(int)));
   connect(imagesPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
 
@@ -1459,6 +1460,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     auto imageInfo = cbica::ImageInfo(fname);
     SlicerManager* imageManager = new SlicerManager(3, mLandmarks, mSeedPoints, mTissuePoints);
     imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
+    imageManager->SetComparisonMode(false);
 
     bool bFirstLoad = false;
     if (mSlicerManagers.size() == 0)
@@ -6492,6 +6494,65 @@ void fMainWindow::ApplicationTheia()
   {
     ShowErrorMessage("Please load at least a single image before trying 3D Visualizer", this);
     return;
+  }
+}
+
+void fMainWindow::EnableComparisonMode(bool enable)
+{
+  if (mSlicerManagers.size() < 3)
+  {
+    ShowMessage("Please load 3 datasets to enable comparison mode", this);
+    return;
+  }
+
+  this->SetComparisonMode(enable);
+
+  if (enable)
+  {
+    if (m_ComparisonViewerLeft.GetPointer() == nullptr &&
+      m_ComparisonViewerCenter.GetPointer() == nullptr &&
+      m_ComparisonViewerRight.GetPointer() == nullptr)
+    {
+      m_ComparisonViewerLeft    = vtkSmartPointer<Slicer>::New();
+      m_ComparisonViewerCenter  = vtkSmartPointer<Slicer>::New();
+      m_ComparisonViewerRight   = vtkSmartPointer<Slicer>::New();
+
+      m_ComparisonViewerLeft->SetComparisonMode(true);
+      m_ComparisonViewerCenter->SetComparisonMode(true);
+      m_ComparisonViewerRight->SetComparisonMode(true);
+
+      m_ComparisonViewerLeft->SetImage(mSlicerManagers[0]->GetSlicer(0)->GetImage(), mSlicerManagers[0]->GetSlicer(0)->GetTransform());
+      m_ComparisonViewerCenter->SetImage(mSlicerManagers[1]->GetSlicer(0)->GetImage(), mSlicerManagers[1]->GetSlicer(0)->GetTransform());
+      m_ComparisonViewerRight->SetImage(mSlicerManagers[2]->GetSlicer(0)->GetImage(), mSlicerManagers[2]->GetSlicer(0)->GetTransform());
+
+      m_ComparisonViewerLeft->SetRenderWindow(0, nullptr);
+      m_ComparisonViewerCenter->SetRenderWindow(0, nullptr);
+      m_ComparisonViewerRight->SetRenderWindow(0, nullptr);
+
+      m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+      m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
+      m_ComparisonViewerRight->SetRenderWindow(0, SaggitalViewWidget->GetRenderWindow());
+
+      m_ComparisonViewerLeft->SetDisplayMode(true);
+      m_ComparisonViewerCenter->SetDisplayMode(true);
+      m_ComparisonViewerRight->SetDisplayMode(true);
+
+      //comparison mode connections
+      disconnect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
+      disconnect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(CoronalViewSliderChanged()));
+      disconnect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(SaggitalViewSliderChanged()));
+
+      connect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+      connect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+      connect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+
+      m_ComparisonViewerLeft->Render();
+      m_ComparisonViewerCenter->Render();
+      m_ComparisonViewerRight->Render();
+    }
+  }
+  else
+  {
   }
 }
 
