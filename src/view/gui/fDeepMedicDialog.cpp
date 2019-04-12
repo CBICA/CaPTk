@@ -34,14 +34,20 @@ void fDeepMedicDialog::CancelButtonPressed()
 void fDeepMedicDialog::ConfirmButtonPressed()
 {
   auto outputDirName_string = outputDirName->text().toStdString();
+  auto modelDirName_string = modelDirName->text().toStdString();
 
   if (outputDirName_string.empty())
   {
     ShowErrorMessage("Please specify the output directory.", this);
     return;
   }
+  if (modelDirName_string.empty())
+  {
+    ShowErrorMessage("Please specify the model directory.", this);
+    return;
+  }
 
-  emit RunDeepMedic(outputDirName_string);
+  emit RunDeepMedic(modelDirName_string, outputDirName_string);
 
   this->close();
 }
@@ -56,4 +62,13 @@ void fDeepMedicDialog::SelectOutputDirectory()
 
   QFileInfo fileInfo(outputImage);
   mInputPathName = fileInfo.absoluteFilePath();
+}
+
+void fDeepMedicDialog::SelectModelDirectory()
+{
+  QString modelDir = getExistingDirectory(this, modelDirName->text());
+  if (modelDir.isNull())
+    return;
+  else
+    modelDirName->setText(modelDir);
 }
