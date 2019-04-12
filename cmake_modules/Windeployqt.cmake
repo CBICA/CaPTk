@@ -30,6 +30,10 @@ find_program(WINDEPLOYQT_EXECUTABLE windeployqt
 #HINTS "${_qt_bin_dir}"
 )
 
+IF( WINDEPLOYQT_EXECUTABLE STREQUAL "" )
+  SET( WINDEPLOYQT_EXECUTABLE "${_qt_bin_dir}/windeployqt.exe" )
+ENDIF()
+
 MESSAGE( AUTHOR_WARNING "WINDEPLOYQT_EXECUTABLE == ${WINDEPLOYQT_EXECUTABLE}" )
 
 # Running this with MSVC 2015 requires CMake 3.6+
