@@ -517,7 +517,7 @@ public:
   /*
   \brief For fast developer testing .TBD:  remove or disable.
   */
-  void loadFromCommandLine(std::vector< QString > files, const std::string &maskImage = "", 
+  void loadFromCommandLine(std::vector< QString > files, const std::string &maskImage = "", const float maskOpacity = 1.0,
     const std::string &tumorPointFile = "", const std::string &tissuePointFile = "", bool firstRun = false)
   {
     auto qvectorString = QVector< QString >::fromStdVector(files);
@@ -526,6 +526,7 @@ public:
     if (!maskImage.empty())
     {
       this->readMaskFile(maskImage);
+      this->ChangeMaskOpacity(maskOpacity * 10);
     }
     if (!tumorPointFile.empty())
     {

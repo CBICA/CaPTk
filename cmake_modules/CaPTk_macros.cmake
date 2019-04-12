@@ -45,9 +45,9 @@ MACRO( CAPTK_ADD_EXECUTABLE APPLICATION SOURCESFILES DEPENDENT_LIBS )
   # Add test for run tests
   ADD_TEST( NAME ${APPLICATION}_rt COMMAND ${APPLICATION} -rt )
 
-  IF (CAPTK_PACKAGE_PROJECT)
+  #IF (CAPTK_PACKAGE_PROJECT)
     CWL_INSTALL(${APPLICATION})
-  ENDIF()
+  #ENDIF()
   
 ENDMACRO()
 
@@ -55,11 +55,11 @@ ENDMACRO()
 MACRO(CWL_INSTALL APPLICATION)
 
   # Post build cwl generation
-  add_custom_command(TARGET ${APPLICATION}
+  add_custom_command(
+    TARGET ${APPLICATION}
     POST_BUILD
     COMMAND ${APPLICATION} -cwl
-    COMMENT "Generating cwl for ${APPLICATION}..."
-    VERBATIM
+    COMMENT "Generating cwl file for ${APPLICATION}..."
   )
   
   IF (APPLE) 
