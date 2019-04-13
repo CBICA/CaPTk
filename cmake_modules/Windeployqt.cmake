@@ -30,7 +30,7 @@ find_program(WINDEPLOYQT_EXECUTABLE windeployqt
 #HINTS "${_qt_bin_dir}"
 )
 
-IF( WINDEPLOYQT_EXECUTABLE STREQUAL "" )
+IF( ${WINDEPLOYQT_EXECUTABLE} STREQUAL "" )
   SET( WINDEPLOYQT_EXECUTABLE "${_qt_bin_dir}/windeployqt.exe" )
 ENDIF()
 
