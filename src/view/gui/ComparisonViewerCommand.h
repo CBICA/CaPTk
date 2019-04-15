@@ -58,6 +58,12 @@ static PointVal drawPoint(PointVal pt, vtkSmartPointer<vtkImageData> image);
 
 void makeStroke(int VisibleInWindow, double x, double y);
 
+//! Set Comparison Viewers
+void SetComparisonViewers(std::vector<vtkSmartPointer<Slicer>>);
+
+//! Set current comparison viewer
+void SetCurrentViewer(vtkSmartPointer<Slicer>);
+
 protected:
   ComparisonViewerCommand();
   ~ComparisonViewerCommand() {}
@@ -73,6 +79,11 @@ private:
   std::vector< PointVal > m_shapeBuffer;
   PointVal m_startPoint;
 
+  //! Comparison Viewers
+  std::vector<vtkSmartPointer<Slicer>> m_ComparisonViewers;
+
+  //! Current Viewer
+  vtkSmartPointer<Slicer> m_currentViewer;
 
 };
 #if __GNUC__

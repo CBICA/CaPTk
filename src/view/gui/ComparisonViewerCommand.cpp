@@ -1306,3 +1306,13 @@ void ComparisonViewerCommand::makeStroke(int VisibleInWindow, double x, double y
   this->SM->GetSlicer(VisibleInWindow)->Render();
 
 }
+
+void ComparisonViewerCommand::SetComparisonViewers(std::vector<vtkSmartPointer<Slicer>> viewers)
+{
+  this->m_ComparisonViewers = viewers;
+}
+
+void ComparisonViewerCommand::SetCurrentViewer(vtkSmartPointer<Slicer> viewer)
+{
+  this->m_currentViewer = viewer;
+}
