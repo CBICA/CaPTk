@@ -560,9 +560,10 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
 
       //this->SM->Activated();
 
-      //if (event == vtkCommand::LeftButtonReleaseEvent)
-      //{
-      //  isi->OnLeftButtonUp();
+      if (event == vtkCommand::LeftButtonReleaseEvent)
+      {
+        isi->OnLeftButtonUp();
+      }
       //  // Do this only on double click and when active Tab is tumor panel and control is not pressed
       //  if (isi->isDoubleClick() && !mw->tumorPointSelected() && (mw->getActiveTabId() == 1))
       //  {
