@@ -156,6 +156,9 @@ fMainWindow::fMainWindow()
 
   setupUi(this);
 
+  //! comparison mode OFF at startup
+  this->SetComparisonMode(false);
+
   this->bottomLayout = new QHBoxLayout();
 
   help_discussion = new QAction(this);
@@ -2127,29 +2130,42 @@ void fMainWindow::SetWindowLevel(double w, double l)
 
 void fMainWindow::UpdateWindowLevel()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
-  if (items.empty()) {
-    return;
-  }
-  int index = GetSlicerIndexFromItem(items[0]);
-  if (index >= 0 && index < (int)mSlicerManagers.size())
+  if (!m_ComparisonMode)//! if comparison mode OFF
   {
-    mSlicerManagers[index]->SetColorWindow(windowSpinBox->value());
-    mSlicerManagers[index]->SetColorLevel(levelSpinBox->value());
-    mSlicerManagers[index]->SetPreset(presetComboBox->currentIndex());
-    mSlicerManagers[index]->Render();
-    //
-    if (presetComboBox->currentIndex() == PRESET_THRESHOLD || presetComboBox->currentIndex() == PRESET_GEODESIC) {
-      thresholdLabel->setEnabled(true);
-      thresholdSpinBox->setEnabled(true);
+    QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+    if (items.empty()) {
+      return;
     }
-    else
+    int index = GetSlicerIndexFromItem(items[0]);
+    if (index >= 0 && index < (int)mSlicerManagers.size())
     {
-      thresholdLabel->setEnabled(false);
-      thresholdSpinBox->setEnabled(false);
+      mSlicerManagers[index]->SetColorWindow(windowSpinBox->value());
+      mSlicerManagers[index]->SetColorLevel(levelSpinBox->value());
+      mSlicerManagers[index]->SetPreset(presetComboBox->currentIndex());
+      mSlicerManagers[index]->Render();
+      //
+      if (presetComboBox->currentIndex() == PRESET_THRESHOLD || presetComboBox->currentIndex() == PRESET_GEODESIC) {
+        thresholdLabel->setEnabled(true);
+        thresholdSpinBox->setEnabled(true);
+      }
+      else
+      {
+        thresholdLabel->setEnabled(false);
+        thresholdSpinBox->setEnabled(false);
+      }
+      //
+      WindowLevelChanged();
     }
-    //
-    WindowLevelChanged();
+  }
+  else//! if comparison mode ON
+  {
+    std::vector<vtkSmartPointer<Slicer>> comparisonViewers = this->GetComparisonViewers();
+    for (int i = 0; i < comparisonViewers.size(); i++)
+    {
+      comparisonViewers[i]->SetColorWindow(windowSpinBox->value());
+      comparisonViewers[i]->SetColorLevel(levelSpinBox->value());
+      comparisonViewers[i]->Render();
+    }
   }
 }
 
