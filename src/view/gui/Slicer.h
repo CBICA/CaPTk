@@ -33,6 +33,7 @@ class vtkPolyDataMapper;
 class vtkVertexGlyphFilter;
 class vtkLabeledDataMapper;
 class vtkRegularPolygonSource;
+class vtkInteractorStyle;
 
 class Slicer : public vtkImageViewer2
 {
@@ -46,6 +47,9 @@ public:
 #else
   vtkTypeRevisionMacro(Slicer, vtkImageViewer2);
 #endif
+
+  //! set interactor style
+  void SetInteractorStyle(vtkInteractorStyle* style);
 
   void SetImage(vtkImageData* image, vtkTransform* transform);
   vtkImageData* GetImage() {
