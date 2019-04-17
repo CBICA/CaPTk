@@ -185,18 +185,13 @@ jobs:
         cmake --build . --target PACKAGE --config Release
       displayName: 'Package CaPTk'
     
-    - bash: |    
-        cd bin
+    - script: |    
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        rm -rf externalApps
+        rm -rf ../binaries
+        rm -rf ../src
         mv CaPTk_*_Installer.exe ../
-        cd ../
-        rm -rf bin
-        rm -rf src
-        rm -rf binaries
-        rm -rf data
-        rm -rf docs*
-        rm -rf regression
-        rm -rf scripts
-        rm -rf testing
+        
       displayName: 'Moving Installer one level up'
 
     - task: CopyFiles@2
