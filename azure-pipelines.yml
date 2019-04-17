@@ -208,7 +208,7 @@ jobs:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
+        artifactName: '$(Build.DefinitionName)_installer_windows'
         downloadPath: '$(System.ArtifactsDirectory)'
     
 - job: 'MacOSBuild'
