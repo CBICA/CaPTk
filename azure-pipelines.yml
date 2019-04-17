@@ -123,7 +123,7 @@ jobs:
         rm -rf regression
         rm -rf scripts
         rm -rf testing
-        ls
+        
       displayName: 'Set up environment variables for packager and build a package'
     
     - task: CopyFiles@2
@@ -188,7 +188,15 @@ jobs:
     - bash: |    
         cd bin
         mv CaPTk_*_Installer.exe ../
-        rm -rf *
+        cd ../
+        rm -rf bin
+        rm -rf src
+        rm -rf binaries
+        rm -rf data
+        rm -rf docs*
+        rm -rf regression
+        rm -rf scripts
+        rm -rf testing
       displayName: 'Moving Installer one level up'
 
     - task: CopyFiles@2
