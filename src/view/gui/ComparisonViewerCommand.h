@@ -28,7 +28,7 @@ public:
   void Dolly(double factor, vtkRenderWindowInteractor *interactor);
   void SetSlicerNumber(int slicer) { mSlicerNumber = slicer; }
   void AddActions();
-  void moveCursor(int VisibleInWindow, double x, double y);
+  void moveCursor(/*int VisibleInWindow, */double x, double y);
 
   static std::pair<int, int > point3Dto2D(const PointVal& pt3D, const int orientation);
 

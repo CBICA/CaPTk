@@ -637,6 +637,7 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
         if (mw->m_drawShapeMode == SHAPE_MODE_NONE || mw->getActiveTabId() != TAB_DRAW)
         {
           //moveCursor(VisibleInWindow, x, y);
+          moveCursor(x, y);
         }
         else
         {
@@ -711,10 +712,11 @@ void ComparisonViewerCommand::Dolly(double factor, vtkRenderWindowInteractor *in
   renderer->ResetCameraClippingRange();
 }
 
-void ComparisonViewerCommand::moveCursor(int VisibleInWindow, double x, double y)
+void ComparisonViewerCommand::moveCursor(/*int VisibleInWindow, */double x, double y)
 {
 
-  vtkRenderer* renderer = this->SM->GetSlicer(VisibleInWindow)->GetRenderer();
+  //vtkRenderer* renderer = this->SM->GetSlicer(VisibleInWindow)->GetRenderer();
+  vtkRenderer* renderer = this->m_currentViewer->GetRenderer();
   renderer->DisplayToNormalizedDisplay(x, y);
   renderer->NormalizedDisplayToViewport(x, y);
   renderer->ViewportToNormalizedViewport(x, y);
@@ -722,26 +724,34 @@ void ComparisonViewerCommand::moveCursor(int VisibleInWindow, double x, double y
   renderer->NormalizedViewportToView(x, y, z);
   renderer->ViewToWorld(x, y, z);
 
-  auto origin = this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetOrigin();
-  auto spacing = this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetSpacing();
+  //auto origin = this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetOrigin();
+  //auto spacing = this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetSpacing();
+
+  auto origin = this->m_currentViewer->GetInput()->GetOrigin();
+  auto spacing = this->m_currentViewer->GetInput()->GetSpacing();
 
   double X = (x - origin[0]) / spacing[0];
   double Y = (y - origin[1]) / spacing[1];
   double Z = (z - origin[2]) / spacing[2];
 
-  switch (this->SM->GetSlicer(VisibleInWindow)->GetSliceOrientation()) {
+  //switch (this->SM->GetSlicer(VisibleInWindow)->GetSliceOrientation()) {
+  switch (this->m_currentViewer->GetSliceOrientation())
+  {
   case vtkImageViewer2::SLICE_ORIENTATION_XY:
     X = ROUND(X);
     Y = ROUND(Y);
-    Z = this->SM->GetSlicer(VisibleInWindow)->GetSlice();
+    //Z = this->SM->GetSlicer(VisibleInWindow)->GetSlice();
+    Z = this->m_currentViewer->GetSlice();
     break;
   case vtkImageViewer2::SLICE_ORIENTATION_XZ:
     X = ROUND(X);
-    Y = this->SM->GetSlicer(VisibleInWindow)->GetSlice();
+    //Y = this->SM->GetSlicer(VisibleInWindow)->GetSlice();
+    Y = this->m_currentViewer->GetSlice();
     Z = ROUND(Z);
     break;
   case vtkImageViewer2::SLICE_ORIENTATION_YZ:
-    X = this->SM->GetSlicer(VisibleInWindow)->GetSlice();
+    //X = this->SM->GetSlicer(VisibleInWindow)->GetSlice();
+    X = this->m_currentViewer->GetSlice();
     Y = ROUND(Y);
     Z = ROUND(Z);
     break;
@@ -752,12 +762,16 @@ void ComparisonViewerCommand::moveCursor(int VisibleInWindow, double x, double y
   double zWorld = Z * spacing[2] + origin[2];
 
   //Update the cursur position 
-  this->SM->GetSlicer(VisibleInWindow)->SetCurrentPosition(xWorld, yWorld, zWorld);
-  this->SM->Picked();
-  this->SM->UpdateViews(VisibleInWindow);
-  this->SM->UpdateLinked(VisibleInWindow);
-  this->SM->UpdateInfoOnCursorPosition(VisibleInWindow);
-
+  //this->SM->GetSlicer(VisibleInWindow)->SetCurrentPosition(xWorld, yWorld, zWorld);
+  //this->SM->Picked();
+  //this->SM->UpdateViews(VisibleInWindow);
+  //this->SM->UpdateLinked(VisibleInWindow);
+  //this->SM->UpdateInfoOnCursorPosition(VisibleInWindow);
+  for (int i = 0; i < this->m_ComparisonViewers.size(); i++)
+  {
+    this->m_ComparisonViewers[i]->SetCurrentPosition(xWorld, yWorld, zWorld);
+    this->m_ComparisonViewers[i]->Render();
+  }
 }
 
 std::pair<int, int > ComparisonViewerCommand::point3Dto2D(const PointVal& pt3D, const int orientation)
