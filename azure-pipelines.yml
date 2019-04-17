@@ -184,6 +184,12 @@ jobs:
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" .
         cmake --build . --target PACKAGE --config Release
       displayName: 'Package CaPTk'
+    
+    - bash: |    
+        cd bin
+        mv CaPTk_*_Installer.exe ../
+        rm -rf *
+      displayName: 'Moving Installer one level up'
 
     - task: CopyFiles@2
       inputs:
