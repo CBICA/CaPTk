@@ -1324,6 +1324,9 @@ signals:
   //! Enable/Disable comparison mode
   void EnableComparisonMode(bool);
 
+  //! Get Comparison Viewers
+  std::vector<vtkSmartPointer<Slicer>> GetComparisonViewers();
+
   void GeodesicTrainingFinishedHandler();
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 

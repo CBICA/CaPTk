@@ -55,6 +55,7 @@
 #include "vtkTransform.h"
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkLookupTable.h"
+#include "ComparisonViewerCommand.h"
 
 #include "QtConcurrent/qtconcurrentrun.h"
 
@@ -6556,6 +6557,43 @@ void fMainWindow::EnableComparisonMode(bool enable)
       m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
       m_ComparisonViewerRight->SetRenderWindow(0, SaggitalViewWidget->GetRenderWindow());
 
+      for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+      {
+        //this->GetComparisonSlicers()[i]->GetRenderWindow()->SetInteractor(
+        //  mSlicerManagers[0]->GetSlicer(0)->GetRenderWindow()->GetInteractor());
+        //for (int j = 0; j < 3; j++)
+        //{
+        InteractorStyleNavigator* style = InteractorStyleNavigator::New();
+        ComparisonViewerCommand *smc = ComparisonViewerCommand::New();
+        smc->SetCurrentViewer(this->GetComparisonViewers()[i]);
+        smc->SetComparisonViewers(this->GetComparisonViewers());
+        smc->SM = mSlicerManagers[0];
+        style->AddObserver(vtkCommand::KeyPressEvent, smc);
+        style->AddObserver(vtkCommand::WindowLevelEvent, smc);
+        style->AddObserver(vtkCommand::EndWindowLevelEvent, smc);
+        style->AddObserver(vtkCommand::StartWindowLevelEvent, smc);
+        style->AddObserver(vtkCommand::PickEvent, smc);
+        style->AddObserver(vtkCommand::StartPickEvent, smc);
+        style->AddObserver(vtkCommand::LeaveEvent, smc);
+        style->AddObserver(vtkCommand::UserEvent, smc);
+        style->AddObserver(vtkCommand::MouseWheelForwardEvent, smc);
+        style->AddObserver(vtkCommand::MouseWheelBackwardEvent, smc);
+        style->AddObserver(vtkCommand::LeftButtonReleaseEvent, smc);
+        style->AddObserver(vtkCommand::EndPickEvent, smc);
+        style->AddObserver(vtkCommand::EndInteractionEvent, smc);
+        style->SetAutoAdjustCameraClippingRange(1);
+        //for (int i = 0; i < m_imagesTable->rowCount(); i++)
+        //{
+        this->GetComparisonViewers()[i]->SetInteractorStyle(style);
+        //
+        //mSlicerManagers[i]->updateToRefCam(mSlicerManagers[i]->GetSlicer(0));
+        //mSlicerManagers[i]->GetSlicer(j)->SetInitPosition();
+      //}
+
+        style->Delete();
+        //}
+      }
+
       m_ComparisonViewerLeft->SetDisplayMode(true);
       m_ComparisonViewerCenter->SetDisplayMode(true);
       m_ComparisonViewerRight->SetDisplayMode(true);
@@ -7789,6 +7827,15 @@ std::vector<int> read_int_vector(std::string &nccRadii)
       arg.c_str());
 
   return vector;
+}
+
+std::vector<vtkSmartPointer<Slicer>> fMainWindow::GetComparisonViewers()
+{
+  std::vector<vtkSmartPointer<Slicer>>comparisonViewers;
+  comparisonViewers.push_back(m_ComparisonViewerLeft);
+  comparisonViewers.push_back(m_ComparisonViewerCenter);
+  comparisonViewers.push_back(m_ComparisonViewerRight);
+  return comparisonViewers;
 }
 
 void fMainWindow::GeodesicTrainingFinishedHandler()

@@ -44,6 +44,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "vtkCamera.h"
 #include "vtkInteractorStyleImage.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkRenderWindowInteractor.h"
 
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
@@ -198,6 +199,11 @@ void Slicer::SetCurrentPosition(double x, double y, double z)
 	mCursor[0] = x;
 	mCursor[1] = y;
 	mCursor[2] = z;
+}
+
+void Slicer::SetInteractorStyle(vtkInteractorStyle * style)
+{
+  this->GetRenderWindow()->GetInteractor()->SetInteractorStyle(style);
 }
 
 void Slicer::SetImage(vtkImageData* image, vtkTransform* transform)
