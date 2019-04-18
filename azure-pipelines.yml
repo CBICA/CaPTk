@@ -185,11 +185,16 @@ jobs:
         cmake --build . --target PACKAGE --config Release
       displayName: 'Package CaPTk'
     
-    - script: |    
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    - script: | 
+        cd ${Agent.BuildDirectory}
+        echo ${Agent.BuildDirectory}
+        ls -l
+        #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        echo "Deleting folders to make space"
         rm -rf externalApps
         rm -rf ../binaries
         rm -rf ../src
+        ls -l
         mv CaPTk_*_Installer.exe ../
         
       displayName: 'Moving Installer one level up'
