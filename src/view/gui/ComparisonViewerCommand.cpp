@@ -597,54 +597,24 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
         }
       }
 
-      //if ((event == vtkCommand::MouseWheelForwardEvent && !bCtrlKey) || (event == vtkCommand::KeyPressEvent && KeyPress == "Up")) {
-      //  double* current = this->SM->GetSlicer(VisibleInWindow)->GetCurrentPosition();
-      //  xWorld = current[0];
-      //  yWorld = current[1];
-      //  zWorld = current[2];
-      //  switch (this->SM->GetSlicer(VisibleInWindow)->GetSliceOrientation()) {
-      //  case vtkImageViewer2::SLICE_ORIENTATION_XY:
-      //    zWorld = (this->SM->GetSlicer(VisibleInWindow)->GetSlice() + 1)*this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetSpacing()[2] + this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetOrigin()[2];
-      //    break;
-      //  case vtkImageViewer2::SLICE_ORIENTATION_XZ:
-      //    yWorld = (this->SM->GetSlicer(VisibleInWindow)->GetSlice() + 1)*this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetSpacing()[1] + this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetOrigin()[1];
-      //    break;
-      //  case vtkImageViewer2::SLICE_ORIENTATION_YZ:
-      //    xWorld = (this->SM->GetSlicer(VisibleInWindow)->GetSlice() + 1)*this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetSpacing()[0] + this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetOrigin()[0];
-      //    break;
-      //  }
-      //  this->SM->GetSlicer(VisibleInWindow)->SetCurrentPosition(xWorld, yWorld, zWorld);
-      //  this->SM->GetSlicer(VisibleInWindow)->UpdateCursorPosition();
-      //  //
-      //  this->SM->Picked();
-      //  this->SM->UpdateViews(VisibleInWindow);
-      //  this->SM->UpdateLinked(VisibleInWindow);
-      //  this->SM->UpdateInfoOnCursorPosition(VisibleInWindow);
-      //}
-      //else if ((event == vtkCommand::MouseWheelBackwardEvent && !bCtrlKey) || (event == vtkCommand::KeyPressEvent && KeyPress == "Down")) {
-      //  double* current = this->SM->GetSlicer(VisibleInWindow)->GetCurrentPosition();
-      //  xWorld = current[0];
-      //  yWorld = current[1];
-      //  zWorld = current[2];
-      //  switch (this->SM->GetSlicer(VisibleInWindow)->GetSliceOrientation()) {
-      //  case vtkImageViewer2::SLICE_ORIENTATION_XY:
-      //    zWorld = (this->SM->GetSlicer(VisibleInWindow)->GetSlice() - 1)*this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetSpacing()[2] + this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetOrigin()[2];
-      //    break;
-      //  case vtkImageViewer2::SLICE_ORIENTATION_XZ:
-      //    yWorld = (this->SM->GetSlicer(VisibleInWindow)->GetSlice() - 1)*this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetSpacing()[1] + this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetOrigin()[1];
-      //    break;
-      //  case vtkImageViewer2::SLICE_ORIENTATION_YZ:
-      //    xWorld = (this->SM->GetSlicer(VisibleInWindow)->GetSlice() - 1)*this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetSpacing()[0] + this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetOrigin()[0];
-      //    break;
-      //  }
-      //  this->SM->GetSlicer(VisibleInWindow)->SetCurrentPosition(xWorld, yWorld, zWorld);
-      //  this->SM->GetSlicer(VisibleInWindow)->UpdateCursorPosition();
-      //  //
-      //  this->SM->Picked();
-      //  this->SM->UpdateViews(VisibleInWindow);
-      //  this->SM->UpdateLinked(VisibleInWindow);
-      //  this->SM->UpdateInfoOnCursorPosition(VisibleInWindow);
-      //}
+      if ((event == vtkCommand::MouseWheelForwardEvent && !bCtrlKey) || (event == vtkCommand::KeyPressEvent && KeyPress == "Up")) {
+        int currentslice = this->m_currentViewer->GetSlice();
+
+        for (int i = 0; i < this->m_ComparisonViewers.size(); i++)
+        {
+          this->m_ComparisonViewers[i]->SetSlice(currentslice + 1);
+          this->m_ComparisonViewers[i]->Render();
+        }
+      }
+      else if ((event == vtkCommand::MouseWheelBackwardEvent && !bCtrlKey) || (event == vtkCommand::KeyPressEvent && KeyPress == "Down")) {
+        int currentslice = this->m_currentViewer->GetSlice();
+
+        for (int i = 0; i < this->m_ComparisonViewers.size(); i++)
+        {
+          this->m_ComparisonViewers[i]->SetSlice(currentslice - 1);
+          this->m_ComparisonViewers[i]->Render();
+        }
+      }
       if (/*event == vtkCommand::PickEvent || */event == vtkCommand::StartPickEvent)
       {
         if (mw->m_drawShapeMode == SHAPE_MODE_NONE || mw->getActiveTabId() != TAB_DRAW)
