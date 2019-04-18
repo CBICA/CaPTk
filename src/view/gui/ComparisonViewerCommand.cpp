@@ -574,16 +574,28 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
       //  }
 
       //}
-      //if (event == vtkCommand::MouseWheelForwardEvent && bCtrlKey) {
-      //  double factor = 2;
-      //  this->Dolly(pow((double)1.1, factor), isi->GetInteractor());
-      //  Execute(caller, vtkCommand::EndInteractionEvent, NULL);
-      //}
-      //else if (event == vtkCommand::MouseWheelBackwardEvent && bCtrlKey) {
-      //  double factor = -2;
-      //  this->Dolly(pow((double)1.1, factor), isi->GetInteractor());
-      //  Execute(caller, vtkCommand::EndInteractionEvent, NULL);
-      //}
+      if (event == vtkCommand::MouseWheelForwardEvent && bCtrlKey) {
+        double factor = 2;
+        //this->Dolly(pow((double)1.1, factor), isi->GetInteractor());
+        //Execute(caller, vtkCommand::EndInteractionEvent, NULL);
+        for (int i = 0; i < this->m_ComparisonViewers.size(); i++)
+        {
+          vtkCamera *camera = this->m_ComparisonViewers[i]->GetRenderer()->GetActiveCamera();
+          camera->Zoom(pow((double)1.1, factor));
+          this->m_ComparisonViewers[i]->Render();
+        }
+      }
+      else if (event == vtkCommand::MouseWheelBackwardEvent && bCtrlKey) {
+        double factor = -2;
+        //this->Dolly(pow((double)1.1, factor), isi->GetInteractor());
+        //Execute(caller, vtkCommand::EndInteractionEvent, NULL);
+        for (int i = 0; i < this->m_ComparisonViewers.size(); i++)
+        {
+          vtkCamera *camera = this->m_ComparisonViewers[i]->GetRenderer()->GetActiveCamera();
+          camera->Zoom(pow((double)1.1, factor));
+          this->m_ComparisonViewers[i]->Render();
+        }
+      }
 
       //if ((event == vtkCommand::MouseWheelForwardEvent && !bCtrlKey) || (event == vtkCommand::KeyPressEvent && KeyPress == "Up")) {
       //  double* current = this->SM->GetSlicer(VisibleInWindow)->GetCurrentPosition();
