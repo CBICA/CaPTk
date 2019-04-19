@@ -6575,10 +6575,6 @@ void fMainWindow::EnableComparisonMode(bool enable)
 
       for (int i = 0; i < this->GetComparisonViewers().size(); i++)
       {
-        //this->GetComparisonSlicers()[i]->GetRenderWindow()->SetInteractor(
-        //  mSlicerManagers[0]->GetSlicer(0)->GetRenderWindow()->GetInteractor());
-        //for (int j = 0; j < 3; j++)
-        //{
         InteractorStyleNavigator* style = InteractorStyleNavigator::New();
         ComparisonViewerCommand *smc = ComparisonViewerCommand::New();
         smc->SetCurrentViewer(this->GetComparisonViewers()[i]);
@@ -6598,23 +6594,23 @@ void fMainWindow::EnableComparisonMode(bool enable)
         style->AddObserver(vtkCommand::EndPickEvent, smc);
         style->AddObserver(vtkCommand::EndInteractionEvent, smc);
         style->SetAutoAdjustCameraClippingRange(1);
-        //for (int i = 0; i < m_imagesTable->rowCount(); i++)
-        //{
         this->GetComparisonViewers()[i]->SetInteractorStyle(style);
-        //
-        //mSlicerManagers[i]->updateToRefCam(mSlicerManagers[i]->GetSlicer(0));
-        //mSlicerManagers[i]->GetSlicer(j)->SetInitPosition();
-      //}
-
         style->Delete();
-        //}
+      }
+
+      //! when we enter comparison mode, the WL should be same as in regular mode
+      std::vector<vtkSmartPointer<Slicer>> comparisonViewers = this->GetComparisonViewers();
+      for (int i = 0; i < comparisonViewers.size(); i++)
+      {
+        comparisonViewers[i]->SetColorWindow(windowSpinBox->value());
+        comparisonViewers[i]->SetColorLevel(levelSpinBox->value());
       }
 
       m_ComparisonViewerLeft->SetDisplayMode(true);
       m_ComparisonViewerCenter->SetDisplayMode(true);
       m_ComparisonViewerRight->SetDisplayMode(true);
 
-      //comparison mode connections
+      //!comparison mode connections
       disconnect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
       disconnect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(CoronalViewSliderChanged()));
       disconnect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(SaggitalViewSliderChanged()));
@@ -6645,6 +6641,7 @@ void fMainWindow::EnableComparisonMode(bool enable)
     mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
     mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
 
+    //!regular mode connections
     connect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
     connect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(CoronalViewSliderChanged()));
     connect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(SaggitalViewSliderChanged()));
