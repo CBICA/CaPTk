@@ -137,7 +137,7 @@ public:
 
   void retranslateUi(QDialog *fDeepMedicDialog)
   {
-    fDeepMedicDialog->setWindowTitle(QApplication::translate("fDeepMedicDialog", "DeepMedic Segmentation", 0));
+    fDeepMedicDialog->setWindowTitle(QApplication::translate("fDeepMedicDialog", "DeepLearning-based Segmentation", 0));
     confirmButton->setText(QApplication::translate("fDeepMedicDialog", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fDeepMedicDialog", "Cancel", 0));
   } // retranslateUi

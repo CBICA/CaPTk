@@ -6570,6 +6570,13 @@ void fMainWindow::ApplicationDeepMedicSegmentation(int type)
     }
   }
 
+  // redundancy check
+  if (type >= fDeepMedicDialog::Max)
+  {
+    ShowErrorMessage("Unsupported model type, please check", this);
+    return;
+  }
+
   deepMedicDialog.SetDefaultModel(type);
   deepMedicDialog.SetCurrentImagePath(mInputPathName);
   deepMedicDialog.exec();

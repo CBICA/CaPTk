@@ -35,7 +35,8 @@ public:
   enum ModelTypes
   {
     Tumor,
-    SkullStripping
+    SkullStripping,
+    Max
   };
   fDeepMedicDialog();
   ~fDeepMedicDialog();
