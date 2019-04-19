@@ -166,32 +166,36 @@ jobs:
       displayName: 'Take the nuclear option'
 
     - script: |
+        mkdir bin
+        cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" .
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile Superbuild'
     
     - script: |
+        cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" .
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile CaPTk'
     
     - script: |
+        cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" .
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         cmake --build . --target PACKAGE --config Release
       displayName: 'Package CaPTk'
     
     - script: | 
-        cd ${Agent.BuildDirectory}
-        echo ${Agent.BuildDirectory}
+        cd bin
         ls -l
         #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         echo "Deleting folders to make space"
         rm -rf externalApps
+        rm -rf binaries_windows.zip
         rm -rf ../binaries
         rm -rf ../src
         ls -l
