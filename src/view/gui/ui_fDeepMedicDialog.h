@@ -82,9 +82,9 @@ public:
     customButton->setObjectName(QString::fromUtf8("customButton"));
     brainTumorSegmentationButton->setText("Custom");
 
-    modelSelectionGridLayout->addWidget(brainTumorSegmentationButton, 0, 0);
-    modelSelectionGridLayout->addWidget(skullStrippingButton, 0, 1);
-    modelSelectionGridLayout->addWidget(customButton, 0, 2);
+    modelSelectionGridLayout->addWidget(brainTumorSegmentationButton, 1, 1, 1, 1);
+    modelSelectionGridLayout->addWidget(skullStrippingButton, 1, 2, 1, 1);
+    modelSelectionGridLayout->addWidget(customButton, 1, 3, 1, 1);
 
     //fDeepMedicDialog->setModal(true);
     gridLayout = new QGridLayout(fDeepMedicDialog);
@@ -141,8 +141,9 @@ public:
     outputGridLayout->addWidget(outputImageButton, 0, 1, 1, 1);
 
     // put the layout in perspective
-    gridLayout->addWidget(modelGroupBox, 1, 0, 1, 2);
-    gridLayout->addWidget(outputGroupBox, 2, 0, 1, 2);
+    gridLayout->addLayout(modelSelectionGridLayout, 1, 0, 1, 3);
+    gridLayout->addWidget(modelGroupBox, 2, 0, 1, 2);
+    gridLayout->addWidget(outputGroupBox, 3, 0, 1, 2);
 
 
     confirmButton = new QPushButton(fDeepMedicDialog);
@@ -155,8 +156,8 @@ public:
     //cancelButton->setIcon(ButtonIcon);
     //cancelButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent 
 
-    gridLayout->addWidget(confirmButton, 3, 0, 1, 1);
-    gridLayout->addWidget(cancelButton, 3, 1, 1, 1);
+    gridLayout->addWidget(confirmButton, 4, 0, 1, 1);
+    gridLayout->addWidget(cancelButton, 4, 1, 1, 1);
 
     retranslateUi(fDeepMedicDialog);
 
