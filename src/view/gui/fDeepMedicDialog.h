@@ -43,6 +43,7 @@ public:
   ~fDeepMedicDialog();
 
   QString m_exe, m_dataDir, m_modelDir; // contains full path and exe name of dcm2nii
+  std::string m_baseModelDir;
 
   void SetCurrentImagePath(const QString &inputPath)
   {
@@ -50,9 +51,7 @@ public:
   }
 
   void SetDefaultModel(int modelType);
-  void SetDefaultModelTumor();
-  void SetDefaultModelSkull();
-  void SetDefaultModelCustom();
+  void SetDefaultModel();
 
   QString mInputPathName;
 
