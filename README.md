@@ -54,4 +54,4 @@ echo checking out ${latesttag}
 git checkout ${latesttag}
 ```
 
-<div style="text-align: right"> [Next (Overview)](0_Overview.md) </div>
+[Next (Overview)](0_Overview.md)
