@@ -15,9 +15,9 @@ fDeepMedicDialog::fDeepMedicDialog()
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
   connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputDirectory()));
-  bool temp1 = connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
-  bool temp2 = connect(skullStrippingButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
-  bool temp3 = connect(customButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
+  connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
+  connect(skullStrippingButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
+  connect(customButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
   //connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, [this] { SetDefaultModel(fDeepMedicDialog::Tumor); });
 
   outputDirName->setText(mInputPathName);

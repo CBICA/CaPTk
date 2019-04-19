@@ -50,18 +50,17 @@ public:
     mInputPathName = inputPath;
   }
 
-  void SetDefaultModel(int modelType);
-  void SetDefaultModel();
 
   QString mInputPathName;
 
 
-  public slots:
+public slots:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
-
   void SelectModelDirectory();
   void SelectOutputDirectory();
+  void SetDefaultModel();
+  void SetDefaultModel(int modelType);
 
 signals:
   void RunDeepMedic(const std::string modelDirectory, const std::string outputDirectory);
