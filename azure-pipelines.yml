@@ -156,34 +156,34 @@ jobs:
 
   steps:
   
-    - script: |
-        choco install doxygen.install
-      displayName: 'Install dependencies'
+    # - script: |
+    #     choco install doxygen.install
+    #   displayName: 'Install dependencies'
   
-    - bash: |
-        rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-      displayName: 'Take the nuclear option'
+    # - bash: |
+    #     rm -rf history
+    #     rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    #   displayName: 'Take the nuclear option'
 
-    - script: |
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" .
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        cmake --build . --target ALL_BUILD --config Release
-      displayName: 'Configure and compile Superbuild'
+    # - script: |
+    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #     cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" .
+    #     setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+    #     cmake --build . --target ALL_BUILD --config Release
+    #   displayName: 'Configure and compile Superbuild'
     
-    - script: |
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" .
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        cmake --build . --target ALL_BUILD --config Release
-      displayName: 'Configure and compile CaPTk'
+    # - script: |
+    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #     cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" .
+    #     setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+    #     cmake --build . --target ALL_BUILD --config Release
+    #   displayName: 'Configure and compile CaPTk'
     
-    - script: |
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" .
-        cmake --build . --target PACKAGE --config Release
-      displayName: 'Package CaPTk'
+    # - script: |
+    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #     cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" .
+    #     cmake --build . --target PACKAGE --config Release
+    #   displayName: 'Package CaPTk'
     
     - powershell: |   
         ls
@@ -197,30 +197,32 @@ jobs:
         Remove-Item -Force -Recurse -Path scripts
         Remove-Item -Force -Recurse -Path testing
 
-        Move-Item -Path bin\CaPTk_*_Installer.exe -Destination .\CaPTk_*_Installer.exe
-        Remove-Item -Force -Recurse -Path bin
+        ls
+
+        # Move-Item -Path bin\CaPTk_*_Installer.exe -Destination .\CaPTk_*_Installer.exe
+        # Remove-Item -Force -Recurse -Path bin
         
       displayName: 'Moving Installer one level up'
 
-    - task: CopyFiles@2
-      inputs:
-        sourceFolder: '$(Build.SourcesDirectory)'
-        targetFolder: '$(Build.ArtifactStagingDirectory)'
-        cleanTargetFolder: true
-        overWrite: true
-        contents: 'CaPTk_*_Installer.exe'
+    # - task: CopyFiles@2
+    #   inputs:
+    #     sourceFolder: '$(Build.SourcesDirectory)'
+    #     targetFolder: '$(Build.ArtifactStagingDirectory)'
+    #     cleanTargetFolder: true
+    #     overWrite: true
+    #     contents: 'CaPTk_*_Installer.exe'
     
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_windows'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_windows'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
     
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
