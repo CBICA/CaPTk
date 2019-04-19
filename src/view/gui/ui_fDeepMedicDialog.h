@@ -141,7 +141,7 @@ public:
     outputGridLayout->addWidget(outputImageButton, 0, 1, 1, 1);
 
     // put the layout in perspective
-    gridLayout->addLayout(modelSelectionGridLayout, 1, 0, 1, 3);
+    gridLayout->addWidget(modelSelectionGroupBox, 1, 0, 1, 3);
     gridLayout->addWidget(modelGroupBox, 2, 0, 1, 2);
     gridLayout->addWidget(outputGroupBox, 3, 0, 1, 2);
 
