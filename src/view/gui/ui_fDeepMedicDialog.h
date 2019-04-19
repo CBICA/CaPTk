@@ -69,12 +69,13 @@ public:
     modelGridLayout = new QGridLayout(modelGroupBox);
     modelGridLayout->setObjectName(QString::fromUtf8("modelGridLayout"));
 
-    auto currentModelDir = getCaPTkDataDir() + "/deepMedic/saved_models/brainSegmentation/";
+    auto currentModelDir = cbica::normPath(getCaPTkDataDir() + "/deepMedic/saved_models/brainSegmentation/");
     modelDirName = new QLineEdit(currentModelDir.c_str());
     modelDirName->setObjectName(QString::fromUtf8("modelDirName"));
     sizePolicy.setHeightForWidth(modelDirName->sizePolicy().hasHeightForWidth());
     modelDirName->setSizePolicy(sizePolicy);
     modelDirName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    modelDirName->setReadOnly(true);
 
     modelImageButton = new QPushButton(modelGroupBox);
     modelImageButton->setObjectName(QString::fromUtf8("modelDirButton"));

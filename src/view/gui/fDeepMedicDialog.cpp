@@ -31,6 +31,20 @@ void fDeepMedicDialog::CancelButtonPressed()
   this->close();
 }
 
+void fDeepMedicDialog::SetDefaultModel(int modelType)
+{
+  if (modelType == fDeepMedicDialog::Tumor)
+  {
+    auto currentModelDir = cbica::normPath(getCaPTkDataDir() + "/deepMedic/saved_models/brainTumorSegmentation/");
+    modelDirName->setText(currentModelDir.c_str());
+  }
+  else if (modelType == fDeepMedicDialog::SkullStripping)
+  {
+    auto currentModelDir = cbica::normPath(getCaPTkDataDir() + "/deepMedic/saved_models/skullStripping/");
+    modelDirName->setText(currentModelDir.c_str());
+  }
+}
+
 void fDeepMedicDialog::ConfirmButtonPressed()
 {
   auto outputDirName_string = outputDirName->text().toStdString();

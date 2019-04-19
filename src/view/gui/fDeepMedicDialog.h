@@ -30,6 +30,13 @@ class fDeepMedicDialog : public QDialog, private Ui::fDeepMedicDialog
   Q_OBJECT
 
 public:
+
+  //! Default models available
+  enum ModelTypes
+  {
+    Tumor,
+    SkullStripping
+  };
   fDeepMedicDialog();
   ~fDeepMedicDialog();
 
@@ -39,6 +46,8 @@ public:
   {
     mInputPathName = inputPath;
   }
+
+  void SetDefaultModel(int modelType);
 
   QString mInputPathName;
 

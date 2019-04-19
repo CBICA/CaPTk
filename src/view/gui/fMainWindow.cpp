@@ -350,7 +350,7 @@ fMainWindow::fMainWindow()
 
   auto lungAppList = " LungField Nodule Analysis";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
-  std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic";
+  std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
   auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer";
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
@@ -641,10 +641,17 @@ fMainWindow::fMainWindow()
       vectorOfSegmentationApps[i].action->setText("  Geodesic Training Segmentation"); // TBD set at source
       connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationGeodesicTraining()));
     }
-    else if (vectorOfSegmentationApps[i].name.find("deepmedic") != std::string::npos)
+    else if (vectorOfSegmentationApps[i].name.find("deepmedic_tumor") != std::string::npos)
     {
-      vectorOfSegmentationApps[i].action->setText("  DeepMedic Segmentation (Brain)"); // TBD set at source
-      connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationDeepMedicSegmentation()));
+      vectorOfSegmentationApps[i].action->setText("  Brain Tumor Segmentation (DeepMedic)"); // TBD set at source
+      //connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationDeepMedicSegmentation(0)));
+      connect(vectorOfSegmentationApps[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::Tumor); });
+    }
+    else if (vectorOfSegmentationApps[i].name.find("deepmedic_brain") != std::string::npos)
+    {
+      vectorOfSegmentationApps[i].action->setText("  Skull Stripping (DeepMedic)"); // TBD set at source
+      //connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationDeepMedicSegmentation(1)));
+      connect(vectorOfSegmentationApps[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::SkullStripping); });
     }
   }
 
@@ -6524,13 +6531,14 @@ void fMainWindow::ApplicationTheia()
   }
 }
 
-void fMainWindow::ApplicationDeepMedicSegmentation()
+void fMainWindow::ApplicationDeepMedicSegmentation(int type)
 {
   if (mSlicerManagers.size() < 4)
   {
     ShowErrorMessage("DeepMedic needs the following images to work: T1CE, T1, T2, FLAIR", this);
     return;
   }
+  deepMedicDialog.SetDefaultModel(type);
   deepMedicDialog.SetCurrentImagePath(mInputPathName);
   deepMedicDialog.exec();
 }

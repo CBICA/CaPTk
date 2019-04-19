@@ -1313,7 +1313,7 @@ signals:
   void PerfusionMeasuresCalculation();
   void DiffusionMeasuresCalculation();
   void ClassifierTraining();
-  void ApplicationDeepMedicSegmentation();
+  void ApplicationDeepMedicSegmentation(int type);
   void ApplicationTheia();
 
   void GeodesicTrainingFinishedHandler();
