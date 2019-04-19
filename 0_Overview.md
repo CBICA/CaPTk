@@ -14,7 +14,11 @@ CaPTk is developed and maintained by the Center for Biomedical Image Computing a
 
 <p align="center">
   <img src="https://github.com/sarthakpati/CaPTk/blob/master/docs_sources/images/0_overview_resize.png" />
-  <figcaption>Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture</figcaption>
+  <figcaption>
+    <center>
+      Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture
+    </center>
+  </figcaption>
 </p>
 
 \image html 0_overview_resize.png "Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture"
