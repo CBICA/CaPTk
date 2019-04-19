@@ -315,6 +315,11 @@ void ComparisonViewerCommand::moveCursor(/*int VisibleInWindow, */double x, doub
     this->m_ComparisonViewers[i]->SetCurrentPosition(xWorld, yWorld, zWorld);
     this->m_ComparisonViewers[i]->Render();
   }
+
+  //! Update intensity value on UI
+  int ix, iy, iz;
+  double value = this->m_currentViewer->GetScalarComponentAsDouble(this->m_currentViewer->GetInput(), X, Y, Z,ix,iy,iz);
+  mw->SetImageInfoIntensityValue(value);
 }
 
 std::pair<int, int > ComparisonViewerCommand::point3Dto2D(const PointVal& pt3D, const int orientation)
