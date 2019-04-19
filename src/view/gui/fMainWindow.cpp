@@ -58,6 +58,8 @@
 
 #include "QtConcurrent/qtconcurrentrun.h"
 
+#include "itkTranslationTransform.h"
+
 //#include "DicomSeriesReader.h"
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
@@ -6830,6 +6832,80 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     }
   }
 
+  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  if (items.empty())
+  {
+    ShowErrorMessage("Please specify an input image.");
+    help_contextual("Glioblastoma_Directionality.html");
+    return;
+  }
+  int index = GetSlicerIndexFromItem(items[0]);
+
+  auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageTypeFloat3D >::New();
+  minMaxCalc->SetImage(newROIImage);
+  minMaxCalc->Compute();
+  auto maxVal = minMaxCalc->GetMaximum();
+
+  if (maxVal == 0)
+  {
+    ShowErrorMessage("Please specify an ROI. See documentation for details");
+    help_contextual("Glioblastoma_Directionality.html");
+    return;
+  }
+
+  QString output_msg = "";
+  QString outputPoints = (m_tempFolderLocation + "/directionalityOutput_points.txt").c_str();
+
+  bool singleIteration = false; // this to check if tissue points other than TU has been initialized
+
+  auto imageOrigin = mSlicerManagers[index]->mOrigin /*labelMap->GetOrigin()*/;
+  auto imageSpacing = roi2Image->GetSpacing();
+  auto volumeMultiplier = imageSpacing[0] * imageSpacing[1] * imageSpacing[2];
+
+  for (size_t i = 0; i < numberOfSeeds; i++)
+  {
+    if (mTissuePoints->mLandmarks[i].id == NCR) // in the case a second point has been initialized for roi2
+    {
+      itk::Point< float, 3 > pointFromTumorPanel = mTissuePoints->mLandmarks[i].coordinates;
+
+      double x_index_post = (pointFromTumorPanel[0] - imageOrigin[0]) / imageSpacing[0];
+      double y_index_post = (pointFromTumorPanel[1] - imageOrigin[1]) / imageSpacing[1];
+      double z_index_post = (pointFromTumorPanel[2] - imageOrigin[2]) / imageSpacing[2];
+
+      double x_index_pre = 0;
+      double y_index_pre = 0;
+      double z_index_pre = 0;
+
+      for (size_t j = 0; j < numberOfSeeds; j++)
+      {
+        if (mTissuePoints->mLandmarks[i].id == TU) // in the case a second point has been initialized for roi2
+        {
+          itk::Point< float, 3 > pointFromTumorPanel = mTissuePoints->mLandmarks[i].coordinates;
+
+          x_index_pre = (pointFromTumorPanel[0] - imageOrigin[0]) / imageSpacing[0];
+          y_index_pre = (pointFromTumorPanel[1] - imageOrigin[1]) / imageSpacing[1];
+          z_index_pre = (pointFromTumorPanel[2] - imageOrigin[2]) / imageSpacing[2];
+        }
+      }
+
+      using TranslationTransformType = itk::TranslationTransform< double, 3 >;
+      auto transform = TranslationTransformType::New();
+      TranslationTransformType::OutputVectorType translation;
+      translation[0] = x_index_post - x_index_pre;
+      translation[1] = y_index_post - y_index_pre;
+      translation[2] = z_index_post - z_index_pre;
+      transform->Translate(translation);
+
+      auto resampler = itk::ResampleImageFilter< ImageTypeFloat3D, ImageTypeFloat3D >::New();
+      resampler->SetTransform(transform.GetPointer());
+      resampler->SetInput(roi1Image);
+      resampler->SetSize(roi1Image->GetLargestPossibleRegion().GetSize());
+      resampler->Update();
+
+      roi1Image = resampler->GetOutput();
+    }
+  }
+
   // visualizing ROI_post with 2 colors to highlight the post-injection region
   ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion());
 
@@ -6856,36 +6932,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       }
     }
   }
-
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
-  if (items.empty())
-  {
-    ShowErrorMessage("Please specify an input image.");
-    help_contextual("Glioblastoma_Directionality.html");
-    return;
-  }
-  int index = GetSlicerIndexFromItem(items[0]);
-
-  auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();
-  minMaxCalc->SetImage(newROIImage);
-  minMaxCalc->Compute();
-  auto maxVal = minMaxCalc->GetMaximum();
-
-  if (maxVal == 0)
-  {
-    ShowErrorMessage("Please specify an ROI. See documentation for details");
-    help_contextual("Glioblastoma_Directionality.html");
-    return;
-  }
-
-  QString output_msg = "";
-  QString outputPoints = (m_tempFolderLocation + "/directionalityOutput_points.txt").c_str();
-
-  bool singleIteration = false; // this to check if tissue points other than TU has been initialized
-
-  auto imageOrigin = mSlicerManagers[index]->mOrigin /*labelMap->GetOrigin()*/;
-  auto imageSpacing = roi2Image->GetSpacing();
-  auto volumeMultiplier = imageSpacing[0] * imageSpacing[1] * imageSpacing[2];
 
   DirectionalityEstimate< ImageTypeFloat3D > directionalityEstimatorObj;
   directionalityEstimatorObj.SetInputMask(roi2Image);
