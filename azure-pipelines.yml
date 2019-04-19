@@ -296,8 +296,26 @@ jobs:
         cmake ../
         cmake ../
 
-        make -j2
+        make 
       displayName: 'Export variables for llvm then configure and compile CaPTk'
+    
+    - bash: |
+        cd bin
+
+        rm CMakeCache.txt
+        rm -rf CaPTk*.app
+
+        export CC=/usr/local/opt/llvm/bin/clang
+        export CXX=/usr/local/opt/llvm/bin/clang++
+        export LDFLAGS="-L/usr/local/opt/llvm/lib"
+        export CPPFLAGS="-L/usr/local/opt/llvm/include"
+
+        cmake ../
+        cmake ../
+
+        make 
+      displayName: 'Ensure documentations are picked up properly'
+    
     
     - bash: |
         cd bin 
