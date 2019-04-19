@@ -197,7 +197,7 @@ jobs:
         Remove-Item -Force -Recurse -Path scripts
         Remove-Item -Force -Recurse -Path testing
 
-        Move-Item -Path src\README.md -Destination .\README.md
+        Move-Item -Path D:\a\1\s\src\README.md -Destination D:\a\1\s\README.md
         # Remove-Item -Force -Recurse -Path bin
 
         ls
