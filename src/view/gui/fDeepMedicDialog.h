@@ -50,9 +50,9 @@ public:
   }
 
   void SetDefaultModel(int modelType);
-  void SetDefaultModelTumor() { SetDefaultModel(Tumor); };
-  void SetDefaultModelSkull() { SetDefaultModel(SkullStripping); };
-  void SetDefaultModelCustom() { SetDefaultModel(Custom); };
+  void SetDefaultModelTumor();
+  void SetDefaultModelSkull();
+  void SetDefaultModelCustom();
 
   QString mInputPathName;
 
