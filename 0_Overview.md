@@ -12,6 +12,11 @@ The package leverages the value of quantitative imaging analytics along with mac
 
 CaPTk is developed and maintained by the Center for Biomedical Image Computing and Analytics (CBICA - https://www.cbica.upenn.edu) at the University of Pennsylvania, and draws upon research from several groups within the Center and beyond. 
 
+<p align="center">
+  <img src="https://github.com/sarthakpati/CaPTk/blob/master/docs_sources/images/0_overview_resize.png" />
+  <figcaption>Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture</figcaption>
+</p>
+
 \image html 0_overview_resize.png "Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture"
 \image latex 0_overview_resize.png "Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture"
 
