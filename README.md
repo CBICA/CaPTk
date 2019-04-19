@@ -1,7 +1,7 @@
 # CaPTk:  Cancer Imaging Phenomics Toolkit 
 
 <p align="center">
-    <img src="https://github.com/sarthakpati/CaPTk/blob/master/docs_sources/images/0_tutorial_1_mainUI_resized.png" />
+    <img src="https://www.med.upenn.edu/cbica/assets/user-content/images/captk/baseScreenshot.png" />
     <br></br>
     <a href="https://dev.azure.com/CBICA/CaPTk/_build" alt="Build Status">
         <img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
@@ -54,4 +54,3 @@ echo checking out ${latesttag}
 git checkout ${latesttag}
 ```
 
-[Next (Overview)](0_Overview.md)
