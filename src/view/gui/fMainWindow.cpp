@@ -2295,6 +2295,16 @@ void fMainWindow::ChangeImageWithOrder(SlicerManager *sm, int order)
   DisplayChanged(item);
 }
 
+void fMainWindow::SetImageInfoIntensityValue(double value)
+{
+  this->infoPanel->setIntensityValue(value);
+}
+
+void fMainWindow::SetImageInfoZSlicePosition(int zslice)
+{
+  this->infoPanel->setZSlicePosition(zslice);
+}
+
 void fMainWindow::OnSliderMovedInComparisonMode(int value)
 {
   if (AxialViewSlider->value() != value || 

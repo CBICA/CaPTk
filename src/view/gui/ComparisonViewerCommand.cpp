@@ -166,25 +166,37 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
         }
       }
 
-      if ((event == vtkCommand::MouseWheelForwardEvent && !bCtrlKey) || (event == vtkCommand::KeyPressEvent && KeyPress == "Up")) {
+      if ((event == vtkCommand::MouseWheelForwardEvent && !bCtrlKey) || (event == vtkCommand::KeyPressEvent && KeyPress == "Up")) 
+      {
         int currentslice = this->m_currentViewer->GetSlice();
-
-        for (int i = 0; i < this->m_ComparisonViewers.size(); i++)
+        int newSlice = currentslice + 1;
+        if (newSlice >= this->m_currentViewer->GetInput()->GetExtent()[4] && 
+          newSlice <= this->m_currentViewer->GetInput()->GetExtent()[5])
         {
-          this->m_ComparisonViewers[i]->SetSlice(currentslice + 1);
-          this->m_ComparisonViewers[i]->Render();
+          for (int i = 0; i < this->m_ComparisonViewers.size(); i++)
+          {
+            this->m_ComparisonViewers[i]->SetSlice(newSlice);
+            this->m_ComparisonViewers[i]->Render();
+          }
+          mw->OnSliderMovedInComparisonMode(newSlice);
+          mw->SetImageInfoZSlicePosition(newSlice);
         }
-        mw->OnSliderMovedInComparisonMode(currentslice + 1);
       }
-      else if ((event == vtkCommand::MouseWheelBackwardEvent && !bCtrlKey) || (event == vtkCommand::KeyPressEvent && KeyPress == "Down")) {
+      else if ((event == vtkCommand::MouseWheelBackwardEvent && !bCtrlKey) || (event == vtkCommand::KeyPressEvent && KeyPress == "Down"))
+      {
         int currentslice = this->m_currentViewer->GetSlice();
-
-        for (int i = 0; i < this->m_ComparisonViewers.size(); i++)
+        int newSlice = currentslice - 1;
+        if (newSlice >= this->m_currentViewer->GetInput()->GetExtent()[4] && 
+          newSlice <= this->m_currentViewer->GetInput()->GetExtent()[5])
         {
-          this->m_ComparisonViewers[i]->SetSlice(currentslice - 1);
-          this->m_ComparisonViewers[i]->Render();
+          for (int i = 0; i < this->m_ComparisonViewers.size(); i++)
+          {
+            this->m_ComparisonViewers[i]->SetSlice(newSlice);
+            this->m_ComparisonViewers[i]->Render();
+          }
+          mw->OnSliderMovedInComparisonMode(newSlice);
+          mw->SetImageInfoZSlicePosition(newSlice);
         }
-        mw->OnSliderMovedInComparisonMode(currentslice - 1);
       }
       if (/*event == vtkCommand::PickEvent || */event == vtkCommand::StartPickEvent)
       {

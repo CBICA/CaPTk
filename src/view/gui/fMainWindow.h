@@ -555,6 +555,14 @@ signals:
   void TissuePointsFocused(bool bFocused);
 
   public slots:
+
+    //! set Z slice position on image info panel
+    void SetImageInfoZSlicePosition(int zslice);
+
+    //! set voxel intensity value at cursor position on image info panel
+    void SetImageInfoIntensityValue(double value);
+
+    //! slot on movement of slider in comparison mode
     void OnSliderMovedInComparisonMode(int);
 
   /**
