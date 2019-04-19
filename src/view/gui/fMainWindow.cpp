@@ -372,10 +372,10 @@ fMainWindow::fMainWindow()
   vectorOfMiscApps = populateStringListInMenu(miscAppList, this, menuApp, "Miscellaneous", false);
   vectorOfPreprocessingActionsAndNames = populateStringListInMenu(preProcessingAlgos, this, menuPreprocessing, "", false);
   vectorOfDeepLearningActionsAndNames = populateStringListInMenu(deepLearningAlgos, this, menuDeepLearning, "", false);
-  auto temp = populateStringListInMenu("", this, menuDeepLearning, "Breast", false);
-  temp = populateStringListInMenu("", this, menuDeepLearning, "Lung", false);
+  auto temp = populateStringListInMenu(" ", this, menuDeepLearning, "Breast", false);
+  temp = populateStringListInMenu(" ", this, menuDeepLearning, "Lung", false);
   menuDeepLearning->addSeparator();
-  temp = populateStringListInMenu("", this, menuDeepLearning, "Training", false);
+  temp = populateStringListInMenu(" ", this, menuDeepLearning, "Training", false);
 
   menuDownload->addAction("All");
   for (const auto &currentActionAndName : vectorOfGBMApps)
