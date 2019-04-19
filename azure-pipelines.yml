@@ -185,20 +185,17 @@ jobs:
         cmake --build . --target PACKAGE --config Release
       displayName: 'Package CaPTk'
     
-    - powershell: |    
-        ls
-        Get-Location
-     
-        Remove-Item-Force -Recurse -Path src
-        Remove-Item-Force -Recurse -Path binaries
-        Remove-Item-Force -Recurse -Path data
-        Remove-Item-Force -Recurse -Path docs*
-        Remove-Item-Force -Recurse -Path regression
-        Remove-Item-Force -Recurse -Path scripts
-        Remove-Item-Force -Recurse -Path testing
+    - powershell: |   
+        Remove-Item -Force -Recurse -Path src
+        Remove-Item -Force -Recurse -Path binaries
+        Remove-Item -Force -Recurse -Path data
+        Remove-Item -Force -Recurse -Path docs*
+        Remove-Item -Force -Recurse -Path regression
+        Remove-Item -Force -Recurse -Path scripts
+        Remove-Item -Force -Recurse -Path testing
 
         Move-Item -Path bin\CaPTk_*_Installer.exe -Destination .\CaPTk_*_Installer.exe
-        Remove-Item-Force -Recurse -Path bin
+        Remove-Item -Force -Recurse -Path bin
         
       displayName: 'Moving Installer one level up'
 
