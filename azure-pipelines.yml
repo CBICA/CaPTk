@@ -198,12 +198,16 @@ jobs:
         Remove-Item -Force -Recurse -Path scripts
         Remove-Item -Force -Recurse -Path testing
 
-        Move-Item -Path "D:\a\1\s\src\README.md" -Destination "D:\a\1\s\README.md"
         # Remove-Item -Force -Recurse -Path bin
-
         ls
         
       displayName: 'Moving Installer one level up'
+
+    - bash: |
+        mv src/README.md .
+        
+        ls
+      displayName: 'test'
 
     # - task: CopyFiles@2
     #   inputs:
