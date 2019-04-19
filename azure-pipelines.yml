@@ -197,10 +197,10 @@ jobs:
         Remove-Item -Force -Recurse -Path scripts
         Remove-Item -Force -Recurse -Path testing
 
-        ls
-
-        # Move-Item -Path bin\CaPTk_*_Installer.exe -Destination .\CaPTk_*_Installer.exe
+        Move-Item -Path src\README.md -Destination .\README.md
         # Remove-Item -Force -Recurse -Path bin
+
+        ls
         
       displayName: 'Moving Installer one level up'
 
