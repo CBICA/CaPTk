@@ -174,6 +174,7 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
           this->m_ComparisonViewers[i]->SetSlice(currentslice + 1);
           this->m_ComparisonViewers[i]->Render();
         }
+        mw->OnSliderMovedInComparisonMode(currentslice + 1);
       }
       else if ((event == vtkCommand::MouseWheelBackwardEvent && !bCtrlKey) || (event == vtkCommand::KeyPressEvent && KeyPress == "Down")) {
         int currentslice = this->m_currentViewer->GetSlice();
@@ -183,6 +184,7 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
           this->m_ComparisonViewers[i]->SetSlice(currentslice - 1);
           this->m_ComparisonViewers[i]->Render();
         }
+        mw->OnSliderMovedInComparisonMode(currentslice - 1);
       }
       if (/*event == vtkCommand::PickEvent || */event == vtkCommand::StartPickEvent)
       {

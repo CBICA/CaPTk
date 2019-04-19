@@ -2297,7 +2297,9 @@ void fMainWindow::ChangeImageWithOrder(SlicerManager *sm, int order)
 
 void fMainWindow::OnSliderMovedInComparisonMode(int value)
 {
-  if (AxialViewSlider->value() != value)
+  if (AxialViewSlider->value() != value || 
+    CoronalViewSlider->value() != value ||
+    SaggitalViewSlider->value() != value)
   {
     AxialViewSlider->setValue(value);
     CoronalViewSlider->setValue(value);
