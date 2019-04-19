@@ -10,27 +10,21 @@ The package leverages the value of quantitative imaging analytics along with mac
 -# Prediction of treatment response for breast and lung cancer.
 -# Risk assessment for breast cancer.
 
-CaPTk is developed and maintained by the Center for Biomedical Image Computing and Analytics (CBICA - https://www.cbica.upenn.edu) at the University of Pennsylvania, and draws upon research from several groups within the Center and beyond. 
+CaPTk is developed and maintained by the (Center for Biomedical Image Computing and Analytics (CBICA))[https://www.cbica.upenn.edu] at the University of Pennsylvania, and draws upon research from several groups within the Center and beyond. 
 
 <p align="center">
   <img src="https://github.com/sarthakpati/CaPTk/blob/master/docs_sources/images/0_overview_resize.png" />
-  <figcaption>
-    <center>
-      Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture
-    </center>
-  </figcaption>
+  <figcaption>Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture</figcaption>
 </p>
-
-\image html 0_overview_resize.png "Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture"
-\image latex 0_overview_resize.png "Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture"
 
 ## Bug Tracker and Feature Request
  
-We coordinate our bugs and feature requests via out GitHub page: https://github.com/CBICA/CaPTk/issues
+We coordinate our bugs and feature requests via our GitHub page: https://github.com/CBICA/CaPTk/issues
 
 ## Supporting Grant
-This work is supported by the NIH/NCI/ITCR* grant U24-CA189523.
-<br>* National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research
+This work is supported by the NIH/NCI/ITCR(*) grant U24-CA189523.
+
+(*) National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research
 
 ## Disclaimer
 - The software has been designed for research purposes only and has neither been reviewed nor approved for clinical use by the Food and Drug Administration (FDA) or by any other federal/state agency.
@@ -38,11 +32,7 @@ This work is supported by the NIH/NCI/ITCR* grant U24-CA189523.
 - The minimum recommended resolution is 1024x768. We have seen some issues with high DPI screens and bug reports related to it will be appreciated.
 
 ## Contact
-For more information, please contact <a href="mailto:software@cbica.upenn.edu">software@cbica.upenn.edu</a>.
-
-\htmlonly
-<div align="right"><a href="Getting_Started.html"><b>Next (Getting Started)<b></a>
-\endhtmlonly
+For more information, please contact <software@cbica.upenn.edu>.
 
 [Next (Getting Started)(1_GettingStarted.md)
 
