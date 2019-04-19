@@ -56,7 +56,7 @@ public:
     if (fDeepMedicDialog->objectName().isEmpty())
       fDeepMedicDialog->setObjectName(QString::fromUtf8("fDeepMedicDialog"));
     //fDeepMedicDialog->setWindowModality(Qt::NonModal);
-    //fDeepMedicDialog->resize(400, 200); // needs to be screenSize dependent 
+    fDeepMedicDialog->resize(200, 200); // needs to be screenSize dependent 
     QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     sizePolicy.setHorizontalStretch(0);
     sizePolicy.setVerticalStretch(0);
@@ -77,10 +77,10 @@ public:
     brainTumorSegmentationButton->setText("Brain Tumor Segmentation");
     skullStrippingButton = new QRadioButton(modelSelectionGroupBox);
     skullStrippingButton->setObjectName(QString::fromUtf8("skullStrippingButton"));
-    brainTumorSegmentationButton->setText("Skull Stripping");
+    skullStrippingButton->setText("Skull Stripping");
     customButton = new QRadioButton(modelSelectionGroupBox);
     customButton->setObjectName(QString::fromUtf8("customButton"));
-    brainTumorSegmentationButton->setText("Custom");
+    customButton->setText("Custom");
 
     modelSelectionGridLayout->addWidget(brainTumorSegmentationButton, 1, 1, 1, 1);
     modelSelectionGridLayout->addWidget(skullStrippingButton, 2, 1, 1, 1);
