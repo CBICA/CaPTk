@@ -370,10 +370,10 @@ fMainWindow::fMainWindow()
   vectorOfMiscApps = populateStringListInMenu(miscAppList, this, menuApp, "Miscellaneous", false);
   vectorOfPreprocessingActionsAndNames = populateStringListInMenu(preProcessingAlgos, this, menuPreprocessing, "", false);
   vectorOfDeepLearningActionsAndNames = populateStringListInMenu(deepLearningAlgos, this, menuDeepLearning, "", false);
-  vectorOfDeepLearningActionsAndNames = populateStringListInMenu("", this, menuDeepLearning, "Breast", false);
-  vectorOfDeepLearningActionsAndNames = populateStringListInMenu("", this, menuDeepLearning, "Lung", false);
+  auto temp = populateStringListInMenu("", this, menuDeepLearning, "Breast", false);
+  temp = populateStringListInMenu("", this, menuDeepLearning, "Lung", false);
   menuDeepLearning->addSeparator();
-  vectorOfDeepLearningActionsAndNames = populateStringListInMenu("", this, menuDeepLearning, "Training", false);
+  temp = populateStringListInMenu("", this, menuDeepLearning, "Training", false);
 
   menuDownload->addAction("All");
   for (const auto &currentActionAndName : vectorOfGBMApps)
@@ -6561,11 +6561,15 @@ void fMainWindow::ApplicationTheia()
 
 void fMainWindow::ApplicationDeepMedicSegmentation(int type)
 {
-  if (mSlicerManagers.size() < 4)
+  if (type <= fDeepMedicDialog::SkullStripping) // different cases for individual models can be put in this way
   {
-    ShowErrorMessage("DeepMedic needs the following images to work: T1CE, T1, T2, FLAIR", this);
-    return;
+    if (mSlicerManagers.size() < 4)
+    {
+      ShowErrorMessage("This model needs the following images to work: T1CE, T1, T2, FLAIR", this);
+      return;
+    }
   }
+
   deepMedicDialog.SetDefaultModel(type);
   deepMedicDialog.SetCurrentImagePath(mInputPathName);
   deepMedicDialog.exec();
