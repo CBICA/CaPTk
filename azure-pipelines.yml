@@ -200,8 +200,25 @@ jobs:
         rm -rf ../src
         ls -l
         mv CaPTk_*_Installer.exe ../
+    # - powershell: |   
+    #     Remove-Item -Force -Recurse -Path src
+    #     Remove-Item -Force -Recurse -Path binaries
+    #     Remove-Item -Force -Recurse -Path data
+    #     Remove-Item -Force -Recurse -Path docs*
+    #     Remove-Item -Force -Recurse -Path regression
+    #     Remove-Item -Force -Recurse -Path scripts
+    #     Remove-Item -Force -Recurse -Path testing
         
-      displayName: 'Moving Installer one level up'
+      displayName: 'Clearing space'
+
+    # - bash: |
+    #     mv bin/CaPTk_*_Installer.exe .  
+    #   displayName: 'Moving Installer one level up'
+
+    - powershell: |   
+        Remove-Item -Force -Recurse -Path bin
+        
+      displayName: 'Clearing build directory'
 
     - task: CopyFiles@2
       inputs:
