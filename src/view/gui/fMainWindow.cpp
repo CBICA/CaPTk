@@ -191,6 +191,7 @@ fMainWindow::fMainWindow()
   menuFile->addMenu(menuLoadFile);
   menuFile->addMenu(menuSaveFile);
   menuApp = new QMenu("Applications");
+  menuDeepLearning = new QMenu("Deep Learning");
   menuPreprocessing = new QMenu("Preprocessing");
   menuHelp = new QMenu("Help");
 
@@ -270,6 +271,7 @@ fMainWindow::fMainWindow()
 #ifndef PACKAGE_VIEWER
   menubar->addMenu(menuApp);
 #endif
+  menubar->addMenu(menuDeepLearning);
   menubar->addMenu(menuHelp);
   this->setMenuBar(menubar);
 
@@ -278,6 +280,7 @@ fMainWindow::fMainWindow()
 #ifndef PACKAGE_VIEWER
   menubar->addAction(menuApp->menuAction());
 #endif
+  menubar->addAction(menuDeepLearning->menuAction());
   menubar->addAction(menuHelp->menuAction());
 
   menuLoadFile->addAction(actionLoad_Nifti_Images);
@@ -351,7 +354,8 @@ fMainWindow::fMainWindow()
   auto lungAppList = " LungField Nodule Analysis";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
-  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer";
+  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
+  auto deepLearningAlgos = " deepmedic_tumor deepmedic_brain";
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
   menuApp->addSeparator();
@@ -365,6 +369,11 @@ fMainWindow::fMainWindow()
   vectorOfSegmentationApps = populateStringListInMenu(segAppList, this, menuApp, "Segmentation", false);
   vectorOfMiscApps = populateStringListInMenu(miscAppList, this, menuApp, "Miscellaneous", false);
   vectorOfPreprocessingActionsAndNames = populateStringListInMenu(preProcessingAlgos, this, menuPreprocessing, "", false);
+  vectorOfDeepLearningActionsAndNames = populateStringListInMenu(deepLearningAlgos, this, menuDeepLearning, "", false);
+  vectorOfDeepLearningActionsAndNames = populateStringListInMenu("", this, menuDeepLearning, "Breast", false);
+  vectorOfDeepLearningActionsAndNames = populateStringListInMenu("", this, menuDeepLearning, "Lung", false);
+  menuDeepLearning->addSeparator();
+  vectorOfDeepLearningActionsAndNames = populateStringListInMenu("", this, menuDeepLearning, "Training", false);
 
   menuDownload->addAction("All");
   for (const auto &currentActionAndName : vectorOfGBMApps)
@@ -643,14 +652,12 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfSegmentationApps[i].name.find("deepmedic_tumor") != std::string::npos)
     {
-      vectorOfSegmentationApps[i].action->setText("  Brain Tumor Segmentation (DeepMedic)"); // TBD set at source
-      //connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationDeepMedicSegmentation(0)));
+      vectorOfSegmentationApps[i].action->setText("  Brain Tumor Segmentation (DeepLearning)"); // TBD set at source
       connect(vectorOfSegmentationApps[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::Tumor); });
     }
     else if (vectorOfSegmentationApps[i].name.find("deepmedic_brain") != std::string::npos)
     {
-      vectorOfSegmentationApps[i].action->setText("  Skull Stripping (DeepMedic)"); // TBD set at source
-      //connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationDeepMedicSegmentation(1)));
+      vectorOfSegmentationApps[i].action->setText("  Skull Stripping (DeepLearning)"); // TBD set at source
       connect(vectorOfSegmentationApps[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::SkullStripping); });
     }
   }
@@ -713,6 +720,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfPreprocessingActionsAndNames[i].name.find("DeepMedicNormalizer") != std::string::npos)
     {
+      vectorOfPreprocessingActionsAndNames[i].action->setText("Z-Scoring Normalizer"); // TBD set at source
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageDeepMedicNormalizer()));
     }
     else if (vectorOfPreprocessingActionsAndNames[i].name.find("SkullStripping") != std::string::npos)
@@ -725,6 +733,26 @@ fMainWindow::fMainWindow()
     {
       vectorOfPreprocessingActionsAndNames[i].action->setText("DICOM to NIfTI");
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(DCM2NIfTIConversion()));
+    }
+    else if (vectorOfPreprocessingActionsAndNames[i].name.find("deepmedic_brain") != std::string::npos)
+    {
+      vectorOfPreprocessingActionsAndNames[i].action->setText("Skull Stripping (DeepLearning)"); // TBD set at source
+      connect(vectorOfPreprocessingActionsAndNames[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::SkullStripping); });
+    }
+  }
+
+  // add a single function for all preprocessing steps, this function will check for the specific names and then initiate that algorithm
+  for (size_t i = 0; i < vectorOfDeepLearningActionsAndNames.size(); i++)
+  {
+    if (vectorOfDeepLearningActionsAndNames[i].name.find("deepmedic_tumor") != std::string::npos)
+    {
+      vectorOfDeepLearningActionsAndNames[i].action->setText("Brain Tumor Segmentation"); // TBD set at source
+      connect(vectorOfDeepLearningActionsAndNames[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::Tumor); });
+    }
+    else if (vectorOfDeepLearningActionsAndNames[i].name.find("deepmedic_brain") != std::string::npos)
+    {
+      vectorOfDeepLearningActionsAndNames[i].action->setText("Skull Stripping"); // TBD set at source
+      connect(vectorOfDeepLearningActionsAndNames[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::SkullStripping); });
     }
   }
 
