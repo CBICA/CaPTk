@@ -1,6 +1,4 @@
-﻿/**
-
-\mainpage Overview
+﻿# Overview
 
 CaPTk is a software platform, written in C++, for analysis of radiographic images of cancer, currently focusing on brain, breast, and lung cancer. CaPTk integrates advanced, validated tools performing various aspects of medical image analysis that have been developed in the context of active clinical research studies and collaborations toward addressing real clinical needs. With emphasis given on being a very lightweight and efficient image viewer and eliminating the prerequisite for a substantial computational background, CaPTk aims to facilitate the swift translation of advanced computational algorithms into routine clinical quantification, analysis, decision making, and reporting workflow.
 
@@ -36,5 +34,7 @@ For more information, please contact <a href="mailto:software@cbica.upenn.edu">s
 \htmlonly
 <div align="right"><a href="Getting_Started.html"><b>Next (Getting Started)<b></a>
 \endhtmlonly
+
+[Next (Getting Started)(1_GettingStarted.md)
 
 */
