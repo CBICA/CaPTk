@@ -15,6 +15,10 @@ fDeepMedicDialog::fDeepMedicDialog()
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
   connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputDirectory()));
+  connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModelTumor()));
+  connect(skullStrippingButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModelSkull()));
+  connect(customButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModelCustom()));
+  //connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, [this] { SetDefaultModel(fDeepMedicDialog::Tumor); });
 
   outputDirName->setText(mInputPathName);
 
@@ -36,11 +40,19 @@ void fDeepMedicDialog::SetDefaultModel(int modelType)
   if (modelType == fDeepMedicDialog::Tumor)
   {
     auto currentModelDir = cbica::normPath(getCaPTkDataDir() + "/deepMedic/saved_models/brainTumorSegmentation/");
+    modelDirName->setReadOnly(true);
     modelDirName->setText(currentModelDir.c_str());
   }
   else if (modelType == fDeepMedicDialog::SkullStripping)
   {
     auto currentModelDir = cbica::normPath(getCaPTkDataDir() + "/deepMedic/saved_models/skullStripping/");
+    modelDirName->setReadOnly(true);
+    modelDirName->setText(currentModelDir.c_str());
+  }
+  else if (modelType == fDeepMedicDialog::Custom)
+  {
+    auto currentModelDir = cbica::normPath(getCaPTkDataDir() + "/deepMedic/saved_models/");
+    modelDirName->setReadOnly(false);
     modelDirName->setText(currentModelDir.c_str());
   }
 }

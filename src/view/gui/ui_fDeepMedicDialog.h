@@ -44,6 +44,12 @@ public:
 
   QHBoxLayout * horizontalLayout;
 
+  QGroupBox *modelSelectionGroupBox;
+  QGridLayout *modelSelectionGridLayout;
+  QRadioButton *brainTumorSegmentationButton;
+  QRadioButton *skullStrippingButton;
+  QRadioButton *customButton;
+
   void setupUi(QDialog *fDeepMedicDialog)
   {
 
@@ -57,6 +63,28 @@ public:
     sizePolicy.setHeightForWidth(fDeepMedicDialog->sizePolicy().hasHeightForWidth());
     fDeepMedicDialog->setSizePolicy(sizePolicy);
     fDeepMedicDialog->setMinimumSize(QSize(0, 0));
+
+    //--------------------------------------------------------------------
+    modelSelectionGroupBox = new QGroupBox(fDeepMedicDialog);
+    modelSelectionGroupBox->setTitle(QString::fromStdString("Model Selector"));
+    modelSelectionGridLayout = new QGridLayout(modelSelectionGroupBox);
+    modelSelectionGridLayout->setObjectName(QString::fromUtf8("modelSelectionGridLayout"));
+
+    //rdNewClassification = new QRadioButton(classificationGroupBox);
+    //rdNewClassification->setObjectName(QString::fromUtf8("newClassification"));
+    brainTumorSegmentationButton = new QRadioButton(modelSelectionGroupBox);
+    brainTumorSegmentationButton->setObjectName(QString::fromUtf8("brainTumorSegmentationButton"));
+    brainTumorSegmentationButton->setText("Brain Tumor Segmentation");
+    skullStrippingButton = new QRadioButton(modelSelectionGroupBox);
+    skullStrippingButton->setObjectName(QString::fromUtf8("skullStrippingButton"));
+    brainTumorSegmentationButton->setText("Skull Stripping");
+    customButton = new QRadioButton(modelSelectionGroupBox);
+    customButton->setObjectName(QString::fromUtf8("customButton"));
+    brainTumorSegmentationButton->setText("Custom");
+
+    modelSelectionGridLayout->addWidget(brainTumorSegmentationButton, 0, 0);
+    modelSelectionGridLayout->addWidget(skullStrippingButton, 0, 1);
+    modelSelectionGridLayout->addWidget(customButton, 0, 2);
 
     //fDeepMedicDialog->setModal(true);
     gridLayout = new QGridLayout(fDeepMedicDialog);
