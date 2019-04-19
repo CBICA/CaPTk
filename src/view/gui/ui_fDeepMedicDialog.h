@@ -83,8 +83,8 @@ public:
     brainTumorSegmentationButton->setText("Custom");
 
     modelSelectionGridLayout->addWidget(brainTumorSegmentationButton, 1, 1, 1, 1);
-    modelSelectionGridLayout->addWidget(skullStrippingButton, 1, 2, 1, 1);
-    modelSelectionGridLayout->addWidget(customButton, 1, 3, 1, 1);
+    modelSelectionGridLayout->addWidget(skullStrippingButton, 2, 1, 1, 1);
+    modelSelectionGridLayout->addWidget(customButton, 3, 1, 1, 1);
 
     //fDeepMedicDialog->setModal(true);
     gridLayout = new QGridLayout(fDeepMedicDialog);

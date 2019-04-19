@@ -35,6 +35,19 @@ void fDeepMedicDialog::CancelButtonPressed()
   this->close();
 }
 
+void fDeepMedicDialog::SetDefaultModelTumor() 
+{ 
+  SetDefaultModel(Tumor); 
+}
+void fDeepMedicDialog::SetDefaultModelSkull() 
+{ 
+  SetDefaultModel(SkullStripping); 
+}
+void fDeepMedicDialog::SetDefaultModelCustom() 
+{ 
+  SetDefaultModel(Custom); 
+}
+
 void fDeepMedicDialog::SetDefaultModel(int modelType)
 {
   if (modelType == fDeepMedicDialog::Tumor)
