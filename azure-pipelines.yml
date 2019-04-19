@@ -186,6 +186,9 @@ jobs:
       displayName: 'Package CaPTk'
     
     - powershell: |   
+        ls
+        Get-Location
+        
         Remove-Item -Force -Recurse -Path src
         Remove-Item -Force -Recurse -Path binaries
         Remove-Item -Force -Recurse -Path data
