@@ -23,7 +23,6 @@ jobs:
   
     - script: |
         choco install doxygen.install
-        choco install nsis
       displayName: 'Install dependencies'
   
     - bash: |
