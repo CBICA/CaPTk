@@ -51,6 +51,7 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        rm -rf ../binaries
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         cmake --build . --target PACKAGE --config Release
         echo "Checking contents of CPack installed folder"
