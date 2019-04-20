@@ -52,7 +52,13 @@ jobs:
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         cmake --build . --target PACKAGE --config Release
+        echo "Checking contents of CPack installed folder"
+        echo "=== First is the bin ==="
         ls -lt ./_CPack_Packages/Win64/NSIS/CaPTk_1.7.0.nonRelease_Installer/bin/
+        echo "=== Next is the lib ==="
+        ls -lt ./_CPack_Packages/Win64/NSIS/CaPTk_1.7.0.nonRelease_Installer/lib/
+        echo "=== Next is the data ==="
+        ls -lt ./_CPack_Packages/Win64/NSIS/CaPTk_1.7.0.nonRelease_Installer/data/
       displayName: 'Package CaPTk'
     
     - script: | 
