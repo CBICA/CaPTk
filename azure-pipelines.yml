@@ -80,7 +80,8 @@ jobs:
         targetFolder: '$(Build.ArtifactStagingDirectory)'
         cleanTargetFolder: true
         overWrite: true
-        contents: 'CaPTk_*_Installer.exe'
+        #contents: 'CaPTk_*_Installer.exe'
+        contents: 'bin/_CPack_Packages/Win64/NSIS/NSISOutput.log'
     
     - task: PublishBuildArtifacts@1
       inputs:
