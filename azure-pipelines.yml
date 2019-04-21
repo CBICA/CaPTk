@@ -61,22 +61,21 @@ jobs:
         rm -rf ../binaries
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         cmake --build . --target PACKAGE --config Release
-        echo "Checking contents of CPack installed folder"
+        echo "Checking contents of CPack package"
         echo "=== First is the bin ==="
-        ls -lt ./_CPack_Packages/Win64/NSIS/CaPTk_1.7.0.nonRelease_Installer/bin/
-        echo "=== Next is the lib ==="
-        ls -lt ./_CPack_Packages/Win64/NSIS/CaPTk_1.7.0.nonRelease_Installer/lib/
-        echo "=== Next is the data ==="
-        ls -lt ./_CPack_Packages/Win64/NSIS/CaPTk_1.7.0.nonRelease_Installer/data/
+        ls -lt 
+        echo "=== Space check ==="
+        df
+        dir d:\
       displayName: 'Package CaPTk'
     
     - script: | 
         cd bin
         #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         echo "Deleting folders to make space"
+        rm -rf qt
         rm -rf externalApps
         rm -rf binaries_windows.zip
-        rm -rf ../binaries
         rm -rf ../src
         mv CaPTk_*_Installer.exe ../
         
