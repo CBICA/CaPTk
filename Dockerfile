@@ -22,13 +22,13 @@ RUN git clone --recursive -j https://github.com/CBICA/CaPTk.git
 
 # start superbuild and then build CaPTk
 RUN cd CaPTk; \
-    echo "=== Starting CaPTk Superbuild ==="
+    echo "=== Starting CaPTk Superbuild ===" \
     mkdir bin; cd bin; \
     cmake -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=./install_libs \
     -Wno-dev ..; \
     make; \
-    echo "=== Building CaPTk ==="
+    echo "=== Building CaPTk ===" \
     cmake -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=./install \
     -Wno-dev ..; \
