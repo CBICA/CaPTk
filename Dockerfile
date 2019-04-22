@@ -3,7 +3,10 @@ FROM ubuntu:16.04
 MAINTAINER CBICA_UPenn software@cbica.upenn.edu
 
 #update
-RUN apt-get update -y
+RUN apt-get update && \
+    apt-get install -y sudo curl git && \
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
+    sudo apt-get install git-lfs=1.0.0
 
 #general dependencies
 RUN apt-get install -y \
@@ -11,17 +14,8 @@ RUN apt-get install -y \
     cmake \
     git-core \
     unzip \
-    doxygen \
-    curl \
-    software-properties-common
-
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
-
-#update
-RUN apt-get update -y
-
-RUN apt-get install git-lfs
-
+    doxygen 
+    
 RUN git lfs install
 
 # clone the current repo
