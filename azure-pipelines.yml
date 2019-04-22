@@ -192,33 +192,20 @@ jobs:
     - script: | 
         cd bin
         ls -l
-        #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         echo "Deleting folders to make space"
         rm -rf externalApps
         rm -rf binaries_windows.zip
         rm -rf ../binaries
         rm -rf ../src
-        ls -l
+        rm -rf ../data
+        rm -rf ../docs*
+        rm -rf ../regression
+        rm -rf ../scripts
+        rm -rf ../testing
         mv CaPTk_*_Installer.exe ../
-    # - powershell: |   
-    #     Remove-Item -Force -Recurse -Path src
-    #     Remove-Item -Force -Recurse -Path binaries
-    #     Remove-Item -Force -Recurse -Path data
-    #     Remove-Item -Force -Recurse -Path docs*
-    #     Remove-Item -Force -Recurse -Path regression
-    #     Remove-Item -Force -Recurse -Path scripts
-    #     Remove-Item -Force -Recurse -Path testing
-        
+        rm -rf *
+        ls -l   
       displayName: 'Clearing space'
-
-    # - bash: |
-    #     mv bin/CaPTk_*_Installer.exe .  
-    #   displayName: 'Moving Installer one level up'
-
-    - powershell: |   
-        Remove-Item -Force -Recurse -Path bin
-        
-      displayName: 'Clearing build directory'
 
     - task: CopyFiles@2
       inputs:
