@@ -199,20 +199,23 @@ jobs:
         rm -rf ../regression
         rm -rf ../scripts
         rm -rf ../testing
-        mv CaPTk_*_Installer.exe ../
+        
+        mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
+        
+        cd ../
         rm -rf *
 
         echo "Delete folders to make space"
         ls -l
       displayName: 'Package CaPTk and clear space'
 
-    - task: CopyFiles@2
-      inputs:
-        sourceFolder: '$(Build.SourcesDirectory)'
-        targetFolder: '$(Build.ArtifactStagingDirectory)'
-        cleanTargetFolder: true
-        overWrite: true
-        contents: 'CaPTk_*_Installer.exe'
+    # - task: CopyFiles@2
+    #   inputs:
+    #     sourceFolder: '$(Build.SourcesDirectory)'
+    #     targetFolder: '$(Build.ArtifactStagingDirectory)'
+    #     cleanTargetFolder: true
+    #     overWrite: true
+    #     contents: 'CaPTk_*_Installer.exe'
     
     - task: PublishBuildArtifacts@1
       inputs:
