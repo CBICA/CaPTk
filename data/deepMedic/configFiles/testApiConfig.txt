@@ -1,0 +1,10 @@
+#Default values are set internally, if the corresponding parameter is not found in the configuration file.
+
+#[Optional but highly suggested] The name will be used for naming folders to save the results in.
+#Default: "testSession"
+sessionName = "testApiSession"
+
+# The path to the saved CNN-model to use for testing. Optional in the case the the model is specified from command line with the -model option. In this case, this entry file of the config file will be disregarded, and the one from the command line will be used.
+cnnModelFilePath = "../saved_models/to_use/model.ckpt"
+
+
