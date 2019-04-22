@@ -6,7 +6,7 @@ MAINTAINER CBICA_UPenn software@cbica.upenn.edu
 RUN apt-get update -y
 
 #general dependencies
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash \
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
     apt-get install -y \
     wget \
     cmake \
