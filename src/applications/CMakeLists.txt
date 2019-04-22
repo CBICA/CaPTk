@@ -55,6 +55,7 @@ ADD_SUBDIRECTORY( GeodesicTraining )
 ADD_SUBDIRECTORY( Preprocessing )
 ADD_SUBDIRECTORY( Utilities )
 #ADD_SUBDIRECTORY( PerfusionAlignment )
+ADD_SUBDIRECTORY( BreastTexturePipeline )
 
 INCLUDE_DIRECTORIES( 
   ${CMAKE_CURRENT_SOURCE_DIR}/FeatureExtraction/src/depends 
@@ -62,6 +63,7 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}/Preprocessing/src/depends
   ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/src/depends
   ${CMAKE_CURRENT_SOURCE_DIR}/PerfusionAlignment/src/depends
+  ${CMAKE_CURRENT_SOURCE_DIR}/BreastTexturePipeline/src/depends
   ${GEODESIC_TRAINING_INCLUDE_DIRS}
 )
 

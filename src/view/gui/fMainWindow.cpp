@@ -617,7 +617,7 @@ fMainWindow::fMainWindow()
     else if (vectorOfBreastApps[i].name.find("breastSegment") != std::string::npos)
     {
       vectorOfBreastApps[i].action->setText("  Breast Segmentation"); //TBD set at source
-      connect(vectorOfBreastApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationLIBRASingle()));
+      connect(vectorOfBreastApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationBreastSegmentation()));
     }
   }
 
@@ -745,6 +745,11 @@ fMainWindow::fMainWindow()
     {
       vectorOfPreprocessingActionsAndNames[i].action->setText("Skull Stripping (DeepLearning)"); // TBD set at source
       connect(vectorOfPreprocessingActionsAndNames[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::SkullStripping); });
+    }
+    else if (vectorOfPreprocessingActionsAndNames[i].name.find("breastNormalize") != std::string::npos)
+    {
+      vectorOfPreprocessingActionsAndNames[i].action->setText("Mammogram Preprocessing");
+      connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageMamogramPreprocess()));
     }
   }
 
@@ -5341,6 +5346,13 @@ void fMainWindow::ApplicationLIBRASingle()
     ShowErrorMessage("At least 1 supported image needs to be loaded and selected", this);
     return;
   }
+
+  if (!mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  {
+    ShowErrorMessage("This is only valid for mammogram images");
+    return;
+  }
+
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
@@ -6441,6 +6453,26 @@ void fMainWindow::ImageDenoising()
     }
   }
 }
+
+void fMainWindow::ImageMamogramPreprocess()
+{
+  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  if (items.empty())
+  {
+    ShowErrorMessage("Please load an image to run bias correction on", this);
+    return;
+  }
+
+  if (!mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  {
+    ShowErrorMessage("This is only valid for mammogram images");
+    return;
+  }
+
+  auto currentFileName = mSlicerManagers[0]->GetFileName();
+
+}
+
 void fMainWindow::ImageBiasCorrection()
 {
   QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();

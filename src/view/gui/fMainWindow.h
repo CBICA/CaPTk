@@ -1305,6 +1305,7 @@ public slots:
   void ApplicationWhiteStripe();
 #endif
   void ImageDenoising();
+  void ImageMamogramPreprocess();
   void ImageBiasCorrection();
   void ImageRegistration();
   void ImageHistogramMatching();
