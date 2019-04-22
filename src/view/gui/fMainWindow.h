@@ -371,6 +371,10 @@ public:
   //! Check if a valid mask is defined for the current instance of the 
   bool isMaskDefined();
 
+  //! Get/Set Comparison Mode
+  void SetComparisonMode(bool mode);
+  bool GetComparisonMode();
+
   /*
   \brief Change direction cosine of image to identity
   \param image The image whose direction is altered
@@ -554,6 +558,16 @@ signals:
   void TissuePointsFocused(bool bFocused);
 
 public slots:
+
+    //! set Z slice position on image info panel
+    void SetImageInfoZSlicePosition(int zslice);
+
+    //! set voxel intensity value at cursor position on image info panel
+    void SetImageInfoIntensityValue(double value);
+
+    //! slot on movement of slider in comparison mode
+    void OnSliderMovedInComparisonMode(int);
+
   /**
   \brief Updates draw mode when drawing panel changes
   */
@@ -1320,6 +1334,12 @@ public slots:
   void ApplicationDeepMedicSegmentation(int type);
   void ApplicationTheia();
 
+  //! Enable/Disable comparison mode
+  void EnableComparisonMode(bool);
+
+  //! Get Comparison Viewers
+  std::vector<vtkSmartPointer<Slicer>> GetComparisonViewers();
+
   void GeodesicTrainingFinishedHandler();
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
@@ -1417,6 +1437,8 @@ private:
   ImageTypeShort3D::Pointer m_imgGeodesicOutNegative;
   std::map<std::string, float> m_fetalbrainfeatures;
   int m_fetalslice;
+  bool m_ComparisonMode; //! comparison mode
+  vtkSmartPointer<Slicer> m_ComparisonViewerLeft, m_ComparisonViewerCenter, m_ComparisonViewerRight;
 
   // GeodesicTraining private variables
   GeodesicTrainingCaPTkApp<2>* m_GeodesicTrainingCaPTkApp2D;

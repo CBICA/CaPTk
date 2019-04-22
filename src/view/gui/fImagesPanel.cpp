@@ -29,6 +29,7 @@ fImagesPanel::fImagesPanel(QWidget * parent) : QWidget(parent)
   connect(m_overlayChkBox, SIGNAL(stateChanged(int)), this, SLOT(overlayUseStateChanged(int)));
   connect(m_overlaySlider, SIGNAL(valueChanged(int)), this, SLOT(overlaySliderChanged(int)));
   connect(m_3dViz, SIGNAL(clicked()), this, SLOT(theiaClicked()));
+  connect(m_CompareButton, SIGNAL(toggled(bool)), this, SIGNAL(CompareModeToggled(bool)));
   connect(HelpButton, SIGNAL(clicked()), this, SLOT(helpClicked()));
 }
 

@@ -56,6 +56,7 @@
 #include "vtkTransform.h"
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkLookupTable.h"
+#include "ComparisonViewerCommand.h"
 
 #include "QtConcurrent/qtconcurrentrun.h"
 
@@ -157,6 +158,9 @@ fMainWindow::fMainWindow()
 {
 
   setupUi(this);
+
+  //! comparison mode OFF at startup
+  this->SetComparisonMode(false);
 
   this->bottomLayout = new QHBoxLayout();
 
@@ -502,6 +506,7 @@ fMainWindow::fMainWindow()
   connect(imagesPanel, SIGNAL(sigOverlaySliderChanged(int)), this, SLOT(overlaySliderChanged(int)));
   connect(imagesPanel, SIGNAL(sigOverlayChanged()), this, SLOT(overlayChanged()));
   connect(imagesPanel, SIGNAL(sigTheiaClicked()), this, SLOT(ApplicationTheia()));
+  connect(imagesPanel, SIGNAL(CompareModeToggled(bool)), this, SLOT(EnableComparisonMode(bool)));
   connect(imagesPanel, SIGNAL(sigImageModalityChanged(int)), this, SLOT(imageModalityChanged(int)));
   connect(imagesPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
 
@@ -1504,6 +1509,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     auto imageInfo = cbica::ImageInfo(fname);
     SlicerManager* imageManager = new SlicerManager(3, mLandmarks, mSeedPoints, mTissuePoints);
     imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
+    imageManager->SetComparisonMode(false);
 
     bool bFirstLoad = false;
     if (mSlicerManagers.size() == 0)
@@ -2169,29 +2175,42 @@ void fMainWindow::SetWindowLevel(double w, double l)
 
 void fMainWindow::UpdateWindowLevel()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
-  if (items.empty()) {
-    return;
-  }
-  int index = GetSlicerIndexFromItem(items[0]);
-  if (index >= 0 && index < (int)mSlicerManagers.size())
+  if (!m_ComparisonMode)//! if comparison mode OFF
   {
-    mSlicerManagers[index]->SetColorWindow(windowSpinBox->value());
-    mSlicerManagers[index]->SetColorLevel(levelSpinBox->value());
-    mSlicerManagers[index]->SetPreset(presetComboBox->currentIndex());
-    mSlicerManagers[index]->Render();
-    //
-    if (presetComboBox->currentIndex() == PRESET_THRESHOLD || presetComboBox->currentIndex() == PRESET_GEODESIC) {
-      thresholdLabel->setEnabled(true);
-      thresholdSpinBox->setEnabled(true);
+    QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+    if (items.empty()) {
+      return;
     }
-    else
+    int index = GetSlicerIndexFromItem(items[0]);
+    if (index >= 0 && index < (int)mSlicerManagers.size())
     {
-      thresholdLabel->setEnabled(false);
-      thresholdSpinBox->setEnabled(false);
+      mSlicerManagers[index]->SetColorWindow(windowSpinBox->value());
+      mSlicerManagers[index]->SetColorLevel(levelSpinBox->value());
+      mSlicerManagers[index]->SetPreset(presetComboBox->currentIndex());
+      mSlicerManagers[index]->Render();
+      //
+      if (presetComboBox->currentIndex() == PRESET_THRESHOLD || presetComboBox->currentIndex() == PRESET_GEODESIC) {
+        thresholdLabel->setEnabled(true);
+        thresholdSpinBox->setEnabled(true);
+      }
+      else
+      {
+        thresholdLabel->setEnabled(false);
+        thresholdSpinBox->setEnabled(false);
+      }
+      //
+      WindowLevelChanged();
     }
-    //
-    WindowLevelChanged();
+  }
+  else//! if comparison mode ON
+  {
+    std::vector<vtkSmartPointer<Slicer>> comparisonViewers = this->GetComparisonViewers();
+    for (int i = 0; i < comparisonViewers.size(); i++)
+    {
+      comparisonViewers[i]->SetColorWindow(windowSpinBox->value());
+      comparisonViewers[i]->SetColorLevel(levelSpinBox->value());
+      comparisonViewers[i]->Render();
+    }
   }
 }
 
@@ -2319,6 +2338,40 @@ void fMainWindow::ChangeImageWithOrder(SlicerManager *sm, int order)
   item = GetItemFromSlicerManager(mSlicerManagers[order]);
   item->setSelected(true);
   DisplayChanged(item);
+}
+
+void fMainWindow::SetImageInfoIntensityValue(double value)
+{
+  this->infoPanel->setIntensityValue(value);
+}
+
+void fMainWindow::SetImageInfoZSlicePosition(int zslice)
+{
+  this->infoPanel->setZSlicePosition(zslice);
+}
+
+void fMainWindow::OnSliderMovedInComparisonMode(int value)
+{
+  if (AxialViewSlider->value() != value || 
+    CoronalViewSlider->value() != value ||
+    SaggitalViewSlider->value() != value)
+  {
+    AxialViewSlider->setValue(value);
+    CoronalViewSlider->setValue(value);
+    SaggitalViewSlider->setValue(value);
+
+  }
+  if (m_ComparisonViewerLeft->GetSlice() != value)
+  {
+    m_ComparisonViewerLeft->SetSlice(value);
+    m_ComparisonViewerCenter->SetSlice(value);
+    m_ComparisonViewerRight->SetSlice(value);
+
+    m_ComparisonViewerLeft->Render();
+    m_ComparisonViewerCenter->Render();
+    m_ComparisonViewerRight->Render();
+  }
+
 }
 
 void fMainWindow::AxialViewSliderChanged()
@@ -6660,6 +6713,131 @@ void fMainWindow::ApplicationTheia()
   }
 }
 
+void fMainWindow::EnableComparisonMode(bool enable)
+{
+  if (mSlicerManagers.size() < 3)
+  {
+    ShowMessage("Please load 3 datasets to enable comparison mode", this);
+    return;
+  }
+
+  this->SetComparisonMode(enable);
+
+  if (enable)
+  {
+    if (m_ComparisonViewerLeft.GetPointer() == nullptr &&
+      m_ComparisonViewerCenter.GetPointer() == nullptr &&
+      m_ComparisonViewerRight.GetPointer() == nullptr)
+    {
+      m_ComparisonViewerLeft = vtkSmartPointer<Slicer>::New();
+      m_ComparisonViewerCenter = vtkSmartPointer<Slicer>::New();
+      m_ComparisonViewerRight = vtkSmartPointer<Slicer>::New();
+
+      m_ComparisonViewerLeft->SetComparisonMode(true);
+      m_ComparisonViewerCenter->SetComparisonMode(true);
+      m_ComparisonViewerRight->SetComparisonMode(true);
+    }
+
+      m_ComparisonViewerLeft->SetImage(mSlicerManagers[0]->GetSlicer(0)->GetImage(), mSlicerManagers[0]->GetSlicer(0)->GetTransform());
+      m_ComparisonViewerCenter->SetImage(mSlicerManagers[1]->GetSlicer(0)->GetImage(), mSlicerManagers[1]->GetSlicer(0)->GetTransform());
+      m_ComparisonViewerRight->SetImage(mSlicerManagers[2]->GetSlicer(0)->GetImage(), mSlicerManagers[2]->GetSlicer(0)->GetTransform());
+
+      m_ComparisonViewerLeft->SetRenderWindow(0, nullptr);
+      m_ComparisonViewerCenter->SetRenderWindow(0, nullptr);
+      m_ComparisonViewerRight->SetRenderWindow(0, nullptr);
+
+      m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+      m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
+      m_ComparisonViewerRight->SetRenderWindow(0, SaggitalViewWidget->GetRenderWindow());
+
+      for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+      {
+        InteractorStyleNavigator* style = InteractorStyleNavigator::New();
+        ComparisonViewerCommand *smc = ComparisonViewerCommand::New();
+        smc->SetCurrentViewer(this->GetComparisonViewers()[i]);
+        smc->SetComparisonViewers(this->GetComparisonViewers());
+        smc->SM = mSlicerManagers[0];
+        style->AddObserver(vtkCommand::KeyPressEvent, smc);
+        style->AddObserver(vtkCommand::WindowLevelEvent, smc);
+        style->AddObserver(vtkCommand::EndWindowLevelEvent, smc);
+        style->AddObserver(vtkCommand::StartWindowLevelEvent, smc);
+        style->AddObserver(vtkCommand::PickEvent, smc);
+        style->AddObserver(vtkCommand::StartPickEvent, smc);
+        style->AddObserver(vtkCommand::LeaveEvent, smc);
+        style->AddObserver(vtkCommand::UserEvent, smc);
+        style->AddObserver(vtkCommand::MouseWheelForwardEvent, smc);
+        style->AddObserver(vtkCommand::MouseWheelBackwardEvent, smc);
+        style->AddObserver(vtkCommand::LeftButtonReleaseEvent, smc);
+        style->AddObserver(vtkCommand::EndPickEvent, smc);
+        style->AddObserver(vtkCommand::EndInteractionEvent, smc);
+        style->SetAutoAdjustCameraClippingRange(1);
+        this->GetComparisonViewers()[i]->SetInteractorStyle(style);
+        style->Delete();
+      }
+
+      //! when we enter comparison mode, the WL should be same as in regular mode
+      std::vector<vtkSmartPointer<Slicer>> comparisonViewers = this->GetComparisonViewers();
+      for (int i = 0; i < comparisonViewers.size(); i++)
+      {
+        comparisonViewers[i]->SetColorWindow(windowSpinBox->value());
+        comparisonViewers[i]->SetColorLevel(levelSpinBox->value());
+      }
+
+      m_ComparisonViewerLeft->SetDisplayMode(true);
+      m_ComparisonViewerCenter->SetDisplayMode(true);
+      m_ComparisonViewerRight->SetDisplayMode(true);
+
+      //!comparison mode connections
+      disconnect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
+      disconnect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(CoronalViewSliderChanged()));
+      disconnect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(SaggitalViewSliderChanged()));
+
+      connect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+      connect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+      connect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+
+      m_ComparisonViewerLeft->Render();
+      m_ComparisonViewerCenter->Render();
+      m_ComparisonViewerRight->Render();
+  }
+  else
+  {
+    vtkImageData *img1 = mSlicerManagers[0]->GetSlicer(0)->GetImage();
+    vtkImageData *img2 = mSlicerManagers[1]->GetSlicer(0)->GetImage();
+    vtkImageData *img3 = mSlicerManagers[2]->GetSlicer(0)->GetImage();
+
+    mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
+    mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
+    mSlicerManagers[2]->SetImage(mSlicerManagers[2]->GetITKImage());
+
+    mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+    mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+    mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+
+    mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+    mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+    mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+
+    //!regular mode connections
+    connect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
+    connect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(CoronalViewSliderChanged()));
+    connect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(SaggitalViewSliderChanged()));
+
+    disconnect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+    disconnect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+    disconnect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
+
+    m_ComparisonViewerLeft->SetDisplayMode(false);
+    m_ComparisonViewerCenter->SetDisplayMode(false);
+    m_ComparisonViewerRight->SetDisplayMode(false);
+
+    this->InitDisplay();
+
+    mSlicerManagers[0]->Render();
+
+  }
+}
+
 void fMainWindow::ApplicationDeepMedicSegmentation(int type)
 {
   if (type <= fDeepMedicDialog::SkullStripping) // different cases for individual models can be put in this way
@@ -7903,6 +8081,15 @@ std::vector<int> read_int_vector(std::string &nccRadii)
   return vector;
 }
 
+std::vector<vtkSmartPointer<Slicer>> fMainWindow::GetComparisonViewers()
+{
+  std::vector<vtkSmartPointer<Slicer>>comparisonViewers;
+  comparisonViewers.push_back(m_ComparisonViewerLeft);
+  comparisonViewers.push_back(m_ComparisonViewerCenter);
+  comparisonViewers.push_back(m_ComparisonViewerRight);
+  return comparisonViewers;
+}
+
 void fMainWindow::GeodesicTrainingFinishedHandler()
 {
   // Load the output segmentation as a ROI
@@ -8821,6 +9008,16 @@ bool fMainWindow::isMaskDefined()
   }
 
   return false;
+}
+
+void fMainWindow::SetComparisonMode(bool mode)
+{
+  this->m_ComparisonMode = mode;
+}
+
+bool fMainWindow::GetComparisonMode()
+{
+  return this->m_ComparisonMode;
 }
 
 void fMainWindow::help_contextual(const std::string startPage)
