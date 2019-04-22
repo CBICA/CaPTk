@@ -187,12 +187,9 @@ jobs:
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         cmake --build . --target PACKAGE --config Release
-      displayName: 'Package CaPTk'
-    
-    - script: | 
-        cd bin
+
         ls -l
-        echo "Deleting folders to make space"
+
         rm -rf externalApps
         rm -rf binaries_windows.zip
         rm -rf ../binaries
@@ -204,8 +201,10 @@ jobs:
         rm -rf ../testing
         mv CaPTk_*_Installer.exe ../
         rm -rf *
-        ls -l   
-      displayName: 'Clearing space'
+
+        echo "Delete folders to make space"
+        ls -l
+      displayName: 'Package CaPTk and clear space'
 
     - task: CopyFiles@2
       inputs:
