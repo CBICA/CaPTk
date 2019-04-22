@@ -350,13 +350,13 @@ fMainWindow::fMainWindow()
   std::string breastAppList = "";
 
 #ifndef __APPLE__
-  breastAppList = " librasingle librabatch";
+  breastAppList = " librasingle librabatch breastSegment";
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
-  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
+  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain breastNormalize";
   auto deepLearningAlgos = " deepmedic_tumor deepmedic_brain";
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
@@ -613,6 +613,11 @@ fMainWindow::fMainWindow()
     {
       vectorOfBreastApps[i].action->setText("  Breast Density Estimator (LIBRA) BatchMode"); //TBD set at source
       connect(vectorOfBreastApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationLIBRABatch()));
+    }
+    else if (vectorOfBreastApps[i].name.find("breastSegment") != std::string::npos)
+    {
+      vectorOfBreastApps[i].action->setText("  Breast Segmentation"); //TBD set at source
+      connect(vectorOfBreastApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationLIBRASingle()));
     }
   }
 
@@ -5284,6 +5289,50 @@ void fMainWindow::ApplicationLIBRABatch()
   }
 
 }
+
+void fMainWindow::ApplicationBreastSegmentation()
+{
+  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  if (items.empty())
+  {
+    ShowErrorMessage("At least 1 supported image needs to be loaded and selected", this);
+    return;
+  }
+  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
+
+  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+
+  if (cbica::fileExists(scriptToCall))
+  {
+    std::string casename = cbica::getFilenameBase(dicomfilename);
+    cbica::createDir(m_tempFolderLocation + "/" + casename); // this is ensure that multiple LIBRA runs happen without issues
+
+    std::string command = scriptToCall + " " + dicomfilename + " " + m_tempFolderLocation + "/" + casename + " true true";
+    cbica::Logging(loggerFile, "Running LIBRA Single Image with command '" + command + "'");
+    startExternalProcess(command.c_str(), QStringList());
+
+    updateProgress(100, "Finished and loading mask");
+
+    using LibraImageType = itk::Image< float, 2 >;
+
+    auto dicomReader = itk::ImageSeriesReader< LibraImageType >::New();
+    dicomReader->SetImageIO(itk::GDCMImageIO::New());
+    dicomReader->SetFileName(m_tempFolderLocation + "/" + casename + "/Result_Images/totalmask/totalmask.dcm");
+    try
+    {
+      dicomReader->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+      std::cerr << "Error while loading DICOM image(s): " << err.what() << "\n";
+    }
+    auto totalMask = dicomReader->GetOutput();
+    auto actualMask = cbica::ChangeImageValues< LibraImageType >(totalMask, "2", "1");
+    cbica::WriteImage< LibraImageType >(actualMask, m_tempFolderLocation + "/" + casename + "/actualMask.nii.gz");
+    readMaskFile(m_tempFolderLocation + "/" + casename + "/actualMask.nii.gz");
+  }
+}
+
 void fMainWindow::ApplicationLIBRASingle()
 {
   QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();

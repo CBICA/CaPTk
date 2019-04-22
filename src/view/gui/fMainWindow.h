@@ -1251,6 +1251,7 @@ public slots:
     return tumorPanel->mTumorPointsSelected;
   }
 
+  void ApplicationBreastSegmentation();
   void ApplicationLIBRASingle();
   void ApplicationLIBRABatch();
   void ApplicationConfetti();
