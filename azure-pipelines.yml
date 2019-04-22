@@ -11,7 +11,7 @@ trigger:
 
 jobs:
 
-- job: 'TestXenial'
+- job: 'XenialBuild'
   displayName: "End-to-end Xenial build"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
@@ -35,7 +35,7 @@ jobs:
 
   # Dependency manager
   - bash: |
-      sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix
+      sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0
     displayName: 'Install dependencies from Aptitude'
 
   # Debug info before main scripts start
@@ -84,7 +84,7 @@ jobs:
       cd bin
       cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_DOCUMENTATION=OFF -DQT_DOWNLOAD_FORCE=ON ..
       make -j2
-    displayName: 'Configure and compile superbuild'
+    displayName: 'Configure and compile Superbuild'
 
   # Configure and build CaPTk
   - bash: |
@@ -99,49 +99,100 @@ jobs:
       ls -a
       ls ./qt/
     displayName: 'Check qt'
-  
-  # Set up environment variables for packager
-  - bash: |
-      export PATH=./bin/qt/5.12.1/gcc_64/bin:$PATH
-      export PATH=./bin/qt/5.12.1/gcc_64/libexec:$PATH
-      export PATH=./bin/qt/5.12.1/gcc_64/lib/cmake/Qt5:$PATH
-    displayName: 'Set up environment variables for packager'
-
+    
   # Build a package
   - bash: |
+      export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
+      export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+      export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
       export PKG_FAST_MODE=1
       ./scripts/captk-pkg
-    displayName: 'Build a package'
 
-# - job: 'TestWindows'
-#   displayName: "End-to-end Windows build"
-#   timeoutInMinutes: 0
-#   cancelTimeoutInMinutes: 300
-
-#   pool:
-#     vmImage: 'Windows-2019'
-
-#   steps:
+      rm -rf bin
+      rm -rf src
+      rm -rf binaries
+      rm -rf data
+      rm -rf docs*
+      rm -rf regression
+      rm -rf scripts
+      rm -rf testing
+      ls
+    displayName: 'Set up environment variables for packager and build a package'
   
-#   - bash: |
-#       rm -rf data
-#       rm -rf history
-#       rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-#     displayName: 'Take the nuclear option'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+      cleanTargetFolder: true
+      overWrite: true
+      contents: 'CaPTk_*_Installer.bin'
+  
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'installer_Linux'
 
-#   - script: |
-#       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
-#       cmake --build . --target ALL_BUILD --config Release
-#     displayName: 'Configure and compile superbuild'
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'installer_Linux'
+      downloadPath: '$(System.ArtifactsDirectory)'
 
-#   - script: |
-#       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#       cmake -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
-#       cmake --build . --target ALL_BUILD --config Release
-#     displayName: 'Configure and compile CaPTk'
+- job: 'WindowsBuild'
+  displayName: "End-to-end Windows build & package"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
 
-- job: 'TestMacOS'
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  steps:
+  
+  - bash: |
+      rm -rf history
+      rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    displayName: 'Take the nuclear option'
+
+  - script: |
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+      setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+      cmake --build . --target ALL_BUILD --config Debug
+    displayName: 'Configure and compile Superbuild'
+
+  - script: |
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+      setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+      cmake --build . --target ALL_BUILD --config Debug
+    displayName: 'Configure and compile CaPTk'
+
+  #- script: |
+  #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+  #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="install" -DBUILD_DOCUMENTATION=OFF .
+  #    cmake --build . --target PACKAGE --config Release
+  #  displayName: 'Package CaPTk'
+
+  #- task: CopyFiles@2
+  #  inputs:
+  #    sourceFolder: '$(Build.SourcesDirectory)'
+  #    targetFolder: '$(Build.ArtifactStagingDirectory)'
+  #    contents: '**/*.cpp'
+  
+  #- task: PublishBuildArtifacts@1
+  #  inputs:
+  #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+  #    artifactName: 'installer_Windows'
+
+  #- task: DownloadBuildArtifacts@0
+  #  inputs:
+  #    buildType: 'current'
+  #    downloadType: 'single'
+  #    artifactName: 'installer_Windows'
+  #    downloadPath: '$(System.ArtifactsDirectory)'
+
+- job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
@@ -150,7 +201,6 @@ jobs:
     vmImage: 'MacOS-10.13'
 
   steps:
-
   - bash: |
       brew install caskroom/cask/mactex make git-lfs doxygen llvm
     displayName: 'Brew dependencies'
@@ -183,7 +233,7 @@ jobs:
       cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
       make -j2
-    displayName: 'Configure and compile superbuild'
+    displayName: 'Configure and compile Superbuild'
 
   - bash: |
       cd bin
@@ -207,6 +257,8 @@ jobs:
       make package
 
       version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+      pkgname="_Installer"
+      pkgname="$version$pkgname"
 
       pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
@@ -232,6 +284,30 @@ jobs:
 
       echo $xml > "./distribution.xml"
 
-      productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./Install_CaPTk_$version.pkg
+      productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
       
+      mv *Installer.pkg ../
+      rm -rf *
     displayName: 'Package CaPTk (.dmg and .pkg)'
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+      cleanTargetFolder: true
+      overWrite: true
+      contents: 'CaPTk_*_Installer.pkg'
+  
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'installer_macOS'
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'installer_macOS'
+      downloadPath: '$(System.ArtifactsDirectory)'
+  
+  
