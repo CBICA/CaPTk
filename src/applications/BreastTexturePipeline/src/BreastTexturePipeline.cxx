@@ -6,7 +6,7 @@
 
 #include "LibraPreprocess.h"
 
-std::string inputImageFile, outputImageFile;
+std::string inputImageFile, outputDir;
 
 bool debugMode;
 
@@ -84,21 +84,18 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  auto outputFileName = outputImageFile;
-  if (cbica::isDir(outputImageFile) || (cbica::getFilenameBase(outputFileName) != ".nii.gz"))
-  {
-    outputFileName = outputImageFile + "/" + cbica::getFilenameBase(inputImageFile) + "_preprocessed.nii.gz";
-  }
+  auto outputFileName = outputDir + "/" + cbica::getFilenameBase(inputImageFile) + "_preprocessed.nii.gz";
+  
   cbica::WriteImage< LibraImageType >(preprocessingObj.GetOutputImage(), outputFileName);
 
   auto libraPath = findRelativeApplicationPath("libra");
 
-  std::string command = libraPath + " " + inputImageFile + " " + cbica::getFilenamePath(outputFileName) + "/" + cbica::getFilenameBase(inputImageFile) + " true true";
+  std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/" + cbica::getFilenameBase(inputImageFile) + " true true";
   std::cout << "Running LIBRA Single Image with command '" + command + "'\n";
   std::system(command.c_str());
   std::cout << "Done.\n";
 
-  auto outputTotalMask = cbica::getFilenamePath(outputFileName) + "/" + cbica::getFilenameBase(inputImageFile) + "/Result_Images/totalmask/totalmask.dcm";
+  auto outputTotalMask = outputDir + "/" + cbica::getFilenameBase(inputImageFile) + "/Result_Images/totalmask/totalmask.dcm";
   //auto outputTotalMaskImage = cbica::ReadImage< LibraImageType >(outputTotalMask);
   auto dicomReader = itk::ImageSeriesReader< LibraImageType >::New();
   dicomReader->SetImageIO(itk::GDCMImageIO::New());
@@ -115,7 +112,7 @@ int algorithmsRunner()
   
   auto outputRelevantMaskImage = cbica::ChangeImageValues< LibraImageType >(outputTotalMaskImage, "2", "1");
 
-  auto outputRelevantMaskFile = cbica::getFilenamePath(outputFileName) + "/" + cbica::getFilenameBase(inputImageFile) + "_mask.nii.gz";
+  auto outputRelevantMaskFile = outputDir + "/" + cbica::getFilenameBase(inputImageFile) + "_mask.nii.gz";
   cbica::WriteImage< LibraImageType >(outputRelevantMaskImage, outputRelevantMaskFile);
 
   auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
@@ -128,12 +125,8 @@ int algorithmsRunner()
     exit(EXIT_FAILURE);
   }
 
-  // -p C:/Projects/CaPTk_myFork/src/applications/FeatureExtraction/data/params_test.csv 
-  // -n IBSI -i C:/Projects/CaPTk_myFork/src/applications/FeatureExtraction/data/PAT1_ConfigD_181221/image_Li222_NN.nii.gz 
-  // -t FL -m C:/Projects/CaPTk_myFork/src/applications/FeatureExtraction/data/PAT1_ConfigD_181221/mask_Li222_PV0.5_3stdDevCutOff_Corrected.nii.gz 
-  // -l TT -r 1 -vc 1 -o C:/Projects/CaPTk_myFork/src/applications/FeatureExtraction/data/PAT1_ConfigD_181221/params_test_output.csv
   command = featureExtractionPath + "-n Lattice -p " + latticeFeatureParamFilePath +
-    " -o " + cbica::getFilenamePath(outputFileName) +
+    " -o " + outputDir +
     " -i " + outputFileName + " -t MAM " +
     " -m " + outputRelevantMaskFile + " -l TT -r 1";
 
@@ -148,12 +141,12 @@ int main(int argc, char** argv)
   cbica::CmdParser parser(argc, argv);
 
   parser.addRequiredParameter("i", "inputImage", cbica::Parameter::FILE, "DICOM", "Input Image for processing");
-  parser.addRequiredParameter("o", "outputImage", cbica::Parameter::FILE, "NIfTI", "Output Image for processing", "If directory is passed, output is '${inputFileBase}_preprocessed.nii.gz'");
+  parser.addRequiredParameter("o", "outputDir", cbica::Parameter::DIRECTORY, "NIfTI", "Dir with write access", "All output files are written here");
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
   parser.addOptionalParameter("r", "resize", cbica::Parameter::INTEGER, "0 - 100", "What resizing factor is to be applied", "Default: " + std::to_string(resizingFactor));
 
   parser.getParameterValue("i", inputImageFile);
-  parser.getParameterValue("o", outputImageFile);
+  parser.getParameterValue("o", outputDir);
 
   if (parser.isPresent("d"))
   {
