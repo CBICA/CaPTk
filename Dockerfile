@@ -6,16 +6,17 @@ MAINTAINER CBICA_UPenn software@cbica.upenn.edu
 RUN apt-get update -y
 
 #general dependencies
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
-    apt-get install -y \
+RUN apt-get install -y \
     wget \
     cmake \
     git-core \
     lapack \
     lapack-devel \
     unzip \
-    git-lfs \
-    doxygen
+    doxygen \
+    curl \
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
+    apt-get install git-lfs
 
 # clone the current repo
 RUN git clone --recursive -j https://github.com/CBICA/CaPTk.git
