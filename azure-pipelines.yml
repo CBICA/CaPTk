@@ -189,17 +189,6 @@ jobs:
         cmake --build . --target PACKAGE --config Release
 
         ls -l
-
-        rm -rf externalApps
-        rm -rf binaries_windows.zip
-        rm -rf ../binaries
-        rm -rf ../src
-        rm -rf ../data
-        rm -rf ../docs*
-        rm -rf ../regression
-        rm -rf ../scripts
-        rm -rf ../testing
-        
         mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
         
         cd ../
