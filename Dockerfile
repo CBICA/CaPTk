@@ -10,13 +10,19 @@ RUN apt-get install -y \
     wget \
     cmake \
     git-core \
-    lapack \
-    lapack-devel \
     unzip \
     doxygen \
     curl \
-    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
-    apt-get install git-lfs
+    software-properties-common
+
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
+
+#update
+RUN apt-get update -y
+
+RUN apt-get install git-lfs
+
+RUN git lfs install
 
 # clone the current repo
 RUN git clone --recursive -j https://github.com/CBICA/CaPTk.git
