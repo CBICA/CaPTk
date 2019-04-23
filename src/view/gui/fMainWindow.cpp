@@ -6993,7 +6993,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
       break;
     }
     default:
-      ShowErrorMessage("DeepMedic needs the following images to work: T1CE, T1, T2, FLAIR", this);
+      ShowErrorMessage("DeepMedic needs the following images to work: T1-Gd, T1, T2, FLAIR", this);
       break;
     }
   }
