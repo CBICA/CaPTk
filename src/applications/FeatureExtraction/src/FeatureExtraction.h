@@ -118,6 +118,7 @@ enum FeatureFamily
   GLRLM,
   GLSZM,
   NGTDM,
+  NGLDM,
   LBP,
   Lattice,
   FractalDimension,
@@ -129,7 +130,7 @@ enum FeatureFamily
 };
 
 static const char FeatureFamilyString[FeatureMax + 1][20] =
-{ "Generic", "Intensity", "Histogram", "Volumetric", "Morphologic", "GLCM", "GLRLM", "GLSZM", "NGTDM", "LBP",
+{ "Generic", "Intensity", "Histogram", "Volumetric", "Morphologic", "GLCM", "GLRLM", "GLSZM", "NGTDM", "NGLDM", "LBP",
 "Lattice", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
 
 /**
