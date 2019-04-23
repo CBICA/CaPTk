@@ -186,8 +186,10 @@ void algorithmRunner()
     normalizer.SetInputImage(flImg);
     flImg = normalizer.GetOutput();
     std::cout << "=== Done.\n";
+  }
 
-
+  if (inferenceType <= SkullStripping)
+  {
     std::cout << "=== Starting resampling of images to isotropic resolution.\n";
     t1cImg = cbica::ResampleImage< TImageType >(t1cImg); // default is linear resampling to isotropic resolution of 1.0
     t1Img = cbica::ResampleImage< TImageType >(t1Img); // default is linear resampling to isotropic resolution of 1.0
