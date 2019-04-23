@@ -56,7 +56,7 @@ static PointVal drawPoint(PointVal pt, vtkSmartPointer<vtkImageData> image, cons
 
 static PointVal drawPoint(PointVal pt, vtkSmartPointer<vtkImageData> image);
 
-void makeStroke(int VisibleInWindow, double x, double y);
+void makeStroke(double x, double y);
 
 //! Set Comparison Viewers
 void SetComparisonViewers(std::vector<vtkSmartPointer<Slicer>>);
