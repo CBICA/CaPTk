@@ -38,108 +38,146 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 // CaPTk
 #include "FeatureBase.h"
 
-//! Helper Class
-struct NGLDMMatrixHolder
+namespace mitk
 {
-public:
-	NGLDMMatrixHolder(double min, double max, int number, int depenence);
-
-	int IntensityToIndex(double intensity);
-	double IndexToMinIntensity(int index);
-	double IndexToMeanIntensity(int index);
-	double IndexToMaxIntensity(int index);
-
-	double m_MinimumRange;
-	double m_MaximumRange;
-	double m_Stepsize;
-	int m_NumberOfDependences;
-	int m_NumberOfBins;
-	Eigen::MatrixXd m_Matrix;
-
-	int m_NeighbourhoodSize;
-	unsigned long m_NumberOfNeighbourVoxels;
-	unsigned long m_NumberOfDependenceNeighbourVoxels;
-	unsigned long m_NumberOfNeighbourhoods;
-	unsigned long m_NumberOfCompleteNeighbourhoods;
-};
-
-//! Helper Class
-struct NGLDMMatrixFeatures
-{
-	NGLDMMatrixFeatures() :
-		LowDependenceEmphasis(0),
-		HighDependenceEmphasis(0),
-		LowGreyLevelCountEmphasis(0),
-		HighGreyLevelCountEmphasis(0),
-		LowDependenceLowGreyLevelEmphasis(0),
-		LowDependenceHighGreyLevelEmphasis(0),
-		HighDependenceLowGreyLevelEmphasis(0),
-		HighDependenceHighGreyLevelEmphasis(0),
-		GreyLevelNonUniformity(0),
-		GreyLevelNonUniformityNormalised(0),
-		DependenceCountNonUniformity(0),
-		DependenceCountNonUniformityNormalised(0),
-		DependenceCountPercentage(0),
-		GreyLevelVariance(0),
-		DependenceCountVariance(0),
-		DependenceCountEntropy(0),
-		DependenceCountEnergy(0),
-		MeanGreyLevelCount(0),
-		MeanDependenceCount(0),
-		ExpectedNeighbourhoodSize(0),
-		AverageNeighbourhoodSize(0),
-		AverageIncompleteNeighbourhoodSize(0),
-		PercentageOfCompleteNeighbourhoods(0),
-		PercentageOfDependenceNeighbours(0)
+	//! Helper Class
+	struct NGLDMMatrixHolder
 	{
-	}
+	public:
+		NGLDMMatrixHolder(double min, double max, int number, int depenence);
 
-public:
-	double LowDependenceEmphasis;
-	double HighDependenceEmphasis;
-	double LowGreyLevelCountEmphasis;
-	double HighGreyLevelCountEmphasis;
-	double LowDependenceLowGreyLevelEmphasis;
-	double LowDependenceHighGreyLevelEmphasis;
-	double HighDependenceLowGreyLevelEmphasis;
-	double HighDependenceHighGreyLevelEmphasis;
+		int IntensityToIndex(double intensity);
+		double IndexToMinIntensity(int index);
+		double IndexToMeanIntensity(int index);
+		double IndexToMaxIntensity(int index);
 
-	double GreyLevelNonUniformity;
-	double GreyLevelNonUniformityNormalised;
-	double DependenceCountNonUniformity;
-	double DependenceCountNonUniformityNormalised;
+		double m_MinimumRange;
+		double m_MaximumRange;
+		double m_Stepsize;
+		int m_NumberOfDependences;
+		int m_NumberOfBins;
+		Eigen::MatrixXd m_Matrix;
 
-	double DependenceCountPercentage;
-	double GreyLevelVariance;
-	double DependenceCountVariance;
-	double DependenceCountEntropy;
-	double DependenceCountEnergy;
-	double MeanGreyLevelCount;
-	double MeanDependenceCount;
+		int m_NeighbourhoodSize;
+		unsigned long m_NumberOfNeighbourVoxels;
+		unsigned long m_NumberOfDependenceNeighbourVoxels;
+		unsigned long m_NumberOfNeighbourhoods;
+		unsigned long m_NumberOfCompleteNeighbourhoods;
+	};
 
-	double ExpectedNeighbourhoodSize;
-	double AverageNeighbourhoodSize;
-	double AverageIncompleteNeighbourhoodSize;
-	double PercentageOfCompleteNeighbourhoods;
-	double PercentageOfDependenceNeighbours;
-};
+	//! Helper Class
+	struct NGLDMMatrixFeatures
+	{
+		NGLDMMatrixFeatures() :
+			LowDependenceEmphasis(0),
+			HighDependenceEmphasis(0),
+			LowGreyLevelCountEmphasis(0),
+			HighGreyLevelCountEmphasis(0),
+			LowDependenceLowGreyLevelEmphasis(0),
+			LowDependenceHighGreyLevelEmphasis(0),
+			HighDependenceLowGreyLevelEmphasis(0),
+			HighDependenceHighGreyLevelEmphasis(0),
+			GreyLevelNonUniformity(0),
+			GreyLevelNonUniformityNormalised(0),
+			DependenceCountNonUniformity(0),
+			DependenceCountNonUniformityNormalised(0),
+			DependenceCountPercentage(0),
+			GreyLevelVariance(0),
+			DependenceCountVariance(0),
+			DependenceCountEntropy(0),
+			DependenceCountEnergy(0),
+			MeanGreyLevelCount(0),
+			MeanDependenceCount(0),
+			ExpectedNeighbourhoodSize(0),
+			AverageNeighbourhoodSize(0),
+			AverageIncompleteNeighbourhoodSize(0),
+			PercentageOfCompleteNeighbourhoods(0),
+			PercentageOfDependenceNeighbours(0)
+		{
+		}
 
+	public:
+		double LowDependenceEmphasis;
+		double HighDependenceEmphasis;
+		double LowGreyLevelCountEmphasis;
+		double HighGreyLevelCountEmphasis;
+		double LowDependenceLowGreyLevelEmphasis;
+		double LowDependenceHighGreyLevelEmphasis;
+		double HighDependenceLowGreyLevelEmphasis;
+		double HighDependenceHighGreyLevelEmphasis;
+
+		double GreyLevelNonUniformity;
+		double GreyLevelNonUniformityNormalised;
+		double DependenceCountNonUniformity;
+		double DependenceCountNonUniformityNormalised;
+
+		double DependenceCountPercentage;
+		double GreyLevelVariance;
+		double DependenceCountVariance;
+		double DependenceCountEntropy;
+		double DependenceCountEnergy;
+		double MeanGreyLevelCount;
+		double MeanDependenceCount;
+
+		double ExpectedNeighbourhoodSize;
+		double AverageNeighbourhoodSize;
+		double AverageIncompleteNeighbourhoodSize;
+		double PercentageOfCompleteNeighbourhoods;
+		double PercentageOfDependenceNeighbours;
+
+	};
+}
+
+mitk::NGLDMMatrixHolder::NGLDMMatrixHolder(double min, double max, int number, int depenence) :
+	m_MinimumRange(min),
+	m_MaximumRange(max),
+	m_Stepsize(0),
+	m_NumberOfDependences(depenence),
+	m_NumberOfBins(number),
+	m_NeighbourhoodSize(1),
+	m_NumberOfNeighbourVoxels(0),
+	m_NumberOfDependenceNeighbourVoxels(0),
+	m_NumberOfNeighbourhoods(0),
+	m_NumberOfCompleteNeighbourhoods(0)
+{
+	m_Matrix.resize(number, depenence);
+	m_Matrix.fill(0);
+	m_Stepsize = (max - min) / (number);
+}
+
+int mitk::NGLDMMatrixHolder::IntensityToIndex(double intensity)
+{
+	return std::floor((intensity - m_MinimumRange) / m_Stepsize);
+}
+
+double mitk::NGLDMMatrixHolder::IndexToMinIntensity(int index)
+{
+	return m_MinimumRange + index * m_Stepsize;
+}
+double mitk::NGLDMMatrixHolder::IndexToMeanIntensity(int index)
+{
+	return m_MinimumRange + (index + 0.5) * m_Stepsize;
+}
+double mitk::NGLDMMatrixHolder::IndexToMaxIntensity(int index)
+{
+	return m_MinimumRange + (index + 1) * m_Stepsize;
+}
 
 template< typename TImageType >
 class NGLDMFeatures : public FeatureBase < TImageType >
 {
 public:
 	//! Default constructor
-	NGTDMFeatures() { };
+	NGLDMFeatures() { };
 
 	//! Default destructor
-	~NGTDMFeatures() { };
+	~NGLDMFeatures() { };
 
 	/**
 	\brief Set the range/Chebyshev Distance (how far from the center index of interest do you want to calculate neighborhood level dependence); defaults to 1
-	
+
 	\IBSI calls this value Chebyshev Distance Delta.
-	
+
 	\param rangeValue integer value for the value you want for range
 	**/
 	void SetRange(int rangeValue)
@@ -239,88 +277,18 @@ public:
 				}
 			}
 
-			std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
-			std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
+			std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
+			std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
 
-			typedef itk::NeighborhoodIterator<TImageType> ShapeIterType;
-			typedef itk::NeighborhoodIterator<TImageType> ShapeMaskIterType;
+			int alpha = 0;
+			unsigned int direction = 26;
+			int range = 1;
+			//NGLDMMatrixHolder holderOverall(rangeMin, rangeMax, numberOfBins, numberofDependency);
+			mitk::NGLDMMatrixHolder holderOverall(m_minimum, m_maximum, m_bins, alpha);
+			mitk::NGLDMMatrixFeatures overallFeature;
+			CalculateNGLDMMatrix(this->m_inputImage, this->m_Mask, alpha, range, direction, holderOverall);
+			LocalCalculateFeatures(holderOverall, overallFeature);
 
-			m_NumberOfCompleteNeighbourhoods = 0;
-			m_NumberOfNeighbourhoods = 0;
-			m_NumberOfNeighbourVoxels = 0;
-			m_NumberOfDependenceNeighbourVoxels = 0;
-
-			itk::Size<TImageType::ImageDimension> radius;
-			radius.Fill(range);
-
-			if ((direction > 1) && (direction - 2 < TImageType::ImageDimension))
-			{
-				radius[direction - 2] = 0;
-			}
-
-			ShapeIterType imageIter(radius, this->m_inputImage, this->m_inputImage->GetLargestPossibleRegion());
-			ShapeMaskIterType maskIter(radius, this->m_Mask, this->m_Mask->GetLargestPossibleRegion());
-
-			auto region = this->m_Mask->GetLargestPossibleRegion();
-
-			auto center = imageIter.Size() / 2;
-			auto iterSize = imageIter.Size();
-			m_NeighbourhoodSize = iterSize - 1;
-			while (!maskIter.IsAtEnd())
-			{
-				int sameValues = 0;
-				bool completeNeighbourhood = true;
-
-				int i = IntensityToIndex(imageIter.GetCenterPixel());
-
-				if ((imageIter.GetCenterPixel() != imageIter.GetCenterPixel()) ||
-					(maskIter.GetCenterPixel() < 1))
-				{
-					++imageIter;
-					++maskIter;
-					continue;
-				}
-
-				for (unsigned int position = 0; position < iterSize; ++position)
-				{
-					if (position == center)
-					{
-						continue;
-					}
-					if (!region.IsInside(maskIter.GetIndex(position)))
-					{
-						completeNeighbourhood = false;
-						continue;
-					}
-					bool isInBounds;
-					auto jIntensity = imageIter.GetPixel(position, isInBounds);
-					auto jMask = maskIter.GetPixel(position, isInBounds);
-					if (jMask < 1 || (jIntensity != jIntensity) || (!isInBounds))
-					{
-						completeNeighbourhood = false;
-						continue;
-					}
-
-					int j = holder.IntensityToIndex(jIntensity);
-					m_NumberOfNeighbourVoxels += 1;
-					if (std::abs(i - j) <= alpha)
-					{
-						m_NumberOfDependenceNeighbourVoxels += 1;
-						++sameValues;
-					}
-				}
-				m_Matrix(i, sameValues) += 1;
-				m_NumberOfNeighbourhoods += 1;
-				if (completeNeighbourhood)
-				{
-					m_NumberOfCompleteNeighbourhoods += 1;
-				}
-
-				++imageIter;
-				++maskIter;
-			}
-
-			this->m_algorithmDone = true;
 		}
 	};
 
@@ -347,20 +315,18 @@ public:
 		}
 		return this->m_features["LowDependenceEmphasis"];
 	}
-	   
-private:
 
-	template<typename TPixel, unsigned int TImageType::Dimension>
-	void
-		CalculateNGLDMMatrix(itk::Image<TPixel, TImageType::Dimension>* itkImage,
-			itk::Image<unsigned short, TImageType::Dimension>* mask,
-			int alpha,
-			int range,
-			unsigned int direction,
-			NGLDMMatrixHolder& holder)
+	void CalculateNGLDMMatrix(
+		TImageType* itkImage,
+		TImageType* mask,
+		int alpha,
+		int range,
+		unsigned int direction,
+		mitk::NGLDMMatrixHolder& holder
+	)
 	{
-		typedef itk::Image<TPixel, TImageType::Dimension> ImageType;
-		typedef itk::Image<unsigned short, TImageType::Dimension> MaskImageType;
+		typedef itk::Image<TImageType::PixelType, TImageType::ImageDimension> ImageType;
+		typedef itk::Image<TImageType::PixelType, TImageType::ImageDimension> MaskImageType;
 		typedef itk::NeighborhoodIterator<ImageType> ShapeIterType;
 		typedef itk::NeighborhoodIterator<MaskImageType> ShapeMaskIterType;
 
@@ -369,13 +335,17 @@ private:
 		holder.m_NumberOfNeighbourVoxels = 0;
 		holder.m_NumberOfDependenceNeighbourVoxels = 0;
 
-		itk::Size<TImageType::Dimension> radius;
+		itk::Size<TImageType::ImageDimension> radius;
 		radius.Fill(range);
 
-		if ((direction > 1) && (direction - 2 < TImageType::Dimension))
+		if ((direction > 1) && (direction - 2 < TImageType::ImageDimension))
 		{
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::direction = " << direction << std::endl;
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::TImageType::ImageDimension = " << TImageType::ImageDimension << std::endl;
 			radius[direction - 2] = 0;
 		}
+
+		std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::radius = " << radius << std::endl;
 
 		ShapeIterType imageIter(radius, itkImage, itkImage->GetLargestPossibleRegion());
 		ShapeMaskIterType maskIter(radius, mask, mask->GetLargestPossibleRegion());
@@ -383,18 +353,27 @@ private:
 		auto region = mask->GetLargestPossibleRegion();
 
 		auto center = imageIter.Size() / 2;
+		std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::center = " << center << std::endl; //phantom 13
+
 		auto iterSize = imageIter.Size();
-		holder.m_NeighbourhoodSize = iterSize - 1;
+		std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::iterSize = " << iterSize << std::endl; //phantom 27
+
+		holder.m_NeighbourhoodSize = iterSize - 1; //phantom 26
 		while (!maskIter.IsAtEnd())
 		{
 			int sameValues = 0;
 			bool completeNeighbourhood = true;
 
 			int i = holder.IntensityToIndex(imageIter.GetCenterPixel());
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << std::endl;
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i intensity = " << imageIter.GetCenterPixel() << std::endl;
 
-			if ((imageIter.GetCenterPixel() != imageIter.GetCenterPixel()) ||
-				(maskIter.GetCenterPixel() < 1))
+
+			//if ((imageIter.GetCenterPixel() != imageIter.GetCenterPixel()) || (maskIter.GetCenterPixel() < 1))
+			if ((imageIter.GetCenterPixel() != maskIter.GetCenterPixel()) || (maskIter.GetCenterPixel() < 1))
 			{
+				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | outside ROI." << std::endl;
+
 				++imageIter;
 				++maskIter;
 				continue;
@@ -402,14 +381,21 @@ private:
 
 			for (unsigned int position = 0; position < iterSize; ++position)
 			{
+				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | position = " << position << "/" << iterSize << std::endl;
+
 				if (position == center)
 				{
+					std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | position = " << position << "/" << iterSize << " == center = " << center << " | Skip" << std::endl;
+
 					continue;
 				}
 				if (!region.IsInside(maskIter.GetIndex(position)))
 				{
 					completeNeighbourhood = false;
 					continue;
+				}
+				else {
+					std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | position = " << position << "/" << iterSize << " | completeNeighbourhood == " << completeNeighbourhood << std::endl;
 				}
 				bool isInBounds;
 				auto jIntensity = imageIter.GetPixel(position, isInBounds);
@@ -421,29 +407,48 @@ private:
 				}
 
 				int j = holder.IntensityToIndex(jIntensity);
+
+				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::j (Index of CenterVoxel) = " << j << std::endl;
+				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::j intensity = " << jIntensity << std::endl;
+
 				holder.m_NumberOfNeighbourVoxels += 1;
+				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_NumberOfNeighbourVoxels = " << holder.m_NumberOfNeighbourVoxels << std::endl;
+
 				if (std::abs(i - j) <= alpha)
 				{
 					holder.m_NumberOfDependenceNeighbourVoxels += 1;
 					++sameValues;
 				}
 			}
+
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_NumberOfNeighbourVoxels = " << holder.m_NumberOfNeighbourVoxels << std::endl;
+
 			holder.m_Matrix(i, sameValues) += 1;
 			holder.m_NumberOfNeighbourhoods += 1;
+
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_Matrix*" << i << ", " << sameValues << ") = " << holder.m_Matrix(i, sameValues) << std::endl;
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_NumberOfNeighbourhoods = " << holder.m_NumberOfNeighbourhoods << std::endl;
+
 			if (completeNeighbourhood)
 			{
 				holder.m_NumberOfCompleteNeighbourhoods += 1;
+				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | completeNeighbourhood = " << completeNeighbourhood << std::endl;
 			}
 
 			++imageIter;
 			++maskIter;
 		}
+
+		std::cout << "[DEBUG] m_NumberOfCompleteNeighbourhoods = " << holder.m_NumberOfCompleteNeighbourhoods << ::std::endl;
+		std::cout << "[DEBUG] m_NumberOfNeighbourhoods = " << holder.m_NumberOfNeighbourhoods << ::std::endl;
+		std::cout << "[DEBUG] m_NumberOfNeighbourVoxels = " << holder.m_NumberOfNeighbourVoxels << ::std::endl;
+		std::cout << "[DEBUG] m_NumberOfDependenceNeighbourVoxels = " << holder.m_NumberOfDependenceNeighbourVoxels << ::std::endl;
 	}
 
 
 	void LocalCalculateFeatures(
-		NGLDMMatrixHolder& holder,
-		NGLDMMatrixFeatures& results
+		mitk::NGLDMMatrixHolder& holder,
+		mitk::NGLDMMatrixFeatures& results
 	)
 	{
 		auto sijMatrix = holder.m_Matrix;
@@ -541,7 +546,7 @@ private:
 		results.AverageIncompleteNeighbourhoodSize = (holder.m_NumberOfNeighbourVoxels - holder.m_NumberOfCompleteNeighbourhoods * holder.m_NeighbourhoodSize) / (1.0 * (holder.m_NumberOfNeighbourhoods - holder.m_NumberOfCompleteNeighbourhoods));
 		results.PercentageOfCompleteNeighbourhoods = (1.0 * holder.m_NumberOfCompleteNeighbourhoods) / (1.0 * holder.m_NumberOfNeighbourhoods);
 		results.PercentageOfDependenceNeighbours = holder.m_NumberOfDependenceNeighbourVoxels / (1.0 * holder.m_NumberOfNeighbourVoxels);
-	
+
 		std::cout << "[DEBUG] LowDependenceEmphasis = " << results.LowDependenceEmphasis << std::endl;
 		this->m_features["LowDependenceEmphasis"] = results.LowDependenceEmphasis;
 
@@ -549,97 +554,15 @@ private:
 		this->m_features["HighDependenceEmphasis"] = results.HighDependenceEmphasis;
 	}
 
-	//template<typename TPixel, unsigned int TImageType::Dimension>
-	//void
-	//	CalculateCoocurenceFeatures(itk::Image<TPixel, TImageType::Dimension>* itkImage, TImageType::Pointer mask)
-	//{
-	//	typedef itk::Image<unsigned short, TImageType::Dimension> MaskType;
-
-	//	double rangeMin = config.MinimumIntensity;
-	//	double rangeMax = config.MaximumIntensity;
-	//	int numberOfBins = config.Bins;
-
-	//	typename MaskType::Pointer maskImage = MaskType::New();
-	//	mitk::CastToItkImage(mask, maskImage);
-
-	//	std::vector<NGLDMMatrixFeatures> resultVector;
-	//	int numberofDependency = 37;
-	//	if (TImageType::Dimension == 2)
-	//		numberofDependency = 37;
-
-	//	NGLDMMatrixHolder holderOverall(rangeMin, rangeMax, numberOfBins, numberofDependency);
-	//	NGLDMMatrixFeatures overallFeature;
-	//	CalculateNGLDMMatrix<TPixel, TImageType::Dimension>(itkImage, maskImage, config.alpha, config.range, config.direction, holderOverall);
-	//	LocalCalculateFeatures(holderOverall, overallFeature);
-
-	//	//MatrixFeaturesTo(overallFeature, config.FeatureEncoding, featureList);
-	//}
-
-
-	//static
-	//	void MatrixFeaturesTo(NGLDMMatrixFeatures features,
-	//		std::string prefix,
-	//		GIFNeighbouringGreyLevelDependenceFeature::FeatureListType & featureList)
-	//{
-	//	featureList.push_back(std::make_pair(prefix + "Low Dependence Emphasis", features.LowDependenceEmphasis));
-	//	featureList.push_back(std::make_pair(prefix + "High Dependence Emphasis", features.HighDependenceEmphasis));
-	//	featureList.push_back(std::make_pair(prefix + "Low Grey Level Count Emphasis", features.LowGreyLevelCountEmphasis));
-	//	featureList.push_back(std::make_pair(prefix + "High Grey Level Count Emphasis", features.HighGreyLevelCountEmphasis));
-	//	featureList.push_back(std::make_pair(prefix + "Low Dependence Low Grey Level Emphasis", features.LowDependenceLowGreyLevelEmphasis));
-	//	featureList.push_back(std::make_pair(prefix + "Low Dependence High Grey Level Emphasis", features.LowDependenceHighGreyLevelEmphasis));
-	//	featureList.push_back(std::make_pair(prefix + "High Dependence Low Grey Level Emphasis", features.HighDependenceLowGreyLevelEmphasis));
-	//	featureList.push_back(std::make_pair(prefix + "High Dependence High Grey Level Emphasis", features.HighDependenceHighGreyLevelEmphasis));
-
-	//	featureList.push_back(std::make_pair(prefix + "Grey Level Non-Uniformity", features.GreyLevelNonUniformity));
-	//	featureList.push_back(std::make_pair(prefix + "Grey Level Non-Uniformity Normalised", features.GreyLevelNonUniformityNormalised));
-	//	featureList.push_back(std::make_pair(prefix + "Dependence Count Non-Uniformity", features.DependenceCountNonUniformity));
-	//	featureList.push_back(std::make_pair(prefix + "Dependence Count Non-Uniformity Normalised", features.DependenceCountNonUniformityNormalised));
-
-	//	featureList.push_back(std::make_pair(prefix + "Dependence Count Percentage", features.DependenceCountPercentage));
-	//	featureList.push_back(std::make_pair(prefix + "Grey Level Mean", features.MeanGreyLevelCount));
-	//	featureList.push_back(std::make_pair(prefix + "Grey Level Variance", features.GreyLevelVariance));
-	//	featureList.push_back(std::make_pair(prefix + "Dependence Count Mean", features.MeanDependenceCount));
-	//	featureList.push_back(std::make_pair(prefix + "Dependence Count Variance", features.DependenceCountVariance));
-	//	featureList.push_back(std::make_pair(prefix + "Dependence Count Entropy", features.DependenceCountEntropy));
-	//	featureList.push_back(std::make_pair(prefix + "Dependence Count Energy", features.DependenceCountEnergy));
-
-	//	featureList.push_back(std::make_pair(prefix + "Expected Neighbourhood Size", features.ExpectedNeighbourhoodSize));
-	//	featureList.push_back(std::make_pair(prefix + "Average Neighbourhood Size", features.AverageNeighbourhoodSize));
-	//	featureList.push_back(std::make_pair(prefix + "Average Incomplete Neighbourhood Size", features.AverageIncompleteNeighbourhoodSize));
-	//	featureList.push_back(std::make_pair(prefix + "Percentage of complete Neighbourhoods", features.PercentageOfCompleteNeighbourhoods));
-	//	featureList.push_back(std::make_pair(prefix + "Percentage of Dependence Neighbour Voxels", features.PercentageOfDependenceNeighbours));
-
-	//}
-
-	//simple functions
-	int NGLDMMatrixHolder::IntensityToIndex(double intensity)
-	{
-		return std::floor((intensity - m_MinimumRange) / m_Stepsize);
-	}
-
-	double NGLDMMatrixHolder::IndexToMinIntensity(int index)
-	{
-		return m_MinimumRange + index * m_Stepsize;
-	}
-
-	double NGLDMMatrixHolder::IndexToMeanIntensity(int index)
-	{
-		return m_MinimumRange + (index + 0.5) * m_Stepsize;
-	}
-
-	double NGLDMMatrixHolder::IndexToMaxIntensity(int index)
-	{
-		return m_MinimumRange + (index + 1) * m_Stepsize;
-	}
-
 	//variables
 	unsigned int m_range = 1;
 	unsigned int m_bins = 10;
+
 	typename TImageType::PixelType m_minimum = 0;
 	typename TImageType::PixelType m_maximum = 0;
 
 	typename TImageType::SizeType m_radius;
-		
+
 	double m_MinimumRange;
 	double m_MaximumRange;
 	double m_Stepsize;
@@ -651,4 +574,7 @@ private:
 	unsigned long m_NumberOfDependenceNeighbourVoxels;
 	unsigned long m_NumberOfNeighbourhoods;
 	unsigned long m_NumberOfCompleteNeighbourhoods;
+
+	//private:
+
 };
