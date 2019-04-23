@@ -426,6 +426,8 @@ public:
 			holder.m_Matrix(i, sameValues) += 1;
 			holder.m_NumberOfNeighbourhoods += 1;
 
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << "| m_Matrix = " << m_Matrix << std::endl;
+
 			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_Matrix*" << i << ", " << sameValues << ") = " << holder.m_Matrix(i, sameValues) << std::endl;
 			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_NumberOfNeighbourhoods = " << holder.m_NumberOfNeighbourhoods << std::endl;
 
