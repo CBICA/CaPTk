@@ -7,6 +7,8 @@
 #include "cbicaITKSafeImageIO.h"
 #include "CaPTkGUIUtils.h"
 
+#include "itkStatisticsImageFilter.h"
+
 #ifdef _WIN32
 #include <direct.h>
 #endif
@@ -95,7 +97,7 @@ void algorithmRunner()
     std::cout << "== Done.\n";
   }
 
-  std::cout << "=== Checking and rectifying (z-score) normalization status.\n"
+  std::cout << "=== Checking and rectifying (z-score) normalization status.\n";
   auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
   statsCalculator->SetInput(t1cImg);
   statsCalculator->Update();
@@ -156,15 +158,15 @@ void algorithmRunner()
     flImg = normalizer.GetOutput();
     std::cout << "== Done.\n";
   }
-  std::cout << "=== Done.\n"
+  std::cout << "=== Done.\n";
 
-  std::cout << "=== Starting resampling of images to isotropic resolution.\n"
+  std::cout << "=== Starting resampling of images to isotropic resolution.\n";
   t1cImg = cbica::ResampleImage< TImageType >(t1cImg); // default is linear resampling to isotropic resolution of 1.0
   t1Img = cbica::ResampleImage< TImageType >(t1Img); // default is linear resampling to isotropic resolution of 1.0
   flImg = cbica::ResampleImage< TImageType >(flImg); // default is linear resampling to isotropic resolution of 1.0
   t2Img = cbica::ResampleImage< TImageType >(t2Img); // default is linear resampling to isotropic resolution of 1.0
   maskImage = cbica::ResampleImage< TImageType >(maskImage, "Nearest"); // default is linear resampling to isotropic resolution of 1.0
-  std::cout << "=== Done.\n"
+  std::cout << "=== Done.\n";
 
   cbica::createDir(outputDirectory);
   std::cout << "Starting DeepMedic Segmentation.\n";
