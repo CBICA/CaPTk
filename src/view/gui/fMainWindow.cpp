@@ -6071,7 +6071,7 @@ void fMainWindow::ApplicationImagingSubtype()
       perfRCBVP = true;
   }
   if (t1ceP == false)
-    msg = msg + "\n" + "T1CE Data.";
+    msg = msg + "\n" + "T1-Gd Data.";
   if (t1P == false)
     msg = msg + "\n" + "T1 Data.";
   if (t2P == false)
