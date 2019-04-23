@@ -6739,7 +6739,7 @@ void fMainWindow::EnableComparisonMode(bool enable)
   }
 }
 
-void fMainWindow::ApplicationDeepMedicSegmentation()
+void fMainWindow::ApplicationDeepMedicSegmentation(int type)
 {
   if (type <= fDeepMedicDialog::SkullStripping) // different cases for individual models can be put in this way
   {
