@@ -192,10 +192,10 @@ public:
 
 	\param coursenessValue integer value for the value you want for alpha
 	**/
-	void SetAlpha(int alphaValue)
-	{
-		m_alpha = alphaValue;
-	}
+	// void SetAlpha(int alphaValue)
+	// {
+	// 	m_alpha = alphaValue;
+	// }
 
 	/**
 	\brief Get the range/Chebyshev Distance (how far from the center index of interest do you want to calculate neighborhood level difference); returns int value
@@ -207,9 +207,9 @@ public:
 	/**
 	\brief Get the courseness/alpha parameter (How much difference between the grey levels of the neighbouring voxels do you consider to be dependent);  returns int value
 	**/
-	int GetAlpha() {
-		return m_alpha;
-	}
+	// int GetAlpha() {
+	// 	return m_alpha;
+	// }
 
 	/**
 	\brief Get the number of bins for quantization of the input image
@@ -325,8 +325,8 @@ public:
 		mitk::NGLDMMatrixHolder& holder
 	)
 	{
-		typedef itk::Image<TImageType::PixelType, TImageType::ImageDimension> ImageType;
-		typedef itk::Image<TImageType::PixelType, TImageType::ImageDimension> MaskImageType;
+		typedef itk::Image<typename TImageType::PixelType, typename TImageType::ImageDimension> ImageType;
+		typedef itk::Image<typename TImageType::PixelType, typename TImageType::ImageDimension> MaskImageType;
 		typedef itk::NeighborhoodIterator<ImageType> ShapeIterType;
 		typedef itk::NeighborhoodIterator<MaskImageType> ShapeMaskIterType;
 
