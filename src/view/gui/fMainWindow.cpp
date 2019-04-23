@@ -355,7 +355,7 @@ fMainWindow::fMainWindow()
   std::string breastAppList = "";
 
 #ifndef __APPLE__
-  breastAppList = " librasingle librabatch breastSegment";
+  breastAppList = " librasingle librabatch breastSegment texturePipeline";
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
@@ -625,6 +625,11 @@ fMainWindow::fMainWindow()
       vectorOfBreastApps[i].action->setText("  Breast Segmentation"); //TBD set at source
       connect(vectorOfBreastApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationBreastSegmentation()));
     }
+    else if (vectorOfBreastApps[i].name.find("texturePipeline") != std::string::npos)
+    {
+      vectorOfBreastApps[i].action->setText("  Texture Feature Pipeline"); //TBD set at source
+      connect(vectorOfBreastApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationTexturePipeline()));
+    } 
   }
 
   for (size_t i = 0; i < vectorOfLungApps.size(); i++)
@@ -1142,7 +1147,7 @@ void fMainWindow::EnableThresholdOfMask()
 {
 
   // only do calculations on current image(s)
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     return;
@@ -1168,7 +1173,7 @@ void fMainWindow::EnableThresholdOfMask()
 
 void fMainWindow::SaveImage()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty()) {
     return;
   }
@@ -1820,7 +1825,7 @@ void fMainWindow::propogateSlicerPosition(int slicerId, int imageId)
   //TBD this not a proper fix a lot work needs to be done to make slicer, slicerManager slicerManagerCommand to be made clean OOP
   if (imageId < 0)
   {
-    QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+    auto items = m_imagesTable->selectedItems();
     if (!items.empty())
     {
       imageId = GetSlicerIndexFromItem(items[0]);
@@ -1866,7 +1871,7 @@ void fMainWindow::CurrentPickedImageChanged(std::string id)
 
 void fMainWindow::ImageInfoChanged()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty()) {
     return;
   }
@@ -1920,7 +1925,7 @@ void fMainWindow::ImageInfoChanged()
 
 void fMainWindow::DisplayChanged()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     return;
@@ -2134,7 +2139,7 @@ void fMainWindow::MousePositionChanged(int visibility, double x, double y, doubl
 
 void fMainWindow::WindowLevelChanged()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty()) {
     return;
   }
@@ -2177,7 +2182,7 @@ void fMainWindow::UpdateWindowLevel()
 {
   if (!m_ComparisonMode)//! if comparison mode OFF
   {
-    QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+    auto items = m_imagesTable->selectedItems();
     if (items.empty()) {
       return;
     }
@@ -2218,7 +2223,7 @@ void fMainWindow::thresholdSpinBoxChanged()
 {
   if (presetComboBox->currentIndex() == PRESET_THRESHOLD)
   {
-    QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+    auto items = m_imagesTable->selectedItems();
     if (items.empty())
     {
       return;
@@ -2261,7 +2266,7 @@ void fMainWindow::UpdateLinkedNavigation(Slicer* refSlicer)
 
 void fMainWindow::CloseImage()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty()) {
     return;
   }
@@ -2282,7 +2287,7 @@ void fMainWindow::CloseAllImages()
 }
 void fMainWindow::ResetTransformationToIdentity()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty()) {
     return;
   }
@@ -2379,7 +2384,7 @@ void fMainWindow::AxialViewSliderChanged()
   static int value = -1;
 
   value = AxialViewSlider->value();
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty()) {
     return;
   }
@@ -2403,7 +2408,7 @@ void fMainWindow::SaggitalViewSliderChanged()
   else {
     value = SaggitalViewSlider->value();
   }
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty()) {
     return;
   }
@@ -2428,7 +2433,7 @@ void fMainWindow::CoronalViewSliderChanged()
   {
     value = CoronalViewSlider->value();
   }
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty()) {
     return;
   }
@@ -2482,7 +2487,7 @@ void fMainWindow::UpdateRenderWindows()
   {
     return;
   }
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty()) {
     return;
   }
@@ -2664,7 +2669,7 @@ VectorVectorDouble fMainWindow::FormulateDrawingPointsForTumorSegmentation()
 
 void fMainWindow::SaveDicomImage()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
     return;
   int index = GetSlicerIndexFromItem(items[0]);
@@ -2702,7 +2707,7 @@ void fMainWindow::SaveDicomImage()
 
 void fMainWindow::SaveDicomDrawing()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
     return;
   int index = GetSlicerIndexFromItem(items[0]);
@@ -2755,7 +2760,7 @@ void fMainWindow::SaveDicomDrawing()
 
 void fMainWindow::SaveDrawing()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
     return;
   int index = GetSlicerIndexFromItem(items[0]);
@@ -2825,7 +2830,7 @@ void fMainWindow::SaveDrawing()
 
 void fMainWindow::SaveSeedDrawing()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
     return;
 
@@ -3183,7 +3188,7 @@ std::vector<ImageTypeFloat3D::Pointer> fMainWindow::getLodedImages(std::vector<s
   std::vector < ImageTypeFloat3D::Pointer> images;
   if (onlySelected)
   {
-    QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+    auto items = m_imagesTable->selectedItems();
     if (!items.empty())
     {
       int index = GetSlicerIndexFromItem(items[0]);
@@ -5013,7 +5018,7 @@ void fMainWindow::overlayUseStateChanged(int state)
 
 void fMainWindow::overlaySliderChanged(int value)
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     return;
@@ -5046,7 +5051,7 @@ void fMainWindow::imageSliderChanged()
   else
     value = image4DSlider->value();
 
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
     return;
 
@@ -5070,7 +5075,7 @@ void fMainWindow::overlayChanged()
 }
 void fMainWindow::overlayChanged(QTableWidgetItem *clickedItem)
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     return;
@@ -5349,14 +5354,38 @@ void fMainWindow::ApplicationLIBRABatch()
 
 }
 
-void fMainWindow::ApplicationBreastSegmentation()
+void fMainWindow::ApplicationTexturePipeline()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     ShowErrorMessage("At least 1 supported image needs to be loaded and selected", this);
     return;
   }
+
+  if (!mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  {
+    ShowErrorMessage("This is only valid for mammogram images");
+    return;
+  }
+
+}
+
+void fMainWindow::ApplicationBreastSegmentation()
+{
+  auto items = m_imagesTable->selectedItems();
+  if (items.empty())
+  {
+    ShowErrorMessage("At least 1 supported image needs to be loaded and selected", this);
+    return;
+  }
+
+  if (!mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  {
+    ShowErrorMessage("This is only valid for mammogram images");
+    return;
+  }
+
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
@@ -5394,7 +5423,7 @@ void fMainWindow::ApplicationBreastSegmentation()
 
 void fMainWindow::ApplicationLIBRASingle()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     ShowErrorMessage("At least 1 supported image needs to be loaded and selected", this);
@@ -5929,7 +5958,7 @@ void fMainWindow::ApplicationPseudoProgression()
 #ifdef BUILD_WHITESTRIPE
 void fMainWindow::ApplicationWhiteStripe()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     ShowErrorMessage("At least 1 supported image needs to be loaded and selected", this);
@@ -6384,7 +6413,7 @@ void fMainWindow::ApplicationGeodesicTraining()
 void fMainWindow::ApplicationGeodesic()
 {
   m_imgGeodesicOut = NULL;
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     ShowErrorMessage("Please specify an input image.", this);
@@ -6465,7 +6494,7 @@ void fMainWindow::ApplicationGeodesicTreshold()
 }
 void fMainWindow::ImageDenoising()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     ShowErrorMessage("Please load the image you would like to de-noise", this);
@@ -6510,7 +6539,7 @@ void fMainWindow::ImageDenoising()
 
 void fMainWindow::ImageMamogramPreprocess()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     ShowErrorMessage("Please load an image to run bias correction on", this);
@@ -6546,7 +6575,7 @@ void fMainWindow::ImageMamogramPreprocess()
 
 void fMainWindow::ImageBiasCorrection()
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     ShowErrorMessage("Please load an image to run bias correction on", this);
@@ -7109,7 +7138,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     }
   }
 
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     ShowErrorMessage("Please specify an input image.");
@@ -7956,7 +7985,7 @@ void fMainWindow::CallPCACalculation(const int number, const std::string inputdi
 void fMainWindow::CallWhiteStripe(double twsWidth, int sliceStartZ, int sliceStopZ, int tissuesMax, double smoothMax, double smoothDelta, int histSize,
   bool T1Image, const std::string outputFileName)
 {
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  auto items = m_imagesTable->selectedItems();
   if (items.empty())
   {
     return;
