@@ -583,6 +583,14 @@ private:
   */
   void CalculateLBP(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, std::map<std::string, double>& featurevec);
 
+  /**
+  \brief Calculate NGLDM features
+
+  \param itkImage The input image
+  \param maskImage The mask specifying the roi
+  \param featurevec - map of Individual feature name and their value
+  */
+  void CalculateNGLDM(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVector* offset, std::map< std::string, double >& featurevec);
 
   /**
   \brief Calculate NGTDM features

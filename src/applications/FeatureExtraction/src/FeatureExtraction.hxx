@@ -228,6 +228,50 @@ void FeatureExtraction< TImage >::CalculateMorphologic(const typename TImage::Po
 }
 
 template< class TImage >
+void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer itkImage,
+	const typename TImage::Pointer maskImage, OffsetVector* offset, std::map<std::string, double>& featurevec)
+{
+	//neighbouring grey level dependece based features (IBSI 3.11)
+	
+	//offset should be always 26 (3D) or 8 (2D): this feature family is rotationally invariant
+
+	NGLDMFeatures< TImage > calculator;
+	calculator.SetInputImage(itkImage);
+	calculator.SetInputMask(maskImage);
+	calculator.SetNumBins(m_Bins);
+	calculator.SetRange(m_Radius); //chebyshev distance delta
+	calculator.SetMinimum(m_minimumToConsider);
+	calculator.SetMaximum(m_maximumToConsider);
+	calculator.Update();
+
+	featurevec["LowDependenceEmphasis"] = calculator.GetLowDependenceEmphasis();
+	featurevec["HighDependenceEmphasis"] = calculator.GetHighDependenceEmphasis();
+	featurevec["LowGreyLevelCountEmphasis"] = calculator.GetLowGreyLevelCountEmphasis();
+	featurevec["HighGreyLevelCountEmphasis"] = calculator.GetHighGreyLevelCountEmphasis();
+	featurevec["LowDependenceLowGreyLevelEmphasis"] = calculator.GetLowDependenceLowGreyLevelEmphasis();
+	featurevec["LowDependenceHighGreyLevelEmphasis"] = calculator.GetLowDependenceHighGreyLevelEmphasis();
+	featurevec["HighDependenceLowGreyLevelEmphasis"] = calculator.GetHighDependenceLowGreyLevelEmphasis();
+	featurevec["HighDependenceHighGreyLevelEmphasis"] = calculator.GetHighDependenceHighGreyLevelEmphasis();
+	featurevec["GreyLevelNonUniformity"] = calculator.GetGreyLevelNonUniformity();
+	featurevec["GreyLevelNonUniformityNormalised"] = calculator.GetGreyLevelNonUniformityNormalised();
+	featurevec["DependenceCountNonUniformity"] = calculator.GetDependenceCountNonUniformity();
+	featurevec["DependenceCountNonUniformityNormalised"] = calculator.GetDependenceCountNonUniformityNormalised();
+	featurevec["DependenceCountPercentage"] = calculator.GetDependenceCountPercentage();
+	featurevec["GreyLevelVariance"] = calculator.GetGreyLevelVariance();
+	featurevec["DependenceCountVariance"] = calculator.GetDependenceCountVariance();
+	featurevec["DependenceCountEntropy"] = calculator.GetDependenceCountEntropy();
+	featurevec["DependenceCountEnergy"] = calculator.GetDependenceCountEnergy();
+	featurevec["MeanGreyLevelCount"] = calculator.GetMeanGreyLevelCount();
+	featurevec["MeanDependenceCount"] = calculator.GetMeanDependenceCount();
+	featurevec["ExpectedNeighbourhoodSize"] = calculator.GetExpectedNeighbourhoodSize();
+	featurevec["AverageNeighbourhoodSize"] = calculator.GetAverageNeighbourhoodSize();
+	featurevec["AverageIncompleteNeighbourhoodSize"] = calculator.GetAverageIncompleteNeighbourhoodSize();
+	featurevec["PercentageOfCompleteNeighbourhoods"] = calculator.GetPercentageOfCompleteNeighbourhoods();
+	featurevec["PercentageOfDependenceNeighbours"] = calculator.GetPercentageOfDependenceNeighbours();
+}
+
+
+template< class TImage >
 void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer itkImage,
   const typename TImage::Pointer maskImage, OffsetVector *offset, std::map<std::string, double>& featurevec)
 {
