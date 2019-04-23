@@ -22,8 +22,7 @@ std::string findRelativeApplicationPath(const std::string appName)
     winExt = "";
 #endif
   
-
-  if (appName_wrap.find("libra") != std::string::npos)
+  if (appName.find("libra") != std::string::npos)
   {
 #if WIN32
     winExt = ".bat";
@@ -35,9 +34,9 @@ std::string findRelativeApplicationPath(const std::string appName)
   
   auto appName_path =
 #ifndef __APPLE__
-  cbica::normPath(currentApplicationPath + appName_wrap + winExt);
+  cbica::normPath(currentApplicationPath + appName + winExt);
 #else
-  cbica::normPath(captk_currentApplicationPath + "../Resources/bin/" + appName_wrap);
+  cbica::normPath(currentApplicationPath + "../Resources/bin/" + appName_wrap);
 #endif  
 
   if (!cbica::isFile(appName_path))
