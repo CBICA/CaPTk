@@ -88,7 +88,7 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
 
       if (event == vtkCommand::EndPickEvent)
       {
-        if (!m_shapeBuffer.empty())
+         if (!m_shapeBuffer.empty())
         {
           this->SM->ActionAdded(m_shapeBuffer);
           m_shapeBuffer.clear();
@@ -198,7 +198,7 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
           mw->SetImageInfoZSlicePosition(newSlice);
         }
       }
-      if (/*event == vtkCommand::PickEvent || */event == vtkCommand::StartPickEvent)
+      if (event == vtkCommand::PickEvent || event == vtkCommand::StartPickEvent)
       {
         if (mw->m_drawShapeMode == SHAPE_MODE_NONE || mw->getActiveTabId() != TAB_DRAW)
         {
@@ -206,7 +206,7 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
         }
         else
         {
-          //makeStroke(VisibleInWindow, x, y);
+          makeStroke(x, y);
         }
       }
     }
@@ -953,9 +953,9 @@ PointVal ComparisonViewerCommand::drawPoint(PointVal pt, vtkSmartPointer<vtkImag
   return pt.getInvalidPt();
 
 }
-void ComparisonViewerCommand::makeStroke(int VisibleInWindow, double x, double y)
+void ComparisonViewerCommand::makeStroke(double x, double y)
 {
-  vtkRenderer* renderer = this->SM->GetSlicer(VisibleInWindow)->GetRenderer();
+  vtkRenderer* renderer = this->m_currentViewer->GetRenderer();
   renderer->DisplayToNormalizedDisplay(x, y);
   renderer->NormalizedDisplayToViewport(x, y);
   renderer->ViewportToNormalizedViewport(x, y);
@@ -963,16 +963,15 @@ void ComparisonViewerCommand::makeStroke(int VisibleInWindow, double x, double y
   renderer->NormalizedViewportToView(x, y, z);
   renderer->ViewToWorld(x, y, z);
 
-  auto origin = this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetOrigin();
-  auto spacing = this->SM->GetSlicer(VisibleInWindow)->GetInput()->GetSpacing();
+  auto origin = this->m_currentViewer->GetInput()->GetOrigin();
+  auto spacing = this->m_currentViewer->GetInput()->GetSpacing();
 
   double X = (x - origin[0]) / spacing[0];
   double Y = (y - origin[1]) / spacing[1];
   double Z = (z - origin[2]) / spacing[2];
 
-  int orientation = this->SM->GetSlicer(VisibleInWindow)->GetSliceOrientation();
-  int slice = this->SM->GetSlicer(VisibleInWindow)->GetSlice();
-  //int* dims = this->SM->mMask->GetDimensions();
+  int orientation = this->m_currentViewer->GetSliceOrientation();
+  int slice = this->m_currentViewer->GetSlice();
 
   int color = mw->getSelectedDrawLabel();
   PointVal centerPt(ROUND(X), ROUND(Y), ROUND(Z), color);
@@ -1087,7 +1086,12 @@ void ComparisonViewerCommand::makeStroke(int VisibleInWindow, double x, double y
   //}
 
   this->SM->mMask->Modified();
-  this->SM->GetSlicer(VisibleInWindow)->Render();
+  for (int i = 0; i < this->m_ComparisonViewers.size(); i++)
+  {
+    //this->m_ComparisonViewers[i]->GetImageActor()->SetOpacity(0.1);
+    this->m_ComparisonViewers[i]->UpdateDisplayExtent();
+    this->m_ComparisonViewers[i]->Render();
+  }
 
 }
 

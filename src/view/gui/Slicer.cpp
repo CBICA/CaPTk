@@ -335,6 +335,7 @@ void Slicer::SetMask(vtkImageData* mask)
 #endif
       mMaskActor->SetPickable(0);
       mMaskActor->SetVisibility(true);
+      ImageActor->SetOpacity(0.75);
       mMaskActor->SetInterpolate(0);
 #if VTK_MAJOR_VERSION >= 6 || (VTK_MAJOR_VERSION >= 5 && VTK_MINOR_VERSION >= 10)
       mMaskActor->GetMapper()->BorderOn();
@@ -345,7 +346,7 @@ void Slicer::SetMask(vtkImageData* mask)
 
     AdjustResliceToSliceOrientation(mMaskReslice);
     this->UpdateDisplayExtent();
-  }
+   }
 }
 void Slicer::RemoveMask()
 {

@@ -6618,6 +6618,10 @@ void fMainWindow::EnableComparisonMode(bool enable)
       m_ComparisonViewerCenter->SetImage(mSlicerManagers[1]->GetSlicer(0)->GetImage(), mSlicerManagers[1]->GetSlicer(0)->GetTransform());
       m_ComparisonViewerRight->SetImage(mSlicerManagers[2]->GetSlicer(0)->GetImage(), mSlicerManagers[2]->GetSlicer(0)->GetTransform());
 
+      m_ComparisonViewerLeft->SetMask(mSlicerManagers[0]->GetMask());
+      m_ComparisonViewerCenter->SetMask(mSlicerManagers[0]->GetMask());
+      m_ComparisonViewerRight->SetMask(mSlicerManagers[0]->GetMask());
+
       m_ComparisonViewerLeft->SetRenderWindow(0, nullptr);
       m_ComparisonViewerCenter->SetRenderWindow(0, nullptr);
       m_ComparisonViewerRight->SetRenderWindow(0, nullptr);
@@ -6678,10 +6682,6 @@ void fMainWindow::EnableComparisonMode(bool enable)
   }
   else
   {
-    vtkImageData *img1 = mSlicerManagers[0]->GetSlicer(0)->GetImage();
-    vtkImageData *img2 = mSlicerManagers[1]->GetSlicer(0)->GetImage();
-    vtkImageData *img3 = mSlicerManagers[2]->GetSlicer(0)->GetImage();
-
     mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
     mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
     mSlicerManagers[2]->SetImage(mSlicerManagers[2]->GetITKImage());
