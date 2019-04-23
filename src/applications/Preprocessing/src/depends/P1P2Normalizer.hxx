@@ -42,7 +42,7 @@ void P1P2Normalizer< TImageType >::Update()
     min.fill(stats_thresholdedImage["Min"]);
     max.fill(stats_thresholdedImage["Max"]);
 
-    filter->SetInput(m_inputImageMasked);
+    filter->SetInput(m_inputImage_meanThresh);
     filter->SetMaskImage(m_mask);
     filter->SetMaskValue(1);
     filter->SetHistogramSize(size);
