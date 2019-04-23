@@ -45,6 +45,7 @@ std::string findRelativeApplicationPath(const std::string appName)
     std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
     exit(EXIT_FAILURE);
   }
+  return appName_path;
 }
 
 inline std::string getCaPTkDataDir()
@@ -134,6 +135,8 @@ int algorithmsRunner()
   std::cout << "Running FeatureExtraction with command '" + command + "'\n";
   std::system(command.c_str());
   std::cout << "Done.\n";
+
+  return EXIT_SUCCESS;
 }
 
 
