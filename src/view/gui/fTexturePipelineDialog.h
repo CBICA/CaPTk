@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// fDeepMedicDialog.h
+// fTexturePipelineDialog.h
 //
 // Copyright (c) 2018. All rights reserved.
 // Section of Biomedical Image Analysis
@@ -13,57 +13,43 @@
 // License Agreement: https://www.med.upenn.edu/sbia/software-agreement.html
 ///////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _fDeepMedicDialog_h_
-#define _fDeepMedicDialog_h_
+#ifndef _fTexturePipelineDialog_h_
+#define _fTexturePipelineDialog_h_
 
 
 //#include "CAPTk.h"
-#include "ui_fDeepMedicDialog.h"
+#include "ui_fTexturePipelineDialog.h"
 
 /**
-\class fDeepMedicDialog
+\class fTexturePipelineDialog
 
 \brief This class controls the elements in the DICOM converter
 */
-class fDeepMedicDialog : public QDialog, private Ui::fDeepMedicDialog
+class fTexturePipelineDialog : public QDialog, private Ui::fTexturePipelineDialog
 {
   Q_OBJECT
 
 public:
 
-  //! Default models available
-  enum ModelTypes
-  {
-    Tumor,
-    SkullStripping,
-    Custom,
-    Max
-  };
-  fDeepMedicDialog();
-  ~fDeepMedicDialog();
+  fTexturePipelineDialog();
+  ~fTexturePipelineDialog();
 
   QString m_exe, m_dataDir, m_modelDir; // contains full path and exe name of dcm2nii
-  std::string m_baseModelDir;
 
   void SetCurrentImagePath(const QString &inputPath)
   {
     mInputPathName = inputPath;
   }
-
-
+  
   QString mInputPathName;
-
-
+  
 public slots:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
-  void SelectModelDirectory();
   void SelectOutputDirectory();
-  void SetDefaultModel();
-  void SetDefaultModel(int modelType);
 
 signals:
-  void RunDeepMedic(const std::string modelDirectory, const std::string outputDirectory);
+  void RunTextureFeaturePipeline(const std::string outputDirectory);
 };
 
 
