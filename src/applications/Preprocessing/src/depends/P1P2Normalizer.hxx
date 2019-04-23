@@ -67,7 +67,7 @@ void P1P2Normalizer< TImageType >::Update()
     thresholder->Update();
 
     auto subtractor = itk::SubtractImageFilter< TImageType >::New();
-    subtractor->SetInput(thresholder->GetOutput());
+    subtractor->SetInput1(thresholder->GetOutput());
     subtractor->SetConstant2(lower);
     subtractor->Update();
 
