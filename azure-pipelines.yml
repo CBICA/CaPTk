@@ -209,7 +209,7 @@ jobs:
         rm -rf src
         rm -rf binaries
         rm -rf data
-        rm -rf docs*
+        #rm -rf docs*
         rm -rf regression
         rm -rf scripts
         rm -rf testing
