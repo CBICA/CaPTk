@@ -18,7 +18,7 @@ std::string findRelativeApplicationPath(const std::string appName)
   std::string winExt = 
 #if WIN32
     winExt = ".exe";
-#elif linux
+#else
     winExt = "";
 #endif
   
@@ -26,8 +26,6 @@ std::string findRelativeApplicationPath(const std::string appName)
   {
 #if WIN32
     winExt = ".bat";
-#elif linux
-    winExt = "";
 #endif
   }
   auto currentApplicationPath = cbica::getExecutablePath() + "/";
