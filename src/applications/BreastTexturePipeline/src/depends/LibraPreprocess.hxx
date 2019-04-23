@@ -60,7 +60,7 @@ typename TImageType::Pointer LibraPreprocess< TImageType >::ApplyFlipToMaskImage
 {
   auto flipFilter = itk::FlipImageFilter < TImageType >::New();
   flipFilter->SetInput(maskImage);
-  flipFilter->Setm_flipAxes(m_flipAxes);
+  flipFilter->SetFlipAxes(m_flipAxes);
   flipFilter->Update();
   return flipFilter->GetOutput();
 }
@@ -185,7 +185,7 @@ void LibraPreprocess< TImageType >::Update()
       orientationAxes[1] = "R"; // no idea why the DICOM header information needs to be changed but whatever
     }
 
-    flipFilter->Setm_flipAxes(m_flipAxes);
+    flipFilter->SetFlipAxes(m_flipAxes);
     flipFilter->Update();
     m_output = flipFilter->GetOutput();
     m_output->DisconnectPipeline();
