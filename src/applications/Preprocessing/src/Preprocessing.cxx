@@ -5,6 +5,7 @@
 #include "cbicaITKUtilities.h"
 
 #include "ZScoreNormalizer.h"
+#include "P1P2Normalizer.h"
 #include "itkN3MRIBiasFieldCorrectionImageFilter.h"
 #include "itkN4BiasFieldCorrectionImageFilter.h"
 #include "SusanDenoising.h"
@@ -20,6 +21,7 @@ enum AvailableAlgorithms
   None,
   HistogramMatching,
   ZScoreNormalize,
+  P1P2Preprocess,
   BiasCorrectionN3,
   BiasCorrectionN4,
   SusanDenoisingAlgo
@@ -59,6 +61,16 @@ int algorithmsRunner()
     normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
     normalizer.Update();
     cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == P1P2Preprocess)
+  {
+    P1P2Normalizer< TImageType > normalizer;
+    normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
+    normalizer.Update();
+    cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == BiasCorrectionN3)
@@ -86,6 +98,7 @@ int algorithmsRunner()
     corrector->Update();
 
     cbica::WriteImage< TImageType >(corrector->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == BiasCorrectionN4)
