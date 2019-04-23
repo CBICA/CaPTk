@@ -19,7 +19,7 @@ RUN apt-get install -y \
 RUN git lfs install
 
 # clone the current repo
-RUN git clone --recursive -j https://github.com/CBICA/CaPTk.git
+RUN git clone https://github.com/CBICA/CaPTk.git
 
 # start superbuild and then build CaPTk
 RUN cd CaPTk; \
