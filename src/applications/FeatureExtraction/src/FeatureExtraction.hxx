@@ -26,6 +26,7 @@
 
 //#include "itkOpenCVImageBridge.h"
 
+#include "NGLDMFeatures.h"
 #include "NGTDMFeatures.h"
 #include "MorphologicFeatures.h"
 #include "HistogramFeatures.h"
@@ -232,7 +233,7 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
 	const typename TImage::Pointer maskImage, OffsetVector* offset, std::map<std::string, double>& featurevec)
 {
 	//neighbouring grey level dependece based features (IBSI 3.11)
-	
+	std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM" << std::endl;
 	//offset should be always 26 (3D) or 8 (2D): this feature family is rotationally invariant
 
 	NGLDMFeatures< TImage > calculator;
@@ -243,31 +244,32 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
 	calculator.SetMinimum(m_minimumToConsider);
 	calculator.SetMaximum(m_maximumToConsider);
 	calculator.Update();
+	std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << calculator.GetRange() << std::endl;
 
 	featurevec["LowDependenceEmphasis"] = calculator.GetLowDependenceEmphasis();
-	featurevec["HighDependenceEmphasis"] = calculator.GetHighDependenceEmphasis();
-	featurevec["LowGreyLevelCountEmphasis"] = calculator.GetLowGreyLevelCountEmphasis();
-	featurevec["HighGreyLevelCountEmphasis"] = calculator.GetHighGreyLevelCountEmphasis();
-	featurevec["LowDependenceLowGreyLevelEmphasis"] = calculator.GetLowDependenceLowGreyLevelEmphasis();
-	featurevec["LowDependenceHighGreyLevelEmphasis"] = calculator.GetLowDependenceHighGreyLevelEmphasis();
-	featurevec["HighDependenceLowGreyLevelEmphasis"] = calculator.GetHighDependenceLowGreyLevelEmphasis();
-	featurevec["HighDependenceHighGreyLevelEmphasis"] = calculator.GetHighDependenceHighGreyLevelEmphasis();
-	featurevec["GreyLevelNonUniformity"] = calculator.GetGreyLevelNonUniformity();
-	featurevec["GreyLevelNonUniformityNormalised"] = calculator.GetGreyLevelNonUniformityNormalised();
-	featurevec["DependenceCountNonUniformity"] = calculator.GetDependenceCountNonUniformity();
-	featurevec["DependenceCountNonUniformityNormalised"] = calculator.GetDependenceCountNonUniformityNormalised();
-	featurevec["DependenceCountPercentage"] = calculator.GetDependenceCountPercentage();
-	featurevec["GreyLevelVariance"] = calculator.GetGreyLevelVariance();
-	featurevec["DependenceCountVariance"] = calculator.GetDependenceCountVariance();
-	featurevec["DependenceCountEntropy"] = calculator.GetDependenceCountEntropy();
-	featurevec["DependenceCountEnergy"] = calculator.GetDependenceCountEnergy();
-	featurevec["MeanGreyLevelCount"] = calculator.GetMeanGreyLevelCount();
-	featurevec["MeanDependenceCount"] = calculator.GetMeanDependenceCount();
-	featurevec["ExpectedNeighbourhoodSize"] = calculator.GetExpectedNeighbourhoodSize();
-	featurevec["AverageNeighbourhoodSize"] = calculator.GetAverageNeighbourhoodSize();
-	featurevec["AverageIncompleteNeighbourhoodSize"] = calculator.GetAverageIncompleteNeighbourhoodSize();
-	featurevec["PercentageOfCompleteNeighbourhoods"] = calculator.GetPercentageOfCompleteNeighbourhoods();
-	featurevec["PercentageOfDependenceNeighbours"] = calculator.GetPercentageOfDependenceNeighbours();
+	//featurevec["HighDependenceEmphasis"] = calculator.GetHighDependenceEmphasis();
+	//featurevec["LowGreyLevelCountEmphasis"] = calculator.GetLowGreyLevelCountEmphasis();
+	//featurevec["HighGreyLevelCountEmphasis"] = calculator.GetHighGreyLevelCountEmphasis();
+	//featurevec["LowDependenceLowGreyLevelEmphasis"] = calculator.GetLowDependenceLowGreyLevelEmphasis();
+	//featurevec["LowDependenceHighGreyLevelEmphasis"] = calculator.GetLowDependenceHighGreyLevelEmphasis();
+	//featurevec["HighDependenceLowGreyLevelEmphasis"] = calculator.GetHighDependenceLowGreyLevelEmphasis();
+	//featurevec["HighDependenceHighGreyLevelEmphasis"] = calculator.GetHighDependenceHighGreyLevelEmphasis();
+	//featurevec["GreyLevelNonUniformity"] = calculator.GetGreyLevelNonUniformity();
+	//featurevec["GreyLevelNonUniformityNormalised"] = calculator.GetGreyLevelNonUniformityNormalised();
+	//featurevec["DependenceCountNonUniformity"] = calculator.GetDependenceCountNonUniformity();
+	//featurevec["DependenceCountNonUniformityNormalised"] = calculator.GetDependenceCountNonUniformityNormalised();
+	//featurevec["DependenceCountPercentage"] = calculator.GetDependenceCountPercentage();
+	//featurevec["GreyLevelVariance"] = calculator.GetGreyLevelVariance();
+	//featurevec["DependenceCountVariance"] = calculator.GetDependenceCountVariance();
+	//featurevec["DependenceCountEntropy"] = calculator.GetDependenceCountEntropy();
+	//featurevec["DependenceCountEnergy"] = calculator.GetDependenceCountEnergy();
+	//featurevec["MeanGreyLevelCount"] = calculator.GetMeanGreyLevelCount();
+	//featurevec["MeanDependenceCount"] = calculator.GetMeanDependenceCount();
+	//featurevec["ExpectedNeighbourhoodSize"] = calculator.GetExpectedNeighbourhoodSize();
+	//featurevec["AverageNeighbourhoodSize"] = calculator.GetAverageNeighbourhoodSize();
+	//featurevec["AverageIncompleteNeighbourhoodSize"] = calculator.GetAverageIncompleteNeighbourhoodSize();
+	//featurevec["PercentageOfCompleteNeighbourhoods"] = calculator.GetPercentageOfCompleteNeighbourhoods();
+	//featurevec["PercentageOfDependenceNeighbours"] = calculator.GetPercentageOfDependenceNeighbours();
 }
 
 
@@ -275,6 +277,8 @@ template< class TImage >
 void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer itkImage,
   const typename TImage::Pointer maskImage, OffsetVector *offset, std::map<std::string, double>& featurevec)
 {
+std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
+
   NGTDMFeatures< TImage > calculator;
   calculator.SetInputImage(itkImage);
   calculator.SetInputMask(maskImage);
@@ -284,6 +288,7 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   calculator.SetMaximum(m_maximumToConsider);
   calculator.SetStartingIndex(m_currentLatticeStart);
   calculator.Update();
+  std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM::calculator.GetRange()" << calculator.GetRange() << std::endl;
 
   //auto temp = calculator.GetOutput();
   double double_Strength = calculator.GetStrength();
@@ -2565,6 +2570,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
               SetFeatureParam(FeatureFamilyString[f]);
               switch (f)
               {
+				  std::cout << "[DEBUG] FeatureExtraction.hxx::SetFeatureParam::FeatureFamilyString[" << f << "]" << std::endl;
                 // case Intensity is not needed since it always calculated
               case Histogram:
               {
@@ -2863,6 +2869,7 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
               }
               case NGTDM:
               {
+				std::cout << "[DEBUG] FeatureExtraction.hxx::case NGTDM" << std::endl;
                 auto temp = m_Features.find(FeatureFamilyString[f]);
                 if (temp != m_Features.end())
                 {
@@ -2915,6 +2922,47 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
                 }
                 break;
               }
+			  case NGLDM:
+			  {
+				  std::cout << "[DEBUG] FeatureExtraction.hxx::case NGTDM" << std::endl;
+				  auto temp = m_Features.find(FeatureFamilyString[f]);
+				  if (temp != m_Features.end())
+				  {
+					  if (std::get<0>(temp->second))
+					  {
+						  auto tempT1 = std::chrono::high_resolution_clock::now();
+
+						  std::get<2>(temp->second) = m_modality[i];
+						  std::get<3>(temp->second) = allROIs[j].label;
+
+						  auto offsets = GetOffsetVector(m_Radius, m_Direction);
+						  /* this dimensionality reduction applies only to shape and Volumetric features */
+						  if (TImage::ImageDimension == 3)
+						  {
+							CalculateNGLDM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
+						  }
+						  else
+						  {
+							  std::cout << "[DEBUG] NGLDM - Not yet implemented for non-3D" << std::endl;
+						  }
+
+						  if (std::get<4>(temp->second).empty())
+						  {
+							  return;
+						  }
+						  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+							  "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+							  ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+						  if (m_debug)
+						  {
+							  auto tempT2 = std::chrono::high_resolution_clock::now();
+							  m_logger.Write("NGLDM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+						  }
+					  }
+				  }
+				  break;
+			  }
               case FractalDimension:
               {
                 if (TImage::ImageDimension == 2)
