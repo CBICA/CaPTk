@@ -56,6 +56,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fMolecularSubtypeDialog.h"
 #include "fDCM2NIfTI.h"
 #include "fDeepMedicDialog.h"
+#include "fTexturePipelineDialog.h"
 #include "fDeepMedicNormDialog.h"
 #include "fFetalBrain.h"
 #include "fSBRTNoduleDialog.h"
@@ -249,6 +250,7 @@ private:
   fDiffusionEstimator diffmeasuresPanel;
   fDCM2NIfTIConverter dcmConverter;
   fDeepMedicDialog deepMedicDialog;
+  fTexturePipelineDialog texturePipelineDialog;
   fHistoMatcher histoMatchPanel;
   fDeepMedicNormalizer deepMedicNormPanel;
   fWhiteStripeObj whiteStripeNormalizer;
@@ -1266,6 +1268,7 @@ public slots:
   }
 
   void ApplicationBreastSegmentation();
+  void ApplicationTexturePipeline();
   void ApplicationLIBRASingle();
   void ApplicationLIBRABatch();
   void ApplicationConfetti();
