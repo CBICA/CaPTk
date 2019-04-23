@@ -6,7 +6,7 @@ MAINTAINER CBICA_UPenn software@cbica.upenn.edu
 RUN apt-get update && \
     apt-get install -y sudo curl git && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
-    sudo apt-get install git-lfs=1.0.0
+    sudo apt-get install git-lfs
 
 #general dependencies
 RUN apt-get install -y \
