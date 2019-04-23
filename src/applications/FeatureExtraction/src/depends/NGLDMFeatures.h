@@ -325,8 +325,8 @@ public:
 		mitk::NGLDMMatrixHolder& holder
 	)
 	{
-		typedef itk::Image<typename TImageType::PixelType, typename TImageType::ImageDimension> ImageType;
-		typedef itk::Image<typename TImageType::PixelType, typename TImageType::ImageDimension> MaskImageType;
+		typedef itk::Image<TImageType::PixelType, TImageType::ImageDimension> ImageType;
+		typedef itk::Image<TImageType::PixelType, TImageType::ImageDimension> MaskImageType;
 		typedef itk::NeighborhoodIterator<ImageType> ShapeIterType;
 		typedef itk::NeighborhoodIterator<MaskImageType> ShapeMaskIterType;
 
