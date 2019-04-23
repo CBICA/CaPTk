@@ -50,6 +50,7 @@ SET( GUI
   fDeepMedicNormDialog
   fSBRTNoduleDialog
   fSBRTAnalysisDialog
+  fTexturePipelineDialog
   #fSegmentationPanel
   #fHelpAppDialog
 )
