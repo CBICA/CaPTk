@@ -6,6 +6,8 @@
 
 #include "LibraPreprocess.h"
 
+#include "ZScoreNormalizer.h"
+
 std::string inputImageFile, outputDir;
 
 bool debugMode;
@@ -82,10 +84,6 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  auto outputFileName = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_preprocessed.nii.gz";
-  
-  cbica::WriteImage< LibraImageType >(preprocessingObj.GetOutputImage(), outputFileName);
-
   auto libraPath = findRelativeApplicationPath("libra");
 
   std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + " true true";
@@ -110,6 +108,18 @@ int algorithmsRunner()
   
   auto outputRelevantMaskImage = cbica::ChangeImageValues< LibraImageType >(outputTotalMaskImage, "2", "1");
   auto outputRelevantMaskImage_flipped = preprocessingObj.ApplyFlipToMaskImage(outputRelevantMaskImage);
+
+  auto preprocessedImage = preprocessingObj.GetOutputImage();
+  ZScoreNormalizer< LibraImageType > normalizer;
+  normalizer.SetInputImage(preprocessingObj.GetOutputImage());
+  normalizer.SetInputMask(outputRelevantMaskImage_flipped);
+  normalizer.SetCutoffs(0, 0);
+  normalizer.SetQuantiles(0, 0);
+  normalizer.Update();
+
+  auto outputFileName = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_preprocessed_normalized.nii.gz";
+
+  cbica::WriteImage< LibraImageType >(normalizer.GetOutput(), outputFileName);
 
   auto outputRelevantMaskFile = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_mask.nii.gz";
   cbica::WriteImage< LibraImageType >(outputRelevantMaskImage_flipped, outputRelevantMaskFile);
