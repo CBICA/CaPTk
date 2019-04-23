@@ -24,15 +24,15 @@ RUN git clone https://github.com/CBICA/CaPTk.git
 # start superbuild and then build CaPTk
 RUN cd CaPTk; \
     echo "=== Starting CaPTk Superbuild ===" \
-    mkdir bin; cd bin; \
+    mkdir bin && cd bin \
     cmake -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=./install_libs \
-    -Wno-dev ..; \
-    make; \
+    -Wno-dev .. && \
+    make && \
     echo "=== Building CaPTk ===" \
     cmake -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=./install \
-    -Wno-dev ..; \
+    -Wno-dev .. && \
     make install/strip
 
 # define entry point
