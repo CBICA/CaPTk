@@ -54,6 +54,7 @@ private:
   bool m_debugMode = false;
   size_t m_resizingFactor;
   std::string m_intermediateOutputDir;
+  itk::FixedArray< bool, TImageType::ImageDimension > m_flipAxes;
 };
 
 #include "LibraPreprocess.hxx"

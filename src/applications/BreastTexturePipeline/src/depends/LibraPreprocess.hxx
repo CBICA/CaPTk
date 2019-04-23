@@ -115,8 +115,7 @@ void LibraPreprocess< TImageType >::Update()
       imageLaterality = laterality;
     }
 
-    itk::FixedArray< bool, TImageType::ImageDimension > flipAxes;
-    flipAxes.Fill(false);
+    m_flipAxes.Fill(false);
     auto flipFilter = itk::FlipImageFilter < TImageType >::New();
     flipFilter->SetInput(m_output);
 
@@ -140,9 +139,9 @@ void LibraPreprocess< TImageType >::Update()
     //// perform flip if imageLaterality is "L" and is flipped OR if imageLaterality is "R"
     //if ((isFlipped && sideL) || !sideL) 
     //{
-    //  flipAxes[0] = true;
-    //  flipAxes[1] = false;
-    //  flipFilter->SetFlipAxes(flipAxes);
+    //  m_flipAxes[0] = true;
+    //  m_flipAxes[1] = false;
+    //  flipFilter->Setm_flipAxes(m_flipAxes);
     //  flipFilter->Update();
     //  m_output = flipFilter->GetOutput();
     //}
@@ -153,7 +152,7 @@ void LibraPreprocess< TImageType >::Update()
 
     if (std::strcmp(orientationAxes[0].c_str(), "P") == 0)
     {
-      flipAxes[0] = true;
+      m_flipAxes[0] = true;
       orientationAxes[0] = "A"; // no idea why the DICOM header information needs to be changed but whatever
       if (std::strcmp(fieldOfViewHorzFlip.c_str(), "YES") == 0)
       {
@@ -167,16 +166,16 @@ void LibraPreprocess< TImageType >::Update()
 
     if (std::strcmp(orientationAxes[1].c_str(), "H") == 0)
     {
-      flipAxes[1] = true;
+      m_flipAxes[1] = true;
       orientationAxes[1] = "F"; // no idea why the DICOM header information needs to be changed but whatever
     }
     else if (std::strcmp(orientationAxes[1].c_str(), "L") == 0)
     {
-      flipAxes[1] = true;
+      m_flipAxes[1] = true;
       orientationAxes[1] = "R"; // no idea why the DICOM header information needs to be changed but whatever
     }
 
-    flipFilter->SetFlipAxes(flipAxes);
+    flipFilter->Setm_flipAxes(m_flipAxes);
     flipFilter->Update();
     m_output = flipFilter->GetOutput();
     m_output->DisconnectPipeline();
