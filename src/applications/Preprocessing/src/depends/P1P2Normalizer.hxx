@@ -11,12 +11,6 @@ void P1P2Normalizer< TImageType >::SetInputImage(typename TImageType::Pointer im
   m_algorithmDone = false;
 }
 
-template< class TImageType >
-void P1P2Normalizer< TImageType >::SetQuantiles(float lower = 2, float upper = 95)
-{
-  m_quantLower = lower;
-  m_quantUpper = upper;
-}
 
 template< class TImageType >
 void P1P2Normalizer< TImageType >::Update()

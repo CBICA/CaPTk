@@ -28,17 +28,11 @@ public:
 
 private:
 
-  //! Set the quantile locations - this should not be changed by the developer
-  void SetQuantiles(float lower, float upper);
-
   //! Get basic statistics from image
   std::map< std::string, double > GetStatisticsForImage(const typename TImageType::Pointer m_inputImage, bool considerMask = true);
 
-  typename TImageType::Pointer m_inputImage, m_mask, m_inputImageMasked, m_output;
-  float m_quantLower = 0.05, m_quantUpper = 0.95;
-  float m_cutoffLower = 3, m_cutoffUpper = 3;
-  bool m_wholeImageMeanThreshold = false;
-  bool m_doSanityCheck = true; //! not needed when called from CaPTk since it does those checks already
+  typename TImageType::Pointer m_inputImage, m_mask, m_output;
+  float m_quantLower = 0.02, m_quantUpper = 0.95;
   bool m_algorithmDone = false;
 };
 
