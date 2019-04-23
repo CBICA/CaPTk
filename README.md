@@ -3,16 +3,20 @@
 <p align="center">
     <img src="https://www.med.upenn.edu/cbica/assets/user-content/images/captk/baseScreenshot.png" />
     <br></br>
-    <a href="https://travis-ci.org/CBICA/CaPTk" alt="Build Status">
-        <img src="https://travis-ci.org/CBICA/CaPTk.svg?branch=master" /></a>
-    <img src="https://img.shields.io/badge/language-c%2B%2B11-blue.svg" />
+    <a href="https://dev.azure.com/CBICA/CaPTk/_build" alt="Build Status">
+        <img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
+    <img src="https://img.shields.io/badge/language-c%2B%2B11-blue.svg" /><br>
+    <a href="https://hub.docker.com/r/cbica/captk/builds" alt="Automated"><img src="https://img.shields.io/docker/cloud/automated/cbica/captk.svg" /><br>
+    <a href="https://hub.docker.com/r/cbica/captk" alt="Build Status"><img src="https://img.shields.io/docker/cloud/build/cbica/captk.svg" /><br>
+    <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues><img src="https://img.shields.io/github/issues/CBICA/CaPTk.svg" /></a>
+    <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues><img src="https://img.shields.io/github/issues-closed/CBICA/CaPTk.svg" /></a>
 </p>
 
 CaPTk is a software platform, written in C++, for analysis of radiographic images of cancer, currently focusing on brain, breast, and lung cancer. CaPTk integrates advanced, validated tools performing various aspects of medical image analysis, that have been developed in the context of active clinical research studies and collaborations toward addressing real clinical needs. With emphasis given in its use as a very lightweight and efficient viewer, and with no prerequisites for substantial computational background, CaPTk aims to facilitate the swift translation of advanced computational algorithms into routine clinical quantification, analysis, decision making, and reporting workflow.
 
 Its long-term goal is to provide widely used technology that leverages the value of advanced imaging analytics in cancer prediction, diagnosis, and prognosis, as well as in better understanding the biological mechanisms of cancer development.
 
-CaPTk is developed and maintained by the <a href="https://www.cbica.upenn.edu/">Center for Biomedical Image Computing and Analytics (CBICA)</a> at the University of Pennsylvania.
+CaPTk is developed and maintained by the [Center for Biomedical Image Computing and Analytics (CBICA)](https://www.cbica.upenn.edu/) at the University of Pennsylvania.
 
 For more details, please visit us at https://www.cbica.upenn.edu/captk
 

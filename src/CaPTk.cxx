@@ -74,6 +74,7 @@ int main(int argc, char** argv)
 #endif
 
   std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
+  float cmd_maskOpacity = 1;
 
   // this is used to populate the available CWL files for the cli
   auto cwlFiles = cbica::getCWLFilesInApplicationDir();
@@ -84,6 +85,7 @@ int main(int argc, char** argv)
 
   parser.addOptionalParameter("i", "images", cbica::Parameter::FILE, "NIfTI or DICOM", "Input coregistered image(s) to load into CaPTk", "Multiple images are delineated using ','");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "NIfTI or DICOM", "Input mask [coregistered with image(s)] to load into CaPTk", "Accepts only one file");
+  parser.addOptionalParameter("mo", "maskOpacity", cbica::Parameter::FLOAT, "0-1", "Opacity of the Input mask", "Needs 'm' to be passed");
   parser.addOptionalParameter("tu", "tumorPt", cbica::Parameter::FILE, ".txt", "Tumor Point file for the image(s) being loaded");
   parser.addOptionalParameter("ts", "tissuePt", cbica::Parameter::FILE, ".txt", "Tissue Point file for the image(s) being loaded");
   parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
@@ -140,6 +142,10 @@ int main(int argc, char** argv)
   if (parser.isPresent("m"))
   {
     parser.getParameterValue("m", cmd_mask);
+    if (parser.isPresent("mo"))
+    {
+      parser.getParameterValue("m0", cmd_maskOpacity);
+    }
   }
   if (parser.isPresent("tu"))
   {
@@ -308,7 +314,7 @@ int main(int argc, char** argv)
 #endif
   }
   else
-    window.loadFromCommandLine(inputFiles_QString, inputMask.toStdString(), cmd_tumor, cmd_tissue/*, true*/); // at this point, inputFiles_QString will have at least 1 value
+    window.loadFromCommandLine(inputFiles_QString, inputMask.toStdString(), cmd_maskOpacity, cmd_tumor, cmd_tissue/*, true*/); // at this point, inputFiles_QString will have at least 1 value
 
 
 

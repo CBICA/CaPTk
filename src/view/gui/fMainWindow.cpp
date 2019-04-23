@@ -59,6 +59,8 @@
 
 #include "QtConcurrent/qtconcurrentrun.h"
 
+#include "itkTranslationTransform.h"
+
 //#include "DicomSeriesReader.h"
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
@@ -195,6 +197,7 @@ fMainWindow::fMainWindow()
   menuFile->addMenu(menuLoadFile);
   menuFile->addMenu(menuSaveFile);
   menuApp = new QMenu("Applications");
+  menuDeepLearning = new QMenu("Deep Learning");
   menuPreprocessing = new QMenu("Preprocessing");
   menuHelp = new QMenu("Help");
 
@@ -274,6 +277,7 @@ fMainWindow::fMainWindow()
 #ifndef PACKAGE_VIEWER
   menubar->addMenu(menuApp);
 #endif
+  menubar->addMenu(menuDeepLearning);
   menubar->addMenu(menuHelp);
   this->setMenuBar(menubar);
 
@@ -282,6 +286,7 @@ fMainWindow::fMainWindow()
 #ifndef PACKAGE_VIEWER
   menubar->addAction(menuApp->menuAction());
 #endif
+  menubar->addAction(menuDeepLearning->menuAction());
   menubar->addAction(menuHelp->menuAction());
 
   menuLoadFile->addAction(actionLoad_Nifti_Images);
@@ -354,11 +359,9 @@ fMainWindow::fMainWindow()
 
   auto lungAppList = " LungField Nodule Analysis";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
-  std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation";
-#ifdef WIN32
-  segAppList += " deepmedic";
-#endif
-  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer";
+  std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
+  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
+  auto deepLearningAlgos = " deepmedic_tumor deepmedic_brain";
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
   menuApp->addSeparator();
@@ -372,6 +375,11 @@ fMainWindow::fMainWindow()
   vectorOfSegmentationApps = populateStringListInMenu(segAppList, this, menuApp, "Segmentation", false);
   vectorOfMiscApps = populateStringListInMenu(miscAppList, this, menuApp, "Miscellaneous", false);
   vectorOfPreprocessingActionsAndNames = populateStringListInMenu(preProcessingAlgos, this, menuPreprocessing, "", false);
+  vectorOfDeepLearningActionsAndNames = populateStringListInMenu(deepLearningAlgos, this, menuDeepLearning, "", false);
+  auto temp = populateStringListInMenu(" ", this, menuDeepLearning, "Breast", false);
+  temp = populateStringListInMenu(" ", this, menuDeepLearning, "Lung", false);
+  menuDeepLearning->addSeparator();
+  temp = populateStringListInMenu(" ", this, menuDeepLearning, "Training", false);
 
   menuDownload->addAction("All");
   for (const auto &currentActionAndName : vectorOfGBMApps)
@@ -649,10 +657,15 @@ fMainWindow::fMainWindow()
       vectorOfSegmentationApps[i].action->setText("  Geodesic Training Segmentation"); // TBD set at source
       connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationGeodesicTraining()));
     }
-    else if (vectorOfSegmentationApps[i].name.find("deepmedic") != std::string::npos)
+    else if (vectorOfSegmentationApps[i].name.find("deepmedic_tumor") != std::string::npos)
     {
-      vectorOfSegmentationApps[i].action->setText("  DeepMedic Segmentation (Brain)"); // TBD set at source
-      connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationDeepMedicSegmentation()));
+      vectorOfSegmentationApps[i].action->setText("  Brain Tumor Segmentation (DeepLearning)"); // TBD set at source
+      connect(vectorOfSegmentationApps[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::Tumor); });
+    }
+    else if (vectorOfSegmentationApps[i].name.find("deepmedic_brain") != std::string::npos)
+    {
+      vectorOfSegmentationApps[i].action->setText("  Skull Stripping (DeepLearning)"); // TBD set at source
+      connect(vectorOfSegmentationApps[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::SkullStripping); });
     }
   }
 
@@ -714,6 +727,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfPreprocessingActionsAndNames[i].name.find("DeepMedicNormalizer") != std::string::npos)
     {
+      vectorOfPreprocessingActionsAndNames[i].action->setText("Z-Scoring Normalizer"); // TBD set at source
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageDeepMedicNormalizer()));
     }
     else if (vectorOfPreprocessingActionsAndNames[i].name.find("SkullStripping") != std::string::npos)
@@ -726,6 +740,26 @@ fMainWindow::fMainWindow()
     {
       vectorOfPreprocessingActionsAndNames[i].action->setText("DICOM to NIfTI");
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(DCM2NIfTIConversion()));
+    }
+    else if (vectorOfPreprocessingActionsAndNames[i].name.find("deepmedic_brain") != std::string::npos)
+    {
+      vectorOfPreprocessingActionsAndNames[i].action->setText("Skull Stripping (DeepLearning)"); // TBD set at source
+      connect(vectorOfPreprocessingActionsAndNames[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::SkullStripping); });
+    }
+  }
+
+  // add a single function for all preprocessing steps, this function will check for the specific names and then initiate that algorithm
+  for (size_t i = 0; i < vectorOfDeepLearningActionsAndNames.size(); i++)
+  {
+    if (vectorOfDeepLearningActionsAndNames[i].name.find("deepmedic_tumor") != std::string::npos)
+    {
+      vectorOfDeepLearningActionsAndNames[i].action->setText("Brain Tumor Segmentation"); // TBD set at source
+      connect(vectorOfDeepLearningActionsAndNames[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::Tumor); });
+    }
+    else if (vectorOfDeepLearningActionsAndNames[i].name.find("deepmedic_brain") != std::string::npos)
+    {
+      vectorOfDeepLearningActionsAndNames[i].action->setText("Skull Stripping"); // TBD set at source
+      connect(vectorOfDeepLearningActionsAndNames[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::SkullStripping); });
     }
   }
 
@@ -802,7 +836,7 @@ fMainWindow::fMainWindow()
 
   connect(&nodulePanel, SIGNAL(SBRTNoduleParamReady(const std::string, const int)), this, SLOT(CallSBRTNodule(const std::string, const int)));
 
-  connect(&deepMedicDialog, SIGNAL(RunDeepMedic(const std::string)), this, SLOT(CallDeepMedicSegmentation(const std::string)));
+  connect(&deepMedicDialog, SIGNAL(RunDeepMedic(const std::string, const std::string)), this, SLOT(CallDeepMedicSegmentation(const std::string, const std::string)));
 
   connect(this, SIGNAL(SeedPointsFocused(bool)), tumorPanel, SLOT(sTableFocused(bool)));
   connect(this, SIGNAL(TissuePointsFocused(bool)), tumorPanel, SLOT(tTableFocused(bool)));
@@ -6087,19 +6121,10 @@ void fMainWindow::ApplicationITKSNAP()
 
   r.WriteToXMLFile(std::string(m_tempFolderLocation + "/testXML.itksnap").c_str());
 
-  std::string scriptToCall = captk_currentApplicationPath +
-#ifdef Q_OS_WIN32
-    "/itksnap.exe"
-#else
-    "/itksnap"
-#endif
-    ;
-
-  QString itkSnapLocation = scriptToCall.c_str();
+  QString itkSnapLocation = getApplicationPath("itksnap").c_str();
   QStringList itkSnapArgs;
   itkSnapArgs << "-w" << std::string(m_tempFolderLocation + "/testXML.itksnap").c_str();
   startExternalProcess(itkSnapLocation, itkSnapArgs);
-  //  std::system((scriptToCall + "-w " + m_tempFolderLocation + "/testXML.itksnap").c_str());
   readMaskFile(maskFile);
   updateProgress(0, "Mask saved from ITK-SNAP loaded");
 }
@@ -6716,20 +6741,30 @@ void fMainWindow::EnableComparisonMode(bool enable)
 
 void fMainWindow::ApplicationDeepMedicSegmentation()
 {
-  if (mSlicerManagers.size() < 4)
+  if (type <= fDeepMedicDialog::SkullStripping) // different cases for individual models can be put in this way
   {
-    ShowErrorMessage("DeepMedic needs the following images to work: T1CE, T1, T2, FLAIR", this);
+    if (mSlicerManagers.size() < 4)
+    {
+      ShowErrorMessage("This model needs the following images to work: T1CE, T1, T2, FLAIR", this);
+      return;
+    }
+  }
+
+  // redundancy check
+  if (type >= fDeepMedicDialog::Max)
+  {
+    ShowErrorMessage("Unsupported model type, please check", this);
     return;
   }
+
+  deepMedicDialog.SetDefaultModel(type);
   deepMedicDialog.SetCurrentImagePath(mInputPathName);
   deepMedicDialog.exec();
 }
 
-void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
+void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, const std::string outputDirectory)
 {
   std::string file_t1ce, file_t1, file_flair, file_t2;
-  auto statsCalculator = itk::StatisticsImageFilter< ImageTypeFloat3D >::New();
-  bool noMaskNorm = false;
 
   cbica::createDir(outputDirectory);
 
@@ -6742,6 +6777,25 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
   {
     cbica::WriteImage< TImageType >(getMaskImage(), file_mask);
   }
+
+  if (!cbica::isDir(modelDirectory))
+  {
+    ShowErrorMessage("Model directory was not found, please try with another");
+    return;
+  }
+  if (!cbica::isFile(modelDirectory + "/modelConfig.txt"))
+  {
+    ShowErrorMessage("'modelConfig.txt' was not found in the directory, please check");
+    return;
+  }
+  if (!cbica::isFile(modelDirectory + "/model.ckpt"))
+  {
+    ShowErrorMessage("'model.ckpt' was not found in the directory, please check");
+    return;
+  }
+
+  auto modelConfigFile = modelDirectory + "/modelConfig.txt",
+    modelCkptFile = modelDirectory + "/model.ckpt";
 
   int progressBar = 0;
   for (size_t i = 0; i < mSlicerManagers.size(); i++)
@@ -6782,10 +6836,8 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     }
   }
 
-  std::string dataDir = getCaPTkDataDir() + "deepMedic/";
-
   QStringList args;
-  args /*<< "-model" << (dataDir + "to_use/modelConfig.txt").c_str()*/
+  args << "-md" << modelDirectory.c_str()
     << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
 
   if (!file_mask.empty())
@@ -6795,7 +6847,6 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
   updateProgress(5, "Starting DeepMedic Segmentation");
 
   auto dmExe = getApplicationPath("DeepMedic");
-  auto temp = args.join(" ").toStdString();
   if (!cbica::exists(dmExe))
   {
     ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
@@ -6803,7 +6854,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string outputDirectory)
     return;
   }
 
-  if (std::system((dmExe + " " + temp).c_str()) != 0)
+  if (startExternalProcess(dmExe.c_str(), args) != 0)
   {
     ShowErrorMessage("DeepMedic returned with exit code != 0");
     updateProgress(0, "");
@@ -6959,6 +7010,80 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     }
   }
 
+  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
+  if (items.empty())
+  {
+    ShowErrorMessage("Please specify an input image.");
+    help_contextual("Glioblastoma_Directionality.html");
+    return;
+  }
+  int index = GetSlicerIndexFromItem(items[0]);
+
+  auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageTypeFloat3D >::New();
+  minMaxCalc->SetImage(newROIImage);
+  minMaxCalc->Compute();
+  auto maxVal = minMaxCalc->GetMaximum();
+
+  if (maxVal == 0)
+  {
+    ShowErrorMessage("Please specify an ROI. See documentation for details");
+    help_contextual("Glioblastoma_Directionality.html");
+    return;
+  }
+
+  QString output_msg = "";
+  QString outputPoints = (m_tempFolderLocation + "/directionalityOutput_points.txt").c_str();
+
+  bool singleIteration = false; // this to check if tissue points other than TU has been initialized
+
+  auto imageOrigin = mSlicerManagers[index]->mOrigin /*labelMap->GetOrigin()*/;
+  auto imageSpacing = roi2Image->GetSpacing();
+  auto volumeMultiplier = imageSpacing[0] * imageSpacing[1] * imageSpacing[2];
+
+  for (size_t i = 0; i < numberOfSeeds; i++)
+  {
+    if (mTissuePoints->mLandmarks[i].id == NCR) // in the case a second point has been initialized for roi2
+    {
+      itk::Point< float, 3 > pointFromTumorPanel = mTissuePoints->mLandmarks[i].coordinates;
+
+      double x_index_post = (pointFromTumorPanel[0] - imageOrigin[0]) / imageSpacing[0];
+      double y_index_post = (pointFromTumorPanel[1] - imageOrigin[1]) / imageSpacing[1];
+      double z_index_post = (pointFromTumorPanel[2] - imageOrigin[2]) / imageSpacing[2];
+
+      double x_index_pre = 0;
+      double y_index_pre = 0;
+      double z_index_pre = 0;
+
+      for (size_t j = 0; j < numberOfSeeds; j++)
+      {
+        if (mTissuePoints->mLandmarks[i].id == TU) // in the case a second point has been initialized for roi2
+        {
+          itk::Point< float, 3 > pointFromTumorPanel = mTissuePoints->mLandmarks[i].coordinates;
+
+          x_index_pre = (pointFromTumorPanel[0] - imageOrigin[0]) / imageSpacing[0];
+          y_index_pre = (pointFromTumorPanel[1] - imageOrigin[1]) / imageSpacing[1];
+          z_index_pre = (pointFromTumorPanel[2] - imageOrigin[2]) / imageSpacing[2];
+        }
+      }
+
+      using TranslationTransformType = itk::TranslationTransform< double, 3 >;
+      auto transform = TranslationTransformType::New();
+      TranslationTransformType::OutputVectorType translation;
+      translation[0] = x_index_post - x_index_pre;
+      translation[1] = y_index_post - y_index_pre;
+      translation[2] = z_index_post - z_index_pre;
+      transform->Translate(translation);
+
+      auto resampler = itk::ResampleImageFilter< ImageTypeFloat3D, ImageTypeFloat3D >::New();
+      resampler->SetTransform(transform.GetPointer());
+      resampler->SetInput(roi1Image);
+      resampler->SetSize(roi1Image->GetLargestPossibleRegion().GetSize());
+      resampler->Update();
+
+      roi1Image = resampler->GetOutput();
+    }
+  }
+
   // visualizing ROI_post with 2 colors to highlight the post-injection region
   ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion());
 
@@ -6985,36 +7110,6 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       }
     }
   }
-
-  QList<QTableWidgetItem*> items = m_imagesTable->selectedItems();
-  if (items.empty())
-  {
-    ShowErrorMessage("Please specify an input image.");
-    help_contextual("Glioblastoma_Directionality.html");
-    return;
-  }
-  int index = GetSlicerIndexFromItem(items[0]);
-
-  auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();
-  minMaxCalc->SetImage(newROIImage);
-  minMaxCalc->Compute();
-  auto maxVal = minMaxCalc->GetMaximum();
-
-  if (maxVal == 0)
-  {
-    ShowErrorMessage("Please specify an ROI. See documentation for details");
-    help_contextual("Glioblastoma_Directionality.html");
-    return;
-  }
-
-  QString output_msg = "";
-  QString outputPoints = (m_tempFolderLocation + "/directionalityOutput_points.txt").c_str();
-
-  bool singleIteration = false; // this to check if tissue points other than TU has been initialized
-
-  auto imageOrigin = mSlicerManagers[index]->mOrigin /*labelMap->GetOrigin()*/;
-  auto imageSpacing = roi2Image->GetSpacing();
-  auto volumeMultiplier = imageSpacing[0] * imageSpacing[1] * imageSpacing[2];
 
   DirectionalityEstimate< ImageTypeFloat3D > directionalityEstimatorObj;
   directionalityEstimatorObj.SetInputMask(roi2Image);
@@ -7815,15 +7910,7 @@ void fMainWindow::ChangeBrushSize(int size)
 
 void fMainWindow::ChangeMaskOpacity(int newMaskOpacity) // multiLabel uncomment this function
 {
-  double tempOpacity;
-  if ((newMaskOpacity > 1) || (newMaskOpacity == 1))
-  {
-    tempOpacity = 1.0;
-  }
-  else
-  {
-    tempOpacity = newMaskOpacity * 0.1;
-  }
+  double tempOpacity = newMaskOpacity * 0.1;
   for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
   {
     for (size_t j = 0; j < 3; j++)
