@@ -111,9 +111,10 @@ int algorithmsRunner()
   auto outputTotalMaskImage = dicomReader->GetOutput();
   
   auto outputRelevantMaskImage = cbica::ChangeImageValues< LibraImageType >(outputTotalMaskImage, "2", "1");
+  auto outputRelevantMaskImage_flipped = preprocessingObj.ApplyFlipToMaskImage(outputRelevantMaskImage);
 
   auto outputRelevantMaskFile = outputDir + "/" + cbica::getFilenameBase(inputImageFile) + "_mask.nii.gz";
-  cbica::WriteImage< LibraImageType >(outputRelevantMaskImage, outputRelevantMaskFile);
+  cbica::WriteImage< LibraImageType >(outputRelevantMaskImage_flipped, outputRelevantMaskFile);
 
   auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
 
@@ -128,7 +129,7 @@ int algorithmsRunner()
   command = featureExtractionPath + "-n Lattice -p " + latticeFeatureParamFilePath +
     " -o " + outputDir +
     " -i " + outputFileName + " -t MAM " +
-    " -m " + outputRelevantMaskFile + " -l TT -r 1";
+    " -m " + outputRelevantMaskFile + " -l TT -r 1 -f 1";
 
   std::cout << "Running FeatureExtraction with command '" + command + "'\n";
   std::system(command.c_str());
