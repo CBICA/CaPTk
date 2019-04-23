@@ -56,6 +56,16 @@ void LibraPreprocess< TImageType >::EnableDebugMode()
 }
 
 template< typename TImageType >
+typename TImageType::Pointer LibraPreprocess< TImageType >::ApplyFlipToMaskImage(typename TImageType::Pointer maskImage)
+{
+  auto flipFilter = itk::FlipImageFilter < TImageType >::New();
+  flipFilter->SetInput(maskImage);
+  flipFilter->Setm_flipAxes(m_flipAxes);
+  flipFilter->Update();
+  return flipFilter->GetOutput();
+}
+
+template< typename TImageType >
 void LibraPreprocess< TImageType >::Update()
 {
   if (!m_algorithmDone)

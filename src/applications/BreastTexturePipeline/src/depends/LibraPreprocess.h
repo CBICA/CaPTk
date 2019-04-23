@@ -45,6 +45,9 @@ public:
   //! this is to pass onto segmentation class
   std::string GetIntermediateSaveLocation() { return m_intermediateOutputDir; };
 
+  //! Use the same flip axes coordinates to apply flip to mask image
+  typename TImageType::Pointer ApplyFlipToMaskImage(typename TImageType::Pointer maskImage);
+
 private:
   std::string m_fileName; //! original dicom file name
   typename TImageType::Pointer m_inputImage, //! raw input image
