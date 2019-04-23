@@ -84,18 +84,18 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  auto outputFileName = outputDir + "/" + cbica::getFilenameBase(inputImageFile) + "_preprocessed.nii.gz";
+  auto outputFileName = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_preprocessed.nii.gz";
   
   cbica::WriteImage< LibraImageType >(preprocessingObj.GetOutputImage(), outputFileName);
 
   auto libraPath = findRelativeApplicationPath("libra");
 
-  std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/" + cbica::getFilenameBase(inputImageFile) + " true true";
+  std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + " true true";
   std::cout << "Running LIBRA Single Image with command '" + command + "'\n";
   std::system(command.c_str());
   std::cout << "Done.\n";
 
-  auto outputTotalMask = outputDir + "/" + cbica::getFilenameBase(inputImageFile) + "/Result_Images/totalmask/totalmask.dcm";
+  auto outputTotalMask = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "/Result_Images/totalmask/totalmask.dcm";
   //auto outputTotalMaskImage = cbica::ReadImage< LibraImageType >(outputTotalMask);
   auto dicomReader = itk::ImageSeriesReader< LibraImageType >::New();
   dicomReader->SetImageIO(itk::GDCMImageIO::New());
@@ -113,7 +113,7 @@ int algorithmsRunner()
   auto outputRelevantMaskImage = cbica::ChangeImageValues< LibraImageType >(outputTotalMaskImage, "2", "1");
   auto outputRelevantMaskImage_flipped = preprocessingObj.ApplyFlipToMaskImage(outputRelevantMaskImage);
 
-  auto outputRelevantMaskFile = outputDir + "/" + cbica::getFilenameBase(inputImageFile) + "_mask.nii.gz";
+  auto outputRelevantMaskFile = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_mask.nii.gz";
   cbica::WriteImage< LibraImageType >(outputRelevantMaskImage_flipped, outputRelevantMaskFile);
 
   auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
