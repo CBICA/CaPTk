@@ -51,12 +51,3 @@ void fTexturePipelineDialog::SelectOutputDirectory()
   QFileInfo fileInfo(outputImage);
   mInputPathName = fileInfo.absoluteFilePath();
 }
-
-void fTexturePipelineDialog::SelectModelDirectory()
-{
-  QString modelDir = getExistingDirectory(this, modelDirName->text());
-  if (modelDir.isNull())
-    return;
-  else
-    modelDirName->setText(modelDir);
-}
