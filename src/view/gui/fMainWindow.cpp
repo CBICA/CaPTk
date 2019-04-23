@@ -42,8 +42,9 @@
 #include <vnl/vnl_trace.h>
 
 #include "cbicaCmdParser.h"
+#ifndef __APPLE__
 #include "LibraPreprocess.h"
-
+#endif
 #include "Registry.h"
 
 #include "DirectionalityEstimate.h"
@@ -6595,7 +6596,7 @@ void fMainWindow::ImageMamogramPreprocess()
     ShowErrorMessage("Only a single DICOM image per folder is supported");
     return;
   }
-
+#ifndef __APPLE__
   LibraPreprocess< LibraImageType > preprocessingObj;
   preprocessingObj.SetInputFileName(currentFiles[0]);
   preprocessingObj.Update();
@@ -6604,6 +6605,7 @@ void fMainWindow::ImageMamogramPreprocess()
   cbica::WriteImage< LibraImageType >(preprocessingObj.GetOutputImage(), outputFileName);
 
   ShowMessage("Preprocessed file has been written to:\n\n\t" + outputFileName + "\n\nPlease load it back to CaPTk to view (physical spacing may be inconsistent with loaded image)", this);
+#endif
   return;
 }
 
