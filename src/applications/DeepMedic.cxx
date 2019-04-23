@@ -34,7 +34,7 @@ void algorithmRunner()
 
   // per-patient registration
   auto greedyExe = getApplicationPath("GreedyRegistration");
-  if (!cbica::ImageSanityCheck< TImageType >(t1cImg, maskProvided))
+  if (!cbica::ImageSanityCheck< TImageType >(t1cImg, maskImage))
   {
     auto tempFile_input = outputDirectory + "/maskToT1gd_input.nii.gz";
     auto tempFile = outputDirectory + "/maskToT1gd.nii.gz";
@@ -165,7 +165,7 @@ void algorithmRunner()
   t1Img = cbica::ResampleImage< TImageType >(t1Img); // default is linear resampling to isotropic resolution of 1.0
   flImg = cbica::ResampleImage< TImageType >(flImg); // default is linear resampling to isotropic resolution of 1.0
   t2Img = cbica::ResampleImage< TImageType >(t2Img); // default is linear resampling to isotropic resolution of 1.0
-  maskImage = cbica::ResampleImage< TImageType >(maskImage, "Nearest"); // default is linear resampling to isotropic resolution of 1.0
+  maskImage = cbica::ResampleImage< TImageType >(maskImage, 1.0, "Nearest"); // default is linear resampling to isotropic resolution of 1.0
   std::cout << "=== Done.\n";
 
   cbica::createDir(outputDirectory);
