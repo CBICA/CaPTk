@@ -193,7 +193,7 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("o", outputImageFile);
   }
-  if (parser.isPresent("zn"))
+  if (parser.isPresent("p12"))
   {
     requestedAlgorithm = P1P2Preprocess;
   }
