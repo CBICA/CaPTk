@@ -11,12 +11,16 @@ RUN apt-get update && \
 #general dependencies
 RUN apt-get install -y \
     wget \
-    cmake \
     git-core \
     unzip \
     doxygen 
     
 RUN git lfs install
+
+# install latest cmake 
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.14.3/cmake-3.14.3-Linux-x86_64.tar.gz && \
+    tar -xzvf cmake-3.14.3-Linux-x86_64.tar.gz
+    export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH
 
 # clone the current repo
 RUN git clone https://github.com/CBICA/CaPTk.git
