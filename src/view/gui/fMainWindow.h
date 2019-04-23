@@ -789,6 +789,11 @@ public slots:
   void CallDeepMedicSegmentation(const std::string modelDirectory, const std::string outputDirectory);
 
   /**
+  \brief Call the breast texture pipeline
+  */
+  void CallTexturePipeline(const std::string outputDirectory);
+
+  /**
   \brief Call Histogram Matching module of ITK
   */
   void CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile);

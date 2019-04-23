@@ -853,6 +853,7 @@ fMainWindow::fMainWindow()
   connect(&nodulePanel, SIGNAL(SBRTNoduleParamReady(const std::string, const int)), this, SLOT(CallSBRTNodule(const std::string, const int)));
 
   connect(&deepMedicDialog, SIGNAL(RunDeepMedic(const std::string, const std::string)), this, SLOT(CallDeepMedicSegmentation(const std::string, const std::string)));
+  connect(&texturePipelineDialog, SIGNAL(RunTextureFeaturePipeline(const std::string)), this, SLOT(CallTexturePipeline(const std::string)));
 
   connect(this, SIGNAL(SeedPointsFocused(bool)), tumorPanel, SLOT(sTableFocused(bool)));
   connect(this, SIGNAL(TissuePointsFocused(bool)), tumorPanel, SLOT(tTableFocused(bool)));
@@ -5369,6 +5370,39 @@ void fMainWindow::ApplicationTexturePipeline()
     return;
   }
 
+  texturePipelineDialog.SetCurrentImagePath(mInputPathName);
+  texturePipelineDialog.exec();
+  return;
+}
+
+void fMainWindow::CallTexturePipeline(const std::string outputDirectory)
+{
+  std::string casename = cbica::getFilenameBase(dicomfilename);
+
+  cbica::createDir(outputDirectory);
+  
+  QStringList args;
+  args << "-i" << dicomfilename.c_str()
+    << "-o" << outputDirectory.c_str();
+
+  updateProgress(5, "Starting BreastTexturePipeline extraction");
+
+  auto texturePipelineExe = getApplicationPath("BreastTexturePipeline");
+  if (!cbica::exists(texturePipelineExe))
+  {
+    ShowErrorMessage("BreastTexturePipeline executable doesn't exist; can't run");
+    updateProgress(0, "");
+    return;
+  }
+
+  if (startExternalProcess(texturePipelineExe.c_str(), args) != 0)
+  {
+    ShowErrorMessage("BreastTexturePipeline returned with exit code != 0");
+    updateProgress(0, "");
+    return;
+  }
+  updateProgress(100, "BreastTexturePipeline finished successfully");
+  return;
 }
 
 void fMainWindow::ApplicationBreastSegmentation()
