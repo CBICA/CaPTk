@@ -7003,8 +7003,19 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     }
   }
 
+  // TBD: this requires cleanup
+  int type;
+  if (modelDirectory.find("tumor") != std::string::npos)
+  {
+    type = 0;
+  }
+  else if (modelDirectory.find("skull") != std::string::npos)
+  {
+    type = 1;
+  }
+
   QStringList args;
-  args << "-md" << modelDirectory.c_str()
+  args << "-md" << modelDirectory.c_str() << "-t" << std::to_string(type).c_str()
     << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
 
   if (!file_mask.empty())
