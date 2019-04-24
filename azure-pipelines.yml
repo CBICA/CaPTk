@@ -324,20 +324,20 @@ jobs:
     # vmImage: 'MacOS-10.13'
 
   steps:
-    - bash: |
-        brew install caskroom/cask/mactex make git-lfs doxygen llvm
-      displayName: 'Brew dependencies'
+    # - bash: |
+    #     brew install caskroom/cask/mactex make git-lfs doxygen llvm
+    #   displayName: 'Brew dependencies'
     
-    - bash: |
-        rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-      displayName: 'Take the nuclear option'
+    # - bash: |
+    #     rm -rf history
+    #     rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    #   displayName: 'Take the nuclear option'
 
     - bash: |
-        export CC=""
-        export CXX=""
-        export LDFLAGS=""
-        export CPPFLAGS=""
+        # export CC=""
+        # export CXX=""
+        # export LDFLAGS=""
+        # export CPPFLAGS=""
 
         git lfs install && git lfs fetch --all
 
@@ -349,14 +349,14 @@ jobs:
         mkdir bin
       displayName: 'Create build directory'
     
-    - bash: |
-        cd bin
+    # - bash: |
+    #     cd bin
 
-        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
-        make -j2
-      displayName: 'Configure and compile Superbuild'
+    #     make -j2
+    #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
         cd bin
@@ -427,8 +427,8 @@ jobs:
 
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
-        mv *Installer.pkg $(Build.ArtifactStagingDirectory)
-        rm -rf *
+        # mv *Installer.pkg $(Build.ArtifactStagingDirectory)
+        # rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
 
     # - task: CopyFiles@2
@@ -439,16 +439,16 @@ jobs:
     #     overWrite: true
     #     contents: 'CaPTk_*_Installer.pkg'
     
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
     
     
