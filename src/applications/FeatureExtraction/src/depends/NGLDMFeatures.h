@@ -50,6 +50,7 @@ namespace mitk
 		double IndexToMinIntensity(int index);
 		double IndexToMeanIntensity(int index);
 		double IndexToMaxIntensity(int index);
+		void Print();
 
 		double m_MinimumRange;
 		double m_MaximumRange;
@@ -141,8 +142,18 @@ mitk::NGLDMMatrixHolder::NGLDMMatrixHolder(double min, double max, int number, i
 	m_NumberOfCompleteNeighbourhoods(0)
 {
 	m_Matrix.resize(number, depenence);
+	std::cout << "[DEBUG] NGLDMFeatures.h::mitk::NGLDMMatrixHolder::NGLDMMatrixHolder:: number = " << number << " | depenence = " << depenence << std::endl;
+
 	m_Matrix.fill(0);
+	//std::cout << "[DEBUG] NGLDMFeatures.h::mitk::NGLDMMatrixHolder::NGLDMMatrixHolder:: m_Matrix = " << m_Matrix << std::endl;
+
 	m_Stepsize = (max - min) / (number);
+}
+
+
+void mitk::NGLDMMatrixHolder::Print()
+{
+	std::cout << "[DEBUG] NGLDMFeatures.h::mitk::NGLDMMatrixHolder::NGLDMMatrixHolder::Print:: m_Matrix = \n\n" << m_Matrix << std::endl;
 }
 
 int mitk::NGLDMMatrixHolder::IntensityToIndex(double intensity)
@@ -280,13 +291,22 @@ public:
 			std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
 			std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
 
+			//TBD - Hard Coded for Phantom for now
 			int alpha = 0;
 			unsigned int direction = 26;
+			int max_number_of_dependence = 21;
 			int range = 1;
+			//TBD - Hard Coded for Phantom for now
+
+
 			//NGLDMMatrixHolder holderOverall(rangeMin, rangeMax, numberOfBins, numberofDependency);
-			mitk::NGLDMMatrixHolder holderOverall(m_minimum, m_maximum, m_bins, alpha);
+			std::cout << "[DEBUG] mitk::NGLDMMatrixHolder::holderOverall(" << m_minimum << ", " << m_maximum << ", " << m_bins << ", " << max_number_of_dependence << ")" << std::endl;
+			mitk::NGLDMMatrixHolder holderOverall(m_minimum, m_maximum, m_bins, max_number_of_dependence);
 			mitk::NGLDMMatrixFeatures overallFeature;
 			CalculateNGLDMMatrix(this->m_inputImage, this->m_Mask, alpha, range, direction, holderOverall);
+			std::cout << "[DEBUG] NGLDMFeatures.h||print " << std::endl;
+			holderOverall.Print();
+
 			LocalCalculateFeatures(holderOverall, overallFeature);
 
 		}
@@ -359,20 +379,28 @@ public:
 		std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::iterSize = " << iterSize << std::endl; //phantom 27
 
 		holder.m_NeighbourhoodSize = iterSize - 1; //phantom 26
+		
+		int iteration_count = 0;
 		while (!maskIter.IsAtEnd())
 		{
 			int sameValues = 0;
 			bool completeNeighbourhood = true;
 
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::imageIter.GetCenterPixel() = " << imageIter.GetCenterPixel() << std::endl;
+
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::imageIter.GetCenterPointer() = " << imageIter.GetCenterPointer() << std::endl;
+
+			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::iteration_count = " << iteration_count << "\n\n"<< std::endl;
+
 			int i = holder.IntensityToIndex(imageIter.GetCenterPixel());
 			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << std::endl;
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i intensity = " << imageIter.GetCenterPixel() << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i intensity = " << imageIter.GetCenterPixel() << std::endl;
 
 
 			//if ((imageIter.GetCenterPixel() != imageIter.GetCenterPixel()) || (maskIter.GetCenterPixel() < 1))
 			if ((imageIter.GetCenterPixel() != maskIter.GetCenterPixel()) || (maskIter.GetCenterPixel() < 1))
 			{
-				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | outside ROI." << std::endl;
+				//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | outside ROI." << std::endl;
 
 				++imageIter;
 				++maskIter;
@@ -381,11 +409,11 @@ public:
 
 			for (unsigned int position = 0; position < iterSize; ++position)
 			{
-				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | position = " << position << "/" << iterSize << std::endl;
+				//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | position = " << position << "/" << iterSize << std::endl;
 
 				if (position == center)
 				{
-					std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | position = " << position << "/" << iterSize << " == center = " << center << " | Skip" << std::endl;
+					//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | position = " << position << "/" << iterSize << " == center = " << center << " | Skip" << std::endl;
 
 					continue;
 				}
@@ -395,7 +423,7 @@ public:
 					continue;
 				}
 				else {
-					std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | position = " << position << "/" << iterSize << " | completeNeighbourhood == " << completeNeighbourhood << std::endl;
+					//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | position = " << position << "/" << iterSize << " | completeNeighbourhood == " << completeNeighbourhood << std::endl;
 				}
 				bool isInBounds;
 				auto jIntensity = imageIter.GetPixel(position, isInBounds);
@@ -408,11 +436,11 @@ public:
 
 				int j = holder.IntensityToIndex(jIntensity);
 
-				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::j (Index of CenterVoxel) = " << j << std::endl;
-				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::j intensity = " << jIntensity << std::endl;
+				//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::j (Index of CenterVoxel) = " << j << std::endl;
+				//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::j intensity = " << jIntensity << std::endl;
 
 				holder.m_NumberOfNeighbourVoxels += 1;
-				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_NumberOfNeighbourVoxels = " << holder.m_NumberOfNeighbourVoxels << std::endl;
+				//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_NumberOfNeighbourVoxels = " << holder.m_NumberOfNeighbourVoxels << std::endl;
 
 				if (std::abs(i - j) <= alpha)
 				{
@@ -421,30 +449,33 @@ public:
 				}
 			}
 
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_NumberOfNeighbourVoxels = " << holder.m_NumberOfNeighbourVoxels << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_NumberOfNeighbourVoxels = " << holder.m_NumberOfNeighbourVoxels << std::endl;
 
 			holder.m_Matrix(i, sameValues) += 1;
 			holder.m_NumberOfNeighbourhoods += 1;
 
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << "| m_Matrix = " << m_Matrix << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << "| m_Matrix = " << holder.m_Matrix << std::endl;
 
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_Matrix*" << i << ", " << sameValues << ") = " << holder.m_Matrix(i, sameValues) << std::endl;
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_NumberOfNeighbourhoods = " << holder.m_NumberOfNeighbourhoods << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_Matrix(" << i << ", " << sameValues << ") = " << holder.m_Matrix(i, sameValues) << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | m_NumberOfNeighbourhoods = " << holder.m_NumberOfNeighbourhoods << std::endl;
 
 			if (completeNeighbourhood)
 			{
 				holder.m_NumberOfCompleteNeighbourhoods += 1;
-				std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | completeNeighbourhood = " << completeNeighbourhood << std::endl;
+				//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << " | completeNeighbourhood = " << completeNeighbourhood << std::endl;
 			}
 
 			++imageIter;
 			++maskIter;
+
+			//TBD
+			++iteration_count;
 		}
 
-		std::cout << "[DEBUG] m_NumberOfCompleteNeighbourhoods = " << holder.m_NumberOfCompleteNeighbourhoods << ::std::endl;
-		std::cout << "[DEBUG] m_NumberOfNeighbourhoods = " << holder.m_NumberOfNeighbourhoods << ::std::endl;
-		std::cout << "[DEBUG] m_NumberOfNeighbourVoxels = " << holder.m_NumberOfNeighbourVoxels << ::std::endl;
-		std::cout << "[DEBUG] m_NumberOfDependenceNeighbourVoxels = " << holder.m_NumberOfDependenceNeighbourVoxels << ::std::endl;
+		//std::cout << "[DEBUG] m_NumberOfCompleteNeighbourhoods = " << holder.m_NumberOfCompleteNeighbourhoods << ::std::endl;
+		//std::cout << "[DEBUG] m_NumberOfNeighbourhoods = " << holder.m_NumberOfNeighbourhoods << ::std::endl;
+		//std::cout << "[DEBUG] m_NumberOfNeighbourVoxels = " << holder.m_NumberOfNeighbourVoxels << ::std::endl;
+		//std::cout << "[DEBUG] m_NumberOfDependenceNeighbourVoxels = " << holder.m_NumberOfDependenceNeighbourVoxels << ::std::endl;
 	}
 
 
@@ -565,17 +596,17 @@ public:
 
 	typename TImageType::SizeType m_radius;
 
-	double m_MinimumRange;
-	double m_MaximumRange;
-	double m_Stepsize;
-	int m_NumberOfDependences;
-	Eigen::MatrixXd m_Matrix;
+	//double m_MinimumRange;
+	//double m_MaximumRange;
+	//double m_Stepsize;
+	//int m_NumberOfDependences;
+	//Eigen::MatrixXd m_Matrix;
 
-	int m_NeighbourhoodSize;
-	unsigned long m_NumberOfNeighbourVoxels;
-	unsigned long m_NumberOfDependenceNeighbourVoxels;
-	unsigned long m_NumberOfNeighbourhoods;
-	unsigned long m_NumberOfCompleteNeighbourhoods;
+	//int m_NeighbourhoodSize;
+	//unsigned long m_NumberOfNeighbourVoxels;
+	//unsigned long m_NumberOfDependenceNeighbourVoxels;
+	//unsigned long m_NumberOfNeighbourhoods;
+	//unsigned long m_NumberOfCompleteNeighbourhoods;
 
 	//private:
 
