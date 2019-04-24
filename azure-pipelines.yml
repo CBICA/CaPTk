@@ -12,7 +12,7 @@ trigger:
 resources:
   containers:
   - container: macos
-    image: macos:10.13
+    image: macos:10.14
 
 jobs:
 - job: 'WindowsBuild'
@@ -322,7 +322,7 @@ jobs:
 
   pool:
     # vmImage: 'MacOS-10.13'
-    name: Test Agent
+    name: macagent
   container: macos
 
   steps:
