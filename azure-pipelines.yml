@@ -320,9 +320,8 @@ jobs:
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool:
+  pool: Default
     # vmImage: 'MacOS-10.13'
-    name: macagent
 
   steps:
     - bash: |
