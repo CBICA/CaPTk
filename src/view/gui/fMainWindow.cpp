@@ -362,7 +362,10 @@ fMainWindow::fMainWindow()
   auto lungAppList = " LungField Nodule Analysis";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
-  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain breastNormalize";
+  auto preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
+#ifndef __APPLE__
+  preProcessingAlgos += " breastNormalize";
+#endif
   auto deepLearningAlgos = " deepmedic_tumor deepmedic_brain";
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
