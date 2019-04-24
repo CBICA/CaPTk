@@ -25,10 +25,16 @@ void P1P2Normalizer< TImageType >::Update()
     thresholder->ThresholdBelow(stats_originalImage["Mean"]);
     thresholder->Update();
 
+    auto maskUpdater = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
+    maskUpdater->SetInput(m_inputImage);
+    maskUpdater->SetLowerThreshold(stats_originalImage["Mean"]);
+    maskUpdater->SetInsideValue(1);
+    maskUpdater->SetOutsideValue(0);
+    maskUpdater->Update();
+    m_mask = maskUpdater->GetOutput()
+
     auto m_inputImage_meanThresh = thresholder->GetOutput();
     auto stats_thresholdedImage = GetStatisticsForImage(m_inputImage_meanThresh, false);
-
-    m_mask = cbica::CreateImage< TImageType >(m_inputImage_meanThresh, 1);
 
     // initialize the histogram    
     using ImageToHistogramFilterType = itk::Statistics::MaskedImageToHistogramFilter< TImageType, TImageType >;
