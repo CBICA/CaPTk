@@ -158,6 +158,7 @@ int main(int argc, char** argv)
 
   parser.getParameterValue("i", inputImageFile);
   parser.getParameterValue("o", outputDir);
+  cbica::createDir(outputDir);
 
   if (parser.isPresent("d"))
   {
@@ -167,21 +168,21 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("r", resizingFactor);
   }
-  auto inputImageInfo = cbica::ImageInfo(inputImageFile);
+  //auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
-  switch (inputImageInfo.GetImageDimensions())
-  {
-  case 2:
-  {
+  //switch (inputImageInfo.GetImageDimensions())
+  //{
+  //case 2:
+  //{
     //using ImageType = itk::Image< float, 2 >;
     return algorithmsRunner();
 
-    break;
-  }
-  default:
-    std::cerr << "Supplied image has an unsupported dimension of '" << inputImageInfo.GetImageDimensions() << "'; only 2 D images are supported.\n";
-    return EXIT_FAILURE; // exiting here because no further processing should be done on the image
-  }
+  //  break;
+  //}
+  //default:
+  //  std::cerr << "Supplied image has an unsupported dimension of '" << inputImageInfo.GetImageDimensions() << "'; only 2 D images are supported.\n";
+  //  return EXIT_FAILURE; // exiting here because no further processing should be done on the image
+  //}
 
   return EXIT_SUCCESS;
 }
