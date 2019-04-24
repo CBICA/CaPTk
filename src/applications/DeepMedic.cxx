@@ -41,6 +41,16 @@ void algorithmRunner()
     maskImage = cbica::ReadImage< TImageType >(inputMaskName);
   }
 
+  // TBD: this requires cleanup
+  if (modelDirName.find("tumor") != std::string::npos)
+  {
+    inferenceType = 0;
+  }
+  else if (modelDirName.find("skull") != std::string::npos)
+  {
+    inferenceType = 1;
+  }
+
   // per-patient registration
   auto greedyExe = getApplicationPath("GreedyRegistration");
   if (!cbica::ImageSanityCheck< TImageType >(t1cImg, maskImage))
@@ -255,7 +265,6 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("t1", "T1", cbica::Parameter::FILE, "", "The input T1 image file.");
   parser.addRequiredParameter("fl", "FLAIR", cbica::Parameter::FILE, "", "The input T2-FLAIR image file.");
   parser.addRequiredParameter("t2", "FLAIR", cbica::Parameter::FILE, "", "The input T2 image file.");
-  parser.addRequiredParameter("t", "type", cbica::Parameter::INTEGER, "0-" + std::to_string(MaxType), "The type of the inference", "Currently supported inference methods are-", "0: Brain tumor segmentation, 1: Skull Stripping", "Default: " + std::to_string(inferenceType));
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "", "The Optional input mask file.", "This is needed for normalization only");
   parser.addOptionalParameter("md", "modelDir", cbica::Parameter::DIRECTORY, "", "The trained model to use", "Defaults to 'CaPTk_installDir/data/deepMedic/brainSegmentation'");
   parser.addRequiredParameter("o", "output", cbica::Parameter::DIRECTORY, "", "The output File.");
