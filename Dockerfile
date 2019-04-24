@@ -11,6 +11,7 @@ RUN apt-get update && \
 #general dependencies
 RUN apt-get install -y \
     build-essential \
+    mesa-common-dev \
     wget \
     git-core \
     unzip \
