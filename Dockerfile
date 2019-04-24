@@ -12,6 +12,7 @@ RUN apt-get update && \
 RUN apt-get install -y \
     build-essential \
     mesa-common-dev \
+    freeglut3-dev \
     wget \
     git-core \
     unzip \
