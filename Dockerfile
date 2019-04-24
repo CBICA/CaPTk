@@ -19,14 +19,15 @@ RUN git lfs install
 
 # install latest cmake 
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.14.3/cmake-3.14.3-Linux-x86_64.tar.gz && \
-    tar -xzvf cmake-3.14.3-Linux-x86_64.tar.gz && \
-    export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH
+    tar -xzf cmake-3.14.3-Linux-x86_64.tar.gz
 
 # clone the current repo
 RUN git clone https://github.com/CBICA/CaPTk.git
 
 # start superbuild and then build CaPTk
-RUN cd CaPTk && \
+RUN export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
+    which cmake && \
+    cd CaPTk && \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin && cd bin && \
     cmake -DCMAKE_BUILD_TYPE=Release \
