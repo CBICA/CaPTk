@@ -10,7 +10,7 @@ RUN apt-get update && \
 
 #general dependencies
 RUN apt-get install -y \
-    gcc gcc-c++ \
+    build-essential \
     wget \
     git-core \
     unzip \
