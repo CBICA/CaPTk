@@ -9,10 +9,10 @@ trigger:
     include:
     - master
 
-resources:
-  containers:
-  - container: macos
-    image: macos:10.14
+# resources:
+#   containers:
+#   - container: macos
+#     image: macos:10.14
 
 jobs:
 - job: 'WindowsBuild'
@@ -323,7 +323,6 @@ jobs:
   pool:
     # vmImage: 'MacOS-10.13'
     name: macagent
-  container: macos
 
   steps:
     - bash: |
