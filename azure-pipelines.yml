@@ -246,7 +246,7 @@ jobs:
 
   steps:
     - bash: |
-        brew install caskroom/cask/mactex make git-lfs doxygen llvm
+        brew install caskroom/cask/mactex make doxygen llvm
       displayName: 'Brew dependencies'
     
     - bash: |
