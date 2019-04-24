@@ -11,8 +11,98 @@ trigger:
 
 jobs:
 
+- job: 'WindowsBuild'
+  displayName: "End-to-end Windows build & package"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  steps:
+  
+    - script: |
+        choco install doxygen.install
+      displayName: 'Install dependencies'
+  
+    - bash: |
+        rm -rf history
+        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+      displayName: 'Take the nuclear option'
+
+    - script: |
+        mkdir bin
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        cmake --build . --target ALL_BUILD --config Release
+      displayName: 'Configure and compile Superbuild'
+    
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        cmake --build . --target ALL_BUILD --config Release
+      displayName: 'Configure and compile CaPTk'
+    
+    #- script: |
+    #    rm -rf binaries
+    #    ls -lt
+    #    cd bin
+    #    rm -rf qt.zip
+    #    ls -lt
+    #  displayName: 'Removing the binaries folder'
+    #  
+    #- script: |
+    #    cd bin
+    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #    rm -rf ../binaries
+    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+    #    cmake --build . --target PACKAGE --config Release
+    #    echo "Checking contents of CPack package"
+    #    echo "=== First is the bin ==="
+    #    ls -lt 
+    #    echo "=== Space check ==="
+    #    df
+    #    dir d:\
+    #  displayName: 'Package CaPTk'
+    #
+    #- script: | 
+    #    cd bin
+    #    #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #    echo "Deleting folders to make space"
+    #    rm -rf qt
+    #    rm -rf externalApps
+    #    rm -rf binaries_windows.zip
+    #    rm -rf ../src
+    #    mv CaPTk_*_Installer.exe ../
+    #    
+    #  displayName: 'Moving Installer one level up'
+    #
+    #- task: CopyFiles@2
+    #  inputs:
+    #    sourceFolder: '$(Build.SourcesDirectory)'
+    #    targetFolder: '$(Build.ArtifactStagingDirectory)'
+    #    cleanTargetFolder: true
+    #    overWrite: true
+    #    contents: 'CaPTk_*_Installer.exe'
+    #
+    #- task: PublishBuildArtifacts@1
+    #  inputs:
+    #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #    artifactName: '$(Build.DefinitionName)_installer_windows'
+    #
+    #- task: DownloadBuildArtifacts@0
+    #  inputs:
+    #    buildType: 'current'
+    #    downloadType: 'single'
+    #    artifactName: '$(Build.DefinitionName)_installer_windows'
+    #    downloadPath: '$(System.ArtifactsDirectory)'
+
 - job: 'XenialBuild'
-  displayName: "End-to-end Xenial build"
+  displayName: "End-to-end Linux (Xenial) build"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
@@ -112,7 +202,7 @@ jobs:
         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        export PKG_FAST_MODE=1
+        # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
 
         rm -rf bin
@@ -123,100 +213,101 @@ jobs:
         rm -rf regression
         rm -rf scripts
         rm -rf testing
+
+        mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
         
       displayName: 'Set up environment variables for packager and build a package'
     
-    - task: CopyFiles@2
-      inputs:
-        sourceFolder: '$(Build.SourcesDirectory)'
-        targetFolder: '$(Build.ArtifactStagingDirectory)'
-        cleanTargetFolder: true
-        overWrite: true
-        contents: 'CaPTk_*_Installer.bin'
-    
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
-
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
-        downloadPath: '$(System.ArtifactsDirectory)'
-
-- job: 'WindowsBuild'
-  displayName: "End-to-end Windows build & package"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
-
-  pool:
-    vmImage: 'vs2017-win2016'
-
-  steps:
-  
-    - script: |
-        choco install doxygen.install
-      displayName: 'Install dependencies'
-  
-    - bash: |
-        rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-      displayName: 'Take the nuclear option'
-
-    - script: |
-        mkdir bin
-        cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        cmake --build . --target ALL_BUILD --config Release
-      displayName: 'Configure and compile Superbuild'
-    
-    - script: |
-        cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        cmake --build . --target ALL_BUILD --config Release
-      displayName: 'Configure and compile CaPTk'
-    
-    - script: |
-        cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-        cmake --build . --target PACKAGE --config Release
-
-        ls -l
-        mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
-        
-        cd ../
-        rm -rf *
-
-        echo "Delete folders to make space"
-        ls -l
-      displayName: 'Package CaPTk and clear space'
-
     # - task: CopyFiles@2
     #   inputs:
     #     sourceFolder: '$(Build.SourcesDirectory)'
     #     targetFolder: '$(Build.ArtifactStagingDirectory)'
     #     cleanTargetFolder: true
     #     overWrite: true
-    #     contents: 'CaPTk_*_Installer.exe'
+    #     contents: 'CaPTk_*_Installer.bin'
     
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_windows'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
 
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_windows'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
         downloadPath: '$(System.ArtifactsDirectory)'
+
+# - job: 'WindowsBuild'
+#   displayName: "End-to-end Windows build & package"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 300
+
+#   pool:
+#     vmImage: 'vs2017-win2016'
+
+#   steps:
+#     - script: |
+#         choco install doxygen.install
+#       displayName: 'Install dependencies'
+  
+#     - bash: |
+#         rm -rf history
+#         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+#       displayName: 'Take the nuclear option'
+
+#     - script: |
+#         mkdir bin
+#         cd bin
+#         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+#         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+#         cmake --build . --target ALL_BUILD --config Release
+#       displayName: 'Configure and compile Superbuild'
+    
+#     - script: |
+#         cd bin
+#         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+#         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+#         cmake --build . --target ALL_BUILD --config Release
+#       displayName: 'Configure and compile CaPTk'
+    
+#     - script: |
+#         cd bin
+#         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+#         cmake --build . --target PACKAGE --config Release
+
+#         ls -l
+#         mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
+        
+#         cd ../
+#         rm -rf *
+
+#         echo "Delete folders to make space"
+#         ls -l
+#       displayName: 'Package CaPTk and clear space'
+
+#     # - task: CopyFiles@2
+#     #   inputs:
+#     #     sourceFolder: '$(Build.SourcesDirectory)'
+#     #     targetFolder: '$(Build.ArtifactStagingDirectory)'
+#     #     cleanTargetFolder: true
+#     #     overWrite: true
+#     #     contents: 'CaPTk_*_Installer.exe'
+    
+#     - task: PublishBuildArtifacts@1
+#       inputs:
+#         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#         artifactName: '$(Build.DefinitionName)_installer_windows'
+
+#     - task: DownloadBuildArtifacts@0
+#       inputs:
+#         buildType: 'current'
+#         downloadType: 'single'
+#         artifactName: '$(Build.DefinitionName)_installer_windows'
+#         downloadPath: '$(System.ArtifactsDirectory)'
     
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
@@ -330,17 +421,17 @@ jobs:
 
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
-        mv *Installer.pkg ../
+        mv *Installer.pkg $(Build.ArtifactStagingDirectory)
         rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
 
-    - task: CopyFiles@2
-      inputs:
-        sourceFolder: '$(Build.SourcesDirectory)'
-        targetFolder: '$(Build.ArtifactStagingDirectory)'
-        cleanTargetFolder: true
-        overWrite: true
-        contents: 'CaPTk_*_Installer.pkg'
+    # - task: CopyFiles@2
+    #   inputs:
+    #     sourceFolder: '$(Build.SourcesDirectory)'
+    #     targetFolder: '$(Build.ArtifactStagingDirectory)'
+    #     cleanTargetFolder: true
+    #     overWrite: true
+    #     contents: 'CaPTk_*_Installer.pkg'
     
     - task: PublishBuildArtifacts@1
       inputs:

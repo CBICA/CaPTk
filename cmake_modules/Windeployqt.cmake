@@ -28,7 +28,7 @@ get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 SET( WINDEPLOYQT_EXECUTABLE "${_qt_bin_dir}/windeployqt.exe" )
 
-MESSAGE( AUTHOR_WARNING "WINDEPLOYQT_EXECUTABLE == ${WINDEPLOYQT_EXECUTABLE}" )
+#MESSAGE( AUTHOR_WARNING "WINDEPLOYQT_EXECUTABLE == ${WINDEPLOYQT_EXECUTABLE}" )
 
 # Running this with MSVC 2015 requires CMake 3.6+
 if((MSVC_VERSION VERSION_EQUAL 1900 OR MSVC_VERSION VERSION_GREATER 1900)
