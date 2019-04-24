@@ -7,11 +7,8 @@ SET( PROJECT_NAME BreastTexturePipeline )
 
 CAPTK_ADD_PROJECT( ${PROJECT_NAME} 1.6.2 )
 
-if( NOT TARGET CaPTk_CBICATk )
-ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/ CaPTk_CBICATk ) # takes care of find_itk
-endif()
-if( NOT TARGET CaPTk_Common )
-ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/../../common/ CaPTk_Common ) # takes care of find_itk
+if( NOT TARGET ${LIBNAME_CBICATK})
+ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/ ${LIBNAME_CBICATK} ) # takes care of find_itk
 endif()
 if( NOT TARGET FeatureExtraction )
 ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/../FeatureExtraction/ FeatureExtraction ) 
