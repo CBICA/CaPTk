@@ -55,7 +55,6 @@ jobs:
         rm -rf binaries
         rm -rf regression
         rm -rf scripts
-        rm -rf testing
         ls -lt
         cd bin
         rm -rf qt.zip
@@ -323,7 +322,7 @@ jobs:
 
   pool:
     # vmImage: 'MacOS-10.13'
-    name: default
+    name: Test Agent
   container: macos
 
   steps:
