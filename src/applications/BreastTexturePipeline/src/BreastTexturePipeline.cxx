@@ -16,27 +16,28 @@ size_t resizingFactor = 100;
 
 std::string findRelativeApplicationPath(const std::string appName)
 {
-  auto appName_wrap = appName;
-  std::string winExt = 
+  std::string winExt =
 #if WIN32
     winExt = ".exe";
 #else
     winExt = "";
 #endif
-  
+
   if (appName.find("libra") != std::string::npos)
   {
 #if WIN32
     winExt = ".bat";
 #endif
   }
-  auto currentApplicationPath = cbica::getExecutablePath() + "/";
-  
+  auto currentApplicationPath = cbica::normPath(cbica::getExecutablePath()) + "/";
+
+  std::cout << "currentApplicationPath: " << currentApplicationPath << "\n";
+
   auto appName_path =
 #ifndef __APPLE__
-  cbica::normPath(currentApplicationPath + appName + winExt);
+    cbica::normPath(currentApplicationPath + appName + winExt);
 #else
-  cbica::normPath(currentApplicationPath + "../Resources/bin/" + appName_wrap);
+    cbica::normPath(currentApplicationPath + "../Resources/bin/" + appName_wrap);
 #endif  
 
   if (!cbica::isFile(appName_path))
@@ -49,7 +50,9 @@ std::string findRelativeApplicationPath(const std::string appName)
 
 inline std::string getCaPTkDataDir()
 {
-  auto captk_currentApplicationPath = cbica::getExecutablePath();
+  auto captk_currentApplicationPath = cbica::normPath(cbica::getExecutablePath());
+  std::cout << "captk_currentApplicationPath: " << captk_currentApplicationPath << "\n";
+
   auto captk_dataDir = captk_currentApplicationPath + "../data/";
   if (!cbica::exists(captk_dataDir))
   {
@@ -59,18 +62,26 @@ inline std::string getCaPTkDataDir()
       captk_dataDir = captk_currentApplicationPath + "../Resources/data/";
       if (!cbica::exists(captk_dataDir))
       {
-        std::cerr << "Data Directory not found. Please re-install CaPTk.\n";
-        return "";
+        captk_dataDir = std::string(PROJECT_SOURCE_DIR) + "data/";
+        if (!cbica::exists(captk_dataDir))
+        {
+          std::cerr << "Data Directory not found. Please re-install CaPTk.\n";
+          return "";
+        }
       }
     }
   }
 
-  return cbica::normPath(captk_dataDir);
+  return captk_dataDir;
 }
 
 //template< class TImageType >
 int algorithmsRunner()
 {
+  if (debugMode)
+  {
+    std::cout << "Starting pre-processing.\n";
+  }
   LibraPreprocess< LibraImageType > preprocessingObj;
   preprocessingObj.SetInputFileName(inputImageFile);
   preprocessingObj.SetResizingFactor(resizingFactor);
@@ -105,7 +116,7 @@ int algorithmsRunner()
     std::cerr << "Error while loading DICOM image(s): " << err.what() << "\n";
   }
   auto outputTotalMaskImage = dicomReader->GetOutput();
-  
+
   auto outputRelevantMaskImage = cbica::ChangeImageValues< LibraImageType >(outputTotalMaskImage, "2", "1");
   auto outputRelevantMaskImage_flipped = preprocessingObj.ApplyFlipToMaskImage(outputRelevantMaskImage);
 
@@ -175,7 +186,7 @@ int main(int argc, char** argv)
   //case 2:
   //{
     //using ImageType = itk::Image< float, 2 >;
-    return algorithmsRunner();
+  return algorithmsRunner();
 
   //  break;
   //}
