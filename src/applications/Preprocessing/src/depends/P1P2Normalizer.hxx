@@ -3,6 +3,7 @@
 #include "P1P2Normalizer.h"
 
 #include "itkDivideImageFilter.h"
+#include "itkBinaryThresholdImageFilter.h"
 
 template< class TImageType >
 void P1P2Normalizer< TImageType >::SetInputImage(typename TImageType::Pointer image)
