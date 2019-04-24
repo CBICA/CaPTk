@@ -9,8 +9,12 @@ trigger:
     include:
     - master
 
-jobs:
+resources:
+  containers:
+  - container: macos
+    image: macos:10.13
 
+jobs:
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
   timeoutInMinutes: 0
@@ -318,7 +322,9 @@ jobs:
   cancelTimeoutInMinutes: 300
 
   pool:
-    vmImage: 'MacOS-10.13'
+    # vmImage: 'MacOS-10.13'
+    name: default
+  container: macos
 
   steps:
     - bash: |
