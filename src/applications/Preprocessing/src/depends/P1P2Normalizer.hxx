@@ -4,7 +4,6 @@
 
 #include "itkDivideImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
-#include "itkImageToHistogramFilter.h"
 
 template< class TImageType >
 void P1P2Normalizer< TImageType >::SetInputImage(typename TImageType::Pointer image)
@@ -21,9 +20,25 @@ void P1P2Normalizer< TImageType >::Update()
   {
     // estimate statistics
     auto stats_originalImage = GetStatisticsForImage(m_inputImage, false);
-    
+
+    auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
+    thresholder->SetInput(m_inputImage);
+    thresholder->ThresholdBelow(stats_originalImage["Mean"]);
+    thresholder->SetOutsideValue(0);
+    thresholder->Update();
+    auto m_inputImage_thresh = thresholder->GetOutput();
+    auto stats_thresholdedImage = GetStatisticsForImage(thresholder->GetOutput(), false);
+
+    auto maskUpdater = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
+    maskUpdater->SetInput(m_inputImage);
+    maskUpdater->SetLowerThreshold(stats_originalImage["Mean"]);
+    maskUpdater->SetInsideValue(1);
+    maskUpdater->SetOutsideValue(0);
+    maskUpdater->Update();
+    m_mask = maskUpdater->GetOutput();
+
     // initialize the histogram    
-    using ImageToHistogramFilterType = itk::Statistics::ImageToHistogramFilter< TImageType >;
+    using ImageToHistogramFilterType = itk::Statistics::MaskedImageToHistogramFilter< TImageType, TImageType >;
 
     const unsigned int numberOfComponents = 1; // we are always assuming a greyscale image
     typename ImageToHistogramFilterType::HistogramType::SizeType size(numberOfComponents);
@@ -31,10 +46,12 @@ void P1P2Normalizer< TImageType >::Update()
 
     auto filter = ImageToHistogramFilterType::New();
     typename ImageToHistogramFilterType::HistogramType::MeasurementVectorType min(numberOfComponents), max(numberOfComponents);
-    min.fill(stats_originalImage["Mean"]);
-    max.fill(stats_originalImage["Max"]);
+    min.fill(stats_thresholdedImage["Min"]);
+    max.fill(stats_thresholdedImage["Max"]);
 
-    filter->SetInput(m_inputImage);
+    filter->SetInput(m_inputImage_thresh);
+    filter->SetMaskImage(m_mask);
+    filter->SetMaskValue(1);
     filter->SetHistogramSize(size);
     filter->SetHistogramBinMinimum(min);
     filter->SetHistogramBinMaximum(max);
@@ -54,7 +71,7 @@ void P1P2Normalizer< TImageType >::Update()
 
     auto thresholder3 = itk::ThresholdImageFilter< TImageType >::New();
     thresholder3->SetInput(thresholder2->GetOutput());
-    thresholder3->ThresholdBelow(upper);
+    thresholder3->ThresholdAbove(upper);
     thresholder3->SetOutsideValue(upper);
     thresholder3->Update();
 
