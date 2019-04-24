@@ -96,7 +96,6 @@ typename TImageType::Pointer P1P2Normalizer< TImageType >::GetOutput()
     Update();
   }
   return m_output;
-  return m_output;
 }
 
 template< class TImageType >
