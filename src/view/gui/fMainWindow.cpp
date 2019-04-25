@@ -5433,7 +5433,11 @@ void fMainWindow::ApplicationBreastSegmentation()
     std::string casename = cbica::getFilenameBase(dicomfilename);
     cbica::createDir(m_tempFolderLocation + "/" + casename); // this is ensure that multiple LIBRA runs happen without issues
 
-    std::string command = scriptToCall + " " + dicomfilename + " " + m_tempFolderLocation + "/" + casename + " true true";
+    std::string command = scriptToCall + " " + dicomfilename + " " + m_tempFolderLocation + "/" + casename
+#if WIN32
+      + " true true"
+#endif
+      ;
     cbica::Logging(loggerFile, "Running LIBRA Single Image with command '" + command + "'");
     startExternalProcess(command.c_str(), QStringList());
 
@@ -5483,7 +5487,11 @@ void fMainWindow::ApplicationLIBRASingle()
     std::string casename = cbica::getFilenameBase(dicomfilename);
     cbica::createDir(m_tempFolderLocation + "/" + casename); // this is ensure that multiple LIBRA runs happen without issues
 
-    std::string command = scriptToCall + " " + dicomfilename + " " + m_tempFolderLocation + "/" + casename + " true true";
+    std::string command = scriptToCall + " " + dicomfilename + " " + m_tempFolderLocation + "/" + casename
+#if WIN32
+      + " true true"
+#endif
+      ;
     cbica::Logging(loggerFile, "Running LIBRA Single Image with command '" + command + "'");
     startExternalProcess(command.c_str(), QStringList());
 
