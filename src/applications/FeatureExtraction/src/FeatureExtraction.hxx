@@ -992,13 +992,14 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
 
   //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [0, m_Range] = [" << 0 << ", " << m_Range << "]" << std::endl;
 
-  matrix_generator->SetDistanceValueMinMax(0, m_Range);
+  //matrix_generator->SetDistanceValueMinMax(0, m_Range * m_Range);
   //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - SetDistanceValueMinMax(0, " << m_Range << ")" << std::endl;
 
 
   //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
   matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
   //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - m_Bins = " << m_Bins << std::endl;
+  matrix_generator->SetDistanceValueMinMax(0, m_Bins);
 
   //TBD
   //typename RunLengthFilterType::FeatureNameVectorPointer requestedFeatures = RunLengthFilterType::FeatureNameVector::New();
@@ -1040,12 +1041,12 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   }
   //TBD
   //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set size_total = " << size_total << std::endl;
+  //matrix_generator->SetDistanceValueMinMax(0, size_total); // TBD: TOCHECK - how is this affecting the computation?
   //TBD
 
   //TBD - Testing
-  //matrix_generator->SetDistanceValueMinMax(0, size_total); // TBD: TOCHECK - how is this affecting the computation?
-
   //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - SetDistanceValueMinMax - [0, m_Range] = [" << 0 << ", " << size_total << "]" << std::endl;
+  //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
   //TBD - Testing
 
 
@@ -1065,6 +1066,13 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
       //std::cout << "\n\n";
       //std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
       //TBD
+
+	  matrix_generator->SetInput(image);
+	  matrix_generator->SetMaskImage(mask);
+	  matrix_generator->SetInsidePixelValue(1);
+	  matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
+	  matrix_generator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
+	  matrix_generator->SetDistanceValueMinMax(0, m_Bins); // TBD: TOCHECK - how is this affecting the computation?
 
       matrix_generator->SetOffset(offsetIt.Value());
       matrix_generator->Update();
