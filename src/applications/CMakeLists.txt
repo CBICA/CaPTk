@@ -341,13 +341,13 @@ FOREACH(subdir ${SUBDIRECTORIES})
     ELSEIF( UNIX AND NOT APPLE )
     
       IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
-        IF( EXISTS "${SUBDIRPATH}/MCRInstaller.zip" )
+        IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
         
-          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${SUBDIRPATH}/MCRInstaller.zip
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
             WORKING_DIRECTORY ${SUBDIRPATH}
             RESULT_VARIABLE RESULT_CODE
           )
-          
+        
           IF( RESULT_CODE EQUAL 0 )
             EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${SUBDIRPATH}/MCRInstaller.zip
               WORKING_DIRECTORY ${SUBDIRPATH}
@@ -376,9 +376,9 @@ FOREACH(subdir ${SUBDIRECTORIES})
   IF(BUILD_LIBRABATCH AND (${subdir} STREQUAL "libra"))
     
     IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
-      IF( EXISTS "${SUBDIRPATH}/MCRInstaller.zip" )
+      IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
       
-        EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${SUBDIRPATH}/MCRInstaller.zip
+        EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
           WORKING_DIRECTORY ${SUBDIRPATH}
           RESULT_VARIABLE RESULT_CODE
         )
