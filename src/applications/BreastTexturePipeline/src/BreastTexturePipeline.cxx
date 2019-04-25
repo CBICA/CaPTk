@@ -145,17 +145,19 @@ int algorithmsRunner()
     auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
 
     auto currentDataDir = getCaPTkDataDir();
-    auto latticeFeatureParamFilePath = getCaPTkDataDir() + "/features/2_params_default_lattice.csv";
+    auto latticeFeatureParamFilePath = currentDataDir + "/features/2_params_default_lattice.csv";
     if (!cbica::isFile(latticeFeatureParamFilePath))
     {
       std::cerr << "The default lattice parameter file, '2_params_default_lattice.csv' was not found in the data directory, '" << currentDataDir << "'; please check.\n";
       exit(EXIT_FAILURE);
     }
 
-    command = featureExtractionPath + " -n Lattice -p " + latticeFeatureParamFilePath +
-      " -o " + outputDir +
-      " -i " + outputFileName + " -t MAM " +
-      " -m " + outputRelevantMaskFile + " -l TT -r 1 -f 1";
+    command = featureExtractionPath + " -n Lattice " + // a generic subject ID
+      "-i " + outputFileName + " -t MAM " + // input image and generic modality
+      "-m " + outputRelevantMaskFile + " -r 1 -l Breast " + // input mask, its ROI to consider and its label
+      "-o " + outputDir + "/output.csv " + // the output file to write stuff into
+      "-p " + latticeFeatureParamFilePath + // the parameter file
+      " -f 1 -vc 1"; // enable feature map writing and verticle concatenation of output file
 
     std::cout << "Running FeatureExtraction with command '" + command + "'\n";
     std::system(command.c_str());
