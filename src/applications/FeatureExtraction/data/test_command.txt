@@ -3,3 +3,5 @@
 
 #SP4
 -o C:\Users\sungm\Desktop\ -p O:\Build\SP4\CaPTk_190422\CaPTk\src\applications\FeatureExtraction\data\NGLDM.csv -n "PhantomPatient" -i "C:\Users\sungm\Dropbox (CBICA)\IBSI\Data\Phantom\IBSI_phantom_image.nii.gz" -t "PhantomModality" -m "C:\Users\sungm\Dropbox (CBICA)\IBSI\Data\Phantom\IBSI_phantom_roi.nii.gz" -r 1 -l "PhantomROI1" -vc 1
+
+-o C:\Users\sungm\Desktop\ -p O:\Build\SP4\CaPTk_190422\CaPTk\src\applications\FeatureExtraction\data\GLCM_GLRLM_Phantom.csv -n "PhantomPatient" -i "C:\Users\sungm\Dropbox (CBICA)\IBSI\Data\Phantom\IBSI_phantom_image.nii.gz" -t "PhantomModality" -m "C:\Users\sungm\Dropbox (CBICA)\IBSI\Data\Phantom\IBSI_phantom_roi.nii.gz" -r 1 -l "PhantomROI1" -vc 1
