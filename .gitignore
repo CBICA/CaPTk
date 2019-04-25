@@ -42,6 +42,7 @@ theia
 .DS_Store
 testing
 /binaries/.DS_Store
+/binaries/MCR
 /cmake_modules/.DS_Store
 /src/applications/.DS_Store
 /.travis/.DS_Store
