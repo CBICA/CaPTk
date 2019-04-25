@@ -16,7 +16,6 @@ size_t resizingFactor = 100;
 
 std::string findRelativeApplicationPath(const std::string appName)
 {
-  std::cout << "appName:" << appName << "\n";
   std::string winExt =
 #if WIN32
     ".exe";
@@ -33,14 +32,13 @@ std::string findRelativeApplicationPath(const std::string appName)
 
   auto currentApplicationPath = cbica::normPath(cbica::getExecutablePath()) + "/";
 
-  std::cout << "currentApplicationPath: " << currentApplicationPath << "\n";
-
-  auto appName_path =
+  auto appName_path = cbica::normPath(currentApplicationPath +
 #ifndef __APPLE__
-    cbica::normPath(currentApplicationPath + appName + winExt);
+    appName + winExt
 #else
-    cbica::normPath(currentApplicationPath + "../Resources/bin/" + appName_wrap);
+    "../Resources/bin/" + appName_wrap
 #endif  
+  );
 
   if (!cbica::isFile(appName_path))
   {
@@ -74,7 +72,7 @@ inline std::string getCaPTkDataDir()
     }
   }
 
-  return captk_dataDir;
+  return cbica::normPath(captk_dataDir);
 }
 
 //template< class TImageType >
@@ -100,11 +98,15 @@ int algorithmsRunner()
   auto libraPath = findRelativeApplicationPath("libra");
   cbica::createDir(outputDir + "/temp");
 
-  std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + " true true";
+  std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile)
+#if WIN32
+    + " true true"
+#endif
+    ;
   std::cout << "Running LIBRA Single Image with command '" + command + "'\n";
   std::system(command.c_str());
   auto outputTotalMask = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "/Result_Images/totalmask/totalmask.dcm";
-  if (!cbica::isFile(outputTotalMask))
+  if (cbica::isFile(outputTotalMask))
   {
     std::cout << "Done.\n";
 
@@ -143,14 +145,14 @@ int algorithmsRunner()
     auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
 
     auto currentDataDir = getCaPTkDataDir();
-    auto latticeFeatureParamFilePath = getCaPTkDataDir() + "/featureExtraction/2_params_default_lattice.csv";
+    auto latticeFeatureParamFilePath = getCaPTkDataDir() + "/features/2_params_default_lattice.csv";
     if (!cbica::isFile(latticeFeatureParamFilePath))
     {
       std::cerr << "The default lattice parameter file, '2_params_default_lattice.csv' was not found in the data directory, '" << currentDataDir << "'; please check.\n";
       exit(EXIT_FAILURE);
     }
 
-    command = featureExtractionPath + "-n Lattice -p " + latticeFeatureParamFilePath +
+    command = featureExtractionPath + " -n Lattice -p " + latticeFeatureParamFilePath +
       " -o " + outputDir +
       " -i " + outputFileName + " -t MAM " +
       " -m " + outputRelevantMaskFile + " -l TT -r 1 -f 1";
