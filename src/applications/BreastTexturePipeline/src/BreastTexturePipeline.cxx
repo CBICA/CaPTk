@@ -102,11 +102,12 @@ int algorithmsRunner()
 
   std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + " true true";
   std::cout << "Running LIBRA Single Image with command '" + command + "'\n";
-  if (std::system(command.c_str()) == 0)
+  std::system(command.c_str());
+  auto outputTotalMask = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "/Result_Images/totalmask/totalmask.dcm";
+  if (!cbica::isFile(outputTotalMask))
   {
     std::cout << "Done.\n";
 
-    auto outputTotalMask = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "/Result_Images/totalmask/totalmask.dcm";
     //auto outputTotalMaskImage = cbica::ReadImage< LibraImageType >(outputTotalMask);
     auto dicomReader = itk::ImageSeriesReader< LibraImageType >::New();
     dicomReader->SetImageIO(itk::GDCMImageIO::New());
