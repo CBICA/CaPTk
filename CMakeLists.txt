@@ -166,8 +166,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   ENDIF()
 
+  OPTION( CAPTK_DISABLE_CWL "Disable CWL file generation - useful for debug builds or devops" OFF )
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
+  MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
 
   SET( CMAKE_COLOR_MAKEFILE ON )
   # option to compile only the viewer
