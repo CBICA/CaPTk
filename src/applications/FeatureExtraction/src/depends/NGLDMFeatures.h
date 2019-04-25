@@ -585,6 +585,66 @@ public:
 
 		std::cout << "[DEBUG] HighDependenceEmphasis = " << results.HighDependenceEmphasis << std::endl;
 		this->m_features["HighDependenceEmphasis"] = results.HighDependenceEmphasis;
+
+		std::cout << "[DEBUG] LowGreyLevelCountEmphasis = " << results.LowGreyLevelCountEmphasis << std::endl;
+		this->m_features["LowGreyLevelCountEmphasis"] = results.LowGreyLevelCountEmphasis;
+
+		std::cout << "[DEBUG] HighGreyLevelCountEmphasis = " << results.HighGreyLevelCountEmphasis << std::endl;
+		this->m_features["HighGreyLevelCountEmphasis"] = results.HighGreyLevelCountEmphasis;
+
+		std::cout << "[DEBUG] LowDependenceLowGreyLevelEmphasis = " << results.LowDependenceLowGreyLevelEmphasis << std::endl;
+		this->m_features["LowDependenceLowGreyLevelEmphasis"] = results.LowDependenceLowGreyLevelEmphasis;
+
+		std::cout << "[DEBUG] LowDependenceHighGreyLevelEmphasis = " << results.LowDependenceHighGreyLevelEmphasis << std::endl;
+		this->m_features["LowDependenceHighGreyLevelEmphasis"] = results.LowDependenceHighGreyLevelEmphasis;
+
+		std::cout << "[DEBUG] HighDependenceLowGreyLevelEmphasis = " << results.HighDependenceLowGreyLevelEmphasis << std::endl;
+		this->m_features["HighDependenceLowGreyLevelEmphasis"] = results.HighDependenceLowGreyLevelEmphasis;
+
+		std::cout << "[DEBUG] HighDependenceHighGreyLevelEmphasis = " << results.HighDependenceHighGreyLevelEmphasis << std::endl;
+		this->m_features["HighDependenceHighGreyLevelEmphasis"] = results.HighDependenceHighGreyLevelEmphasis;
+
+		std::cout << "[DEBUG] GreyLevelNonUniformity = " << results.GreyLevelNonUniformity << std::endl;
+		this->m_features["GreyLevelNonUniformity"] = results.GreyLevelNonUniformity;
+
+		std::cout << "[DEBUG] GreyLevelNonUniformityNormalised = " << results.GreyLevelNonUniformityNormalised << std::endl;
+		this->m_features["GreyLevelNonUniformityNormalised"] = results.GreyLevelNonUniformityNormalised;
+
+		std::cout << "[DEBUG] DependenceCountNonUniformity = " << results.DependenceCountNonUniformity << std::endl;
+		this->m_features["DependenceCountNonUniformity"] = results.DependenceCountNonUniformity;
+
+		std::cout << "[DEBUG] DependenceCountNonUniformityNormalised = " << results.DependenceCountNonUniformityNormalised << std::endl;
+		this->m_features["DependenceCountNonUniformityNormalised"] = results.DependenceCountNonUniformityNormalised;
+
+		std::cout << "[DEBUG] DependenceCountPercentage = " << results.DependenceCountPercentage << std::endl;
+		this->m_features["DependenceCountPercentage"] = results.DependenceCountPercentage;
+
+		std::cout << "[DEBUG] GreyLevelVariance = " << results.GreyLevelVariance << std::endl;
+		this->m_features["GreyLevelVariance"] = results.GreyLevelVariance;
+
+		std::cout << "[DEBUG] DependenceCountVariance = " << results.DependenceCountVariance << std::endl;
+		this->m_features["DependenceCountVariance"] = results.DependenceCountVariance;
+		
+		std::cout << "[DEBUG] DependenceCountEntropy = " << results.DependenceCountEntropy << std::endl;
+		this->m_features["DependenceCountEntropy"] = results.DependenceCountEntropy;
+
+		std::cout << "[DEBUG] DependenceCountEnergy = " << results.DependenceCountEnergy << std::endl;
+		this->m_features["DependenceCountEnergy"] = results.DependenceCountEnergy;
+
+		std::cout << "[DEBUG] MeanGreyLevelCount = " << results.MeanGreyLevelCount << std::endl;
+		this->m_features["MeanGreyLevelCount"] = results.MeanGreyLevelCount;
+
+		std::cout << "[DEBUG] MeanDependenceCount = " << results.MeanDependenceCount << std::endl;
+		this->m_features["MeanDependenceCount"] = results.MeanDependenceCount;
+
+
+		//TBD - Extra feature values not listed in IBSI
+		//double ExpectedNeighbourhoodSize;
+		//double AverageNeighbourhoodSize;
+		//double AverageIncompleteNeighbourhoodSize;
+		//double PercentageOfCompleteNeighbourhoods;
+		//double PercentageOfDependenceNeighbours;
+
 	}
 
 	//variables
