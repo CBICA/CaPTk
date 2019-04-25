@@ -340,20 +340,22 @@ FOREACH(subdir ${SUBDIRECTORIES})
 
     ELSEIF( UNIX AND NOT APPLE )
     
-      IF( EXISTS "${SUBDIRPATH}/MCRInstaller.zip" )
-      
-        EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${SUBDIRPATH}/MCRInstaller.zip
-          WORKING_DIRECTORY ${SUBDIRPATH}
-          RESULT_VARIABLE RESULT_CODE
-        )
+      IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
+        IF( EXISTS "${SUBDIRPATH}/MCRInstaller.zip" )
         
-        IF( RESULT_CODE EQUAL 0 )
-          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${SUBDIRPATH}/MCRInstaller.zip
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${SUBDIRPATH}/MCRInstaller.zip
             WORKING_DIRECTORY ${SUBDIRPATH}
             RESULT_VARIABLE RESULT_CODE
           )
+          
+          IF( RESULT_CODE EQUAL 0 )
+            EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${SUBDIRPATH}/MCRInstaller.zip
+              WORKING_DIRECTORY ${SUBDIRPATH}
+              RESULT_VARIABLE RESULT_CODE
+            )
+          ENDIF()
+          
         ENDIF()
-        
       ENDIF()
     
       INSTALL(FILES ${SUBDIRPATH}/bin/libra
@@ -372,7 +374,8 @@ FOREACH(subdir ${SUBDIRECTORIES})
   ENDIF()
 
   IF(BUILD_LIBRABATCH AND (${subdir} STREQUAL "libra"))
-
+    
+    IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
       IF( EXISTS "${SUBDIRPATH}/MCRInstaller.zip" )
       
         EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${SUBDIRPATH}/MCRInstaller.zip
@@ -388,6 +391,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
         ENDIF()
         
       ENDIF()
+    ENDIF()
     
     SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} librabatch" CACHE STRING "Available stand-alone apps" FORCE)
     # ALSO add this to CAPTK_BRREAST_APPS
