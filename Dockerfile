@@ -20,6 +20,8 @@ RUN apt-get install -y \
     
 RUN git lfs install
 
+RUN ln -s `locate libc.so.6` /lib/libc.so
+
 # install latest cmake 
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.14.3/cmake-3.14.3-Linux-x86_64.tar.gz && \
     tar -xzf cmake-3.14.3-Linux-x86_64.tar.gz
