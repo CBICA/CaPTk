@@ -38,12 +38,12 @@ RUN export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
     cmake -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=./install_libs \
     -Wno-dev .. && \
-    make -j && \
+    make -j4 && \
     echo "=== Building CaPTk ===" && \
     cmake -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=./install \
     -Wno-dev .. && \
-    make install/strip -j
+    make install/strip -j4
 
 # define entry point
 ENTRYPOINT ["/CaPTk/bin/install/bin/CaPTk"]
