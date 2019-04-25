@@ -16,11 +16,12 @@ size_t resizingFactor = 100;
 
 std::string findRelativeApplicationPath(const std::string appName)
 {
+  std::cout << "appName:" << appName << "\n";
   std::string winExt =
 #if WIN32
-    winExt = ".exe";
+    ".exe";
 #else
-    winExt = "";
+    "";
 #endif
 
   if (appName.find("libra") != std::string::npos)
@@ -29,6 +30,7 @@ std::string findRelativeApplicationPath(const std::string appName)
     winExt = ".bat";
 #endif
   }
+
   auto currentApplicationPath = cbica::normPath(cbica::getExecutablePath()) + "/";
 
   std::cout << "currentApplicationPath: " << currentApplicationPath << "\n";
@@ -96,65 +98,73 @@ int algorithmsRunner()
   }
 
   auto libraPath = findRelativeApplicationPath("libra");
+  cbica::createDir(outputDir + "/temp");
 
   std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + " true true";
   std::cout << "Running LIBRA Single Image with command '" + command + "'\n";
-  std::system(command.c_str());
-  std::cout << "Done.\n";
-
-  auto outputTotalMask = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "/Result_Images/totalmask/totalmask.dcm";
-  //auto outputTotalMaskImage = cbica::ReadImage< LibraImageType >(outputTotalMask);
-  auto dicomReader = itk::ImageSeriesReader< LibraImageType >::New();
-  dicomReader->SetImageIO(itk::GDCMImageIO::New());
-  dicomReader->SetFileName(outputTotalMask);
-  try
+  if (std::system(command.c_str()) == 0)
   {
-    dicomReader->Update();
+    std::cout << "Done.\n";
+
+    auto outputTotalMask = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "/Result_Images/totalmask/totalmask.dcm";
+    //auto outputTotalMaskImage = cbica::ReadImage< LibraImageType >(outputTotalMask);
+    auto dicomReader = itk::ImageSeriesReader< LibraImageType >::New();
+    dicomReader->SetImageIO(itk::GDCMImageIO::New());
+    dicomReader->SetFileName(outputTotalMask);
+    try
+    {
+      dicomReader->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+      std::cerr << "Error while loading DICOM image(s): " << err.what() << "\n";
+    }
+    auto outputTotalMaskImage = dicomReader->GetOutput();
+
+    auto outputRelevantMaskImage = cbica::ChangeImageValues< LibraImageType >(outputTotalMaskImage, "2", "1");
+    auto outputRelevantMaskImage_flipped = preprocessingObj.ApplyFlipToMaskImage(outputRelevantMaskImage);
+
+    auto preprocessedImage = preprocessingObj.GetOutputImage();
+    ZScoreNormalizer< LibraImageType > normalizer;
+    normalizer.SetInputImage(preprocessingObj.GetOutputImage());
+    normalizer.SetInputMask(outputRelevantMaskImage_flipped);
+    normalizer.SetCutoffs(0, 0);
+    normalizer.SetQuantiles(0, 0);
+    normalizer.Update();
+
+    auto outputFileName = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_preprocessed_normalized.nii.gz";
+
+    cbica::WriteImage< LibraImageType >(normalizer.GetOutput(), outputFileName);
+
+    auto outputRelevantMaskFile = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_mask.nii.gz";
+    cbica::WriteImage< LibraImageType >(outputRelevantMaskImage_flipped, outputRelevantMaskFile);
+
+    auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
+
+    auto currentDataDir = getCaPTkDataDir();
+    auto latticeFeatureParamFilePath = getCaPTkDataDir() + "/featureExtraction/2_params_default_lattice.csv";
+    if (!cbica::isFile(latticeFeatureParamFilePath))
+    {
+      std::cerr << "The default lattice parameter file, '2_params_default_lattice.csv' was not found in the data directory, '" << currentDataDir << "'; please check.\n";
+      exit(EXIT_FAILURE);
+    }
+
+    command = featureExtractionPath + "-n Lattice -p " + latticeFeatureParamFilePath +
+      " -o " + outputDir +
+      " -i " + outputFileName + " -t MAM " +
+      " -m " + outputRelevantMaskFile + " -l TT -r 1 -f 1";
+
+    std::cout << "Running FeatureExtraction with command '" + command + "'\n";
+    std::system(command.c_str());
+    std::cout << "Done.\n";
+
+    return EXIT_SUCCESS;
   }
-  catch (itk::ExceptionObject & err)
+  else
   {
-    std::cerr << "Error while loading DICOM image(s): " << err.what() << "\n";
+    std::cerr << "Libra did not succeed. Please recheck.\n";
+    return EXIT_FAILURE;
   }
-  auto outputTotalMaskImage = dicomReader->GetOutput();
-
-  auto outputRelevantMaskImage = cbica::ChangeImageValues< LibraImageType >(outputTotalMaskImage, "2", "1");
-  auto outputRelevantMaskImage_flipped = preprocessingObj.ApplyFlipToMaskImage(outputRelevantMaskImage);
-
-  auto preprocessedImage = preprocessingObj.GetOutputImage();
-  ZScoreNormalizer< LibraImageType > normalizer;
-  normalizer.SetInputImage(preprocessingObj.GetOutputImage());
-  normalizer.SetInputMask(outputRelevantMaskImage_flipped);
-  normalizer.SetCutoffs(0, 0);
-  normalizer.SetQuantiles(0, 0);
-  normalizer.Update();
-
-  auto outputFileName = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_preprocessed_normalized.nii.gz";
-
-  cbica::WriteImage< LibraImageType >(normalizer.GetOutput(), outputFileName);
-
-  auto outputRelevantMaskFile = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_mask.nii.gz";
-  cbica::WriteImage< LibraImageType >(outputRelevantMaskImage_flipped, outputRelevantMaskFile);
-
-  auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
-
-  auto currentDataDir = getCaPTkDataDir();
-  auto latticeFeatureParamFilePath = getCaPTkDataDir() + "/featureExtraction/2_params_default_lattice.csv";
-  if (!cbica::isFile(latticeFeatureParamFilePath))
-  {
-    std::cerr << "The default lattice parameter file, '2_params_default_lattice.csv' was not found in the data directory, '" << currentDataDir << "'; please check.\n";
-    exit(EXIT_FAILURE);
-  }
-
-  command = featureExtractionPath + "-n Lattice -p " + latticeFeatureParamFilePath +
-    " -o " + outputDir +
-    " -i " + outputFileName + " -t MAM " +
-    " -m " + outputRelevantMaskFile + " -l TT -r 1 -f 1";
-
-  std::cout << "Running FeatureExtraction with command '" + command + "'\n";
-  std::system(command.c_str());
-  std::cout << "Done.\n";
-
-  return EXIT_SUCCESS;
 }
 
 
