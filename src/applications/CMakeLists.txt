@@ -55,7 +55,7 @@ ADD_SUBDIRECTORY( GeodesicTraining )
 ADD_SUBDIRECTORY( Preprocessing )
 ADD_SUBDIRECTORY( Utilities )
 #ADD_SUBDIRECTORY( PerfusionAlignment )
-IF (UNIX AND NOT APPLE)
+IF (NOT APPLE)
   ADD_SUBDIRECTORY( BreastTexturePipeline )
 ENDIF()
 
@@ -339,25 +339,27 @@ FOREACH(subdir ${SUBDIRECTORIES})
       INSTALL(DIRECTORY "${SUBDIRPATH}/Mathworks" DESTINATION bin)
 
     ELSEIF( UNIX AND NOT APPLE )
-    
-      IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
-        IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
-        
-          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-            WORKING_DIRECTORY ${SUBDIRPATH}
-            RESULT_VARIABLE RESULT_CODE
-          )
-        
-          IF( RESULT_CODE EQUAL 0 )
-            EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${SUBDIRPATH}/MCRInstaller.zip
+      
+      IF( UNIX AND NOT APPLE )
+        IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
+          IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
+          
+            EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
               WORKING_DIRECTORY ${SUBDIRPATH}
               RESULT_VARIABLE RESULT_CODE
             )
+            
+            IF( RESULT_CODE EQUAL 0 )
+              EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${SUBDIRPATH}/MCRInstaller.zip
+                WORKING_DIRECTORY ${SUBDIRPATH}
+                RESULT_VARIABLE RESULT_CODE
+              )
+            ENDIF()
+            
           ENDIF()
-          
         ENDIF()
       ENDIF()
-    
+      
       INSTALL(FILES ${SUBDIRPATH}/bin/libra
         DESTINATION bin
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
@@ -375,21 +377,23 @@ FOREACH(subdir ${SUBDIRECTORIES})
 
   IF(BUILD_LIBRABATCH AND (${subdir} STREQUAL "libra"))
     
-    IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
-      IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
-      
-        EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-          WORKING_DIRECTORY ${SUBDIRPATH}
-          RESULT_VARIABLE RESULT_CODE
-        )
+    IF( UNIX AND NOT APPLE )
+      IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
+        IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
         
-        IF( RESULT_CODE EQUAL 0 )
-          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${SUBDIRPATH}/MCRInstaller.zip
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
             WORKING_DIRECTORY ${SUBDIRPATH}
             RESULT_VARIABLE RESULT_CODE
           )
+          
+          IF( RESULT_CODE EQUAL 0 )
+            EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${SUBDIRPATH}/MCRInstaller.zip
+              WORKING_DIRECTORY ${SUBDIRPATH}
+              RESULT_VARIABLE RESULT_CODE
+            )
+          ENDIF()
+          
         ENDIF()
-        
       ENDIF()
     ENDIF()
     
