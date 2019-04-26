@@ -352,7 +352,7 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
   
-- job: 'MacOS SelfHostBuild'
+- job: 'MacOSSelfHostBuild'
   displayName: "Self-hosted MacOS agent"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
