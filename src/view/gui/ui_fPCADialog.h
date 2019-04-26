@@ -237,8 +237,29 @@ public:
     //linkLabel->setTextInteractionFlags(Qt:::TextBrowserInteraction);
     //linkLabel->setOpenExternalLinks(true);
 
+    numberPCALabelApply = new QLabel(classificationGroupBox);
+    sizePolicy13.setHeightForWidth(numberPCALabelApply->sizePolicy().hasHeightForWidth());
+    numberPCALabelApply->setSizePolicy(sizePolicy13);
+    numberPCALabelApply->setAlignment(Qt::AlignRight);
 
 
+    numberPCANameApply = new QLineEdit(classificationGroupBox);
+    numberPCANameApply->setObjectName(QString::fromUtf8("numberPCANameApply"));
+    sizePolicy13.setHeightForWidth(numberPCANameApply->sizePolicy().hasHeightForWidth());
+    numberPCANameApply->setSizePolicy(sizePolicy13);
+    numberPCANameApply->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+
+    numberPCALabelCreate = new QLabel(classificationGroupBox);
+    sizePolicy13.setHeightForWidth(numberPCALabelCreate->sizePolicy().hasHeightForWidth());
+    numberPCALabelCreate->setSizePolicy(sizePolicy13);
+    numberPCALabelCreate->setAlignment(Qt::AlignRight);
+
+    numberPCANameCreate = new QLineEdit(classificationGroupBox);
+    numberPCANameCreate->setObjectName(QString::fromUtf8("numberPCANameCreate"));
+    sizePolicy13.setHeightForWidth(numberPCANameCreate->sizePolicy().hasHeightForWidth());
+    numberPCANameCreate->setSizePolicy(sizePolicy13);
+    numberPCANameCreate->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
     //    classificationGridLayout->addWidget(rdNewClassification, 0, 0, 1, 6);
     //classificationGridLayout->addWidget(rdLoadedClassification, 1, 0, 1, 6);
@@ -258,8 +279,8 @@ public:
     classificationGridLayout->addWidget(numberPCALabelApply, 6, 0, 1, 1);
     classificationGridLayout->addWidget(numberPCANameApply, 6, 1, 1, 4);
 
-    classificationGridLayout->addWidget(disclaimerLabel, 7, 1, 1, 4);
-    classificationGridLayout->addWidget(disclaimerButton, 7, 5, 1, 1);
+ /*   classificationGridLayout->addWidget(disclaimerLabel, 7, 1, 1, 4);
+    classificationGridLayout->addWidget(disclaimerButton, 7, 5, 1, 1);*/
 
 
     QFrame* line = new QFrame();

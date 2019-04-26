@@ -34,6 +34,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "CaPTkClassifierUtils.h"
 #include "cbicaLogging.h"
 #include "itkEnhancedScalarImageToRunLengthFeaturesFilter.h"
+#include "itkRoundImageFilter.h"
 
 #define RECURRENCE_MODEL_G 0.5
 #define RECURRENCE_MODEL_RHO 0.0896
@@ -251,14 +252,14 @@ public:
   VectorDouble GetIntensityFeatures(std::vector<float> m_intensities);
 
   template<class ImageType>
-  VectorDouble GetGLCMFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask);
+  VectorDouble GetGLCMFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask,double minvalue,double maxvalue);
 
   template<class ImageType>
   typename ImageType::Pointer MakeAdditionalModality(typename ImageType::Pointer image1, typename ImageType::Pointer image2);
 
 
   template<class ImageType>
-  VectorDouble GetRunLengthFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask);
+  VectorDouble GetRunLengthFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask, double minvalue, double maxvalue);
 
   template<class PerfusionImageType, class ImageType>
   VectorVectorDouble GetPerfusionFeatures(typename PerfusionImageType::Pointer image, typename ImageType::Pointer mask);
@@ -1561,12 +1562,26 @@ std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble>
   for (unsigned int i = 0; i < roiIndices.size(); i++)
     ROIIntensities.push_back(std::round(image.GetPointer()->GetPixel(roiIndices[i])));
 
+  double minvalue = *min_element(ROIIntensities.begin(), ROIIntensities.end());
+  double maxvalue = *max_element(ROIIntensities.begin(), ROIIntensities.end());
+
   VectorDouble HistogramFeatures = GetHistogramFeatures(ROIIntensities, 10);
   VectorDouble HistogramFeatures1 = GetHistogramFeatures(ROIIntensities, 20);
-  //VectorDouble HistogramFeatures1 = GetHistogramFeaturesWhole(ROIIntensities);
   VectorDouble IntensityFeatures = GetIntensityFeatures(ROIIntensities);
-  VectorDouble GLCMFeatures = GetGLCMFeatures<ImageType>(image, mask);
-  VectorDouble GLRLMFeatures = GetRunLengthFeatures<ImageType>(image, mask);
+  ImageType::Pointer isotropicImageGLCM = cbica::ResampleImage< ImageType >(image, 1.0, "Linear");
+  ImageType::Pointer isotropicMaskGLCM  = cbica::ResampleImage< ImageType >(mask, 1.0, "Nearest");
+  auto roundingFilter = itk::RoundImageFilter< ImageType,ImageType>::New();
+  roundingFilter->SetInput(isotropicMaskGLCM);
+  roundingFilter->Update();
+  isotropicMaskGLCM = roundingFilter->GetOutput();
+  VectorDouble GLCMFeatures = GetGLCMFeatures<ImageType>(isotropicImageGLCM, isotropicMaskGLCM,minvalue,maxvalue);
+
+  ImageType::Pointer isotropicImageGLRLM = cbica::ResampleImage< ImageType >(image, 1.0, "Linear");
+  ImageType::Pointer isotropicMaskGLRLM = cbica::ResampleImage< ImageType >(mask, 1.0, "Nearest");
+  roundingFilter->SetInput(isotropicMaskGLRLM);
+  roundingFilter->Update();
+  isotropicMaskGLRLM = roundingFilter->GetOutput();
+  VectorDouble GLRLMFeatures = GetRunLengthFeatures<ImageType>(isotropicImageGLRLM, isotropicMaskGLRLM, minvalue, maxvalue);
 
   std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble> new_tuple(HistogramFeatures, IntensityFeatures, GLCMFeatures, GLRLMFeatures, HistogramFeatures1);
   return new_tuple;
@@ -1645,7 +1660,7 @@ VectorDouble PseudoProgressionEstimator::GetShapeFeatures(typename TImageTypeSha
 }
 
 template<class ImageType>
-VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask)
+VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask, double minvalue, double maxvalue)
 {
   double m_Bins = 16;
   using FeatureextractionImageType = typename ImageType::Pointer;
@@ -1655,7 +1670,6 @@ VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Poi
   using OffsetType = typename ImageType::OffsetType;
   using Offsets = OffsetType;
   using OffsetVector = itk::VectorContainer< unsigned char, OffsetType >;
-
 
   double inputRadius = 1;
   double inputDirections = 13;
@@ -1673,10 +1687,14 @@ VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Poi
   }
 
   typename OffsetVector::Pointer offsets = OffsetVector::New();
+  auto centerIndex = neighborhood.GetCenterNeighborhoodIndex();
 
-  for (int d = 0; d < directionsToCompute; d++)
+  for (int d = directionsToCompute - 1; d >= 0; d--)
   {
-    offsets->push_back(neighborhood.GetOffset(d));
+    if (d != static_cast<int>(centerIndex))
+    {
+      offsets->push_back(neighborhood.GetOffset(d));
+    }
   }
 
 
@@ -1687,7 +1705,7 @@ VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Poi
   {
     auto glcmGenerator = Image2CoOccuranceType::New();
     glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-    glcmGenerator->SetPixelValueMinMax(0, 255);
+    glcmGenerator->SetPixelValueMinMax(minvalue,maxvalue);
     glcmGenerator->SetMaskImage(mask);
     glcmGenerator->SetInput(image);
     auto featureCalc = Hist2FeaturesType::New();
@@ -1724,15 +1742,13 @@ VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Poi
   features.push_back(clusterprominance);
   features.push_back(autocorr);
   features.push_back(ener);
-
-  // TODO: Sung to add his GLCM extraction code here
-  //featurevec[std::string(IndividualFeaturesString[Correlation]) + "_Sung"] = 0;
   return features;
 }
 
 template<class ImageType>
-VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask)
+VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask, double minvalue, double maxvalue)
 {
+  double m_Bins = 16;
   using HistogramFrequencyContainerType = itk::Statistics::DenseFrequencyContainer2;
   using RunLengthFilterType = itk::Statistics::EnhancedScalarImageToRunLengthFeaturesFilter< ImageType, HistogramFrequencyContainerType >;
   using RunLengthMatrixGenerator = typename RunLengthFilterType::RunLengthMatrixFilterType;
@@ -1741,7 +1757,7 @@ VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType
   using OffsetVector = itk::VectorContainer< unsigned char, OffsetType >;
 
   //offset calculation
-  double inputDirections = 26;
+  double inputDirections = 13;
   itk::Neighborhood< typename ImageType::PixelType, ImageType::ImageDimension > neighborhood;
   neighborhood.SetRadius(1);
   auto size = neighborhood.GetSize();
@@ -1769,10 +1785,10 @@ VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType
   matrix_generator->SetInput(image);
   matrix_generator->SetMaskImage(mask);
   matrix_generator->SetInsidePixelValue(1);
-  matrix_generator->SetPixelValueMinMax(0, 255);
+  matrix_generator->SetPixelValueMinMax(minvalue,maxvalue);
 
-  matrix_generator->SetDistanceValueMinMax(0, 4);
-  matrix_generator->SetNumberOfBinsPerAxis(16);
+  matrix_generator->SetDistanceValueMinMax(0,10);
+  matrix_generator->SetNumberOfBinsPerAxis(m_Bins);
   typename  RunLengthFeatures::Pointer runLengthMatrixCalculator = RunLengthFeatures::New();
   typename  RunLengthFeatures::Pointer runLengthFeaturesCalculator = RunLengthFeatures::New();
   typename  OffsetVector::ConstIterator offsetIt;
@@ -1785,8 +1801,19 @@ VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType
   {
     matrix_generator->SetOffset(offsetIt.Value());
     matrix_generator->Update();
+    
+    //auto outputglcmGenerator = matrix_generator->GetOutput();
+    //auto iterator = outputglcmGenerator->Begin();
+    //while (iterator != outputglcmGenerator->End())
+    //{
+    //  std::cout << iterator.GetIndex() << " " << iterator.GetFrequency() << std::endl;
+    //  ++iterator;
+    //}
+
     runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
     runLengthFeaturesCalculator->Update();
+
+
     sre += runLengthFeaturesCalculator->GetShortRunEmphasis();
     lre += runLengthFeaturesCalculator->GetLongRunEmphasis();
     gln += runLengthFeaturesCalculator->GetGreyLevelNonuniformity();

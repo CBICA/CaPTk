@@ -968,8 +968,8 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 
 
     //calculate perfusion based features from all the pre-calculated perfusion images
-    for (int i = 0; i < 10; i++)
-      OtherFeaturesInMap["Z" + std::to_string(i)] = GetAllFeaturesPerImagePerROI<ImageType>(RevisedPerfusionImagesOfAllPatients[sid][i], LabelImagePointer, "PCA_" + std::to_string(i));
+    //for (int i = 0; i < 10; i++)
+    //  OtherFeaturesInMap["Z" + std::to_string(i)] = GetAllFeaturesPerImagePerROI<ImageType>(RevisedPerfusionImagesOfAllPatients[sid][i], LabelImagePointer, "PCA_" + std::to_string(i));
 
     //5 shape features per patient
     VectorDouble ShapeFeatures = GetShapeFeatures<ImageType>(LabelImagePointer);
@@ -1314,7 +1314,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
         CurrentTimePoint.GetPointer()->SetPixel(indices[j], revisedPerfData(j, i));
 
       OnePatientperfusionImages.push_back(CurrentTimePoint);
-      //cbica::WriteImage<ImageType>(CurrentTimePoint, outputdirectory + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
+      cbica::WriteImage<ImageType>(CurrentTimePoint, outputdirectory + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
     }
     RevisedPerfusionImagesOfAllPatients.push_back(OnePatientperfusionImages);
   }
@@ -1362,7 +1362,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
     ImageType::Pointer OriginalT1ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]));
     ImageType::Pointer OriginalT2ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]));
 
-    ImageType::Pointer OriginalT1T1CEImagePointer = MakeAdditionalModality<ImageType>(OriginalT1ImagePointer, OriginalT1CEImagePointer);
+    ImageType::Pointer OriginalT1T1CEImagePointer = MakeAdditionalModality<ImageType>( OriginalT1CEImagePointer, OriginalT1ImagePointer);
     ImageType::Pointer OriginalT2FLImagePointer = MakeAdditionalModality<ImageType>(OriginalT2ImagePointer, OriginalT2FlairImagePointer);
 
     ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(OriginalT1ImagePointer);
@@ -1529,13 +1529,13 @@ PerfusionMapType PseudoProgressionEstimator::CombineAndCalculatePerfusionPCA(Per
     for (unsigned int i = 0; i < Features.Rows(); i++)
     {
       VectorDouble oneVector;
-      for (unsigned int j = 0; j < 45; j++)
+      for (unsigned int j = 0; j < Features.Cols(); j++)
         oneVector.push_back(Features(i, j));
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
   }
   FeatureReductionClass m_featureReduction;
-  vtkSmartPointer<vtkTable> ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
+  vtkSmartPointer<vtkTable> ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsForPSU(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
 
   int start = 0;
   for (unsigned int index = 0; index<sizes.size(); index++)// for (auto const &mapiterator : PerfusionDataMap) 
@@ -1755,29 +1755,29 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   std::string outputdirectory)
 {
   //writing of all the modalities perfusion data finished
-  WriteCSVFiles(T1IntensityHistogram, outputdirectory+ "/t1.csv");
-  WriteCSVFiles(TCIntensityHistogram, outputdirectory+ "/t1ce.csv");
-  WriteCSVFiles(T2IntensityHistogram, outputdirectory + "/t2.csv");
-  WriteCSVFiles(FLIntensityHistogram, outputdirectory + "/flair.csv");
-  WriteCSVFiles(T1TCIntensityHistogram, outputdirectory + "/t1t1ce.csv");
-  WriteCSVFiles(T2FLIntensityHistogram, outputdirectory + "/t2flair.csv");
-  WriteCSVFiles(AXIntensityHistogram, outputdirectory + "/AX.csv");
-  WriteCSVFiles(FAIntensityHistogram, outputdirectory + "/FA.csv");
-  WriteCSVFiles(RDIntensityHistogram, outputdirectory + "/RAD.csv");
-  WriteCSVFiles(TRIntensityHistogram, outputdirectory + "/TR.csv");
-  WriteCSVFiles(PHIntensityHistogram, outputdirectory + "/PH.csv");
-  WriteCSVFiles(PSIntensityHistogram, outputdirectory + "/PSR.csv");
-  WriteCSVFiles(RCIntensityHistogram, outputdirectory + "/RCBV.csv");
-  WriteCSVFiles(PCA1IntensityHistogram, outputdirectory + "/PCA1.csv");
-  WriteCSVFiles(PCA2IntensityHistogram, outputdirectory +"/PCA2.csv");
-  WriteCSVFiles(PCA3IntensityHistogram, outputdirectory +"/PCA3.csv");
-  WriteCSVFiles(PCA4IntensityHistogram, outputdirectory +"/PCA4.csv");
-  WriteCSVFiles(PCA5IntensityHistogram, outputdirectory +"/PCA5.csv");
-  WriteCSVFiles(PCA6IntensityHistogram, outputdirectory +"/PCA6.csv");
-  WriteCSVFiles(PCA7IntensityHistogram, outputdirectory +"/PCA7.csv");
-  WriteCSVFiles(PCA8IntensityHistogram, outputdirectory +"/PCA8.csv");
-  WriteCSVFiles(PCA9IntensityHistogram, outputdirectory +"/PCA9.csv");
-  WriteCSVFiles(PCA10IntensityHistogram, outputdirectory +"/PCA10.csv");
+  //WriteCSVFiles(T1IntensityHistogram, outputdirectory+ "/t1.csv");
+  //WriteCSVFiles(TCIntensityHistogram, outputdirectory+ "/t1ce.csv");
+  //WriteCSVFiles(T2IntensityHistogram, outputdirectory + "/t2.csv");
+  //WriteCSVFiles(FLIntensityHistogram, outputdirectory + "/flair.csv");
+  //WriteCSVFiles(T1TCIntensityHistogram, outputdirectory + "/t1t1ce.csv");
+  //WriteCSVFiles(T2FLIntensityHistogram, outputdirectory + "/t2flair.csv");
+  //WriteCSVFiles(AXIntensityHistogram, outputdirectory + "/AX.csv");
+  //WriteCSVFiles(FAIntensityHistogram, outputdirectory + "/FA.csv");
+  //WriteCSVFiles(RDIntensityHistogram, outputdirectory + "/RAD.csv");
+  //WriteCSVFiles(TRIntensityHistogram, outputdirectory + "/TR.csv");
+  //WriteCSVFiles(PHIntensityHistogram, outputdirectory + "/PH.csv");
+  //WriteCSVFiles(PSIntensityHistogram, outputdirectory + "/PSR.csv");
+  //WriteCSVFiles(RCIntensityHistogram, outputdirectory + "/RCBV.csv");
+  //WriteCSVFiles(PCA1IntensityHistogram, outputdirectory + "/PCA1.csv");
+  //WriteCSVFiles(PCA2IntensityHistogram, outputdirectory +"/PCA2.csv");
+  //WriteCSVFiles(PCA3IntensityHistogram, outputdirectory +"/PCA3.csv");
+  //WriteCSVFiles(PCA4IntensityHistogram, outputdirectory +"/PCA4.csv");
+  //WriteCSVFiles(PCA5IntensityHistogram, outputdirectory +"/PCA5.csv");
+  //WriteCSVFiles(PCA6IntensityHistogram, outputdirectory +"/PCA6.csv");
+  //WriteCSVFiles(PCA7IntensityHistogram, outputdirectory +"/PCA7.csv");
+  //WriteCSVFiles(PCA8IntensityHistogram, outputdirectory +"/PCA8.csv");
+  //WriteCSVFiles(PCA9IntensityHistogram, outputdirectory +"/PCA9.csv");
+  //WriteCSVFiles(PCA10IntensityHistogram, outputdirectory +"/PCA10.csv");
 
 
   FeatureReductionClass m_featureReduction;
@@ -1847,7 +1847,7 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   
   try
   {
-    vtkSmartPointer<vtkTable> T1TCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T1TCIntensityHistogram, PCA_T1T1CE, Mean_T1T1CE);
+    T1TCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T1TCIntensityHistogram, PCA_T1T1CE, Mean_T1T1CE);
     std::cout << "T1TC" << std::endl;
   }
   catch (const std::exception& e1)
@@ -2858,6 +2858,7 @@ void PseudoProgressionEstimator::WriteCSVFiles(VariableSizeMatrixType inputdata,
     }
     myfile << "\n";
   }
+  myfile.close();
 }
 void PseudoProgressionEstimator::WriteCSVFiles(VectorVectorDouble inputdata, std::string filepath)
 {
@@ -2874,6 +2875,7 @@ void PseudoProgressionEstimator::WriteCSVFiles(VectorVectorDouble inputdata, std
     }
     myfile << "\n";
   }
+  myfile.close();
 }
 void PseudoProgressionEstimator::WriteCSVFiles(vtkSmartPointer<vtkTable> inputdata, std::string filepath)
 {
@@ -2890,6 +2892,7 @@ void PseudoProgressionEstimator::WriteCSVFiles(vtkSmartPointer<vtkTable> inputda
     }
     myfile << "\n";
   }
+  myfile.close();
 }
 void PseudoProgressionEstimator::WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath)
 {
@@ -2899,6 +2902,7 @@ void PseudoProgressionEstimator::WriteCSVFiles(VariableLengthVectorType inputdat
     myfile << std::to_string(inputdata[index1]) << ",";
 
   myfile << "\n";
+  myfile.close();
 }
 
 void PseudoProgressionEstimator::WriteCSVFiles(std::vector<double> inputdata, std::string filepath)
@@ -2909,6 +2913,7 @@ void PseudoProgressionEstimator::WriteCSVFiles(std::vector<double> inputdata, st
     myfile << std::to_string(inputdata[index1]) << ",";
 
   myfile << "\n";
+  myfile.close();
 }
 
 VariableSizeMatrixType PseudoProgressionEstimator::GetModelSelectedFeatures(VariableSizeMatrixType & ScaledFeatureSetAfterAddingLabel, VariableLengthVectorType & SelectedFeatures)
