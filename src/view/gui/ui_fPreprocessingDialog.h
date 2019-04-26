@@ -274,7 +274,7 @@ public:
     cancelButton->setText(QApplication::translate("fPreprocessingDialog", "Cancel", 0));
 
     cbT1Data->setText(QApplication::translate("fPreprocessingDialog", "T1", 0));
-    cbT1ceData->setText(QApplication::translate("fPreprocessingDialog", "T1ce", 0));
+    cbT1ceData->setText(QApplication::translate("fPreprocessingDialog", "T1-Gd", 0));
     cbT2Data->setText(QApplication::translate("fPreprocessingDialog", "T2", 0));
     cbT2FlairData->setText(QApplication::translate("fPreprocessingDialog", "Flair", 0));
     cbDTIData->setText(QApplication::translate("fPreprocessingDialog", "DTI", 0));

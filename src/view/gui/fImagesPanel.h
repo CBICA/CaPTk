@@ -118,6 +118,7 @@ signals:
   void sigImageModalityChanged(int);
   void helpClicked_Interaction(std::string);
   void sigTheiaClicked();
+  void CompareModeToggled(bool);
 
 };
 

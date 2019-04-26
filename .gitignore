@@ -7,6 +7,8 @@ CaPTk*.bin
 makeself-*.run*
 archive
 
+src/applications/*/bin
+
 # Linux specific paths that get pulled in
 src/applications/individualApps/dcm2nii
 src/applications/individualApps/itksnap
@@ -40,6 +42,7 @@ theia
 .DS_Store
 testing
 /binaries/.DS_Store
+/binaries/MCR
 /cmake_modules/.DS_Store
 /src/applications/.DS_Store
 /.travis/.DS_Store

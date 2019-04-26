@@ -45,7 +45,7 @@ MACRO( CAPTK_ADD_EXECUTABLE APPLICATION SOURCESFILES DEPENDENT_LIBS )
   # Add test for run tests
   ADD_TEST( NAME ${APPLICATION}_rt COMMAND ${APPLICATION} -rt )
 
-  IF (CAPTK_PACKAGE_PROJECT)
+  IF (NOT CAPTK_DISABLE_CWL)
     CWL_INSTALL(${APPLICATION})
   ENDIF()
   
@@ -55,11 +55,11 @@ ENDMACRO()
 MACRO(CWL_INSTALL APPLICATION)
 
   # Post build cwl generation
-  add_custom_command(TARGET ${APPLICATION}
+  add_custom_command(
+    TARGET ${APPLICATION}
     POST_BUILD
     COMMAND ${APPLICATION} -cwl
-    COMMENT "Generating cwl for ${APPLICATION}..."
-    VERBATIM
+    COMMENT "Generating cwl file for ${APPLICATION}..."
   )
   
   IF (APPLE) 
@@ -196,7 +196,7 @@ FIND_PACKAGE(OpenMP REQUIRED)
 SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
 SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
 
-MESSAGE(AUTHOR_WARNING "OpenMP is enabled, you may see issues on Azure")
+#MESSAGE(AUTHOR_WARNING "OpenMP is enabled, you may see issues on Azure")
 
 # add a few compiler options for GCC and MSVC
 IF( CMAKE_COMPILER_IS_GNUCXX )

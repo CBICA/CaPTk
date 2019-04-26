@@ -159,7 +159,7 @@ inline int guessImageType(const std::string &fileName)
 }
 
 static const char ImageModalityString[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES + 1][15] =
-{ "DEF", "T1", "T1T1CE", "T1Gd", "T2",
+{ "DEF", "T1", "T1Gd", "T2",
 "FLAIR", "DTI_AX", "DTI_FA", "DTI_RAD", "DTI_TR", 
 "PERFUSION", "DTI", "REC", "PP", "CT", 
 "PET", "pSR", "PH", "RCBV", "SEG", 
