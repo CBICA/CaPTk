@@ -163,6 +163,7 @@ int algorithmsRunner()
     features.SetSelectedROIsAndLabels("1", "Breast");
     features.SetMaskImage(outputRelevantMaskImage_flipped);
     features.SetWriteFeatureMaps(true);
+    features.SetValidMask();
     features.SetRequestedFeatures(latticeFeatureParamFilePath);
     features.SetOutputFilename(cbica::normPath(outputDir + "/output.csv"));
     features.SetVerticallyConcatenatedOutput(true);
