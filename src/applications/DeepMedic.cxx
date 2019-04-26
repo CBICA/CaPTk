@@ -9,6 +9,7 @@
 #include "CaPTkGUIUtils.h"
 
 #include "itkStatisticsImageFilter.h"
+#include "itkBinaryFillholeImageFilter.h"
 
 #ifdef _WIN32
 #include <direct.h>
@@ -252,6 +253,25 @@ void algorithmRunner()
   {
     std::cerr << "DeepMedic exited with code !=0.\n";
     exit(EXIT_FAILURE);
+  }
+
+  // do hole filling for skull stripping
+  if (type = SkullStripping)
+  {
+    std::cout << "=== Performing hole-filling operation for skull stripping.\n";
+    auto outputImageFile = outputDirectory + "/segm.nii.gz";
+    if (cbica::exists(output))
+    {
+      auto outputImageWithHoles = cbica::ReadImage< TImageType >(outputImageFile);
+
+      auto holeFillter = itk::BinaryFillholeImageFilter< TImageType >::New();
+      holeFillter->SetInput(outputImageWithHoles);
+      holeFillter->SetForegroundValue(itk::NumericTraits< typename TImageType::PixelType >::min());
+      holeFillter->Update();
+
+      cbica::WriteImage< TImageType >(holeFillter->GetOutput(), outputImageFile);
+    }
+    std::cout << "=== Done.\n";
   }
 
   return;
