@@ -405,7 +405,7 @@ Contains the following applications:
 */
 
 /**
-\page Glioblastoma_Molecular "Brain Cancer: Glioblastoma Molecular Subtype Prediction"
+\page Glioblastoma_Molecular Brain Cancer: Glioblastoma Molecular Subtype Prediction
 This application provides the prediction of the molecular subtype of <i>de novo</i> glioblastoma patients using baseline pre-operative multi-parametric MRI analysis [1].
 
 <b>REQUIREMENTS:</b>

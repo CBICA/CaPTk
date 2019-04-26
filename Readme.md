@@ -55,4 +55,3 @@ latesttag=$(git describe --tags)
 echo checking out ${latesttag}
 git checkout ${latesttag}
 ```
-
