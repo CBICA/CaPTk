@@ -165,7 +165,7 @@ int algorithmsRunner()
     features.SetWriteFeatureMaps(true);
     features.SetValidMask();
     features.SetRequestedFeatures(latticeFeatureParamFilePath);
-    features.SetOutputFilename(cbica::normPath(outputDir + "/output.csv"));
+    features.SetOutputFilename(cbica::normPath(outputDir + "/features/output.csv"));
     features.SetVerticallyConcatenatedOutput(true);
     features.Update();
 
