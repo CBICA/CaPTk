@@ -53,8 +53,6 @@ jobs:
         ls -lt
         cd bin
         rm -rf qt.zip
-        rm -rf *-prefix
-        rm -rf *-source
         ls -lt
       displayName: 'Removing the binaries folder'
      
