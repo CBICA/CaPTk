@@ -53,13 +53,14 @@ jobs:
         ls -lt
         cd bin
         rm -rf qt.zip
+        rm -rf *-prefix
+        rm -rf *-source
         ls -lt
       displayName: 'Removing the binaries folder'
      
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        rm -rf ../binaries
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         cmake --build . --target PACKAGE --config Release
 
