@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.0.nonRelease" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.0.PreAlpha" ref="index.html">
         <section title="Overview" ref="index.html" />
         <section title="Installation Instructions" ref="Installation.html" />
         <section title="Getting Started" ref="Getting_Started.html">
@@ -42,7 +42,7 @@
             <section title="Brain Cancer: Glioblastoma Survival Prediction Index" ref="Glioblastoma_Survival.html" />
             <section title="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
             <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
-            <section title="&quot;Brain Cancer: Glioblastoma Molecular Subtype Prediction&quot;" ref="Glioblastoma_Molecular.html" />
+            <section title="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
             <section title="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
             <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
             <section title="Brain Cancer: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
@@ -94,7 +94,7 @@
       <keyword name="Segmentation" id="Segmentation" ref="ht_Segmentation.html" />
       <keyword name="Feature Extraction" id="Feature Extraction" ref="ht_FeatureExtraction.html" />
       <keyword name="Specialized Applications (SAs) Usage" id="Specialized Applications (SAs) Usage" ref="ht_SpecialApps.html" />
-      <keyword name="&quot;Brain Cancer: Glioblastoma Molecular Subtype Prediction&quot;" id="&quot;Brain Cancer: Glioblastoma Molecular Subtype Prediction&quot;" ref="Glioblastoma_Molecular.html" />
+      <keyword name="Brain Cancer: Glioblastoma Molecular Subtype Prediction" id="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
       <keyword name="Brain Cancer: WhiteStripe Normalization" id="Brain Cancer: WhiteStripe Normalization" ref="Glioblastoma_WhiteStripe.html" />
       <keyword name="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" id="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
       <keyword name="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" id="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />

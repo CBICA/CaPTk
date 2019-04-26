@@ -788,7 +788,7 @@ namespace cbica
   // #ifdef __APPLE__
   //   return "/Applications/CaPTk_1.6.2.Beta.app/Contents/MacOS/";
   // #endif
-    return path;
+    return cbica::normPath(path);
   }
 
   std::string getFullPath()

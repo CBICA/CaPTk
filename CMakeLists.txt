@@ -11,8 +11,8 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 0.nonRelease )
-SET( PROJECT_VERSION_TWEAK nonRelease )
+SET( PROJECT_VERSION_PATCH 0.Alpha )
+SET( PROJECT_VERSION_TWEAK Alpha )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -166,8 +166,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   ENDIF()
 
+  OPTION( CAPTK_DISABLE_CWL "Disable CWL file generation - useful for debug builds or devops" OFF )
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
+  MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
 
   SET( CMAKE_COLOR_MAKEFILE ON )
   # option to compile only the viewer
@@ -294,11 +296,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${OpenCV_LIBRARIES}
   )
 
-  IF(LINUX)
-  SET( DEPENDENT_LIBS 
-    ${DEPENDENT_LIBS}
-    Qt5::X11Extras
-  )
+  IF(UNIX AND NOT APPLE)
+    SET( DEPENDENT_LIBS 
+      ${DEPENDENT_LIBS}
+      Qt5::X11Extras
+    )
   ENDIF()
   
   SET( DEPENDENT_LIBS ${DEPENDENT_LIBS} CACHE STRING "All dependent libraries" )

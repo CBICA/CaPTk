@@ -56,6 +56,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fMolecularSubtypeDialog.h"
 #include "fDCM2NIfTI.h"
 #include "fDeepMedicDialog.h"
+#include "fTexturePipelineDialog.h"
 #include "fDeepMedicNormDialog.h"
 #include "fFetalBrain.h"
 #include "fSBRTNoduleDialog.h"
@@ -249,6 +250,7 @@ private:
   fDiffusionEstimator diffmeasuresPanel;
   fDCM2NIfTIConverter dcmConverter;
   fDeepMedicDialog deepMedicDialog;
+  fTexturePipelineDialog texturePipelineDialog;
   fHistoMatcher histoMatchPanel;
   fDeepMedicNormalizer deepMedicNormPanel;
   fWhiteStripeObj whiteStripeNormalizer;
@@ -557,7 +559,7 @@ signals:
   void SeedPointsFocused(bool bFocused);
   void TissuePointsFocused(bool bFocused);
 
-  public slots:
+public slots:
 
     //! set Z slice position on image info panel
     void SetImageInfoZSlicePosition(int zslice);
@@ -785,6 +787,11 @@ signals:
   \brief Call the Deep Medic Segmentation dialog
   */
   void CallDeepMedicSegmentation(const std::string modelDirectory, const std::string outputDirectory);
+
+  /**
+  \brief Call the breast texture pipeline
+  */
+  void CallTexturePipeline(const std::string outputDirectory);
 
   /**
   \brief Call Histogram Matching module of ITK
@@ -1265,6 +1272,8 @@ signals:
     return tumorPanel->mTumorPointsSelected;
   }
 
+  void ApplicationBreastSegmentation();
+  void ApplicationTexturePipeline();
   void ApplicationLIBRASingle();
   void ApplicationLIBRABatch();
   void ApplicationConfetti();
@@ -1318,6 +1327,7 @@ signals:
   void ApplicationWhiteStripe();
 #endif
   void ImageDenoising();
+  void ImageMamogramPreprocess();
   void ImageBiasCorrection();
   void ImageRegistration();
   void ImageHistogramMatching();
