@@ -261,7 +261,9 @@ inline std::string getApplicationPath(std::string appName)
   }
   else
   {
+#ifdef CAPTK_PACKAGE_PROJECT
     ShowErrorMessage("Specified application was not found, please check");
+#endif  
     return "";
   }
 #endif 
