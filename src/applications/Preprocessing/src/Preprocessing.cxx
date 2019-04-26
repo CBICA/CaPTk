@@ -5,6 +5,7 @@
 #include "cbicaITKUtilities.h"
 
 #include "ZScoreNormalizer.h"
+#include "P1P2Normalizer.h"
 #include "itkN3MRIBiasFieldCorrectionImageFilter.h"
 #include "itkN4BiasFieldCorrectionImageFilter.h"
 #include "SusanDenoising.h"
@@ -20,6 +21,7 @@ enum AvailableAlgorithms
   None,
   HistogramMatching,
   ZScoreNormalize,
+  P1P2Preprocess,
   BiasCorrectionN3,
   BiasCorrectionN4,
   SusanDenoisingAlgo
@@ -59,6 +61,16 @@ int algorithmsRunner()
     normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
     normalizer.Update();
     cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == P1P2Preprocess)
+  {
+    P1P2Normalizer< TImageType > normalizer;
+    normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
+    normalizer.Update();
+    cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == BiasCorrectionN3)
@@ -86,6 +98,7 @@ int algorithmsRunner()
     corrector->Update();
 
     cbica::WriteImage< TImageType >(corrector->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == BiasCorrectionN4)
@@ -165,6 +178,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ssS", "susanSigma", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Sigma", "Defaults to " + std::to_string(ssSigma));
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
+  parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
   
 
   if (parser.isPresent("i"))
@@ -178,6 +192,10 @@ int main(int argc, char** argv)
   if (parser.isPresent("o"))
   {
     parser.getParameterValue("o", outputImageFile);
+  }
+  if (parser.isPresent("p12"))
+  {
+    requestedAlgorithm = P1P2Preprocess;
   }
   if (parser.isPresent("zn"))
   {

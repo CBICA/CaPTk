@@ -56,6 +56,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fMolecularSubtypeDialog.h"
 #include "fDCM2NIfTI.h"
 #include "fDeepMedicDialog.h"
+#include "fTexturePipelineDialog.h"
 #include "fDeepMedicNormDialog.h"
 #include "fFetalBrain.h"
 #include "fSBRTNoduleDialog.h"
@@ -249,6 +250,7 @@ private:
   fDiffusionEstimator diffmeasuresPanel;
   fDCM2NIfTIConverter dcmConverter;
   fDeepMedicDialog deepMedicDialog;
+  fTexturePipelineDialog texturePipelineDialog;
   fHistoMatcher histoMatchPanel;
   fDeepMedicNormalizer deepMedicNormPanel;
   fWhiteStripeObj whiteStripeNormalizer;
@@ -370,6 +372,10 @@ public:
 
   //! Check if a valid mask is defined for the current instance of the 
   bool isMaskDefined();
+
+  //! Get/Set Comparison Mode
+  void SetComparisonMode(bool mode);
+  bool GetComparisonMode();
 
   /*
   \brief Change direction cosine of image to identity
@@ -554,6 +560,16 @@ signals:
   void TissuePointsFocused(bool bFocused);
 
 public slots:
+
+    //! set Z slice position on image info panel
+    void SetImageInfoZSlicePosition(int zslice);
+
+    //! set voxel intensity value at cursor position on image info panel
+    void SetImageInfoIntensityValue(double value);
+
+    //! slot on movement of slider in comparison mode
+    void OnSliderMovedInComparisonMode(int);
+
   /**
   \brief Updates draw mode when drawing panel changes
   */
@@ -771,6 +787,11 @@ public slots:
   \brief Call the Deep Medic Segmentation dialog
   */
   void CallDeepMedicSegmentation(const std::string modelDirectory, const std::string outputDirectory);
+
+  /**
+  \brief Call the breast texture pipeline
+  */
+  void CallTexturePipeline(const std::string outputDirectory);
 
   /**
   \brief Call Histogram Matching module of ITK
@@ -1251,6 +1272,8 @@ public slots:
     return tumorPanel->mTumorPointsSelected;
   }
 
+  void ApplicationBreastSegmentation();
+  void ApplicationTexturePipeline();
   void ApplicationLIBRASingle();
   void ApplicationLIBRABatch();
   void ApplicationConfetti();
@@ -1304,6 +1327,7 @@ public slots:
   void ApplicationWhiteStripe();
 #endif
   void ImageDenoising();
+  void ImageMamogramPreprocess();
   void ImageBiasCorrection();
   void ImageRegistration();
   void ImageHistogramMatching();
@@ -1317,6 +1341,12 @@ public slots:
   void ClassifierTraining();
   void ApplicationDeepMedicSegmentation(int type);
   void ApplicationTheia();
+
+  //! Enable/Disable comparison mode
+  void EnableComparisonMode(bool);
+
+  //! Get Comparison Viewers
+  std::vector<vtkSmartPointer<Slicer>> GetComparisonViewers();
 
   void GeodesicTrainingFinishedHandler();
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
@@ -1415,6 +1445,8 @@ private:
   ImageTypeShort3D::Pointer m_imgGeodesicOutNegative;
   std::map<std::string, float> m_fetalbrainfeatures;
   int m_fetalslice;
+  bool m_ComparisonMode; //! comparison mode
+  vtkSmartPointer<Slicer> m_ComparisonViewerLeft, m_ComparisonViewerCenter, m_ComparisonViewerRight;
 
   // GeodesicTraining private variables
   GeodesicTrainingCaPTkApp<2>* m_GeodesicTrainingCaPTkApp2D;
