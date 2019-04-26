@@ -266,7 +266,7 @@ void algorithmRunner()
 
       auto holeFillter = itk::BinaryFillholeImageFilter< TImageType >::New();
       holeFillter->SetInput(outputImageWithHoles);
-      holeFillter->SetForegroundValue(itk::NumericTraits< typename TImageType::PixelType >::min());
+      holeFillter->SetForegroundValue(0);
       holeFillter->Update();
 
       cbica::WriteImage< TImageType >(holeFillter->GetOutput(), outputImageFile);
