@@ -1,5 +1,5 @@
-#ifndef ui_fPerfusionAlignmentDialog_H
-#define ui_fPerfusionAlignmentDialog_H
+#ifndef ui_fPerfusionAligner_H
+#define ui_fPerfusionAligner_H
 
 #include <QtCore/QVariant>
 // #include <QtGui/QAction>
@@ -36,7 +36,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class ui_fPerfusionAlignmentDialog
+class ui_fPerfusionAligner
 {
 public:
   QGridLayout *gridLayout;
@@ -215,9 +215,9 @@ public:
 };
 
 namespace Ui {
-  class fPerfusionAlignmentDialog : public ui_fPerfusionAlignmentDialog {};
+  class fPerfusionAligner : public ui_fPerfusionAligner {};
 } // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif // ui_fPerfusionAlignmentDialog_H
+#endif // ui_fPerfusionAligner_H
