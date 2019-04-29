@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 
 
   std::cout << "Finished successfully.\n";
- // std::cout << "\nPress any key to continue............\n";
+  std::cout << "\nPress any key to continue............\n";
 
   return EXIT_SUCCESS;
 }
