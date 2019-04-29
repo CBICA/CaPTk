@@ -147,14 +147,14 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     //myfile.close();
 
     // Resize
-    PerfusionImageType::SizeType inputSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
+    typename PerfusionImageType::SizeType inputSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
     typename PerfusionImageType::SizeType outputSize;
     outputSize[0] = inputSize[0];
     outputSize[1] = inputSize[1];
     outputSize[2] = inputSize[2];
     outputSize[3] = (std::stof(timeinseconds) * 2 / 1000) * region.GetSize()[3];
 
-    PerfusionImageType::SpacingType outputSpacing;
+    typename PerfusionImageType::SpacingType outputSpacing;
     outputSpacing[0] = perfImagePointerNifti->GetSpacing()[0];
     outputSpacing[1] = perfImagePointerNifti->GetSpacing()[1];
     outputSpacing[2] = perfImagePointerNifti->GetSpacing()[2];
@@ -167,7 +167,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
 
 
     typedef itk::ResampleImageFilter<PerfusionImageType, PerfusionImageType> ResampleImageFilterType;
-    ResampleImageFilterType::Pointer resample = ResampleImageFilterType::New();
+    typename ResampleImageFilterType::Pointer resample = ResampleImageFilterType::New();
     resample->SetInput(perfImagePointerNifti);
     resample->SetSize(outputSize);
     resample->SetOutputSpacing(outputSpacing);
@@ -183,9 +183,9 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
 
     std::cout << "base: " << base << " drop: " << drop << " min: " << mincurve << " max: " << maxcurve << std::endl;
     //write the corresponding perfusion 3D images
-    PerfusionImageType::RegionType region1 = resample->GetOutput()->GetLargestPossibleRegion();
-    PerfusionImageType::IndexType regionIndex;
-    PerfusionImageType::SizeType regionSize;
+    typename PerfusionImageType::RegionType region1 = resample->GetOutput()->GetLargestPossibleRegion();
+    typename PerfusionImageType::IndexType regionIndex;
+    typename PerfusionImageType::SizeType regionSize;
     regionSize[0] = region1.GetSize()[0];
     regionSize[1] = region1.GetSize()[1];
     regionSize[2] = region1.GetSize()[2];
@@ -205,13 +205,13 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
       NewImage->FillBuffer(0);
     
       regionIndex[3] = index;
-      PerfusionImageType::RegionType desiredRegion(regionIndex, regionSize);
+      typename PerfusionImageType::RegionType desiredRegion(regionIndex, regionSize);
       auto filter = itk::ExtractImageFilter< PerfusionImageType, ImageType >::New();
       filter->SetExtractionRegion(desiredRegion);
       filter->SetInput(resample->GetOutput());
       filter->SetDirectionCollapseToIdentity();
       filter->Update();
-      ImageType::Pointer CurrentTimePoint = filter->GetOutput();
+      typename ImageType::Pointer CurrentTimePoint = filter->GetOutput();
 
       itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
       itk::ImageRegionIteratorWithIndex <ImageType> newIt(NewImage, NewImage->GetLargestPossibleRegion());
