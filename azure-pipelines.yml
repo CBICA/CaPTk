@@ -192,7 +192,6 @@ jobs:
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf data
         rm -rf regression
-        rm -rf testing
         rm -rf binaries
 
         # export PKG_FAST_MODE=1
