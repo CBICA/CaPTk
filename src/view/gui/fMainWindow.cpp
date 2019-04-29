@@ -23,6 +23,7 @@
 #include "PerfusionDerivatives.h"
 #include "DiffusionDerivatives.h"
 #include "ZScoreNormalizer.h"
+#include "PerfusionPCA.h"
 #include "SBRT_LungField.h"
 #include "SBRT_Nodule.h"
 #include "SBRT_Analysis.h"
@@ -843,8 +844,8 @@ fMainWindow::fMainWindow()
   connect(&deepMedicNormPanel, SIGNAL(RunDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)), this, SLOT(CallImageDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)));
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
 
-  //connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(std::string, std::string, std::string)), this, SLOT(PCAEstimateOnExistingModel(const std::string &, const std::string &, const std::string &)));
-  //connect(&pcaPanel, SIGNAL(TrainNewPCAModel(std::string, std::string)), this, SLOT(TrainNewPCAModelOnGivenData(const std::string &, const std::string &)));
+  connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(std::string, std::string, std::string)), this, SLOT(PCAEstimateOnExistingModel(const std::string &, const std::string &, const std::string &)));
+  connect(&pcaPanel, SIGNAL(TrainNewPCAModel(std::string, std::string)), this, SLOT(TrainNewPCAModelOnGivenData(const std::string &, const std::string &)));
 
 
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
@@ -4260,19 +4261,19 @@ void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, 
   if (modeldirectory.empty())
   {
     ShowErrorMessage("Please provide path of a directory having PCA model");
-    help_contextual("Glioblastoma_Pseudoprogression.html");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
   if (inputdirectory.empty())
   {
     ShowErrorMessage("Please provide path of a directory having input images");
-    help_contextual("Glioblastoma_Pseudoprogression.html");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
   if (outputdirectory.empty())
   {
     ShowErrorMessage("Please provide path of a directory to save output");
-    help_contextual("Glioblastoma_Pseudoprogression.html");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
   if (!cbica::isDir(outputdirectory))
@@ -4280,7 +4281,7 @@ void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, 
     if (!cbica::createDir(outputdirectory))
     {
       ShowErrorMessage("Unable to create the output directory");
-      help_contextual("Glioblastoma_Pseudoprogression.html");
+      //help_contextual("Glioblastoma_Pseudoprogression.html");
       return;
     }
   }
@@ -4290,7 +4291,7 @@ void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, 
   if (QualifiedSubjects.size() == 0)
   {
     ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.");
-    help_contextual("Glioblastoma_Pseudoprogression.html");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
   //if (mpca.PseudoProgressionEstimateOnExistingModel(QualifiedSubjects, modeldirectory, inputdirectory, outputdirectory, useConventionalData, useDTIData, usePerfData, useDistData))
@@ -4883,13 +4884,13 @@ void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory,
   if (inputdirectory.empty())
   {
     ShowErrorMessage("Please provide input directory.", this);
-    help_contextual("Glioblastoma_Pseudoprogression.html");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
   if (outputdirectory.empty())
   {
     ShowErrorMessage("Please provide output directory.", this);
-    help_contextual("Glioblastoma_Pseudoprogression.html");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
   if (!cbica::isDir(outputdirectory))
@@ -4897,7 +4898,7 @@ void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory,
     if (!cbica::createDir(outputdirectory))
     {
       ShowErrorMessage("Unable to create the output directory", this);
-      help_contextual("Glioblastoma_Pseudoprogression.html");
+      //help_contextual("Glioblastoma_Pseudoprogression.html");
       return;
     }
   }
@@ -4908,7 +4909,7 @@ void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory,
   if (QualifiedSubjects.size() == 0)
   {
     ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.", this);
-    help_contextual("Glioblastoma_Pseudoprogression.html");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
   if (QualifiedSubjects.size() > 0 && QualifiedSubjects.size() <= 20)
@@ -4916,6 +4917,7 @@ void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory,
     ShowErrorMessage("There should be atleast 20 patients to build reliable pseudo-progression model.");
     return;
   }
+  PerfusionPCA mPCAEstimator;
   if (mPCAEstimator.PrepareNewPCAModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
     ShowMessage("Trained pseudoprogression model has been saved at the specified location.", this);
   else
