@@ -102,13 +102,6 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-    # - bash: |
-    #     echo "Build.DefinitionName=" $(Build.DefinitionName)
-    #     echo "Build.Repository.Name=" $(Build.Repository.Name)
-    #     echo "System.TeamProject=" $(System.TeamProject)
-    #     echo "System.CollectionId=" $(System.CollectionId)
-    #   displayName: 'Test Names'
-
   # Checkout validator.
   # - bash: |
   #     set -x
@@ -156,7 +149,7 @@ jobs:
     # Nuclear Option #1
     - bash: |
         rm -rf binaries/_*.zip
-        # rm -rf data
+        rm -rf data
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
@@ -194,17 +187,19 @@ jobs:
         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        rm -rf data
+        rm -rf regression
+        rm -rf testing
+        rm -rf binaries
+
         # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
 
         rm -rf bin
         rm -rf src
-        rm -rf binaries
-        rm -rf data
-        #rm -rf docs*
-        rm -rf regression
+        rm -rf docs*
+
         rm -rf scripts
-        rm -rf testing
 
         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
         
