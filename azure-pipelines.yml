@@ -188,6 +188,7 @@ jobs:
         cd bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
+        make install/strip
       displayName: 'Configure and compile CaPTk'
 
     # Check qt
@@ -196,6 +197,12 @@ jobs:
         ls -a
         ls ./qt/
       displayName: 'Check qt'
+      
+    # Check libra
+    - bash: |
+        cd bin/install/appdir/usr/bin/
+        ls -l
+      displayName: 'Checking ${installDir}/bin'
       
     # Build a package
     - bash: |

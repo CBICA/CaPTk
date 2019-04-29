@@ -9,6 +9,10 @@
 #include "CaPTkGUIUtils.h"
 
 #include "itkStatisticsImageFilter.h"
+#include "itkBinaryFillholeImageFilter.h"
+#include "itkJoinSeriesImageFilter.h"
+#include "itkExtractImageFilter.h"
+#include "itkPermuteAxesImageFilter.h"
 
 #ifdef _WIN32
 #include <direct.h>
@@ -27,6 +31,88 @@ enum InferenceTypes
   SkullStripping,
   MaxType
 };
+
+template< class TImageType >
+typename TImageType::Pointer HoleFillForSingleAxis(typename TImageType::Pointer input, size_t axisToIterate)
+{
+  auto size = input->GetLargestPossibleRegion().GetSize();
+  auto origin = input->GetOrigin();
+  typename TImageType::IndexType regionIndex;
+  typename TImageType::SizeType regionSize;
+
+  regionSize = size;
+  regionSize[axisToIterate] = 0;
+  regionIndex.Fill(0);
+
+  itk::FixedArray< unsigned int, TImageType::ImageDimension > order;
+  order[0] = 0;
+  order[1] = 0;
+  order[axisToIterate] = 1;
+  auto permuter = itk::PermuteAxesImageFilter< TImageType >::New();
+  permuter->SetInput(input);
+  permuter->SetOrder(order);
+  permuter->Update();
+  cbica::WriteImage< TImageType >(permuter->GetOutput(), 
+    "C:/Projects/CaPTk_myFork/data/deepMedic/testing/pred_AAAC_2008.03.30_Segm_permuter" + std::to_string(axisToIterate) + ".nii.gz");
+
+
+  using TImageType2D = itk::Image< typename TImageType::PixelType, 2 >;
+  auto extractor = itk::ExtractImageFilter< typename TImageType, TImageType2D >::New();
+  extractor->SetInput(input);
+  extractor->SetDirectionCollapseToIdentity(); // This is required.
+
+  //auto joiner = itk::JoinSeriesImageFilter< itk::Image<float,2>, itk::Image<float, 3> >::New();
+  auto joiner = itk::JoinSeriesImageFilter< TImageType2D, TImageType >::New();
+  joiner->SetOrigin(input->GetOrigin()[axisToIterate]);
+  joiner->SetSpacing(input->GetSpacing()[axisToIterate]);
+
+  for (size_t i = 0; i < size[axisToIterate]; i++)
+  {
+    regionIndex[axisToIterate] = i;
+    typename TImageType::RegionType desiredRegion(regionIndex, regionSize);
+    extractor->SetExtractionRegion(desiredRegion);
+    extractor->Update();
+
+    auto debugImage = extractor->GetOutput();
+
+    auto holeFiller = itk::BinaryFillholeImageFilter< TImageType2D >::New();
+    holeFiller->SetInput(extractor->GetOutput());
+    holeFiller->SetForegroundValue(1);
+    holeFiller->Update();
+
+    joiner->SetInput(i, holeFiller->GetOutput());
+  }
+
+  joiner->Update();
+  return joiner->GetOutput();
+}
+
+template< class TImageType >
+typename TImageType::Pointer HoleFillOnThreeAxes(typename TImageType::Pointer input)
+{
+  auto holeFiller = itk::BinaryFillholeImageFilter< TImageType >::New();
+  holeFiller->SetInput(input);
+  holeFiller->SetForegroundValue(1);
+  holeFiller->SetFullyConnected(true);
+  return holeFiller->GetOutput();
+
+  auto output = HoleFillForSingleAxis< TImageType >(input, 2);
+  if (cbica::ImageSanityCheck<TImageType>(input, output))
+  {
+    output = HoleFillForSingleAxis< TImageType >(output, 1);
+    if (cbica::ImageSanityCheck<TImageType>(input, output))
+    {
+      output = HoleFillForSingleAxis< TImageType >(output, 0);
+      if (cbica::ImageSanityCheck<TImageType>(input, output))
+      {
+        return output;
+      }
+    }
+  }
+  
+  std::cerr << "Something went wrong with hole filling, please check.\n";
+  exit(EXIT_FAILURE);
+}
 
 template< class TImageType >
 void algorithmRunner()
@@ -252,6 +338,26 @@ void algorithmRunner()
   {
     std::cerr << "DeepMedic exited with code !=0.\n";
     exit(EXIT_FAILURE);
+  }
+
+  // do hole filling for skull stripping
+  if (inferenceType = SkullStripping)
+  {
+    std::cout << "=== Performing hole-filling operation for skull stripping.\n";
+    auto outputImageFile = outputDirectory + "/segm.nii.gz";
+    if (cbica::exists(outputImageFile))
+    {
+      auto outputImageWithHoles = cbica::ReadImage< TImageType >(outputImageFile);
+
+      auto holeFiller = itk::BinaryFillholeImageFilter< TImageType >::New();
+      holeFiller->SetInput(outputImageWithHoles);
+      holeFiller->SetForegroundValue(1);
+      holeFiller->SetFullyConnected(false);
+      holeFiller->Update();
+
+      cbica::WriteImage< TImageType >(holeFiller->GetOutput(), outputImageFile);
+    }
+    std::cout << "=== Done.\n";
   }
 
   return;
