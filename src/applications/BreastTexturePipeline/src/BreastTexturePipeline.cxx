@@ -185,6 +185,8 @@ int main(int argc, char** argv)
   parser.getParameterValue("i", inputImageFile);
   parser.getParameterValue("o", outputDir);
   cbica::createDir(outputDir);
+  inputImageFile = cbica::normPath(inputImageFile);
+  outputDir = cbica::normPath(outputDir);
 
   if (parser.isPresent("d"))
   {
