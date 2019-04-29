@@ -853,7 +853,7 @@ fMainWindow::fMainWindow()
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
-  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(const double, const double,const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(const double, const double, const std::string, const std::string, const std::string, const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(int, int,const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(int, int, const std::string, const std::string, const std::string, const std::string)));
 
 
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -8078,7 +8078,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 }
 
 
-void fMainWindow::CallPerfusionAlignmentCalculation(const double before, const double after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder)
+void fMainWindow::CallPerfusionAlignmentCalculation(const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {

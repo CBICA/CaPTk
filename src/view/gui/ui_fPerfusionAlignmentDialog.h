@@ -194,9 +194,11 @@ public:
     inputGridLayout->addWidget(inputDicomImageName, 2, 1, 1, 1);
     inputGridLayout->addWidget(inputDicomImageButton,2, 2, 1, 1);
 
-    inputGridLayout->addWidget(inputAfterPointsLabel, 3, 0, 1, 1);
-    inputGridLayout->addWidget(inputAfterPointsName, 4, 1, 1, 1);
+    inputGridLayout->addWidget(inputBeforePointsLabel, 3, 0, 1, 1);
+    inputGridLayout->addWidget(inputBeforePointsName, 3, 1, 1, 1);
 
+    inputGridLayout->addWidget(inputAfterPointsLabel, 4, 0, 1, 1);
+    inputGridLayout->addWidget(inputAfterPointsName, 4, 1, 1, 1);
 
     // output
     outputGroupBox = new QGroupBox(fPerfusionAlignmentDialog);
@@ -268,6 +270,8 @@ public:
     inputBeforePointsLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "# of Points before drop", 0));
     inputAfterPointsLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "# of Points after drop", 0));
     inputImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "DSC-MRI Image", 0));
+    inputT1ceImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "T1 PostContrast Image", 0));
+    inputDicomImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "Dicom Image", 0));
 
     confirmButton->setText(QApplication::translate("fPerfusionAlignmentDialog", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fPerfusionAlignmentDialog", "Cancel", 0));
