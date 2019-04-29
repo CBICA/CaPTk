@@ -10,9 +10,9 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # to read the version number.
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
-SET( PROJECT_VERSION_MINOR 6 )
-SET( PROJECT_VERSION_PATCH 2 )
-SET( PROJECT_VERSION_TWEAK RC )
+SET( PROJECT_VERSION_MINOR 7 )
+SET( PROJECT_VERSION_PATCH 0.Alpha )
+SET( PROJECT_VERSION_TWEAK Alpha )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -166,8 +166,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   ENDIF()
 
+  OPTION( CAPTK_DISABLE_CWL "Disable CWL file generation - useful for debug builds or devops" OFF )
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
+  MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
 
   SET( CMAKE_COLOR_MAKEFILE ON )
   # option to compile only the viewer
@@ -294,11 +296,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${OpenCV_LIBRARIES}
   )
 
-  IF(LINUX)
-  SET( DEPENDENT_LIBS 
-    ${DEPENDENT_LIBS}
-    Qt5::X11Extras
-  )
+  IF(UNIX AND NOT APPLE)
+    SET( DEPENDENT_LIBS 
+      ${DEPENDENT_LIBS}
+      Qt5::X11Extras
+    )
   ENDIF()
   
   SET( DEPENDENT_LIBS ${DEPENDENT_LIBS} CACHE STRING "All dependent libraries" )
@@ -328,11 +330,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_LIBRABATCH ON CACHE BOOL "Do you want to connect LIBRA to CaPTk Console (needs MATLAB runtime)?" )
   SET( BUILD_CONFETTI ON CACHE BOOL "Do you want to connect Confetti to CaPTk Console (needs Python 2.7 and other dependencies)?" )
   SET( BUILD_FETALBRAIN OFF CACHE BOOL "Do you want to build FetalBrain?" )
-  IF(WIN32)
-    SET( BUILD_DEEPMEDIC ON CACHE BOOL "Do you want to package DeepMedic?" )
-  ELSEIF()
-    SET( BUILD_DEEPMEDIC OFF CACHE BOOL "Do you want to package DeepMedic?" )
-  ENDIF()
+  SET( BUILD_DEEPMEDIC ON CACHE BOOL "Do you want to package DeepMedic?" )
 
   IF(BUILD_EGFRvIII)
     ADD_DEFINITIONS(-DBUILD_EGFRvIII)
@@ -719,7 +717,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     #FILE(GLOB egfrv3_FILES "${DATA_DIR}/egfrv3/*.*")
     #SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/egfrv3)
-
+    
     FILE(GLOB sri24_FILES "${DATA_DIR}/sri24/*.*")
     SET_SOURCE_FILES_PROPERTIES(${sri24_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
 
@@ -731,6 +729,22 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     #INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
     #INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/sri24" DESTINATION data PATTERN ".svn" EXCLUDE)
+  ENDIF()
+
+  # install DeepMedic files
+  IF (APPLE)
+    FILE(GLOB_RECURSE DEEPMEDIC_CONFIGFILES "${DATA_DIR}/deepMedic/configFiles/*")
+    FILE(GLOB_RECURSE DEEPMEDIC_SAVEDMODELS "${DATA_DIR}/deepMedic/saved_models/*")
+    
+    SET_SOURCE_FILES_PROPERTIES( ${DEEPMEDIC_CONFIGFILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/deepMedic/configFiles )
+    SET_SOURCE_FILES_PROPERTIES( ${DEEPMEDIC_SAVEDMODELS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/deepMedic/saved_models )
+    
+    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${DEEPMEDIC_CONFIGFILES})
+    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${DEEPMEDIC_SAVEDMODELS})
+    
+  ELSE()
+    INSTALL(DIRECTORY "${DATA_DIR}/deepMedic/configFiles" DESTINATION data/deepMedic)
+    INSTALL(DIRECTORY "${DATA_DIR}/deepMedic/saved_models" DESTINATION data/deepMedic)
   ENDIF()
 
   IF(WIN32)

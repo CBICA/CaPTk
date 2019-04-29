@@ -33,6 +33,7 @@ class vtkPolyDataMapper;
 class vtkVertexGlyphFilter;
 class vtkLabeledDataMapper;
 class vtkRegularPolygonSource;
+class vtkInteractorStyle;
 
 class Slicer : public vtkImageViewer2
 {
@@ -46,6 +47,9 @@ public:
 #else
   vtkTypeRevisionMacro(Slicer, vtkImageViewer2);
 #endif
+
+  //! set interactor style
+  void SetInteractorStyle(vtkInteractorStyle* style);
 
   void SetImage(vtkImageData* image, vtkTransform* transform);
   vtkImageData* GetImage() {
@@ -87,6 +91,10 @@ public:
   static double GetScalarComponentAsDouble(vtkSmartPointer< vtkImageData > image, double X, double Y, double Z, int &ix, int &iy, int &iz, int component = 0);
   void Render();
   void ResetCamera();
+
+  //! Get/Set Comparison mode
+  void SetComparisonMode(bool mode);
+  bool GetComparisonMode();
 
   void SetInitPosition();
   void SetCurrentPosition(double x, double y, double z);
@@ -175,6 +183,8 @@ public:
   vtkSmartPointer<vtkBorderWidget> borderWidget;
   vtkBorderCallback * borderCallback;
 
+  //!slicer knows if the viewing mode is comparison mode or not
+  bool m_ComparisonMode; 
 };
 
 

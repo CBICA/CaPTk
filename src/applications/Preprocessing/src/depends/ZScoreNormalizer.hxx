@@ -251,7 +251,6 @@ typename TImageType::Pointer ZScoreNormalizer< TImageType >::GetOutput()
     Update();
   }
   return m_output;
-  return m_output;
 }
 
 template< class TImageType >
