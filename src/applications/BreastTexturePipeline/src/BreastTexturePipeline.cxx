@@ -97,6 +97,7 @@ int algorithmsRunner()
   }
 
   auto libraPath = findRelativeApplicationPath("libra");
+  //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
   cbica::createDir(outputDir + "/temp");
 
   std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile)
@@ -143,7 +144,7 @@ int algorithmsRunner()
     auto outputRelevantMaskFile = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_mask.nii.gz";
     cbica::WriteImage< LibraImageType >(outputRelevantMaskImage_flipped, outputRelevantMaskFile);
 
-    auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
+    //auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
 
     auto currentDataDir = getCaPTkDataDir();
     auto latticeFeatureParamFilePath = currentDataDir + "/features/2_params_default_lattice.csv";
