@@ -200,6 +200,8 @@ jobs:
         rm -rf regression
         rm -rf binaries
 
+        make install
+
         # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
         # ./scripts/captk-pkg
