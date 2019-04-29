@@ -74,6 +74,16 @@ void fBottomImageInfoTip::setCurrentInfo(int visibility, double x, double y, dou
   }
 }
 
+void fBottomImageInfoTip::setZSlicePosition(int zslice)
+{
+  pixelPosZ->setText(QString::number(zslice));
+}
+
+void fBottomImageInfoTip::setIntensityValue(double value)
+{
+  valueLabel->setText(QString::number(value));
+}
+
 void fBottomImageInfoTip::pixelPosButtonClicked()
 {
   double X, Y, Z;

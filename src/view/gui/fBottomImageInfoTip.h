@@ -83,6 +83,17 @@ public:
   */
   void pixelPosButtonClicked();
 
+  /**
+ \brief Display Z slice position 
+ \param z slize position
+ */
+  void setZSlicePosition(int zslice);
+
+  /**
+\brief Display intensity value at cursor position
+\param value intensity value
+*/
+  void setIntensityValue(double value);
 
 signals:
   void MoveSlicerCursor(double, double, double, int);

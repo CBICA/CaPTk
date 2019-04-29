@@ -56,6 +56,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fMolecularSubtypeDialog.h"
 #include "fDCM2NIfTI.h"
 #include "fDeepMedicDialog.h"
+#include "fTexturePipelineDialog.h"
 #include "fDeepMedicNormDialog.h"
 #include "fFetalBrain.h"
 #include "fSBRTNoduleDialog.h"
@@ -91,7 +92,7 @@ typedef itk::Image< short, 3 > GenericImage;
 // multiLabel
 enum DRAW_MODE
 {
-  DRAW_MODE_LABEL_1 = 1, DRAW_MODE_LABEL_2, DRAW_MODE_LABEL_3, DRAW_MODE_LABEL_4, DRAW_MODE_LABEL_5, DRAW_MODE_LABEL_6, 
+  DRAW_MODE_LABEL_1 = 1, DRAW_MODE_LABEL_2, DRAW_MODE_LABEL_3, DRAW_MODE_LABEL_4, DRAW_MODE_LABEL_5, DRAW_MODE_LABEL_6,
   DRAW_MODE_LABEL_7, DRAW_MODE_LABEL_8, DRAW_MODE_LABEL_9
 };
 
@@ -249,6 +250,7 @@ private:
   fDiffusionEstimator diffmeasuresPanel;
   fDCM2NIfTIConverter dcmConverter;
   fDeepMedicDialog deepMedicDialog;
+  fTexturePipelineDialog texturePipelineDialog;
   fHistoMatcher histoMatchPanel;
   fDeepMedicNormalizer deepMedicNormPanel;
   fWhiteStripeObj whiteStripeNormalizer;
@@ -272,6 +274,7 @@ private:
 
   QMenu* menuApp;
   QMenu* menuPreprocessing;
+  QMenu* menuDeepLearning;
   QMenu* menuHelp;
 
   QAction *help_discussion;
@@ -324,10 +327,10 @@ private:
   QHBoxLayout* bottomLayout;
 
   /**
-\struct ActionAndName
+  \struct ActionAndName
 
-\brief This is a helper struct to tie an action with its name as a std::string
-*/
+  \brief This is a helper struct to tie an action with its name as a std::string
+  */
   struct ActionAndName
   {
     QAction* action;
@@ -340,12 +343,12 @@ private:
   /**
   \brief Takes a list of application variables from CMake defines and put it in specified window and menu
 
-    \param inputList The list obtained from CMake variable which is added to cache
-    \param inputFMainWindow The current fMainWindow from which the QActions need to inherit
-    \param menuToPopulate The QMenu in which the QActions need to be populated *visualizationInputImagesLabel
-    \return A vector of ActionAndName structs which ties a QAction to the corresponding name from inputList
-    **/
-    std::vector< ActionAndName > populateStringListInMenu(const std::vector< std::string > &vectorOfInputs, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic);
+  \param inputList The list obtained from CMake variable which is added to cache
+  \param inputFMainWindow The current fMainWindow from which the QActions need to inherit
+  \param menuToPopulate The QMenu in which the QActions need to be populated *visualizationInputImagesLabel
+  \return A vector of ActionAndName structs which ties a QAction to the corresponding name from inputList
+  **/
+  std::vector< ActionAndName > populateStringListInMenu(const std::vector< std::string > &vectorOfInputs, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic);
 
   // initialize vectors of Actions and Names so that the process can be automated and the QAction is tied to its corresponding Name
   std::vector< ActionAndName >
@@ -354,7 +357,8 @@ private:
     vectorOfLungApps, // lung-specific applications
     vectorOfSegmentationApps, // the segmentation applications
     vectorOfMiscApps, // the rest
-    vectorOfPreprocessingActionsAndNames; // for preprocessing algorithms
+    vectorOfPreprocessingActionsAndNames, // for preprocessing algorithms
+    vectorOfDeepLearningActionsAndNames; // for deep learning applications
 
 public:
   //! Default constructor
@@ -362,12 +366,16 @@ public:
 
   //! Default destructor
   ~fMainWindow();
-  
+
   QTableWidget * m_imagesTable;
   QTableWidget * m_nonVisImagesTable;
 
   //! Check if a valid mask is defined for the current instance of the 
   bool isMaskDefined();
+
+  //! Get/Set Comparison Mode
+  void SetComparisonMode(bool mode);
+  bool GetComparisonMode();
 
   /*
   \brief Change direction cosine of image to identity
@@ -388,7 +396,7 @@ public:
 
   /**
   \brief Load images into memory
-  
+
   \param filenames Vector of image filenames which need to be loaded (comes from "Load" dialog)
   \param imagetype_int Either NIfTI or DICOM
   \param bSkipDup Skip duplicates, defaults to true
@@ -398,7 +406,7 @@ public:
 
   /**
   \brief Load non-viewing images into memory
-  
+
   \param directoryname Directory name in which the non-viewing images are present
   \param imagetype_int Either NIfTI or DICOM
   \param imagesubtype Modality of the image (T1, T2, ...)
@@ -441,7 +449,7 @@ public:
   \brief Get the corresponding table item from the image
   */
   QTableWidgetItem* GetItemFromSlicerManager(SlicerManager* sm);
-  
+
   /**
   \brief Construct near and far indeces from the initialized mask
   */
@@ -473,7 +481,7 @@ public:
         }
       }
       ++maskIt;
-	  ++outputIt;
+      ++outputIt;
     }
     return output;
   }
@@ -517,7 +525,7 @@ public:
   /*
   \brief For fast developer testing .TBD:  remove or disable.
   */
-  void loadFromCommandLine(std::vector< QString > files, const std::string &maskImage = "", 
+  void loadFromCommandLine(std::vector< QString > files, const std::string &maskImage = "", const float maskOpacity = 1.0,
     const std::string &tumorPointFile = "", const std::string &tissuePointFile = "", bool firstRun = false)
   {
     auto qvectorString = QVector< QString >::fromStdVector(files);
@@ -526,6 +534,7 @@ public:
     if (!maskImage.empty())
     {
       this->readMaskFile(maskImage);
+      this->ChangeMaskOpacity(maskOpacity * 10);
     }
     if (!tumorPointFile.empty())
     {
@@ -550,7 +559,17 @@ signals:
   void SeedPointsFocused(bool bFocused);
   void TissuePointsFocused(bool bFocused);
 
-  public slots:
+public slots:
+
+    //! set Z slice position on image info panel
+    void SetImageInfoZSlicePosition(int zslice);
+
+    //! set voxel intensity value at cursor position on image info panel
+    void SetImageInfoIntensityValue(double value);
+
+    //! slot on movement of slider in comparison mode
+    void OnSliderMovedInComparisonMode(int);
+
   /**
   \brief Updates draw mode when drawing panel changes
   */
@@ -577,22 +596,22 @@ signals:
   void StartEGFREstimate();
 
   /**
-  \brief get the mask image 
+  \brief get the mask image
   */
- ImageTypeFloat3D::Pointer getMaskImage();
+  ImageTypeFloat3D::Pointer getMaskImage();
 
 
- /**
- \brief function that performs segmentation and UI measurements of Featl Ventriculomegaly application
- */
- void skullstripfunc();
- void Predict();
- void TrainNewFetalModel(const std::string &directory, const std::string &outputdirectory);
+  /**
+  \brief function that performs segmentation and UI measurements of Featl Ventriculomegaly application
+  */
+  void skullstripfunc();
+  void Predict();
+  void TrainNewFetalModel(const std::string &directory, const std::string &outputdirectory);
 
   /**
   \brief get images loaded and their file names
   */
- std::vector<ImageTypeFloat3D::Pointer> getLodedImages(std::vector<std::string> &fileNames, std::vector<std::string> &modality, bool onlySelected = false);
+  std::vector<ImageTypeFloat3D::Pointer> getLodedImages(std::vector<std::string> &fileNames, std::vector<std::string> &modality, bool onlySelected = false);
 
   /**
   \brief Main function that estimates recurrence on the displayed test subject
@@ -605,7 +624,7 @@ signals:
   param cbPerfData Whether Perfusion data is present or not
   param cbDistData Whether Distance feature need to be used or not
   */
-  void StartRecurrenceEstimate(const std::string &outputdirectory,  bool cbT1Data,  bool cbDTIData,  bool cbPerfData,  bool cbDistData);
+  void StartRecurrenceEstimate(const std::string &outputdirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistData);
   void LoadedSubjectExistingRecurrenceEstimate(const std::string &outputdirectory, const std::string &modeldirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistData);
   //void StartSurvivalEstimate(const std::string output, const std::string model, double age);
   /**
@@ -622,7 +641,7 @@ signals:
   param cbPerfData Whether Perfusion data is present or not
   param cbDistData Whether Distance feature need to be used or not
   */
-  void RecurrenceEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory, bool cbConventionalData,  bool cbDTIData,  bool cbPerfData,  bool cbDistData);
+  void RecurrenceEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory, bool cbConventionalData, bool cbDTIData, bool cbPerfData, bool cbDistData);
 
   /**
   \brief Main function that trains a model on many training subjects
@@ -636,8 +655,8 @@ signals:
   param cbPerfData Whether Perfusion data is present or not
   param cbDistData Whether Distance feature need to be used or not
   */
-  void TrainNewModelOnGivenData(const std::string &directory, const std::string &outputdirectory,  bool cbConvData,  bool cbDTIData,  bool cbPerfData,  bool cbDistData);
-  
+  void TrainNewModelOnGivenData(const std::string &directory, const std::string &outputdirectory, bool cbConvData, bool cbDTIData, bool cbPerfData, bool cbDistData);
+
   /**
   \brief Main function that estimates pseudoprogression on the displayed test subject
   param outputdirectory The directory where recurrence map will be written
@@ -691,7 +710,7 @@ signals:
   void CallForSurvivalPredictionOnExistingModelFromMain(const std::string modeldirectory, const std::string inputdirectory, const std::string outputdirectory);
 
   /**
-  \brief Create new model for Survival analysis 
+  \brief Create new model for Survival analysis
 
   \param inputdirectory The input subjects directory (pre-sorted)
   \param outputdirectory The output directory to save the data
@@ -716,7 +735,7 @@ signals:
   */
   void CallForNewEGFRvIIIPredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory);
 
-  
+
   /**
   \brief MolecularSubtype using Existing model
 
@@ -740,7 +759,7 @@ signals:
   \param referenceAtlas The reference atlas (defaults to SRI24 atlas)
   \param referenceMask The reference mask (defaults to SRI24 mask)
   \param inputImageFile The input image file
-  \param outputImageFile The output file to save 
+  \param outputImageFile The output file to save
   */
   void CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask, const std::string inputImageFile, const std::string outputImageFile);
   void CallPCACalculation(const int, const std::string inputFolder, const std::string outputFolder);
@@ -767,7 +786,12 @@ signals:
   /**
   \brief Call the Deep Medic Segmentation dialog
   */
-  void CallDeepMedicSegmentation(const std::string outputDirectory);
+  void CallDeepMedicSegmentation(const std::string modelDirectory, const std::string outputDirectory);
+
+  /**
+  \brief Call the breast texture pipeline
+  */
+  void CallTexturePipeline(const std::string outputDirectory);
 
   /**
   \brief Call Histogram Matching module of ITK
@@ -782,7 +806,7 @@ signals:
   /**
   \brief Call Deep Medic Normalization module
   */
-  void CallImageDeepMedicNormalizer(const std::string inputImage, const std::string maskImage, const std::string outputImageFile, 
+  void CallImageDeepMedicNormalizer(const std::string inputImage, const std::string maskImage, const std::string outputImageFile,
     const std::string quantLower, const std::string quantUpper,
     const std::string cutoffLower, const std::string cutoffUpper, bool wholeImageMeanThreshold);
 
@@ -796,7 +820,7 @@ signals:
   \brief Generate population atlas
   */
   void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputImageFile);
-  
+
   /**
 \brief Generete SBRT Nodule
 */
@@ -824,12 +848,12 @@ signals:
   */
   void UpdateActionQ(const QVariantList& list)
   {
-	  std::vector< PointVal > points;
-	  for (int i = 0; i < list.size(); i++)
-	  {
-		  points.push_back(qvariant_cast<PointVal>(list[i]));
-	  }
-	  UpdateAction(points);
+    std::vector< PointVal > points;
+    for (int i = 0; i < list.size(); i++)
+    {
+      points.push_back(qvariant_cast<PointVal>(list[i]));
+    }
+    UpdateAction(points);
   }
   void UpdateAction(std::vector< PointVal > points = std::vector< PointVal >());
 
@@ -870,7 +894,7 @@ signals:
 
     //ShowMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    if /*(std::system((link).c_str()) != 0)*/(!openLink(currentLink))
+    if /*(std::system((link).c_str()) != 0)*/ (!openLink(currentLink))
     {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
       return;
@@ -898,17 +922,17 @@ signals:
   \brief Function called when the sliders of axial view is changed
   */
   void AxialViewSliderChanged();
-  
+
   /**
   \brief Function called when the sliders of coronal view is changed
   */
   void CoronalViewSliderChanged();
-  
+
   /**
   \brief Function called when the sliders of saggital view is changed
   */
   void SaggitalViewSliderChanged();
-  
+
   /**
   \brief Closing viewing image by pressing X in front of the image
   param item The current selected item of the table
@@ -922,10 +946,10 @@ signals:
   void CloseNonViewingDTIImage(QTableWidgetItem* item);
 
 
-  void clearMask(int label=-1);
+  void clearMask(int label = -1);
 
   void makeStroke(std::vector<itk::Image<short, 3>::IndexType>& indices, const int value);
-  
+
   int getSelectedDrawLabel()
   {
     return drawingPanel->getSelectedDrawLabel();
@@ -934,17 +958,17 @@ signals:
   {
     return drawingPanel->getSelectedDrawSize();
   }
-  
+
   /**
   \brief Save near/far drawing in Nifti format
   */
   void SaveDrawing();
-  
+
   /**
   \brief Save near/far drawing in DICOM format
   */
   void SaveDicomDrawing();
-  
+
   /**
   \brief Save initial seed drawing in Nifti format
   */
@@ -955,14 +979,14 @@ signals:
   */
   void LoadDrawing();
 
-///**
-//\brief Load near/far drawing from a DICOM file
-//*/
-//void LoadDicomDrawing();
+  ///**
+  //\brief Load near/far drawing from a DICOM file
+  //*/
+  //void LoadDicomDrawing();
 
-  /**
-  \brief Load annotated ROI from filename
-  */
+    /**
+    \brief Load annotated ROI from filename
+    */
   void LoadDrawing(const std::string &maskFile);
 
   /**
@@ -971,7 +995,7 @@ signals:
   VectorVectorDouble FormulateDrawingPointsForEdemaSegmentation();
 
   /**
-  \brief Puts initial seed points in one vector to be used for tumor segmentation 
+  \brief Puts initial seed points in one vector to be used for tumor segmentation
   */
   VectorVectorDouble FormulateDrawingPointsForTumorSegmentation();
 
@@ -979,7 +1003,7 @@ signals:
   \brief Save the current selected Nifti image
   */
   void SaveImage();
-  
+
   /**
   \brief Save the current selected DICOM image
   */
@@ -989,7 +1013,7 @@ signals:
   \brief Get indices of particular label
   */
   VectorVectorDouble GetMaskLabelIndices(const int label);
-  
+
   /**
   \brief Read ROI from a file into the memory
   */
@@ -1031,7 +1055,7 @@ signals:
   */
   void panelChanged(int current);
 
-  void propogateSlicerPosition(int slicerId =0,int imageId=-1);
+  void propogateSlicerPosition(int slicerId = 0, int imageId = -1);
 
 
   /**
@@ -1054,14 +1078,14 @@ signals:
   \brief Close all loaded images
   */
   void CloseAllImages();
-  
+
   /**
   \brief Reset the number of points in the table when all the images are closed
   */
   void ResetNumberOfPoints();
 
   /**
-  \brief This function deals with undo  
+  \brief This function deals with undo
   */
   void UndoFunctionality();
 
@@ -1204,7 +1228,7 @@ signals:
   */
   void MoveSlicerCursor(double x, double y, double z, int mode = 0);
 
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForSurvival (const std::string directoryname);
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForSurvival(const std::string directoryname);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useConventionalData, const bool &useDTIData, const bool &usePerfData, const bool &useDistData);
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForRecurrence(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useT1Data, const bool &useDTIData, const bool &usePerfData, const bool &useDistData);
@@ -1221,20 +1245,20 @@ signals:
   /**
   \brief Called internally within DisplayChange function to update link between images
   */
-  void UpdateLinkedNavigation( Slicer* refSlicer);
+  void UpdateLinkedNavigation(Slicer* refSlicer);
 
   void toolTabDockChanged(bool bUnDocked)//TBD - move to cpp file 
   {
-	  if (bUnDocked)
-	  {
-		  
-		  m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight() * 10);
-		  m_toolTabdock->show();
-	  }
-	  else
-	  {
-		  m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
-	  }
+    if (bUnDocked)
+    {
+
+      m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight() * 10);
+      m_toolTabdock->show();
+    }
+    else
+    {
+      m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
+    }
   }
   //! Returns the active tab from the tab widget
   int getActiveTabId()
@@ -1248,6 +1272,8 @@ signals:
     return tumorPanel->mTumorPointsSelected;
   }
 
+  void ApplicationBreastSegmentation();
+  void ApplicationTexturePipeline();
   void ApplicationLIBRASingle();
   void ApplicationLIBRABatch();
   void ApplicationConfetti();
@@ -1301,6 +1327,7 @@ signals:
   void ApplicationWhiteStripe();
 #endif
   void ImageDenoising();
+  void ImageMamogramPreprocess();
   void ImageBiasCorrection();
   void ImageRegistration();
   void ImageHistogramMatching();
@@ -1312,8 +1339,14 @@ signals:
   void PerfusionMeasuresCalculation();
   void DiffusionMeasuresCalculation();
   void ClassifierTraining();
-  void ApplicationDeepMedicSegmentation();
+  void ApplicationDeepMedicSegmentation(int type);
   void ApplicationTheia();
+
+  //! Enable/Disable comparison mode
+  void EnableComparisonMode(bool);
+
+  //! Get Comparison Viewers
+  std::vector<vtkSmartPointer<Slicer>> GetComparisonViewers();
 
   void GeodesicTrainingFinishedHandler();
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
@@ -1329,7 +1362,7 @@ signals:
   void EnableAdvancedVisualizer()
   {
     m_advancedVisualizer = true;
-  }  
+  }
 
 public:
 
@@ -1398,9 +1431,9 @@ public:
 
   std::vector<int> mActionIds;
   std::vector<int> mActionSequenceIds;
-  
+
   std::vector< std::vector<PointVal> > mActionPoints;
-  
+
   GenericImage::Pointer mCustomImageToThreshold;
 
   int mSequenceNumber, mCustomImageToThreshold_min, mCustomImageToThreshold_max;
@@ -1412,40 +1445,42 @@ private:
   ImageTypeShort3D::Pointer m_imgGeodesicOutNegative;
   std::map<std::string, float> m_fetalbrainfeatures;
   int m_fetalslice;
+  bool m_ComparisonMode; //! comparison mode
+  vtkSmartPointer<Slicer> m_ComparisonViewerLeft, m_ComparisonViewerCenter, m_ComparisonViewerRight;
 
   // GeodesicTraining private variables
-	GeodesicTrainingCaPTkApp<2>* m_GeodesicTrainingCaPTkApp2D;
+  GeodesicTrainingCaPTkApp<2>* m_GeodesicTrainingCaPTkApp2D;
   GeodesicTrainingCaPTkApp<3>* m_GeodesicTrainingCaPTkApp3D;
-	std::string m_GeodesicTrainingFirstFileNameFromLastExec = "";
+  std::string m_GeodesicTrainingFirstFileNameFromLastExec = "";
   bool m_IsGeodesicTrainingRunning = false;
 
-	std::thread m_ExternalProcessThread;
+  std::thread m_ExternalProcessThread;
 
-    struct DicomDictTagAndVal
-    {
-      std::string tag;
-      std::string value;
+  struct DicomDictTagAndVal
+  {
+    std::string tag;
+    std::string value;
 
-      DicomDictTagAndVal(const std::string &input_tag, const std::string &input_value) :
-        tag(input_tag), value(input_value)
-      { }
+    DicomDictTagAndVal(const std::string &input_tag, const std::string &input_value) :
+      tag(input_tag), value(input_value)
+    { }
 
-      DicomDictTagAndVal(const std::string &input_tag) :
+    DicomDictTagAndVal(const std::string &input_tag) :
       tag(input_tag)
-      { }
+    { }
 
-      void SetValue(const std::string &input_value)
-      {
-        value = input_value;
-      }
-    };
+    void SetValue(const std::string &input_value)
+    {
+      value = input_value;
+    }
+  };
 
-	void RegistrationWorker(std::vector<std::string> compVector, std::vector<std::string> inputFileNames,
-		std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames);
+  void RegistrationWorker(std::vector<std::string> compVector, std::vector<std::string> inputFileNames,
+    std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames);
 
   bool m_skipTutorialOnNextRun = false;
 
-  std::atomic<int> m_NumberOfUnfinishedExternalProcesses = {0};
+  std::atomic<int> m_NumberOfUnfinishedExternalProcesses = { 0 };
 
   int  startExternalProcess(const QString &application, const QStringList &arguments);
 };

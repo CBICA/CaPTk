@@ -63,6 +63,16 @@ public:
     return mLastError;
   }
 
+  //! Get/Set Comparison mode
+  void SetComparisonMode(bool mode);
+  bool GetComparisonMode();
+
+  //! set image on a specific slicer
+  void SetImageOnSlicer(vtkSmartPointer< vtkImageData >, vtkTransform* transform, int slicer);
+
+  //! Get image as ITK image
+  ImageTypeFloat3D::Pointer GetITKImage();
+
   void UpdateVtkImage();
 
   void SetImage(ImageTypeFloat3D::Pointer t1ceimage);
@@ -276,6 +286,7 @@ public:
   int mOrder;
   double mThresholdIndex;
   double mThreshold;
+  bool m_ComparisonMode; //! comparison mode
 
 };
 #if __GNUC__
