@@ -45,11 +45,25 @@ public:
 
   QGroupBox *inputGroupBox;
   QGridLayout *inputGridLayout;
+  
   QLabel *inputImageLabel;
   QLineEdit *inputImageName;
+  QPushButton *inputImageButton;
 
-  QLabel *inputEchoLabel;
-  QLineEdit *inputEchoName;
+  QLabel *inputT1ceImageLabel;
+  QLineEdit *inputT1ceImageName;
+  QPushButton *inputT1ceImageButton;
+
+  QLabel *inputDicomImageLabel;
+  QLineEdit *inputDicomImageName;
+  QPushButton *inputDicomImageButton;
+
+  QLabel *inputAfterPointsLabel;
+  QLineEdit *inputAfterPointsName;
+
+  QLabel *inputBeforePointsLabel;
+  QLineEdit *inputBeforePointsName;
+
 
   QGroupBox *outputGroupBox;
   QGridLayout *outputGridLayout;
@@ -57,14 +71,10 @@ public:
   QLabel *outputImageLabel;
   QLabel *longRunningWarning;
   QPushButton *outputImageButton;
-  QPushButton *inputImageButton;
+
 
   QPushButton *confirmButton;
   QPushButton *cancelButton;
-
-  QCheckBox* m_psr;
-  QCheckBox* m_rcbv;
-  QCheckBox* m_ph;
 
   QHBoxLayout * horizontalLayout;
 
@@ -96,45 +106,97 @@ public:
     sizePolicy.setHeightForWidth(inputImageLabel->sizePolicy().hasHeightForWidth());
     inputImageLabel->setSizePolicy(sizePolicy);
 
-    inputEchoLabel = new QLabel(inputGroupBox);
-    sizePolicy.setHeightForWidth(inputEchoLabel->sizePolicy().hasHeightForWidth());
-    inputEchoLabel->setSizePolicy(sizePolicy);
-
-
     inputImageName = new QLineEdit("");
     inputImageName->setObjectName(QString::fromUtf8("inputImageName"));
     sizePolicy.setHeightForWidth(inputImageName->sizePolicy().hasHeightForWidth());
     inputImageName->setSizePolicy(sizePolicy);
     inputImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-    inputEchoName = new QLineEdit("");
-    inputEchoName->setObjectName(QString::fromUtf8("inputEchoName"));
-    sizePolicy.setHeightForWidth(inputEchoName->sizePolicy().hasHeightForWidth());
-    inputEchoName->setSizePolicy(sizePolicy);
-    inputEchoName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
-
-
     inputImageButton = new QPushButton(inputGroupBox);
     inputImageButton->setObjectName(QString::fromUtf8("inputImageButton"));
     inputImageButton->setText(QString("Browse"));
 
-    m_psr = new QCheckBox("Percent Signal Recovery");
-    m_psr->setEnabled(true);
-    m_rcbv = new QCheckBox("Reletive Cerebal Blood Volume");
-    m_rcbv->setEnabled(true);
-    m_ph = new QCheckBox("Peak Height");
-    m_ph->setEnabled(true);
+
+
+
+
+
+    inputT1ceImageLabel = new QLabel(inputGroupBox);
+    sizePolicy.setHeightForWidth(inputT1ceImageLabel->sizePolicy().hasHeightForWidth());
+    inputT1ceImageLabel->setSizePolicy(sizePolicy);
+
+    inputT1ceImageName = new QLineEdit("");
+    inputT1ceImageName->setObjectName(QString::fromUtf8("inputT1ceImageName"));
+    sizePolicy.setHeightForWidth(inputT1ceImageName->sizePolicy().hasHeightForWidth());
+    inputT1ceImageName->setSizePolicy(sizePolicy);
+    inputT1ceImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    inputT1ceImageButton = new QPushButton(inputGroupBox);
+    inputT1ceImageButton->setObjectName(QString::fromUtf8("inputT1ceImageButton"));
+    inputT1ceImageButton->setText(QString("Browse"));
+
+
+
+
+    inputDicomImageLabel = new QLabel(inputGroupBox);
+    sizePolicy.setHeightForWidth(inputDicomImageLabel->sizePolicy().hasHeightForWidth());
+    inputDicomImageLabel->setSizePolicy(sizePolicy);
+
+    inputDicomImageName = new QLineEdit("");
+    inputDicomImageName->setObjectName(QString::fromUtf8("inputDicomImageName"));
+    sizePolicy.setHeightForWidth(inputDicomImageName->sizePolicy().hasHeightForWidth());
+    inputDicomImageName->setSizePolicy(sizePolicy);
+    inputDicomImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    inputDicomImageButton = new QPushButton(inputGroupBox);
+    inputDicomImageButton->setObjectName(QString::fromUtf8("inputDicomImageButton"));
+    inputDicomImageButton->setText(QString("Browse"));
+
+
+
+
+    inputBeforePointsLabel = new QLabel(inputGroupBox);
+    sizePolicy.setHeightForWidth(inputBeforePointsLabel->sizePolicy().hasHeightForWidth());
+    inputBeforePointsLabel->setSizePolicy(sizePolicy);
+
+    inputAfterPointsLabel = new QLabel(inputGroupBox);
+    sizePolicy.setHeightForWidth(inputAfterPointsLabel->sizePolicy().hasHeightForWidth());
+    inputAfterPointsLabel->setSizePolicy(sizePolicy);
+
+
+
+    inputBeforePointsName = new QLineEdit("");
+    inputBeforePointsName->setObjectName(QString::fromUtf8("inputBeforePointsName"));
+    sizePolicy.setHeightForWidth(inputBeforePointsName->sizePolicy().hasHeightForWidth());
+    inputBeforePointsName->setSizePolicy(sizePolicy);
+    inputBeforePointsName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    inputAfterPointsName = new QLineEdit("");
+    inputAfterPointsName->setObjectName(QString::fromUtf8("inputAfterPointsName"));
+    sizePolicy.setHeightForWidth(inputAfterPointsName->sizePolicy().hasHeightForWidth());
+    inputAfterPointsName->setSizePolicy(sizePolicy);
+    inputAfterPointsName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+
+
+
+
 
     inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
     inputGridLayout->addWidget(inputImageName, 0, 1, 1, 1);
     inputGridLayout->addWidget(inputImageButton, 0, 2, 1, 1);
 
-    inputGridLayout->addWidget(inputEchoLabel, 1, 0, 1, 1);
-    inputGridLayout->addWidget(inputEchoName, 1, 1, 1, 1);
+    inputGridLayout->addWidget(inputT1ceImageLabel, 1, 0, 1, 1);
+    inputGridLayout->addWidget(inputT1ceImageName, 1, 1, 1, 1);
+    inputGridLayout->addWidget(inputT1ceImageButton, 1, 2, 1, 1);
 
-    inputGridLayout->addWidget(m_rcbv, 3, 0, 1, 1);
-    inputGridLayout->addWidget(m_ph, 4, 0, 1, 1);
-    inputGridLayout->addWidget(m_psr, 5, 0, 1, 1);
+    inputGridLayout->addWidget(inputDicomImageLabel, 2, 0, 1, 1);
+    inputGridLayout->addWidget(inputDicomImageName, 2, 1, 1, 1);
+    inputGridLayout->addWidget(inputDicomImageButton,2, 2, 1, 1);
+
+    inputGridLayout->addWidget(inputAfterPointsLabel, 3, 0, 1, 1);
+    inputGridLayout->addWidget(inputAfterPointsName, 4, 1, 1, 1);
+
 
     // output
     outputGroupBox = new QGroupBox(fPerfusionAlignmentDialog);
@@ -203,14 +265,12 @@ public:
     // m_ph->setText(QApplication::translate("fPerfusionAlignmentDialog", "Peak Height", 0, QApplication::UnicodeUTF8));
     // NEW CHANGES
     fPerfusionAlignmentDialog->setWindowTitle(QApplication::translate("fPerfusionAlignmentDialog", "Perfusion Derivatives", 0));
-    inputEchoLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "Echo Time", 0));
+    inputBeforePointsLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "# of Points before drop", 0));
+    inputAfterPointsLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "# of Points after drop", 0));
     inputImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "DSC-MRI Image", 0));
 
     confirmButton->setText(QApplication::translate("fPerfusionAlignmentDialog", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fPerfusionAlignmentDialog", "Cancel", 0));
-    m_rcbv->setText(QApplication::translate("fPerfusionAlignmentDialog", "Automatically-extracted proxy to Relative Cerebral Blood Volume (ap-rCBV)", 0));
-    m_psr->setText(QApplication::translate("fPerfusionAlignmentDialog", "Percent Signal Recovery (PSR)", 0));
-    m_ph->setText(QApplication::translate("fPerfusionAlignmentDialog", "Peak Height (PH)", 0));
   } // retranslateUi
 };
 

@@ -21,6 +21,7 @@
 #include "SusanDenoising.h"
 #include "WhiteStripe.h"
 #include "PerfusionDerivatives.h"
+#include "PerfusionAlignment.h"
 #include "DiffusionDerivatives.h"
 #include "ZScoreNormalizer.h"
 #include "PerfusionPCA.h"
@@ -852,6 +853,9 @@ fMainWindow::fMainWindow()
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(const double, const double,const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(const double, const double, const std::string, const std::string, const std::string, const std::string)));
+
+
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
     SLOT(CallDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)));
 
@@ -6848,6 +6852,10 @@ void fMainWindow::PerfusionMeasuresCalculation()
 {
   perfmeasuresPanel.exec();
 }
+void fMainWindow::PerfusionAlignmentCalculation()
+{
+  perfalignPanel.exec();
+}
 void fMainWindow::DiffusionMeasuresCalculation()
 {
   //open a simple dialog box with input and output images
@@ -8067,6 +8075,52 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
     msg = "Perfusion derivatives have been saved at the specified locations.";
     ShowMessage(msg.toStdString(), this);
   }
+}
+
+
+void fMainWindow::CallPerfusionAlignmentCalculation(const double before, const double after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder)
+{
+  if (!cbica::isFile(inputfilename))
+  {
+    ShowErrorMessage("Input DSC-MRI Image passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputt1cefilename))
+  {
+    ShowErrorMessage("Input T1ce Image passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputdicomfilename))
+  {
+    ShowErrorMessage("Input Dicom Image passed is not a valid file, please re-check", this);
+    return;
+  }
+  typedef ImageTypeFloat4D PerfusionImageType;
+
+  PerfusionAlignment objPerfusion;
+
+  std::vector<double> OriginalCurve, RevisedCurve;
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, inputdicomfilename, inputt1cefilename, before, after, OriginalCurve, RevisedCurve);
+  for (int index = 0; index < PerfusionAlignment.size(); index++)
+  {
+    std::cout << "Writing time-point: " << index + 1 << "/" << PerfusionAlignment.size() << std::endl;
+    cbica::WriteImage<ImageTypeFloat3D>(PerfusionAlignment[index], outputFolder + std::to_string(index + 1 + before) + ".nii.gz");
+  }
+
+  std::ofstream myfile;
+  myfile.open(outputFolder + "/original_curve.csv");
+  for (unsigned int index1 = 0; index1 < OriginalCurve.size(); index1++)
+    myfile << std::to_string(OriginalCurve[index1]) << "\n";
+  myfile.close();
+
+  myfile.open(outputFolder + "/revised_curve.csv");
+  for (unsigned int index1 = 0; index1 < RevisedCurve.size(); index1++)
+    myfile << std::to_string(RevisedCurve[index1]) << "\n";
+  myfile.close();
+
+  QString msg;
+  msg = "Aligned images have been saved at the specified location.";
+  ShowMessage(msg.toStdString(), this);
 }
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder, int classifier, int conf, int folds)

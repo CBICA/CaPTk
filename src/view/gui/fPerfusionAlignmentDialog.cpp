@@ -16,10 +16,9 @@ fPerfusionAligner::fPerfusionAligner()
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
   connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputImage()));
   connect(inputImageButton, SIGNAL(clicked()), this, SLOT(SelectInputImage()));
+  connect(inputT1ceImageButton, SIGNAL(clicked()), this, SLOT(SelectT1ceInputImage()));
+  connect(inputDicomImageButton, SIGNAL(clicked()), this, SLOT(SelectDicomInputImage()));
 
-  m_rcbv->setChecked(true);
-  m_psr->setChecked(true);
-  m_ph->setChecked(true);
 }
 fPerfusionAligner::~fPerfusionAligner()
 {
@@ -35,22 +34,32 @@ void fPerfusionAligner::ConfirmButtonPressed()
     ShowErrorMessage("Please specify the DSC-MRI Image.");
     return;
   }
-  if ((inputEchoName->text().isEmpty()))
+  if ((inputT1ceImageName->text().isEmpty()))
   {
-	  ShowErrorMessage("Please specify the Echo Time.");
+    ShowErrorMessage("Please specify the T1ce Image.");
+    return;
+  }
+  if ((inputDicomImageName->text().isEmpty()))
+  {
+    ShowErrorMessage("Please specify the Dicom file.");
+    return;
+  }
+  if ((inputBeforePointsLabel->text().isEmpty()))
+  {
+	  ShowErrorMessage("Please specify the number of points to pick before the drop.");
 	  return;
+  }
+  if ((inputAfterPointsLabel->text().isEmpty()))
+  {
+    ShowErrorMessage("Please specify the number of points to pick after the drop.");
+    return;
   }
   if (outputImageName->text().isEmpty())
   {
     ShowErrorMessage("Please specify the output folder.");
     return;
   }
-  if (m_rcbv->isChecked() == false && m_psr->isChecked() == false && m_ph->isChecked() == false)
-  {
-    ShowErrorMessage("Please select at least one of the given three options: ap-rCBV, PH, PSR.");
-    return;
-  }
-  emit RunPerfusionMeasuresCalculation(inputEchoName->text().toDouble(), m_rcbv->isChecked(), m_psr->isChecked(), m_ph->isChecked(), mInputPathName.toStdString(), mOutputPathName.toStdString());
+  emit RunPerfusionAlignmentCalculation(inputBeforePointsLabel->text().toDouble(), inputAfterPointsLabel->text().toDouble(), mInputPathName.toStdString(), mInputT1cePathName.toStdString(), mInputDicomPathName.toStdString(), mOutputPathName.toStdString());
 
   this->close();
 }
@@ -75,4 +84,26 @@ void fPerfusionAligner::SelectInputImage()
 		inputImageName->setText(inputImage);
 
 	mInputPathName = inputImage;
+}
+
+void fPerfusionAligner::SelectDicomInputImage()
+{
+  auto inputImage = getExistingFile(this, mInputDicomPathName);
+  if (inputImage.isNull() || inputImage.isEmpty())
+    return;
+  else
+    inputDicomImageName->setText(inputImage);
+
+  mInputDicomPathName = inputImage;
+}
+
+void fPerfusionAligner::SelectT1ceInputImage()
+{
+  auto inputT1ceImage = getExistingFile(this, mInputT1cePathName);
+  if (inputT1ceImage.isNull() || inputT1ceImage.isEmpty())
+    return;
+  else
+    inputT1ceImageName->setText(inputT1ceImage);
+
+  mInputT1cePathName = inputT1ceImage;
 }
