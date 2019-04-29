@@ -1568,20 +1568,20 @@ std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble>
   VectorDouble HistogramFeatures = GetHistogramFeatures(ROIIntensities, 10);
   VectorDouble HistogramFeatures1 = GetHistogramFeatures(ROIIntensities, 20);
   VectorDouble IntensityFeatures = GetIntensityFeatures(ROIIntensities);
-  ImageType::Pointer isotropicImageGLCM = cbica::ResampleImage< ImageType >(image, 1.0, "Linear");
-  ImageType::Pointer isotropicMaskGLCM  = cbica::ResampleImage< ImageType >(mask, 1.0, "Nearest");
-  auto roundingFilter = itk::RoundImageFilter< ImageType,ImageType>::New();
+  typename ImageType::Pointer isotropicImageGLCM = cbica::ResampleImage< ImageType >(image, 1.0, "Linear");
+  typename ImageType::Pointer isotropicMaskGLCM  = cbica::ResampleImage< ImageType >(mask, 1.0, "Nearest");
+  auto roundingFilter = itk::RoundImageFilter< typename ImageType,typename ImageType>::New();
   roundingFilter->SetInput(isotropicMaskGLCM);
   roundingFilter->Update();
   isotropicMaskGLCM = roundingFilter->GetOutput();
-  VectorDouble GLCMFeatures = GetGLCMFeatures<ImageType>(isotropicImageGLCM, isotropicMaskGLCM,minvalue,maxvalue);
+  VectorDouble GLCMFeatures = GetGLCMFeatures<typename ImageType>(isotropicImageGLCM, isotropicMaskGLCM,minvalue,maxvalue);
 
-  ImageType::Pointer isotropicImageGLRLM = cbica::ResampleImage< ImageType >(image, 1.0, "Linear");
-  ImageType::Pointer isotropicMaskGLRLM = cbica::ResampleImage< ImageType >(mask, 1.0, "Nearest");
+  typename ImageType::Pointer isotropicImageGLRLM = cbica::ResampleImage< ImageType >(image, 1.0, "Linear");
+  typename ImageType::Pointer isotropicMaskGLRLM = cbica::ResampleImage< ImageType >(mask, 1.0, "Nearest");
   roundingFilter->SetInput(isotropicMaskGLRLM);
   roundingFilter->Update();
   isotropicMaskGLRLM = roundingFilter->GetOutput();
-  VectorDouble GLRLMFeatures = GetRunLengthFeatures<ImageType>(isotropicImageGLRLM, isotropicMaskGLRLM, minvalue, maxvalue);
+  VectorDouble GLRLMFeatures = GetRunLengthFeatures<typename ImageType>(isotropicImageGLRLM, isotropicMaskGLRLM, minvalue, maxvalue);
 
   std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble> new_tuple(HistogramFeatures, IntensityFeatures, GLCMFeatures, GLRLMFeatures, HistogramFeatures1);
   return new_tuple;
