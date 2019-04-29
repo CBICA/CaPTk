@@ -197,6 +197,12 @@ jobs:
         ls ./qt/
       displayName: 'Check qt'
       
+    # Check libra
+    - bash: |
+        cd bin/install/appdir/usr/bin/
+        ls -l
+      displayName: 'Checking ${installDir}/bin'
+      
     # Build a package
     - bash: |
         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
