@@ -30,6 +30,12 @@ IF( CCacheExectuable )
   #MESSAGE( STATUS "Speeding up build with ccache" )
 ENDIF()
 
+IF(WIN32)
+  # enable parallel builds for windows
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /MP")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+ENDIF()
+
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules/)
 INCLUDE( CaPTk_macros )
 
@@ -782,7 +788,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     # define the executable
     IF(WIN32)
       # ensures no console pops up when launching the program
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /MP")
       ADD_EXECUTABLE(${EXE_NAME} WIN32
         ${EXE_SOURCES}
         #${YAMLCPP_Headers}
