@@ -25,6 +25,8 @@ jobs:
       displayName: 'Install dependencies'
   
     - bash: |
+        rm -rf binaries/*mac*.zip
+        rm -rf binaries/*windows*.zip
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
@@ -148,7 +150,8 @@ jobs:
 
     # Nuclear Option #1
     - bash: |
-        rm -rf binaries/_*.zip
+        rm -rf binaries/*mac*.zip
+        rm -rf binaries/*windows*.zip
         rm -rf data
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
@@ -231,6 +234,8 @@ jobs:
       displayName: 'Brew dependencies'
     
     - bash: |
+        rm -rf binaries/*mac*.zip
+        rm -rf binaries/*windows*.zip
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
@@ -358,6 +363,8 @@ jobs:
     #   displayName: 'Brew dependencies'
     
     - bash: |
+        rm -rf binaries/*mac*.zip
+        rm -rf binaries/*windows*.zip
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
