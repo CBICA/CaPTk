@@ -196,6 +196,7 @@ jobs:
 
         # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
+        ./scripts/captk-pkg
 
         rm -rf bin
         rm -rf src
