@@ -152,7 +152,6 @@ jobs:
     - bash: |
         rm -rf binaries/*mac*.zip
         rm -rf binaries/*windows*.zip
-        rm -rf data
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
@@ -196,7 +195,6 @@ jobs:
         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        rm -rf data
         rm -rf regression
         rm -rf binaries
 
