@@ -259,9 +259,12 @@ inline std::string getApplicationPath(std::string appName)
   {
     return individualAppDir + "/" + appName_wrap + winExt;
   }
+  // we need a better check for the individual applications for the developer mode here
   else
   {
+#ifdef CAPTK_PACKAGE_PROJECT
     ShowErrorMessage("Specified application was not found, please check");
+#endif  
     return "";
   }
 #endif 

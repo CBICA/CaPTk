@@ -3153,23 +3153,23 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string &modality, con
         // write the features for training
         if (m_outputVerticallyConcatenated)
         {
-          if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
-          {
-            m_finalOutputToWrite = "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n" + m_finalOutputToWrite;
-          }
-          std::ofstream myfile;
-          myfile.open(m_outputFile, std::ios_base::app);
-          // check for locks in a cluster environment
-          while (!myfile.is_open())
-          {
-            cbica::sleep(100);
-            myfile.open(m_outputFile, std::ios_base::app);
-          }
-          myfile << m_finalOutputToWrite;
-#ifndef WIN32
-          myfile.flush();
-#endif
-          myfile.close();
+//          if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
+//          {
+//            m_finalOutputToWrite = "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n" + m_finalOutputToWrite;
+//          }
+//          std::ofstream myfile;
+//          myfile.open(m_outputFile, std::ios_base::app);
+//          // check for locks in a cluster environment
+//          while (!myfile.is_open())
+//          {
+//            cbica::sleep(100);
+//            myfile.open(m_outputFile, std::ios_base::app);
+//          }
+//          myfile << m_finalOutputToWrite;
+//#ifndef WIN32
+//          myfile.flush();
+//#endif
+//          myfile.close();
         }
         else
         {
