@@ -30,25 +30,37 @@ class fDeepMedicDialog : public QDialog, private Ui::fDeepMedicDialog
   Q_OBJECT
 
 public:
+
+  //! Default models available
+  enum ModelTypes
+  {
+    Tumor,
+    SkullStripping,
+    Custom,
+    Max
+  };
   fDeepMedicDialog();
   ~fDeepMedicDialog();
 
   QString m_exe, m_dataDir, m_modelDir; // contains full path and exe name of dcm2nii
+  std::string m_baseModelDir;
 
   void SetCurrentImagePath(const QString &inputPath)
   {
     mInputPathName = inputPath;
   }
 
+
   QString mInputPathName;
 
 
-  public slots:
+public slots:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
-
   void SelectModelDirectory();
   void SelectOutputDirectory();
+  void SetDefaultModel();
+  void SetDefaultModel(int modelType);
 
 signals:
   void RunDeepMedic(const std::string modelDirectory, const std::string outputDirectory);

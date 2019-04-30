@@ -44,6 +44,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "vtkCamera.h"
 #include "vtkInteractorStyleImage.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkRenderWindowInteractor.h"
 
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
@@ -200,6 +201,11 @@ void Slicer::SetCurrentPosition(double x, double y, double z)
 	mCursor[2] = z;
 }
 
+void Slicer::SetInteractorStyle(vtkInteractorStyle * style)
+{
+  this->GetRenderWindow()->GetInteractor()->SetInteractorStyle(style);
+}
+
 void Slicer::SetImage(vtkImageData* image, vtkTransform* transform)
 {
   if (image != NULL && transform != NULL) {
@@ -329,6 +335,7 @@ void Slicer::SetMask(vtkImageData* mask)
 #endif
       mMaskActor->SetPickable(0);
       mMaskActor->SetVisibility(true);
+      ImageActor->SetOpacity(0.75);
       mMaskActor->SetInterpolate(0);
 #if VTK_MAJOR_VERSION >= 6 || (VTK_MAJOR_VERSION >= 5 && VTK_MINOR_VERSION >= 10)
       mMaskActor->GetMapper()->BorderOn();
@@ -339,7 +346,7 @@ void Slicer::SetMask(vtkImageData* mask)
 
     AdjustResliceToSliceOrientation(mMaskReslice);
     this->UpdateDisplayExtent();
-  }
+   }
 }
 void Slicer::RemoveMask()
 {
@@ -757,14 +764,19 @@ void Slicer::SetOpacity(double s)
 
 void Slicer::SetRenderWindow(int orientation, vtkRenderWindow * rw)
 {
-  this->Superclass::SetRenderWindow(rw);
-  this->SetupInteractor(rw->GetInteractor());
-  this->GetRenderer()->AddActor(pdmA);
-  this->GetRenderer()->ResetCamera();
-  SetSliceOrientation(2 - (orientation % 3));
-  ResetCamera();
-  vtkCamera *camera = this->GetRenderer()->GetActiveCamera();
-  camera->SetParallelScale(camera->GetParallelScale() * 0.8);
+  if (rw == nullptr)
+    this->Superclass::SetRenderWindow(rw);
+  else
+  {
+    this->Superclass::SetRenderWindow(rw);
+    this->SetupInteractor(rw->GetInteractor());
+    this->GetRenderer()->AddActor(pdmA);
+    this->GetRenderer()->ResetCamera();
+    SetSliceOrientation(2 - (orientation % 3));
+    ResetCamera();
+    vtkCamera *camera = this->GetRenderer()->GetActiveCamera();
+    camera->SetParallelScale(camera->GetParallelScale() * 0.8);
+  }
 }
 
 void Slicer::ResetCamera()
@@ -1227,4 +1239,14 @@ void Slicer::RemoveOverlay()
     mOverlayActor = NULL;
     mOverlayMapper = NULL;
   }
+}
+
+void Slicer::SetComparisonMode(bool mode)
+{
+  this->m_ComparisonMode = mode;
+}
+
+bool Slicer::GetComparisonMode()
+{
+  return this->m_ComparisonMode;
 }
