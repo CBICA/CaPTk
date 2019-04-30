@@ -30,6 +30,12 @@ IF( CCacheExectuable )
   #MESSAGE( STATUS "Speeding up build with ccache" )
 ENDIF()
 
+IF(WIN32)
+  # enable parallel builds for windows
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /MP")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+ENDIF()
+
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules/)
 INCLUDE( CaPTk_macros )
 
@@ -320,6 +326,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_MSUBTYPE ON CACHE BOOL "Do you want to build Molecular Subtype Estimation?" )
   SET( BUILD_ATLAS ON CACHE BOOL "Do you want to build Population Atlas?" )
   SET( BUILD_ALIGNMENT ON CACHE BOOL "Do you want to build Perfusion Alignment?" )
+  SET( BUILD_PCA ON CACHE BOOL "Do you want to build Perfusion PCA?" )
   SET( BUILD_GEODESIC ON CACHE BOOL "Do you want to build Geodesic Segmentation?" )
   SET( BUILD_GEODESICTRAINING ON CACHE BOOL "Do you want to build Geodesic Training Segmentation?" )
   SET( BUILD_SBRT ON CACHE BOOL "Do you want to build SBRT Lung?" )
@@ -343,6 +350,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ADD_DEFINITIONS(-DBUILD_ALIGNMENT)
   ENDIF()
 
+  IF(BUILD_PCA)
+    ADD_DEFINITIONS(-DBUILD_PCA)
+  ENDIF()
+  
   IF(BUILD_RECURRENCE)
     ADD_DEFINITIONS(-DBUILD_RECURRENCE)
   ENDIF()
@@ -782,7 +793,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     # define the executable
     IF(WIN32)
       # ensures no console pops up when launching the program
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /MP")
       ADD_EXECUTABLE(${EXE_NAME} WIN32
         ${EXE_SOURCES}
         #${YAMLCPP_Headers}
