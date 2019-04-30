@@ -1,8 +1,4 @@
 FeatureName,ParamName,Type,Range,Default,Comments
-Generic,Quantization,String,Image:ROI,ROI,Whether the quantization of Intensities is supposed to happen on a per-image basis or on a per-ROI basis
-Generic,Resampling,mm,0:10,1.0,Resamples all images and masks to this value of voxel/pixel resolution before computations (0: no resampling)
-Generic,ResamplingInterpolator_Image,mm,Nearest:Linear:BSpline,Linear,Type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
-Generic,ResamplingInterpolator_Mask,mm,Nearest:Linear:BSpline,Nearest,Type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
 Intensity,,,,,
 Volumetric,Dimension,string,[2D:3D],2D,For calculating 2D slice or full 3D volume features this doesn't do anything for 2D images
 Histogram,Bins,Int,,129,The number of bins to calculate the Histogram on
