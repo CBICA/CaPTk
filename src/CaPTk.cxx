@@ -75,6 +75,7 @@ int main(int argc, char** argv)
 
   std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
   float cmd_maskOpacity = 1;
+  bool comparisonMode = false;
 
   // this is used to populate the available CWL files for the cli
   auto cwlFiles = cbica::getCWLFilesInApplicationDir();
@@ -89,7 +90,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("tu", "tumorPt", cbica::Parameter::FILE, ".txt", "Tumor Point file for the image(s) being loaded");
   parser.addOptionalParameter("ts", "tissuePt", cbica::Parameter::FILE, ".txt", "Tissue Point file for the image(s) being loaded");
   parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
-  
+  parser.addOptionalParameter("c", "comparisonMode", cbica::Parameter::BOOLEAN, "true or false", "Enable/Disable comparison mode", "comparison mode during loading");
+
   parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
   
   // check for CWL command coming in through the command line after "CaPTk"
@@ -154,6 +156,10 @@ int main(int argc, char** argv)
   if (parser.isPresent("ts"))
   {
     parser.getParameterValue("ts", cmd_tissue);
+  }
+  if (parser.isPresent("c"))
+  {
+    parser.getParameterValue("c", comparisonMode);
   }
 
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
@@ -314,7 +320,8 @@ int main(int argc, char** argv)
 #endif
   }
   else
-    window.loadFromCommandLine(inputFiles_QString, inputMask.toStdString(), cmd_maskOpacity, cmd_tumor, cmd_tissue/*, true*/); // at this point, inputFiles_QString will have at least 1 value
+    window.loadFromCommandLine(inputFiles_QString, comparisonMode, inputMask.toStdString(),
+      cmd_maskOpacity, cmd_tumor, cmd_tissue/*, true*/); // at this point, inputFiles_QString will have at least 1 value
 
 
 
