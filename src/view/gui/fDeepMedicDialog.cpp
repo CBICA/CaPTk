@@ -15,8 +15,13 @@ fDeepMedicDialog::fDeepMedicDialog()
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
   connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputDirectory()));
+  connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
+  connect(skullStrippingButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
+  connect(customButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
+  //connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, [this] { SetDefaultModel(fDeepMedicDialog::Tumor); });
 
   outputDirName->setText(mInputPathName);
+  m_baseModelDir = cbica::normPath(getCaPTkDataDir() + "/deepMedic/saved_models/");
 
   m_exe = getApplicationPath("DeepMedic").c_str();
 
@@ -29,6 +34,53 @@ fDeepMedicDialog::~fDeepMedicDialog()
 void fDeepMedicDialog::CancelButtonPressed()
 {
   this->close();
+}
+
+void fDeepMedicDialog::SetDefaultModel()
+{
+  if (brainTumorSegmentationButton->isChecked())
+  {
+    SetDefaultModel(fDeepMedicDialog::Tumor);
+  }
+  else if (skullStrippingButton->isChecked())
+  {
+    SetDefaultModel(fDeepMedicDialog::SkullStripping);
+  }
+  else if (customButton->isChecked())
+  {
+    SetDefaultModel(fDeepMedicDialog::Custom);
+  }
+}
+
+void fDeepMedicDialog::SetDefaultModel(int modelType)
+{
+  if (modelType == fDeepMedicDialog::Tumor)
+  {
+    brainTumorSegmentationButton->setChecked(true);
+    skullStrippingButton->setChecked(false);
+    customButton->setChecked(false);
+    auto currentModelDir = m_baseModelDir  + "/brainTumorSegmentation/";
+    modelDirName->setReadOnly(true);
+    modelDirName->setText(currentModelDir.c_str());
+  }
+  else if (modelType == fDeepMedicDialog::SkullStripping)
+  {
+    brainTumorSegmentationButton->setChecked(false);
+    skullStrippingButton->setChecked(true);
+    customButton->setChecked(false);
+    auto currentModelDir = m_baseModelDir + "/skullStripping/";
+    modelDirName->setReadOnly(true);
+    modelDirName->setText(currentModelDir.c_str());
+  }
+  else if (modelType == fDeepMedicDialog::Custom)
+  {
+    brainTumorSegmentationButton->setChecked(false);
+    skullStrippingButton->setChecked(false);
+    customButton->setChecked(true);
+    auto currentModelDir = m_baseModelDir;
+    modelDirName->setReadOnly(false);
+    modelDirName->setText(currentModelDir.c_str());
+  }
 }
 
 void fDeepMedicDialog::ConfirmButtonPressed()

@@ -161,6 +161,31 @@ void SlicerManager::SetImage(ImageTypeFloat3D::Pointer t1ceimage)
   UpdateVtkImage();
 
 }
+
+ImageTypeFloat3D::Pointer SlicerManager::GetITKImage()
+{
+  return this->mITKImage;
+}
+
+void SlicerManager::SetComparisonMode(bool mode)
+{
+  this->m_ComparisonMode = mode;
+  for (int i = 0; i < (int)mSlicers.size(); i++)
+  {
+    mSlicers[i]->SetComparisonMode(mode);
+  }
+}
+
+bool SlicerManager::GetComparisonMode()
+{
+  return this->m_ComparisonMode;
+}
+
+void SlicerManager::SetImageOnSlicer(vtkSmartPointer<vtkImageData> image, vtkTransform* transform, int slicer)
+{
+  mSlicers[slicer]->SetImage(image, transform);
+}
+
 void SlicerManager::UpdateVtkImage()
 {
   typedef itk::Image<float, 3> OutputImageType3D;
