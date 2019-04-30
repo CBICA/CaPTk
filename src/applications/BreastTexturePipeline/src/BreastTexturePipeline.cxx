@@ -7,6 +7,7 @@
 #include "LibraPreprocess.h"
 
 #include "ZScoreNormalizer.h"
+#include "FeatureExtraction.h"
 
 std::string inputImageFile, outputDir;
 
@@ -96,6 +97,7 @@ int algorithmsRunner()
   }
 
   auto libraPath = findRelativeApplicationPath("libra");
+  //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
   cbica::createDir(outputDir + "/temp");
 
   std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile)
@@ -142,7 +144,7 @@ int algorithmsRunner()
     auto outputRelevantMaskFile = outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile) + "_mask.nii.gz";
     cbica::WriteImage< LibraImageType >(outputRelevantMaskImage_flipped, outputRelevantMaskFile);
 
-    auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
+    //auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
 
     auto currentDataDir = getCaPTkDataDir();
     auto latticeFeatureParamFilePath = currentDataDir + "/features/2_params_default_lattice.csv";
@@ -152,15 +154,22 @@ int algorithmsRunner()
       exit(EXIT_FAILURE);
     }
 
-    command = featureExtractionPath + " -n Lattice " + // a generic subject ID
-      "-i " + outputFileName + " -t MAM " + // input image and generic modality
-      "-m " + outputRelevantMaskFile + " -r 1 -l Breast " + // input mask, its ROI to consider and its label
-      "-o " + outputDir + "/output.csv " + // the output file to write stuff into
-      "-p " + latticeFeatureParamFilePath + // the parameter file
-      " -f 1 -vc 1"; // enable feature map writing and verticle concatenation of output file
+    std::cout << "Running FeatureExtraction.\n";
 
-    std::cout << "Running FeatureExtraction with command '" + command + "'\n";
-    std::system(command.c_str());
+    std::vector< LibraImageType::Pointer > inputImages;
+    inputImages.push_back(normalizer.GetOutput());
+    FeatureExtraction< LibraImageType > features;
+    features.SetPatientID("Lattice");
+    features.SetInputImages(inputImages, "MAM");
+    features.SetSelectedROIsAndLabels("1", "Breast");
+    features.SetMaskImage(outputRelevantMaskImage_flipped);
+    features.SetWriteFeatureMaps(true);
+    features.SetValidMask();
+    features.SetRequestedFeatures(latticeFeatureParamFilePath);
+    features.SetOutputFilename(cbica::normPath(outputDir + "/features/output.csv"));
+    features.SetVerticallyConcatenatedOutput(true);
+    features.Update();
+
     std::cout << "Done.\n";
 
     return EXIT_SUCCESS;
@@ -185,6 +194,8 @@ int main(int argc, char** argv)
   parser.getParameterValue("i", inputImageFile);
   parser.getParameterValue("o", outputDir);
   cbica::createDir(outputDir);
+  inputImageFile = cbica::normPath(inputImageFile);
+  outputDir = cbica::normPath(outputDir);
 
   if (parser.isPresent("d"))
   {

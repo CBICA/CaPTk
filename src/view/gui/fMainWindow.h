@@ -46,6 +46,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fEGFRvIIIDialog.h"
 #include "fSkullStripDialog.h"
 #include "fPerfusionMeasuresDialog.h"
+#include "fPerfusionAlignmentDialog.h"
 #include "fDiffusionMeasuresDialog.h"
 #include "fPCADialog.h"
 #include "fHistoMatchDialog.h"
@@ -244,9 +245,10 @@ private:
   fSBRTAnalysisDialog analysisPanel;
 
   fSkullStripper skullStrippingPanel;
-  fPCAEstimator pcaPanel;
+  fPCADialog pcaPanel;
   fTrainingSimulator trainingPanel;
   fPerfusionEstimator perfmeasuresPanel;
+  fPerfusionAligner perfalignPanel;
   fDiffusionEstimator diffmeasuresPanel;
   fDCM2NIfTIConverter dcmConverter;
   fDeepMedicDialog deepMedicDialog;
@@ -763,10 +765,14 @@ public slots:
   */
   void CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask, const std::string inputImageFile, const std::string outputImageFile);
   void CallPCACalculation(const int, const std::string inputFolder, const std::string outputFolder);
-  void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
+  void CallPerfusionAlignmentCalculation(const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder);
+    
+    void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
   void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
   void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int, int, int);
 
+  void PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
+  void TrainNewPCAModelOnGivenData(const std::string &, const std::string &);
   /**
   \brief Call DCM2NII for DICOM conversion and load the image into CaPTk
 
@@ -1337,6 +1343,7 @@ public slots:
   void CustomPreprocessing();
   void ApplicationPCA();
   void PerfusionMeasuresCalculation();
+  void PerfusionAlignmentCalculation();
   void DiffusionMeasuresCalculation();
   void ClassifierTraining();
   void ApplicationDeepMedicSegmentation(int type);
