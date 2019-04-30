@@ -5476,7 +5476,7 @@ void fMainWindow::ApplicationTexturePipeline()
     return;
   }
 
-  if (!mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  if (mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
   {
     ShowErrorMessage("This is only valid for mammogram images");
     return;
@@ -5526,7 +5526,7 @@ void fMainWindow::ApplicationBreastSegmentation()
     return;
   }
 
-  if (!mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  if (mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
   {
     ShowErrorMessage("This is only valid for mammogram images");
     return;
@@ -5580,7 +5580,7 @@ void fMainWindow::ApplicationLIBRASingle()
     return;
   }
 
-  if (!mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  if (mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
   {
     ShowErrorMessage("This is only valid for mammogram images");
     return;
@@ -6700,7 +6700,7 @@ void fMainWindow::ImageMamogramPreprocess()
     return;
   }
 
-  if (!mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  if (mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
   {
     ShowErrorMessage("This is only valid for mammogram images");
     return;
