@@ -62,7 +62,7 @@ public slots:
   void NewModelRadioButtonChecked();
   void OpenTestSubjectsDirectory();
   void CurrentSubjectRadioButtonChecked();
-  void CheckForDisclaimer();
+  //void CheckForDisclaimer();
 
 signals:
   void ExistingModelBasedPCAEstimate(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);

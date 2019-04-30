@@ -7,7 +7,7 @@
 
 fPCADialog::fPCADialog()
 {
-  this->setWindowTitle("Pseudo-Progression Estimator");
+  this->setWindowTitle("PCA Estimator");
   //TBD read this from common place 
   setupUi(this);
   this->setWindowModality(Qt::NonModal);
@@ -26,7 +26,7 @@ fPCADialog::fPCADialog()
   connect(rdExistingClassification, SIGNAL(toggled(bool)), this, SLOT(ExistingClassificationRadioButtonChecked()));
   connect(rdLoadedClassification, SIGNAL(toggled(bool)), this, SLOT(LoadedClassificationRadioButtonChecked()));
   connect(rdCreateModel, SIGNAL(toggled(bool)), this, SLOT(NewModelRadioButtonChecked()));
-  connect(disclaimerButton, SIGNAL(clicked()), this, SLOT(CheckForDisclaimer()));
+  //connect(disclaimerButton, SIGNAL(clicked()), this, SLOT(CheckForDisclaimer()));
 
   //  connect(rdNewClassification, SIGNAL(toggled(bool)), this, SLOT(CurrentSubjectRadioButtonChecked()));
 
@@ -47,7 +47,7 @@ fPCADialog::fPCADialog()
   cbDistanceData->hide();
   cbDTIData->hide();
   cbPerfData->hide();
-  disclaimerLabel->setText("You can find a pretrained model, based on our study at PENN, ");
+  //disclaimerLabel->setText("You can find a pretrained model, based on our study at PENN, ");
 
   rdLoadedClassification->hide();
   modelDirectoryLabel1->hide();
@@ -240,47 +240,47 @@ void fPCADialog::CurrentSubjectRadioButtonChecked()
   //}
 }
 
-void fPCADialog::CheckForDisclaimer()
-{
-  QString volumeString;
-  volumeString = "You are about to download a model trained on de novo glioblastoma cases.\n";
-  volumeString += "Please note that this model was created following certain assumptions \n";
-  volumeString += "(described in the paper below), can be used for research purposes only \n\n\n";
-  volumeString += "H.Akbari, et al. Quantitative radiomics and machine learning to distinguish\n";
-  volumeString += "true progression from pseudoprogression in patients with GBM, \n";
-  volumeString += "ASNR 56th Annual Meeting, 2018.\n";
-
-  QMessageBox *box = new QMessageBox(QMessageBox::Question, "Disclaimer", volumeString, QMessageBox::Ok | QMessageBox::Cancel);
-  //box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
-  box->setWindowModality(Qt::NonModal);
-  QCoreApplication::processEvents();
-  if (box->exec() == QMessageBox::Ok)
-  {
-    std::string path = captk_currentApplicationPath;
-    path = path.substr(0, path.length() - 3);
-    std::string link =
-#ifdef _WIN32
-      getCaPTkDataDir() + "/GnuWin32/bin/wget.exe"
-#else
-      "wget"
-#endif
-      + std::string(" ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PseudoProgressionEstimator_PretrainedModel.zip") +
-      " -O " + captk_PretrainedFolder + "/PseudoProgressionEstimator_PretrainedModel.zip";
-
-    cbica::Logging(loggerFile, link);
-
-    ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
-
-    if /*(std::system((link).c_str()) != 0)*/ (!openLink("ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PseudoProgressionEstimator_PretrainedModel.zip"))
-    {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified model.", this);
-      return;
-    }
-    else
-    {
-      //std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
-      //ShowMessage(dataMessage, this, "Saved");
-      return;
-    }
-  }
-}
+//void fPCADialog::CheckForDisclaimer()
+//{
+//  QString volumeString;
+//  volumeString = "You are about to download a model trained on de novo glioblastoma cases.\n";
+//  volumeString += "Please note that this model was created following certain assumptions \n";
+//  volumeString += "(described in the paper below), can be used for research purposes only \n\n\n";
+//  volumeString += "H.Akbari, et al. Quantitative radiomics and machine learning to distinguish\n";
+//  volumeString += "true progression from pseudoprogression in patients with GBM, \n";
+//  volumeString += "ASNR 56th Annual Meeting, 2018.\n";
+//
+//  QMessageBox *box = new QMessageBox(QMessageBox::Question, "Disclaimer", volumeString, QMessageBox::Ok | QMessageBox::Cancel);
+//  //box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
+//  box->setWindowModality(Qt::NonModal);
+//  QCoreApplication::processEvents();
+//  if (box->exec() == QMessageBox::Ok)
+//  {
+//    std::string path = captk_currentApplicationPath;
+//    path = path.substr(0, path.length() - 3);
+//    std::string link =
+//#ifdef _WIN32
+//      getCaPTkDataDir() + "/GnuWin32/bin/wget.exe"
+//#else
+//      "wget"
+//#endif
+//      + std::string(" ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PseudoProgressionEstimator_PretrainedModel.zip") +
+//      " -O " + captk_PretrainedFolder + "/PseudoProgressionEstimator_PretrainedModel.zip";
+//
+//    cbica::Logging(loggerFile, link);
+//
+//    ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
+//
+//    if /*(std::system((link).c_str()) != 0)*/ (!openLink("ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PseudoProgressionEstimator_PretrainedModel.zip"))
+//    {
+//      ShowErrorMessage("CaPTk couldn't open the browser to download specified model.", this);
+//      return;
+//    }
+//    else
+//    {
+//      //std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
+//      //ShowMessage(dataMessage, this, "Saved");
+//      return;
+//    }
+//  }
+//}

@@ -57,7 +57,7 @@ public:
 
   QGridLayout *outputGridLayout;
   QLabel	*outputDirectoryLabel;
-  QLabel     *disclaimerLabel;
+  //QLabel     *disclaimerLabel;
   QLabel     *linkLabel;
   QLabel	*trainingDirectoryLabel;
   QLabel	*testDirectoryLabel;
@@ -201,30 +201,30 @@ public:
     modelDirectoryLabel2->setSizePolicy(sizePolicy13);
     modelDirectoryLabel2->setAlignment(Qt::AlignRight);
 
-    disclaimerLabel = new QLabel(classificationGroupBox);
-    sizePolicy13.setHeightForWidth(disclaimerLabel->sizePolicy().hasHeightForWidth());
-    disclaimerLabel->setSizePolicy(sizePolicy13);
-    disclaimerLabel->setAlignment(Qt::AlignRight);
+    //disclaimerLabel = new QLabel(classificationGroupBox);
+    //sizePolicy13.setHeightForWidth(disclaimerLabel->sizePolicy().hasHeightForWidth());
+    //disclaimerLabel->setSizePolicy(sizePolicy13);
+    //disclaimerLabel->setAlignment(Qt::AlignRight);
 
-    disclaimerButton = new QPushButton(classificationGroupBox);
-    disclaimerButton->setObjectName(QString::fromUtf8("disclaimerButton"));
-    //testSubjectsDirectoryButton->setIcon(ButtonIcon);
-    //testSubjectsDirectoryButton->setIconSize(QSize(20, 20));
-    disclaimerButton->setText(QString("here."));
-    disclaimerButton->setToolTip(QString("disclaimerButton"));
-    disclaimerButton->setFlat(true);
-    disclaimerButton->setStyleSheet("Text-align:left");
+    //disclaimerButton = new QPushButton(classificationGroupBox);
+    //disclaimerButton->setObjectName(QString::fromUtf8("disclaimerButton"));
+    ////testSubjectsDirectoryButton->setIcon(ButtonIcon);
+    ////testSubjectsDirectoryButton->setIconSize(QSize(20, 20));
+    //disclaimerButton->setText(QString("here."));
+    //disclaimerButton->setToolTip(QString("disclaimerButton"));
+    //disclaimerButton->setFlat(true);
+    //disclaimerButton->setStyleSheet("Text-align:left");
 
 
-    QPalette* palette1 = new QPalette();
-    palette1->setColor(QPalette::ButtonText, Qt::blue);
-    disclaimerButton->setPalette(*palette1);
+    //QPalette* palette1 = new QPalette();
+    //palette1->setColor(QPalette::ButtonText, Qt::blue);
+    //disclaimerButton->setPalette(*palette1);
 
-    QFont font("Bavaria");
-    font.setPointSize(8);
-    font.setWeight(QFont::Bold);
-    font.setUnderline(true);
-    disclaimerButton->setFont(font);
+    //QFont font("Bavaria");
+    //font.setPointSize(8);
+    //font.setWeight(QFont::Bold);
+    //font.setUnderline(true);
+    //disclaimerButton->setFont(font);
 
 
 

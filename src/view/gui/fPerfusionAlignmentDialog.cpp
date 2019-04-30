@@ -104,6 +104,5 @@ void fPerfusionAligner::SelectT1ceInputImage()
     return;
   else
     inputT1ceImageName->setText(inputT1ceImage);
-
   mInputT1cePathName = inputT1ceImage;
 }
