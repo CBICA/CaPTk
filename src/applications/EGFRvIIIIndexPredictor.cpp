@@ -548,6 +548,7 @@ VectorDouble EGFRvIIIIndexPredictor::CombineEstimates(const VectorDouble &estima
 
 VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::vector < std::map < CAPTK::ImageModalityType, std::string>> &qualifiedsubjects, const std::string &outputdirectory)
 {
+  std::cout << "Started reading model parameters" << std::endl;
   //std::string local_captk_dataDir = "E:/SoftwareDevelopmentProjects/CaPTk-August2018/data";
   typedef itk::CSVArray2DFileReader<double> ReaderType;
   VariableSizeMatrixType HistogramFeaturesConfigurations;
@@ -620,6 +621,7 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
   ImageType::Pointer NEGAtlasImagePointer = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "egfrv3/EGFRneg.nii.gz");
   ImageType::Pointer POSAtlasImagePointer = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "egfrv3/EGFRpos.nii.gz");
 
+  std::cout << "Finished readig model parameters" << std::endl;
   VariableSizeMatrixType FeaturesOfAllSubjects;
   FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 448);
 
@@ -672,17 +674,17 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
       return results;
     }
   }
-
-  //typedef itk::CSVNumericObjectFileWriter<double, 2, 448> WriterTypeMatrix;
-  //WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();
-  //MatrixType data;
-  //data.set_size(2,448);
-  //for (int i = 0; i < 2; i++)
-  //	for (int j = 0; j < 448; j++)
-  //		data(i, j) = FeaturesOfAllSubjects(i, j);
-  //writermatrix->SetFileName(outputdirectory+ "/plain_test_features.csv");
-  //writermatrix->SetInput(&data);
-  //writermatrix->Write();
+  std::cout << "Feature writing started:" << std::endl;
+  typedef itk::CSVNumericObjectFileWriter<double, 144, 448> WriterTypeMatrix;
+  WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();
+  MatrixType data;
+  data.set_size(144,448);
+  for (int i = 0; i < 144; i++)
+  	for (int j = 0; j < 448; j++)
+  		data(i, j) = FeaturesOfAllSubjects(i, j);
+  writermatrix->SetFileName(outputdirectory+ "/plain_test_features.csv");
+  writermatrix->SetInput(&data);
+  writermatrix->Write();
   
 
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
@@ -696,27 +698,27 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
     ScaledFeatureSetAfterAddingLabel(i, j) = 0;
   }
 
-  /*typedef itk::CSVNumericObjectFileWriter<double, 2, 449> WriterTypeMatrix1;
+  typedef itk::CSVNumericObjectFileWriter<double, 144, 449> WriterTypeMatrix1;
   WriterTypeMatrix1::Pointer writermatrix1 = WriterTypeMatrix1::New();
-  data.set_size(2, 449);
-  for (int i = 0; i < 2; i++)
+  data.set_size(144, 449);
+  for (int i = 0; i < 144; i++)
     for (int j = 0; j < 449; j++)
       data(i, j) = ScaledFeatureSetAfterAddingLabel(i, j);
   writermatrix->SetFileName(outputdirectory + "/scaled_test_features.csv");
   writermatrix->SetInput(&data);
-  writermatrix->Write();*/
+  writermatrix->Write();
 
   VariableSizeMatrixType ModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel);
 
-  //typedef itk::CSVNumericObjectFileWriter<double, 2, 8> WriterTypeMatrix2;
-  //WriterTypeMatrix2::Pointer writermatrix2 = WriterTypeMatrix2::New();
-  //data.set_size(2, 8);
-  //for (int i = 0; i < 2; i++)
-  //  for (int j = 0; j < 8; j++)
-  //    data(i, j) = ModelSelectedFeatures(i, j);
-  //writermatrix2->SetFileName(outputdirectory + "/selected_test_features.csv");
-  //writermatrix2->SetInput(&data);
-  //writermatrix2->Write();
+  typedef itk::CSVNumericObjectFileWriter<double, 144, 8> WriterTypeMatrix2;
+  WriterTypeMatrix2::Pointer writermatrix2 = WriterTypeMatrix2::New();
+  data.set_size(144, 8);
+  for (int i = 0; i < 144; i++)
+    for (int j = 0; j < 8; j++)
+      data(i, j) = ModelSelectedFeatures(i, j);
+  writermatrix2->SetFileName(outputdirectory + "/selected_test_features.csv");
+  writermatrix2->SetInput(&data);
+  writermatrix2->Write();
 
   //---------------------------------------------------------------------------------------------------------------	
   try
