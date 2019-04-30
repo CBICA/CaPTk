@@ -345,17 +345,10 @@ public:
 		mitk::NGLDMMatrixHolder& holder
 	)
 	{
-<<<<<<< HEAD
 		// typedef itk::Image< TImageType > ImageType;
 		// typedef itk::Image< TImageType > MaskImageType;
 		typedef itk::NeighborhoodIterator<TImageType> ShapeIterType;
 		typedef itk::NeighborhoodIterator<TImageType> ShapeMaskIterType;
-=======
-		typedef itk::Image<TImageType::PixelType, TImageType::ImageDimension> ImageType;
-		typedef itk::Image<TImageType::PixelType, TImageType::ImageDimension> MaskImageType;
-		typedef itk::NeighborhoodIterator<ImageType> ShapeIterType;
-		typedef itk::NeighborhoodIterator<MaskImageType> ShapeMaskIterType;
->>>>>>> ad7a9dfdd245ed42448bf2d7b53bca33dc536cf8
 
 		holder.m_NumberOfCompleteNeighbourhoods = 0;
 		holder.m_NumberOfNeighbourhoods = 0;
