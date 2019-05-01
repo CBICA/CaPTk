@@ -349,10 +349,10 @@ FOREACH(subdir ${SUBDIRECTORIES})
           )
           
           IF( RESULT_CODE EQUAL 0 )
-            EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-              WORKING_DIRECTORY ${SUBDIRPATH}
-              RESULT_VARIABLE RESULT_CODE
-            )
+            #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            #  WORKING_DIRECTORY ${SUBDIRPATH}
+            #  RESULT_VARIABLE RESULT_CODE
+            #)
           ENDIF()
           
         ENDIF()
@@ -400,10 +400,10 @@ FOREACH(subdir ${SUBDIRECTORIES})
           )
           
           IF( RESULT_CODE EQUAL 0 )
-            EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-              WORKING_DIRECTORY ${SUBDIRPATH}
-              RESULT_VARIABLE RESULT_CODE
-            )
+            #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            #  WORKING_DIRECTORY ${SUBDIRPATH}
+            #  RESULT_VARIABLE RESULT_CODE
+            #)
           ENDIF()
           
         ENDIF()
