@@ -36,8 +36,8 @@ SET( GUI
   fPCADialog
   fTrainingDialog
   fPerfusionMeasuresDialog
-  fDiffusionMeasuresDialog
   fPerfusionAlignmentDialog
+  fDiffusionMeasuresDialog
   fDCM2NIfTI
   fHistoMatchDialog
   fWhiteStripeDialog

@@ -340,23 +340,21 @@ FOREACH(subdir ${SUBDIRECTORIES})
 
     ELSEIF( UNIX AND NOT APPLE )
       
-      IF( UNIX AND NOT APPLE )
-        IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
-          IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
+      IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
+        IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
+        
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            WORKING_DIRECTORY ${SUBDIRPATH}
+            RESULT_VARIABLE RESULT_CODE
+          )
           
-            EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-              WORKING_DIRECTORY ${SUBDIRPATH}
-              RESULT_VARIABLE RESULT_CODE
-            )
-            
-            IF( RESULT_CODE EQUAL 0 )
-              EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${SUBDIRPATH}/MCRInstaller.zip
-                WORKING_DIRECTORY ${SUBDIRPATH}
-                RESULT_VARIABLE RESULT_CODE
-              )
-            ENDIF()
-            
+          IF( RESULT_CODE EQUAL 0 )
+            #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            #  WORKING_DIRECTORY ${SUBDIRPATH}
+            #  RESULT_VARIABLE RESULT_CODE
+            #)
           ENDIF()
+          
         ENDIF()
       ENDIF()
       
@@ -377,26 +375,6 @@ FOREACH(subdir ${SUBDIRECTORIES})
 
   IF(BUILD_LIBRABATCH AND (${subdir} STREQUAL "libra"))
     
-    IF( UNIX AND NOT APPLE )
-      IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
-        IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
-        
-          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-            WORKING_DIRECTORY ${SUBDIRPATH}
-            RESULT_VARIABLE RESULT_CODE
-          )
-          
-          IF( RESULT_CODE EQUAL 0 )
-            EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${SUBDIRPATH}/MCRInstaller.zip
-              WORKING_DIRECTORY ${SUBDIRPATH}
-              RESULT_VARIABLE RESULT_CODE
-            )
-          ENDIF()
-          
-        ENDIF()
-      ENDIF()
-    ENDIF()
-    
     SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} librabatch" CACHE STRING "Available stand-alone apps" FORCE)
     # ALSO add this to CAPTK_BRREAST_APPS
 
@@ -413,6 +391,24 @@ FOREACH(subdir ${SUBDIRECTORIES})
       
     ELSEIF( UNIX AND NOT APPLE )
     
+      IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
+        IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
+        
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            WORKING_DIRECTORY ${SUBDIRPATH}
+            RESULT_VARIABLE RESULT_CODE
+          )
+          
+          IF( RESULT_CODE EQUAL 0 )
+            #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            #  WORKING_DIRECTORY ${SUBDIRPATH}
+            #  RESULT_VARIABLE RESULT_CODE
+            #)
+          ENDIF()
+          
+        ENDIF()
+      ENDIF()
+      
       INSTALL(FILES ${SUBDIRPATH}/bin/libra
         DESTINATION bin
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
