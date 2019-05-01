@@ -5,7 +5,7 @@
     <br></br>
     <a href="https://dev.azure.com/CBICA/CaPTk/_build" alt="Build Status">
         <img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
-    <img src="https://img.shields.io/badge/language-c%2B%2B11-blue.svg" /><br>
+    <img src="https://img.shields.io/badge/language-c%2B%2B11-blue.svg" />
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues><img src="https://img.shields.io/github/issues/CBICA/CaPTk.svg" /></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues><img src="https://img.shields.io/github/issues-closed/CBICA/CaPTk.svg" /></a>
 </p>
