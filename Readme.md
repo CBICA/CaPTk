@@ -21,10 +21,6 @@ For project documentation and how-to guides, please visit https://cbica.github.i
 
 For issues, please visit https://github.com/cbica/captk/issues
 
-## Downloads (All)
-
-Visit our NITRC downloads page for details: https://www.nitrc.org/frs/?group_id=1059
-
 ## Supporting Grant
 This work is in part supported by the grant U24-CA189523, awarded by the National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research (NIH/NCI/ITCR).
 
@@ -36,11 +32,11 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 ## Download Latest Release (1.7.0)
 
 | Platform (x64) | Link                                             |
-| -------------- |:------------------------------------------------:|
+|:--------------:|:------------------------------------------------:|
 | Windows        | https://www.nitrc.org/frs/downloadlink.php/11203 |
 | Linux (1.6.2)  | https://www.nitrc.org/frs/downloadlink.php/11131 |
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11212 |
-| All            | https://www.nitrc.org/frs/?group_id=1059 |
+| Archive        | https://www.nitrc.org/frs/?group_id=1059 |
 
 
 ## Contact
