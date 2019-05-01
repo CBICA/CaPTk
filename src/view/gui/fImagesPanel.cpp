@@ -69,6 +69,11 @@ void fImagesPanel::ImageTableSelectionChanged(QTableWidgetItem*)
 
 }
 
+void fImagesPanel::CompareButtonClick()
+{
+  this->m_CompareButton->click();
+}
+
 void fImagesPanel::NewImageLoaded(QString idstr, const std::string &filename, int rowIndex, const std::string &imageSubTypeStr, const int imgSubtype, const QObject* caller)
 {
   m_imagesTable->setRowCount(rowIndex + 1);
