@@ -39,6 +39,9 @@ public:
   //! Default Constructor
   fImagesPanel(QWidget * parent = 0);
 
+  //! animate comparison mode button click
+  void CompareButtonClick();
+
   //! Default Destructor
   ~fImagesPanel() {}
   void NewImageLoaded(QString idstr, const std::string &filename, int rowIndex, const std::string &imageSubTypeStr, const int imgSubtype, const QObject* caller);

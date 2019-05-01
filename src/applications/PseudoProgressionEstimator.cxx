@@ -72,7 +72,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
         else if ((filePath_lower.find("ph") != std::string::npos)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("perf") != std::string::npos)
+        else if ((filePath_lower.find("truncated") != std::string::npos)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           perfFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
@@ -173,11 +173,11 @@ int PrepareNewSurvivalPredictionModel(const std::string inputdirectory, const st
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(CAPTK::MachineLearningApplicationSubtype::TRAINING, inputdirectory, true, true, true, true);
   PseudoProgressionEstimator objPseudoProgressionEstimator;
   std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
-  if (QualifiedSubjects.size() == 0)
-    std::cout << "No subject found with required input. Exiting...." << std::endl;
-  else if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
-    std::cout << "There should be atleast 20 patients to build reliable pseudo-progression model. Exiting...." << std::endl;
-  else
+  //if (QualifiedSubjects.size() == 0)
+  //  std::cout << "No subject found with required input. Exiting...." << std::endl;
+  //else if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
+  //  std::cout << "There should be atleast 20 patients to build reliable pseudo-progression model. Exiting...." << std::endl;
+  //else
     objPseudoProgressionEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, true, true, true, true);
   return EXIT_SUCCESS;
 }

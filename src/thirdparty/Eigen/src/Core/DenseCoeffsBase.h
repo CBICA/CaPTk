@@ -361,7 +361,7 @@ class DenseCoeffsBase<Derived, WriteAccessors> : public DenseCoeffsBase<Derived,
     EIGEN_STRONG_INLINE Scalar&
     operator()(Index row, Index col)
     {
-      eigen_assert(row >= 0 && row < rows()
+		eigen_assert(row >= 0 && row < rows()
           && col >= 0 && col < cols());
       return coeffRef(row, col);
     }
