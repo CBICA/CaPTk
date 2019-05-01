@@ -1,7 +1,7 @@
 /**
 \file  NGTDMFeatures.h
 
-\brief NGTDM feature calculation
+\brief NGTDM feature calculation (Neighbourhood Grey Tone Difference Matrix based features)
 
 http://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
