@@ -33,11 +33,15 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 - This code (excluding dependent libraries) is governed by the license provided in http://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
 - The minimum recommended resolution is 1200x1024. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
 
-## Download Latest Release (1.6.1)
+## Download Latest Release (1.7.0)
 
-- Windows: https://www.nitrc.org/frs/downloadlink.php/11129
-- Linux: https://www.nitrc.org/frs/downloadlink.php/11131
-- macOS (1.6.0): https://www.nitrc.org/frs/downloadlink.php/11037
+| Platform (x64) | Link                                             |
+| -------------- |:------------------------------------------------:|
+| Windows        | https://www.nitrc.org/frs/downloadlink.php/11203 |
+| Linux (1.6.2)  | https://www.nitrc.org/frs/downloadlink.php/11131 |
+| macOS          | https://www.nitrc.org/frs/downloadlink.php/11212 |
+| All            | https://www.nitrc.org/frs/?group_id=1059 |
+
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a> .
