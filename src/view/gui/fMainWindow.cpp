@@ -20,10 +20,11 @@
 #include "N3BiasCorrection.h"
 #include "SusanDenoising.h"
 #include "WhiteStripe.h"
-#include "PerfusionPCA.h"
 #include "PerfusionDerivatives.h"
+#include "PerfusionAlignment.h"
 #include "DiffusionDerivatives.h"
 #include "ZScoreNormalizer.h"
+#include "PerfusionPCA.h"
 #include "SBRT_LungField.h"
 #include "SBRT_Nodule.h"
 #include "SBRT_Analysis.h"
@@ -843,10 +844,18 @@ fMainWindow::fMainWindow()
   connect(&histoMatchPanel, SIGNAL(RunHistogramMatching(const std::string, const std::string, const std::string)), this, SLOT(CallImageHistogramMatching(const std::string, const std::string, const std::string)));
   connect(&deepMedicNormPanel, SIGNAL(RunDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)), this, SLOT(CallImageDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)));
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
-  connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
+
+  connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(std::string, std::string, std::string)), this, SLOT(PCAEstimateOnExistingModel(const std::string &, const std::string &, const std::string &)));
+  connect(&pcaPanel, SIGNAL(TrainNewPCAModel(std::string, std::string)), this, SLOT(TrainNewPCAModelOnGivenData(const std::string &, const std::string &)));
+
+
+  //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(int, int,const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(int, int, const std::string, const std::string, const std::string, const std::string)));
+
+
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
     SLOT(CallDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)));
 
@@ -4250,6 +4259,57 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
   }
   return;
 }
+
+void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory)
+{
+  if (modeldirectory.empty())
+  {
+    ShowErrorMessage("Please provide path of a directory having PCA model");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
+    return;
+  }
+  if (inputdirectory.empty())
+  {
+    ShowErrorMessage("Please provide path of a directory having input images");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
+    return;
+  }
+  if (outputdirectory.empty())
+  {
+    ShowErrorMessage("Please provide path of a directory to save output");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
+    return;
+  }
+  if (!cbica::isDir(outputdirectory))
+  {
+    if (!cbica::createDir(outputdirectory))
+    {
+      ShowErrorMessage("Unable to create the output directory");
+      //help_contextual("Glioblastoma_Pseudoprogression.html");
+      return;
+    }
+  }
+
+  std::vector<double> finalresult;
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
+  if (QualifiedSubjects.size() == 0)
+  {
+    ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.");
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
+    return;
+  }
+  //if (mpca.PseudoProgressionEstimateOnExistingModel(QualifiedSubjects, modeldirectory, inputdirectory, outputdirectory, useConventionalData, useDTIData, usePerfData, useDistData))
+  //  ShowMessage("Output has been saved at the specified location.", this);
+  //else
+  //{
+  //  std::string msg;
+  //  msg = "Pseudoprogression model did not finish as expected, please see log file for details: " + loggerFile;
+  //  ShowErrorMessage(msg, this);
+  //}
+  return;
+}
+
+
 void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputdirectory)
 {
   if (!cbica::isDir(inputdirectory))
@@ -4820,6 +4880,54 @@ void fMainWindow::TrainNewPseudoprogressionModelOnGivenData(const std::string &i
   else
     ShowErrorMessage("Pseudoprogression Estimator wasn't able to save the training files as expected. See log file for details: " + loggerFile, this);
 }
+
+
+void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory, const std::string &outputdirectory)
+{
+  std::string errorMsg;
+  if (inputdirectory.empty())
+  {
+    ShowErrorMessage("Please provide input directory.", this);
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
+    return;
+  }
+  if (outputdirectory.empty())
+  {
+    ShowErrorMessage("Please provide output directory.", this);
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
+    return;
+  }
+  if (!cbica::isDir(outputdirectory))
+  {
+    if (!cbica::createDir(outputdirectory))
+    {
+      ShowErrorMessage("Unable to create the output directory", this);
+      //help_contextual("Glioblastoma_Pseudoprogression.html");
+      return;
+    }
+  }
+
+  std::vector<double> finalresult;
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
+
+  if (QualifiedSubjects.size() == 0)
+  {
+    ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.", this);
+    //help_contextual("Glioblastoma_Pseudoprogression.html");
+    return;
+  }
+  if (QualifiedSubjects.size() > 0 && QualifiedSubjects.size() <= 20)
+  {
+    ShowErrorMessage("There should be atleast 20 patients to build reliable pseudo-progression model.");
+    return;
+  }
+  PerfusionPCA mPCAEstimator;
+  if (mPCAEstimator.PrepareNewPCAModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
+    ShowMessage("Trained pseudoprogression model has been saved at the specified location.", this);
+  else
+    ShowErrorMessage("Pseudoprogression Estimator wasn't able to save the training files as expected. See log file for details: " + loggerFile, this);
+}
+
 
 //
 //void fMainWindow::LoadDicomDrawing()
@@ -6744,6 +6852,10 @@ void fMainWindow::PerfusionMeasuresCalculation()
 {
   perfmeasuresPanel.exec();
 }
+void fMainWindow::PerfusionAlignmentCalculation()
+{
+  perfalignPanel.exec();
+}
 void fMainWindow::DiffusionMeasuresCalculation()
 {
   //open a simple dialog box with input and output images
@@ -7963,6 +8075,52 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
     msg = "Perfusion derivatives have been saved at the specified locations.";
     ShowMessage(msg.toStdString(), this);
   }
+}
+
+
+void fMainWindow::CallPerfusionAlignmentCalculation(const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder)
+{
+  if (!cbica::isFile(inputfilename))
+  {
+    ShowErrorMessage("Input DSC-MRI Image passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputt1cefilename))
+  {
+    ShowErrorMessage("Input T1ce Image passed is not a valid file, please re-check", this);
+    return;
+  }
+  if (!cbica::isFile(inputdicomfilename))
+  {
+    ShowErrorMessage("Input Dicom Image passed is not a valid file, please re-check", this);
+    return;
+  }
+  typedef ImageTypeFloat4D PerfusionImageType;
+
+  PerfusionAlignment objPerfusion;
+
+  std::vector<double> OriginalCurve, RevisedCurve;
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, inputdicomfilename, inputt1cefilename, before, after, OriginalCurve, RevisedCurve);
+  for (int index = 0; index < PerfusionAlignment.size(); index++)
+  {
+    std::cout << "Writing time-point: " << index + 1 << "/" << PerfusionAlignment.size() << std::endl;
+    cbica::WriteImage<ImageTypeFloat3D>(PerfusionAlignment[index], outputFolder + std::to_string(index + 1 + before) + ".nii.gz");
+  }
+
+  std::ofstream myfile;
+  myfile.open(outputFolder + "/original_curve.csv");
+  for (unsigned int index1 = 0; index1 < OriginalCurve.size(); index1++)
+    myfile << std::to_string(OriginalCurve[index1]) << "\n";
+  myfile.close();
+
+  myfile.open(outputFolder + "/revised_curve.csv");
+  for (unsigned int index1 = 0; index1 < RevisedCurve.size(); index1++)
+    myfile << std::to_string(RevisedCurve[index1]) << "\n";
+  myfile.close();
+
+  QString msg;
+  msg = "Aligned images have been saved at the specified location.";
+  ShowMessage(msg.toStdString(), this);
 }
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, std::string outputFolder, int classifier, int conf, int folds)
