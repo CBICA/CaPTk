@@ -527,7 +527,7 @@ public:
   /*
   \brief For fast developer testing .TBD:  remove or disable.
   */
-  void loadFromCommandLine(std::vector< QString > files, const std::string &maskImage = "", const float maskOpacity = 1.0,
+  void loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage = "", const float maskOpacity = 1.0,
     const std::string &tumorPointFile = "", const std::string &tissuePointFile = "", bool firstRun = false)
   {
     auto qvectorString = QVector< QString >::fromStdVector(files);
@@ -546,6 +546,8 @@ public:
     {
       this->tumorPanel->tLoad(tissuePointFile.c_str());
     }
+    if (comparisonMode)
+      this->imagesPanel->CompareButtonClick();
 
 #ifdef CAPTK_PACKAGE_PROJECT
     if (firstRun)
