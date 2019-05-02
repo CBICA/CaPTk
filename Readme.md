@@ -3,13 +3,10 @@
 <p align="center">
     <img src="https://www.med.upenn.edu/cbica/assets/user-content/images/captk/baseScreenshot.png" />
     <br></br>
-    <a href="https://dev.azure.com/CBICA/CaPTk/_build" alt="Build Status">
-        <img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
-    <img src="https://img.shields.io/badge/language-c%2B%2B11-blue.svg" /><br>
-    <a href="https://hub.docker.com/r/cbica/captk/builds" alt="Automated"><img src="https://img.shields.io/docker/cloud/automated/cbica/captk.svg" /><br>
-    <a href="https://hub.docker.com/r/cbica/captk" alt="Build Status"><img src="https://img.shields.io/docker/cloud/build/cbica/captk.svg" /><br>
-    <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues><img src="https://img.shields.io/github/issues/CBICA/CaPTk.svg" /></a>
-    <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues><img src="https://img.shields.io/github/issues-closed/CBICA/CaPTk.svg" /></a>
+    <a href="https://dev.azure.com/CBICA/CaPTk/_build" alt="Build Status"><img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
+    <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues/CBICA/CaPTk.svg" /></a>
+    <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues-closed/CBICA/CaPTk.svg" /></a>
+    <img src="https://img.shields.io/badge/language-c%2B%2B11-blue.svg" />
 </p>
 
 CaPTk is a software platform, written in C++, for analysis of radiographic images of cancer, currently focusing on brain, breast, and lung cancer. CaPTk integrates advanced, validated tools performing various aspects of medical image analysis, that have been developed in the context of active clinical research studies and collaborations toward addressing real clinical needs. With emphasis given in its use as a very lightweight and efficient viewer, and with no prerequisites for substantial computational background, CaPTk aims to facilitate the swift translation of advanced computational algorithms into routine clinical quantification, analysis, decision making, and reporting workflow.
@@ -24,10 +21,6 @@ For project documentation and how-to guides, please visit https://cbica.github.i
 
 For issues, please visit https://github.com/cbica/captk/issues
 
-## Downloads (All)
-
-Visit our NITRC downloads page for details: https://www.nitrc.org/frs/?group_id=1059
-
 ## Supporting Grant
 This work is in part supported by the grant U24-CA189523, awarded by the National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research (NIH/NCI/ITCR).
 
@@ -36,11 +29,15 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 - This code (excluding dependent libraries) is governed by the license provided in http://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
 - The minimum recommended resolution is 1200x1024. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
 
-## Download Latest Release (1.6.1)
+## Download Latest Release (1.7.0)
 
-- Windows: https://www.nitrc.org/frs/downloadlink.php/11129
-- Linux: https://www.nitrc.org/frs/downloadlink.php/11131
-- macOS (1.6.0): https://www.nitrc.org/frs/downloadlink.php/11037
+| Platform (x64) | Link                                             |
+|:--------------:|:------------------------------------------------:|
+| Windows        | https://www.nitrc.org/frs/downloadlink.php/11203 |
+| Linux (1.6.2)  | https://www.nitrc.org/frs/downloadlink.php/11131 |
+| macOS          | https://www.nitrc.org/frs/downloadlink.php/11212 |
+| Archive        | https://www.nitrc.org/frs/?group_id=1059 |
+
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a> .
