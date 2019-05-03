@@ -139,7 +139,7 @@ echo ""
 
 for i in {1..3}
 do
-  read -p "I accept the terms of the licenses above (Y/N)" choice
+  read -p "I accept the terms of the licenses above [Y/N] " choice
   case "$choice" in 
     [yY][eE][sS]|[yY]) install_captk ; break  ;;
     [nN][oO]|[nN]) echo "Goodbye" ; exit 0 ;;
