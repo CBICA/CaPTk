@@ -226,7 +226,136 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_Linux'
         downloadPath: '$(System.ArtifactsDirectory)'
+
+- job: 'XenialSelfHostedBuild'
+  displayName: "End-to-end Linux (Xenial) build"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+
+  pool: Default
+
+  steps:
+  # Checkout validator.
+  # - bash: |
+  #     set -x
+  #     if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
+  #       git checkout $(System.PullRequest.SourceCommitId)
+  #     fi
+  #   displayName: 'Checkout pull request HEAD'
+
+    # Pull LFS
+    - bash: |
+        git lfs pull
+      displayName: 'Pull LFS'
+
+    # # Dependency manager
+    # - bash: |
+    #     sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
+    #   displayName: 'Install dependencies from Aptitude'
+
+  # Debug info before main scripts start
+  # - bash: |
+  #     ls -al
+  #   displayName: 'Get debugging information'
+
+    # Create build dir
+    - bash: |
+        mkdir -p bin
+      displayName: 'Create build directory'
+
+  # This is here in case if either Qt or External apps needs to be overridden
+  # - bash: |
+  #       mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
+  #       mv ./binaries/externalApps.zip ./bin/
+  #       cd bin
+  #       unzip externalApps.zip &> /dev/null
+  #   displayName: 'Install Qt & external applications'
+
+    # Set up Qt from Binaries
+    # - bash: |
+    #     mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
+    #     echo "Moved qt binaries"
+    #   displayName: 'Set up Qt on Linux'
+
+    # Create as much free memory as possible
+
+    # Nuclear Option #1
+    - bash: |
+        rm -rf binaries/*mac*.zip
+        rm -rf binaries/*windows*.zip
+        rm -rf history
+        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+      displayName: 'Take the nuclear option'
+
+    # Create fake test dirs. Can be removed.
+    # - bash: |   
+    #     cd bin
+    #     mkdir -p testing
+    #     mkdir -p ./testing/TestData
+    #   displayName: 'Create phony tests'
+
+    # # Configure and build superbuild
+    # - bash: |
+    #     cd bin
+    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+    #     make -j2
+    #   displayName: 'Configure and compile Superbuild'
+
+    # Configure and build CaPTk
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        make -j2
+        make install/strip
+      displayName: 'Configure and compile CaPTk'
+
+    # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
+      
+    # Check libra
+    - bash: |
+        cd bin/install/appdir/usr/bin/
+        ls -l
+      displayName: 'Checking ${installDir}/bin'
+      
+    # Build a package
+    - bash: |
+        export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
+        export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        rm -rf regression
+        rm -rf binaries
+
+        # export PKG_FAST_MODE=1
+        ./scripts/captk-pkg
+        # ./scripts/captk-pkg
+
+        rm -rf bin
+        rm -rf src
+        rm -rf docs*
+
+        rm -rf scripts
+
+        mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
+        
+      displayName: 'Set up environment variables for packager and build a package'
     
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
   timeoutInMinutes: 0
