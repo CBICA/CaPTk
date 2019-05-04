@@ -28,9 +28,9 @@ jobs:
         rm -rf binaries/qt*
         rm -rf binaries/*mac*.zip
         rm -rf binaries/*linux*.zip
-        rm -rf binaries/*window*.zip
+        # rm -rf binaries/*window*.zip
         rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+        
       displayName: 'Take the nuclear option'
 
     - script: |
@@ -154,10 +154,10 @@ jobs:
     - bash: |
         rm -rf binaries/qt*
         rm -rf binaries/*mac*.zip
-        rm -rf binaries/*linux*.zip
+        # rm -rf binaries/*linux*.zip
         rm -rf binaries/*window*.zip
         rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+        
       displayName: 'Take the nuclear option'
 
     # Create fake test dirs. Can be removed.
@@ -246,11 +246,11 @@ jobs:
     
     - bash: |
         rm -rf binaries/qt*
-        rm -rf binaries/*mac*.zip
+        # rm -rf binaries/*mac*.zip
         rm -rf binaries/*linux*.zip
         rm -rf binaries/*window*.zip
         rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+        
       displayName: 'Take the nuclear option'
 
     - bash: |
@@ -371,14 +371,6 @@ jobs:
 #   pool: Default
 
 #   steps:
-#     - bash: |
-        # rm -rf binaries/qt*
-        # rm -rf binaries/*mac*.zip
-        # rm -rf binaries/*linux*.zip
-        # rm -rf binaries/*window*.zip
-#         rm -rf history
-#         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-#       displayName: 'Take the nuclear option'
 
 #     - bash: |
 #         export CC=""
@@ -539,18 +531,6 @@ jobs:
 #     #     mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
 #     #     echo "Moved qt binaries"
 #     #   displayName: 'Set up Qt on Linux'
-
-#     # Create as much free memory as possible
-
-#     # Nuclear Option #1
-#     - bash: |
-        # rm -rf binaries/qt*
-        # rm -rf binaries/*mac*.zip
-        # rm -rf binaries/*linux*.zip
-        # rm -rf binaries/*window*.zip
-#         rm -rf history
-#         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-#       displayName: 'Take the nuclear option'
 
 #     # Create fake test dirs. Can be removed.
 #     # - bash: |   
