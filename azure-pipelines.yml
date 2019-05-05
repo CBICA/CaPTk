@@ -9,6 +9,7 @@ trigger:
     include:
     - master
 
+
 jobs:
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
