@@ -208,9 +208,7 @@ jobs:
         rm -rf regression
         rm -rf binaries
 
-        # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
-        # ./scripts/captk-pkg
 
         rm -rf bin
         rm -rf src
@@ -493,31 +491,52 @@ jobs:
   pool: Default
 
   steps:
-
-    # Pull LFS
     - bash: |
         git lfs pull
       displayName: 'Pull LFS'
 
-
-    # Create build dir
     - bash: |
+        ls binaries
+        
         mkdir -p bin
       displayName: 'Create build directory'
 
+    - bash: |
+        rm -rf binaries/qt*
+        rm -rf binaries/*mac*.zip
+        # rm -rf binaries/*linux*.zip
+        rm -rf binaries/*window*.zip
+        rm -rf history
+        
+      displayName: 'Take the nuclear option'
+
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+        make -j 2
+      displayName: 'Configure and compile Superbuild'
+
+    - bash: |
         cd bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-        make -j2
+        make -j 2
+
+        ls ../src/applications/individualApps/libra/
+
         make install/strip
       displayName: 'Configure and compile CaPTk'
 
-    # Check libra
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
+      
     - bash: |
         cd bin/install/appdir/usr/bin/
         ls -l
       displayName: 'Checking ${installDir}/bin'
-    
-    # Build a package
+      
     - bash: |
         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
@@ -525,9 +544,7 @@ jobs:
         rm -rf regression
         rm -rf binaries
 
-        # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
-        # ./scripts/captk-pkg
 
         rm -rf bin
         rm -rf src
@@ -536,9 +553,9 @@ jobs:
         rm -rf scripts
 
         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
-      
+        
       displayName: 'Set up environment variables for packager and build a package'
-  
+    
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -550,4 +567,3 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_Linux'
         downloadPath: '$(System.ArtifactsDirectory)'
-    
