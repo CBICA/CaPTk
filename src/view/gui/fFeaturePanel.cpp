@@ -226,7 +226,8 @@ void fFeaturePanel::computeFeature(int type)
           {
             if (std::atof(currentFeature_Parameter.second.c_str()) == 3.0)
             {
-              ShowMessage("The resampling rate is set to 3.0 for computation efficiency, please reduce it to increase accuracy of extracted features",
+              ShowMessage(
+                "The resampling rate is set to 3.0 for computation efficiency, please reduce it to increase accuracy of extracted features\n\nChange it under 'Customization -> Advanced ... -> Generic -> Resampling Rate'",
                 this, "Warning");
             }
           }
