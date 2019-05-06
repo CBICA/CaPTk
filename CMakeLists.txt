@@ -924,7 +924,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF()
 
   IF(CAPTK_PACKAGE_PROJECT)
-
+  
+     # see https://github.com/openmeeg/openmeeg/issues/314
+     if (WIN32 AND OPENMP_FOUND AND VCOMP_WORKAROUND) 
+         set(VCOMP_PATH "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/redist/x64/Microsoft.VC140.OpenMP/vcomp140.dll") 
+         INSTALL(FILES "${VCOMP_PATH}" DESTINATION bin COMPONENT Libraries) 
+     endif() 
+ 
     SET(DEPENDENCY_DIRS ${VTK_LIBRARY_DIRS}/${CMAKE_CONFIGURATION_TYPES}/ ${QT_BINARY_DIR})
     IF(APPLE)
       # SET(EXECUTABLE "${PROJECT_BINARY_DIR}/${CMAKE_CONFIGURATION_TYPES}/${EXE_NAME}.app")
