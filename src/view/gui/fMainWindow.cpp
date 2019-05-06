@@ -5530,6 +5530,8 @@ void fMainWindow::CallTexturePipeline(const std::string outputDirectory)
     return;
   }
 
+  ShowMessage("WARNING: Depending on the size of the image, the Texture Feature Extraction can take 1-10 minutes. UI will be unresponsive during this time");
+
   if (startExternalProcess(texturePipelineExe.c_str(), args) != 0)
   {
     ShowErrorMessage("BreastTexturePipeline returned with exit code != 0");
