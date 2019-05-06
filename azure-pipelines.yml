@@ -132,6 +132,9 @@ jobs:
     # Create build dir
     - bash: |
         ls binaries
+
+        unzip binaries/MCR.zip
+        rm -rf MCR
         
         mkdir -p bin
       displayName: 'Create build directory'
@@ -179,10 +182,11 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
+        
+        ls ../src/applications/individualApps/libra/
+
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j 2
-
-        ls ../src/applications/individualApps/libra/
 
         make install/strip
       displayName: 'Configure and compile CaPTk'
