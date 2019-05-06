@@ -3,10 +3,10 @@
 
 #  [Optional but highly suggested] The name will be used in the filenames when saving the model.
 #  Default: "cnnModel"
-modelName = "DMO-3path-new-4"
+modelName = "DMO-3path-new-4-CaPTk"
 
 #  [Required] The main folder that the output will be placed.
-folderForOutput = "../../../output-3path-new-4/"
+folderForOutput = "../../../output-3path-new-4-CaPTk/"
 
 
 #  ================ MODEL PARAMETERS =================
