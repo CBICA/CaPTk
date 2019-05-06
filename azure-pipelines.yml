@@ -493,16 +493,6 @@ jobs:
         mkdir -p bin
       displayName: 'Create build directory'
 
-    # - bash: |
-    #     ls src/applications/individualApps/
-
-    #     rm -rf binaries/qt*
-    #     rm -rf binaries/*mac*.zip
-    #     rm -rf binaries/*window*.zip
-    #     rm -rf history
-        
-    #   displayName: 'Take the nuclear option'
-
     - bash: |
         ls src/applications/individualApps/
 
