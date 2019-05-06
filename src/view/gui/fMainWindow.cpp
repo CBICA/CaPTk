@@ -5590,7 +5590,8 @@ void fMainWindow::ApplicationLIBRASingle()
     return;
   }
 
-  if (mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] != 1) /*||
+    (mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)*/)
   {
     ShowErrorMessage("This is only valid for mammogram images");
     return;
