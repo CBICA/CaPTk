@@ -129,12 +129,7 @@ jobs:
   #   displayName: 'Get debugging information'
 
     # Create build dir
-    - bash: |
-  #      ls binaries
-
-  #      unzip binaries/MCR.zip
-  #      rm -rf MCR
-        
+    - bash: |        
         mkdir -p bin
       displayName: 'Create build directory'
 
