@@ -128,7 +128,7 @@ namespace cbica
     auto appDir = getExecutablePath();
 
 #ifdef __APPLE__
-    appDir += "../Resources/bin";
+    appDir += "/../Resources/bin";
 #endif
 
     auto filesInDir = filesInDirectory(appDir);

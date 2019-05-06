@@ -37,7 +37,7 @@ std::string findRelativeApplicationPath(const std::string appName)
 #ifndef __APPLE__
     appName + winExt
 #else
-    "../Resources/bin/" + appName_wrap
+    "/../Resources/bin/" + appName_wrap
 #endif  
   );
 

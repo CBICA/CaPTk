@@ -151,11 +151,7 @@ jobs:
 
     # Nuclear Option #1
     - bash: |
-        ls src/applications/individualApps/
 
-        rm -rf binaries/qt*
-        rm -rf binaries/*mac*.zip
-        rm -rf binaries/*window*.zip
         rm -rf history
         
       displayName: 'Take the nuclear option'
@@ -245,10 +241,7 @@ jobs:
       displayName: 'Brew dependencies'
     
     - bash: |
-        rm -rf binaries/qt*
-        # rm -rf binaries/*mac*.zip
-        rm -rf binaries/*linux*.zip
-        rm -rf binaries/*window*.zip
+
         rm -rf history
         
       displayName: 'Take the nuclear option'
