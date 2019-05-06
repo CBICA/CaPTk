@@ -1530,6 +1530,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       fname = d.absolutePath().toStdString();
+      dicomfilename = fname;
     }
     else 
       fname = fileName;
@@ -5289,6 +5290,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       QString fname = d.absolutePath();
+      dicomfilename = fileName;
       this->openDicomImages(fname);
     }
     else
@@ -5512,6 +5514,11 @@ void fMainWindow::ApplicationTexturePipeline()
 
 void fMainWindow::CallTexturePipeline(const std::string outputDirectory)
 {
+  if (dicomfilename.empty())
+  {
+    ShowErrorMessage("This can only run with a DICOM image as input", this);
+    return;
+  }
   std::string casename = cbica::getFilenameBase(dicomfilename);
 
   cbica::createDir(outputDirectory);
@@ -5551,7 +5558,14 @@ void fMainWindow::ApplicationBreastSegmentation()
     return;
   }
 
-  if (mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  if (dicomfilename.empty())
+  {
+    ShowErrorMessage("This can only run with a DICOM image as input", this);
+    return;
+  }
+
+  if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] != 1) /*||
+    (mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)*/)
   {
     ShowErrorMessage("This is only valid for mammogram images");
     return;
