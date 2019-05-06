@@ -192,7 +192,6 @@ jobs:
         ls -l
       displayName: 'Checking ${installDir}/bin'
       
-    # Build a package
     - bash: |
         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
