@@ -151,7 +151,6 @@ jobs:
 
     # Nuclear Option #1
     - bash: |
-
         rm -rf history
         
       displayName: 'Take the nuclear option'
@@ -165,8 +164,6 @@ jobs:
 
     # Configure and build superbuild
     - bash: |
-        ls src/applications/individualApps/
-
         cd bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j 2
@@ -179,7 +176,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j 2
 
-        make install/strip
+        # make install/strip
       displayName: 'Configure and compile CaPTk'
 
     # Check qt
@@ -487,30 +484,22 @@ jobs:
         git lfs pull
       displayName: 'Pull LFS'
 
-    - bash: |
-        ls src/applications/individualApps/
-        
+    - bash: |    
         mkdir -p bin
       displayName: 'Create build directory'
 
     - bash: |
-        ls src/applications/individualApps/
-
         cd bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j 2
       displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        ls src/applications/individualApps/
-
         cd bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j 2
 
-        ls ../src/applications/individualApps/libra/
-
-        make install/strip
+        # make install/strip
       displayName: 'Configure and compile CaPTk'
 
     - bash: |
