@@ -1542,9 +1542,22 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     else if (!bFirstLoad)
     {
       {
-        auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
-        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
-        if (!cbica::ImageSanityCheck(fname, temp_prev))
+        //auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+        //ImageTypeFloat3D::DirectionType originaldirection;
+        //originaldirection[0][0] = mSlicerManagers[0]->mDirection(0, 0);
+        //originaldirection[0][1] = mSlicerManagers[0]->mDirection(0, 1);
+        //originaldirection[0][2] = mSlicerManagers[0]->mDirection(0, 2);
+        //originaldirection[1][0] = mSlicerManagers[0]->mDirection(1, 0);
+        //originaldirection[1][1] = mSlicerManagers[0]->mDirection(1, 1);
+        //originaldirection[1][2] = mSlicerManagers[0]->mDirection(1, 2);
+        //originaldirection[2][0] = mSlicerManagers[0]->mDirection(2, 0);
+        //originaldirection[2][1] = mSlicerManagers[0]->mDirection(2, 1);
+        //originaldirection[2][2] = mSlicerManagers[0]->mDirection(2, 2);
+        //auto img = convertVtkToItk< ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension >(mSlicerManagers[0]->mImage);
+        //img->SetDirection(originaldirection);
+
+        //cbica::WriteImage< ImageTypeFloat3D >(img, temp_prev);
+        if (!cbica::ImageSanityCheck(fname, mSlicerManagers[0]->GetPathFileName()))
         {
           ShowErrorMessage("The physical dimensions of the previously loaded image and current image are inconsistent; cannot load");
           return;
