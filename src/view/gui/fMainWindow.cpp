@@ -406,17 +406,25 @@ fMainWindow::fMainWindow()
   bool libraCheck = false;
   for (const auto &currentActionAndName : vectorOfBreastApps)
   {
-    if (currentActionAndName.name != "Breast Cancer")
+    if (!libraCheck)
     {
-      if (!libraCheck)
+      if (currentActionAndName.name.find("libra") != std::string::npos)
       {
-        if (currentActionAndName.name.find("libra") != std::string::npos)
-        {
-          libraCheck = true;
-          menuDownload->addAction("LIBRA");
-        }
+        libraCheck = true;
+        menuDownload->addAction("LIBRA");
       }
     }
+    //if (currentActionAndName.name != "Breast Cancer")
+    //{
+    //  if (!libraCheck)
+    //  {
+    //    if (currentActionAndName.name.find("libra") != std::string::npos)
+    //    {
+    //      libraCheck = true;
+    //      menuDownload->addAction("LIBRA");
+    //    }
+    //  }
+    //}
   }
 
   bool sbrtCheck = false;
@@ -5453,10 +5461,11 @@ void fMainWindow::ApplicationLIBRABatch()
 
   if (cbica::fileExists(scriptToCall))
   {
-    QtConcurrent::run(this, &fMainWindow::startExternalProcess,
-      scriptToCall.c_str(),
-      QStringList()
-    );
+    startExternalProcess(scriptToCall.c_str(), QStringList());
+    //QtConcurrent::run(this, &fMainWindow::startExternalProcess,
+    //  scriptToCall.c_str(),
+    //  QStringList()
+    //);
 
     return;
   }
