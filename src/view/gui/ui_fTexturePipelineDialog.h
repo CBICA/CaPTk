@@ -46,7 +46,7 @@ public:
     if (fTexturePipelineDialog->objectName().isEmpty())
       fTexturePipelineDialog->setObjectName(QString::fromUtf8("fTexturePipelineDialog"));
     //fTexturePipelineDialog->setWindowModality(Qt::NonModal);
-    fTexturePipelineDialog->resize(200, 200); // needs to be screenSize dependent 
+    fTexturePipelineDialog->resize(300, 150); // needs to be screenSize dependent 
     QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     sizePolicy.setHorizontalStretch(0);
     sizePolicy.setVerticalStretch(0);
