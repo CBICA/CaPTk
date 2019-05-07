@@ -206,7 +206,11 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("d", "debug", cbica::Parameter::BOOLEAN, "true or false", "Whether to print out additional debugging info", "Defaults to '0'");
   parser.addOptionalParameter("dw", "debugWrite", cbica::Parameter::BOOLEAN, "true or false", "Whether to write intermediate files or not", "Defaults to '0'");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::FILE, "Text file with write access", "Full path to log file to store logging information", "By default, only console output is generated");
-  parser.exampleUsage("FeatureExtraction -n AAAC -i AAAC0_flair_pp_shrunk.nii.gz -p 1_params_default.csv -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -o featExParam1.csv -t FL -r 1 -l ED,NC");
+  //parser.exampleUsage("FeatureExtraction -n AAAC -i AAAC0_flair_pp_shrunk.nii.gz -p 1_params_default.csv -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -o featExParam1.csv -t FL -r 1 -l ED,NC");
+
+  parser.addApplicationDescription("This does feature calculation based on the input image(s) and mask");
+  parser.addExampleUsage("-n AAAC -i AAAC0_flair_pp_shrunk.nii.gz,AAAC0_t1_pp_shrunk.nii.gz  -t FL,T1 -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -r 1,2 -l ED,NC -p 1_params_default.csv -o featExParam1.csv -vc 1", 
+    "This calculates features based for subject 'AAAC' using the images 'AAAC0_flair_pp_shrunk.nii.gz,AAAC0_t1_pp_shrunk.nii.gz' represented by the modalities 'FL,T1' in the region defined by 'AAAC0_flair_pp_shrunk_testTumor.nii.gz' at label '1,2' (output as 'ED,NC') based on the parameter file '1_params_default.csv' with output written into 'featExParam1.csv' with vertical concatenation");
 
   //bool loggerRequested = false;
   //cbica::Logging logger;
