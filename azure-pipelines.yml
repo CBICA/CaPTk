@@ -58,18 +58,18 @@ jobs:
         ls -lt
       displayName: 'Removing the binaries folder'
      
-    - script: |
-        cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-        cmake --build . --target PACKAGE --config Release
-
-        mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
-        
-        cd ../
-        rm -rf *
-        
-      displayName: 'Package CaPTk'
+    #- script: |
+    #    cd bin
+    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+    #    cmake --build . --target PACKAGE --config Release
+    #
+    #    mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
+    #    
+    #    cd ../
+    #    rm -rf *
+    #    
+    #  displayName: 'Package CaPTk'
     #
     #- script: | 
     #    cd bin
@@ -83,17 +83,17 @@ jobs:
     #    
     #  displayName: 'Moving Installer one level up'
     #
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_windows'
-    
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_windows'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    #- task: PublishBuildArtifacts@1
+    #  inputs:
+    #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #    artifactName: '$(Build.DefinitionName)_installer_windows'
+    #
+    #- task: DownloadBuildArtifacts@0
+    #  inputs:
+    #    buildType: 'current'
+    #    downloadType: 'single'
+    #    artifactName: '$(Build.DefinitionName)_installer_windows'
+    #    downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
