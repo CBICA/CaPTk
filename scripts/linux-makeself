@@ -125,24 +125,14 @@ install_captk () {
 cat ./Linux-Combined.txt | more
 
 echo ""
-# echo "I accept the terms of the licenses above."
+echo "I accept the terms of the licenses above."
 
-# # Modifies the select prompt
-# PS3="# "
+# Modifies the select prompt
+PS3="# "
 
-# select yn in "Yes" "No"; do
-#   case $yn in
-#     Yes ) install_captk ; break  ;;
-#     No ) echo "Goodbye" ; exit 0 ;;
-#   esac
-# done
-
-for i in {1..3}
-do
-  read -p "I accept the terms of the licenses above [Y/N] " choice
-  case "$choice" in 
-    [yY][eE][sS]|[yY]) install_captk ; break  ;;
-    [nN][oO]|[nN]) echo "Goodbye" ; exit 0 ;;
-    * ) echo "Invalid";;
+select yn in "Yes" "No"; do
+  case $yn in
+    Yes ) install_captk ; break  ;;
+    No ) echo "Goodbye" ; exit 0 ;;
   esac
 done

@@ -343,7 +343,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
         IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
         
-          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E unzip ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
             WORKING_DIRECTORY ${SUBDIRPATH}
             RESULT_VARIABLE RESULT_CODE
           )
@@ -394,7 +394,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
         IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
         
-          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E unzip ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
             WORKING_DIRECTORY ${SUBDIRPATH}
             RESULT_VARIABLE RESULT_CODE
           )
