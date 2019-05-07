@@ -71,6 +71,23 @@ if [ ! -d "./src/applications/individualApps/libra/MCR" ]; then
   echo "[:] Done installing MCR component."
 fi
 
+# get version of GNU tool - taken from https://stackoverflow.com/a/25845393
+toolversion() {
+    local prog="$1" operator="$2" value="$3" version
+
+    version=$($prog --version | awk '{print $NF; exit}')
+
+    awk -vv1="$version" -vv2="$value" 'BEGIN {
+        split(v1, a, /\./); split(v2, b, /\./);
+        if (a[1] == b[1]) {
+            exit (a[2] '$operator' b[2]) ? 0 : 1
+        }
+        else {
+            exit (a[1] '$operator' b[1]) ? 0 : 1
+        }
+    }'
+}
+
 # Run the fixes for linux, assume being ran from build folder (./bin)
 RUN_FIXES () {
 
@@ -266,8 +283,12 @@ cp -r ../docs install/appdir/usr/
 # We need to fix the project first
 RUN_FIXES
 
-# Install and deploy
-RUN_DEPLOYQT
+if toolversion ldd '>=' 2.24; then
+  echo "Too high a version of LDD detected; AppImage will potentially be unsupported, skipping packaging."
+else
+  # Install and deploy
+  RUN_DEPLOYQT
+fi
 
 echo "[:] Building Installer..."
 
