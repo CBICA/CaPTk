@@ -341,14 +341,17 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   typedef itk::Statistics::EnhancedScalarImageToNeighbourhoodGreyLevelDifferenceFeaturesFilter< TImage > FilterType;
   typedef typename FilterType::NeighbourhoodGreyLevelDifferenceFeaturesFilterType TextureFilterType;
   //typedef itk::MinimumMaximumImageCalculator< TImage > MinMaxComputerType;
+
   using MatrixGenerator = itk::Statistics::EnhancedScalarImageToNeighbourhoodGreyLevelDifferenceMatrixFilter< TImage >;
   using FeatureCalculator = itk::Statistics::EnhancedHistogramToNeighbourhoodGreyLevelDifferenceFeaturesFilter< typename MatrixGenerator::HistogramType >;
+
   typename MatrixGenerator::Pointer matrixFilter = MatrixGenerator::New();
   typename FeatureCalculator::Pointer featureFilter = FeatureCalculator::New();
   matrixFilter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
   matrixFilter->SetNumberOfBinsPerAxis(m_Bins);
   matrixFilter->SetInput(itkImage);
   matrixFilter->SetMaskImage(maskImage);
+
   //voxel count
   //unsigned long numberOfVoxels = 0;
   //itk::ImageRegionConstIterator<TImage> voxelCountIter(maskImage, maskImage->GetLargestPossibleRegion());
@@ -358,26 +361,32 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
     //  ++numberOfVoxels;
    // ++voxelCountIter;
   //}
+
   //add offsets except self voxel
   typename OffsetVector::ConstIterator offsetIt;
   std::vector <OffsetType> tVector;
   for (offsetIt = offset->Begin(); offsetIt != offset->End(); offsetIt++)
   {
+
     tVector.push_back(offsetIt.Value());
   }
   matrixFilter->AddOffsets(tVector);
   matrixFilter->Update();
+
   //typename FilterType::FeatureNameVectorPointer requestedFeatures = FilterType::FeatureNameVector::New();
+
   //requestedFeatures->push_back(TextureFilterType::Coarseness);
   //requestedFeatures->push_back(TextureFilterType::Contrast);
   //requestedFeatures->push_back(TextureFilterType::Busyness);
   //requestedFeatures->push_back(TextureFilterType::Complexity);
   //requestedFeatures->push_back(TextureFilterType::Strength);
   //requestedFeatures->push_back(20);
+
   featureFilter->SetNumberOfVoxels(m_currentNonZeroImageValues.size());
   featureFilter->SetInput(matrixFilter->GetOutput());
   featureFilter->SetSiMatrix(matrixFilter->GetSiMatrix());
   featureFilter->Update();
+
   auto Coarseness = featureFilter->GetCoarseness();
   auto Contrast = featureFilter->GetContrast();
   auto Business = featureFilter->GetBusyness();
@@ -1083,6 +1092,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   //TBD - Testing
 
 
+
   if ((m_offsetSelect == "Average") || (m_offsetSelect == "Individual"))
   {
     double sre = 0, lre = 0, gln = 0, glnn = 0, rln = 0, rlnn = 0, rp = 0, lglre = 0, hglre = 0, srlgle = 0, srhgle = 0, lrlgle = 0, lrhgle = 0,
@@ -1422,6 +1432,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   {
     // not defined, so don't do anything to featurevec
   }
+
 }
 
 
@@ -1559,6 +1570,7 @@ void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImag
   }
   if (m_QuantizationType == "ROI")
   {
+
     statisticsCalculatorToUse = m_statistics_local;
   }
 
@@ -1714,6 +1726,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             m_patchBoundaryDisregarded = true;
           }
         }
+
         else if (outer_key == ParamsString[LatticeFullImage])
         {
           if (currentValue == "1")
@@ -1933,6 +1946,7 @@ void FeatureExtraction< TImage >::SetRequestedFeatures(std::map< std::string, st
     std::map<std::string, std::map<std::string, std::string>> temp;
     for (size_t j = 0; j < currentFeature.second.size(); j++)
     {
+
       std::map< std::string, std::string > currentFeature_ParamsAndVals;
       std::string paramName;
       for (auto& currentFeature_Parameter : currentFeature.second[j]) // each parameter within the feature family

@@ -406,17 +406,25 @@ fMainWindow::fMainWindow()
   bool libraCheck = false;
   for (const auto &currentActionAndName : vectorOfBreastApps)
   {
-    if (currentActionAndName.name != "Breast Cancer")
+    if (!libraCheck)
     {
-      if (!libraCheck)
+      if (currentActionAndName.name.find("libra") != std::string::npos)
       {
-        if (currentActionAndName.name.find("libra") != std::string::npos)
-        {
-          libraCheck = true;
-          menuDownload->addAction("LIBRA");
-        }
+        libraCheck = true;
+        menuDownload->addAction("LIBRA");
       }
     }
+    //if (currentActionAndName.name != "Breast Cancer")
+    //{
+    //  if (!libraCheck)
+    //  {
+    //    if (currentActionAndName.name.find("libra") != std::string::npos)
+    //    {
+    //      libraCheck = true;
+    //      menuDownload->addAction("LIBRA");
+    //    }
+    //  }
+    //}
   }
 
   bool sbrtCheck = false;
@@ -1522,6 +1530,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       fname = d.absolutePath().toStdString();
+      dicomfilename = fname;
     }
     else 
       fname = fileName;
@@ -1542,9 +1551,22 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     else if (!bFirstLoad)
     {
       {
-        auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
-        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
-        if (!cbica::ImageSanityCheck(fname, temp_prev))
+        //auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+        //ImageTypeFloat3D::DirectionType originaldirection;
+        //originaldirection[0][0] = mSlicerManagers[0]->mDirection(0, 0);
+        //originaldirection[0][1] = mSlicerManagers[0]->mDirection(0, 1);
+        //originaldirection[0][2] = mSlicerManagers[0]->mDirection(0, 2);
+        //originaldirection[1][0] = mSlicerManagers[0]->mDirection(1, 0);
+        //originaldirection[1][1] = mSlicerManagers[0]->mDirection(1, 1);
+        //originaldirection[1][2] = mSlicerManagers[0]->mDirection(1, 2);
+        //originaldirection[2][0] = mSlicerManagers[0]->mDirection(2, 0);
+        //originaldirection[2][1] = mSlicerManagers[0]->mDirection(2, 1);
+        //originaldirection[2][2] = mSlicerManagers[0]->mDirection(2, 2);
+        //auto img = convertVtkToItk< ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension >(mSlicerManagers[0]->mImage);
+        //img->SetDirection(originaldirection);
+
+        //cbica::WriteImage< ImageTypeFloat3D >(img, temp_prev);
+        if (!cbica::ImageSanityCheck(fname, mSlicerManagers[0]->GetPathFileName()))
         {
           ShowErrorMessage("The physical dimensions of the previously loaded image and current image are inconsistent; cannot load");
           return;
@@ -5268,6 +5290,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       QString fname = d.absolutePath();
+      dicomfilename = fileName;
       this->openDicomImages(fname);
     }
     else
@@ -5453,10 +5476,11 @@ void fMainWindow::ApplicationLIBRABatch()
 
   if (cbica::fileExists(scriptToCall))
   {
-    QtConcurrent::run(this, &fMainWindow::startExternalProcess,
-      scriptToCall.c_str(),
-      QStringList()
-    );
+    startExternalProcess(scriptToCall.c_str(), QStringList());
+    //QtConcurrent::run(this, &fMainWindow::startExternalProcess,
+    //  scriptToCall.c_str(),
+    //  QStringList()
+    //);
 
     return;
   }
@@ -5476,7 +5500,8 @@ void fMainWindow::ApplicationTexturePipeline()
     return;
   }
 
-  if (mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] != 1) /*||
+    (mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)*/)
   {
     ShowErrorMessage("This is only valid for mammogram images");
     return;
@@ -5489,6 +5514,11 @@ void fMainWindow::ApplicationTexturePipeline()
 
 void fMainWindow::CallTexturePipeline(const std::string outputDirectory)
 {
+  if (dicomfilename.empty())
+  {
+    ShowErrorMessage("This can only run with a DICOM image as input", this);
+    return;
+  }
   std::string casename = cbica::getFilenameBase(dicomfilename);
 
   cbica::createDir(outputDirectory);
@@ -5502,14 +5532,16 @@ void fMainWindow::CallTexturePipeline(const std::string outputDirectory)
   auto texturePipelineExe = getApplicationPath("BreastTexturePipeline");
   if (!cbica::exists(texturePipelineExe))
   {
-    ShowErrorMessage("BreastTexturePipeline executable doesn't exist; can't run");
+    ShowErrorMessage("BreastTexturePipeline executable doesn't exist; can't run", this);
     updateProgress(0, "");
     return;
   }
 
+  ShowMessage("WARNING: Depending on the size of the image, the Texture Feature Extraction can take 1-10 minutes. UI will be unresponsive during this time", this);
+
   if (startExternalProcess(texturePipelineExe.c_str(), args) != 0)
   {
-    ShowErrorMessage("BreastTexturePipeline returned with exit code != 0");
+    ShowErrorMessage("BreastTexturePipeline returned with exit code != 0", this);
     updateProgress(0, "");
     return;
   }
@@ -5526,7 +5558,14 @@ void fMainWindow::ApplicationBreastSegmentation()
     return;
   }
 
-  if (mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  if (dicomfilename.empty())
+  {
+    ShowErrorMessage("This can only run with a DICOM image as input", this);
+    return;
+  }
+
+  if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] != 1) /*||
+    (mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)*/)
   {
     ShowErrorMessage("This is only valid for mammogram images");
     return;
@@ -5580,7 +5619,8 @@ void fMainWindow::ApplicationLIBRASingle()
     return;
   }
 
-  if (mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
+  if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] != 1) /*||
+    (mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)*/)
   {
     ShowErrorMessage("This is only valid for mammogram images");
     return;
