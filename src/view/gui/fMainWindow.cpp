@@ -5532,16 +5532,16 @@ void fMainWindow::CallTexturePipeline(const std::string outputDirectory)
   auto texturePipelineExe = getApplicationPath("BreastTexturePipeline");
   if (!cbica::exists(texturePipelineExe))
   {
-    ShowErrorMessage("BreastTexturePipeline executable doesn't exist; can't run");
+    ShowErrorMessage("BreastTexturePipeline executable doesn't exist; can't run", this);
     updateProgress(0, "");
     return;
   }
 
-  ShowMessage("WARNING: Depending on the size of the image, the Texture Feature Extraction can take 1-10 minutes. UI will be unresponsive during this time");
+  ShowMessage("WARNING: Depending on the size of the image, the Texture Feature Extraction can take 1-10 minutes. UI will be unresponsive during this time", this);
 
   if (startExternalProcess(texturePipelineExe.c_str(), args) != 0)
   {
-    ShowErrorMessage("BreastTexturePipeline returned with exit code != 0");
+    ShowErrorMessage("BreastTexturePipeline returned with exit code != 0", this);
     updateProgress(0, "");
     return;
   }

@@ -19,7 +19,9 @@ int main(int argc, char **argv)
 
   parser.getParameterValue("l", file_labelMap);
   parser.getParameterValue("o", file_output);
-  parser.exampleUsage("DirectionalityEstimate -l img_timepoint_1.nii.gz -o <output file>");
+  parser.addApplicationDescription("This does a directionaliy estimation on the pre and post contrast injections for brains");
+  parser.addExampleUsage("-l c:/img_timepoint_1.nii.gz -o c:/output.txt", "This does directionality calculation based on the inputs");
+
 
   std::string output_message = "Output Point:\nCoordinate = ";
   std::string seedPoint;
