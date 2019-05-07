@@ -2816,7 +2816,7 @@ void FeatureExtraction< TImage >::Update()
             }
             case NGTDM:
             {
-              std::cout << "[DEBUG] FeatureExtraction.hxx::case NGTDM" << std::endl;
+              //std::cout << "[DEBUG] FeatureExtraction.hxx::case NGTDM" << std::endl;
               auto temp = m_Features.find(FeatureFamilyString[f]);
               if (temp != m_Features.end())
               {
