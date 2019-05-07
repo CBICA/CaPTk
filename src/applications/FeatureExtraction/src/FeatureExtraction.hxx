@@ -2869,47 +2869,47 @@ void FeatureExtraction< TImage >::Update()
               }
               break;
             }
-            //case NGLDM:
-            //{
-            //  //std::cout << "[DEBUG] FeatureExtraction.hxx::case NGTDM" << std::endl;
-            //  auto temp = m_Features.find(FeatureFamilyString[f]);
-            //  if (temp != m_Features.end())
-            //  {
-            //    if (std::get<0>(temp->second))
-            //    {
-            //      auto tempT1 = std::chrono::high_resolution_clock::now();
+            case NGLDM:
+            {
+              //std::cout << "[DEBUG] FeatureExtraction.hxx::case NGLDM" << std::endl;
+              auto temp = m_Features.find(FeatureFamilyString[f]);
+              if (temp != m_Features.end())
+              {
+                if (std::get<0>(temp->second))
+                {
+                  auto tempT1 = std::chrono::high_resolution_clock::now();
 
-            //      std::get<2>(temp->second) = m_modality[i];
-            //      std::get<3>(temp->second) = allROIs[j].label;
+                  std::get<2>(temp->second) = m_modality[i];
+                  std::get<3>(temp->second) = allROIs[j].label;
 
-            //      auto offsets = GetOffsetVector(m_Radius, m_Direction);
-            //      /* this dimensionality reduction applies only to shape and Volumetric features */
-            //      if (TImage::ImageDimension == 3)
-            //      {
-            //        CalculateNGLDM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
-            //      }
-            //      else
-            //      {
-            //        std::cout << "[DEBUG] NGLDM - Not yet implemented for non-3D" << std::endl;
-            //      }
+                  auto offsets = GetOffsetVector(m_Radius, m_Direction);
+                  /* this dimensionality reduction applies only to shape and Volumetric features */
+                  if (TImage::ImageDimension == 3)
+                  {
+                    CalculateNGLDM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
+                  }
+                  else
+                  {
+                    std::cout << "[DEBUG] NGLDM - Not yet implemented for non-3D" << std::endl;
+                  }
 
-            //      if (std::get<4>(temp->second).empty())
-            //      {
-            //        return;
-            //      }
-            //      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-            //        "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-            //        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                  if (std::get<4>(temp->second).empty())
+                  {
+                    return;
+                  }
+                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                    "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                    ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-            //      if (m_debug)
-            //      {
-            //        auto tempT2 = std::chrono::high_resolution_clock::now();
-            //        m_logger.Write("NGLDM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
-            //      }
-            //    }
-            //  }
-            //  break;
-            //}
+                  if (m_debug)
+                  {
+                    auto tempT2 = std::chrono::high_resolution_clock::now();
+                    m_logger.Write("NGLDM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                  }
+                }
+              }
+              break;
+            }
             case FractalDimension:
             {
               if (TImage::ImageDimension == 2)
