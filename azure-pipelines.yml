@@ -359,6 +359,83 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
   
+#### SELF-HOSTED AGENTS
+
+- job: 'XenialSelfHostedBuild'
+  displayName: "End-to-end Linux (Xenial) build"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+
+  pool: Default
+
+  steps:
+    # Pull LFS
+    - bash: |
+        git lfs pull
+      displayName: 'Pull LFS'
+
+    # Create build dir
+    - bash: |
+        mkdir -p bin
+      displayName: 'Create build directory'
+
+    # Configure and build superbuild
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+        make -j2
+      displayName: 'Configure and compile Superbuild'
+
+    # Configure and build CaPTk
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+        make -j2
+        make install/strip
+      displayName: 'Configure and compile CaPTk'
+
+    # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
+      
+    # Check libra
+    - bash: |
+        cd bin/install/appdir/usr/bin/
+        ls -l
+      displayName: 'Checking ${installDir}/bin'
+      
+    # Build a package
+    - bash: |
+        export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
+        export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+
+        make install
+
+        ./scripts/captk-pkg
+
+        rm -rf bin
+
+        mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
+        
+      displayName: 'Set up environment variables for packager and build a package'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_selfhosted'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_selfhosted'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+
 - job: 'MacOSSelfHostBuild'
   displayName: "Self-hosted MacOS agent"
   timeoutInMinutes: 0
@@ -469,74 +546,12 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
+        artifactName: '$(Build.DefinitionName)_installer_macOS_selfhosted'
 
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
+        artifactName: '$(Build.DefinitionName)_installer_macOS_selfhosted'
         downloadPath: '$(System.ArtifactsDirectory)'
-
-- job: 'XenialSelfHostedBuild'
-  displayName: "End-to-end Linux (Xenial) build"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
-
-  pool: Default
-
-  steps:
-    # Pull LFS
-    - bash: |
-        git lfs pull
-      displayName: 'Pull LFS'
-
-    # Create build dir
-    - bash: |
-        mkdir -p bin
-      displayName: 'Create build directory'
-
-    # Configure and build superbuild
-    - bash: |
-        cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
-        make -j2
-      displayName: 'Configure and compile Superbuild'
-
-    # Configure and build CaPTk
-    - bash: |
-        cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
-        make -j2
-        make install/strip
-      displayName: 'Configure and compile CaPTk'
-
-    # Check qt
-    - bash: |
-        cd bin
-        ls -a
-        ls ./qt/
-      displayName: 'Check qt'
-      
-    # Check libra
-    - bash: |
-        cd bin/install/appdir/usr/bin/
-        ls -l
-      displayName: 'Checking ${installDir}/bin'
-      
-    # Build a package
-    - bash: |
-        export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
-        export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-
-        make install
-
-        ./scripts/captk-pkg
-
-        rm -rf bin
-
-        mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
-        
-      displayName: 'Set up environment variables for packager and build a package'
     
