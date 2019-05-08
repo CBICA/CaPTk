@@ -78,6 +78,9 @@ public:
   //! Actual algorithm runner - this is to be changed for each feature family
   virtual void Update() {};
 
+  //! Enable debug mode
+  void EnableDebugMode() { m_debugMode = true; };
+
 protected:
 
   typename TImageType::Pointer m_inputImage, //! the image on which the computations need to happen
@@ -87,6 +90,7 @@ protected:
   bool m_algorithmDone = false; //! whether the algorithm has finished computing or not
   bool m_writeIntermediateFiles = false; //! used for debugging only
   std::map< std::string, double > m_features; //! the output with feature names and their respective values
+  bool m_debugMode = false;
 };
 
 #include "FeatureBase.hxx"

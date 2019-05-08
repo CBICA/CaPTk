@@ -1,8 +1,6 @@
-﻿/**
+/**
 \file FeatureExtraction.hxx
-
 \brief Contains the implementations of class FeatureExtraction
-
 */
 
 #pragma once
@@ -91,6 +89,10 @@ void FeatureExtraction< TImage >::CalculateFractalDimensions(const typename TIma
   fractalDimensionCalculator.SetRadius(m_Radius);
   fractalDimensionCalculator.SetLatticePointStatus(latticePatch);
   fractalDimensionCalculator.SetStartingIndex(m_currentLatticeStart);
+  if (m_debug)
+  {
+    fractalDimensionCalculator.EnableDebugMode();
+  }
   fractalDimensionCalculator.Update();
   auto temp = fractalDimensionCalculator.GetOutput();
   for (auto const& f : temp)
@@ -106,6 +108,10 @@ void FeatureExtraction< TImage >::CalculateLawsMeasures(const typename TImage::P
   LawsMeasures< TImage > lawsMeasuresCalculator;
   lawsMeasuresCalculator.SetInputImage(itkImage);
   lawsMeasuresCalculator.SetStartingIndex(m_currentLatticeStart);
+  if (m_debug)
+  {
+    lawsMeasuresCalculator.EnableDebugMode();
+  }
   lawsMeasuresCalculator.Update();
   auto temp = lawsMeasuresCalculator.GetOutput();
   for (auto const& f : temp)
@@ -131,6 +137,10 @@ void FeatureExtraction< TImage >::CalculateEdgeEnhancement(const typename TImage
   edgeEnhancementCalculator.SetStartingIndex(m_currentLatticeStart);
   edgeEnhancementCalculator.SetETA(m_edgesETA);
   edgeEnhancementCalculator.SetEpsilon(m_edgesEpsilon);
+  if (m_debug)
+  {
+    edgeEnhancementCalculator.EnableDebugMode();
+  }
   edgeEnhancementCalculator.Update();
   auto temp = edgeEnhancementCalculator.GetOutput();
   for (auto const& f : temp)
@@ -155,6 +165,10 @@ void FeatureExtraction< TImage >::CalculateLBP(const typename TImage::Pointer it
   lbpCalculator.SetInputImage(itkImage);
   lbpCalculator.SetNeighbors(m_neighborhood);
   lbpCalculator.SetLBPStyle(m_LBPStyle);
+  if (m_debug)
+  {
+    lbpCalculator.EnableDebugMode();
+  }
   lbpCalculator.Update();
   auto temp = lbpCalculator.GetOutput();
   for (auto const& f : temp)
@@ -171,6 +185,10 @@ void FeatureExtraction< TImage >::CalculatePowerSpectrum(const typename TImage::
   powerSpectrumCalculator.SetInputImage(itkImage);
   powerSpectrumCalculator.SetCenter(m_centerIndexString);
   powerSpectrumCalculator.SetStartingIndex(m_currentLatticeStart);
+  if (m_debug)
+  {
+    powerSpectrumCalculator.EnableDebugMode();
+  }
   powerSpectrumCalculator.Update();
   auto temp = powerSpectrumCalculator.GetOutput();
   for (auto const& f : temp)
@@ -198,6 +216,10 @@ void FeatureExtraction< TImage >::CalculateGaborWavelets(const typename TImage::
   gaborWaveletCalculator.SetLevel(m_gaborLevel);
   gaborWaveletCalculator.SetFMax(m_gaborFMax);
   gaborWaveletCalculator.SetGamma(m_gaborGamma);
+  if (m_debug)
+  {
+    gaborWaveletCalculator.EnableDebugMode();
+  }
   gaborWaveletCalculator.Update();
   auto temp = gaborWaveletCalculator.GetOutput();
   for (auto const& f : temp)
@@ -216,6 +238,10 @@ void FeatureExtraction< TImage >::CalculateMorphologic(const typename TImage::Po
   morphologicCalculator.SetMaskShape(mask1);
   morphologicCalculator.SetStartingIndex(m_currentLatticeStart);
   morphologicCalculator.SetRange(m_Range);
+  if (m_debug)
+  {
+    morphologicCalculator.EnableDebugMode();
+  }
   morphologicCalculator.Update();
   auto temp = morphologicCalculator.GetOutput();
   if (temp.empty())
@@ -237,40 +263,44 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM" << std::endl;
   //offset should be always 26 (3D) or 8 (2D): this feature family is rotationally invariant
 
-  NGLDMFeatures< TImage > calculator;
-  calculator.SetInputImage(itkImage);
-  calculator.SetInputMask(maskImage);
-  calculator.SetNumBins(m_Bins);
-  calculator.SetRange(m_Radius); //chebyshev distance delta
-  calculator.SetMinimum(m_minimumToConsider);
-  calculator.SetMaximum(m_maximumToConsider);
-  calculator.Update();
-  std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << calculator.GetRange() << std::endl;
+  NGLDMFeatures< TImage > ngldmCalculator;
+  ngldmCalculator.SetInputImage(itkImage);
+  ngldmCalculator.SetInputMask(maskImage);
+  ngldmCalculator.SetNumBins(m_Bins);
+  ngldmCalculator.SetRange(m_Radius); //chebyshev distance delta
+  ngldmCalculator.SetMinimum(m_minimumToConsider);
+  ngldmCalculator.SetMaximum(m_maximumToConsider);
+  if (m_debug)
+  {
+    ngldmCalculator.EnableDebugMode();
+  }
+  ngldmCalculator.Update();
+  std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << ngldmCalculator.GetRange() << std::endl;
 
-  featurevec["LowDependenceEmphasis"] = calculator.GetLowDependenceEmphasis();
-  //featurevec["HighDependenceEmphasis"] = calculator.GetHighDependenceEmphasis();
-  //featurevec["LowGreyLevelCountEmphasis"] = calculator.GetLowGreyLevelCountEmphasis();
-  //featurevec["HighGreyLevelCountEmphasis"] = calculator.GetHighGreyLevelCountEmphasis();
-  //featurevec["LowDependenceLowGreyLevelEmphasis"] = calculator.GetLowDependenceLowGreyLevelEmphasis();
-  //featurevec["LowDependenceHighGreyLevelEmphasis"] = calculator.GetLowDependenceHighGreyLevelEmphasis();
-  //featurevec["HighDependenceLowGreyLevelEmphasis"] = calculator.GetHighDependenceLowGreyLevelEmphasis();
-  //featurevec["HighDependenceHighGreyLevelEmphasis"] = calculator.GetHighDependenceHighGreyLevelEmphasis();
-  //featurevec["GreyLevelNonUniformity"] = calculator.GetGreyLevelNonUniformity();
-  //featurevec["GreyLevelNonUniformityNormalised"] = calculator.GetGreyLevelNonUniformityNormalised();
-  //featurevec["DependenceCountNonUniformity"] = calculator.GetDependenceCountNonUniformity();
-  //featurevec["DependenceCountNonUniformityNormalised"] = calculator.GetDependenceCountNonUniformityNormalised();
-  //featurevec["DependenceCountPercentage"] = calculator.GetDependenceCountPercentage();
-  //featurevec["GreyLevelVariance"] = calculator.GetGreyLevelVariance();
-  //featurevec["DependenceCountVariance"] = calculator.GetDependenceCountVariance();
-  //featurevec["DependenceCountEntropy"] = calculator.GetDependenceCountEntropy();
-  //featurevec["DependenceCountEnergy"] = calculator.GetDependenceCountEnergy();
-  //featurevec["MeanGreyLevelCount"] = calculator.GetMeanGreyLevelCount();
-  //featurevec["MeanDependenceCount"] = calculator.GetMeanDependenceCount();
-  //featurevec["ExpectedNeighbourhoodSize"] = calculator.GetExpectedNeighbourhoodSize();
-  //featurevec["AverageNeighbourhoodSize"] = calculator.GetAverageNeighbourhoodSize();
-  //featurevec["AverageIncompleteNeighbourhoodSize"] = calculator.GetAverageIncompleteNeighbourhoodSize();
-  //featurevec["PercentageOfCompleteNeighbourhoods"] = calculator.GetPercentageOfCompleteNeighbourhoods();
-  //featurevec["PercentageOfDependenceNeighbours"] = calculator.GetPercentageOfDependenceNeighbours();
+  featurevec["LowDependenceEmphasis"] = ngldmCalculator.GetLowDependenceEmphasis();
+  //featurevec["HighDependenceEmphasis"] = ngldmCalculator.GetHighDependenceEmphasis();
+  //featurevec["LowGreyLevelCountEmphasis"] = ngldmCalculator.GetLowGreyLevelCountEmphasis();
+  //featurevec["HighGreyLevelCountEmphasis"] = ngldmCalculator.GetHighGreyLevelCountEmphasis();
+  //featurevec["LowDependenceLowGreyLevelEmphasis"] = ngldmCalculator.GetLowDependenceLowGreyLevelEmphasis();
+  //featurevec["LowDependenceHighGreyLevelEmphasis"] = ngldmCalculator.GetLowDependenceHighGreyLevelEmphasis();
+  //featurevec["HighDependenceLowGreyLevelEmphasis"] = ngldmCalculator.GetHighDependenceLowGreyLevelEmphasis();
+  //featurevec["HighDependenceHighGreyLevelEmphasis"] = ngldmCalculator.GetHighDependenceHighGreyLevelEmphasis();
+  //featurevec["GreyLevelNonUniformity"] = ngldmCalculator.GetGreyLevelNonUniformity();
+  //featurevec["GreyLevelNonUniformityNormalised"] = ngldmCalculator.GetGreyLevelNonUniformityNormalised();
+  //featurevec["DependenceCountNonUniformity"] = ngldmCalculator.GetDependenceCountNonUniformity();
+  //featurevec["DependenceCountNonUniformityNormalised"] = ngldmCalculator.GetDependenceCountNonUniformityNormalised();
+  //featurevec["DependenceCountPercentage"] = ngldmCalculator.GetDependenceCountPercentage();
+  //featurevec["GreyLevelVariance"] = ngldmCalculator.GetGreyLevelVariance();
+  //featurevec["DependenceCountVariance"] = ngldmCalculator.GetDependenceCountVariance();
+  //featurevec["DependenceCountEntropy"] = ngldmCalculator.GetDependenceCountEntropy();
+  //featurevec["DependenceCountEnergy"] = ngldmCalculator.GetDependenceCountEnergy();
+  //featurevec["MeanGreyLevelCount"] = ngldmCalculator.GetMeanGreyLevelCount();
+  //featurevec["MeanDependenceCount"] = ngldmCalculator.GetMeanDependenceCount();
+  //featurevec["ExpectedNeighbourhoodSize"] = ngldmCalculator.GetExpectedNeighbourhoodSize();
+  //featurevec["AverageNeighbourhoodSize"] = ngldmCalculator.GetAverageNeighbourhoodSize();
+  //featurevec["AverageIncompleteNeighbourhoodSize"] = ngldmCalculator.GetAverageIncompleteNeighbourhoodSize();
+  //featurevec["PercentageOfCompleteNeighbourhoods"] = ngldmCalculator.GetPercentageOfCompleteNeighbourhoods();
+  //featurevec["PercentageOfDependenceNeighbours"] = ngldmCalculator.GetPercentageOfDependenceNeighbours();
 }
 
 
@@ -280,29 +310,33 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
 {
   std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
 
-  NGTDMFeatures< TImage > calculator;
-  calculator.SetInputImage(itkImage);
-  calculator.SetInputMask(maskImage);
-  calculator.SetNumBins(m_Bins);
-  calculator.SetRange(m_Radius);
-  calculator.SetMinimum(m_minimumToConsider);
-  calculator.SetMaximum(m_maximumToConsider);
-  calculator.SetStartingIndex(m_currentLatticeStart);
-  calculator.Update();
-  std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM::calculator.GetRange()" << calculator.GetRange() << std::endl;
+  NGTDMFeatures< TImage > ngtdmCalculator;
+  ngtdmCalculator.SetInputImage(itkImage);
+  ngtdmCalculator.SetInputMask(maskImage);
+  ngtdmCalculator.SetNumBins(m_Bins);
+  ngtdmCalculator.SetRange(m_Radius);
+  ngtdmCalculator.SetMinimum(m_minimumToConsider);
+  ngtdmCalculator.SetMaximum(m_maximumToConsider);
+  ngtdmCalculator.SetStartingIndex(m_currentLatticeStart);
+  ngtdmCalculator.Update();
+  if (m_debug)
+  {
+    ngtdmCalculator.EnableDebugMode();
+    std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM::calculator.GetRange()" << ngtdmCalculator.GetRange() << std::endl;
+  }
 
   //auto temp = calculator.GetOutput();
-  double double_Strength = calculator.GetStrength();
-  double double_Complexity = calculator.GetComplexity();
-  double double_Coarsness = calculator.GetCoarsness();
-  double double_Contrast = calculator.GetContrast();
-  double double_Busyness = calculator.GetBusyness();
+  double double_Strength = ngtdmCalculator.GetStrength();
+  double double_Complexity = ngtdmCalculator.GetComplexity();
+  double double_Coarsness = ngtdmCalculator.GetCoarsness();
+  double double_Contrast = ngtdmCalculator.GetContrast();
+  double double_Busyness = ngtdmCalculator.GetBusyness();
 
-  featurevec["Strength"] = calculator.GetStrength();
-  featurevec["Complexity"] = calculator.GetComplexity();
-  featurevec["Coarseness"] = calculator.GetCoarsness();
-  featurevec["Constrast"] = calculator.GetContrast();
-  featurevec["Busyness"] = calculator.GetBusyness();
+  featurevec["Strength"] = ngtdmCalculator.GetStrength();
+  featurevec["Complexity"] = ngtdmCalculator.GetComplexity();
+  featurevec["Coarseness"] = ngtdmCalculator.GetCoarsness();
+  featurevec["Constrast"] = ngtdmCalculator.GetContrast();
+  featurevec["Busyness"] = ngtdmCalculator.GetBusyness();
   /* commenting out old codes calling NGLDM
   typedef itk::Statistics::EnhancedScalarImageToNeighbourhoodGreyLevelDifferenceFeaturesFilter< TImage > FilterType;
   typedef typename FilterType::NeighbourhoodGreyLevelDifferenceFeaturesFilterType TextureFilterType;
@@ -347,7 +381,6 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   //requestedFeatures->push_back(TextureFilterType::Complexity);
   //requestedFeatures->push_back(TextureFilterType::Strength);
   //requestedFeatures->push_back(20);
-
 
   featureFilter->SetNumberOfVoxels(m_currentNonZeroImageValues.size());
   featureFilter->SetInput(matrixFilter->GetOutput());
@@ -543,6 +576,10 @@ void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer 
   glszmCalculator.SetMaximum(m_maximumToConsider);
   glszmCalculator.SetStartingIndex(m_currentLatticeStart);
   glszmCalculator.SetOffsets(offset);
+  if (m_debug)
+  {
+    glszmCalculator.EnableDebugMode();
+  }
   glszmCalculator.Update();
   auto temp = glszmCalculator.GetOutput();
   for (auto const& f : temp)
@@ -1055,6 +1092,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   //TBD - Testing
 
 
+
   if ((m_offsetSelect == "Average") || (m_offsetSelect == "Individual"))
   {
     double sre = 0, lre = 0, gln = 0, glnn = 0, rln = 0, rlnn = 0, rp = 0, lglre = 0, hglre = 0, srlgle = 0, srhgle = 0, lrlgle = 0, lrhgle = 0,
@@ -1394,6 +1432,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   {
     // not defined, so don't do anything to featurevec
   }
+
 }
 
 
@@ -1531,6 +1570,7 @@ void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImag
   }
   if (m_QuantizationType == "ROI")
   {
+
     statisticsCalculatorToUse = m_statistics_local;
   }
 
@@ -1686,6 +1726,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             m_patchBoundaryDisregarded = true;
           }
         }
+
         else if (outer_key == ParamsString[LatticeFullImage])
         {
           if (currentValue == "1")
@@ -1905,6 +1946,7 @@ void FeatureExtraction< TImage >::SetRequestedFeatures(std::map< std::string, st
     std::map<std::string, std::map<std::string, std::string>> temp;
     for (size_t j = 0; j < currentFeature.second.size(); j++)
     {
+
       std::map< std::string, std::string > currentFeature_ParamsAndVals;
       std::string paramName;
       for (auto& currentFeature_Parameter : currentFeature.second[j]) // each parameter within the feature family
