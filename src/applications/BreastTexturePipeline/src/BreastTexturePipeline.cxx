@@ -154,7 +154,7 @@ int algorithmsRunner()
       exit(EXIT_FAILURE);
     }
 
-    std::cout << "Running FeatureExtraction.\n";
+    std::cout << "Running CaPTk's FeatureExtraction.\n";
 
     std::vector< LibraImageType::Pointer > inputImages;
     inputImages.push_back(normalizer.GetOutput());
