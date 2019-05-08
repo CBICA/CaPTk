@@ -926,7 +926,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   IF(CAPTK_PACKAGE_PROJECT)
   
      # see https://github.com/openmeeg/openmeeg/issues/314
-     if (WIN32 AND OPENMP_FOUND AND VCOMP_WORKAROUND) 
+     if (WIN32 AND OPENMP_FOUND) 
          set(VCOMP_PATH "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/redist/x64/Microsoft.VC140.OpenMP/vcomp140.dll") 
          INSTALL(FILES "${VCOMP_PATH}" DESTINATION bin COMPONENT Libraries) 
      endif() 
