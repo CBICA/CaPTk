@@ -1,8 +1,6 @@
-﻿/**
+/**
 \file FeatureExtraction.hxx
-
 \brief Contains the implementations of class FeatureExtraction
-
 */
 
 #pragma once
@@ -383,7 +381,6 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   //requestedFeatures->push_back(TextureFilterType::Complexity);
   //requestedFeatures->push_back(TextureFilterType::Strength);
   //requestedFeatures->push_back(20);
-
 
   featureFilter->SetNumberOfVoxels(m_currentNonZeroImageValues.size());
   featureFilter->SetInput(matrixFilter->GetOutput());
@@ -1095,6 +1092,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   //TBD - Testing
 
 
+
   if ((m_offsetSelect == "Average") || (m_offsetSelect == "Individual"))
   {
     double sre = 0, lre = 0, gln = 0, glnn = 0, rln = 0, rlnn = 0, rp = 0, lglre = 0, hglre = 0, srlgle = 0, srhgle = 0, lrlgle = 0, lrhgle = 0,
@@ -1434,6 +1432,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   {
     // not defined, so don't do anything to featurevec
   }
+
 }
 
 
@@ -1571,6 +1570,7 @@ void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImag
   }
   if (m_QuantizationType == "ROI")
   {
+
     statisticsCalculatorToUse = m_statistics_local;
   }
 
@@ -1726,6 +1726,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             m_patchBoundaryDisregarded = true;
           }
         }
+
         else if (outer_key == ParamsString[LatticeFullImage])
         {
           if (currentValue == "1")
@@ -1945,6 +1946,7 @@ void FeatureExtraction< TImage >::SetRequestedFeatures(std::map< std::string, st
     std::map<std::string, std::map<std::string, std::string>> temp;
     for (size_t j = 0; j < currentFeature.second.size(); j++)
     {
+
       std::map< std::string, std::string > currentFeature_ParamsAndVals;
       std::string paramName;
       for (auto& currentFeature_Parameter : currentFeature.second[j]) // each parameter within the feature family
