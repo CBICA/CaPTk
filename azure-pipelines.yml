@@ -27,7 +27,6 @@ jobs:
     - bash: |
         rm -rf binaries/*mac*.zip
         rm -rf binaries/*linux*.zip
-        rm -rf binaries/*windows*.zip
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
@@ -105,14 +104,6 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-  # Checkout validator.
-  # - bash: |
-  #     set -x
-  #     if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
-  #       git checkout $(System.PullRequest.SourceCommitId)
-  #     fi
-  #   displayName: 'Checkout pull request HEAD'
-
     # Pull LFS
     - bash: |
         git lfs pull
@@ -132,20 +123,6 @@ jobs:
     - bash: |
         mkdir -p bin
       displayName: 'Create build directory'
-
-  # This is here in case if either Qt or External apps needs to be overridden
-  # - bash: |
-  #       mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
-  #       mv ./binaries/externalApps.zip ./bin/
-  #       cd bin
-  #       unzip externalApps.zip &> /dev/null
-  #   displayName: 'Install Qt & external applications'
-
-    # Set up Qt from Binaries
-    # - bash: |
-    #     mv ./binaries/qt5.12.1_linux.zip ./bin/qt.zip
-    #     echo "Moved qt binaries"
-    #   displayName: 'Set up Qt on Linux'
 
     # Create as much free memory as possible
 
@@ -242,7 +219,6 @@ jobs:
       displayName: 'Brew dependencies'
     
     - bash: |
-        rm -rf binaries/*mac*.zip
         rm -rf binaries/*linux*.zip
         rm -rf binaries/*windows*.zip
         rm -rf history
