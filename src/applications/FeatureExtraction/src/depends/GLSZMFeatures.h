@@ -141,12 +141,6 @@ public:
   //! Default destructor
   ~GLSZMFeatures() { };
 
-  //! Set the radius for computation
-  void SetRadius(int radius) { m_radius = radius; };
-
-  //! Set the radius for computation in world coordinates
-  void SetRadius(float radius) { m_radius_float = radius; };
-
   /**
   \brief Set the range (how far from the center index of interest do you want to calculate neighborhood tone difference); defaults to 1
 
@@ -830,9 +824,6 @@ private:
   unsigned int m_bins = 10;
   typename TImageType::PixelType m_minimum = 0.0;
   typename TImageType::PixelType m_maximum = 0.0;
-
-  int m_radius = -1;
-  float m_radius_float = -1;
 
   std::vector< double > pVector;
   std::vector< double > sVector;
