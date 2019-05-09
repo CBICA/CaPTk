@@ -96,7 +96,7 @@ public:
       stats->SetInput(this->m_inputImage);  //input, unmasked full image
       stats->Update();
       stats->SetUseHistograms(true);
-      stats->SetHistogramParameters(this->this->m_Bins, this->m_minimum, this->m_maximum);
+      stats->SetHistogramParameters(this->m_Bins, this->m_minimum, this->m_maximum);
       stats->Update();
       //std::cout << "\n[DEBUG] NGTDMFeatures.h - itk::LabelStatisticsImageFilter->SetHistogramParameters: (this->m_Bins=" << this->m_Bins << " | this->m_minimum=" << this->m_minimum << " | this->m_maximum=" << this->m_maximum << ")" << std::endl;
 

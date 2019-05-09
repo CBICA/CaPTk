@@ -53,8 +53,8 @@ namespace mitk
 		double IndexToMaxIntensity(int index);
 		void Print();
 
-		double this->m_minimumRange;
-		double this->m_maximumRange;
+		double m_minimumRange;
+		double m_maximumRange;
 		double m_Stepsize;
 		int m_NumberOfDependences;
 		int m_NumberOfBins;
@@ -131,8 +131,8 @@ namespace mitk
 }
 
 mitk::NGLDMMatrixHolder::NGLDMMatrixHolder(double min, double max, int number, int depenence) :
-	this->m_minimumRange(min),
-	this->m_maximumRange(max),
+	m_minimumRange(min),
+	m_maximumRange(max),
 	m_Stepsize(0),
 	m_NumberOfDependences(depenence),
 	m_NumberOfBins(number),
@@ -159,20 +159,20 @@ void mitk::NGLDMMatrixHolder::Print()
 
 int mitk::NGLDMMatrixHolder::IntensityToIndex(double intensity)
 {
-	return std::floor((intensity - this->m_minimumRange) / m_Stepsize);
+	return std::floor((intensity - m_minimumRange) / m_Stepsize);
 }
 
 double mitk::NGLDMMatrixHolder::IndexToMinIntensity(int index)
 {
-	return this->m_minimumRange + index * m_Stepsize;
+	return m_minimumRange + index * m_Stepsize;
 }
 double mitk::NGLDMMatrixHolder::IndexToMeanIntensity(int index)
 {
-	return this->m_minimumRange + (index + 0.5) * m_Stepsize;
+	return m_minimumRange + (index + 0.5) * m_Stepsize;
 }
 double mitk::NGLDMMatrixHolder::IndexToMaxIntensity(int index)
 {
-	return this->m_minimumRange + (index + 1) * m_Stepsize;
+	return m_minimumRange + (index + 1) * m_Stepsize;
 }
 
 template< typename TImageType >
@@ -584,8 +584,8 @@ private:
 	unsigned int m_range = 1;
 	typename TImageType::SizeType m_radius;
 
-	//double this->m_minimumRange;
-	//double this->m_maximumRange;
+	//double m_minimumRange;
+	//double m_maximumRange;
 	//double m_Stepsize;
 	//int m_NumberOfDependences;
 	//Eigen::MatrixXd m_Matrix;

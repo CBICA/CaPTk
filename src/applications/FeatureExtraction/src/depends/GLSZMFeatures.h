@@ -761,7 +761,6 @@ private:
   //using HistogramType = THistogramFrequencyContainer;
 
   unsigned int m_maxSize = 1;
-  unsigned int this->m_Bins = 10;
 
   std::vector< double > pVector;
   std::vector< double > sVector;
