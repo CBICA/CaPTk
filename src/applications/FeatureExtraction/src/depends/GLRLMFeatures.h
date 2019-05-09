@@ -240,18 +240,21 @@ public:
           }
           else // individual
           {
-            this->m_features["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunEmphasis();
-            this->m_features["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunEmphasis();
-            this->m_features["GreyLevelNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
-            this->m_features["RunLengthNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+
+            //2019-05-09 For Future Reference - Commenting out features that were not in agreement with IBIS
+
+            // this->m_features["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunEmphasis();
+            // this->m_features["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunEmphasis();
+            // this->m_features["GreyLevelNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+            // this->m_features["RunLengthNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
             this->m_features["LowGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
             this->m_features["HighGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
             this->m_features["ShortRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
             this->m_features["ShortRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
-            this->m_features["LongRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
-            this->m_features["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
-            this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
-            this->m_features["RunPercentage_Offset_" + std::to_string(offsetNum)] = this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(this->m_nonZeroIndeces.size());
+            // this->m_features["LongRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+            // this->m_features["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+            // this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
+            // this->m_features["RunPercentage_Offset_" + std::to_string(offsetNum)] = this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(this->m_nonZeroIndeces.size());
             //this->m_features["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
             //this->m_features["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
             //this->m_features["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelVariance();
@@ -285,23 +288,25 @@ public:
           rlv /= this->m_offsets->size();
           re /= this->m_offsets->size();
 
-          this->m_features["ShortRunEmphasis"] = sre;
-          this->m_features["LongRunEmphasis"] = lre;
-          this->m_features["GreyLevelNonuniformity"] = gln;
-          this->m_features["RunLengthNonuniformity"] = rln;
-          this->m_features["RunPercentage"] = rp;
+        //2019-05-09 For Future Reference - Commenting out features that were not in agreement with IBIS
+
+          // this->m_features["ShortRunEmphasis"] = sre;
+          // this->m_features["LongRunEmphasis"] = lre;
+          // this->m_features["GreyLevelNonuniformity"] = gln;
+          // this->m_features["RunLengthNonuniformity"] = rln;
+          // this->m_features["RunPercentage"] = rp;
           this->m_features["LowGreyLevelRunEmphasis"] = lglre;
           this->m_features["HighGreyLevelRunEmphasis"] = hglre;
           this->m_features["ShortRunLowGreyLevelEmphasis"] = srlgle;
           this->m_features["ShortRunHighGreyLevelEmphasis"] = srhgle;
-          this->m_features["LongRunLowGreyLevelEmphasis"] = lrlgle;
-          this->m_features["LongRunHighGreyLevelEmphasis"] = lrhgle;
-          this->m_features["TotalRuns"] = runs;
-          this->m_features["RunLengthNonuniformityNormalized"] = rlnn;
-          this->m_features["GreyLevelNonuniformityNormalized"] = glnn;
-          this->m_features["GreyLevelVariance_Offset"] = glv;
-          this->m_features["RunLengthVariance_Offset"] = rlv;
-          this->m_features["RunEntropy"] = re;
+          // this->m_features["LongRunLowGreyLevelEmphasis"] = lrlgle;
+          // this->m_features["LongRunHighGreyLevelEmphasis"] = lrhgle;
+          // this->m_features["TotalRuns"] = runs;
+          // this->m_features["RunLengthNonuniformityNormalized"] = rlnn;
+          // this->m_features["GreyLevelNonuniformityNormalized"] = glnn;
+          // this->m_features["GreyLevelVariance_Offset"] = glv;
+          // this->m_features["RunLengthVariance_Offset"] = rlv;
+          // this->m_features["RunEntropy"] = re;
 
           //TBD
           //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LowGreyLevelRunEmphasis = " << lglre << std::endl;
@@ -379,16 +384,18 @@ public:
         runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
         runLengthFeaturesCalculator->Update();
         
-        this->m_features["ShortRunEmphasis"] = runLengthFeaturesCalculator->GetShortRunEmphasis();
-        this->m_features["LongRunEmphasis"] = runLengthFeaturesCalculator->GetLongRunEmphasis();
-        this->m_features["GreyLevelNonuniformity"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
-        this->m_features["RunLengthNonuniformity"] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+        //2019-05-09 For Future Reference - Commenting out features that were not in agreement with IBIS
+
+        // this->m_features["ShortRunEmphasis"] = runLengthFeaturesCalculator->GetShortRunEmphasis();
+        // this->m_features["LongRunEmphasis"] = runLengthFeaturesCalculator->GetLongRunEmphasis();
+        // this->m_features["GreyLevelNonuniformity"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+        // this->m_features["RunLengthNonuniformity"] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
         this->m_features["LowGreyLevelRunEmphasis"] = runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
         this->m_features["HighGreyLevelRunEmphasis"] = runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
         this->m_features["ShortRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
         this->m_features["ShortRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
-        this->m_features["LongRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
-        this->m_features["LongRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+        // this->m_features["LongRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+        // this->m_features["LongRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
 
         //TBD
         //wrapper_generator->SetOffsets(offset);
