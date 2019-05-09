@@ -36,6 +36,8 @@
 #include "PowerSpectrum.h"
 #include "LBPMeasures.h"
 #include "GLSZMFeatures.h"
+#include "GLCMFeatures.h"
+#include "GLRLMFeatures.h"
 //#include "FractalBoxCount_template.h"
 
 //TBD
@@ -257,7 +259,7 @@ void FeatureExtraction< TImage >::CalculateMorphologic(const typename TImage::Po
 
 template< class TImage >
 void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer itkImage,
-  const typename TImage::Pointer maskImage, OffsetVector* offset, std::map<std::string, double>& featurevec)
+  const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
   //neighbouring grey level dependece based features (IBSI 3.11)
   std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM" << std::endl;
@@ -270,14 +272,20 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   ngldmCalculator.SetRange(m_Radius); //chebyshev distance delta
   ngldmCalculator.SetMinimum(m_minimumToConsider);
   ngldmCalculator.SetMaximum(m_maximumToConsider);
+  ngldmCalculator.SetRange(m_Range);
   if (m_debug)
   {
     ngldmCalculator.EnableDebugMode();
   }
   ngldmCalculator.Update();
-  std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << ngldmCalculator.GetRange() << std::endl;
+  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << ngldmCalculator.GetRange() << std::endl;
 
-  featurevec["LowDependenceEmphasis"] = ngldmCalculator.GetLowDependenceEmphasis();
+  auto temp = ngldmCalculator.GetOutput();
+  for (auto const& f : temp)
+  {
+    featurevec[f.first] = f.second;
+  }
+  //featurevec["LowDependenceEmphasis"] = ngldmCalculator.GetLowDependenceEmphasis();
   //featurevec["HighDependenceEmphasis"] = ngldmCalculator.GetHighDependenceEmphasis();
   //featurevec["LowGreyLevelCountEmphasis"] = ngldmCalculator.GetLowGreyLevelCountEmphasis();
   //featurevec["HighGreyLevelCountEmphasis"] = ngldmCalculator.GetHighGreyLevelCountEmphasis();
@@ -306,7 +314,7 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
 
 template< class TImage >
 void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer itkImage,
-  const typename TImage::Pointer maskImage, OffsetVector* offset, std::map<std::string, double>& featurevec)
+  const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
   std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
 
@@ -318,25 +326,31 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   ngtdmCalculator.SetMinimum(m_minimumToConsider);
   ngtdmCalculator.SetMaximum(m_maximumToConsider);
   ngtdmCalculator.SetStartingIndex(m_currentLatticeStart);
+  ngtdmCalculator.SetRange(m_Range);
   ngtdmCalculator.Update();
   if (m_debug)
   {
     ngtdmCalculator.EnableDebugMode();
-    std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM::calculator.GetRange()" << ngtdmCalculator.GetRange() << std::endl;
+    //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM::calculator.GetRange()" << ngtdmCalculator.GetRange() << std::endl;
   }
 
-  //auto temp = calculator.GetOutput();
-  double double_Strength = ngtdmCalculator.GetStrength();
-  double double_Complexity = ngtdmCalculator.GetComplexity();
-  double double_Coarsness = ngtdmCalculator.GetCoarsness();
-  double double_Contrast = ngtdmCalculator.GetContrast();
-  double double_Busyness = ngtdmCalculator.GetBusyness();
+  auto temp = ngtdmCalculator.GetOutput();
+  for (auto const& f : temp)
+  {
+    featurevec[f.first] = f.second;
+  }
+  ////auto temp = calculator.GetOutput();
+  //double double_Strength = ngtdmCalculator.GetStrength();
+  //double double_Complexity = ngtdmCalculator.GetComplexity();
+  //double double_Coarsness = ngtdmCalculator.GetCoarsness();
+  //double double_Contrast = ngtdmCalculator.GetContrast();
+  //double double_Busyness = ngtdmCalculator.GetBusyness();
 
-  featurevec["Strength"] = ngtdmCalculator.GetStrength();
-  featurevec["Complexity"] = ngtdmCalculator.GetComplexity();
-  featurevec["Coarseness"] = ngtdmCalculator.GetCoarsness();
-  featurevec["Constrast"] = ngtdmCalculator.GetContrast();
-  featurevec["Busyness"] = ngtdmCalculator.GetBusyness();
+  //featurevec["Strength"] = ngtdmCalculator.GetStrength();
+  //featurevec["Complexity"] = ngtdmCalculator.GetComplexity();
+  //featurevec["Coarseness"] = ngtdmCalculator.GetCoarsness();
+  //featurevec["Constrast"] = ngtdmCalculator.GetContrast();
+  //featurevec["Busyness"] = ngtdmCalculator.GetBusyness();
   /* commenting out old codes calling NGLDM
   typedef itk::Statistics::EnhancedScalarImageToNeighbourhoodGreyLevelDifferenceFeaturesFilter< TImage > FilterType;
   typedef typename FilterType::NeighbourhoodGreyLevelDifferenceFeaturesFilterType TextureFilterType;
@@ -399,7 +413,7 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   std::cout << "\n Strength = " << Strength << std::endl;
   */
 
-  //typename MatrixGenerator::OffsetVector::Pointer newOffset = MatrixGenerator::OffsetVector::New();
+  //typename MatrixGenerator::OffsetVectorPointer newOffset = MatrixGenerator::OffsetVector::New();
   //auto oldOffsets = matrixFilter->GetOffsets();
   //auto oldOffsetsIterator = oldOffsets->Begin();
   //while (oldOffsetsIterator != oldOffsets->End())
@@ -476,7 +490,7 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
 
   //typename FilterType::Pointer filter = FilterType::New();
 
-  //typename FilterType::OffsetVector::Pointer newOffset = FilterType::OffsetVector::New();
+  //typename FilterType::OffsetVectorPointer newOffset = FilterType::OffsetVector::New();
   //auto oldOffsets = filter->GetOffsets();
   //auto oldOffsetsIterator = oldOffsets->Begin();
   //while (oldOffsetsIterator != oldOffsets->End())
@@ -563,14 +577,12 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
 
 
 template< class TImage >
-void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer itkImage, const typename TImage::Pointer maskImage, OffsetVector* offset, std::map<std::string, double>& featurevec)
+void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer itkImage, const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
   GLSZMFeatures< TImage > glszmCalculator;
   glszmCalculator.SetInputImage(itkImage);
   glszmCalculator.SetInputMask(maskImage);
   glszmCalculator.SetNumBins(m_Bins);
-  glszmCalculator.SetRadius(m_Radius);
-  glszmCalculator.SetRadius(m_Radius_float);
   glszmCalculator.SetMaxSize(m_Range);
   glszmCalculator.SetMinimum(m_minimumToConsider);
   glszmCalculator.SetMaximum(m_maximumToConsider);
@@ -983,580 +995,64 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
 
 
 template< class TImage >
-void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer image, const typename TImage::Pointer mask, OffsetVector* offset, std::map<std::string, double>& featurevec, bool latticePatch)
+void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer image, const typename TImage::Pointer mask, OffsetVectorPointer offset, std::map<std::string, double>& featurevec, bool latticePatch)
 {
-  using HistogramFrequencyContainerType = itk::Statistics::DenseFrequencyContainer2;
-
-  //MITK Version
-  //using RunLengthFilterType = itk::Statistics::EnhancedScalarImageToRunLengthFeaturesFilter< TImage, HistogramFrequencyContainerType >;
-
-  //ITK Version
-  using RunLengthFilterType = itk::Statistics::ScalarImageToRunLengthFeaturesFilter< TImage, HistogramFrequencyContainerType >;
-
-  using RunLengthMatrixGenerator = typename RunLengthFilterType::RunLengthMatrixFilterType;
-  using RunLengthFeatures = typename RunLengthFilterType::RunLengthFeaturesFilterType;
-
-  //TBD
-  typename RunLengthFilterType::Pointer wrapper_generator = RunLengthFilterType::New();
-  wrapper_generator->SetInput(image);
-  wrapper_generator->SetMaskImage(mask);
-  wrapper_generator->SetInsidePixelValue(1);
-  wrapper_generator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-  //TBD
-
-  typename  RunLengthMatrixGenerator::Pointer matrix_generator = RunLengthMatrixGenerator::New();
-  matrix_generator->SetInput(image);
-  matrix_generator->SetMaskImage(mask);
-  matrix_generator->SetInsidePixelValue(1);
-  matrix_generator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-
+  GLRLMFeatures< TImage > glrlmCalculator;
+  glrlmCalculator.SetInputImage(image);
+  glrlmCalculator.SetInputMask(mask);
+  glrlmCalculator.SetMinimum(m_minimumToConsider);
+  glrlmCalculator.SetMaximum(m_maximumToConsider);
+  glrlmCalculator.SetOffsets(offset);
+  glrlmCalculator.SetOffsetSelectorType(m_offsetSelect);
+  if (m_debug)
+  {
+    glrlmCalculator.EnableDebugMode();
+  }
   if (latticePatch)
   {
-  	auto maxStep = m_latticeSizeImage[0];
-  	for (size_t d = 1; d < TImage::ImageDimension; d++)
-  	{
-  		if (maxStep < m_latticeSizeImage[d])
-  		{
-  			maxStep = m_latticeSizeImage[d];
-  		}
-  	}
-  	matrix_generator->SetDistanceValueMinMax(0, std::sqrt(2) * (maxStep - 1));
+    auto maxStep = m_latticeSizeImage[0];
+    for (size_t d = 1; d < TImageType::ImageDimension; d++)
+    {
+      if (maxStep < m_latticeSizeImage[d])
+      {
+        maxStep = m_latticeSizeImage[d];
+      }
+    }
+    glrlmCalculator.SetDistanceMax(std::sqrt(2) * (maxStep - 1));
   }
   else
   {
-    // this defaults to the full dynamic range of double according to ITK's documentation
-    //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [m_minimumToConsider, m_maximumToConsider] = [" << m_minimumToConsider << ", " << m_maximumToConsider << "]" << std::endl;
-
-    //matrix_generator->SetDistanceValueMinMax(m_minimumToConsider, m_maximumToConsider); // TBD: TOCHECK - how is this affecting the computation?
-
-    //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [0, m_Range] = [" << 0 << ", " << m_Range << "]" << std::endl;
-
-    //matrix_generator->SetDistanceValueMinMax(0, m_Range * m_Range);
-    //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - SetDistanceValueMinMax(0, " << m_Range << ")" << std::endl;
-
-
-    //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
-    //matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
-    matrix_generator->SetDistanceValueMinMax(0, m_Range);
+    glrlmCalculator.SetDistanceMax(m_Range);
   }
-
-  wrapper_generator->SetNumberOfBinsPerAxis(m_Bins);
-  //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - m_Bins = " << m_Bins << std::endl;
-
-  //TBD
-  typename RunLengthFilterType::FeatureNameVectorPointer requestedFeatures = RunLengthFilterType::FeatureNameVector::New();
-  typedef typename RunLengthFilterType::RunLengthFeaturesFilterType TextureFilterType;
-  requestedFeatures->push_back(TextureFilterType::ShortRunEmphasis);
-  requestedFeatures->push_back(TextureFilterType::LongRunEmphasis);
-  requestedFeatures->push_back(TextureFilterType::GreyLevelNonuniformity);
-  //requestedFeatures->push_back(TextureFilterType::GreyLevelNonuniformityNormalized);
-  requestedFeatures->push_back(TextureFilterType::RunLengthNonuniformity);
-  //requestedFeatures->push_back(TextureFilterType::RunLengthNonuniformityNormalized);
-  requestedFeatures->push_back(TextureFilterType::LowGreyLevelRunEmphasis);
-  requestedFeatures->push_back(TextureFilterType::HighGreyLevelRunEmphasis);
-  requestedFeatures->push_back(TextureFilterType::ShortRunLowGreyLevelEmphasis);
-  requestedFeatures->push_back(TextureFilterType::ShortRunHighGreyLevelEmphasis);
-  requestedFeatures->push_back(TextureFilterType::LongRunLowGreyLevelEmphasis);
-  requestedFeatures->push_back(TextureFilterType::LongRunHighGreyLevelEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::RunPercentage);
-  //requestedFeatures->push_back(TextureFilterType::NumberOfRuns);
-  //requestedFeatures->push_back(TextureFilterType::GreyLevelVariance);
-  //requestedFeatures->push_back(TextureFilterType::RunLengthVariance);
-  //requestedFeatures->push_back(TextureFilterType::RunEntropy);
-  wrapper_generator->SetRequestedFeatures(requestedFeatures);
-  //TBD
-
-  typename  RunLengthFeatures::Pointer runLengthMatrixCalculator = RunLengthFeatures::New();
-  typename  RunLengthFeatures::Pointer runLengthFeaturesCalculator = RunLengthFeatures::New();
-
-  typename  OffsetVector::ConstIterator offsetIt;
-  size_t offsetNum = 0;
-
-
-  //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set offsetNum = " << offsetNum << std::endl;
-
-  auto size = image->GetBufferedRegion().GetSize();
-  double size_total = size[0];
-  for (size_t d = 1; d < TImage::ImageDimension; d++)
+  glrlmCalculator.Update();
+  auto temp = glrlmCalculator.GetOutput();
+  for (auto const& f : temp)
   {
-    size_total *= size[d];
+    featurevec[f.first] = f.second;
   }
-  //TBD
-  //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set size_total = " << size_total << std::endl;
-  //matrix_generator->SetDistanceValueMinMax(0, size_total); // TBD: TOCHECK - how is this affecting the computation?
-  //TBD
-
-  //TBD - Testing
-  //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - SetDistanceValueMinMax - [0, m_Range] = [" << 0 << ", " << size_total << "]" << std::endl;
-  //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
-  //TBD - Testing
-
-
-
-  if ((m_offsetSelect == "Average") || (m_offsetSelect == "Individual"))
-  {
-    double sre = 0, lre = 0, gln = 0, glnn = 0, rln = 0, rlnn = 0, rp = 0, lglre = 0, hglre = 0, srlgle = 0, srhgle = 0, lrlgle = 0, lrhgle = 0,
-      runs = 0, glv = 0, rlv = 0, re = 0;
-
-    //TBD
-    int count_offset = 0;
-    //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - Set count_offset = " << count_offset << std::endl;
-    //TBD
-
-    for (offsetIt = offset->Begin(); offsetIt != offset->End(); offsetIt++, offsetNum++)
-    {
-      //TBD
-      //std::cout << "\n\n";
-      //std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
-      //TBD
-
-      matrix_generator->SetOffset(offsetIt.Value());
-      matrix_generator->Update();
-
-
-
-      //TBD
-      //std::cout << "\n\n";
-      //std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - GLRLM Matrix: Offset: " << offsetIt.Value() << "(" << count_offset << ")\n";
-      //auto temp = matrix_generator->GetOutput();
-      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
-      //{
-      //  std::cout << "\tIndex = " << iter.GetIndex() << " ||| Frequency = " << iter.GetFrequency() << std::endl;
-      //}
-
-      //std::cout << "[DEBUG] GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
-      //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
-      //for (int bin_count = 0; bin_count < m_Bins; bin_count++)
-      //{
-      //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
-      //}
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - GLRLM Matrix: Offset: " << offsetIt.Value() << " | Distance[" << matrix_generator->GetMinDistance() << ", " << matrix_generator->GetMaxDistance() << "] | Pixel [" << matrix_generator->GetMin() << ", " << matrix_generator->GetMax() << "] \n" << std::endl;
-      //TBD
-
-
-      ////Header for easier DEBUG std:cout interpretation
-      //std::cout << "\tGLRLM Measurement Vectors -> intensity[]\t|\trunLength[] = midpoint[int,run]\t|\tfrenquency" << std::endl;
-
-      //TBD
-      auto temp = matrix_generator->GetOutput();
-      for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
-      {
-        auto temp_index = iter.GetIndex();
-        auto temp_min_vector = temp->GetHistogramMinFromIndex(temp_index);
-        auto temp_max_vector = temp->GetHistogramMaxFromIndex(temp_index);
-        //std::cout << " \tGLRLM Measurement Vectors -> Intensity[" << temp_min_vector[0] << ", " << temp_max_vector[0] << "]\t|\tRun[" << temp_min_vector[1] << ", " << temp_max_vector[1] << "] = [" << temp->GetMeasurementVector(temp_index) << "]\t|\tFrequency = " << temp->GetFrequency(temp_index) << std::endl;
-        //if (temp->GetFrequency(temp_index) > 0) {
-        //  std::cout << " \tGLRLM Measurement Vectors -> Intensity[" << temp_min_vector[0] << ", " << temp_max_vector[0] << "]\t|\tRun[" << temp_min_vector[1] << ", " << temp_max_vector[1] << "] | Index[" << iter.GetIndex() << "] = " << temp->GetFrequency(temp_index) << std::endl;
-        //}
-      }
-      //TBD
-
-      runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
-      runLengthFeaturesCalculator->Update();
-
-      //TBD - print out matrix
-      //std::cout << "\n\n\n";
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetNumberOfBinsPerAxis() = " << matrix_generator->GetNumberOfBinsPerAxis() << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetMinDistance() = " << matrix_generator->GetMinDistance() << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetMaxDistance() = " << matrix_generator->GetMaxDistance() << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - matrix_generator->GetOffsets() = " << matrix_generator->GetOffsets() << std::endl;
-
-      //TBD - Only prints out first set, may not be complete - std cout codes above for full matrix
-      //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Individual -> " << offsetIt.Value() << " - Matrix = \n" << std::endl;
-      //std::cout << "\tindex\t|\t[min, max]\t|\tfrenquency" << std::endl;
-      //for (int bin_count = 0; bin_count < m_Bins; bin_count++) 
-      //{
-      //  auto index_temp = matrix_generator->GetOutput()->GetIndex(bin_count);
-      //  auto min_temp = matrix_generator->GetOutput()->GetHistogramMinFromIndex(index_temp);
-      //  auto max_temp = matrix_generator->GetOutput()->GetHistogramMaxFromIndex(index_temp);
-      //  auto min_temp2 = roundf(min_temp[0] * 100) / 100;
-      //  auto max_temp2 = roundf(max_temp[0] * 100) / 100;
-      //  auto freq_temp = matrix_generator->GetOutput()->GetFrequency(index_temp);
-      //  std::cout << "\t" << "index[" << index_temp << "] \t | \t" << bin_count << "\t | \t[" << min_temp2 << ", " << max_temp2 << "]\t | \t" << freq_temp << std::endl;
-      //}
-      //TBD - Only prints out first set, may not be complete
-
-      //std::cout << "\tLowGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
-      //std::cout << "\tHighGreyLevelRunEmphasis = " << runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis() << std::endl;
-      //std::cout << "\tShortRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis() << std::endl;
-      //std::cout << "\tShortRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis() << std::endl;
-      //std::cout << "\tLongRunLowGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
-      //std::cout << "\tLongRunHighGreyLevelEmphasis = " << runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
-      //TBD - print out matrix
-
-      //TBD
-      count_offset++;
-      //TBD
-
-      if (m_offsetSelect == "Average")
-      {
-        sre += runLengthFeaturesCalculator->GetShortRunEmphasis();
-        lre += runLengthFeaturesCalculator->GetLongRunEmphasis();
-        gln += runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
-        rln += runLengthFeaturesCalculator->GetRunLengthNonuniformity();
-        lglre += runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
-        hglre += runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
-        srlgle += runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
-        srhgle += runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
-        lrlgle += runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
-        lrhgle += runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
-        runs += runLengthFeaturesCalculator->GetTotalNumberOfRuns();
-        rp += static_cast<double>(runLengthFeaturesCalculator->GetTotalNumberOfRuns()) / static_cast<double>(m_currentNonZeroImageValues.size());
-        //glnn += runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
-        //rlnn += runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
-        //glv += runLengthFeaturesCalculator->GetGreyLevelVariance();
-        //rlv += runLengthFeaturesCalculator->GetRunLengthVariance();
-        //re += runLengthFeaturesCalculator->GetRunEntropy();
-      }
-      else // individual
-      {
-        featurevec["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunEmphasis();
-        featurevec["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunEmphasis();
-        featurevec["GreyLevelNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
-        featurevec["RunLengthNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
-        featurevec["LowGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
-        featurevec["HighGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
-        featurevec["ShortRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
-        featurevec["ShortRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
-        featurevec["LongRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
-        featurevec["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
-        featurevec["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
-        featurevec["RunPercentage_Offset_" + std::to_string(offsetNum)] = featurevec["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(m_currentNonZeroImageValues.size());
-        //featurevec["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
-        //featurevec["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
-        //featurevec["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelVariance();
-        //featurevec["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthVariance();
-        //featurevec["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunEntropy();
-
-      }
-    }
-
-    if (m_offsetSelect == "Average")
-    {
-      //TBD
-      //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - offset->size() = " << offset->size() << std::endl;
-      //TBD
-
-      sre /= offset->size();
-      lre /= offset->size();
-      gln /= offset->size();
-      rln /= offset->size();
-      lglre /= offset->size();
-      hglre /= offset->size();
-      srlgle /= offset->size();
-      srhgle /= offset->size();
-      lrlgle /= offset->size();
-      lrhgle /= offset->size();
-      rp /= offset->size();
-      runs /= offset->size();
-      rlnn /= offset->size();
-      glnn /= offset->size();
-      glv /= offset->size();
-      rlv /= offset->size();
-      re /= offset->size();
-
-      featurevec["ShortRunEmphasis"] = sre;
-      featurevec["LongRunEmphasis"] = lre;
-      featurevec["GreyLevelNonuniformity"] = gln;
-      featurevec["RunLengthNonuniformity"] = rln;
-      featurevec["RunPercentage"] = rp;
-      featurevec["LowGreyLevelRunEmphasis"] = lglre;
-      featurevec["HighGreyLevelRunEmphasis"] = hglre;
-      featurevec["ShortRunLowGreyLevelEmphasis"] = srlgle;
-      featurevec["ShortRunHighGreyLevelEmphasis"] = srhgle;
-      featurevec["LongRunLowGreyLevelEmphasis"] = lrlgle;
-      featurevec["LongRunHighGreyLevelEmphasis"] = lrhgle;
-      featurevec["TotalRuns"] = runs;
-      featurevec["RunLengthNonuniformityNormalized"] = rlnn;
-      featurevec["GreyLevelNonuniformityNormalized"] = glnn;
-      featurevec["GreyLevelVariance_Offset"] = glv;
-      featurevec["RunLengthVariance_Offset"] = rlv;
-      featurevec["RunEntropy"] = re;
-
-      //TBD
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LowGreyLevelRunEmphasis = " << lglre << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - HighGreyLevelRunEmphasis = " << hglre << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - ShortRunLowGreyLevelEmphasis = " << srlgle << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - ShortRunHighGreyLevelEmphasis = " << srhgle << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LongRunLowGreyLevelEmphasis = " << lrlgle << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LongRunHighGreyLevelEmphasis = " << lrhgle << std::endl;
-      //TBD
-
-    }
-
-    ////TBD - test if wrapper (image -> features) give same output as image -> matrix and matrix -> features with intermediate steps
-    //if (m_offsetSelect == "Average") 
-    //{
-    //  std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - count_offset = " << count_offset << std::endl;
-    //
-    //  wrapper_generator->SetOffsets(offset);
-    //  wrapper_generator->SetDistanceValueMinMax(0, m_Range);
-    //  wrapper_generator->Update();
-    //  auto featureMeans = wrapper_generator->GetFeatureMeans();
-    //  auto featureStd = wrapper_generator->GetFeatureStandardDeviations();
-    //
-    //  //typedef typename RunLengthFilterType::RunLengthFeaturesFilterType TextureFilterType;
-    //  for (std::size_t i = 0; i < featureMeans->size(); ++i)
-    //  {
-    //    switch (i)
-    //    {
-    //    case TextureFilterType::ShortRunEmphasis:
-    //      std::cout << "\n [DEBUG] featureextraction.hxx - calculateglrlm - ShortRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //      break;
-    //
-    //    case TextureFilterType::GreyLevelNonuniformity:
-    //      std::cout << "\n [DEBUG] featureextraction.hxx - calculateglrlm - GreyLevelNonuniformity: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //      break;
-    //    case TextureFilterType::RunLengthNonuniformity:
-    //      std::cout << "\n [DEBUG] featureextraction.hxx - calculateglrlm - RunLengthNonuniformity: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //      break;
-    //    case TextureFilterType::LowGreyLevelRunEmphasis:
-    //      std::cout << "\n [DEBUG] featureextraction.hxx - calculateglrlm - LowGreyLevelRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //      break;
-    //    case TextureFilterType::HighGreyLevelRunEmphasis:
-    //      std::cout << "\n [DEBUG] featureextraction.hxx - calculateglrlm - HighGreyLevelRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //      break;
-    //    case TextureFilterType::ShortRunLowGreyLevelEmphasis:
-    //      std::cout << "\n [DEBUG] featureextraction.hxx - calculateglrlm - ShortRunLowGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //      break;
-    //    case TextureFilterType::ShortRunHighGreyLevelEmphasis:
-    //      std::cout << "\n [DEBUG] featureextraction.hxx - calculateglrlm - ShortRunHighGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //      break;
-    //    case TextureFilterType::LongRunLowGreyLevelEmphasis:
-    //      std::cout << "\n [DEBUG] featureextraction.hxx - calculateglrlm - LongRunLowGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //      break;
-    //    case TextureFilterType::LongRunHighGreyLevelEmphasis:
-    //      std::cout << "\n [DEBUG] featureextraction.hxx - calculateglrlm - LongRunHighGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //      break;
-    //    }
-    //  }
-    //}
-  }
-  else if ((m_offsetSelect == "ITKDefault") || (m_offsetSelect == "Combined"))
-  {
-    matrix_generator->SetOffsets(offset);
-    matrix_generator->Update();
-
-    //TBD - show bin to frequency
-    //auto temp = matrix_generator->GetOutput();
-    //std::cout << "GLRLM Matrix:\n";
-    //for (int bin_count = 0; bin_count < m_Bins; bin_count++) 
-    //{
-    //  std::cout << "\t" << bin_count << "\t|\t" << temp->GetFrequency(bin_count) << std::endl;
-    //}
-    //TBD - show bin to frequency
-
-    runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
-    runLengthFeaturesCalculator->Update();
-
-    featurevec["ShortRunEmphasis"] = runLengthFeaturesCalculator->GetShortRunEmphasis();
-    featurevec["LongRunEmphasis"] = runLengthFeaturesCalculator->GetLongRunEmphasis();
-    featurevec["GreyLevelNonuniformity"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
-    featurevec["RunLengthNonuniformity"] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
-    featurevec["LowGreyLevelRunEmphasis"] = runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
-    featurevec["HighGreyLevelRunEmphasis"] = runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
-    featurevec["ShortRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
-    featurevec["ShortRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
-    featurevec["LongRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
-    featurevec["LongRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
-
-    //TBD
-    //wrapper_generator->SetOffsets(offset);
-    //wrapper_generator->CombinedFeatureCalculationOn(); //function not available according to VS2017. Error Code C2039
-
-    //wrapper_generator->Update();
-    //auto featureMeans = wrapper_generator->GetFeatureMeans();
-    //auto featureStd = wrapper_generator->GetFeatureStandardDeviations();
-
-    //for (std::size_t i = 0; i < featureMeans->size(); ++i)
-    //{
-    //  switch (i)
-    //  {
-    //  case TextureFilterType::ShortRunEmphasis:
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetShortRunEmphasis() << std::endl;
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //    break;
-    //  case TextureFilterType::LongRunEmphasis:
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLongRunEmphasis() << std::endl;
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //    break;
-    //  case TextureFilterType::GreyLevelNonuniformity:
-    //    break;
-    //  //case texturefiltertype::greylevelnonuniformitynormalized:
-    //  //  break;
-    //  case TextureFilterType::RunLengthNonuniformity:
-    //    break;
-    //  //case TextureFilterType::RunLengthNonuniformityNormalized:
-    //  //  break;
-    //  case TextureFilterType::LowGreyLevelRunEmphasis:
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LowGreyLevelRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLowGreyLevelRunEmphasis() << std::endl;
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LowGreyLevelRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //    break;
-    //  case TextureFilterType::HighGreyLevelRunEmphasis:
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - HighGreyLevelRunEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetHighGreyLevelRunEmphasis() << std::endl;
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - HighGreyLevelRunEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //    break;
-    //  case TextureFilterType::ShortRunLowGreyLevelEmphasis:
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunLowGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetShortRunLowGreyLevelEmphasis() << std::endl;
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunLowGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //    break;
-    //  case TextureFilterType::ShortRunHighGreyLevelEmphasis:
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunHighGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetShortRunHighGreyLevelEmphasis() << std::endl;
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - ShortRunHighGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //    break;
-    //  case TextureFilterType::LongRunLowGreyLevelEmphasis:
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunLowGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLongRunLowGreyLevelEmphasis() << std::endl;
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunLowGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //    break;
-    //  case TextureFilterType::LongRunHighGreyLevelEmphasis:
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunHighGreyLevelEmphasis: runLengthMatrixCalculator = " << runLengthMatrixCalculator->GetLongRunHighGreyLevelEmphasis() << std::endl;
-    //    std::cout << "\n [DEBUG] FeatureExtraction.hxx - CalculateGLRLM - LongRunHighGreyLevelEmphasis: wrapper_generator = " << featureMeans->ElementAt(i) << std::endl;
-    //    break;
-    //  case TextureFilterType::RunPercentage:
-    //    break;
-    //  case TextureFilterType::NumberOfRuns:
-    //    break;
-    //  case TextureFilterType::GreyLevelVariance:
-    //    break;
-    //  case TextureFilterType::RunLengthVariance:
-    //    break;
-    //  case TextureFilterType::RunEntropy:
-    //    break;
-    //  default:
-    //    break;
-    //  }
-    //}
-    //TBD
-  }
-  else
-  {
-    // not defined, so don't do anything to featurevec
-  }
-
 }
 
 
 template< class TImage >
-void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer image, const typename TImage::Pointer mask, OffsetVector* offset, std::map<std::string, double>& featurevec, bool latticePatch)
+void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer image, const typename TImage::Pointer mask, OffsetVectorPointer offset, std::map<std::string, double>& featurevec, bool latticePatch)
 {
-  using Image2CoOccuranceType = itk::Statistics::ScalarImageToCooccurrenceMatrixFilter < TImage >;
-  using HistogramType = typename Image2CoOccuranceType::HistogramType;
-  using Hist2FeaturesType = itk::Statistics::HistogramToTextureFeaturesFilter< HistogramType >;
-
-  double contrast = 0, correl = 0, ener = 0, entro = 0, homo = 0, clustershade = 0, clusterprominance = 0, autocorr = 0;
-
-  auto image_wrap = image;
-  auto mask_wrap = mask;
-
-  if (m_offsetSelect == "Average")
+  GLCMFeatures< TImage > glcmCalculator;
+  glcmCalculator.SetInputImage(image);
+  glcmCalculator.SetInputMask(mask);
+  glcmCalculator.SetMinimum(m_minimumToConsider);
+  glcmCalculator.SetMaximum(m_maximumToConsider);
+  glcmCalculator.SetOffsets(offset);
+  glcmCalculator.SetOffsetSelectorType(m_offsetSelect);
+  if (m_debug)
   {
-    for (size_t i = 0; i < offset->size(); i++)
-    {
-      typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
-      glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-      glcmGenerator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-      glcmGenerator->SetMaskImage(mask_wrap);
-      glcmGenerator->SetInput(image_wrap);
-      auto featureCalc = Hist2FeaturesType::New();
-
-      glcmGenerator->SetOffset(offset->at(i));
-      glcmGenerator->Update();
-      featureCalc->SetInput(glcmGenerator->GetOutput());
-      featureCalc->Update();
-
-      //TBD - to debug and compare vs GLRLM
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLCM - GLCM Matrix: Offset: " << offset->at(i) << "\n";
-
-      //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
-      //auto temp = glcmGenerator->GetOutput();
-      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
-      //{
-      //  std::cout << "\tGLCM Measurement vectors = " << iter.GetMeasurementVector()
-      //    << "; Frequency = " << iter.GetFrequency() << std::endl;
-      //}
-
-      //TBD - to debug and compare vs GLRLM
-
-      contrast += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Inertia));
-      correl += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Correlation));
-      ener += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Energy));
-      homo += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::InverseDifferenceMoment));
-      entro += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Entropy));
-      clustershade += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::ClusterShade));
-      clusterprominance += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::ClusterProminence));
-      autocorr += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::HaralickCorrelation));
-    }
-
-    contrast = contrast / offset->size();
-    correl = correl / offset->size();
-    ener = ener / offset->size();
-    homo = homo / offset->size();
-    entro = entro / offset->size();
-    clusterprominance = clusterprominance / offset->size();
-    clustershade = clustershade / offset->size();
-    autocorr = autocorr / offset->size();
-
-    featurevec["Energy"] = ener;
-    featurevec["Entropy"] = entro;
-    featurevec["Correlation"] = correl;
-    featurevec["Homogeneity"] = homo; // also called "inverse difference moment"
-    featurevec["Contrast"] = contrast; // also called "inertia"
-    featurevec["ClusterShade"] = clustershade;
-    featurevec["ClusterProminence"] = clusterprominance;
-    featurevec["AutoCorrelation"] = autocorr; // called "haralick"
+    glcmCalculator.EnableDebugMode();
   }
-  else if ((m_offsetSelect == "ITKDefault") || (m_offsetSelect == "Combined"))
+  glcmCalculator.Update();
+  auto temp = glcmCalculator.GetOutput();
+  for (auto const& f : temp)
   {
-    typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
-    glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-    glcmGenerator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-    glcmGenerator->SetMaskImage(mask_wrap);
-    glcmGenerator->SetInput(image_wrap);
-    auto featureCalc = Hist2FeaturesType::New();
-
-    glcmGenerator->SetOffsets(offset);
-    glcmGenerator->Update();
-    featureCalc->SetInput(glcmGenerator->GetOutput());
-    featureCalc->Update();
-
-    featurevec["Energy"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Energy));
-    featurevec["Entropy"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Entropy));
-    featurevec["Correlation"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Correlation));
-    featurevec["Homogeneity"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::InverseDifferenceMoment)); // also called "difference moment"
-    featurevec["Contrast"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Inertia)); // also called "inertia"
-    featurevec["ClusterShade"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::ClusterShade));
-    featurevec["ClusterProminence"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::ClusterProminence));
-    featurevec["AutoCorrelation"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::HaralickCorrelation)); // called "haralick"
+    featurevec[f.first] = f.second;
   }
-  else
-  {
-    typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
-    glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-    glcmGenerator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-    glcmGenerator->SetMaskImage(mask_wrap);
-    glcmGenerator->SetInput(image_wrap);
-    auto featureCalc = Hist2FeaturesType::New();
-
-    for (size_t i = 0; i < offset->size(); i++)
-    {
-      glcmGenerator->SetOffset(offset->at(i));
-      glcmGenerator->Update();
-      featureCalc->SetInput(glcmGenerator->GetOutput());
-      featureCalc->Update();
-
-      auto tempStr = "_Offset_" + std::to_string(i);
-      featurevec[std::string("Energy") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Energy);
-      featurevec[std::string("Entropy") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Entropy);
-      featurevec[std::string("Correlation") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Correlation);
-      featurevec[std::string("Homogeneity") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::InverseDifferenceMoment); // also called "difference moment"
-      featurevec[std::string("Contrast") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Inertia); // also called "inertia"
-      featurevec[std::string("ClusterShade") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::ClusterShade);
-      featurevec[std::string("ClusterProminence") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::ClusterProminence);
-      featurevec[std::string("AutoCorrelation") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::HaralickCorrelation); // called "haralick"
-    }
-  }
-  // TODO: Sung to add his GLCM extraction code here
-  //featurevec[std::string("Correlation]) + "_Sung"] = 0;
 }
 
 

@@ -32,6 +32,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <vector>
 
 #include "FeatureBase.h"
+#include "TextureFeatureBase.h"
 
 //! Helper Class
 struct GreyLevelSizeZoneMatrixHolder
@@ -132,7 +133,8 @@ public:
 };
 
 template< typename TImageType >
-class GLSZMFeatures : public FeatureBase < TImageType >
+class GLSZMFeatures : 
+  public FeatureBase < TImageType >, public TextureFeatureBase< TImageType >
 {
 public:
   //! Default constructor
@@ -140,12 +142,6 @@ public:
 
   //! Default destructor
   ~GLSZMFeatures() { };
-
-  //! Set the radius for computation
-  void SetRadius(int radius) { m_radius = radius; };
-
-  //! Set the radius for computation in world coordinates
-  void SetRadius(float radius) { m_radius_float = radius; };
 
   /**
   \brief Set the range (how far from the center index of interest do you want to calculate neighborhood tone difference); defaults to 1
@@ -158,56 +154,6 @@ public:
   }
 
   /**
-  \brief Get the range (how far from the center index of interest do you want to calculate neighborhood tone difference); returns int value
-  **/
-  int GetMaxSize()
-  {
-    return m_maxSize;
-  }
-
-  /**
-  \brief Get the number of bins for quantization of the input image
-  **/
-  int GetNumBins()
-  {
-    return m_bins;
-  }
-
-  /**
-  \brief Set the number of bins for quantization of the input image; defaults to 10 unless overridden by user
-
-  \param numBinValue integer value for the number of bins you want for image quantization
-  **/
-  void SetNumBins(int numBinValue)
-  {
-    m_bins = numBinValue;
-  }
-
-  /**
-  \brief Set the minimum
-  */
-  void SetMinimum(typename TImageType::PixelType minimumInput)
-  {
-    m_minimum = minimumInput;
-  }
-
-  /**
-  \brief Set the maximum
-  */
-  void SetMaximum(typename TImageType::PixelType maximumInput)
-  {
-    m_maximum = maximumInput;
-  }
-
-  /**
-  Set the offsets
-  */
-  void SetOffsets(itk::VectorContainer< unsigned char, typename TImageType::OffsetType > * offsets)
-  {
-    m_offsets = offsets;
-  }
-
-  /**
   \brief Update calculate five feature values
   **/
   void Update()
@@ -216,7 +162,7 @@ public:
     {
 
       // do the computation that is needed here
-      if ((m_minimum == 0) || (m_maximum == 0))
+      if ((this->m_minimum == 0) || (this->m_maximum == 0))
       {
         auto maskFilter = itk::MaskImageFilter< TImageType, TImageType, TImageType >::New();
         maskFilter->SetInput(this->m_inputImage);
@@ -228,13 +174,13 @@ public:
         minMaxComputer->SetImage(maskFilter->GetOutput());
         minMaxComputer->Compute();
 
-        if (m_minimum == 0)
+        if (this->m_minimum == 0)
         {
-          m_minimum = minMaxComputer->GetMinimum();
+          this->m_minimum = minMaxComputer->GetMinimum();
         }
-        if (m_maximum == 0)
+        if (this->m_maximum == 0)
         {
-          m_maximum = minMaxComputer->GetMaximum();
+          this->m_maximum = minMaxComputer->GetMaximum();
         }
       }
 
@@ -266,16 +212,16 @@ public:
       //TBD - Get the min max of the output of maskFilter
 
 
-      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
-      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
-      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - m_bins = " << m_bins << std::endl;
+      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - this->m_minimum = " << this->m_minimum << std::endl;
+      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - this->m_maximum = " << this->m_maximum << std::endl;
+      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - this->m_Bins = " << this->m_Bins << std::endl;
 
-      GreyLevelSizeZoneMatrixHolder tmpHolder(m_minimum, m_maximum, m_bins, TImageType::ImageDimension);
+      GreyLevelSizeZoneMatrixHolder tmpHolder(this->m_minimum, this->m_maximum, this->m_Bins, TImageType::ImageDimension);
       int largestRegion = CalculateGlSZMatrix(true, tmpHolder);
 
       //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - largestRegion = " << largestRegion << std::endl;
 
-      GreyLevelSizeZoneMatrixHolder holderOverall(m_minimum, m_maximum, m_bins, largestRegion);
+      GreyLevelSizeZoneMatrixHolder holderOverall(this->m_minimum, this->m_maximum, this->m_Bins, largestRegion);
 
       //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - holderOverall Completed" << std::endl;
       //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - Error causing program to quit seems to be happening at CalculateGLSZMatrix function." << std::endl;
@@ -290,18 +236,6 @@ public:
 
       this->m_algorithmDone = true;
     }
-  };
-
-  /**
-  \brief return the map of feature names and feature values
-  **/
-  std::map< std::string, double > GetOutput()
-  {
-    if (!this->m_algorithmDone)
-    {
-      Update();
-    }
-    return this->m_features;
   };
 
   /**
@@ -561,11 +495,11 @@ private:
 
               visitedImageIterator.Set(1);
               //visitedImage->SetPixel(currentIndex, 1);
-              for (size_t i = 0; i < m_offsets->size(); i++)
+              for (size_t i = 0; i < this->m_offsets->size(); i++)
               {
-                auto newIndex = currentIndex + m_offsets->at(i);
+                auto newIndex = currentIndex + this->m_offsets->at(i);
                 indices.push_back(newIndex);
-                newIndex = currentIndex - m_offsets->at(i);
+                newIndex = currentIndex - this->m_offsets->at(i);
                 indices.push_back(newIndex);
               }
             }
@@ -702,11 +636,11 @@ private:
     //        ++steps;
 
     //        visitedImage->SetPixel(currentIndex, 1);
-    //        for (size_t i = 0; i < m_offsets->size(); i++)
+    //        for (size_t i = 0; i < this->m_offsets->size(); i++)
     //        {
-    //          auto newIndex = currentIndex + m_offsets->at(i);
+    //          auto newIndex = currentIndex + this->m_offsets->at(i);
     //          indices.push_back(newIndex);
-    //          newIndex = currentIndex - m_offsets->at(i);
+    //          newIndex = currentIndex - this->m_offsets->at(i);
     //          indices.push_back(newIndex);
     //        }
     //      }
@@ -814,30 +748,21 @@ private:
     itk::Statistics::Histogram< double >::MeasurementVectorType temp_mv(1);
     temp_mv.Fill(intensity);
 
-    if (!m_histogram->GetIndex(temp_mv, temp_idx))
+    if (!this->m_histogram->GetIndex(temp_mv, temp_idx))
     {
       std::cerr << "Couldn't find index for intensity value '" << intensity << "' in histogram for GLSZM.\n";
     }
     {
-      double index = temp_idx[0]; // for uniform histogram, use "std::floor((intensity - m_minimum) / m_bins)"
-      return std::max<double>(0, std::min<double>(index, m_bins - 1));
+      double index = temp_idx[0]; // for uniform histogram, use "std::floor((intensity - this->m_minimum) / this->m_Bins)"
+      return std::max<double>(0, std::min<double>(index, this->m_Bins - 1));
     }
   }
 
   //using HistogramType = THistogramFrequencyContainer;
 
   unsigned int m_maxSize = 1;
-  unsigned int m_bins = 10;
-  typename TImageType::PixelType m_minimum = 0.0;
-  typename TImageType::PixelType m_maximum = 0.0;
-
-  int m_radius = -1;
-  float m_radius_float = -1;
 
   std::vector< double > pVector;
   std::vector< double > sVector;
 
-  itk::Statistics::Histogram< double >::Pointer m_histogram;
-
-  itk::VectorContainer< unsigned char, typename TImageType::OffsetType > * m_offsets;
 };

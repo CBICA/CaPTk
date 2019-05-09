@@ -6948,6 +6948,11 @@ void fMainWindow::EnableComparisonMode(bool enable)
     ShowMessage("Please load 3 datasets to enable comparison mode", this);
     return;
   }
+  if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1)) //! e.g. Mammography images
+  {
+    ShowErrorMessage("2D images are not currently supported in Comparison Mode.");
+    return;
+  }
 
   this->SetComparisonMode(enable);
 

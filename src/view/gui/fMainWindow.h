@@ -889,16 +889,16 @@ public slots:
     auto currentApp = action->text().toStdString();
     std::string path = getCaPTkDataDir();
     auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-    std::string link =
-#ifdef _WIN32
-      path + "/GnuWin32/bin/wget.exe"
-#else
-      "wget"
-#endif
-      + currentLink +
-      " -O " + captk_SampleDataFolder + "/" + currentApp + ".zip";
+//    std::string link =
+//#ifdef _WIN32
+//      path + "/GnuWin32/bin/wget.exe"
+//#else
+//      "wget"
+//#endif
+//      + currentLink +
+//      " -O " + captk_SampleDataFolder + "/" + currentApp + ".zip";
 
-    cbica::Logging(loggerFile, link);
+    cbica::Logging(loggerFile, currentLink);
 
     //ShowMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
