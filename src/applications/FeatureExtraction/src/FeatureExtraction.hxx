@@ -1020,10 +1020,10 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     }
     glrlmCalculator.SetDistanceMax(std::sqrt(2) * (maxStep - 1));
   }
-  else
-  {
-    glrlmCalculator.SetDistanceMax(m_Range);
-  }
+  //else
+  //{
+  //  glrlmCalculator.SetDistanceMax(m_Range);
+  //}
   glrlmCalculator.Update();
   auto temp = glrlmCalculator.GetOutput();
   for (auto const& f : temp)
