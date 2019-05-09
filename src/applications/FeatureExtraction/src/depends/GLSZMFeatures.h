@@ -32,6 +32,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <vector>
 
 #include "FeatureBase.h"
+#include "TextureFeatureBase.h"
 
 //! Helper Class
 struct GreyLevelSizeZoneMatrixHolder
@@ -132,7 +133,8 @@ public:
 };
 
 template< typename TImageType >
-class GLSZMFeatures : public FeatureBase < TImageType >
+class GLSZMFeatures : 
+  public FeatureBase < TImageType >, public TextureFeatureBase< TImageType >
 {
 public:
   //! Default constructor
@@ -149,56 +151,6 @@ public:
   void SetMaxSize(int rangeValue)
   {
     m_maxSize = rangeValue;
-  }
-
-  /**
-  \brief Get the range (how far from the center index of interest do you want to calculate neighborhood tone difference); returns int value
-  **/
-  int GetMaxSize()
-  {
-    return m_maxSize;
-  }
-
-  /**
-  \brief Get the number of bins for quantization of the input image
-  **/
-  int GetNumBins()
-  {
-    return m_bins;
-  }
-
-  /**
-  \brief Set the number of bins for quantization of the input image; defaults to 10 unless overridden by user
-
-  \param numBinValue integer value for the number of bins you want for image quantization
-  **/
-  void SetNumBins(int numBinValue)
-  {
-    m_bins = numBinValue;
-  }
-
-  /**
-  \brief Set the minimum
-  */
-  void SetMinimum(typename TImageType::PixelType minimumInput)
-  {
-    m_minimum = minimumInput;
-  }
-
-  /**
-  \brief Set the maximum
-  */
-  void SetMaximum(typename TImageType::PixelType maximumInput)
-  {
-    m_maximum = maximumInput;
-  }
-
-  /**
-  Set the offsets
-  */
-  void SetOffsets(itk::VectorContainer< unsigned char, typename TImageType::OffsetType > * offsets)
-  {
-    m_offsets = offsets;
   }
 
   /**
@@ -284,18 +236,6 @@ public:
 
       this->m_algorithmDone = true;
     }
-  };
-
-  /**
-  \brief return the map of feature names and feature values
-  **/
-  std::map< std::string, double > GetOutput()
-  {
-    if (!this->m_algorithmDone)
-    {
-      Update();
-    }
-    return this->m_features;
   };
 
   /**
@@ -555,11 +495,11 @@ private:
 
               visitedImageIterator.Set(1);
               //visitedImage->SetPixel(currentIndex, 1);
-              for (size_t i = 0; i < m_offsets->size(); i++)
+              for (size_t i = 0; i < this->m_offsets->size(); i++)
               {
-                auto newIndex = currentIndex + m_offsets->at(i);
+                auto newIndex = currentIndex + this->m_offsets->at(i);
                 indices.push_back(newIndex);
-                newIndex = currentIndex - m_offsets->at(i);
+                newIndex = currentIndex - this->m_offsets->at(i);
                 indices.push_back(newIndex);
               }
             }
@@ -696,11 +636,11 @@ private:
     //        ++steps;
 
     //        visitedImage->SetPixel(currentIndex, 1);
-    //        for (size_t i = 0; i < m_offsets->size(); i++)
+    //        for (size_t i = 0; i < this->m_offsets->size(); i++)
     //        {
-    //          auto newIndex = currentIndex + m_offsets->at(i);
+    //          auto newIndex = currentIndex + this->m_offsets->at(i);
     //          indices.push_back(newIndex);
-    //          newIndex = currentIndex - m_offsets->at(i);
+    //          newIndex = currentIndex - this->m_offsets->at(i);
     //          indices.push_back(newIndex);
     //        }
     //      }
@@ -822,13 +762,8 @@ private:
 
   unsigned int m_maxSize = 1;
   unsigned int m_bins = 10;
-  typename TImageType::PixelType m_minimum = 0.0;
-  typename TImageType::PixelType m_maximum = 0.0;
 
   std::vector< double > pVector;
   std::vector< double > sVector;
 
-  itk::Statistics::Histogram< double >::Pointer m_histogram;
-
-  itk::VectorContainer< unsigned char, typename TImageType::OffsetType > * m_offsets;
 };
