@@ -26,9 +26,11 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <vector>
 
 #include "FeatureBase.h"
+#include "TextureFeatureBase.h"
 
 template< typename TImageType >
-class NGTDMFeatures : public FeatureBase < TImageType >
+class NGTDMFeatures : 
+  public FeatureBase < TImageType >, TextureFeatureBase< TImageType >
 {
 public:
   //! Default constructor
@@ -45,46 +47,6 @@ public:
   void SetRange(int rangeValue)
   {
     m_range = rangeValue;
-  }
-
-  /**
-  \brief Get the range (how far from the center index of interest do you want to calculate neighborhood tone difference); returns int value
-  **/
-  int GetRange() {
-    return m_range;
-  }
-
-  /**
-  \brief Get the number of bins for quantization of the input image
-  **/
-  int GetNumBins() {
-    return m_bins;
-  }
-
-  /**
-  \brief Set the number of bins for quantization of the input image; defaults to 10 unless overridden by user
-
-  \param numBinValue integer value for the number of bins you want for image quantization
-  **/
-  void SetNumBins(int numBinValue)
-  {
-    m_bins = numBinValue;
-  }
-
-  /**
-  \brief Set the minimum
-  */
-  void SetMinimum(int minimumInput)
-  {
-    m_minimum = minimumInput;
-  }
-
-  /**
-  \brief Set the maximum
-  */
-  void SetMaximum(int maximumInput)
-  {
-    m_maximum = maximumInput;
   }
 
   /**
@@ -263,18 +225,6 @@ public:
   };
 
   /**
-  \brief return the map of feature names and feature values
-  **/
-  std::map< std::string, double > GetOutput()
-  {
-    if (!this->m_algorithmDone)
-    {
-      Update();
-    }
-    return this->m_features;
-  };
-
-  /**
   \brief return the Coarsness
   **/
   double GetCoarsness()
@@ -359,14 +309,10 @@ private:
   //using HistogramType = THistogramFrequencyContainer;
 
   unsigned int m_range = 1;
-  unsigned int m_bins = 10;
-  typename TImageType::PixelType m_minimum = 0;
-  typename TImageType::PixelType m_maximum = 0;
 
   typename TImageType::SizeType m_radius;
 
   std::vector< double > pVector;
   std::vector< double > sVector;
 
-  itk::Statistics::Histogram< double >::Pointer m_histogram;
 };
