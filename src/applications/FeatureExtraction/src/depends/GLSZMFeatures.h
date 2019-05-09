@@ -748,7 +748,7 @@ private:
     itk::Statistics::Histogram< double >::MeasurementVectorType temp_mv(1);
     temp_mv.Fill(intensity);
 
-    if (!m_histogram->GetIndex(temp_mv, temp_idx))
+    if (!this->m_histogram->GetIndex(temp_mv, temp_idx))
     {
       std::cerr << "Couldn't find index for intensity value '" << intensity << "' in histogram for GLSZM.\n";
     }

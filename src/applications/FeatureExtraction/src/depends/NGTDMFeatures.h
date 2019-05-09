@@ -100,7 +100,7 @@ public:
       stats->Update();
       //std::cout << "\n[DEBUG] NGTDMFeatures.h - itk::LabelStatisticsImageFilter->SetHistogramParameters: (this->m_Bins=" << this->m_Bins << " | this->m_minimum=" << this->m_minimum << " | this->m_maximum=" << this->m_maximum << ")" << std::endl;
 
-      m_histogram = stats->GetHistogram(1); //Get Histogram for the label value one
+      this->m_histogram = stats->GetHistogram(1); //Get Histogram for the label value one
 
       m_radius.Fill(m_range);
 
@@ -236,7 +236,7 @@ private:
     itk::Statistics::Histogram< double >::MeasurementVectorType temp_mv(1);
     temp_mv.Fill(intensity);
 
-    if (!m_histogram->GetIndex(temp_mv, temp_idx))
+    if (!this->m_histogram->GetIndex(temp_mv, temp_idx))
     {
       //std::cerr << "Couldn't find index for intensity value '" << intensity << "' in histogram for NGTDM.\n";
     }

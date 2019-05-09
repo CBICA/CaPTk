@@ -133,7 +133,7 @@ public:
         //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - Set count_offset = " << count_offset << std::endl;
         //TBD
 
-        for (auto offsetIt = m_offsets->Begin(); offsetIt != m_offsets->End(); offsetIt++, offsetNum++)
+        for (auto offsetIt = this->m_offsetsBegin(); offsetIt != this->m_offsetsEnd(); offsetIt++, offsetNum++)
         {
           //TBD
           //std::cout << "\n\n";
@@ -264,26 +264,26 @@ public:
         if (m_offsetSelector == "Average")
         {
           //TBD
-          //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - m_offsets->size() = " << m_offsets->size() << std::endl;
+          //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - this->m_offsetssize() = " << this->m_offsetssize() << std::endl;
           //TBD
 
-          sre /= m_offsets->size();
-          lre /= m_offsets->size();
-          gln /= m_offsets->size();
-          rln /= m_offsets->size();
-          lglre /= m_offsets->size();
-          hglre /= m_offsets->size();
-          srlgle /= m_offsets->size();
-          srhgle /= m_offsets->size();
-          lrlgle /= m_offsets->size();
-          lrhgle /= m_offsets->size();
-          rp /= m_offsets->size();
-          runs /= m_offsets->size();
-          rlnn /= m_offsets->size();
-          glnn /= m_offsets->size();
-          glv /= m_offsets->size();
-          rlv /= m_offsets->size();
-          re /= m_offsets->size();
+          sre /= this->m_offsetssize();
+          lre /= this->m_offsetssize();
+          gln /= this->m_offsetssize();
+          rln /= this->m_offsetssize();
+          lglre /= this->m_offsetssize();
+          hglre /= this->m_offsetssize();
+          srlgle /= this->m_offsetssize();
+          srhgle /= this->m_offsetssize();
+          lrlgle /= this->m_offsetssize();
+          lrhgle /= this->m_offsetssize();
+          rp /= this->m_offsetssize();
+          runs /= this->m_offsetssize();
+          rlnn /= this->m_offsetssize();
+          glnn /= this->m_offsetssize();
+          glv /= this->m_offsetssize();
+          rlv /= this->m_offsetssize();
+          re /= this->m_offsetssize();
 
           this->m_features["ShortRunEmphasis"] = sre;
           this->m_features["LongRunEmphasis"] = lre;
