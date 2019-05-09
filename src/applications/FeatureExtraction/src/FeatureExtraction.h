@@ -374,7 +374,7 @@ private:
   /**
   \brief Calculates the OffsetVectorPointer based on the provided radius in mm and directions
   */
-  typename OffsetVectorPointer GetOffsetVector(float inputRadius, int inputDirections)
+  OffsetVectorPointer GetOffsetVector(float inputRadius, int inputDirections)
   {
     auto spacing = m_Mask->GetSpacing();
     itk::Size< TImageType::ImageDimension > radius; // radius value along individual axes in image coordinates
@@ -405,7 +405,7 @@ private:
   /**
   \brief Calculates the OffsetVectorPointer based on the provided radius and directions
   */
-  typename OffsetVectorPointer GetOffsetVector(int inputRadius, int inputDirections)
+  OffsetVectorPointer GetOffsetVector(int inputRadius, int inputDirections)
   {
     if (m_offsetString.empty())
     {
@@ -463,7 +463,7 @@ private:
       {
         radius.Fill(inputRadius);
       }
-      typename OffsetVectorPointer offsets = OffsetVector::New();
+      OffsetVectorPointer offsets = OffsetVector::New();
       for (size_t i = 0; i < m_offsetString.size(); i++)
       {
         auto tempCurrentOffset = cbica::stringSplit(m_offsetString[i], "x");
