@@ -46,7 +46,7 @@ public:
   **/
   void SetRange(int rangeValue)
   {
-    m_range = rangeValue;
+    this->m_range = rangeValue;
   }
 
   /**
@@ -104,11 +104,10 @@ public:
 
       m_radius.Fill(m_range);
 
-      if (this->m_debugMode)
-      {
-        std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() : this->m_minimum = " << this->m_minimum << std::endl;
-        std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() : this->m_maximum = " << this->m_maximum << std::endl;
-        std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() : itk::LabelStatisticsImageFilter->SetHistogramParameters: (m_bins=" << this->m_Bins<< " | m_minimum=" << this->m_minimum << " | m_maximum=" << this->m_maximum << ")" << std::endl;
+      if (this->m_debugMode){
+        std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() : m_minimum = " << this->m_minimum << std::endl;
+        std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() : m_maximum = " << this->m_maximum << std::endl;
+        std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() : itk::LabelStatisticsImageFilter->SetHistogramParameters: (m_Bins=" << this->m_Bins << " | m_minimum=" << this->m_minimum << " | m_maximum=" << this->m_maximum << ")" << std::endl;
         std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() : m_range = " << m_range << std::endl;
       }
       

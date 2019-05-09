@@ -23,7 +23,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkOffset.h"
 
 //#include "Eigen/src/Core/Matrix.h"
-// #include "Eigen/src/Core/Array.h"
+//#include "Eigen/src/Core/Array.h"
 #include "Eigen/Dense"
 
 #include <map>
