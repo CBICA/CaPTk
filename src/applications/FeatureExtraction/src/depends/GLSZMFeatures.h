@@ -162,7 +162,7 @@ public:
     {
 
       // do the computation that is needed here
-      if ((m_minimum == 0) || (m_maximum == 0))
+      if ((this->m_minimum == 0) || (this->m_maximum == 0))
       {
         auto maskFilter = itk::MaskImageFilter< TImageType, TImageType, TImageType >::New();
         maskFilter->SetInput(this->m_inputImage);
@@ -174,13 +174,13 @@ public:
         minMaxComputer->SetImage(maskFilter->GetOutput());
         minMaxComputer->Compute();
 
-        if (m_minimum == 0)
+        if (this->m_minimum == 0)
         {
-          m_minimum = minMaxComputer->GetMinimum();
+          this->m_minimum = minMaxComputer->GetMinimum();
         }
-        if (m_maximum == 0)
+        if (this->m_maximum == 0)
         {
-          m_maximum = minMaxComputer->GetMaximum();
+          this->m_maximum = minMaxComputer->GetMaximum();
         }
       }
 
@@ -212,16 +212,16 @@ public:
       //TBD - Get the min max of the output of maskFilter
 
 
-      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
-      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
-      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - m_bins = " << m_bins << std::endl;
+      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - this->m_minimum = " << this->m_minimum << std::endl;
+      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - this->m_maximum = " << this->m_maximum << std::endl;
+      //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - this->m_Bins = " << this->m_Bins << std::endl;
 
-      GreyLevelSizeZoneMatrixHolder tmpHolder(m_minimum, m_maximum, m_bins, TImageType::ImageDimension);
+      GreyLevelSizeZoneMatrixHolder tmpHolder(this->m_minimum, this->m_maximum, this->m_Bins, TImageType::ImageDimension);
       int largestRegion = CalculateGlSZMatrix(true, tmpHolder);
 
       //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - largestRegion = " << largestRegion << std::endl;
 
-      GreyLevelSizeZoneMatrixHolder holderOverall(m_minimum, m_maximum, m_bins, largestRegion);
+      GreyLevelSizeZoneMatrixHolder holderOverall(this->m_minimum, this->m_maximum, this->m_Bins, largestRegion);
 
       //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - holderOverall Completed" << std::endl;
       //std::cout << "\n[DEBUG] GLSZMFeatures.h - Update() - Error causing program to quit seems to be happening at CalculateGLSZMatrix function." << std::endl;
@@ -753,15 +753,15 @@ private:
       std::cerr << "Couldn't find index for intensity value '" << intensity << "' in histogram for GLSZM.\n";
     }
     {
-      double index = temp_idx[0]; // for uniform histogram, use "std::floor((intensity - m_minimum) / m_bins)"
-      return std::max<double>(0, std::min<double>(index, m_bins - 1));
+      double index = temp_idx[0]; // for uniform histogram, use "std::floor((intensity - this->m_minimum) / this->m_Bins)"
+      return std::max<double>(0, std::min<double>(index, this->m_Bins - 1));
     }
   }
 
   //using HistogramType = THistogramFrequencyContainer;
 
   unsigned int m_maxSize = 1;
-  unsigned int m_bins = 10;
+  unsigned int this->m_Bins = 10;
 
   std::vector< double > pVector;
   std::vector< double > sVector;

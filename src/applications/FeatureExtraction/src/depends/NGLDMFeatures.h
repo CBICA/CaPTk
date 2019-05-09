@@ -37,6 +37,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 // CaPTk
 #include "FeatureBase.h"
+#include "TextureFeatureBase.h"
 
 namespace mitk
 {
@@ -52,8 +53,8 @@ namespace mitk
 		double IndexToMaxIntensity(int index);
 		void Print();
 
-		double m_MinimumRange;
-		double m_MaximumRange;
+		double this->m_minimumRange;
+		double this->m_maximumRange;
 		double m_Stepsize;
 		int m_NumberOfDependences;
 		int m_NumberOfBins;
@@ -130,8 +131,8 @@ namespace mitk
 }
 
 mitk::NGLDMMatrixHolder::NGLDMMatrixHolder(double min, double max, int number, int depenence) :
-	m_MinimumRange(min),
-	m_MaximumRange(max),
+	this->m_minimumRange(min),
+	this->m_maximumRange(max),
 	m_Stepsize(0),
 	m_NumberOfDependences(depenence),
 	m_NumberOfBins(number),
@@ -158,24 +159,25 @@ void mitk::NGLDMMatrixHolder::Print()
 
 int mitk::NGLDMMatrixHolder::IntensityToIndex(double intensity)
 {
-	return std::floor((intensity - m_MinimumRange) / m_Stepsize);
+	return std::floor((intensity - this->m_minimumRange) / m_Stepsize);
 }
 
 double mitk::NGLDMMatrixHolder::IndexToMinIntensity(int index)
 {
-	return m_MinimumRange + index * m_Stepsize;
+	return this->m_minimumRange + index * m_Stepsize;
 }
 double mitk::NGLDMMatrixHolder::IndexToMeanIntensity(int index)
 {
-	return m_MinimumRange + (index + 0.5) * m_Stepsize;
+	return this->m_minimumRange + (index + 0.5) * m_Stepsize;
 }
 double mitk::NGLDMMatrixHolder::IndexToMaxIntensity(int index)
 {
-	return m_MinimumRange + (index + 1) * m_Stepsize;
+	return this->m_minimumRange + (index + 1) * m_Stepsize;
 }
 
 template< typename TImageType >
-class NGLDMFeatures : public FeatureBase < TImageType >
+class NGLDMFeatures : 
+  public FeatureBase < TImageType >, public TextureFeatureBase< TImageType >
 {
 public:
 	//! Default constructor
@@ -209,53 +211,6 @@ public:
 	// }
 
 	/**
-	\brief Get the range/Chebyshev Distance (how far from the center index of interest do you want to calculate neighborhood level difference); returns int value
-	**/
-	int GetRange() {
-		return m_range;
-	}
-
-	/**
-	\brief Get the courseness/alpha parameter (How much difference between the grey levels of the neighbouring voxels do you consider to be dependent);  returns int value
-	**/
-	// int GetAlpha() {
-	// 	return m_alpha;
-	// }
-
-	/**
-	\brief Get the number of bins for quantization of the input image
-	**/
-	int GetNumBins() {
-		return m_bins;
-	}
-
-	/**
-	\brief Set the number of bins for quantization of the input image; defaults to 10 unless overridden by user
-
-	\param numBinValue integer value for the number of bins you want for image quantization
-	**/
-	void SetNumBins(int numBinValue)
-	{
-		m_bins = numBinValue;
-	}
-
-	/**
-	\brief Set the minimum
-	*/
-	void SetMinimum(int minimumInput)
-	{
-		m_minimum = minimumInput;
-	}
-
-	/**
-	\brief Set the maximum
-	*/
-	void SetMaximum(int maximumInput)
-	{
-		m_maximum = maximumInput;
-	}
-
-	/**
 	\brief Update calculates features
 	**/
 	void Update()
@@ -263,7 +218,7 @@ public:
 		if (!this->m_algorithmDone)
 		{
 			// do the computation that is needed here; update min max pixel values within ROI if not a
-			if ((m_minimum == 0) || (m_maximum == 0))
+			if ((this->m_minimum == 0) || (this->m_maximum == 0))
 			{
 				//Masked out regions outside of the mask (ROI region, single label of multi label ROi).
 				auto maskFilter = itk::MaskImageFilter< TImageType, TImageType, TImageType >::New();
@@ -273,23 +228,23 @@ public:
 				maskFilter->Update();
 				//Question: Is the mask being read in only one label of multi-label (e.g. edema of multi label segmentation?)
 
-				//update m_minimum and m_maximum based on max and min pixel values of the ROI regions of the image
+				//update this->m_minimum and this->m_maximum based on max and min pixel values of the ROI regions of the image
 				auto minMaxComputer = itk::MinimumMaximumImageCalculator< TImageType >::New();
 				minMaxComputer->SetImage(maskFilter->GetOutput());
 				minMaxComputer->Compute();
 
-				if (m_minimum == 0)
+				if (this->m_minimum == 0)
 				{
-					m_minimum = minMaxComputer->GetMinimum();
+					this->m_minimum = minMaxComputer->GetMinimum();
 				}
-				if (m_maximum == 0)
+				if (this->m_maximum == 0)
 				{
-					m_maximum = minMaxComputer->GetMaximum();
+					this->m_maximum = minMaxComputer->GetMaximum();
 				}
 			}
 
-			std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
-			std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
+			std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - this->m_minimum = " << this->m_minimum << std::endl;
+			std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - this->m_maximum = " << this->m_maximum << std::endl;
 
 			//TBD - Hard Coded for Phantom for now
 			int alpha = 0;
@@ -300,8 +255,8 @@ public:
 
 
 			//NGLDMMatrixHolder holderOverall(rangeMin, rangeMax, numberOfBins, numberofDependency);
-			std::cout << "[DEBUG] mitk::NGLDMMatrixHolder::holderOverall(" << m_minimum << ", " << m_maximum << ", " << m_bins << ", " << max_number_of_dependence << ")" << std::endl;
-			mitk::NGLDMMatrixHolder holderOverall(m_minimum, m_maximum, m_bins, max_number_of_dependence);
+			std::cout << "[DEBUG] mitk::NGLDMMatrixHolder::holderOverall(" << this->m_minimum << ", " << this->m_maximum << ", " << this->m_Bins << ", " << max_number_of_dependence << ")" << std::endl;
+			mitk::NGLDMMatrixHolder holderOverall(this->m_minimum, this->m_maximum, this->m_Bins, max_number_of_dependence);
 			mitk::NGLDMMatrixFeatures overallFeature;
 			CalculateNGLDMMatrix(this->m_inputImage, this->m_Mask, alpha, range, direction, holderOverall);
 			std::cout << "[DEBUG] NGLDMFeatures.h||print " << std::endl;
@@ -312,33 +267,11 @@ public:
 		}
 	};
 
-	/**
-	\brief return the map of feature names and feature values
-	**/
-	std::map< std::string, double > GetOutput()
-	{
-		if (!this->m_algorithmDone)
-		{
-			Update();
-		}
-		return this->m_features;
-	};
-
-	/**
-	\brief return the Low Dependence Emphasis
-	**/
-	double GetLowDependenceEmphasis()
-	{
-		if (!this->m_algorithmDone)
-		{
-			Update();
-		}
-		return this->m_features["LowDependenceEmphasis"];
-	}
+private:
 
 	void CalculateNGLDMMatrix(
-		TImageType* itkImage,
-		TImageType* mask,
+		typename TImageType::Pointer itkImage,
+		typename TImageType::Pointer mask,
 		int alpha,
 		int range,
 		unsigned int direction,
@@ -649,15 +582,10 @@ public:
 
 	//variables
 	unsigned int m_range = 1;
-	unsigned int m_bins = 10;
-
-	typename TImageType::PixelType m_minimum = 0;
-	typename TImageType::PixelType m_maximum = 0;
-
 	typename TImageType::SizeType m_radius;
 
-	//double m_MinimumRange;
-	//double m_MaximumRange;
+	//double this->m_minimumRange;
+	//double this->m_maximumRange;
 	//double m_Stepsize;
 	//int m_NumberOfDependences;
 	//Eigen::MatrixXd m_Matrix;

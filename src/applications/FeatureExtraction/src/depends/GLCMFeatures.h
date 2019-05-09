@@ -53,8 +53,8 @@ public:
         for (size_t i = 0; i < this->m_offsets->size(); i++)
         {
           typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
-          glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-          glcmGenerator->SetPixelValueMinMax(m_minimum, m_maximum);
+          glcmGenerator->SetNumberOfBinsPerAxis(this->m_Bins); //reasonable number of bins
+          glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
           glcmGenerator->SetMaskImage(mask_wrap);
           glcmGenerator->SetInput(image_wrap);
           auto featureCalc = Hist2FeaturesType::New();
@@ -108,8 +108,8 @@ public:
       else if ((m_offsetSelector == "ITKDefault") || (m_offsetSelector == "Combined"))
       {
         typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
-        glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-        glcmGenerator->SetPixelValueMinMax(m_minimum, m_maximum);
+        glcmGenerator->SetNumberOfBinsPerAxis(this->m_Bins); //reasonable number of bins
+        glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
         glcmGenerator->SetMaskImage(mask_wrap);
         glcmGenerator->SetInput(image_wrap);
         auto featureCalc = Hist2FeaturesType::New();
@@ -131,8 +131,8 @@ public:
       else
       {
         typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
-        glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-        glcmGenerator->SetPixelValueMinMax(m_minimum, m_maximum);
+        glcmGenerator->SetNumberOfBinsPerAxis(this->m_Bins); //reasonable number of bins
+        glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
         glcmGenerator->SetMaskImage(mask_wrap);
         glcmGenerator->SetInput(image_wrap);
         auto featureCalc = Hist2FeaturesType::New();

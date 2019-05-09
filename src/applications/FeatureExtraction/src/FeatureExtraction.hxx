@@ -271,14 +271,20 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   ngldmCalculator.SetRange(m_Radius); //chebyshev distance delta
   ngldmCalculator.SetMinimum(m_minimumToConsider);
   ngldmCalculator.SetMaximum(m_maximumToConsider);
+  ngldmCalculator.SetRange(m_Range);
   if (m_debug)
   {
     ngldmCalculator.EnableDebugMode();
   }
   ngldmCalculator.Update();
-  std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << ngldmCalculator.GetRange() << std::endl;
+  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << ngldmCalculator.GetRange() << std::endl;
 
-  featurevec["LowDependenceEmphasis"] = ngldmCalculator.GetLowDependenceEmphasis();
+  auto temp = ngldmCalculator.GetOutput();
+  for (auto const& f : temp)
+  {
+    featurevec[f.first] = f.second;
+  }
+  //featurevec["LowDependenceEmphasis"] = ngldmCalculator.GetLowDependenceEmphasis();
   //featurevec["HighDependenceEmphasis"] = ngldmCalculator.GetHighDependenceEmphasis();
   //featurevec["LowGreyLevelCountEmphasis"] = ngldmCalculator.GetLowGreyLevelCountEmphasis();
   //featurevec["HighGreyLevelCountEmphasis"] = ngldmCalculator.GetHighGreyLevelCountEmphasis();
@@ -319,25 +325,31 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   ngtdmCalculator.SetMinimum(m_minimumToConsider);
   ngtdmCalculator.SetMaximum(m_maximumToConsider);
   ngtdmCalculator.SetStartingIndex(m_currentLatticeStart);
+  ngtdmCalculator.SetRange(m_Range);
   ngtdmCalculator.Update();
   if (m_debug)
   {
     ngtdmCalculator.EnableDebugMode();
-    std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM::calculator.GetRange()" << ngtdmCalculator.GetRange() << std::endl;
+    //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM::calculator.GetRange()" << ngtdmCalculator.GetRange() << std::endl;
   }
 
-  //auto temp = calculator.GetOutput();
-  double double_Strength = ngtdmCalculator.GetStrength();
-  double double_Complexity = ngtdmCalculator.GetComplexity();
-  double double_Coarsness = ngtdmCalculator.GetCoarsness();
-  double double_Contrast = ngtdmCalculator.GetContrast();
-  double double_Busyness = ngtdmCalculator.GetBusyness();
+  auto temp = ngtdmCalculator.GetOutput();
+  for (auto const& f : temp)
+  {
+    featurevec[f.first] = f.second;
+  }
+  ////auto temp = calculator.GetOutput();
+  //double double_Strength = ngtdmCalculator.GetStrength();
+  //double double_Complexity = ngtdmCalculator.GetComplexity();
+  //double double_Coarsness = ngtdmCalculator.GetCoarsness();
+  //double double_Contrast = ngtdmCalculator.GetContrast();
+  //double double_Busyness = ngtdmCalculator.GetBusyness();
 
-  featurevec["Strength"] = ngtdmCalculator.GetStrength();
-  featurevec["Complexity"] = ngtdmCalculator.GetComplexity();
-  featurevec["Coarseness"] = ngtdmCalculator.GetCoarsness();
-  featurevec["Constrast"] = ngtdmCalculator.GetContrast();
-  featurevec["Busyness"] = ngtdmCalculator.GetBusyness();
+  //featurevec["Strength"] = ngtdmCalculator.GetStrength();
+  //featurevec["Complexity"] = ngtdmCalculator.GetComplexity();
+  //featurevec["Coarseness"] = ngtdmCalculator.GetCoarsness();
+  //featurevec["Constrast"] = ngtdmCalculator.GetContrast();
+  //featurevec["Busyness"] = ngtdmCalculator.GetBusyness();
   /* commenting out old codes calling NGLDM
   typedef itk::Statistics::EnhancedScalarImageToNeighbourhoodGreyLevelDifferenceFeaturesFilter< TImage > FilterType;
   typedef typename FilterType::NeighbourhoodGreyLevelDifferenceFeaturesFilterType TextureFilterType;

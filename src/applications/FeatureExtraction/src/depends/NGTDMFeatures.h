@@ -30,7 +30,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 template< typename TImageType >
 class NGTDMFeatures : 
-  public FeatureBase < TImageType >, TextureFeatureBase< TImageType >
+  public FeatureBase < TImageType >, public TextureFeatureBase< TImageType >
 {
 public:
   //! Default constructor
@@ -57,7 +57,7 @@ public:
     if (!this->m_algorithmDone)
     {
       // do the computation that is needed here
-      if ((m_minimum == 0) || (m_maximum == 0))
+      if ((this->m_minimum == 0) || (this->m_maximum == 0))
       {
         auto maskFilter = itk::MaskImageFilter< TImageType, TImageType, TImageType >::New();
         maskFilter->SetInput(this->m_inputImage); //full input image
@@ -72,18 +72,18 @@ public:
         minMaxComputer->Compute();
         //Calculated min and max of the input image masked out for the given ROI single label
 
-        if (m_minimum == 0)
+        if (this->m_minimum == 0)
         {
-          m_minimum = minMaxComputer->GetMinimum();
+          this->m_minimum = minMaxComputer->GetMinimum();
         }
-        if (m_maximum == 0)
+        if (this->m_maximum == 0)
         {
-          m_maximum = minMaxComputer->GetMaximum();
+          this->m_maximum = minMaxComputer->GetMaximum();
         }
       }
 
-      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_minimum = " << m_minimum << std::endl;
-      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - m_maximum = " << m_maximum << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - this->m_minimum = " << this->m_minimum << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - this->m_maximum = " << this->m_maximum << std::endl;
 
       /// histogram calculation from ITK -- for texture feature pipeline
       using TMaskImageType = itk::Image< int, TImageType::ImageDimension >;
@@ -96,9 +96,9 @@ public:
       stats->SetInput(this->m_inputImage);  //input, unmasked full image
       stats->Update();
       stats->SetUseHistograms(true);
-      stats->SetHistogramParameters(m_bins, m_minimum, m_maximum);
+      stats->SetHistogramParameters(this->this->m_Bins, this->m_minimum, this->m_maximum);
       stats->Update();
-      //std::cout << "\n[DEBUG] NGTDMFeatures.h - itk::LabelStatisticsImageFilter->SetHistogramParameters: (m_bins=" << m_bins << " | m_minimum=" << m_minimum << " | m_maximum=" << m_maximum << ")" << std::endl;
+      //std::cout << "\n[DEBUG] NGTDMFeatures.h - itk::LabelStatisticsImageFilter->SetHistogramParameters: (this->m_Bins=" << this->m_Bins << " | this->m_minimum=" << this->m_minimum << " | this->m_maximum=" << this->m_maximum << ")" << std::endl;
 
       m_histogram = stats->GetHistogram(1); //Get Histogram for the label value one
 
@@ -111,8 +111,8 @@ public:
       NeighborhoodType iter(m_radius, this->m_inputImage, this->m_inputImage->GetBufferedRegion()),
         iterMask(m_radius, this->m_Mask, this->m_Mask->GetBufferedRegion());
 
-      pVector.resize(m_bins, 0);
-      sVector.resize(m_bins, 0);
+      pVector.resize(this->m_Bins, 0);
+      sVector.resize(this->m_Bins, 0);
 
       int count = 0;
       iter.GoToBegin();
@@ -150,7 +150,7 @@ public:
       }
 
       unsigned int Ngp = 0;
-      for (unsigned int i = 0; i < m_bins; ++i)
+      for (unsigned int i = 0; i < this->m_Bins; ++i)
       {
         if (pVector[i] > 0.1)
         {
@@ -167,7 +167,7 @@ public:
       double complexity = 0;
       double strengthA = 0;
 
-      for (unsigned int i = 0; i < m_bins; ++i)
+      for (unsigned int i = 0; i < this->m_Bins; ++i)
       {
         sumS += sVector[i];
         sumStimesP += pVector[i] * sVector[i];
@@ -176,7 +176,7 @@ public:
         //std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() - bin[" << i << "] | p[" << i << "] * s[" << i << "] = " << pVector[i] << " * " << sVector[i] << " = " << (pVector[i] * sVector[i]) << std::endl;
         //TBD - for debugging NGTDM matrix
 
-        for (unsigned int j = 0; j < m_bins; ++j)
+        for (unsigned int j = 0; j < this->m_Bins; ++j)
         {
           double iMinusj = 1.0*i - 1.0*j;
           contrastA += pVector[i] * pVector[j] * iMinusj*iMinusj;
@@ -224,66 +224,6 @@ public:
     }
   };
 
-  /**
-  \brief return the Coarsness
-  **/
-  double GetCoarsness()
-  {
-    if (!this->m_algorithmDone)
-    {
-      Update();
-    }
-    return this->m_features["Coarsness"];
-  }
-
-  /**
-  \brief return the Contrast
-  **/
-  double GetContrast()
-  {
-    if (!this->m_algorithmDone)
-    {
-      Update();
-    }
-    return this->m_features["Contrast"];
-  }
-
-  /**
-  \brief return the Busyness
-  **/
-  double GetBusyness()
-  {
-    if (!this->m_algorithmDone)
-    {
-      Update();
-    }
-    return this->m_features["Busyness"];
-  }
-
-  /**
-  \brief return the Complexity
-  **/
-  double GetComplexity()
-  {
-    if (!this->m_algorithmDone)
-    {
-      Update();
-    }
-    return this->m_features["Complexity"];
-  }
-
-  /**
-  \brief return the Strength
-  **/
-  double GetStrength()
-  {
-    if (!this->m_algorithmDone)
-    {
-      Update();
-    }
-    return this->m_features["Strength"];
-  }
-
 private:
 
   /**
@@ -301,8 +241,8 @@ private:
       //std::cerr << "Couldn't find index for intensity value '" << intensity << "' in histogram for NGTDM.\n";
     }
     {
-      double index = temp_idx[0]; // for uniform histogram, use "std::floor((intensity - m_minimum) / m_bins)"
-      return std::max<double>(0, std::min<double>(index, m_bins - 1));
+      double index = temp_idx[0]; // for uniform histogram, use "std::floor((intensity - this->m_minimum) / this->m_Bins)"
+      return std::max<double>(0, std::min<double>(index, this->m_Bins - 1));
     }
   }
 
