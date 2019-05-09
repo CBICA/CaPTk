@@ -36,6 +36,7 @@
 #include "PowerSpectrum.h"
 #include "LBPMeasures.h"
 #include "GLSZMFeatures.h"
+#include "GLCMFeatures.h"
 //#include "FractalBoxCount_template.h"
 
 //TBD
@@ -257,7 +258,7 @@ void FeatureExtraction< TImage >::CalculateMorphologic(const typename TImage::Po
 
 template< class TImage >
 void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer itkImage,
-  const typename TImage::Pointer maskImage, OffsetVector* offset, std::map<std::string, double>& featurevec)
+  const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
   //neighbouring grey level dependece based features (IBSI 3.11)
   std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM" << std::endl;
@@ -306,7 +307,7 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
 
 template< class TImage >
 void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer itkImage,
-  const typename TImage::Pointer maskImage, OffsetVector* offset, std::map<std::string, double>& featurevec)
+  const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
   std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
 
@@ -399,7 +400,7 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   std::cout << "\n Strength = " << Strength << std::endl;
   */
 
-  //typename MatrixGenerator::OffsetVector::Pointer newOffset = MatrixGenerator::OffsetVector::New();
+  //typename MatrixGenerator::OffsetVectorPointer newOffset = MatrixGenerator::OffsetVector::New();
   //auto oldOffsets = matrixFilter->GetOffsets();
   //auto oldOffsetsIterator = oldOffsets->Begin();
   //while (oldOffsetsIterator != oldOffsets->End())
@@ -476,7 +477,7 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
 
   //typename FilterType::Pointer filter = FilterType::New();
 
-  //typename FilterType::OffsetVector::Pointer newOffset = FilterType::OffsetVector::New();
+  //typename FilterType::OffsetVectorPointer newOffset = FilterType::OffsetVector::New();
   //auto oldOffsets = filter->GetOffsets();
   //auto oldOffsetsIterator = oldOffsets->Begin();
   //while (oldOffsetsIterator != oldOffsets->End())
@@ -563,14 +564,12 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
 
 
 template< class TImage >
-void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer itkImage, const typename TImage::Pointer maskImage, OffsetVector* offset, std::map<std::string, double>& featurevec)
+void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer itkImage, const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
   GLSZMFeatures< TImage > glszmCalculator;
   glszmCalculator.SetInputImage(itkImage);
   glszmCalculator.SetInputMask(maskImage);
   glszmCalculator.SetNumBins(m_Bins);
-  glszmCalculator.SetRadius(m_Radius);
-  glszmCalculator.SetRadius(m_Radius_float);
   glszmCalculator.SetMaxSize(m_Range);
   glszmCalculator.SetMinimum(m_minimumToConsider);
   glszmCalculator.SetMaximum(m_maximumToConsider);
@@ -983,7 +982,7 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
 
 
 template< class TImage >
-void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer image, const typename TImage::Pointer mask, OffsetVector* offset, std::map<std::string, double>& featurevec, bool latticePatch)
+void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer image, const typename TImage::Pointer mask, OffsetVectorPointer offset, std::map<std::string, double>& featurevec, bool latticePatch)
 {
   using HistogramFrequencyContainerType = itk::Statistics::DenseFrequencyContainer2;
 
@@ -1437,126 +1436,26 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
 
 
 template< class TImage >
-void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer image, const typename TImage::Pointer mask, OffsetVector* offset, std::map<std::string, double>& featurevec, bool latticePatch)
+void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer image, const typename TImage::Pointer mask, OffsetVectorPointer offset, std::map<std::string, double>& featurevec, bool latticePatch)
 {
-  using Image2CoOccuranceType = itk::Statistics::ScalarImageToCooccurrenceMatrixFilter < TImage >;
-  using HistogramType = typename Image2CoOccuranceType::HistogramType;
-  using Hist2FeaturesType = itk::Statistics::HistogramToTextureFeaturesFilter< HistogramType >;
-
-  double contrast = 0, correl = 0, ener = 0, entro = 0, homo = 0, clustershade = 0, clusterprominance = 0, autocorr = 0;
-
-  auto image_wrap = image;
-  auto mask_wrap = mask;
-
-  if (m_offsetSelect == "Average")
+  GLCMFeatures< TImage > glcmCalculator;
+  glcmCalculator.SetInputImage(image);
+  glcmCalculator.SetInputMask(mask);
+  glcmCalculator.SetMinimum(m_minimumToConsider);
+  glcmCalculator.SetMaximum(m_maximumToConsider);
+  glcmCalculator.SetOffsets(offset);
+  glcmCalculator.SetOffsetSelectorType(m_offsetSelect);
+  if (m_debug)
   {
-    for (size_t i = 0; i < offset->size(); i++)
-    {
-      typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
-      glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-      glcmGenerator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-      glcmGenerator->SetMaskImage(mask_wrap);
-      glcmGenerator->SetInput(image_wrap);
-      auto featureCalc = Hist2FeaturesType::New();
-
-      glcmGenerator->SetOffset(offset->at(i));
-      glcmGenerator->Update();
-      featureCalc->SetInput(glcmGenerator->GetOutput());
-      featureCalc->Update();
-
-      //TBD - to debug and compare vs GLRLM
-      //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLCM - GLCM Matrix: Offset: " << offset->at(i) << "\n";
-
-      //std::cout << "\tindex\t|\t|\tfrenquency" << std::endl;
-      //auto temp = glcmGenerator->GetOutput();
-      //for (auto iter = temp->Begin(); iter != temp->End(); ++iter)
-      //{
-      //  std::cout << "\tGLCM Measurement vectors = " << iter.GetMeasurementVector()
-      //    << "; Frequency = " << iter.GetFrequency() << std::endl;
-      //}
-
-      //TBD - to debug and compare vs GLRLM
-
-      contrast += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Inertia));
-      correl += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Correlation));
-      ener += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Energy));
-      homo += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::InverseDifferenceMoment));
-      entro += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Entropy));
-      clustershade += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::ClusterShade));
-      clusterprominance += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::ClusterProminence));
-      autocorr += static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::HaralickCorrelation));
-    }
-
-    contrast = contrast / offset->size();
-    correl = correl / offset->size();
-    ener = ener / offset->size();
-    homo = homo / offset->size();
-    entro = entro / offset->size();
-    clusterprominance = clusterprominance / offset->size();
-    clustershade = clustershade / offset->size();
-    autocorr = autocorr / offset->size();
-
-    featurevec["Energy"] = ener;
-    featurevec["Entropy"] = entro;
-    featurevec["Correlation"] = correl;
-    featurevec["Homogeneity"] = homo; // also called "inverse difference moment"
-    featurevec["Contrast"] = contrast; // also called "inertia"
-    featurevec["ClusterShade"] = clustershade;
-    featurevec["ClusterProminence"] = clusterprominance;
-    featurevec["AutoCorrelation"] = autocorr; // called "haralick"
+    glcmCalculator.EnableDebugMode();
   }
-  else if ((m_offsetSelect == "ITKDefault") || (m_offsetSelect == "Combined"))
+  glcmCalculator.Update();
+  auto temp = glcmCalculator.GetOutput();
+  for (auto const& f : temp)
   {
-    typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
-    glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-    glcmGenerator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-    glcmGenerator->SetMaskImage(mask_wrap);
-    glcmGenerator->SetInput(image_wrap);
-    auto featureCalc = Hist2FeaturesType::New();
-
-    glcmGenerator->SetOffsets(offset);
-    glcmGenerator->Update();
-    featureCalc->SetInput(glcmGenerator->GetOutput());
-    featureCalc->Update();
-
-    featurevec["Energy"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Energy));
-    featurevec["Entropy"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Entropy));
-    featurevec["Correlation"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Correlation));
-    featurevec["Homogeneity"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::InverseDifferenceMoment)); // also called "difference moment"
-    featurevec["Contrast"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Inertia)); // also called "inertia"
-    featurevec["ClusterShade"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::ClusterShade));
-    featurevec["ClusterProminence"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::ClusterProminence));
-    featurevec["AutoCorrelation"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::HaralickCorrelation)); // called "haralick"
+    featurevec[f.first] = f.second;
   }
-  else
-  {
-    typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
-    glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-    glcmGenerator->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-    glcmGenerator->SetMaskImage(mask_wrap);
-    glcmGenerator->SetInput(image_wrap);
-    auto featureCalc = Hist2FeaturesType::New();
 
-    for (size_t i = 0; i < offset->size(); i++)
-    {
-      glcmGenerator->SetOffset(offset->at(i));
-      glcmGenerator->Update();
-      featureCalc->SetInput(glcmGenerator->GetOutput());
-      featureCalc->Update();
-
-      auto tempStr = "_Offset_" + std::to_string(i);
-      featurevec[std::string("Energy") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Energy);
-      featurevec[std::string("Entropy") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Entropy);
-      featurevec[std::string("Correlation") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Correlation);
-      featurevec[std::string("Homogeneity") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::InverseDifferenceMoment); // also called "difference moment"
-      featurevec[std::string("Contrast") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Inertia); // also called "inertia"
-      featurevec[std::string("ClusterShade") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::ClusterShade);
-      featurevec[std::string("ClusterProminence") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::ClusterProminence);
-      featurevec[std::string("AutoCorrelation") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::HaralickCorrelation); // called "haralick"
-    }
-  }
-  // TODO: Sung to add his GLCM extraction code here
-  //featurevec[std::string("Correlation]) + "_Sung"] = 0;
 }
 
 

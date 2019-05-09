@@ -147,7 +147,8 @@ public:
   using TConstIteratorType = itk::ImageRegionConstIterator< TImageType >;
   using OffsetType = typename TImageType::OffsetType;
   //using Offsets = OffsetType; // TBD: replace 'Offsets' data type with 'OffsetType'
-  using OffsetVector = itk::VectorContainer< unsigned char, OffsetType >;
+  using OffsetVector = itk::VectorContainer< unsigned char, typename TImageType::OffsetType >;
+  using OffsetVectorPointer = typename OffsetVector::Pointer;
 
   //Constructor
   FeatureExtraction()
@@ -371,9 +372,9 @@ private:
   void SetFeatureParam(std::string featureFamily);
 
   /**
-  \brief Calculates the OffsetVector::Pointer based on the provided radius in mm and directions
+  \brief Calculates the OffsetVectorPointer based on the provided radius in mm and directions
   */
-  typename OffsetVector::Pointer GetOffsetVector(float inputRadius, int inputDirections)
+  typename OffsetVectorPointer GetOffsetVector(float inputRadius, int inputDirections)
   {
     auto spacing = m_Mask->GetSpacing();
     itk::Size< TImageType::ImageDimension > radius; // radius value along individual axes in image coordinates
@@ -402,9 +403,9 @@ private:
   }
 
   /**
-  \brief Calculates the OffsetVector::Pointer based on the provided radius and directions
+  \brief Calculates the OffsetVectorPointer based on the provided radius and directions
   */
-  typename OffsetVector::Pointer GetOffsetVector(int inputRadius, int inputDirections)
+  typename OffsetVectorPointer GetOffsetVector(int inputRadius, int inputDirections)
   {
     if (m_offsetString.empty())
     {
@@ -426,7 +427,7 @@ private:
         directionsToCompute = inputDirections;
       }
 
-      typename OffsetVector::Pointer offsets = OffsetVector::New();
+      OffsetVectorPointer offsets = OffsetVector::New();
       auto centerIndex = neighborhood.GetCenterNeighborhoodIndex();
 
       for (int d = directionsToCompute - 1; d >= 0; d--)
@@ -462,7 +463,7 @@ private:
       {
         radius.Fill(inputRadius);
       }
-      typename OffsetVector::Pointer offsets = OffsetVector::New();
+      typename OffsetVectorPointer offsets = OffsetVector::New();
       for (size_t i = 0; i < m_offsetString.size(); i++)
       {
         auto tempCurrentOffset = cbica::stringSplit(m_offsetString[i], "x");
@@ -517,7 +518,7 @@ private:
   \param featurevec Map of Individual feature name and their value
   \param latticePatch Whether the computation is happening on a lattice patch or not
   */
-  void CalculateGLCM(const typename TImageType::Pointer image, const typename TImageType::Pointer mask, OffsetVector *offset, std::map<std::string, double> &featurevec, bool latticePatch = false);
+  void CalculateGLCM(const typename TImageType::Pointer image, const typename TImageType::Pointer mask, OffsetVectorPointer offset, std::map<std::string, double> &featurevec, bool latticePatch = false);
 
   /**
   \brief Calculate RunLength Features
@@ -529,7 +530,7 @@ private:
   \param feature A vector holding features of each offset direction
   \param featurevec - map of Individual feature name and their value
   */
-  void CalculateGLRLM(const typename TImageType::Pointer image, typename TImageType::Pointer mask, OffsetVector *offset, std::map<std::string, double> &featurevec, bool latticePatch = false);
+  void CalculateGLRLM(const typename TImageType::Pointer image, typename TImageType::Pointer mask, OffsetVectorPointer offset, std::map<std::string, double> &featurevec, bool latticePatch = false);
 
   /**
   \brief Calculate CalculateMorphologic
@@ -572,7 +573,7 @@ private:
   \param maskImage The mask specifying the roi
   \param featurevec - map of Individual feature name and their value
   */
-  void CalculateGLSZM(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVector *offset, std::map<std::string, double>& featurevec);
+  void CalculateGLSZM(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec);
 
 
   /**
@@ -591,7 +592,7 @@ private:
   \param maskImage The mask specifying the roi
   \param featurevec - map of Individual feature name and their value
   */
-  void CalculateNGLDM(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVector* offset, std::map< std::string, double >& featurevec);
+  void CalculateNGLDM(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVectorPointer offset, std::map< std::string, double >& featurevec);
 
   /**
   \brief Calculate NGTDM features
@@ -600,7 +601,7 @@ private:
   \param maskImage The mask specifying the roi
   \param featurevec - map of Individual feature name and their value
   */
-  void CalculateNGTDM(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVector *offset, std::map< std::string, double >& featurevec);
+  void CalculateNGTDM(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVectorPointer offset, std::map< std::string, double >& featurevec);
 
   /**
   \brief Calculate Fractal Dimension features (box count and minkovski)
