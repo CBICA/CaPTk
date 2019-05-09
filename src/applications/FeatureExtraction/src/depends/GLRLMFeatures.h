@@ -69,36 +69,7 @@ public:
       matrix_generator->SetInsidePixelValue(1);
       matrix_generator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
 
-      if (latticePatch)
-      {
-        auto maxStep = m_latticeSizeImage[0];
-        for (size_t d = 1; d < TImageType::ImageDimension; d++)
-        {
-          if (maxStep < m_latticeSizeImage[d])
-          {
-            maxStep = m_latticeSizeImage[d];
-          }
-        }
-        matrix_generator->SetDistanceValueMinMax(0, m_maxDistance);
-      }
-      else
-      {
-        // this defaults to the full dynamic range of double according to ITK's documentation
-        //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [this->m_minimum, this->m_maximum] = [" << this->m_minimum << ", " << this->m_maximum << "]" << std::endl;
-
-        //matrix_generator->SetDistanceValueMinMax(this->m_minimum, this->m_maximum); // TBD: TOCHECK - how is this affecting the computation?
-
-        //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Possible Values for SetDistanceValueMinMax - [0, m_Range] = [" << 0 << ", " << m_Range << "]" << std::endl;
-
-        //matrix_generator->SetDistanceValueMinMax(0, m_Range * m_Range);
-        //std::cout << "\n[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - SetDistanceValueMinMax(0, " << m_Range << ")" << std::endl;
-
-
-        //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TBD: TOCHECK - how is this affecting the computation?
-        //matrix_generator->SetNumberOfBinsPerAxis(this->m_Bins); // TOCHECK - needs to be statistically significant
-        //matrix_generator->SetDistanceValueMinMax(0, m_Range);
-        matrix_generator->SetDistanceValueMinMax(0, m_maxDistance);
-      }
+      matrix_generator->SetDistanceValueMinMax(0, m_maxDistance);
 
       wrapper_generator->SetNumberOfBinsPerAxis(this->m_Bins);
       //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - this->m_Bins = " << this->m_Bins << std::endl;
@@ -134,7 +105,7 @@ public:
 
       //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Set offsetNum = " << offsetNum << std::endl;
 
-      auto size = image->GetBufferedRegion().GetSize();
+      auto size = this->m_inputImage->GetBufferedRegion().GetSize();
       double size_total = size[0];
       for (size_t d = 1; d < TImageType::ImageDimension; d++)
       {
@@ -152,7 +123,7 @@ public:
 
 
 
-      if ((m_offsetSelect == "Average") || (m_offsetSelect == "Individual"))
+      if ((m_offsetSelector == "Average") || (m_offsetSelector == "Individual"))
       {
         double sre = 0, lre = 0, gln = 0, glnn = 0, rln = 0, rlnn = 0, rp = 0, lglre = 0, hglre = 0, srlgle = 0, srhgle = 0, lrlgle = 0, lrhgle = 0,
           runs = 0, glv = 0, rlv = 0, re = 0;
@@ -260,7 +231,7 @@ public:
             lrlgle += runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
             lrhgle += runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
             runs += runLengthFeaturesCalculator->GetTotalNumberOfRuns();
-            rp += static_cast<double>(runLengthFeaturesCalculator->GetTotalNumberOfRuns()) / static_cast<double>(m_currentNonZeroImageValues.size());
+            rp += static_cast<double>(runLengthFeaturesCalculator->GetTotalNumberOfRuns()) / static_cast<double>(this->m_nonZeroIndeces.size());
             //glnn += runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
             //rlnn += runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
             //glv += runLengthFeaturesCalculator->GetGreyLevelVariance();
@@ -280,7 +251,7 @@ public:
             this->m_features["LongRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
             this->m_features["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
             this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
-            this->m_features["RunPercentage_Offset_" + std::to_string(offsetNum)] = this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(m_currentNonZeroImageValues.size());
+            this->m_features["RunPercentage_Offset_" + std::to_string(offsetNum)] = this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(this->m_nonZeroIndeces.size());
             //this->m_features["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
             //this->m_features["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
             //this->m_features["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelVariance();
