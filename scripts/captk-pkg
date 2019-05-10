@@ -114,7 +114,7 @@ RUN_FIXES () {
   cd ${SRC_DIR}
   cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
   cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
-  cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
+  #cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
 
   # Move into install
   cd ./bin/install/appdir/usr
@@ -128,7 +128,11 @@ RUN_FIXES () {
   # but for SOME reason linuxdeployqt doesn't pull in. So we need to manually add these nss libraries in for the webengine
   # to work.
   echo "[:] Adding NSS libs..."
-  cp /usr/lib/x86_64-linux-gnu/nss/* ./lib
+  if [ -d "/usr/lib/x86_64-linux-gnu/nss" ]; then
+    cp /usr/lib/x86_64-linux-gnu/nss/* ./lib
+  else
+    cp -r /usr/lib64/nss/* ./lib
+  fi
 
   # Fix 3: LIBRA was made on windows and none of the stuff is marked as executable by default
   # All of these need to be exec or else it flat out doesnt work.
