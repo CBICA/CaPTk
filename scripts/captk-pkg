@@ -114,7 +114,7 @@ RUN_FIXES () {
   cd ${SRC_DIR}
   cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
   cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
-  cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
+  #cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
 
   # Move into install
   cd ./bin/install/appdir/usr
