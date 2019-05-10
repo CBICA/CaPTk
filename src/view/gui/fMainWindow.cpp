@@ -7120,11 +7120,11 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     ShowErrorMessage("'modelConfig.txt' was not found in the directory, please check");
     return;
   }
-  if (!cbica::isFile(modelDirectory + "/model.ckpt"))
-  {
-    ShowErrorMessage("'model.ckpt' was not found in the directory, please check");
-    return;
-  }
+  //if (!cbica::isFile(modelDirectory + "/model.ckpt"))
+  //{
+  //  ShowErrorMessage("'model.ckpt' was not found in the directory, please check");
+  //  return;
+  //}
 
   auto modelConfigFile = modelDirectory + "/modelConfig.txt",
     modelCkptFile = modelDirectory + "/model.ckpt";
