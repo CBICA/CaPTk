@@ -34,9 +34,9 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
 | Windows        | https://www.nitrc.org/frs/downloadlink.php/11203 |
-| Linux (1.6.2)  | https://www.nitrc.org/frs/downloadlink.php/11131 |
+| Linux          | https://www.nitrc.org/frs/downloadlink.php/11226 |
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11212 |
-| Archive        | https://www.nitrc.org/frs/?group_id=1059 |
+| Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
 
 ## Contact
