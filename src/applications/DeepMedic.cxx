@@ -314,11 +314,11 @@ void algorithmRunner()
     std::cerr << "'modelConfig.txt' was not found in the directory, please check.\n";
     return;
   }
-  if (!cbica::isFile(modelDirName + "/model.ckpt"))
-  {
-    std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
-    return;
-  }
+  //if (!cbica::isFile(modelDirName + "/model.ckpt"))
+  //{
+  //  std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
+  //  return;
+  //}
 
 #ifdef _WIN32
   SetCurrentDirectory(cbica::getFilenamePath(dmExe).c_str());
