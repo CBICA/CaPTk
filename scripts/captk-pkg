@@ -131,7 +131,7 @@ RUN_FIXES () {
   if [ -d "/usr/lib/x86_64-linux-gnu/nss" ]; then
     cp /usr/lib/x86_64-linux-gnu/nss/* ./lib
   else
-    cp /usr/lib64/nss/* ./lib
+    cp -r /usr/lib64/nss/* ./lib
   fi
 
   # Fix 3: LIBRA was made on windows and none of the stuff is marked as executable by default
