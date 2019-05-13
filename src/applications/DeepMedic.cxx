@@ -122,11 +122,19 @@ void algorithmRunner()
     std::cerr << "'modelConfig.txt' was not found in the directory, please check.\n";
     return;
   }
-  //if (!cbica::isFile(modelDirName + "/model.ckpt"))
-  //{
-  //  std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
-  //  return;
-  //}
+  if (!cbica::isFile(modelDirName + "/model.ckpt.index"))
+  {
+    std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
+    return;
+  }
+  auto filesInDir = cbica::filesInDirectory(modelDirName);
+  for (size_t i = 0; i < filesInDir.size(); i++)
+  {
+    if (filesInDir[i].find("model.ckpt.data") != std::string::npos) // find an appopriate checkpoint
+    {
+      break;
+    }
+  }
 
   auto t1cImg = cbica::ReadImage< TImageType >(inputT1ce);
   auto t1Img = cbica::ReadImage< TImageType >(inputT1);
