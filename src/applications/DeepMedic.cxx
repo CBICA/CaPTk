@@ -308,6 +308,7 @@ void algorithmRunner()
   cbica::WriteImage< TImageType >(flImg, file_flNorm);
 
   auto dmExe = getApplicationPath("deepMedicRun");
+  //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicRun.exe";
 
   if (!cbica::isFile(modelDirName + "/modelConfig.txt"))
   {
@@ -344,7 +345,7 @@ void algorithmRunner()
   if (inferenceType = SkullStripping)
   {
     std::cout << "=== Performing hole-filling operation for skull stripping.\n";
-    auto outputImageFile = outputDirectory + "/segm.nii.gz";
+    auto outputImageFile = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
     if (cbica::exists(outputImageFile))
     {
       auto outputImageWithHoles = cbica::ReadImage< TImageType >(outputImageFile);
