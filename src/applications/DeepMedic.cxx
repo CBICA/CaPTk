@@ -117,6 +117,17 @@ typename TImageType::Pointer HoleFillOnThreeAxes(typename TImageType::Pointer in
 template< class TImageType >
 void algorithmRunner()
 {
+  if (!cbica::isFile(modelDirName + "/modelConfig.txt"))
+  {
+    std::cerr << "'modelConfig.txt' was not found in the directory, please check.\n";
+    return;
+  }
+  //if (!cbica::isFile(modelDirName + "/model.ckpt"))
+  //{
+  //  std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
+  //  return;
+  //}
+
   auto t1cImg = cbica::ReadImage< TImageType >(inputT1ce);
   auto t1Img = cbica::ReadImage< TImageType >(inputT1);
   auto t2Img = cbica::ReadImage< TImageType >(inputT2);
@@ -309,17 +320,6 @@ void algorithmRunner()
 
   auto dmExe = getApplicationPath("deepMedicRun");
   //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicRun.exe";
-
-  if (!cbica::isFile(modelDirName + "/modelConfig.txt"))
-  {
-    std::cerr << "'modelConfig.txt' was not found in the directory, please check.\n";
-    return;
-  }
-  //if (!cbica::isFile(modelDirName + "/model.ckpt"))
-  //{
-  //  std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
-  //  return;
-  //}
 
 #ifdef _WIN32
   SetCurrentDirectory(cbica::getFilenamePath(dmExe).c_str());
