@@ -314,11 +314,11 @@ void algorithmRunner()
     std::cerr << "'modelConfig.txt' was not found in the directory, please check.\n";
     return;
   }
-  if (!cbica::isFile(modelDirName + "/model.ckpt"))
-  {
-    std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
-    return;
-  }
+  //if (!cbica::isFile(modelDirName + "/model.ckpt"))
+  //{
+  //  std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
+  //  return;
+  //}
 
 #ifdef _WIN32
   SetCurrentDirectory(cbica::getFilenamePath(dmExe).c_str());
@@ -380,7 +380,9 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("cl", "cutOffLower", cbica::Parameter::FLOAT, "0-10", "The Lower Cut-off (multiple of stdDev) to remove", "This is needed for normalization only", "Default: 3");
   parser.addOptionalParameter("cu", "cutOffUpper", cbica::Parameter::FLOAT, "0-10", "The Upper Cut-off (multiple of stdDev) to remove", "This is needed for normalization only", "Default: 3");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  parser.exampleUsage("DeepMedic -t1 <input dir> -t1c <input dir> -t2 <input dir> -fl <input dir> -o <output dir>");
+  parser.addApplicationDescription("This is a Deep Learning based inference engine based on DeepMedic (see documentation for details)");
+  parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -m c:/CaPTk_install/data/deepMedic/saved_models/skullStripping", "This does a skull stripping of the input structural data");
+  parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -m c:/CaPTk_install/data/deepMedic/saved_models/brainTumorSegmentation", "This does a tumor segmentation of the input structural data");
 
   // parameters to get from the command line
   cbica::Logging logger;
