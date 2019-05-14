@@ -180,6 +180,8 @@ public:
     m_LBP->setEnabled(false);
     m_NGTDM = new QCheckBox("NGTDM (Tone Difference)");
     m_NGTDM->setToolTip(QString("Calculates Neighborhood Gray-Tone Difference Matrix."));
+    m_NGLDM = new QCheckBox("NGLDM (Level Dependence)");
+    m_NGLDM->setToolTip(QString("Calculates Neighborhood Gray-Level Dependence Matrix."));
     m_GLSZM = new QCheckBox("GLSZM (Size Zone)");
     m_GLSZM->setToolTip(QString("Calculates Gray-Level Size Zone Matrix."));
     m_Lattice = new QCheckBox("Lattice Computation");
