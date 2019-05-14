@@ -186,17 +186,10 @@ public:
 	//! Default destructor
 	~NGLDMFeatures() { };
 
-	/**
-	\brief Set the range/Chebyshev Distance (how far from the center index of interest do you want to calculate neighborhood level dependence); defaults to 1
-
-	\IBSI calls this value Chebyshev Distance Delta.
-
-	\param rangeValue integer value for the value you want for range
-	**/
-	void SetRange(int rangeValue)
-	{
-		m_range = rangeValue;
-	}
+  void SetDistanceMax(const double maxDistance)
+  {
+    m_maxDistance = maxDistance;
+  }
 
 	/**
 	\brief Set the courseness/alpha parameter (How much difference between the grey levels of the neighbouring voxels do you consider to be dependent); defaults to 0 as typical choice for couraseness
@@ -580,10 +573,6 @@ private:
 
 	}
 
-	//variables
-	unsigned int m_range = 1;
-	typename TImageType::SizeType m_radius;
-
 	//double m_minimumRange;
 	//double m_maximumRange;
 	//double m_Stepsize;
@@ -596,6 +585,11 @@ private:
 	//unsigned long m_NumberOfNeighbourhoods;
 	//unsigned long m_NumberOfCompleteNeighbourhoods;
 
-	//private:
+	private:
+    double m_maxDistance = -1;
+
+    //variables
+    unsigned int m_range = 1;
+    typename TImageType::SizeType m_radius;
 
 };
