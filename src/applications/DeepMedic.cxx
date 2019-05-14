@@ -141,6 +141,7 @@ void algorithmRunner()
   auto t2Img = cbica::ReadImage< TImageType >(inputT2);
   auto flImg = cbica::ReadImage< TImageType >(inputFlair);
   auto maskImage = cbica::CreateImage< TImageType >(t1cImg);
+
   if (maskProvided)
   {
     maskImage = cbica::ReadImage< TImageType >(inputMaskName);
@@ -369,21 +370,12 @@ void algorithmRunner()
     std::cout << "=== Done.\n";
   }
 
-  auto currentMaskImage = cbica::ReadImage< TImageType >(outputImageFile);
-
   // registration of segmentation back to patient space
   {
-    auto tempFile_input = outputDirectory + "/maskToT1gd_input.nii.gz";
-    auto tempFile = outputDirectory + "/maskToT1gd.nii.gz";
-    auto greedyCommand = greedyExe +
-      " -i " + outputImageFile +
-      " -f " + inputT1ce +
-      " -t " + outputDirectory + "/tempMatrix.mat" +
-      " -o " + outputImageFile + " -reg -trf -a -m MI -n 100x50x5"
-      ;
-
-    std::cout << "== Starting registration of output segmentation back to patient space using Greedy.\n";
-    std::system(greedyCommand.c_str());
+    std::cout << "== Starting registration of output segmentation back to patient space.\n";
+    auto resampledMask = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(outputImageFile), 
+      t1cImg->GetSpacing(), 
+      t1cImage->GetLargestRegion().GetSize(), "nearest");
     std::cout << "== Done.\n";
   }
 
