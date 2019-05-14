@@ -373,9 +373,10 @@ void algorithmRunner()
   // registration of segmentation back to patient space
   {
     std::cout << "== Starting registration of output segmentation back to patient space.\n";
+    auto t1cImg_original = cbica::ReadImage< TImageType >(inputT1ce);
     auto resampledMask = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(outputImageFile), 
-      t1cImg->GetSpacing(), 
-      t1cImage->GetLargestRegion().GetSize(), "nearest");
+      t1cImg_original->GetSpacing(),
+      t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
     std::cout << "== Done.\n";
   }
 
