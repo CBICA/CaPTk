@@ -15,6 +15,7 @@ fDeepMedicDialog::fDeepMedicDialog()
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
   connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputDirectory()));
+  connect(modelImageButton, SIGNAL(clicked()), this, SLOT(SelectModelDirectory()));
   connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
   connect(skullStrippingButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
   connect(customButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
@@ -59,6 +60,7 @@ void fDeepMedicDialog::SetDefaultModel(int modelType)
     brainTumorSegmentationButton->setChecked(true);
     skullStrippingButton->setChecked(false);
     customButton->setChecked(false);
+    modelImageButton->setChecked(false);
     auto currentModelDir = m_baseModelDir  + "/brainTumorSegmentation/";
     modelDirName->setReadOnly(true);
     modelDirName->setText(currentModelDir.c_str());
@@ -68,6 +70,7 @@ void fDeepMedicDialog::SetDefaultModel(int modelType)
     brainTumorSegmentationButton->setChecked(false);
     skullStrippingButton->setChecked(true);
     customButton->setChecked(false);
+    modelImageButton->setChecked(false);
     auto currentModelDir = m_baseModelDir + "/skullStripping/";
     modelDirName->setReadOnly(true);
     modelDirName->setText(currentModelDir.c_str());
@@ -77,6 +80,7 @@ void fDeepMedicDialog::SetDefaultModel(int modelType)
     brainTumorSegmentationButton->setChecked(false);
     skullStrippingButton->setChecked(false);
     customButton->setChecked(true);
+    modelImageButton->setChecked(true);
     auto currentModelDir = m_baseModelDir;
     modelDirName->setReadOnly(false);
     modelDirName->setText(currentModelDir.c_str());

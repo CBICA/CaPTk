@@ -7120,11 +7120,11 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     ShowErrorMessage("'modelConfig.txt' was not found in the directory, please check");
     return;
   }
-  if (!cbica::isFile(modelDirectory + "/model.ckpt"))
-  {
-    ShowErrorMessage("'model.ckpt' was not found in the directory, please check");
-    return;
-  }
+  //if (!cbica::isFile(modelDirectory + "/model.ckpt"))
+  //{
+  //  ShowErrorMessage("'model.ckpt' was not found in the directory, please check");
+  //  return;
+  //}
 
   auto modelConfigFile = modelDirectory + "/modelConfig.txt",
     modelCkptFile = modelDirectory + "/model.ckpt";
@@ -7180,7 +7180,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
   }
 
   QStringList args;
-  args << "-md" << modelDirectory.c_str() << "-t" << std::to_string(type).c_str()
+  args << "-md" << modelDirectory.c_str()
     << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
 
   if (!file_mask.empty())
@@ -7204,7 +7204,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     return;
   }
 
-  auto output = outputDirectory + "/segm.nii.gz";
+  auto output = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
   if (cbica::exists(output))
   {
     readMaskFile(output);

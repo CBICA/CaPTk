@@ -69,7 +69,10 @@ public:
       matrix_generator->SetInsidePixelValue(1);
       matrix_generator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
 
-      matrix_generator->SetDistanceValueMinMax(0, m_maxDistance);
+      if (m_maxDistance != -1) // this will happen for lattice
+      {
+        matrix_generator->SetDistanceValueMinMax(0, m_maxDistance);
+      }
 
       wrapper_generator->SetNumberOfBinsPerAxis(this->m_Bins);
       //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - this->m_Bins = " << this->m_Bins << std::endl;
@@ -139,6 +142,11 @@ public:
           //std::cout << "\n\n";
           //std::cout << "[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - Average OR Individual  - GLRLM Matrix: Offset: " << offsetIt.Value() << "\n";
           //TBD
+
+          if (m_maxDistance == -1) // this will happen for non-lattice
+          {
+            matrix_generator->SetDistanceValueMinMax(0, GetDistanceFromOffset(offsetIt.Value()));
+          }
 
           matrix_generator->SetOffset(offsetIt.Value());
           matrix_generator->Update();
@@ -369,6 +377,20 @@ public:
       }
       else if ((m_offsetSelector == "ITKDefault") || (m_offsetSelector == "Combined"))
       {
+        if (m_maxDistance == -1) // this will happen for non-lattice
+        {
+          // find the maximum distance for all offsets
+          for (auto offsetIt = this->m_offsets->Begin(); offsetIt != this->m_offsets->End(); offsetIt++, offsetNum++)
+          {
+            auto currentDistance = GetDistanceFromOffset(offsetIt.Value());
+            if (m_maxDistance < currentDistance)
+            {
+              m_maxDistance = currentDistance;
+            }
+          }
+          matrix_generator->SetDistanceValueMinMax(0, m_maxDistance);
+        }
+
         matrix_generator->SetOffsets(this->m_offsets);
         matrix_generator->Update();
 
@@ -475,6 +497,20 @@ public:
   }
 
 private:
+
+  //! Compute the distance of the current offset from the center in world coordinate system
+  double GetDistanceFromOffset(typename TImageType::OffsetType currentOffset)
+  {
+    auto spacing = this->m_inputImage->GetSpacing();
+    double temp, distance = 0;
+    for (size_t d = 0; d < TImageType::ImageDimension; d++)
+    {
+      temp = std::abs(currentOffset[d]) * spacing[d]; // abs is needed because offset can be negative compared to the center
+      distance += temp * temp;
+    }
+    return std::sqrt(distance);
+  }
+
   std::string m_offsetSelector; //! type of offset selection
-  double m_maxDistance;
+  double m_maxDistance = -1;
 };
