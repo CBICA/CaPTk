@@ -50,6 +50,34 @@
 #endif
 
 template< class TImage >
+float FeatureExtraction< TImage >::GetMaximumDistanceWithinTheDefinedROI(const typename TImage::Pointer image, const typename TImage::Pointer mask)
+{
+  // ref: https://github.com/MachadoLF/TextureAnalysisExtension/blob/603aac5c58d6e95e510300c7c67a6b87c143c5d1/TextureProcessing/RunLengthFeat/RunLengthFeat.cxx#L73
+  using BoundingBoxType = itk::BoundingBox<unsigned long, TImage::ImageDimension >;
+  auto bbox = BoundingBoxType::New();
+  auto points = BoundingBoxType::PointsContainer::New();
+  itk::Point< float, TImage::ImageDimension > point;
+
+  unsigned int idx = 0;
+
+  itk::ImageRegionIteratorWithIndex< TImage > ItI(image, image->GetLargestPossibleRegion());
+
+  for (ItI.GoToBegin(); !ItI.IsAtEnd(); ++ItI)
+  {
+    if (mask->GetPixel(ItI.GetIndex()) == 1)
+    {
+      image->TransformIndexToPhysicalPoint(ItI.GetIndex(), point);
+      points->InsertElement(idx++, point);
+    }
+  }
+  bbox->SetPoints(points);
+  bbox->ComputeBoundingBox();
+  auto pointMin = bbox->GetMinimum();
+  auto pointMax = bbox->GetMaximum();
+  return pointMin.EuclideanDistanceTo(pointMax);
+}
+
+template< class TImage >
 template< class TVolumeImage >
 void FeatureExtraction< TImage >::CalculateVolumetric(const typename TVolumeImage::Pointer mask, std::map<std::string, double>& featurevec)
 {
@@ -270,14 +298,14 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   ngldmCalculator.SetInputImage(itkImage);
   ngldmCalculator.SetInputMask(maskImage);
   ngldmCalculator.SetNumBins(m_Bins);
-  ngldmCalculator.SetRange(m_Radius); //chebyshev distance delta
+  //ngldmCalculator.SetRange(m_Radius); //chebyshev distance delta
   ngldmCalculator.SetMinimum(m_minimumToConsider);
   ngldmCalculator.SetMaximum(m_maximumToConsider);
-  ngldmCalculator.SetRange(m_Range);
   if (m_debug)
   {
     ngldmCalculator.EnableDebugMode();
   }
+  ngldmCalculator.SetDistanceMax(GetMaximumDistanceWithinTheDefinedROI(itkImage, maskImage));
   ngldmCalculator.Update();
   //std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << ngldmCalculator.GetRange() << std::endl;
 
@@ -1023,29 +1051,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   }
   else // get the maximum possible distance within the defied ROI bounding box
   {
-    // ref: https://github.com/MachadoLF/TextureAnalysisExtension/blob/603aac5c58d6e95e510300c7c67a6b87c143c5d1/TextureProcessing/RunLengthFeat/RunLengthFeat.cxx#L73
-    using BoundingBoxType = itk::BoundingBox<unsigned long, TImage::ImageDimension >;
-    auto bbox = BoundingBoxType::New();
-    auto points = BoundingBoxType::PointsContainer::New();
-    itk::Point< float, TImage::ImageDimension > point;
-
-    unsigned int idx = 0;
-
-    itk::ImageRegionIteratorWithIndex< TImage > ItI(image, image->GetLargestPossibleRegion());
-
-    for (ItI.GoToBegin(); !ItI.IsAtEnd(); ++ItI)
-    {
-      if (mask->GetPixel(ItI.GetIndex()) == 1)
-      {
-        image->TransformIndexToPhysicalPoint(ItI.GetIndex(), point);
-        points->InsertElement(idx++, point);
-      }
-    }
-    bbox->SetPoints(points);
-    bbox->ComputeBoundingBox();
-    auto pointMin = bbox->GetMinimum();
-    auto pointMax = bbox->GetMaximum();
-    glrlmCalculator.SetDistanceMax(pointMin.EuclideanDistanceTo(pointMax));
+    glrlmCalculator.SetDistanceMax(GetMaximumDistanceWithinTheDefinedROI(image, mask));
   }
   glrlmCalculator.Update();
   auto temp = glrlmCalculator.GetOutput();
