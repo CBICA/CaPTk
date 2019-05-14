@@ -146,8 +146,6 @@ void algorithmRunner()
     maskImage = cbica::ReadImage< TImageType >(inputMaskName);
   }
 
-  auto originalSpacing = t1cImage->GetSpacing();
-
   // TBD: this requires cleanup
   if (modelDirName.find("tumor") != std::string::npos)
   {
