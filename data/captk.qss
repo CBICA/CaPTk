@@ -57,6 +57,10 @@ QPushButton::checked
 {
   background-color: rgb(0,140,149);
 }
+QPushButton:disabled 
+{
+  background-color: rgb(200,200,200);
+}
 QRadioButton::disabled
 {
   color: rgb(80, 80, 80);
