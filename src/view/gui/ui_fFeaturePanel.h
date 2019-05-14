@@ -229,6 +229,7 @@ public:
     featureLayout4->addWidget(m_GLRLM);
     featureLayout4->addWidget(m_GLSZM);
     featureLayout4->addWidget(m_NGTDM);
+    featureLayout4->addWidget(m_NGLDM);
     featureLayout4->addWidget(m_LBP);
     featureLayout4->addStretch();
 
