@@ -377,6 +377,10 @@ void algorithmRunner()
     auto resampledMask = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(outputImageFile), 
       t1cImg_original->GetSpacing(),
       t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
+    cbica::WriteImage< TImageType >(
+      resampledMask,
+      outputImageFile
+      );
     std::cout << "== Done.\n";
   }
 
