@@ -146,6 +146,8 @@ void algorithmRunner()
     maskImage = cbica::ReadImage< TImageType >(inputMaskName);
   }
 
+  auto originalSpacing = t1cImage->GetSpacing();
+
   // TBD: this requires cleanup
   if (modelDirName.find("tumor") != std::string::npos)
   {
@@ -349,11 +351,11 @@ void algorithmRunner()
     exit(EXIT_FAILURE);
   }
 
+  auto outputImageFile = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
   // do hole filling for skull stripping
   if (inferenceType = SkullStripping)
   {
     std::cout << "=== Performing hole-filling operation for skull stripping.\n";
-    auto outputImageFile = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
     if (cbica::exists(outputImageFile))
     {
       auto outputImageWithHoles = cbica::ReadImage< TImageType >(outputImageFile);
@@ -367,6 +369,24 @@ void algorithmRunner()
       cbica::WriteImage< TImageType >(holeFiller->GetOutput(), outputImageFile);
     }
     std::cout << "=== Done.\n";
+  }
+
+  auto currentMaskImage = cbica::ReadImage< TImageType >(outputImageFile);
+
+  // registration of segmentation back to patient space
+  {
+    auto tempFile_input = outputDirectory + "/maskToT1gd_input.nii.gz";
+    auto tempFile = outputDirectory + "/maskToT1gd.nii.gz";
+    auto greedyCommand = greedyExe +
+      " -i " + outputImageFile +
+      " -f " + inputT1ce +
+      " -t " + outputDirectory + "/tempMatrix.mat" +
+      " -o " + outputImageFile + " -reg -trf -a -m MI -n 100x50x5"
+      ;
+
+    std::cout << "== Starting registration of output segmentation back to patient space using Greedy.\n";
+    std::system(greedyCommand.c_str());
+    std::cout << "== Done.\n";
   }
 
   return;
