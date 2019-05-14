@@ -21,6 +21,7 @@
 
 #include "itkHistogramToRunLengthFeaturesFilter.h"
 #include "itkScalarImageToRunLengthFeaturesFilter.h"
+#include "itkBoundingBox.h"
 
 
 //#include "itkOpenCVImageBridge.h"
@@ -1020,10 +1021,32 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
     }
     glrlmCalculator.SetDistanceMax(std::sqrt(2) * (maxStep - 1));
   }
-  //else
-  //{
-  //  glrlmCalculator.SetDistanceMax(m_Range);
-  //}
+  else // get the maximum possible distance within the defied ROI bounding box
+  {
+    // ref: https://github.com/MachadoLF/TextureAnalysisExtension/blob/603aac5c58d6e95e510300c7c67a6b87c143c5d1/TextureProcessing/RunLengthFeat/RunLengthFeat.cxx#L73
+    using BoundingBoxType = itk::BoundingBox<unsigned long, TImage::ImageDimension >;
+    auto bbox = BoundingBoxType::New();
+    auto points = BoundingBoxType::PointsContainer::New();
+    itk::Point< float, TImage::ImageDimension > point;
+
+    unsigned int idx = 0;
+
+    itk::ImageRegionIteratorWithIndex< TImage > ItI(image, image->GetLargestPossibleRegion());
+
+    for (ItI.GoToBegin(); !ItI.IsAtEnd(); ++ItI)
+    {
+      if (mask->GetPixel(ItI.GetIndex()) == 1)
+      {
+        image->TransformIndexToPhysicalPoint(ItI.GetIndex(), point);
+        points->InsertElement(idx++, point);
+      }
+    }
+    bbox->SetPoints(points);
+    bbox->ComputeBoundingBox();
+    auto pointMin = bbox->GetMinimum();
+    auto pointMax = bbox->GetMaximum();
+    glrlmCalculator.SetDistanceMax(pointMin.EuclideanDistanceTo(pointMax));
+  }
   glrlmCalculator.Update();
   auto temp = glrlmCalculator.GetOutput();
   for (auto const& f : temp)
