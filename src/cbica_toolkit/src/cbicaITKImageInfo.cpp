@@ -15,6 +15,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
 
+#include "gdcmReader.h"
+
 namespace cbica
 {
   // ============================================================================ //
@@ -24,11 +26,19 @@ namespace cbica
     auto fName_norm = cbica::normPath(fName);
     auto fName_ext = cbica::getFilenameExtension(fName);
 
-    if (cbica::isFile(fName) && (fName_ext != ".dcm"))
+    if (cbica::isFile(fName) /*&& (fName_ext != ".dcm")*/)
     {
       m_fileName = fName_norm;
 
       m_itkImageIOBase = itk::ImageIOFactory::CreateImageIO(m_fileName.c_str(), itk::ImageIOFactory::ReadMode);
+      
+      gdcm::Reader reader;
+      reader.SetFileName(m_fileName.c_str());
+
+      if (!m_itkImageIOBase->CanReadFile(m_fileName.c_str()) || !reader.CanRead())
+      {
+        itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
+      }
 
       // exception handling in case of NULL pointer initialization
       if (m_itkImageIOBase)
@@ -56,15 +66,15 @@ namespace cbica
         m_size.push_back(m_itkImageIOBase->GetDimensions(i));
       }
     }
-    else if (fName_ext == ".dcm")
-    {
-      m_dicomDetected = true;
-      // nothing to do here
-      return;
-    }
+    //else if (fName_ext == ".dcm")
+    //{
+    //  m_dicomDetected = true;
+    //  // nothing to do here
+    //  return;
+    //}
     else
     {
-      std::cerr << "Please pass a non-DICOM image file for this class.\n";
+      std::cerr << "Please pass a supported image.\n";
       return;
     }
   }
