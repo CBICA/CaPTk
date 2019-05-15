@@ -25,6 +25,10 @@ namespace cbica
   {
     auto fName_norm = cbica::normPath(fName);
     auto fName_ext = cbica::getFilenameExtension(fName);
+    if (!fName_ext.empty())
+    {
+      std::transform(fName_ext.begin(), fName_ext.end(), fName_ext.begin(), ::tolower);
+    }
 
     if (cbica::isFile(fName) /*&& (fName_ext != ".dcm")*/)
     {
@@ -32,10 +36,19 @@ namespace cbica
 
       m_itkImageIOBase = itk::ImageIOFactory::CreateImageIO(m_fileName.c_str(), itk::ImageIOFactory::ReadMode);
       
-      gdcm::Reader reader;
-      reader.SetFileName(m_fileName.c_str());
+      if ((fName_ext == ".dcm") || (fName_ext == ".dicom") || (fName_ext == "") ||
+        (fName_ext == ".ima"))
+      {
+        gdcm::Reader reader;
+        reader.SetFileName(m_fileName.c_str());
 
-      if (!m_itkImageIOBase->CanReadFile(m_fileName.c_str()) || !reader.CanRead())
+        if (!reader.CanRead())
+        {
+          itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
+        }
+      }
+      
+      if (!m_itkImageIOBase->CanReadFile(m_fileName.c_str()))
       {
         itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
       }
