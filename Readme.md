@@ -45,6 +45,7 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 ```bash
 user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
 ```
+This will extract the package to the path `squashfs-root/usr/` with the binaries present in `squashfs-root/usr/bin`.
 - Currently, we support all distributions newer than Ubuntu 16.04.
 
 ### **Compatibility**
