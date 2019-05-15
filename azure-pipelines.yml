@@ -153,7 +153,7 @@ jobs:
         cd bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
-        make install/strip
+        #make install/strip
       displayName: 'Configure and compile CaPTk'
 
     # Check qt
@@ -177,11 +177,11 @@ jobs:
         rm -rf regression
         rm -rf binaries
 
-        make install
+        #make install
 
         # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
-        # ./scripts/captk-pkg
+        ./scripts/captk-pkg
 
         rm -rf bin
         rm -rf src
