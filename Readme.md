@@ -44,11 +44,11 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
   - Currently, we support all distributions newer than Ubuntu 16.04.
 - **Compatibility**
   
-  | Platform (x64) | Build | Tested | Untested | Unsupported |
-  |:--------------:|:-----:|:------:|:--------:|:-----------:|
-  | Windows        | 7 | 7, 8, 10 | N/A | XP, Vista |
-  | Linux          | Ubuntu 16.04 | Ubuntu 16.04, 18.04; Debian 9 | CentOS 7 | Ubuntu 14.04, CentOS 6 |
-  | macOS          | 10.13 | 10.14 | 10.13 | 10.12 |
+  | Platform (x64) |     Build    |             Tested            | Untested |       Unsupported      |
+  |:--------------:|:------------:|:-----------------------------:|:--------:|:----------------------:|
+  |     Windows    |       7      |            7, 8, 10           |    N/A   |        XP, Vista       |
+  |      Linux     | Ubuntu 16.04 | Ubuntu 16.04, 18.04; Debian 9 | CentOS 7 | Ubuntu 14.04; CentOS 6 |
+  |      macOS     |     10.13    |             10.14             |   10.13  |          10.12         |
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a> .
