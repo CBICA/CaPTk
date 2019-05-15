@@ -7004,11 +7004,7 @@ void fMainWindow::ApplicationTheia()
 
       QStringList args;
       args << "-i" << mSlicerManagers[index]->GetFileName().c_str() << "-m" << maskFile.c_str();
-
-      QtConcurrent::run(this, &fMainWindow::startExternalProcess,
-        getApplicationPath("Theia").c_str(),
-        args
-      );
+      startExternalProcess(getApplicationPath("Theia").c_str(), args);
     }
     else
     {
