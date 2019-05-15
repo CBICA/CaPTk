@@ -117,11 +117,31 @@ typename TImageType::Pointer HoleFillOnThreeAxes(typename TImageType::Pointer in
 template< class TImageType >
 void algorithmRunner()
 {
+  if (!cbica::isFile(modelDirName + "/modelConfig.txt"))
+  {
+    std::cerr << "'modelConfig.txt' was not found in the directory, please check.\n";
+    return;
+  }
+  if (!cbica::isFile(modelDirName + "/model.ckpt.index"))
+  {
+    std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
+    return;
+  }
+  auto filesInDir = cbica::filesInDirectory(modelDirName);
+  for (size_t i = 0; i < filesInDir.size(); i++)
+  {
+    if (filesInDir[i].find("model.ckpt.data") != std::string::npos) // find an appopriate checkpoint
+    {
+      break;
+    }
+  }
+
   auto t1cImg = cbica::ReadImage< TImageType >(inputT1ce);
   auto t1Img = cbica::ReadImage< TImageType >(inputT1);
   auto t2Img = cbica::ReadImage< TImageType >(inputT2);
   auto flImg = cbica::ReadImage< TImageType >(inputFlair);
   auto maskImage = cbica::CreateImage< TImageType >(t1cImg);
+
   if (maskProvided)
   {
     maskImage = cbica::ReadImage< TImageType >(inputMaskName);
@@ -308,17 +328,7 @@ void algorithmRunner()
   cbica::WriteImage< TImageType >(flImg, file_flNorm);
 
   auto dmExe = getApplicationPath("deepMedicRun");
-
-  if (!cbica::isFile(modelDirName + "/modelConfig.txt"))
-  {
-    std::cerr << "'modelConfig.txt' was not found in the directory, please check.\n";
-    return;
-  }
-  //if (!cbica::isFile(modelDirName + "/model.ckpt"))
-  //{
-  //  std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
-  //  return;
-  //}
+  //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicRun.exe";
 
 #ifdef _WIN32
   SetCurrentDirectory(cbica::getFilenamePath(dmExe).c_str());
@@ -340,11 +350,11 @@ void algorithmRunner()
     exit(EXIT_FAILURE);
   }
 
+  auto outputImageFile = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
   // do hole filling for skull stripping
   if (inferenceType = SkullStripping)
   {
     std::cout << "=== Performing hole-filling operation for skull stripping.\n";
-    auto outputImageFile = outputDirectory + "/segm.nii.gz";
     if (cbica::exists(outputImageFile))
     {
       auto outputImageWithHoles = cbica::ReadImage< TImageType >(outputImageFile);
@@ -358,6 +368,20 @@ void algorithmRunner()
       cbica::WriteImage< TImageType >(holeFiller->GetOutput(), outputImageFile);
     }
     std::cout << "=== Done.\n";
+  }
+
+  // registration of segmentation back to patient space
+  {
+    std::cout << "== Starting registration of output segmentation back to patient space.\n";
+    auto t1cImg_original = cbica::ReadImage< TImageType >(inputT1ce);
+    auto resampledMask = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(outputImageFile), 
+      t1cImg_original->GetSpacing(),
+      t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
+    cbica::WriteImage< TImageType >(
+      resampledMask,
+      outputImageFile
+      );
+    std::cout << "== Done.\n";
   }
 
   return;

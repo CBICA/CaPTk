@@ -7204,7 +7204,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     return;
   }
 
-  auto output = outputDirectory + "/segm.nii.gz";
+  auto output = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
   if (cbica::exists(output))
   {
     readMaskFile(output);

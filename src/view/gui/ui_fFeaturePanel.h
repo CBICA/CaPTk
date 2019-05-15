@@ -64,6 +64,7 @@ public:
   QCheckBox* m_GLCM;
   QCheckBox* m_LBP;
   QCheckBox* m_NGTDM;
+  QCheckBox* m_NGLDM;
   QCheckBox* m_GLSZM;
   QCheckBox* m_Lattice;
   QCheckBox* m_Laws;
@@ -99,6 +100,7 @@ public:
     m_featureCheckBoxMap["GLCM"] = m_GLCM;
     m_featureCheckBoxMap["LBP"] = m_LBP;
     m_featureCheckBoxMap["NGTDM"] = m_NGTDM;
+    m_featureCheckBoxMap["NGLDM"] = m_NGLDM;
     m_featureCheckBoxMap["GLSZM"] = m_GLSZM;
     m_featureCheckBoxMap["Lattice"] = m_Lattice;
     m_featureCheckBoxMap["Laws"] = m_Laws;
@@ -178,6 +180,8 @@ public:
     m_LBP->setEnabled(false);
     m_NGTDM = new QCheckBox("NGTDM (Tone Difference)");
     m_NGTDM->setToolTip(QString("Calculates Neighborhood Gray-Tone Difference Matrix."));
+    m_NGLDM = new QCheckBox("NGLDM (Level Dependence)");
+    m_NGLDM->setToolTip(QString("Calculates Neighborhood Gray-Level Dependence Matrix."));
     m_GLSZM = new QCheckBox("GLSZM (Size Zone)");
     m_GLSZM->setToolTip(QString("Calculates Gray-Level Size Zone Matrix."));
     m_Lattice = new QCheckBox("Lattice Computation");
@@ -225,6 +229,7 @@ public:
     featureLayout4->addWidget(m_GLRLM);
     featureLayout4->addWidget(m_GLSZM);
     featureLayout4->addWidget(m_NGTDM);
+    featureLayout4->addWidget(m_NGLDM);
     featureLayout4->addWidget(m_LBP);
     featureLayout4->addStretch();
 
