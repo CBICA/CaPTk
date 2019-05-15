@@ -6,30 +6,36 @@ EXECUTE_PROCESS(COMMAND lsb_release -cs
 )
 IF( "${RELEASE_CODENAME}" STREQUAL "trusty" )
 
-  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/qtifwsilent.qs
-    ${CMAKE_CURRENT_BINARY_DIR}/qtifwsilent.qs
-    @ONLY 
-  )
-   
-  EXECUTE_PROCESS(
-    COMMAND curl -L -O 'https://download.qt.io/official_releases/qt/5.12/5.12.1/qt-opensource-linux-x64-5.12.1.run' && chmod +x qt-opensource-linux-x64-5.12.1.run && QT_INSTALL_DIR=/usr/local/Qt ./qt-opensource-linux-x64-5.12.1.run --platform minimal --script qtifwsilent.qs
-    OUTPUT_VARIABLE TEMP
-  )
+  OPTION( QT_BUILD_FROM_SOURCE "Build Qt ${QT_VERSION} from " OFF )
   
-  EXECUTE_PROCESS(
-    COMMAND export PATH="/usr/local/Qt/5.12.1/gcc_64/bin/:${PATH}"
-    OUTPUT_VARIABLE TEMP
-  )
+  IF( ("${Qt5_DIR}" STREQUAL "") OR ("${Qt5_DIR}" STREQUAL "Qt5_DIR-NOTFOUND") OR QT_BUILD_FROM_SOURCE )
 
-  EXECUTE_PROCESS(
-    COMMAND export LD_LIBRARY_PATH="/usr/local/Qt/5.12.1/gcc_64/lib:${LD_LIBRARY_PATH}"
-    OUTPUT_VARIABLE TEMP
-  )
+    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/qtifwsilent.qs
+      ${CMAKE_CURRENT_BINARY_DIR}/qtifwsilent.qs
+      @ONLY 
+    )
+     
+    EXECUTE_PROCESS(
+      COMMAND curl -L -O 'https://download.qt.io/official_releases/qt/5.12/5.12.1/qt-opensource-linux-x64-${QT_VERSION}.run' && chmod +x qt-opensource-linux-x64-${QT_VERSION}.run && QT_INSTALL_DIR=/usr/local/Qt ./qt-opensource-linux-x64-${QT_VERSION}.run --platform minimal --script qtifwsilent.qs
+      OUTPUT_VARIABLE TEMP
+    )
+    
+    EXECUTE_PROCESS(
+      COMMAND export PATH="/usr/local/Qt/${QT_VERSION}/gcc_64/bin/:${PATH}"
+      OUTPUT_VARIABLE TEMP
+    )
 
-  EXECUTE_PROCESS(
-    COMMAND export CMAKE_PREFIX_PATH="/usr/local/Qt/5.12.1/gcc_64/lib/cmake/Qt5:${CMAKE_PREFIX_PATH}"
-    OUTPUT_VARIABLE TEMP
-  )
+    EXECUTE_PROCESS(
+      COMMAND export LD_LIBRARY_PATH="/usr/local/Qt/${QT_VERSION}/gcc_64/lib:${LD_LIBRARY_PATH}"
+      OUTPUT_VARIABLE TEMP
+    )
+
+    EXECUTE_PROCESS(
+      COMMAND export CMAKE_PREFIX_PATH="/usr/local/Qt/${QT_VERSION}/gcc_64/lib/cmake/Qt5:${CMAKE_PREFIX_PATH}"
+      OUTPUT_VARIABLE TEMP
+    )
+    
+  ENDIF()
 
 ELSE()
   OPTION( QT_DOWNLOAD_FORCE "Force Qt binary download regardless of whether Qt was found in host machine or not" OFF )
