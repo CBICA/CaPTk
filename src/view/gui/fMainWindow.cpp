@@ -5278,35 +5278,44 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     }
   }
 
-  int i = 0;
+  int i = 0, fileSizeCheck = files.size() + 1;
+  if (mSlicerManagers.size() == 0)
   {
-    std::string fileName = files[i].toStdString();
-    fileName = cbica::normPath(fileName);
-    updateProgress(i + 1, "Opening " + fileName, files.size());
-    auto extension = cbica::getFilenameExtension(fileName);
-    if (!extension.empty())
     {
-      std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+      std::string fileName = files[i].toStdString();
+      fileName = cbica::normPath(fileName);
+      updateProgress(i + 1, "Opening " + fileName, files.size());
+      auto extension = cbica::getFilenameExtension(fileName);
+      if (!extension.empty())
+      {
+        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+      }
+      if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+        (extension == ".ima"))
+      {
+        QDir d = QFileInfo(fileName.c_str()).absoluteDir();
+        QString fname = d.absolutePath();
+        dicomfilename = fileName;
+        this->openDicomImages(fname);
+      }
+      else
+      {
+        LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
+      }
     }
-    if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
-      (extension == ".ima"))
-    {
-      QDir d = QFileInfo(fileName.c_str()).absoluteDir();
-      QString fname = d.absolutePath();
-      dicomfilename = fileName;
-      this->openDicomImages(fname);
-    }
-    else
-    {
-      LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
-    }
+    fileSizeCheck = 1;
+  }
+  else
+  {
+    fileSizeCheck = 0;
   }
 
   // basic sanity check
-  if (files.size() > 1)
+  if (files.size() > fileSizeCheck)
   {
     std::string erroredFiles, unsupportedExtension;
-    for (int i = 1; i < files.size(); i++)
+    std::vector< std::string > basicSanityChecksPassedFiles;
+    for (int i = fileSizeCheck; i < files.size(); i++)
     {
       std::string fileName = files[i].toStdString();
       fileName = cbica::normPath(fileName);
@@ -5316,16 +5325,17 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
         std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
       }
       if (!((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
-        (extension == ".ima")) || (extension == ".nii") || (extension == ".nii.gz"))
+        (extension == ".ima") || (extension == ".nii") || (extension == ".nii.gz")))
       {
         unsupportedExtension += fileName + "\n";
       }
+      else if (!cbica::ImageSanityCheck(files[0].toStdString(), files[i].toStdString()))
+      {
+        erroredFiles += fileName + "\n";
+      }
       else
       {
-        if (!cbica::ImageSanityCheck(files[0].toStdString(), files[i].toStdString()))
-        {
-          erroredFiles += fileName + "\n";
-        }
+        basicSanityChecksPassedFiles.push_back(files[i].toStdString());
       }
     }
 
@@ -5344,9 +5354,9 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       ShowErrorMessage("Extensions for the following files were not supported, CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
     }
 
-    for (int i = 1; i < files.size(); i++)
+    for (int i = 0; i < basicSanityChecksPassedFiles.size(); i++)
     {
-      std::string fileName = files[i].toStdString();
+      std::string fileName = basicSanityChecksPassedFiles[i];
       fileName = cbica::normPath(fileName);
       updateProgress(i + 1, "Opening " + fileName, files.size());
       auto extension = cbica::getFilenameExtension(fileName);
