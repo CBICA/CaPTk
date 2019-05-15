@@ -39,7 +39,9 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
 ### FAQ
-- [LINUX]: If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: `user@pc:~# ~/CaPTk/${version}/captk --appimage-extract`
+- **LINUX**
+  - If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: `user@pc:~# ~/CaPTk/${version}/captk --appimage-extract`
+  - Currently, we support all distributions newer than Ubuntu 16.04.
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a> .
