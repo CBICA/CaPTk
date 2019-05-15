@@ -659,7 +659,10 @@ private:
     myfile << comments << "\n";
     myfile.close();
   }
-  
+
+  //! This is used to calculate the maximum possible distance in the defined ROI - useful for GLRLM and NGLDM calculations
+  float GetMaximumDistanceWithinTheDefinedROI(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage);
+    
   // member variables
   cbica::Statistics< typename TImageType::PixelType > m_statistics_local; //! this is for the intensity features
   typename TImageType::PixelType m_minimumToConsider, m_maximumToConsider;

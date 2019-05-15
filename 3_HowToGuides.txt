@@ -310,7 +310,7 @@ The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are 
 <b> USAGE:</b>
 	-# Load the images that you want to segment in CaPTk.
   -# [OPTIONAL] Load the brain mask - this is used for normalization.
-  -# [OPTIONAL] Select the appropriate pre-trained model folder (default is brain tumor segmentation)
+  -# [OPTIONAL] Select the appropriate pre-trained model folder (either brain tumor segmentation or skull stripping is available): for custom models, select appropriate option and browse to the model directory.
   -# Select the output folder.
   -# Click on 'Applications' -> 'Brain Tumor Segmentation' or 'Skull Stripping' 
 

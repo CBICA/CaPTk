@@ -716,17 +716,23 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
 
 std::string PerfusionAlignment::ReadMetaDataTags(std::string filepaths,std::string tag)
 {
-  DicomMetadataReader *dcmMetaReader = new DicomMetadataReader();
-  dcmMetaReader->SetFilePath(filepaths);
-  bool readstatus = dcmMetaReader->ReadMetaData();
+  DicomMetadataReader dcmMetaReader;
+  dcmMetaReader.SetFilePath(filepaths);
+  bool readstatus = dcmMetaReader.ReadMetaData();
   std::string label;
   std::string value;
 
   if (readstatus)
   {
-    bool tagFound = dcmMetaReader->GetTagValue(tag, label, value);
+    bool tagFound = dcmMetaReader.GetTagValue(tag, label, value);
     if (tagFound)
       return value;
+    else
+      return "";
+  }
+  else
+  {
+    return "";
   }
 }
 
