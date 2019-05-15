@@ -47,7 +47,7 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
   | Platform (x64) | Build | Tested |
   |:--------------:|:-----:|:------:|
   | Windows        | 7 | 7 & 10 |
-  | Linux          | Ubuntu 16.04 | Ubuntu 16.04 |
+  | Linux          | Ubuntu 16.04 | Ubuntu 16.04, 18.04; Debian 9 |
   | macOS          | 10.13 | 10.13, 10.14 |
 
 ## Contact
