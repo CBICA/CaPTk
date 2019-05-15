@@ -1,14 +1,13 @@
-FIND_PACKAGE(Qt5 COMPONENTS Core )
+FIND_PACKAGE( Qt5Core ${QT_VERSION} )
 
-EXECUTE_PROCESS(COMMAND lsb_release -cs
-  OUTPUT_VARIABLE RELEASE_CODENAME
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+# buld Qt from source for trusty; otherwise use pre-built binaries
 IF( "${RELEASE_CODENAME}" STREQUAL "trusty" )
 
   OPTION( QT_BUILD_FROM_SOURCE "Build Qt ${QT_VERSION} from " OFF )
   
-  IF( ("${Qt5_DIR}" STREQUAL "") OR ("${Qt5_DIR}" STREQUAL "Qt5_DIR-NOTFOUND") OR QT_BUILD_FROM_SOURCE )
+  FIND_PACKAGE( Qt5Core ${QT_VERSION} )
+  
+  IF( (NOT Qt5Core_FOUND) OR QT_BUILD_FROM_SOURCE )
 
     CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/qtifwsilent.qs
       ${CMAKE_CURRENT_BINARY_DIR}/qtifwsilent.qs
@@ -41,7 +40,7 @@ ELSE()
   OPTION( QT_DOWNLOAD_FORCE "Force Qt binary download regardless of whether Qt was found in host machine or not" OFF )
 ENDIF()
 
-IF( ("${Qt5_DIR}" STREQUAL "") OR ("${Qt5_DIR}" STREQUAL "Qt5_DIR-NOTFOUND") OR QT_DOWNLOAD_FORCE )
+IF( (NOT Qt5Core_FOUND) OR QT_DOWNLOAD_FORCE )
 
   SET( FILENAME_TO_EXTRACT "qt" )
   SET( FILE_TO_EXTRACT "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip" )
