@@ -542,6 +542,12 @@ jobs:
   container: ubuntu1404
   
   steps:
+    # install LFS
+    - bash: |
+        curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+        sudo apt-get install git-lfs
+      displayName: 'Install LFS'
+
     # Pull LFS
     - bash: |
         git lfs pull
