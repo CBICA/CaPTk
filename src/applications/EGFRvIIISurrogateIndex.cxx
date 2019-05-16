@@ -52,7 +52,7 @@ int main(int argc, char **argv)
   auto extension = cbica::getFilenameExtension(inputFile);
   std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
   int imageType = CAPTK::ImageExtension::NIfTI; // default 
-  if (extension == ".dcm")
+  if (cbica::IsDicom(inputFile))
   {
     imageType = CAPTK::ImageExtension::DICOM;
   }

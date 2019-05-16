@@ -990,7 +990,7 @@ void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsI
   auto reader = itk::ImageFileReader< ImageTypeFloat2D >::New();
   reader->SetFileName(fileName);
   auto ext = cbica::getFilenameExtension(fileName);
-  if (ext == ".dcm")
+  if (cbica::IsDicom(fileName))
   {
     reader->SetImageIO(itk::GDCMImageIO::New());
   }
@@ -1521,12 +1521,13 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
       return;
     }
-    if ((extension == ".dcm") || 
-      (extension == ".DCM") ||
-      (extension == ".dicom") || 
-      (extension == "") || 
-      (extension == ".ima") ||
-      (extension == ".IMA"))
+    //if ((extension == ".dcm") || 
+    //  (extension == ".DCM") ||
+    //  (extension == ".dicom") || 
+    //  (extension == "") || 
+    //  (extension == ".ima") ||
+    //  (extension == ".IMA"))
+    if (cbica::IsDicom(fileName))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       fname = d.absolutePath().toStdString();
@@ -3036,7 +3037,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
 {
   if (!mSlicerManagers.empty())
   {
-    if (cbica::getFilenameExtension(maskFileName) == ".dcm")
+    if (cbica::isDicom(maskFileName))
     {
 
       auto path = cbica::getFilenamePath(maskFileName);
@@ -5365,8 +5366,9 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       {
         std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
       }
-      if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
-        (extension == ".ima"))
+      //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+      //  (extension == ".ima"))
+      if (cbica::IsDicom(fileName))
       {
         QDir d = QFileInfo(fileName.c_str()).absoluteDir();
         QString fname = d.absolutePath();
