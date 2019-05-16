@@ -568,7 +568,7 @@ jobs:
         tar -xzvf cmake-3.13.5-Linux-x86_64.tar.gz
         cd cmake-3.13.5-Linux-x86_64
         echo "##vso[task.setvariable variable=temp_path]`pwd`/cmake-3.13.5-Linux-x86_64/bin:$PATH"
-        export PATH=$(temp_path)
+        export PATH=$env:TEMP_PATH
         echo "Displaying PATH"
         echo $PATH
       displayName: 'Update CMake to 3.13'
@@ -580,7 +580,7 @@ jobs:
 
     # Create build dir
     - bash: |
-        export PATH=$(temp_path)
+        export PATH=$env:TEMP_PATH
         echo "Displaying PATH"
         echo $PATH
         mkdir -p bin
@@ -605,7 +605,7 @@ jobs:
 
     # Configure and build superbuild
     - bash: |
-        export PATH=$(temp_path)
+        export PATH=$env:TEMP_PATH
         echo "Displaying PATH"
         echo $PATH
         cd bin
@@ -615,7 +615,7 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
-        export PATH=$(temp_path)
+        export PATH=$env:TEMP_PATH
         echo "Displaying PATH"
         echo $PATH
         cd bin
@@ -626,7 +626,7 @@ jobs:
 
     # Check libra
     - bash: |
-        export PATH=$(temp_path)
+        export PATH=$env:TEMP_PATH
         echo "Displaying PATH"
         echo $PATH
         cd bin/install/appdir/usr/bin/
@@ -635,7 +635,7 @@ jobs:
       
     # Build a package
     - bash: |
-        export PATH=$(temp_path)
+        export PATH=$env:TEMP_PATH
         echo "Displaying PATH"
         echo $PATH
         rm -rf regression
