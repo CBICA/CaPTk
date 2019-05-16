@@ -52,7 +52,7 @@ RUN export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
     cmake -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=../bin_libs/install \
     -Wno-dev .. && \
-    make -j4
+    make -j4 && \
     make install/strip -j4
 
 # define entry point
