@@ -556,6 +556,9 @@ jobs:
     # Dependency manager
     - bash: |
         sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get install g++-4.9
         gcc --version
       displayName: 'Install dependencies from Aptitude'
 
@@ -565,7 +568,8 @@ jobs:
         tar -xzvf cmake-3.13.5-Linux-x86_64.tar.gz
         cd cmake-3.13.5-Linux-x86_64
         export PATH=`pwd`/cmake-3.13.5-Linux-x86_64/bin:$PATH
-        
+        echo "Displaying PATH"
+        echo $PATH
       displayName: 'Update CMake to 3.13'
 
   # Debug info before main scripts start
