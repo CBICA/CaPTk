@@ -103,15 +103,16 @@ inline int guessImageType(const std::string &fileName)
     (fileName_wrap.find("_t1-ce") != std::string::npos) || (fileName_wrap.find("_t1-gd") != std::string::npos) ||
     (fileName_wrap.find("_t1gd") != std::string::npos) || (fileName_wrap.find("t1gd_") != std::string::npos) ||
     (fileName_wrap.find("t1ce") != std::string::npos) || (fileName_wrap.find("t1-gad") != std::string::npos) ||
-    (fileName_wrap.find("t1-ce") != std::string::npos) || (fileName_wrap.find("t1-gd") != std::string::npos))
+    (fileName_wrap.find("t1-ce") != std::string::npos) || (fileName_wrap.find("t1-gd") != std::string::npos) ||
+    (fileName_wrap.find("t1ce.nii.gz") != std::string::npos) || (fileName_wrap.find("t1gd.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_T1CE;
   }
-  else if ((fileName_wrap.find("_t1") != std::string::npos) || (fileName_wrap.find("t1_") != std::string::npos))
+  else if ((fileName_wrap.find("_t1") != std::string::npos) || (fileName_wrap.find("t1_") != std::string::npos) || (fileName_wrap.find("t1.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_T1;
   }
-  else if ((fileName_wrap.find("_t2") != std::string::npos) || (fileName_wrap.find("t2_") != std::string::npos))
+  else if ((fileName_wrap.find("_t2") != std::string::npos) || (fileName_wrap.find("t2_") != std::string::npos) || (fileName_wrap.find("t2.nii.gz") != std::string::npos))
   {
     if ((fileName_wrap.find("flair") != std::string::npos))
     {
@@ -122,7 +123,8 @@ inline int guessImageType(const std::string &fileName)
       ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_T2;
     }
   }
-  else if ((fileName_wrap.find("_flair") != std::string::npos) || (fileName_wrap.find("flair_") != std::string::npos) || (fileName_wrap.find(".flair.") != std::string::npos))
+  else if ((fileName_wrap.find("_flair") != std::string::npos) || (fileName_wrap.find("flair_") != std::string::npos) || (fileName_wrap.find(".flair.") != std::string::npos) 
+    || (fileName_wrap.find("flair.nii.gz") != std::string::npos) || (fileName_wrap.find("fl.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR;
   }
