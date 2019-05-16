@@ -19,6 +19,8 @@
 #include <QDialog>
 
 class QWebEngineView;
+class QSlider;
+class QLabel;
 
 QT_BEGIN_NAMESPACE
 
@@ -38,16 +40,31 @@ private:
   QPushButton *backButton;
   QPushButton *forwardButton;
   QPushButton *refreshButton;
+  QPushButton *zoomInButton;
+  QPushButton *zoomOutButton;
+  QSlider *zoomSlider;
+  QLabel *zoomValueLabel;
+  QLabel *percentLabel;
   std::string m_helpFileFullPath;
   std::string m_dataDir, m_docDir;
   std::string m_startPage;
-
-
+  int zoomPercentValue;
+   
 private slots:
   void on_homeButton_clicked();
   void on_backButton_clicked();
   void on_forwardButton_clicked();
   void on_refreshButton_clicked();
+  void on_zoomInButton_clicked();
+  void on_zoomOutButton_clicked();
+  void on_zoomSliderMoved(int);
+
+protected:
+  //! handle ctrl+wheel for zoom in/out
+  void wheelEvent(QWheelEvent *event);
+
+  //! zoom to value
+  void SetZoom(int zoomValue);
 
 public:
 
