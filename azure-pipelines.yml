@@ -555,7 +555,8 @@ jobs:
 
     # Dependency manager
     - bash: |
-        sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
+        sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget
+        gcc --version
       displayName: 'Install dependencies from Aptitude'
 
     # CMake install
