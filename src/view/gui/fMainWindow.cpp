@@ -30,6 +30,7 @@
 #include "SBRT_Analysis.h"
 
 #include "cbicaITKSafeImageIO.h"
+#include "DicomIOManager.h"
 #include "itkFlipImageFilter.h"
 
 #include "lddmm_common.h"
@@ -3039,7 +3040,6 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
   {
     if (cbica::isDicom(maskFileName))
     {
-
       auto path = cbica::getFilenamePath(maskFileName);
       auto filesInDir = cbica::filesInDirectory(path, false);
 
