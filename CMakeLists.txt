@@ -756,6 +756,20 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     INSTALL(DIRECTORY "${DATA_DIR}/deepMedic/configFiles" DESTINATION data/deepMedic)
     INSTALL(DIRECTORY "${DATA_DIR}/deepMedic/saved_models" DESTINATION data/deepMedic)
   ENDIF()
+  
+  # install CWL files
+  FILE(GLOB_RECURSE CWL_FILES "${DATA_DIR}/cwlFiles/*")
+  FOREACH(cwlFile ${CWL_FILES})
+    IF (APPLE)
+      SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${cwlFile})
+
+      INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
+
+    ELSE()
+      INSTALL(FILES "${cwlFile}" DESTINATION bin)
+    ENDIF()
+  ENDFOREACH()
 
   IF(WIN32)
     FILE(GLOB_RECURSE ALL_DEPENDENT_LIBS "${PROJECT_BINARY_DIR}/${CMAKE_CONFIGURATION_TYPES}/*.dll")
@@ -814,7 +828,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       # ENDFOREACH()
 
       FOREACH(FT_META_FILES_TO_INCLUDE ${FEATURE_EXTRACTION_META_FILES_TO_INCLUDE})
-        IF (${FT_META_FILES_TO_INCLUDE} STREQUAL "${DATA_DIR}/features/batchmode/batch_featureextraction.csv")
+        IF (${FT_META_FILES_TO_INCLUDE} STREQUAL "${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/batchMode/batch_featureExtraction.csv")
           SET_SOURCE_FILES_PROPERTIES(${FT_META_FILES_TO_INCLUDE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch )
 
           SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FT_META_FILES_TO_INCLUDE})
