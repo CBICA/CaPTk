@@ -73,6 +73,14 @@ MACRO(CWL_INSTALL APPLICATION)
     COMMENT "Generating cwl file for ${APPLICATION}..."
   )
   
+  # Post build cwl generation
+  add_custom_command(
+    TARGET ${APPLICATION}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl ${DATA_DIR}/cwlFiles
+    COMMENT "Updating cwl File for ${APPLICATION}..."
+  )
+  
   IF (APPLE) 
     list (APPEND STANDALONE_APPS_LIST ${APPLICATION})
     INSTALL( 
