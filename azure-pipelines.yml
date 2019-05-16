@@ -568,8 +568,8 @@ jobs:
         tar -xzvf cmake-3.13.5.tar.gz
         cd cmake-3.13.5
         ./configure
-        make
-        sudo make install
+        make -j2
+        sudo make install/strip
         cmake --version
       displayName: 'Update CMake to 3.13'
 
