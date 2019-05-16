@@ -665,16 +665,15 @@ namespace cbica
     gdcmIO->SetFileName(fName);
     if (gdcmIO->CanReadFile(fName.c_str()) || cbica::isDir(fName))
     {
-      typedef DicomIOManager<TImageType> ReaderType;
-      ReaderType *dcmSeriesReader = new ReaderType();
-      dcmSeriesReader->SetDirectoryPath(fName);
-      bool loadstatus = dcmSeriesReader->LoadDicom();
+      DicomIOManager< TImageType > dcmSeriesReader;
+      dcmSeriesReader.SetDirectoryPath(fName);
+      bool loadstatus = dcmSeriesReader.LoadDicom();
       if (!loadstatus)
       {
         //QMessageBox::critical(this, "Dicom Loading", "Dicom Load Failed");
         return nullptr;
       }
-      return dcmSeriesReader->GetITKImage();
+      return dcmSeriesReader.GetITKImage();
     }
     else
     {
