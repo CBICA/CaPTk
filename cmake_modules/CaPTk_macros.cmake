@@ -81,26 +81,26 @@ MACRO(CWL_INSTALL APPLICATION)
     COMMENT "Updating cwl File for ${APPLICATION}..."
   )
   
-  IF (APPLE) 
-    list (APPEND STANDALONE_APPS_LIST ${APPLICATION})
-    INSTALL( 
-      FILES ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl
-      DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-    ) 
-  
-  ELSEIF(WIN32)
-    INSTALL( 
-      FILES ${PROJECT_BINARY_DIR}/$<CONFIGURATION>/${APPLICATION}.cwl
-      DESTINATION bin
-    )
-  
-  ELSE()
-    INSTALL( 
-      FILES ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl
-      DESTINATION bin
-    )
-  
-  ENDIF()
+  #IF (APPLE) 
+  #  list (APPEND STANDALONE_APPS_LIST ${APPLICATION})
+  #  INSTALL( 
+  #    FILES ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl
+  #    DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+  #  ) 
+  #
+  #ELSEIF(WIN32)
+  #  INSTALL( 
+  #    FILES ${PROJECT_BINARY_DIR}/$<CONFIGURATION>/${APPLICATION}.cwl
+  #    DESTINATION bin
+  #  )
+  #
+  #ELSE()
+  #  INSTALL( 
+  #    FILES ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl
+  #    DESTINATION bin
+  #  )
+  #
+  #ENDIF()
 
 ENDMACRO()
 
