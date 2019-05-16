@@ -10,7 +10,7 @@ trigger:
     - master
 
 jobs:
-- job: 'Docker Image'
+- job: 'DockerImage'
   displayName: "End-to-end Docker build & push"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
