@@ -195,7 +195,10 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  parser.exampleUsage("MolecularSubtypePredictor -t 0 -i <input dir> -o <output dir>");
+  //parser.exampleUsage("MolecularSubtypePredictor -t 0 -i <input dir> -o <output dir>");
+  parser.addExampleUsage("-i C:/properly/formatted/inputDir -o C:/outputDir -t 0", "Trains a new model based on the samples in inputDir");
+  parser.addExampleUsage("-t 1 -i C:/input -m C:/model -o C:/output", "Tests an existing model for inputs in 'C:/input' based on 'C:/EGFRvIIIModel' ");
+  parser.addApplicationDescription("Molecular Subtype Training and Prediction application");
 
   // parameters to get from the command line
   cbica::Logging logger;
