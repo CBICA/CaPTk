@@ -558,6 +558,15 @@ jobs:
         sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
       displayName: 'Install dependencies from Aptitude'
 
+    # CMake install
+    - bash: |
+        wget https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5-Linux-x86_64.tar.gz
+        tar -xzvf cmake-3.13.5-Linux-x86_64.tar.gz
+        cd cmake-3.13.5-Linux-x86_64
+        export PATH=`pwd`/cmake-3.13.5-Linux-x86_64/bin:$PATH
+        
+      displayName: 'Update CMake to 3.13'
+
   # Debug info before main scripts start
   # - bash: |
   #     ls -al
