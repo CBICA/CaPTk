@@ -567,10 +567,11 @@ jobs:
         wget https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5-Linux-x86_64.tar.gz
         tar -xzvf cmake-3.13.5-Linux-x86_64.tar.gz
         cd cmake-3.13.5-Linux-x86_64
-        echo "##vso[task.setvariable variable=temp_path]`pwd`/cmake-3.13.5-Linux-x86_64/bin:$PATH"
-        export PATH=$env:TEMP_PATH
-        echo "Displaying PATH"
-        echo $PATH
+        echo "##vso[task.setvariable variable=location;isOutput=true]`pwd`/cmake-3.13.5-Linux-x86_64/bin"
+        #export PATH=$(location)
+        #echo "Displaying PATH"
+        #echo $PATH
+        name: cmake_path
       displayName: 'Update CMake to 3.13'
 
   # Debug info before main scripts start
@@ -580,7 +581,7 @@ jobs:
 
     # Create build dir
     - bash: |
-        export PATH=$env:TEMP_PATH
+        export PATH=$(cmake_path.location):${PATH}
         echo "Displaying PATH"
         echo $PATH
         mkdir -p bin
@@ -605,7 +606,7 @@ jobs:
 
     # Configure and build superbuild
     - bash: |
-        export PATH=$env:TEMP_PATH
+        export PATH=$(cmake_path.location):${PATH}
         echo "Displaying PATH"
         echo $PATH
         cd bin
@@ -615,7 +616,7 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
-        export PATH=$env:TEMP_PATH
+        export PATH=$(cmake_path.location):${PATH}
         echo "Displaying PATH"
         echo $PATH
         cd bin
@@ -626,7 +627,7 @@ jobs:
 
     # Check libra
     - bash: |
-        export PATH=$env:TEMP_PATH
+        export PATH=$(cmake_path.location):${PATH}
         echo "Displaying PATH"
         echo $PATH
         cd bin/install/appdir/usr/bin/
@@ -635,7 +636,7 @@ jobs:
       
     # Build a package
     - bash: |
-        export PATH=$env:TEMP_PATH
+        export PATH=$(cmake_path.location):${PATH}
         echo "Displaying PATH"
         echo $PATH
         rm -rf regression
