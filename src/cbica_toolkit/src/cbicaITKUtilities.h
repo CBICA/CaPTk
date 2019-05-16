@@ -1248,4 +1248,11 @@ namespace cbica
     return outputIndeces;
   }
 
+  bool IsDicom(const std::string fileNameToCheck)
+  {
+    gdcm::Reader reader;
+    reader.SetFileName(fileNameToCheck.c_str());
+    return reader.CanRead();
+  }
+
 }
