@@ -77,7 +77,7 @@ MACRO(CWL_INSTALL APPLICATION)
   add_custom_command(
     TARGET ${APPLICATION}
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl ${DATA_DIR}/cwlFiles
+    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/${APPLICATION}.cwl ${DATA_DIR}/cwlFiles/${APPLICATION}.cwl
     COMMENT "Updating cwl File for ${APPLICATION}..."
   )
   
