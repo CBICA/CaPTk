@@ -211,8 +211,8 @@ jobs:
     
     # Build Docker image
     - script: |
-      docker build -t $(dockerId)/$(imageName) .
-      docker push $(dockerId)/$(imageName)
+        docker build -t $(dockerId)/$(imageName) .
+        docker push $(dockerId)/$(imageName)
     #  docker login -u $(dockerId) -p $(pswd)
     
     
