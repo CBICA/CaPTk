@@ -462,6 +462,12 @@ if flipneed
     corrected_img=fliplr(corrected_img); % Michael: When the image was flipped by the program previously, it has to be flipped again now.
 end
 
+mask_toWrite = uint8(imresize(mask_up,size(dcmimg_orig),'nearest'));
+disp('Trying to write the result');
+maskDir = strcat(outpath,'/totalmask');
+mkdir(maskDir);
+dicomwrite(mask_toWrite, fullfile(maskDir,'/totalmask.dcm'), dcminfo, 'CreateMode', 'Copy');
+
 % %%%%save only outlined images
 figure(1);set(1,'Visible',vis);imagesc(dense_class);colormap jet;colorbar;axis image;
 V1=min(tvalues);V2=max(tvalues);N=-3;
@@ -476,8 +482,8 @@ for i=1:length(cents)
 end
 hold off
 
-[imgwind, outlined_image]=wind_and_outline(corrected_img,seg,mask_up,lo_win,2.5);
-imwrite(outlined_image,fullfile(outpath,strcat([outfileroot '_density_segmentation' ext])),ext(2:end));
+%[imgwind, outlined_image]=wind_and_outline(corrected_img,seg,mask_up,lo_win,2.5);
+%imwrite(outlined_image,fullfile(outpath,strcat([outfileroot '_density_segmentation' ext])),ext(2:end));
 breastMask=logical(mask_up);
 
 if saveIntermediate

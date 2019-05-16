@@ -63,6 +63,7 @@ public:
   QPushButton * m_clearImagesBtn;
   QPushButton * m_clearImagesBtn_temp; // TBD
   QPushButton * HelpButton;
+  QPushButton * m_CompareButton;
 
   void setupUi(QWidget *fImagesPanel)
   {
@@ -131,6 +132,8 @@ public:
     m_clearImagesBtn = new QPushButton("Close All");
     m_clearImagesBtn_temp = new QPushButton("Close All");
     m_3dViz = new QPushButton("3D Visualizer");
+    m_CompareButton = new QPushButton("Comparison Mode");
+    m_CompareButton->setCheckable(true);
 #ifndef WIN32
     m_3dViz->setDisabled(true);
 #endif
@@ -158,6 +161,7 @@ public:
     visLayoutSub->addWidget(m_overlayChkBox);
     visLayoutSub->addWidget(m_overlaySlider);
     visLayoutSub->addWidget(new QLabel("|"));
+    visLayoutSub->addWidget(m_CompareButton);
     visLayoutSub->addWidget(m_3dViz);
     visLayoutSub->addWidget(new QLabel("|"));
     visLayoutSub->addWidget(m_clearImagesBtn);

@@ -11,30 +11,36 @@ Volumetric,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area al
 Volumetric,Axis,String,[z:x:y],z,The axis with maximum area for which the 2D slice computation is to be done
 Histogram,Bins,Int,,10,The number of bins to calculate for the Histogram
 GLCM,Bins,Int,,10,
-GLCM,Directions,Int,03:26,26,The number of directions around the center voxel to calculate features on
+GLCM,Directions,Int,03:27,27,The number of directions around the center voxel to calculate features on
 GLCM,Radius,Int,(1:9),1,Radius around the center voxel which can be in mm as well (needs to be defined as float in same space as input image/mask)
 GLCM,Offset,String,[Individual:Average:Combined],Average,Either individual offset values or averaged
 GLCM,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area along specified axis) or full 3D volume features
 GLCM,Axis,String,[z:x:y],z,The axis with maximum area for which the 2D slice computation is to be done (keep in mind that single slice computation for individual offsets might not work)
 GLRLM,Bins,Int,,10,
-GLRLM,Directions,Int,03:26,26,The number of directions around the center voxel to calculate features on
+GLRLM,Directions,Int,03:27,27,The number of directions around the center voxel to calculate features on
 GLRLM,Radius,Int,(1:9),1,Radius around the center voxel which can be in mm as well (needs to be defined as float in same space as input image/mask)
 GLRLM,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area along specified axis) or full 3D volume features
 GLRLM,Axis,String,[z:x:y],z,The axis with maximum area for which the 2D slice computation is to be done (keep in mind that single slice computation for individual offsets might not work)
 GLRLM,Offset,String,[Individual:Average:Combined],Individual,Either individual offset values or averaged
 GLRLM,Range,Int,,4,The run length distance 
-NGTDM,Bins,Int,,20,
-NGTDM,Directions,Int,03:26,26,The number of directions around the center voxel to calculate features on
-NGTDM,Radius,Int,(1:9),1,Radius around the center voxel
-NGTDM,Offset,String,[Individual:Average],Average,Either individual offset values or averaged
-NGTDM,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area along specified axis) or full 3D volume features
-NGTDM,Axis,String,[z:x:y],z,The axis with maximum area for which the 2D slice computation is to be done (keep in mind that single slice computation for individual offsets might not work)
 GLSZM,Bins,Int,,20,
-GLSZM,Directions,Int,03:26,26,The number of directions around the center voxel to calculate features on
+GLSZM,Directions,Int,03:27,27,The number of directions around the center voxel to calculate features on
 GLSZM,Radius,Int,(1:9),1,Radius around the center voxel
 GLSZM,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area along specified axis) or full 3D volume features
 GLSZM,Axis,String,[z:x:y],z,The axis with maximum area for which the 2D slice computation is to be done (keep in mind that single slice computation for individual offsets might not work)
 GLSZM,Range,Int,,4,The run length distance
+NGTDM,Bins,Int,,20,
+NGTDM,Directions,Int,03:27,27,The number of directions around the center voxel to calculate features on
+NGTDM,Radius,Int,(1:9),1,Radius around the center voxel
+NGTDM,Offset,String,[Individual:Average],Average,Either individual offset values or averaged
+NGTDM,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area along specified axis) or full 3D volume features
+NGTDM,Axis,String,[z:x:y],z,The axis with maximum area for which the 2D slice computation is to be done (keep in mind that single slice computation for individual offsets might not work)
+NGLDM,Bins,Int,,20,,
+NGLDM,Directions,Int,03:27,27,The number of directions around the center voxel to calculate features on,
+NGLDM,Radius,Int,(1:9),1,Radius around the center voxel,
+NGLDM,Offset,String,[Individual:Average],Average,Either individual offset values or averaged,
+NGLDM,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area along specified axis) or full 3D volume features,
+NGLDM,Axis,String,[z:x:y],z,The axis with maximum area for which the 2D slice computation is to be done (keep in mind that single slice computation for individual offsets might not work)
 LBP,Radius,Int,(1:9),1.1,Radius around the center voxel/pixel (if defined as float it is assumed to be in world coordinates and if as Integer it is assumed to be in image coordinates)
 Lattice,FullImage,Int,0:1,0,Whether computations across the entire image need to happen in addition to lattice
 Lattice,Window,mm,0:ImageSize,10.0,Window of single lattice node

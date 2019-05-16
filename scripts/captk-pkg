@@ -71,6 +71,23 @@ if [ ! -d "./src/applications/individualApps/libra/MCR" ]; then
   echo "[:] Done installing MCR component."
 fi
 
+# get version of GNU tool - taken from https://stackoverflow.com/a/25845393
+toolversion() {
+    local prog="$1" operator="$2" value="$3" version
+
+    version=$($prog --version | awk '{print $NF; exit}')
+
+    awk -vv1="$version" -vv2="$value" 'BEGIN {
+        split(v1, a, /\./); split(v2, b, /\./);
+        if (a[1] == b[1]) {
+            exit (a[2] '$operator' b[2]) ? 0 : 1
+        }
+        else {
+            exit (a[1] '$operator' b[1]) ? 0 : 1
+        }
+    }'
+}
+
 # Run the fixes for linux, assume being ran from build folder (./bin)
 RUN_FIXES () {
 
@@ -81,6 +98,9 @@ RUN_FIXES () {
   # Save the usr dir location
   cd ./appdir/usr/
   USR_DIR=`pwd`
+
+  echo "[:] Adding proper qmake to PATH..."
+  export PATH=$PATH:`pwd`/bin/qt/5.12.1/bin
 
   echo "[:] Running Linux Fixes..."
 
@@ -94,7 +114,7 @@ RUN_FIXES () {
   cd ${SRC_DIR}
   cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
   cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
-  cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
+  #cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
 
   # Move into install
   cd ./bin/install/appdir/usr
@@ -108,7 +128,11 @@ RUN_FIXES () {
   # but for SOME reason linuxdeployqt doesn't pull in. So we need to manually add these nss libraries in for the webengine
   # to work.
   echo "[:] Adding NSS libs..."
-  cp /usr/lib/x86_64-linux-gnu/nss/* ./lib
+  if [ -d "/usr/lib/x86_64-linux-gnu/nss" ]; then
+    cp /usr/lib/x86_64-linux-gnu/nss/* ./lib
+  else
+    cp -r /usr/lib64/nss/* ./lib
+  fi
 
   # Fix 3: LIBRA was made on windows and none of the stuff is marked as executable by default
   # All of these need to be exec or else it flat out doesnt work.
@@ -165,7 +189,7 @@ RUN_DEPLOYQT () {
   # The issue is that linuxdeployqt cannot for the life of it process globstars (**) for some reason, meaning we cannot simply exclude MCR/** and be done,
   # no, we need to manually come up with a glob for EVERY possible directory hierarchy for MCR, leaving us with this.
   # Using continuous release as of 3/5/18, please change to version 5 or 6 if you are having issues with this.
-  ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.6.0-rc1/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
+  ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.8.0-beta/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
   # But now we aren't even done. Normally, you could run linuxdeployqt with the -appimage flag which gives us our amazing AppImage file that can be ran anywhere.
   # However, we have started to see a lot of issues revolving around the $LD_LIBRARY_PATH since we want to arbitrarily run applications from the main CaPTk binary.
   # The solution is to wrap the entry of the AppImage according to this guide made by the guy who made AppImages: https://github.com/probonopd/linuxdeployqt/wiki/Custom-wrapper-script-instead-of-AppRun
@@ -219,29 +243,42 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 cd bin
 
-# Check for existing install folder, and trash it if it exists. We do this to make sure the binaries are overwritten
-if [ -d "install" ]; then
-  echo "[:] Cleaning up previous build..."
-  rm -rf ./install/
+# Optional flag one can set in the terminal to skip the double build process, used in Azure
+if [ -z "$PKG_FAST_MODE" ]; then
+
+  # Check for existing install folder, and trash it if it exists. We do this to make sure the binaries are overwritten
+  if [ -d "install" ]; then
+    echo "[:] Cleaning up previous build..."
+    rm -rf ./install/
+  fi
+
+  # Superbuild
+  # Configure cmake
+  echo "[:] Running cmake command for superbuild..."
+  bash ../scripts/linux-cmake-conf
+
+  # Make install/strip
+  echo "[:] Building superbuild..."
+  make -j2
+
+  # CaPTk
+  # Configure cmake
+  echo "[:] Running cmake command for CaPTk..."
+  bash ../scripts/linux-cmake-conf
+
+  # Make install/strip
+  echo "[:] Building CaPTk..."
+  make -j2 install/strip
+
+else
+
+  echo "[!] Fast mode enabled!"
+
+  # Make install/strip
+  echo "[:] Installing CaPTk..."
+  make -j2 install/strip
+
 fi
-
-# Superbuild
-# Configure cmake
-echo "[:] Running cmake command for superbuild..."
-bash ../scripts/linux-cmake-conf
-
-# Make install/strip
-echo "[:] Building superbuild..."
-make -j2
-
-# CaPTk
-# Configure cmake
-echo "[:] Running cmake command for CaPTk..."
-bash ../scripts/linux-cmake-conf
-
-# Make install/strip
-echo "[:] Building CaPTk..."
-make -j2 install/strip
 
 # Install docs
 echo "[:] Installing docs..."
@@ -250,8 +287,12 @@ cp -r ../docs install/appdir/usr/
 # We need to fix the project first
 RUN_FIXES
 
-# Install and deploy
-RUN_DEPLOYQT
+if toolversion ldd '>=' 2.24; then
+  echo "Too high a version of LDD detected; AppImage will potentially be unsupported, skipping packaging."
+else
+  # Install and deploy
+  RUN_DEPLOYQT
+fi
 
 echo "[:] Building Installer..."
 

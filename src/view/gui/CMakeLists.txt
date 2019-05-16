@@ -36,8 +36,8 @@ SET( GUI
   fPCADialog
   fTrainingDialog
   fPerfusionMeasuresDialog
-  fDiffusionMeasuresDialog
   fPerfusionAlignmentDialog
+  fDiffusionMeasuresDialog
   fDCM2NIfTI
   fHistoMatchDialog
   fWhiteStripeDialog
@@ -50,6 +50,7 @@ SET( GUI
   fDeepMedicNormDialog
   fSBRTNoduleDialog
   fSBRTAnalysisDialog
+  fTexturePipelineDialog
   #fSegmentationPanel
   #fHelpAppDialog
 )
@@ -62,6 +63,8 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/Slicer.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/SlicerManagerCommand.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/SlicerManagerCommand.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ComparisonViewerCommand.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ComparisonViewerCommand.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Landmarks.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Landmarks.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/InteractorStyleNavigator.h"

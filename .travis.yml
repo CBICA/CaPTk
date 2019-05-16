@@ -55,7 +55,7 @@ matrix:
   allow_failures:
     #- os: linux
     #  dist: xenial
-    # - os: osx
+    - os: osx
     - os: linux
       dist: trusty
     - os: windows

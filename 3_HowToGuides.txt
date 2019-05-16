@@ -174,7 +174,7 @@ This tool does a z-scoring based normalization on the loaded image.
 	-# An input image.
 	
 <b>USAGE:</b>
-	-# Launch the tool using the 'Preprocessing' -> 'DeepMedicNormalizer' menu option.
+	-# Launch the tool using the 'Preprocessing' -> 'ZScoringNormalizer' menu option.
   -# Specify the input image and the (optional) mask
   -# Specify the parameters (quantization upper/lower and cut-off upper/lower) to remove the outliers 
   -# Specify the output image 
@@ -300,21 +300,23 @@ References:
 
 --------
 
-## DeepMedic (Windows-only)
-DeepMedic is a Deep Learning based segmentation algorithm [1,2] and users can do inference using a pre-trained model (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation.
+## Deep Learning Segmentation
+
+For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the pre-processing).
 
 <b> REQUIREMENTS:</b>
 The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.
 
 <b> USAGE:</b>
-	-# Load in CaPTk the images that you want to segment.
+	-# Load the images that you want to segment in CaPTk.
   -# [OPTIONAL] Load the brain mask - this is used for normalization.
+  -# [OPTIONAL] Select the appropriate pre-trained model folder (either brain tumor segmentation or skull stripping is available): for custom models, select appropriate option and browse to the model directory.
   -# Select the output folder.
-  -# Click on 'Applications' -> 'DeepMedic Segmentation' 
+  -# Click on 'Applications' -> 'Brain Tumor Segmentation' or 'Skull Stripping' 
 
 This can also be used from the command line:
 \verbatim
-DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -o C:/data/output/ -m C:/data/optionalMask.nii.gz
+DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -o C:/data/output/ -m C:/data/optionalMask.nii.gz -md C:/data/pretrainedModelFolder/
 \endverbatim
 <br>
 
@@ -404,7 +406,7 @@ Contains the following applications:
 */
 
 /**
-\page Glioblastoma_Molecular "Brain Cancer: Glioblastoma Molecular Subtype Prediction"
+\page Glioblastoma_Molecular Brain Cancer: Glioblastoma Molecular Subtype Prediction
 This application provides the prediction of the molecular subtype of <i>de novo</i> glioblastoma patients using baseline pre-operative multi-parametric MRI analysis [1].
 
 <b>REQUIREMENTS:</b>
@@ -1011,8 +1013,8 @@ Please see the LIBRA manual for more details: http://www.med.upenn.edu/sbia/libr
 
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-libra.bat --input C:/inputDICOMDir --output C:/outputDir # windows
-libra --input C:/inputDICOMDir --output C:/outputDir # linux
+${captk_install_dir}/bin/libra.bat --input C:/inputDICOMDir --output C:/outputDir # windows
+${captk_install_dir}/bin/libra --input C:/inputDICOMDir --output C:/outputDir # linux
 \endverbatim
 
 <br>

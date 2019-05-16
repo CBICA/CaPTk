@@ -206,7 +206,11 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("d", "debug", cbica::Parameter::BOOLEAN, "true or false", "Whether to print out additional debugging info", "Defaults to '0'");
   parser.addOptionalParameter("dw", "debugWrite", cbica::Parameter::BOOLEAN, "true or false", "Whether to write intermediate files or not", "Defaults to '0'");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::FILE, "Text file with write access", "Full path to log file to store logging information", "By default, only console output is generated");
-  parser.exampleUsage("FeatureExtraction -n AAAC -i AAAC0_flair_pp_shrunk.nii.gz -p 1_params_default.csv -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -o featExParam1.csv -t FL -r 1 -l ED,NC");
+  //parser.exampleUsage("FeatureExtraction -n AAAC -i AAAC0_flair_pp_shrunk.nii.gz -p 1_params_default.csv -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -o featExParam1.csv -t FL -r 1 -l ED,NC");
+
+  parser.addApplicationDescription("This does feature calculation based on the input image(s) and mask");
+  parser.addExampleUsage("-n AAAC -i AAAC0_flair_pp_shrunk.nii.gz,AAAC0_t1_pp_shrunk.nii.gz  -t FL,T1 -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -r 1,2 -l ED,NC -p 1_params_default.csv -o featExParam1.csv -vc 1", 
+    "This calculates features based for subject 'AAAC' using the images 'AAAC0_flair_pp_shrunk.nii.gz,AAAC0_t1_pp_shrunk.nii.gz' represented by the modalities 'FL,T1' in the region defined by 'AAAC0_flair_pp_shrunk_testTumor.nii.gz' at label '1,2' (output as 'ED,NC') based on the parameter file '1_params_default.csv' with output written into 'featExParam1.csv' with vertical concatenation");
 
   //bool loggerRequested = false;
   //cbica::Logging logger;
@@ -388,6 +392,51 @@ int main(int argc, char** argv)
     case 3:
     {
       using ImageType = itk::Image < float, 3 >;
+      if (genericImageInfo.GetImageSize()[2] == 1)
+      {
+        // this is actually a 2D image so re-process accordingly
+
+        auto m_tempFolderLocation = cbica::getUserHomeDirectory() + "/.CaPTk/tmp_" + cbica::getCurrentProcessID() + "/";
+        cbica::createDir(m_tempFolderLocation);
+
+        ImageType::IndexType regionIndex;
+        ImageType::SizeType regionSize;
+
+        auto currentSize = genericImageInfo.GetImageSize();
+        auto currentOrigin = genericImageInfo.GetImageOrigins();
+        regionSize[0] = currentSize[0];
+        regionSize[1] = currentSize[1];
+        regionSize[2] = 0;
+        for (size_t d = 0; d < 3; d++)
+        {
+          regionIndex[d] = /*currentOrigin[d]*/0;
+        }
+
+        using ActualImageType = itk::Image< float, 2 >;
+        ImageType::RegionType desiredRegion(regionIndex, regionSize);
+        auto filter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
+        filter->SetExtractionRegion(desiredRegion);
+        for (size_t i = 0; i < image_paths.size(); i++)
+        {
+          filter->SetInput(cbica::ReadImage< ImageType >(image_paths[i]));
+          filter->SetDirectionCollapseToIdentity(); // This is required.
+          filter->Update();
+
+          auto currentFileBase = cbica::getFilenameBase(image_paths[i]);
+          image_paths[i] = m_tempFolderLocation + currentFileBase + "_2D.nii.gz";
+          cbica::WriteImage< ActualImageType >(filter->GetOutput(), image_paths[i]);
+        }
+        filter->SetInput(cbica::ReadImage< ImageType >(maskfilename));
+        filter->SetDirectionCollapseToIdentity(); // This is required.
+        filter->Update();
+
+        auto currentFileBase = cbica::getFilenameBase(maskfilename);
+        maskfilename = m_tempFolderLocation + currentFileBase + "_2D.nii.gz";
+        cbica::WriteImage< ActualImageType >(filter->GetOutput(), maskfilename);
+        algorithmRunner< ActualImageType >();
+      }
+
+      // otherwise, it actually is a 3D image
       algorithmRunner< ImageType >();
       break;
     }
