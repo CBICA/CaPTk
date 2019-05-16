@@ -16,7 +16,15 @@ RUN apt-get install -y \
     wget \
     git-core \
     unzip \
-    doxygen 
+    doxygen \
+    gcc \
+    g++ \
+    make \
+    libgl-dev \
+    python3-pip \
+    python-numpy \
+    dos2unix \
+    libxkbcommon-x11-0
     
 RUN git lfs install
 
