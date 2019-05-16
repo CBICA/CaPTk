@@ -205,6 +205,10 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_Linux'
         downloadPath: '$(System.ArtifactsDirectory)'
     
+    # Build Docker image
+    - script: docker build -t cbica/captk .
+    
+    
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
   timeoutInMinutes: 0
