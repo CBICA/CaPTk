@@ -56,6 +56,8 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "gdcmMD5.h"
 #include "gdcmReader.h"
 
+#include "DicomIOManager.h"
+
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 //unsigned int RmsCounter = 0;
 //double MaxRmsE[4] = { 0.8, 0.75, 0.4, 0.2 };
@@ -1247,18 +1249,6 @@ namespace cbica
       }
     }
     return outputIndeces;
-  }
-
-  /**
-  \brief Check if the given file is a valid DICOM image or not
-
-  \param fileNameToCheck The input file
-  */
-  inline bool IsDicom(const std::string fileNameToCheck)
-  {
-    gdcm::Reader reader;
-    reader.SetFileName(fileNameToCheck.c_str());
-    return reader.CanRead();
   }
 
 }

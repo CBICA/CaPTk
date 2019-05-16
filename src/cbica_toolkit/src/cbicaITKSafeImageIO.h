@@ -48,7 +48,7 @@ using TImageType = ImageTypeFloat3D;
 using MaskType = itk::Image<unsigned int, 3>;
 
 namespace cbica
-{
+{ 
   /**
   \brief Get the itk::ImageFileReader from input file name. This is useful for scenarios where reader meta information is needed for later writing step(s).
 
@@ -661,9 +661,7 @@ namespace cbica
   template <class TImageType = ImageTypeFloat3D >
   typename TImageType::Pointer ReadImage(const std::string &fName, const std::string &supportedExtensions = ".nii.gz,.nii,.dcm", const std::string &delimitor = ",")
   {
-    auto gdcmIO = itk::GDCMImageIO::New();
-    gdcmIO->SetFileName(fName);
-    if (gdcmIO->CanReadFile(fName.c_str()) || cbica::isDir(fName))
+    if (cbica::IsDicom(fName))
     {
       DicomIOManager< TImageType > dcmSeriesReader;
       dcmSeriesReader.SetDirectoryPath(fName);

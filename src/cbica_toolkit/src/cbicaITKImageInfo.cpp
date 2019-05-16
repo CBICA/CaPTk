@@ -36,8 +36,7 @@ namespace cbica
 
       m_itkImageIOBase = itk::ImageIOFactory::CreateImageIO(m_fileName.c_str(), itk::ImageIOFactory::ReadMode);
       
-      if ((fName_ext == ".dcm") || (fName_ext == ".dicom") || (fName_ext == "") ||
-        (fName_ext == ".ima"))
+      if (cbica::IsDicom(fName_norm))
       {
         gdcm::Reader reader;
         reader.SetFileName(m_fileName.c_str());
