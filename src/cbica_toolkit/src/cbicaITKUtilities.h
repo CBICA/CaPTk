@@ -1249,7 +1249,12 @@ namespace cbica
     return outputIndeces;
   }
 
-  bool IsDicom(const std::string fileNameToCheck)
+  /**
+  \brief Check if the given file is a valid DICOM image or not
+
+  \param fileNameToCheck The input file
+  */
+  inline bool IsDicom(const std::string fileNameToCheck)
   {
     gdcm::Reader reader;
     reader.SetFileName(fileNameToCheck.c_str());
