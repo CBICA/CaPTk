@@ -757,19 +757,23 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     INSTALL(DIRECTORY "${DATA_DIR}/deepMedic/saved_models" DESTINATION data/deepMedic)
   ENDIF()
   
-  # install CWL files
-  FILE(GLOB_RECURSE CWL_FILES "${DATA_DIR}/cwlFiles/*")
-  FOREACH(cwlFile ${CWL_FILES})
-    IF (APPLE)
-      SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
-      SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${cwlFile})
+  # install CWL files if they aren't getting generated
+  IF(CAPTK_DISABLE_CWL)
+	
+    FILE(GLOB_RECURSE CWL_FILES "${DATA_DIR}/cwlFiles/*")
+    FOREACH(cwlFile ${CWL_FILES})
+      IF (APPLE)
+        SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+        SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${cwlFile})
 
-      INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
+        INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
 
-    ELSE()
-      INSTALL(FILES "${cwlFile}" DESTINATION bin)
-    ENDIF()
-  ENDFOREACH()
+      ELSE()
+        INSTALL(FILES "${cwlFile}" DESTINATION bin)
+      ENDIF()
+    ENDFOREACH()
+  
+  ENDIF()
 
   IF(WIN32)
     FILE(GLOB_RECURSE ALL_DEPENDENT_LIBS "${PROJECT_BINARY_DIR}/${CMAKE_CONFIGURATION_TYPES}/*.dll")
