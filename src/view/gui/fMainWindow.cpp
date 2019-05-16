@@ -8526,6 +8526,17 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
   //updateProgress(5, "Starting Registration");
 
   auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
+  auto gdcmIO = itk::GDCMImageIO::New();
+  gdcmIO->SetFileName(fixedFileName);
+  if (gdcmIO->CanReadFile(fixedFileName.c_str()))
+  {
+    // dicom image detected
+    cbica::WriteImage< ImageTypeFloat3D >(
+      cbica::ReadImage< ImageTypeFloat3D >(fixedFileName),
+      m_tempFolderLocation + "/tempDicomConverted_fixed.nii.gz"
+      );
+    fixedFileName = m_tempFolderLocation + "/tempDicomConverted_fixed.nii.gz";
+  }
 
   if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
   {
@@ -8556,6 +8567,21 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
       << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
       << "-m" << metrics.c_str() << "-n" << iterations.c_str();
 
+    gdcmIO->SetFileName(matrixFileNames[i]);
+    if (gdcmIO->CanReadFile(matrixFileNames[i].c_str()))
+    {
+      // dicom image detected
+      cbica::WriteImage< ImageTypeFloat3D >(
+        cbica::ReadImage< ImageTypeFloat3D >(matrixFileNames[i]),
+        m_tempFolderLocation + "/tempDicomConverted.nii.gz"
+        );
+      args << "-t" << (m_tempFolderLocation + "/tempDicomConverted.nii.gz").c_str();
+    }
+    else
+    {
+      args << "-t" << matrixFileNames[i].c_str();
+    }
+    
     if (metrics == "NCC")
       args << "-ri" << radii.c_str();
     if (affineMode)
