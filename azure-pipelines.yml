@@ -567,7 +567,8 @@ jobs:
         wget https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5-Linux-x86_64.tar.gz
         tar -xzvf cmake-3.13.5-Linux-x86_64.tar.gz
         cd cmake-3.13.5-Linux-x86_64
-        export PATH=`pwd`/cmake-3.13.5-Linux-x86_64/bin:$PATH
+        echo "##vso[task.setvariable variable=PATH]`pwd`/cmake-3.13.5-Linux-x86_64/bin:$PATH"
+        #export PATH=`pwd`/cmake-3.13.5-Linux-x86_64/bin:$PATH
         echo "Displaying PATH"
         echo $PATH
       displayName: 'Update CMake to 3.13'
@@ -579,6 +580,8 @@ jobs:
 
     # Create build dir
     - bash: |
+        echo "Displaying PATH"
+        echo $PATH
         mkdir -p bin
       displayName: 'Create build directory'
 
