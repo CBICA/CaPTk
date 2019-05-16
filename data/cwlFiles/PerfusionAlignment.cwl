@@ -1,6 +1,6 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.6.2.RC
+version: 1.7.0.RC
 baseCommand: PerfusionAlignment
 inputs:
   input:
@@ -10,34 +10,20 @@ inputs:
       position: 1
       prefix: -i
     doc: The input DSC-MRI image..
-  echo time:
+  dicom file:
     type: string
     label: none
     inputBinding:
       position: 1
-      prefix: -e
-    doc: The echo time in seconds..
-  PSR:
+      prefix: -a
+    doc: The number of time-points after drop..
+  t1ce file:
     type: string
     label: none
     inputBinding:
       position: 1
-      prefix: -p
-    doc: The Percent Signal Recovery image (1=YES, 0=NO, 1 (Default)).
-  peakHeight:
-    type: string
-    label: none
-    inputBinding:
-      position: 1
-      prefix: -pH
-    doc: The Peak Height image (1=YES, 0=NO, 1 (Default)).
-  apRCBV:
-    type: string
-    label: none
-    inputBinding:
-      position: 1
-      prefix: -r
-    doc: Automatially-extracted proxy to reletive cerebral volume image (1=YES, 0=NO, 1 (Default)).
+      prefix: -c
+    doc: The input T1 post-weighted image..
   output:
     type: string
     label: none

@@ -1,6 +1,6 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.6.2.Beta
+version: 1.7.0.RC
 baseCommand: TrainingModule
 inputs:
   features:
@@ -30,7 +30,7 @@ inputs:
     inputBinding:
       position: 1
       prefix: -n
-    doc: The Configuration type, either Cross-validation or Split Train-Test (1=CrossValidtion, 2=TrainTest)..
+    doc: The Configuration type, Cross-validation (n=1), Split Train-Test (n=2), Train only (n=3), and Test only (n=4)..
   configuration parameters:
     type: int
     label: none
@@ -39,12 +39,12 @@ inputs:
       prefix: -k
     doc: The number of folds for Crossvalidation (5/10) and the size of training set for TrainTest (k<n)..
   output:
-    type: string
+    type: string?
     label: none
     inputBinding:
       position: 1
-      prefix: -o
-    doc: The output direcory to write output.
+      prefix: -m
+    doc: The model direcory (needed only when n=4).
   runtest:
     type: string?
     label: none
