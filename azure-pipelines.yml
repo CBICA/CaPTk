@@ -564,9 +564,9 @@ jobs:
 
     # CMake install
     - script: |
-        wget https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5.tar.gz
-        tar -xzvf cmake-3.13.5.tar.gz
-        cd cmake-3.13.5
+        wget https://github.com/Kitware/CMake/releases/download/v3.12.1/cmake-3.12.1.tar.gz
+        tar -xzvf cmake-3.12.1.tar.gz
+        cd cmake-3.12.1
         ./configure
         make -j2
         sudo make install/strip
