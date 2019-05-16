@@ -284,9 +284,7 @@ bool DicomIOManager<T>::LoadDicom()
 template<class T>
 inline bool DicomIOManager<T>::IsDicom(std::string path)
 {
-  gdcm::Reader reader;
-  reader.SetFileName(path.c_str());
-  return reader.CanRead();
+  return cbica::IsDicom(path);
 }
 
 template <class T>
