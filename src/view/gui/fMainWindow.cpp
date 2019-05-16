@@ -5290,8 +5290,9 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       {
         std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
       }
-      if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
-        (extension == ".ima"))
+      //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+      //  (extension == ".ima"))
+      if (cbica::IsDicom(fileName))
       {
         QDir d = QFileInfo(fileName.c_str()).absoluteDir();
         QString fname = d.absolutePath();
@@ -8525,18 +8526,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
 
   //updateProgress(5, "Starting Registration");
 
-  auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
-  auto gdcmIO = itk::GDCMImageIO::New();
-  gdcmIO->SetFileName(fixedFileName);
-  if (gdcmIO->CanReadFile(fixedFileName.c_str()))
-  {
-    // dicom image detected
-    cbica::WriteImage< ImageTypeFloat3D >(
-      cbica::ReadImage< ImageTypeFloat3D >(fixedFileName),
-      m_tempFolderLocation + "/tempDicomConverted_fixed.nii.gz"
-      );
-    fixedFileName = m_tempFolderLocation + "/tempDicomConverted_fixed.nii.gz";
-  }
+  //auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
 
   if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
   {
@@ -8566,22 +8556,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
     args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
       << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
       << "-m" << metrics.c_str() << "-n" << iterations.c_str();
-
-    gdcmIO->SetFileName(matrixFileNames[i]);
-    if (gdcmIO->CanReadFile(matrixFileNames[i].c_str()))
-    {
-      // dicom image detected
-      cbica::WriteImage< ImageTypeFloat3D >(
-        cbica::ReadImage< ImageTypeFloat3D >(matrixFileNames[i]),
-        m_tempFolderLocation + "/tempDicomConverted.nii.gz"
-        );
-      args << "-t" << (m_tempFolderLocation + "/tempDicomConverted.nii.gz").c_str();
-    }
-    else
-    {
-      args << "-t" << matrixFileNames[i].c_str();
-    }
-    
+        
     if (metrics == "NCC")
       args << "-ri" << radii.c_str();
     if (affineMode)

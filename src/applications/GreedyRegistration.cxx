@@ -144,9 +144,7 @@ int main(int argc, char** argv)
 
   std::string tempFolderLocation = cbica::normPath(cbica::getUserHomeDirectory() + "/.CaPTk");
   cbica::createDir(tempFolderLocation);
-  auto gdcmIO = itk::GDCMImageIO::New();
-  gdcmIO->SetFileName(fixedImage);
-  if (gdcmIO->CanReadFile(fixedImage.c_str()))
+  if (cbica::IsDicom(fixedImage))
   {
     // dicom image detected
     cbica::WriteImage< ImageTypeFloat3D >(
@@ -168,8 +166,7 @@ int main(int argc, char** argv)
       ImagePairSpec ip;
       ip.weight = current_weight;
       ip.fixed = fixedImage;
-      gdcmIO->SetFileName(inputImageFiles[i]);
-      if (gdcmIO->CanReadFile(inputImageFiles[i].c_str()))
+      if (cbica::IsDicom(inputImageFiles[i]))
       {
         // dicom image detected
         cbica::WriteImage< ImageTypeFloat3D >(
