@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  parser.exampleUsage("");
+  //parser.exampleUsage("");
   parser.addExampleUsage("-i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -v C:/input.bvec -a 1 -f 1 -r 1 -t 1 -o C:/output",
     "Calculates diffusion derivatives for the specified input image and parameters");
   parser.addApplicationDescription("Calculates Diffusion Derivatives for a DWI image for a defined mask, bvec and bval files");
