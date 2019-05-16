@@ -189,7 +189,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("a", "atlas", cbica::Parameter::STRING, "", "The atlas template.");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  parser.exampleUsage("PopulationAtlases -i <input dir> -l atlaslabelfile.csv -a jakob_stripped_with_cere_lps_256256128.nii.gz -o <output dir>");
+  //parser.exampleUsage("PopulationAtlases -i <input dir> -l atlaslabelfile.csv -a jakob_stripped_with_cere_lps_256256128.nii.gz -o <output dir>");
   parser.addExampleUsage("-i C:/properly/formatted/inputDir -l atlaslabelfile.csv -a jakob_stripped_with_cere_lps_256256128.nii.gz -o C:/outputDir", 
     "Calculates the population atlas based on the input files, atlas label file and the jakob");
   parser.addApplicationDescription("Population Atlas calculator");
