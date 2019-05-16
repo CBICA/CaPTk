@@ -176,7 +176,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   ENDIF()
 
-  OPTION( CAPTK_DISABLE_CWL "Disable CWL file generation - useful for debug builds or devops" OFF )
+  OPTION( CAPTK_DISABLE_CWL "Disable CWL file generation - useful for debug builds or devops" ON )
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
   MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
