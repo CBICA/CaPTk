@@ -9,7 +9,10 @@ int main(int argc, char **argv)
   auto parser = cbica::CmdParser(argc, argv, "EGFRvIIISurrogateIndex");
   parser.addRequiredParameter("i", "image", cbica::Parameter::FILE, "NIfTI or DICOM", "Input Perfusion image on which computation is done");
   parser.addRequiredParameter("m", "mask", cbica::Parameter::FILE, "NIfTI or DICOM", "Mask containing near (1) and far (2) labels");
-  parser.exampleUsage("EGFRvIIISurrogateIndex -i DSC-MRI_data.nii.gz -m Near_Far_masks.nii.gz");
+  //parser.exampleUsage("EGFRvIIISurrogateIndex -i DSC-MRI_data.nii.gz -m Near_Far_masks.nii.gz");
+  parser.addExampleUsage("-i DSC-MRI_data.nii.gz -m Near_Far_masks.nii.gz",
+    "Based on the near-far mask and input DSC MRI data, the PHI index is calculated");
+  parser.addApplicationDescription("Peritumoral Heterogeneity Index calculator");
   
   std::string inputFile, drawingFile;
 
