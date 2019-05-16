@@ -563,7 +563,7 @@ jobs:
       displayName: 'Install dependencies from Aptitude'
 
     # CMake install
-    - bash: |
+    - script: |
         wget https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5-Linux-x86_64.tar.gz
         tar -xzvf cmake-3.13.5-Linux-x86_64.tar.gz
         cd cmake-3.13.5-Linux-x86_64
@@ -580,7 +580,7 @@ jobs:
   #   displayName: 'Get debugging information'
 
     # Create build dir
-    - bash: |
+    - script: |
         export PATH=$(cmake_path.location):${PATH}
         echo "Displaying PATH"
         echo $PATH
@@ -590,7 +590,7 @@ jobs:
     # Create as much free memory as possible
 
     # Nuclear Option #1
-    - bash: |
+    - script: |
         rm -rf binaries/*mac*.zip
         rm -rf binaries/*windows*.zip
         rm -rf history
@@ -605,7 +605,7 @@ jobs:
     #   displayName: 'Create phony tests'
 
     # Configure and build superbuild
-    - bash: |
+    - script: |
         export PATH=$(cmake_path.location):${PATH}
         echo "Displaying PATH"
         echo $PATH
@@ -615,7 +615,7 @@ jobs:
       displayName: 'Configure and compile Superbuild'
 
     # Configure and build CaPTk
-    - bash: |
+    - script: |
         export PATH=$(cmake_path.location):${PATH}
         echo "Displaying PATH"
         echo $PATH
@@ -626,7 +626,7 @@ jobs:
       displayName: 'Configure and compile CaPTk'
 
     # Check libra
-    - bash: |
+    - script: |
         export PATH=$(cmake_path.location):${PATH}
         echo "Displaying PATH"
         echo $PATH
@@ -635,7 +635,7 @@ jobs:
       displayName: 'Checking ${installDir}/bin'
       
     # Build a package
-    - bash: |
+    - script: |
         export PATH=$(cmake_path.location):${PATH}
         echo "Displaying PATH"
         echo $PATH
