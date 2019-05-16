@@ -190,8 +190,8 @@ int main(int argc, char **argv)
 	parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
 	parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("EGFRvIIIIndexPredictor -i <input dir> -t 0 -o <output dir>");
-  parser.addExampleUsage("-i C:/properly/formatted/inputDir -o C:/outputDir -t 0", "Trains a new model based on the samples in inputDir");
-  parser.addExampleUsage("-t 1 -i C:/input -m C:/model -o C:/output", "Tests an existing model for inputs in 'C:/input' based on 'C:/EGFRvIIIModel' ");
+  parser.addExampleUsage("-t 0 -i C:/properly/formatted/inputDir -o C:/outputDir", "Trains a new model based on the samples in inputDir");
+  parser.addExampleUsage("-t 1 -i C:/input -m C:/model -o C:/output", "Tests an existing model for inputs in 'C:/input' based on 'C:/model' ");
   parser.addApplicationDescription("EGFRvIII Index Training and Prediction application");
 
 	// parameters to get from the command line
