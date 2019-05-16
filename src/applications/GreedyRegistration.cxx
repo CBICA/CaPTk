@@ -142,6 +142,19 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
+  std::string tempFolderLocation = cbica::normPath(cbica::getUserHomeDirectory() + "/.CaPTk");
+  cbica::createDir(tempFolderLocation);
+  auto gdcmIO = itk::GDCMImageIO::New();
+  gdcmIO->SetFileName(fixedImage);
+  if (gdcmIO->CanReadFile(fixedImage.c_str()))
+  {
+    // dicom image detected
+    cbica::WriteImage< ImageTypeFloat3D >(
+      cbica::ReadImage< ImageTypeFloat3D >(fixedImage),
+      tempFolderLocation + "/tempDicomConverted_fixed.nii.gz"
+      );
+    fixedImage = tempFolderLocation + "/tempDicomConverted_fixed.nii.gz";
+  }
   for (int i = 0; i < inputImageFiles.size(); i++)
   {
 
@@ -155,7 +168,20 @@ int main(int argc, char** argv)
       ImagePairSpec ip;
       ip.weight = current_weight;
       ip.fixed = fixedImage;
-      ip.moving = inputImageFiles[i];
+      gdcmIO->SetFileName(inputImageFiles[i]);
+      if (gdcmIO->CanReadFile(inputImageFiles[i].c_str()))
+      {
+        // dicom image detected
+        cbica::WriteImage< ImageTypeFloat3D >(
+          cbica::ReadImage< ImageTypeFloat3D >(inputImageFiles[i]),
+          tempFolderLocation + "/tempDicomConverted_moving.nii.gz"
+          );
+        ip.moving = tempFolderLocation + "/tempDicomConverted_moving.nii.gz";
+      }
+      else
+      {
+        ip.moving = inputImageFiles[i];
+      }
       param.inputs.push_back(ip);
 
       if (parser.isPresent("a")) {
