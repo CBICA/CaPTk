@@ -192,6 +192,7 @@ int main(int argc, char **argv)
   //parser.exampleUsage("EGFRvIIIIndexPredictor -i <input dir> -t 0 -o <output dir>");
   parser.addExampleUsage("-i C:/properly/formatted/inputDir -o C:/outputDir -t 0", "Trains a new model based on the samples in inputDir");
   parser.addExampleUsage("-t 1 -i C:/input -m C:/model -o C:/output", "Tests an existing model for inputs in 'C:/input' based on 'C:/EGFRvIIIModel' ");
+  parser.addApplicationDescription("EGFRvIII Index Training and Prediction application");
 
 	// parameters to get from the command line
 	cbica::Logging logger;
