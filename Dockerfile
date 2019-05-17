@@ -24,7 +24,9 @@ RUN apt-get install -y \
     python3-pip \
     python-numpy \
     dos2unix \
-    libxkbcommon-x11-0
+    libxkbcommon-x11-0 \
+    libxt-dev \
+    libglib2.0-0
     
 RUN git lfs install
 
@@ -44,11 +46,13 @@ RUN export PATH=/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin bin_libs && cd bin_libs && \
     cmake -DCMAKE_INSTALL_PREFIX=./install \
+    -DQT_DOWNLOAD_FORCE=ON \
     -Wno-dev .. && \
     make -j4 && \
     echo "=== Building CaPTk ===" && \
     cd ../bin && \
     cmake -DCMAKE_INSTALL_PREFIX=../bin_libs/install \
+    -DQT_DOWNLOAD_FORCE=ON \
     -Wno-dev .. && \
     make -j4 && \
     make install/strip -j4
