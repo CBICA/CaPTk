@@ -572,7 +572,7 @@ jobs:
         make -j2
         sudo make install/strip
         cmake --version
-      displayName: 'Update CMake to 3.13'
+      displayName: 'Update CMake'
 
   # Debug info before main scripts start
   # - bash: |
