@@ -155,8 +155,14 @@ Image pre-processing is essential to quantitative image analysis. CaPTk pre-proc
   <li><b>Co-registration.</b> Registration of various images to the same anatomical template, for examining anatomically aligned imaging signals in tandem and at the voxel level, is done using the Greedy Registration algorithm [5].</li>
   <li><b>Bias correction.</b> Correction for magnetic field inhomogeneity is provided using a non-parametric non-uniform intensity normalization [2].</li>
   <li><b>Intensity normalization.</b> Conversion of signals across modalities to comparable quantities using histogram matching [4].</li>
-  <li><b>DeepMedic normalization.</b> Images are normalized using a z-scoring mechanism with option to do the normalization within the region of interest or across the entire image. In addition, there is an option to remove outliers & noise from the image by removing a certain percentage of the top and bottom intensity ranges [6].</li>
+  <li><b>Z-Scoring normalization.</b> Images are normalized using a z-scoring mechanism with option to do the normalization within the region of interest or across the entire image. In addition, there is an option to remove outliers & noise from the image by removing a certain percentage of the top and bottom intensity ranges [6].</li>
 </ul>
+
+<B>NOTE:</B> An extended set of algorithms are available via the command line utility <b>Preprocessing</b>. For full details, run the command:
+
+\verbatim
+Preprocessing.exe -u
+\endverbatim
 
 \image html pre-processing_resize.png "Available pre-processing algorithms"
 \image latex pre-processing_resize.png "Available pre-processing algorithms"
