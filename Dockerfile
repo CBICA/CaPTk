@@ -48,13 +48,13 @@ RUN export PATH=/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
     cmake -DCMAKE_INSTALL_PREFIX=./install/appdir/usr \
     -DQT_DOWNLOAD_FORCE=ON \
     -Wno-dev .. && \
-    make -j4 && \
+    make -j2 && \
     echo "=== Building CaPTk ===" && \
     cmake -DCMAKE_INSTALL_PREFIX=./install/appdir/usr \
     -DQT_DOWNLOAD_FORCE=ON \
     -Wno-dev .. && \
-    make -j4 && \
-    make install/strip -j4
+    make -j2 && \
+    make install/strip -j2
 
 # define entry point
 #ENTRYPOINT ["/CaPTk/bin/CaPTk"]
