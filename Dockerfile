@@ -43,14 +43,12 @@ RUN export PATH=/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
     cd CaPTk && \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin bin_libs && cd bin_libs && \
-    cmake -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=./install \
+    cmake -DCMAKE_INSTALL_PREFIX=./install \
     -Wno-dev .. && \
     make -j4 && \
     echo "=== Building CaPTk ===" && \
     cd ../bin && \
-    cmake -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=../bin_libs/install \
+    cmake -DCMAKE_INSTALL_PREFIX=../bin_libs/install \
     -Wno-dev .. && \
     make -j4 && \
     make install/strip -j4
