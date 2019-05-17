@@ -93,6 +93,8 @@ jobs:
 
   pool:
     vmImage: 'Ubuntu-16.04'
+  
+  container: ubuntu1404
 
   steps:
     # Pull LFS
