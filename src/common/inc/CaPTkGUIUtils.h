@@ -255,6 +255,10 @@ inline std::string getApplicationPath(std::string appName)
     return individualAppDir + "/" + appName_wrap + winExt;
   }
   individualAppDir = cbica::normPath(std::string(PROJECT_SOURCE_DIR) + "/src/applications/individualApps/" + appName + "/");
+  if (appName.find("deepMedic") != std::string::npos)
+  {
+    individualAppDir = cbica::normPath(std::string(PROJECT_SOURCE_DIR) + "/src/applications/individualApps/deepmedic/");
+  }
   if (cbica::isFile(individualAppDir + "/" + appName_wrap + winExt))
   {
     return individualAppDir + "/" + appName_wrap + winExt;

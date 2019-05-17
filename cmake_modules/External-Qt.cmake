@@ -1,8 +1,46 @@
-FIND_PACKAGE(Qt5 COMPONENTS Core )
+FIND_PACKAGE( Qt5Core ${QT_VERSION} )
 
-OPTION( QT_DOWNLOAD_FORCE "Force Qt binary download regardless of whether Qt was found in host machine or not" OFF )
+# buld Qt from source for trusty; otherwise use pre-built binaries
+IF( "${RELEASE_CODENAME}" STREQUAL "trusty" )
 
-IF( ("${Qt5_DIR}" STREQUAL "") OR ("${Qt5_DIR}" STREQUAL "Qt5_DIR-NOTFOUND") OR QT_DOWNLOAD_FORCE )
+  OPTION( QT_BUILD_FROM_SOURCE "Build Qt ${QT_VERSION} from " OFF )
+  
+  FIND_PACKAGE( Qt5Core ${QT_VERSION} )
+  
+  IF( (NOT Qt5Core_FOUND) OR QT_BUILD_FROM_SOURCE )
+
+    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/qtifwsilent.qs
+      ${CMAKE_CURRENT_BINARY_DIR}/qtifwsilent.qs
+      @ONLY 
+    )
+     
+    EXECUTE_PROCESS(
+      COMMAND curl -L -O 'https://download.qt.io/official_releases/qt/5.12/5.12.1/qt-opensource-linux-x64-${QT_VERSION}.run' && chmod +x qt-opensource-linux-x64-${QT_VERSION}.run && QT_INSTALL_DIR=/usr/local/Qt ./qt-opensource-linux-x64-${QT_VERSION}.run --platform minimal --script qtifwsilent.qs
+      OUTPUT_VARIABLE TEMP
+    )
+    
+    EXECUTE_PROCESS(
+      COMMAND export PATH="/usr/local/Qt/${QT_VERSION}/gcc_64/bin/:${PATH}"
+      OUTPUT_VARIABLE TEMP
+    )
+
+    EXECUTE_PROCESS(
+      COMMAND export LD_LIBRARY_PATH="/usr/local/Qt/${QT_VERSION}/gcc_64/lib:${LD_LIBRARY_PATH}"
+      OUTPUT_VARIABLE TEMP
+    )
+
+    EXECUTE_PROCESS(
+      COMMAND export CMAKE_PREFIX_PATH="/usr/local/Qt/${QT_VERSION}/gcc_64/lib/cmake/Qt5:${CMAKE_PREFIX_PATH}"
+      OUTPUT_VARIABLE TEMP
+    )
+    
+  ENDIF()
+
+ELSE()
+  OPTION( QT_DOWNLOAD_FORCE "Force Qt binary download regardless of whether Qt was found in host machine or not" OFF )
+ENDIF()
+
+IF( (NOT Qt5Core_FOUND) OR QT_DOWNLOAD_FORCE )
 
   SET( FILENAME_TO_EXTRACT "qt" )
   SET( FILE_TO_EXTRACT "${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip" )
@@ -57,6 +95,7 @@ IF( ("${Qt5_DIR}" STREQUAL "") OR ("${Qt5_DIR}" STREQUAL "Qt5_DIR-NOTFOUND") OR 
       SET(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5/" )
 
       SET( ENV{CMAKE_PREFIX_PATH} "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5/:${QT_EXTRACTED_DIR}/${QT_VERSION}/bin:${PROJECT_BINARY_DIR}/ITK-build/:${PROJECT_BINARY_DIR}/OpenCV-build/:${PROJECT_BINARY_DIR}/VTK-build:$ENV{CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE )
+      SET( ENV{LD_LIBRARY_PATH} "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/:$ENV{LD_LIBRARY_PATH}" CACHE PATH "" FORCE )
       SET( ENV{CMAKE_PROGRAM_PATH} "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5/:${QT_EXTRACTED_DIR}/${QT_VERSION}/bin:$ENV{CMAKE_PROGRAM_PATH}" CACHE PATH "" FORCE )
       SET( ENV{PATH} "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{PATH}" CACHE PATH "" FORCE)
     ENDIF()

@@ -68,7 +68,7 @@ VectorDouble TrainingModule::CalculatePerformanceMeasures(VariableLengthVectorTy
   double FN = 0;
   VectorDouble result;
 
-  for (int index = 0; index< predictedLabels.Size(); index++)
+  for (unsigned int index = 0; index< predictedLabels.Size(); index++)
   {
     if (predictedLabels[index] == 1 && GivenLabels[index] == 1)
       TP++;
@@ -310,14 +310,14 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
     //copy the remaining subjects in the last fold
     if (index == number_of_folds - 1)
     {
-      for (unsigned int remainingLoop = 0; remainingLoop < remainder; remainingLoop++)
+      for (int remainingLoop = 0; remainingLoop < remainder; remainingLoop++)
         testingindices.push_back(inputLabels.Size() - 1 - remainingLoop);
     }
 
-    for (int index3 = 0; index3 < inputLabels.Size(); index3++)
+    for (unsigned int index3 = 0; index3 < inputLabels.Size(); index3++)
     {
       int found = 0;
-      for (int index4 = 0; index4 < testingindices.size(); index4++)
+      for (unsigned int index4 = 0; index4 < testingindices.size(); index4++)
       {
         if (index3 == testingindices[index4])
         {
@@ -330,18 +330,18 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
     }
     //find training and testing labels and features
     trainingfeatures.SetSize(trainingindices.size(), inputFeatures.Cols());
-    for (int i = 0; i < trainingindices.size(); i++)
+    for (unsigned int i = 0; i < trainingindices.size(); i++)
     {
       traininglabels.push_back(inputLabels[trainingindices[i]]);
-      for (int j = 0; j < trainingfeatures.Cols(); j++)
+      for (unsigned int j = 0; j < trainingfeatures.Cols(); j++)
         trainingfeatures(i, j) = inputFeatures(trainingindices[i], j);
     }
     testingfeatures.SetSize(testingindices.size(), inputFeatures.Cols());
-    for (int i = 0; i < testingindices.size(); i++)
+    for (unsigned int i = 0; i < testingindices.size(); i++)
     {
       testinglabels.push_back(inputLabels[testingindices[i]]);
       predictedlabels.push_back(-1);
-      for (int j = 0; j < testingfeatures.Cols(); j++)
+      for (unsigned int j = 0; j < testingfeatures.Cols(); j++)
         testingfeatures(i, j) = inputFeatures(testingindices[i], j);
     }
     std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble> new_tuple(trainingindices, traininglabels, trainingfeatures, testingindices, testinglabels, testingfeatures, predictedlabels);
@@ -356,7 +356,7 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
     //---------------------------
     double numberOfSelectedFeatures = 0;
     VectorDouble EffectSize = EffectSizeFeatureSelection(std::get<2>(FoldingDataMap[index]), std::get<1>(FoldingDataMap[index]));
-    for (int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
+    for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
     {
       if (EffectSize[eSizeCounter] < 0)
         EffectSize[eSizeCounter] = EffectSize[eSizeCounter] * -1;
@@ -366,14 +366,14 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
 
     //keep on copy the  features
     std::vector<double> PerFeaturePerformance;
-    for (int featureNo = 0; featureNo < EffectSize.size(); featureNo++)
+    for (unsigned int featureNo = 0; featureNo < EffectSize.size(); featureNo++)
     {
       VariableSizeMatrixType reducedFeatureSet;
       reducedFeatureSet.SetSize(std::get<1>(FoldingDataMap[index]).size(), featureNo + 1);
 
       //copy the reduced features to the reduced feature set
-      for (int j = 0; j < reducedFeatureSet.Rows(); j++)
-        for (int k = 0; k < reducedFeatureSet.Cols(); k++)
+      for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
+        for (unsigned int k = 0; k < reducedFeatureSet.Cols(); k++)
           reducedFeatureSet(j, k) = std::get<2>(FoldingDataMap[index])(j, indices[k]);
 
       //check performance using cross-validation
@@ -396,8 +396,8 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
     }
     VariableSizeMatrixType selectedFeatureSet;
     selectedFeatureSet.SetSize(std::get<1>(FoldingDataMap[index]).size(), numberOfSelectedFeatures);
-    for (int j = 0; j < selectedFeatureSet.Rows(); j++)
-      for (int k = 0; k < numberOfSelectedFeatures; k++)
+    for (unsigned int j = 0; j < selectedFeatureSet.Rows(); j++)
+      for (unsigned int k = 0; k < numberOfSelectedFeatures; k++)
         selectedFeatureSet(j, k) = std::get<2>(FoldingDataMap[index])(j, k);
 
 
@@ -562,23 +562,23 @@ VectorDouble TrainingModule::EffectSizeFeatureSelection(const VariableSizeMatrix
 
   NoOfSamplesC1 = 0;
   NoOfSamplesC2 = 0;
-  for (int index = 0; index < target.size(); index++)
+  for (unsigned int index = 0; index < target.size(); index++)
   {
     if (target[index] == -1)
     {
-      for (int featureNo = 0; featureNo < training_features.Cols(); featureNo++)
+      for (unsigned int featureNo = 0; featureNo < training_features.Cols(); featureNo++)
         features_set1(NoOfSamplesC1, featureNo) = training_features(index, featureNo);
       NoOfSamplesC1++;
     }
     else if (target[index] == 1)
     {
-      for (int featureNo = 0; featureNo < training_features.Cols(); featureNo++)
+      for (unsigned int featureNo = 0; featureNo < training_features.Cols(); featureNo++)
         features_set2(NoOfSamplesC2, featureNo) = training_features(index, featureNo);
       NoOfSamplesC2++;
     }
   }
   std::vector<double> EffectSize;
-  for (int featureNo = 0; featureNo < training_features.Cols(); featureNo++)
+  for (unsigned int featureNo = 0; featureNo < training_features.Cols(); featureNo++)
   {
     double temp = 0.0;
     for (int sampleNo = 0; sampleNo < NoOfSamplesC1; sampleNo++)
@@ -803,6 +803,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
   }
   catch (const std::exception& e1)
   {
+    std::cerr << "Cannot find the file 'features.csv' in the input directory. Error code : " + std::string(e1.what()) << "\n";
     //logger.WriteError("Cannot find the file 'features.csv' in the input directory. Error code : " + std::string(e1.what()));
     return false;
   }
@@ -987,19 +988,19 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   VariableSizeMatrixType testingfeatures;
 
   trainingfeatures.SetSize(trainingindices.size(), inputFeatures.Cols());
-  for (int i = 0; i < trainingindices.size(); i++)
+  for (unsigned int i = 0; i < trainingindices.size(); i++)
   {
     traininglabels.push_back(inputLabels[trainingindices[i]]);
-    for (int j = 0; j < trainingfeatures.Cols(); j++)
+    for (unsigned int j = 0; j < trainingfeatures.Cols(); j++)
       trainingfeatures(i, j) = inputFeatures(trainingindices[i], j);
   }
 
   testingfeatures.SetSize(testingindices.size(), inputFeatures.Cols());
-  for (int i = 0; i < testingindices.size(); i++)
+  for (unsigned int i = 0; i < testingindices.size(); i++)
   {
     testinglabels.push_back(inputLabels[testingindices[i]]);
     predictedlabels.push_back(-1);
-    for (int j = 0; j < testingfeatures.Cols(); j++)
+    for (unsigned int j = 0; j < testingfeatures.Cols(); j++)
       testingfeatures(i, j) = inputFeatures(testingindices[i], j);
   }
   std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble> new_tuple(trainingindices, traininglabels, trainingfeatures, testingindices, testinglabels, testingfeatures, predictedlabels);
@@ -1010,7 +1011,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   //feature selection mechanism
   //---------------------------
   VectorDouble EffectSize = EffectSizeFeatureSelection(std::get<2>(FoldingDataMap[0]), std::get<1>(FoldingDataMap[0]));
-  for (int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
+  for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
   {
     if (EffectSize[eSizeCounter] < 0)
       EffectSize[eSizeCounter] = EffectSize[eSizeCounter] * -1;
@@ -1025,11 +1026,11 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
   VariableSizeMatrixType CrossValidatedPerformances;
   CrossValidatedPerformances.SetSize(std::get<2>(FoldingDataMap[0]).Cols(), 8);
-  for (int index1 = 0; index1 < CrossValidatedPerformances.Rows(); index1++)
-    for (int index2 = 0; index2 < CrossValidatedPerformances.Cols(); index2++)
+  for (unsigned int index1 = 0; index1 < CrossValidatedPerformances.Rows(); index1++)
+    for (unsigned int index2 = 0; index2 < CrossValidatedPerformances.Cols(); index2++)
       CrossValidatedPerformances[index1][index2] = 0;
 
-  for (int featureNo = 15; featureNo < std::get<2>(FoldingDataMap[0]).Cols(); featureNo++)
+  for (unsigned int featureNo = 15; featureNo < std::get<2>(FoldingDataMap[0]).Cols(); featureNo++)
   {
     //std::cout << featureNo << std::endl;
 
@@ -1037,8 +1038,8 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
     reducedFeatureSet.SetSize(std::get<1>(FoldingDataMap[0]).size(), featureNo + 1);
 
     //copy the already selected features to the reduced feature set
-    for (int j = 0; j < reducedFeatureSet.Rows(); j++)
-      for (int k = 0; k < reducedFeatureSet.Cols(); k++)
+    for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
+      for (unsigned int k = 0; k < reducedFeatureSet.Cols(); k++)
         reducedFeatureSet(j, k) = std::get<2>(FoldingDataMap[0])(j, indices[k]);
 
     //check performance using cross-validation
@@ -1086,7 +1087,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
   //Write the selected features
   myfile.open(outputfolder + "/selectedfeatures.csv");
-  for (unsigned int index1 = 0; index1 < maxFeatureNumber; index1++)
+  for (int index1 = 0; index1 < maxFeatureNumber; index1++)
     myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
   myfile.close();
 
@@ -1098,8 +1099,8 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   reducedFeatureSet.SetSize(std::get<1>(FoldingDataMap[0]).size(), featureNo + 1);
 
   //copy the already selected features to the reduced feature set
-  for (int j = 0; j < reducedFeatureSet.Rows(); j++)
-    for (int k = 0; k < reducedFeatureSet.Cols(); k++)
+  for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
+    for (unsigned int k = 0; k < reducedFeatureSet.Cols(); k++)
     {
       reducedFeatureSet(j, k) = std::get<2>(FoldingDataMap[0])(j, indices[k]);
     }
@@ -1281,14 +1282,14 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
   //---------------------------
   std::vector<double> trainingindices;
   std::vector<double> traininglabels;
-  for (int index = 0; index < inputLabels.Size(); index++)
+  for (unsigned int index = 0; index < inputLabels.Size(); index++)
     traininglabels.push_back(inputLabels[index]);
     
 
   //sorting based on effect sizes
   //-----------------------------
   VectorDouble EffectSize = EffectSizeFeatureSelection(inputFeatures, traininglabels);  //to convert to vector double
-  for (int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
+  for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
   {
     if (EffectSize[eSizeCounter] < 0)
       EffectSize[eSizeCounter] = EffectSize[eSizeCounter] * -1;
@@ -1302,13 +1303,13 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
 
   VariableSizeMatrixType CrossValidatedPerformances;
   CrossValidatedPerformances.SetSize(inputFeatures.Cols(), 8);
-  for (int index1 = 0; index1 < CrossValidatedPerformances.Rows(); index1++)
-    for (int index2 = 0; index2 < CrossValidatedPerformances.Cols(); index2++)
+  for (unsigned int index1 = 0; index1 < CrossValidatedPerformances.Rows(); index1++)
+    for (unsigned int index2 = 0; index2 < CrossValidatedPerformances.Cols(); index2++)
       CrossValidatedPerformances[index1][index2] = 0;
 
   //feature selection mechanism
   //---------------------------
-  for (int featureNo = 15; featureNo < inputFeatures.Cols(); featureNo++)
+  for (unsigned int featureNo = 15; featureNo < inputFeatures.Cols(); featureNo++)
   {
     //std::cout << featureNo << std::endl;
 
@@ -1316,8 +1317,8 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
     reducedFeatureSet.SetSize(traininglabels.size(), featureNo + 1);
 
     //copy the already selected features to the reduced feature set
-    for (int j = 0; j < reducedFeatureSet.Rows(); j++)
-      for (int k = 0; k < reducedFeatureSet.Cols(); k++)
+    for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
+      for (unsigned int k = 0; k < reducedFeatureSet.Cols(); k++)
         reducedFeatureSet(j, k) = inputFeatures(j, indices[k]);
 
     //check performance using cross-validation
@@ -1365,7 +1366,7 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
 
   //Write the selected features
   myfile.open(outputdirectory + "/selectedfeatures.csv");
-  for (unsigned int index1 = 0; index1 <= maxFeatureNumber; index1++)
+  for (int index1 = 0; index1 <= maxFeatureNumber; index1++)
     myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
   myfile.close();
 
@@ -1377,8 +1378,8 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
   reducedFeatureSet.SetSize(traininglabels.size(), featureNo + 1);
 
   //copy the already selected features to the reduced feature set
-  for (int j = 0; j < reducedFeatureSet.Rows(); j++)
-    for (int k = 0; k < reducedFeatureSet.Cols(); k++)
+  for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
+    for (unsigned int k = 0; k < reducedFeatureSet.Cols(); k++)
     {
       reducedFeatureSet(j, k) = inputFeatures(j, indices[k]);
     }
@@ -1753,9 +1754,9 @@ VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures
     }
   }
   myfile.open(outputfolder + "/ScaledTestingData.csv");
-  for(int index1=0;index1<datatowrite.Rows();index1++)
+  for(unsigned int index1=0;index1<datatowrite.Rows();index1++)
   {
-    for (int index2=0;index2<datatowrite.Cols();index2++)
+    for (unsigned int index2=0;index2<datatowrite.Cols();index2++)
     {
       if (index2 == 0)
         myfile << std::to_string(datatowrite[index1][index2]);
