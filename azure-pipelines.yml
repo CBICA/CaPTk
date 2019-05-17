@@ -542,6 +542,16 @@ jobs:
   container: ubuntu1404
   
   steps:
+  
+    # Dependency manager
+    - bash: |
+        sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget zlib1g-dev zlib-bin curl
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        #sudo apt-get update
+        #sudo apt-get install g++-4.9
+        gcc --version
+      displayName: 'Install dependencies from Aptitude'
+
     # install LFS
     - bash: |
         curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
@@ -552,15 +562,6 @@ jobs:
     - bash: |
         git lfs pull
       displayName: 'Pull LFS'
-
-    # Dependency manager
-    - bash: |
-        sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget zlib1g-dev zlib-bin
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-        #sudo apt-get update
-        #sudo apt-get install g++-4.9
-        gcc --version
-      displayName: 'Install dependencies from Aptitude'
 
     # CMake install
     - script: |
