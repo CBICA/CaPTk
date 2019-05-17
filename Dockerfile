@@ -38,7 +38,7 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.14.3/cmake-3.14.3
 RUN git clone https://github.com/CBICA/CaPTk.git
 
 # start superbuild and then build CaPTk
-RUN export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
+RUN export PATH=/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
     which cmake && \
     cd CaPTk && \
     echo "=== Starting CaPTk Superbuild ===" && \
