@@ -990,7 +990,7 @@ void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsI
   auto reader = itk::ImageFileReader< ImageTypeFloat2D >::New();
   reader->SetFileName(fileName);
   auto ext = cbica::getFilenameExtension(fileName);
-  if (ext == ".dcm")
+  if (cbica::IsDicom(fileName))
   {
     reader->SetImageIO(itk::GDCMImageIO::New());
   }
@@ -1521,12 +1521,13 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       ShowErrorMessage("Only DICOM (dcm) or NIfTI (nii/nii.gz) images are supported right now; please contact CBICA for adding extended support");
       return;
     }
-    if ((extension == ".dcm") || 
-      (extension == ".DCM") ||
-      (extension == ".dicom") || 
-      (extension == "") || 
-      (extension == ".ima") ||
-      (extension == ".IMA"))
+    //if ((extension == ".dcm") || 
+    //  (extension == ".DCM") ||
+    //  (extension == ".dicom") || 
+    //  (extension == "") || 
+    //  (extension == ".ima") ||
+    //  (extension == ".IMA"))
+    if (cbica::IsDicom(fileName))
     {
       QDir d = QFileInfo(fileName.c_str()).absoluteDir();
       fname = d.absolutePath().toStdString();
@@ -3036,9 +3037,8 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
 {
   if (!mSlicerManagers.empty())
   {
-    if (cbica::getFilenameExtension(maskFileName) == ".dcm")
+    if (cbica::IsDicom(maskFileName))
     {
-
       auto path = cbica::getFilenamePath(maskFileName);
       auto filesInDir = cbica::filesInDirectory(path, false);
 
@@ -5278,25 +5278,109 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     }
   }
 
-  for (int i = 0; i < files.size(); i++)
+  int i = 0, fileSizeCheck = files.size() + 1;
+  if (mSlicerManagers.size() == 0)
   {
-    std::string fileName = files[i].toStdString();
-    fileName = cbica::normPath(fileName);
-    updateProgress(i + 1, "Opening " + fileName, files.size());
-    auto extension = cbica::getFilenameExtension(fileName);
-    if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
-      (extension == ".ima") ||
-      (extension == ".IMA"))
     {
-      QDir d = QFileInfo(fileName.c_str()).absoluteDir();
-      QString fname = d.absolutePath();
-      dicomfilename = fileName;
-      this->openDicomImages(fname);
+      std::string fileName = files[i].toStdString();
+      fileName = cbica::normPath(fileName);
+      updateProgress(i + 1, "Opening " + fileName, files.size());
+      auto extension = cbica::getFilenameExtension(fileName);
+      if (!extension.empty())
+      {
+        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+      }
+      //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+      //  (extension == ".ima"))
+      if (cbica::IsDicom(fileName))
+      {
+        QDir d = QFileInfo(fileName.c_str()).absoluteDir();
+        QString fname = d.absolutePath();
+        dicomfilename = fileName;
+        this->openDicomImages(fname);
+      }
+      else
+      {
+        LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
+      }
     }
-    else
-      LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
-
+    fileSizeCheck = 1;
   }
+  else
+  {
+    fileSizeCheck = 0;
+  }
+
+  // basic sanity check
+  if (files.size() > fileSizeCheck)
+  {
+    std::string erroredFiles, unsupportedExtension;
+    std::vector< std::string > basicSanityChecksPassedFiles;
+    for (int i = fileSizeCheck; i < files.size(); i++)
+    {
+      std::string fileName = files[i].toStdString();
+      fileName = cbica::normPath(fileName);
+      auto extension = cbica::getFilenameExtension(fileName);
+      if (!extension.empty())
+      {
+        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+      }
+      if (!((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+        (extension == ".ima") || (extension == ".nii") || (extension == ".nii.gz")))
+      {
+        unsupportedExtension += fileName + "\n";
+      }
+      else if (!cbica::ImageSanityCheck(files[0].toStdString(), files[i].toStdString()))
+      {
+        erroredFiles += fileName + "\n";
+      }
+      else
+      {
+        basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+      }
+    }
+
+    if (!unsupportedExtension.empty() && !erroredFiles.empty())
+    {
+      ShowErrorMessage("Extensions for the following files were not supported, CaPTk will try to load the rest:\n\n" + unsupportedExtension +
+        "\n\nAnd the following files are inconsistent with the first loaded image:\n\n" + erroredFiles, this);
+      return;
+    }
+    if (!unsupportedExtension.empty())
+    {
+      ShowErrorMessage("Extensions for the following files were not supported, CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
+    }
+    if (!erroredFiles.empty())
+    {
+      ShowErrorMessage("Extensions for the following files were not supported, CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
+    }
+
+    for (int i = 0; i < basicSanityChecksPassedFiles.size(); i++)
+    {
+      std::string fileName = basicSanityChecksPassedFiles[i];
+      fileName = cbica::normPath(fileName);
+      updateProgress(i + 1, "Opening " + fileName, files.size());
+      auto extension = cbica::getFilenameExtension(fileName);
+      if (!extension.empty())
+      {
+        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+      }
+      //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+      //  (extension == ".ima"))
+      if (cbica::IsDicom(fileName))
+      {
+        QDir d = QFileInfo(fileName.c_str()).absoluteDir();
+        QString fname = d.absolutePath();
+        dicomfilename = fileName;
+        this->openDicomImages(fname);
+      }
+      else
+      {
+        LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
+      }
+    }
+  }
+
   updateProgress(0, "Loading complete", 100);
 }
 
@@ -6922,11 +7006,7 @@ void fMainWindow::ApplicationTheia()
 
       QStringList args;
       args << "-i" << mSlicerManagers[index]->GetFileName().c_str() << "-m" << maskFile.c_str();
-
-      QtConcurrent::run(this, &fMainWindow::startExternalProcess,
-        getApplicationPath("Theia").c_str(),
-        args
-      );
+      startExternalProcess(getApplicationPath("Theia").c_str(), args);
     }
     else
     {
@@ -8447,7 +8527,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
 
   //updateProgress(5, "Starting Registration");
 
-  auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
+  //auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
 
   if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
   {
@@ -8477,7 +8557,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
     args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
       << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
       << "-m" << metrics.c_str() << "-n" << iterations.c_str();
-
+        
     if (metrics == "NCC")
       args << "-ri" << radii.c_str();
     if (affineMode)

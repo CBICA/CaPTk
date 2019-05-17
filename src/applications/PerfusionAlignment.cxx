@@ -13,9 +13,10 @@ int main(int argc, char **argv)
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  parser.exampleUsage("PerfusionAlignment -i AAAC_PreOp_perf_pp.nii.gz -d AAAC_PreOp_perf_pp.dcm -o <output dir>");
-
-
+  //parser.exampleUsage("PerfusionAlignment -i AAAC_PreOp_perf_pp.nii.gz -d AAAC_PreOp_perf_pp.dcm -o <output dir>");
+  parser.addExampleUsage("-i AAAC_PreOp_perf_pp.nii.gz -d AAAC_PreOp_perf_pp.dcm -o <output dir>", "Aligns the perfusion signal of the input image based on the time points");
+  parser.addApplicationDescription("Perfusion Alignment of the input based based on specified time points");
+  
 
   // parameters to get from the command line
   cbica::Logging logger;

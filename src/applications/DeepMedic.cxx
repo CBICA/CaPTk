@@ -127,6 +127,14 @@ void algorithmRunner()
     std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
     return;
   }
+  if (cbica::isFile(modelDirName + "/VERSION.yaml"))
+  {
+    if (!cbica::IsCompatible(modelDirName + "/VERSION.yaml"))
+    {
+      std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+      return;
+    }
+  }
   auto filesInDir = cbica::filesInDirectory(modelDirName);
   for (size_t i = 0; i < filesInDir.size(); i++)
   {
