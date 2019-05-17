@@ -18,6 +18,7 @@
           <section title="Coordinate definition (Seed-point initialization)" ref="gs_seedpoints.html" />
           <section title="Label Annotation/Drawing Panel" ref="gs_drawing.html" />
           <section title="Pre-processing" ref="gs_preprocessing.html" />
+          <section title="Utilities (Command-line only)" ref="gs_utilities.html" />
           <section title="Segmentation" ref="gs_segmentation.html" />
           <section title="Feature Extraction" ref="gs_features.html" />
           <section title="Specialized Applications" ref="gs_specializedApps.html" />
@@ -44,6 +45,8 @@
             <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
             <section title="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
             <section title="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
+            <section title="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
+            <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
             <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
             <section title="Brain Cancer: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
             <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
@@ -77,6 +80,7 @@
       <keyword name="Image Loading" id="Image Loading" ref="gs_imageLoading.html" />
       <keyword name="Image Visualization" id="Image Visualization" ref="gs_imageVisualization.html" />
       <keyword name="Tab Docking (Windows-only)" id="Tab Docking (Windows-only)" ref="gs_tabDocking.html" />
+      <keyword name="Utilities (Command-line only)" id="Utilities (Command-line only)" ref="gs_utilities.html" />
       <keyword name="Pre-processing" id="Pre-processing" ref="gs_preprocessing.html" />
       <keyword name="Coordinate definition (Seed-point initialization)" id="Coordinate definition (Seed-point initialization)" ref="gs_seedpoints.html" />
       <keyword name="Label Annotation/Drawing Panel" id="Label Annotation/Drawing Panel" ref="gs_drawing.html" />
@@ -105,6 +109,8 @@
       <keyword name="Brain Cancer: Confetti" id="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
       <keyword name="Brain Cancer: Directionality Estimator" id="Brain Cancer: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
       <keyword name="Breast Cancer: Breast Density Estimation (LIBRA)" id="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
+      <keyword name="Breast Cancer: Texture Feature Extraction" id="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
+      <keyword name="Breast Cancer: Breast Segmentation" id="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
       <keyword name="Lung Cancer: Radiomics Analysis of Lung Cancer" id="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
       <keyword name="Miscellaneous: Perfusion Derivatives" id="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
       <keyword name="Miscellaneous: Diffusion Derivatives" id="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
@@ -149,6 +155,7 @@
       <file>gs_imageLoading.html</file>
       <file>gs_imageVisualization.html</file>
       <file>gs_tabDocking.html</file>
+      <file>gs_utilities.html</file>
       <file>gs_preprocessing.html</file>
       <file>gs_seedpoints.html</file>
       <file>gs_drawing.html</file>
@@ -177,6 +184,8 @@
       <file>Glioblastoma_Confetti.html</file>
       <file>Glioblastoma_Directionality.html</file>
       <file>BreastCancer_LIBRA.html</file>
+      <file>BreastCancer_texture.html</file>
+      <file>BreastCancer_breastSegmentation.html</file>
       <file>LungCancer_SBRT.html</file>
       <file>Perfusion_Derivatives.html</file>
       <file>Diffusion_Derivatives.html</file>

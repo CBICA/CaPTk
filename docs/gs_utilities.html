@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.15"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): Segmentation</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): Utilities (Command-line only)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -55,27 +55,27 @@
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('gs_segmentation.html','');});
+$(document).ready(function(){initNavTree('gs_utilities.html','');});
 /* @license-end */
 </script>
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Segmentation </div>  </div>
+<div class="title">Utilities (Command-line only) </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Currently there are two ways to produce segmentation labels for various structures in the images that are loaded:</p><ol type="1">
-<li>using the Geodesic Distance Transform</li>
-<li>using ITK-SNAP</li>
-<li>Skull Stripping (Deep Learning based)</li>
-<li>Tumor Segmentation (Deep Learning based)</li>
+<div class="textblock"><p>To make pipeline construction using CaPTk easier, a bunch of utilities have been provided.</p>
+<p>They include</p><ol type="1">
+<li>Resizing</li>
+<li>DICOM conversion</li>
+<li>Sanity checking</li>
+<li>Image header information</li>
+<li>Unique values in image</li>
+<li>Changing pixel values.</li>
 </ol>
-<div class="image">
-<img src="applicationsSeg_resize.png" alt="applicationsSeg_resize.png"/>
-<div class="caption">
-Segmentation applications</div></div>
-<p> More information on how to run those is provided in the <a href="ht_Segmentation.html">corresponding How-To section</a>.</p>
-<hr/>
+<p>For full details, run the command:</p>
+<pre class="fragment">Utilities.exe -u
+</pre><hr/>
  </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
