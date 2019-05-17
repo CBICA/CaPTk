@@ -395,6 +395,8 @@ Contains the following applications:
 - \subpage Glioblastoma_EGFRvIII "Brain Cancer: Glioblastoma EGFRvIII SVM Index"
 - \subpage Glioblastoma_Molecular "Brain Cancer: Glioblastoma Molecular Subtype Prediction"
 - \subpage BreastCancer_LIBRA "Breast Cancer: Breast Density Estimation (LIBRA)"
+- \subpage BreastCancer_texture "Breast Cancer: Texture Feature Extraction"
+- \subpage BreastCancer_breastSegmentation "Breast Cancer: Breast Segmentation"
 - \subpage LungCancer_SBRT "Lung Cancer: Radiomics Analysis of Lung Cancer (SBRT Lung)"
 - \subpage Glioblastoma_Directionality "Miscellaneous: Directionality Estimator"
 - \subpage Perfusion_Derivatives "Miscellaneous: Perfusion Derivatives"
@@ -1028,6 +1030,63 @@ Reference:
 </ol>
 
 */
+
+
+/**
+\page BreastCancer_texture Breast Cancer: Texture Feature Extraction
+
+This application extracts the Texture Features as described in the paper [1]. It uses the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the computation. 
+
+<b>REQUIREMENTS:</b>
+	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
+	- FFDM vendors currently supported: GE Healthcare and Hologic.
+	- Each image stored in a separate folder.
+	
+<b>USAGE:</b>
+	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
+	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
+	-# Specify the output directory. 
+
+<br>
+
+--------
+
+Reference:
+
+<ol>
+  <li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530</li>
+</ol>
+
+*/
+
+
+/**
+\page BreastCancer_breastSegmentation Breast Cancer: Breast Segmentation
+
+This application uses LIBRA [1] to extract the breast region in the loaded image. 
+
+<b>REQUIREMENTS:</b>
+	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
+	- FFDM vendors currently supported: GE Healthcare and Hologic.
+	- Each image stored in a separate folder.
+	
+<b>USAGE:</b>
+	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
+	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
+	-# Output is loaded automatically. 
+
+<br>
+
+--------
+
+Reference:
+
+<ol>
+  <li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530</li>
+</ol>
+
+*/
+
 
 /**
 \page LungCancer_SBRT Lung Cancer: Radiomics Analysis of Lung Cancer

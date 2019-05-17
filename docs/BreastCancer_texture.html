@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.15"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): Segmentation</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): Breast Cancer: Texture Feature Extraction</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -55,28 +55,36 @@
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('gs_segmentation.html','');});
+$(document).ready(function(){initNavTree('BreastCancer_texture.html','');});
 /* @license-end */
 </script>
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Segmentation </div>  </div>
+<div class="title">Breast Cancer: Texture Feature Extraction </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Currently there are two ways to produce segmentation labels for various structures in the images that are loaded:</p><ol type="1">
-<li>using the Geodesic Distance Transform</li>
-<li>using ITK-SNAP</li>
-<li>Skull Stripping (Deep Learning based)</li>
-<li>Tumor Segmentation (Deep Learning based)</li>
+<div class="textblock"><p>This application extracts the Texture Features as described in the paper [1].</p>
+<p>It uses the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the computation.</p>
+<p><b>REQUIREMENTS:</b></p><ul>
+<li>Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.</li>
+<li>FFDM vendors currently supported: GE Healthcare and Hologic.</li>
+<li>Each image stored in a separate folder.</li>
+</ul>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Load the FFDM image using the 'File -&gt; Load -&gt; Images' menu option.</li>
+<li>Launch LIBRA using the 'Applications -&gt; Breast Segmentation' menu option.</li>
+<li>Specify the output directory.</li>
 </ol>
-<div class="image">
-<img src="applicationsSeg_resize.png" alt="applicationsSeg_resize.png"/>
-<div class="caption">
-Segmentation applications</div></div>
-<p> More information on how to run those is provided in the <a href="ht_Segmentation.html">corresponding How-To section</a>.</p>
+<p><br />
+</p>
 <hr/>
- </div></div><!-- PageDoc -->
+<p>Reference:</p>
+<ol>
+<li>
+B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530 </li>
+</ol>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
