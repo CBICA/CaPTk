@@ -98,13 +98,14 @@ int main(int argc, char** argv)
   parser.addApplicationDescription("Entry point for all CaPTk applications");
   
   // check for CWL command coming in through the command line after "CaPTk"
-  if (cmd_inputs.empty() && (argc > 1))
+  if (argc > 1)
   {
     for (auto & file : cwlFiles)
     {
       auto cwlFileBase = cbica::getFilenameBase(file);
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
       auto argv_1 = std::string(argv[1]);
+      argv_1 = cbica::getFilenameBase(argv_1, false);
       std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
 
       // Check for filename without cwl extension
