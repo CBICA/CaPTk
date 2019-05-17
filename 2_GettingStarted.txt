@@ -14,6 +14,7 @@ Table of Contents
   - \subpage gs_seedpoints "Coordinate Definition"
   - \subpage gs_drawing "Label Annotation/Drawing Panel"
   - \subpage gs_preprocessing "Pre-processing Algorithms"
+  - \subpage gs_utilities "Utilities (CLI)"
   - \subpage gs_segmentation "Segmentation"
   - \subpage gs_features "Feature Extraction"
   - \subpage gs_specializedApps "Specialized Applications"
@@ -143,6 +144,18 @@ Double clicking on the tab bar will dock/undock the entire section, resulting in
 
 \image html dock_comparison_resize.png "Left is while dock is active and right is undocked behavior"
 \image latex dock_comparison_resize.png "Left is while dock is active and right is undocked behavior"
+
+--------
+*/
+
+/**
+\page gs_utilities Utilities (Command-line only)
+
+To make pipeline construction using CaPTk easier, a bunch of utilities have been provided. They include Resizing, DICOM conversion, Sanity checking, Image header information, Unique values in image and changing pixel values. For full details, run the command:
+
+\verbatim
+Utilities.exe -u
+\endverbatim
 
 --------
 */
