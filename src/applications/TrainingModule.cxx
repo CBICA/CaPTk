@@ -25,12 +25,15 @@ int main(int argc, char *argv[])
   parser.addRequiredParameter("l", "label", cbica::Parameter::STRING, "", "The input file having target labels (*.csv).");
   parser.addRequiredParameter("c", "classifier", cbica::Parameter::INTEGER, "", "The SVM kernel to be used in developing model (1=Linear, 2=RBF).");
   parser.addRequiredParameter("n", "configuration", cbica::Parameter::INTEGER, "", "The Configuration type, Cross-validation (n=1), Split Train-Test (n=2), Train only (n=3), and Test only (n=4).");
-  parser.addRequiredParameter("k", "configuration parameters", cbica::Parameter::INTEGER, "", "The number of folds for Crossvalidation (5/10) and the size of training set for TrainTest (k<n).");
+  parser.addRequiredParameter("k", "configuration parameters", cbica::Parameter::INTEGER, "", "The number of folds for Cross-validation (5/10) and the size of training set for TrainTest (k<n).");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
 
   parser.addOptionalParameter("m", "output", cbica::Parameter::STRING, "", "The model direcory (needed only when n=4)");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  parser.exampleUsage("TrainingModule -f features2.csv -l labels2.csv -c 1 -o <output dir> -k 5");
+  //parser.exampleUsage("TrainingModule -f features2.csv -l labels2.csv -c 1 -o <output dir> -k 5");
+  parser.addExampleUsage(" -f features2.csv -l labels2.csv -c 1 -o <output dir> -k 5", 
+    "Trains a new Linear SVM model based on the input features in 'feature2.csv' and corresponding labels in 'labels2.csv' with cross-validation of 5");
+  parser.addApplicationDescription("Molecular Subtype Training and Prediction application");
 
   // parameters to get from the command line
   cbica::Logging logger;

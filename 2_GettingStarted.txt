@@ -14,6 +14,7 @@ Table of Contents
   - \subpage gs_seedpoints "Coordinate Definition"
   - \subpage gs_drawing "Label Annotation/Drawing Panel"
   - \subpage gs_preprocessing "Pre-processing Algorithms"
+  - \subpage gs_utilities "Utilities (CLI)"
   - \subpage gs_segmentation "Segmentation"
   - \subpage gs_features "Feature Extraction"
   - \subpage gs_specializedApps "Specialized Applications"
@@ -148,6 +149,26 @@ Double clicking on the tab bar will dock/undock the entire section, resulting in
 */
 
 /**
+\page gs_utilities Utilities (Command-line only)
+
+To make pipeline construction using CaPTk easier, a bunch of utilities have been provided. They include 
+-# Resizing
+-# DICOM conversion
+-# Sanity checking
+-# Image header information
+-# Unique values in image
+-# Changing pixel values. 
+
+For full details, run the command:
+
+\verbatim
+Utilities.exe -u
+\endverbatim
+
+--------
+*/
+
+/**
 \page gs_preprocessing Pre-processing
 Image pre-processing is essential to quantitative image analysis. CaPTk pre-processing tools available under the "Preprocessing" menu are fully-parameterizable and comprise:
 <ul>
@@ -155,8 +176,15 @@ Image pre-processing is essential to quantitative image analysis. CaPTk pre-proc
   <li><b>Co-registration.</b> Registration of various images to the same anatomical template, for examining anatomically aligned imaging signals in tandem and at the voxel level, is done using the Greedy Registration algorithm [5].</li>
   <li><b>Bias correction.</b> Correction for magnetic field inhomogeneity is provided using a non-parametric non-uniform intensity normalization [2].</li>
   <li><b>Intensity normalization.</b> Conversion of signals across modalities to comparable quantities using histogram matching [4].</li>
-  <li><b>DeepMedic normalization.</b> Images are normalized using a z-scoring mechanism with option to do the normalization within the region of interest or across the entire image. In addition, there is an option to remove outliers & noise from the image by removing a certain percentage of the top and bottom intensity ranges [6].</li>
+  <li><b>Z-Scoring normalization.</b> Images are normalized using a z-scoring mechanism with option to do the normalization within the region of interest or across the entire image. In addition, there is an option to remove outliers & noise from the image by removing a certain percentage of the top and bottom intensity ranges [6].</li>
+  <li><b>Histogram Matching</b></li>
 </ul>
+
+<B>NOTE:</B> An extended set of algorithms are available via the command line utility <b>Preprocessing</b>. For full details, run the command:
+
+\verbatim
+Preprocessing.exe -u
+\endverbatim
 
 \image html pre-processing_resize.png "Available pre-processing algorithms"
 \image latex pre-processing_resize.png "Available pre-processing algorithms"
@@ -284,7 +312,8 @@ There are the following controls underneath the <b>Drawing</b> tab:
 Currently there are two ways to produce segmentation labels for various structures in the images that are loaded:
   -# using the Geodesic Distance Transform
   -# using ITK-SNAP
-  -# using DeepMedic (BraTS data trained)
+  -# Skull Stripping (Deep Learning based)
+  -# Tumor Segmentation (Deep Learning based)
 
 \image html applicationsSeg_resize.png "Segmentation applications"
 \image latex applicationsSeg_resize.png "Segmentation applications"
