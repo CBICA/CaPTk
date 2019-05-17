@@ -173,9 +173,6 @@ jobs:
         rm -rf regression
         rm -rf binaries
 
-        #make install
-
-        # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
@@ -541,7 +538,7 @@ jobs:
   
     # Dependency manager
     - bash: |
-        sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget zlib1g-dev zlib-bin curl libxt-dev libglew-dev
+        sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget zlib1g-dev zlib-bin curl libxt-dev libglew-dev libglu1-mesa-dev libgmp-dev libmpfr-dev
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         #sudo apt-get update
         #sudo apt-get install g++-4.9
@@ -557,13 +554,14 @@ jobs:
     # Pull LFS
     - bash: |
         git lfs pull
+        git lfs fetch --all
       displayName: 'Pull LFS'
 
     # CMake install
     - script: |
-        wget https://github.com/Kitware/CMake/releases/download/v3.12.1/cmake-3.12.1.tar.gz
-        tar -xzvf cmake-3.12.1.tar.gz
-        cd cmake-3.12.1
+        wget https://github.com/Kitware/CMake/releases/download/v3.12.4/cmake-3.12.4.tar.gz
+        tar -xzvf cmake-3.12.4.tar.gz
+        cd cmake-3.12.4
         ./configure --system-curl
         make -j2
         sudo make install/strip
@@ -598,36 +596,43 @@ jobs:
     #   displayName: 'Create phony tests'
 
     # Configure and build superbuild
-    - script: |
+    - bash: |
         cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
       displayName: 'Configure and compile Superbuild'
 
     # Configure and build CaPTk
-    - script: |
+    - bash: |
         cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
-        make install/strip
+        #make install/strip
       displayName: 'Configure and compile CaPTk'
 
+    # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
+      
     # Check libra
-    - script: |
+    - bash: |
         cd bin/install/appdir/usr/bin/
         ls -l
       displayName: 'Checking ${installDir}/bin'
       
     # Build a package
-    - script: |
+    - bash: |
+        export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
+        export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf regression
         rm -rf binaries
 
-        make install
-
-        # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
-        # ./scripts/captk-pkg
+        ./scripts/captk-pkg
 
         rm -rf bin
         rm -rf src
@@ -642,11 +647,11 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        artifactName: '$(Build.DefinitionName)_docker_installer_Linux'
 
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        artifactName: '$(Build.DefinitionName)_docker_installer_Linux'
         downloadPath: '$(System.ArtifactsDirectory)'
