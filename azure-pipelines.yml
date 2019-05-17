@@ -545,7 +545,7 @@ jobs:
   
     # Dependency manager
     - bash: |
-        sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget zlib1g-dev zlib-bin curl
+        sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget zlib1g-dev zlib-bin curl libxt-dev 
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         #sudo apt-get update
         #sudo apt-get install g++-4.9
