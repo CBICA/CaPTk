@@ -353,8 +353,23 @@ FOREACH(subdir ${SUBDIRECTORIES})
             #  WORKING_DIRECTORY ${SUBDIRPATH}
             #  RESULT_VARIABLE RESULT_CODE
             #)
+            
           ENDIF()
+        ELSE()
+          FILE(DOWNLOAD "ftp://www.nitrc.org/var/home/groups/captk/downloads/MCR.zip" "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
           
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E unzip ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            WORKING_DIRECTORY ${SUBDIRPATH}
+            RESULT_VARIABLE RESULT_CODE
+          )
+          
+          IF( RESULT_CODE EQUAL 0 )
+            #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            #  WORKING_DIRECTORY ${SUBDIRPATH}
+            #  RESULT_VARIABLE RESULT_CODE
+            #)
+            
+          ENDIF()
         ENDIF()
       ENDIF()
       

@@ -41,7 +41,11 @@ public:
   //! load dicom data
   bool LoadDicom();
 
-  bool IsDicom(std::string path);
+  //! check if file is dicom
+  static bool IsDicom(std::string path);
+
+  //! check if file can be read or not and return the base imageIO if readable
+  static bool CanReadFile(std::string path, itk::ImageIOBase::Pointer &imageIO);
 
   //! helper to write itk image
   //template <class TInputImage>

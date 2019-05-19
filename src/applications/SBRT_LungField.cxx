@@ -1,5 +1,6 @@
 #include <time.h>
 #include <string>
+#include "CaPTkUtils.h"
 #include "SBRT_LungField.h"
 
 #include "cbicaCmdParser.h"
@@ -83,7 +84,18 @@ int main(int argc, char**argv)
   if (!maskName.empty())
     maskAvail = 1;
 
-  //
+  if (petName.empty() || ctName.empty())
+  {
+	  std::cout << "Both CT and PET need to be loaded for SBRT Lung Field calculation." << std::endl;
+	  return 0;
+  }
+  if ((guessImageType(ctName) != CAPTK::ImageModalityType::IMAGE_TYPE_CT) ||
+	  (guessImageType(petName) != CAPTK::ImageModalityType::IMAGE_TYPE_PET))
+  {
+	  std::cout << "Only CT and PET need to be loaded for SBRT Lung Field calculation." << std::endl;
+	  return 0;
+  }
+  
   SBRT_LungField< float, imageDimension, inputImageNum > lfObject;
 
   if (!logName.empty())

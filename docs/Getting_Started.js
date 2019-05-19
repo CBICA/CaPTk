@@ -9,6 +9,7 @@ var Getting_Started =
     [ "Coordinate definition (Seed-point initialization)", "gs_seedpoints.html", null ],
     [ "Label Annotation/Drawing Panel", "gs_drawing.html", null ],
     [ "Pre-processing", "gs_preprocessing.html", null ],
+    [ "Utilities (Command-line only)", "gs_utilities.html", null ],
     [ "Segmentation", "gs_segmentation.html", null ],
     [ "Feature Extraction", "gs_features.html", null ],
     [ "Specialized Applications", "gs_specializedApps.html", null ]

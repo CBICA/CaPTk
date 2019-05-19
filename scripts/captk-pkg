@@ -64,12 +64,12 @@ shopt -s globstar
 SRC_DIR=`pwd`
 
 # Check to make sure MCR is present
-if [ ! -d "./src/applications/individualApps/libra/MCR" ]; then
-  echo "[!] MCR Not found, installing..."
-  unzip ./binaries/MCR.zip
-  mv MCR ./src/applications/individualApps/libra/
-  echo "[:] Done installing MCR component."
-fi
+#if [ ! -d "./src/applications/individualApps/libra/MCR" ]; then
+  #echo "[!] MCR Not found, installing..."
+  #unzip ./binaries/MCR.zip
+  #mv MCR ./src/applications/individualApps/libra/
+  #echo "[:] Done installing MCR component."
+#fi
 
 # get version of GNU tool - taken from https://stackoverflow.com/a/25845393
 toolversion() {

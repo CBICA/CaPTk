@@ -98,6 +98,12 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
+    # Pull LFS
+    - bash: |
+        #git lfs pull
+        echo "Not doing this until quota is improved on GitHub"
+      displayName: 'Pull LFS'
+
     # Dependency manager
     - bash: |
         curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
