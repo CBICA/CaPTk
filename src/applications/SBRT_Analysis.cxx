@@ -1,4 +1,5 @@
 #include <time.h>
+#include "CaPTkUtils.h"
 #include "SBRT_Analysis.h"
 
 #include "cbicaCmdParser.h"
@@ -75,6 +76,17 @@ int main(int argc, char** argv)
   std::string metaName = modelDir + "/meta_fea_proj.txt";
   std::string projName = modelDir + "/triFac_res_cpp_kc3_kr5_pet_cox_coeff_train_all.txt";
 
+  if (inputFileName.empty() || maskName.empty())
+  {
+	  std::cout << "PET and Mask images need to be loaded for SBRT Analysis." << std::endl;
+	  return 0;
+  }
+  if (guessImageType(inputFileName) != CAPTK::ImageModalityType::IMAGE_TYPE_PET)
+  {
+	  std::cout << "Only PET image need to be loaded for SBRT Analysis along with mask." << std::endl;
+	  return 0;
+  }
+  
   SBRT_Analysis< float, imageDimension > anaObject;
 
   if (!logName.empty())

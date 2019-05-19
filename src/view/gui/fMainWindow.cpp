@@ -4415,7 +4415,7 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
     }
   }
 
-  if (ctImageFile.empty() && petImageFile.empty())
+  if (ctImageFile.empty() || petImageFile.empty())
   {
     ShowErrorMessage("Both CT and PET need to be loaded for SBRT");
     return;
@@ -5779,7 +5779,7 @@ void fMainWindow::ApplicationSBRTLungField()
     }
   }
 
-  if (ctImageFile.empty() && petImageFile.empty())
+  if (ctImageFile.empty() || petImageFile.empty())
   {
     ShowErrorMessage("Both CT and PET need to be loaded for SBRT", this);
     return;
