@@ -11,7 +11,7 @@ export CXX=""
 export LDFLAGS=""
 export CPPFLAGS=""
 
-git lfs install && git lfs fetch --all
+# git lfs install && git lfs fetch --all
 
 ### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
 echo "Run Dependency Manager"
@@ -20,8 +20,8 @@ echo $CC
 export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
-cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
+cmake ../ -DCMAKE_INSTALL_PREFIX="../superbuild"
+cmake ../ -DCMAKE_INSTALL_PREFIX="../superbuild"
 
 make -j 2
 
