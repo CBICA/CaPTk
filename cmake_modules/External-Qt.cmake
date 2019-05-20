@@ -15,7 +15,7 @@ IF( "${RELEASE_CODENAME}" STREQUAL "trusty" )
     )
      
     EXECUTE_PROCESS(
-      COMMAND curl -L -O 'https://download.qt.io/official_releases/qt/5.12/5.12.1/qt-opensource-linux-x64-${QT_VERSION}.run' && chmod +x qt-opensource-linux-x64-${QT_VERSION}.run && QT_INSTALL_DIR=/usr/local/Qt ./qt-opensource-linux-x64-${QT_VERSION}.run --platform minimal --script qtifwsilent.qs
+      COMMAND curl -L -O 'https://download.qt.io/official_releases/qt/5.11/5.11.2/qt-opensource-linux-x64-${QT_VERSION}.run' && chmod +x qt-opensource-linux-x64-${QT_VERSION}.run && QT_INSTALL_DIR=/usr/local/Qt ./qt-opensource-linux-x64-${QT_VERSION}.run --platform minimal --script qtifwsilent.qs
       OUTPUT_VARIABLE TEMP
     )
     
