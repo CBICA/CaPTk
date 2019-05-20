@@ -165,8 +165,13 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("c", comparisonMode);
   }
-
-#ifndef linux
+  
+#if defined(__linux__)
+  auto defaultFormat = QVTKOpenGLWidget::defaultFormat();
+  // defaultFormat.setSamples(0);
+  defaultFormat.setVersion(3, 0);
+  QSurfaceFormat::setDefaultFormat(defaultFormat);
+#else
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
 #endif
 
