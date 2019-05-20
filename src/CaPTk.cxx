@@ -167,7 +167,7 @@ int main(int argc, char** argv)
   }
   
 #if defined(__linux__)
-  auto defaultFormat = QVTKOpenGLWidget::defaultFormat();
+  QSurfaceFormat defaultFormat;
   // defaultFormat.setSamples(0);
   defaultFormat.setVersion(3, 0);
   QSurfaceFormat::setDefaultFormat(defaultFormat);
