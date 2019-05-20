@@ -106,18 +106,8 @@ jobs:
 
     # Dependency manager
     - bash: |
-        curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-        sudo apt-get install git-lfs
-        git lfs install
-
         sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
       displayName: 'Install dependencies from Aptitude'
-
-        # Pull LFS
-    - bash: |
-        git lfs pull
-        git lfs fetch --all
-      displayName: 'Pull LFS'
 
   # Debug info before main scripts start
   # - bash: |
