@@ -1037,6 +1037,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   }
   catch (const std::exception& e1)
   {
+    std::cerr << e1.what() << "\n";
   }
   return projectedDatasetTable;
 }
@@ -1421,6 +1422,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   }
   catch (const std::exception& e1)
   {
+    std::cerr << e1.what() << "\n";
   }
 
   return projectedDatasetTable;
@@ -1771,6 +1773,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   }
   catch (const std::exception& e1)
   {
+    std::cerr << e1.what() << "\n";
   }
 
   return projectedDatasetTable;

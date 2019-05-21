@@ -633,8 +633,7 @@ int main(int argc, char** argv)
 
   if (requestedAlgorithm == Information)
   {
-    auto gdcmIO = itk::GDCMImageIO::New();
-    if (gdcmIO->CanReadFile(inputImageFile.c_str())) // if dicom file
+    if (cbica::IsDicom(inputImageFile)) // if dicom file
     {
       std::cout << "DICOM file detected, will print out all tags.\n";
       DicomMetadataReader reader;

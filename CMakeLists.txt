@@ -11,8 +11,8 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 0.RC )
-SET( PROJECT_VERSION_TWEAK RC )
+SET( PROJECT_VERSION_PATCH 0 )
+SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -44,6 +44,9 @@ INCLUDE( CaPTk_macros )
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
 SET( QT_VERSION "5.12.1" CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
 SET( OPENCV_VERSION "3.4.5" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
+
+SET(CAPTK_BUILD_DIR "${PROJECT_BINARY_DIR}" CACHE STRING "CaPTk build directory" FORCE )
+ADD_DEFINITIONS(-DCAPTK_BUILD_DIR="${PROJECT_BINARY_DIR}")
 
 CAPTK_INITIAL_SETUP()
 
@@ -79,11 +82,12 @@ ELSE()
       SET( ENV{CMAKE_PROGRAM_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/bin:$ENV{CMAKE_PROGRAM_PATH}" CACHE PATH "" FORCE )
     ELSE()
       SET( ENV{CMAKE_PREFIX_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:${PROJECT_BINARY_DIR}/ITK-build/:${PROJECT_BINARY_DIR}/OpenCV-build/:${PROJECT_BINARY_DIR}/VTK-build:$ENV{CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE )
+      SET( ENV{LD_LIBRARY_PATH} "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/:$ENV{LD_LIBRARY_PATH}" CACHE PATH "" FORCE )
       SET( ENV{CMAKE_PROGRAM_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{CMAKE_PROGRAM_PATH}" CACHE PATH "" FORCE )
       SET( ENV{PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{PATH}" CACHE PATH "" FORCE)
     ENDIF()
 
-    MESSAGE( AUTHOR_WARNING "=== [DEBUG] ENV{CMAKE_PREFIX_PATH}=$ENV{CMAKE_PREFIX_PATH}" )
+    #MESSAGE( AUTHOR_WARNING "=== [DEBUG] ENV{CMAKE_PREFIX_PATH}=$ENV{CMAKE_PREFIX_PATH}" )
 
   ENDIF()
 ENDIF()
@@ -159,6 +163,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
       SET (CAPTK_MACOSX_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${PROJECT}" )
+      
     endif()
 
     IF(MSVC)
@@ -172,11 +177,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   ENDIF()
 
-  OPTION( CAPTK_DISABLE_CWL "Disable CWL file generation - useful for debug builds or devops" OFF )
+  OPTION( CAPTK_DISABLE_CWL "Disable CWL file generation - useful for debug builds or devops" ON )
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
   MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
-
+  
   SET( CMAKE_COLOR_MAKEFILE ON )
   # option to compile only the viewer
   SET( CAPTK_BUILD_CONSOLE_ONLY OFF CACHE BOOL "Do you want only the interactive capabilities of ${PROJECT_NAME}? Enabling this will remove all algorithms from compilation." )
@@ -752,6 +757,24 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     INSTALL(DIRECTORY "${DATA_DIR}/deepMedic/configFiles" DESTINATION data/deepMedic)
     INSTALL(DIRECTORY "${DATA_DIR}/deepMedic/saved_models" DESTINATION data/deepMedic)
   ENDIF()
+  
+  # install CWL files if they aren't getting generated
+  #IF(CAPTK_DISABLE_CWL)
+	
+    FILE(GLOB_RECURSE CWL_FILES "${DATA_DIR}/cwlFiles/*")
+    FOREACH(cwlFile ${CWL_FILES})
+      IF (APPLE)
+        SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+        SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${cwlFile})
+
+        INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
+
+      ELSE()
+        INSTALL(FILES "${cwlFile}" DESTINATION bin)
+      ENDIF()
+    ENDFOREACH()
+  
+  #ENDIF()
 
   IF(WIN32)
     FILE(GLOB_RECURSE ALL_DEPENDENT_LIBS "${PROJECT_BINARY_DIR}/${CMAKE_CONFIGURATION_TYPES}/*.dll")
@@ -810,7 +833,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       # ENDFOREACH()
 
       FOREACH(FT_META_FILES_TO_INCLUDE ${FEATURE_EXTRACTION_META_FILES_TO_INCLUDE})
-        IF (${FT_META_FILES_TO_INCLUDE} STREQUAL "${DATA_DIR}/features/batchmode/batch_featureextraction.csv")
+        IF (${FT_META_FILES_TO_INCLUDE} STREQUAL "${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/batchMode/batch_featureExtraction.csv")
           SET_SOURCE_FILES_PROPERTIES(${FT_META_FILES_TO_INCLUDE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/featureExtractionBatch )
 
           SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FT_META_FILES_TO_INCLUDE})

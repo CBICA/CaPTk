@@ -926,7 +926,7 @@ namespace cbica
         helpRequested = true;
         position = i;
         //std::cout << "[DEBUG] m_exePath: "<< m_exePath << "\n";
-        writeCWLFile(m_exePath, false);
+        writeCWLFile(m_exePath, true);
         exit(EXIT_SUCCESS);
         return true;
       }

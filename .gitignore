@@ -48,3 +48,4 @@ testing
 /.travis/.DS_Store
 
 vsts*
+superbuild
