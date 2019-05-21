@@ -4,9 +4,9 @@ MAINTAINER CBICA_UPenn software@cbica.upenn.edu
 
 #update
 RUN apt-get update && \
-    apt-get install -y sudo curl git && \
-    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
-    sudo apt-get install git-lfs
+    apt-get install -y sudo curl git
+    #curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
+    #sudo apt-get install git-lfs
 
 #general dependencies
 RUN apt-get install -y \
@@ -28,7 +28,7 @@ RUN apt-get install -y \
     libxt-dev \
     libglib2.0-0
     
-RUN git lfs install
+#RUN git lfs install
 
 RUN ln -s `locate libc.so.6` /lib/libc.so
 
