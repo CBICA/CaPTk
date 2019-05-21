@@ -25,8 +25,8 @@ jobs:
   steps:
   - script: |
       docker build -t $(dockerId)/$(imageName) .
-  #    docker login -u $(dockerId) -p $(pswd)
       docker push $(dockerId)/$(imageName)
+ #    docker login -u $(dockerId) -p $(pswd)
     #env:
     #  pswd: $(dockerPassword)
   
