@@ -11,8 +11,8 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 0 )
-SET( PROJECT_VERSION_TWEAK )
+SET( PROJECT_VERSION_PATCH 0.RC2 )
+SET( PROJECT_VERSION_TWEAK RC2 )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
