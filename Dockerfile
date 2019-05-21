@@ -16,7 +16,17 @@ RUN apt-get install -y \
     wget \
     git-core \
     unzip \
-    doxygen 
+    doxygen \
+    gcc \
+    g++ \
+    make \
+    libgl-dev \
+    python3-pip \
+    python-numpy \
+    dos2unix \
+    libxkbcommon-x11-0 \
+    libxt-dev \
+    libglib2.0-0
     
 RUN git lfs install
 
@@ -30,20 +40,22 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.14.3/cmake-3.14.3
 RUN git clone https://github.com/CBICA/CaPTk.git
 
 # start superbuild and then build CaPTk
-RUN export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
+RUN export PATH=/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
     which cmake && \
     cd CaPTk && \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin && cd bin && \
-    cmake -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=./install_libs \
+    cmake -DCMAKE_INSTALL_PREFIX=./install/appdir/usr \
+    -DQT_DOWNLOAD_FORCE=ON \
     -Wno-dev .. && \
-    make -j4 && \
+    make && \
     echo "=== Building CaPTk ===" && \
-    cmake -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=./install \
+    cmake -DCMAKE_INSTALL_PREFIX=./install/appdir/usr \
+    -DQT_DOWNLOAD_FORCE=ON \
     -Wno-dev .. && \
-    make install/strip -j4
+    make && \
+    make install/strip
 
 # define entry point
+#ENTRYPOINT ["/CaPTk/bin/CaPTk"]
 ENTRYPOINT ["/CaPTk/bin/install/bin/CaPTk"]

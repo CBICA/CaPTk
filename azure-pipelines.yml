@@ -30,7 +30,6 @@ jobs:
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
-
     - script: |
         mkdir bin
         cd bin
@@ -109,12 +108,10 @@ jobs:
         #git lfs pull
         echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-
     # Dependency manager
     - bash: |
         sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
       displayName: 'Install dependencies from Aptitude'
-
   # Debug info before main scripts start
   # - bash: |
   #     ls -al
@@ -124,7 +121,6 @@ jobs:
     - bash: |
         mkdir -p bin
       displayName: 'Create build directory'
-
     # Create as much free memory as possible
 
     # Nuclear Option #1
@@ -134,7 +130,6 @@ jobs:
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
-
     # Create fake test dirs. Can be removed.
     # - bash: |   
     #     cd bin
@@ -148,7 +143,6 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
       displayName: 'Configure and compile Superbuild'
-
     # Configure and build CaPTk
     - bash: |
         cd bin
@@ -156,7 +150,6 @@ jobs:
         make -j2
         #make install/strip
       displayName: 'Configure and compile CaPTk'
-
     # Check qt
     - bash: |
         cd bin
@@ -177,6 +170,7 @@ jobs:
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf regression
         rm -rf binaries
+<<<<<<< HEAD
 
         #make install
 
@@ -184,12 +178,16 @@ jobs:
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
+=======
+        #make install
+        # export PKG_FAST_MODE=1
+        ./scripts/captk-pkg
+        ./scripts/captk-pkg
+>>>>>>> cff23dccfdd7c9dd42077ec008239ad124921112
         rm -rf bin
         rm -rf src
         rm -rf docs*
-
         rm -rf scripts
-
         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
         
       displayName: 'Set up environment variables for packager and build a package'
@@ -225,62 +223,47 @@ jobs:
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
-
     - bash: |
         export CC=""
         export CXX=""
         export LDFLAGS=""
         export CPPFLAGS=""
-
         git lfs install && git lfs fetch --all
-
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
       displayName: 'Export variables'
-
     - bash: |
         mkdir bin
       displayName: 'Create build directory'
     
     - bash: |
         cd bin
-
         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-
         make -j2
       displayName: 'Configure and compile Superbuild'
-
     - bash: |
         cd bin
-
         rm CMakeCache.txt
-
         export CC=/usr/local/opt/llvm/bin/clang
         export CXX=/usr/local/opt/llvm/bin/clang++
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
-
         cmake ../
         cmake ../
-
         make 
       displayName: 'Export variables for llvm then configure and compile CaPTk'
     
     - bash: |
         cd bin
-
         rm CMakeCache.txt
         rm -rf CaPTk*.app
-
         export CC=/usr/local/opt/llvm/bin/clang
         export CXX=/usr/local/opt/llvm/bin/clang++
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
-
         cmake ../
         cmake ../
-
         make 
       displayName: 'Ensure documentations are picked up properly'
     
@@ -289,15 +272,11 @@ jobs:
         cd bin 
         
         make package
-
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
         pkgname="_Installer"
         pkgname="$version$pkgname"
-
         pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
-
         productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
-
         xml='<?xml version="1.0" encoding="utf-8"?>
         <installer-gui-script minSpecVersion="1">
             <title>CaPTk_'"$version"'</title>
@@ -315,9 +294,7 @@ jobs:
             </choice>
             <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
         </installer-gui-script>' 
-
         echo $xml > "./distribution.xml"
-
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
@@ -654,4 +631,8 @@ jobs:
 #        buildType: 'current'
 #        downloadType: 'single'
 #        artifactName: '$(Build.DefinitionName)_installer_Linux'
+<<<<<<< HEAD
 #        downloadPath: '$(System.ArtifactsDirectory)'
+=======
+#        downloadPath: '$(System.ArtifactsDirectory)'
+>>>>>>> cff23dccfdd7c9dd42077ec008239ad124921112
