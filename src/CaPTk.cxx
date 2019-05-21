@@ -18,11 +18,6 @@
 
 #include "CheckOpenGLVersion.h"
 
-#include "qapplication.h"
-#include "qoffscreensurface.h"
-#include "qopenglcontext.h"
-#include "qdebug.h"
-#include "qopenglfunctions.h"
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
@@ -224,6 +219,9 @@ int main(int argc, char** argv)
     bool minimumVersionNotFound = false;
 #if WIN32
     CheckOpenGLVersion checker(hInstance);
+#else
+    CheckOpenGLVersion checker;
+#endif
 
     if (!checker.hasVersion_3_2())
     {
@@ -231,42 +229,15 @@ int main(int argc, char** argv)
       msg += "\tOpenGL Version : " + checker.version + "\n";
       msg += "\tOpenGL Renderer: " + checker.renderer + "\n";
       msg += "\tOpenGL Vendor  : " + checker.vendor;
+#if WIN32
       ShowErrorMessage(msg);
       cbica::sleep(1000);
-      return EXIT_FAILURE;
-    }
 #else
-    QOffscreenSurface surf;
-    surf.create();
-
-    QOpenGLContext ctx;
-    ctx.create();
-    ctx.makeCurrent(&surf);
-
-    std::string gl_version = reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VERSION));
-    //std::string gl_extensions = reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_EXTENSIONS));
-
-    auto split_1 = cbica::stringSplit(gl_version, " ");
-    auto versions = cbica::stringSplit(split_1[0], ".");
-    int version_major = std::atoi(versions[0].c_str());
-    int version_minor = std::atoi(versions[1].c_str());
-
-    if (((version_major == 3) && (version_minor < 2)) || // version < 3.2 
-      (version_major < 3)) // version < 3.0
-    {
-      minimumVersionNotFound = true;
-    }
-    if (minimumVersionNotFound)
-    {
-      msg = "A working OpenGL version was not found. Please update in order to get CaPTk's interactive capabilities to work (command line applications will still work).\n";
-      msg += "Current Version is '" + gl_version + "' but a minimum of 3.2 is needed.\n";
-
-      std::cerr << msg;
+      std::cerr << msg << "\n";
+#endif
       return EXIT_FAILURE;
     }
-#endif
-
-    if (!minimumVersionNotFound)
+    else
     {
       std::ofstream myFile;
       myFile.open(openGLVersionCheckFile.c_str());

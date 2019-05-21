@@ -1,5 +1,10 @@
 #include "CheckOpenGLVersion.h"
 
+#include "qoffscreensurface.h"
+#include "qopenglcontext.h"
+#include "qopenglfunctions.h"
+#include "cbicaUtilities.h"
+
 CheckOpenGLVersion::CheckOpenGLVersion()
 {
 }
@@ -135,6 +140,32 @@ bool CheckOpenGLVersion::hasVersion_3_2()
 
   return false;
 #else
+
+  QOffscreenSurface surf;
+  surf.create();
+
+  QOpenGLContext ctx;
+  ctx.create();
+  ctx.makeCurrent(&surf);
+
+  std::string gl_version = reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VERSION));
+  //std::string gl_extensions = reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_EXTENSIONS));
+
+  this->version = std::string(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VERSION)));
+  this->renderer = std::string(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_RENDERER)));
+  this->vendor = std::string(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VENDOR)));
+
+  auto split_1 = cbica::stringSplit(this->version, " ");
+  auto versions = cbica::stringSplit(split_1[0], ".");
+  int version_major = std::atoi(versions[0].c_str());
+  int version_minor = std::atoi(versions[1].c_str());
+
+  if (((version_major == 3) && (version_minor < 2)) || // version < 3.2 
+    (version_major < 3)) // version < 3.0
+  {
+    return false;
+  }
+
   return true;
 #endif
 }
