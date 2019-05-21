@@ -170,20 +170,12 @@ jobs:
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf regression
         rm -rf binaries
-<<<<<<< HEAD
 
         #make install
-
         # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
-=======
-        #make install
-        # export PKG_FAST_MODE=1
-        ./scripts/captk-pkg
-        ./scripts/captk-pkg
->>>>>>> cff23dccfdd7c9dd42077ec008239ad124921112
         rm -rf bin
         rm -rf src
         rm -rf docs*
