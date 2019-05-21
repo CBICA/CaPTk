@@ -623,8 +623,4 @@ jobs:
 #        buildType: 'current'
 #        downloadType: 'single'
 #        artifactName: '$(Build.DefinitionName)_installer_Linux'
-<<<<<<< HEAD
 #        downloadPath: '$(System.ArtifactsDirectory)'
-=======
-#        downloadPath: '$(System.ArtifactsDirectory)'
->>>>>>> cff23dccfdd7c9dd42077ec008239ad124921112
