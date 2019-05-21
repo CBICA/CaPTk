@@ -16,8 +16,11 @@
 #include "cbicaUtilities.h"
 #include "yaml-cpp/yaml.h"
 
-#include "CheckOpenGLVersion.h"
-
+#include "qapplication.h"
+#include "qoffscreensurface.h"
+#include "qopenglcontext.h"
+#include "qdebug.h"
+#include "qopenglfunctions.h"
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
@@ -215,27 +218,45 @@ int main(int argc, char** argv)
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
   if (!cbica::isFile(openGLVersionCheckFile))
   {
-#if WIN32
-    CheckOpenGLVersion checker(hInstance);
-#else
-    CheckOpenGLVersion checker;
-#endif
+    QOffscreenSurface surf;
+    surf.create();
 
-    if (checker.hasVersion_3_2())
+    QOpenGLContext ctx;
+    ctx.create();
+    ctx.makeCurrent(&surf);
+
+    std::string gl_version = reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VERSION));
+    std::string gl_extensions = reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_EXTENSIONS));
+
+    auto split_1 = cbica::stringSplit(gl_version, " ");
+    auto versions = cbica::stringSplit(split_1[0], ".");
+    bool minimumVersionNotFound = false;
+    int version_major = std::atoi(versions[0].c_str());
+    int version_minor = std::atoi(versions[1].c_str());
+
+    if (((version_major == 3) && (version_minor < 2)) || // version < 3.2 
+      (version_major < 3)) // version < 3.0
+    {
+      minimumVersionNotFound = true;
+    }
+    if (minimumVersionNotFound)
+    {
+      std::string msg = "A working OpenGL version was not found. Please update in order to get CaPTk's interactive capabilities to work (command line applications will still work).\n";
+      msg += "Current Version is '" + gl_version + "' but a minimum of 3.2 is needed.\n";
+
+#if WIN32
+      ShowErrorMessage(msg);
+#else
+      std::cerr << msg;
+#endif
+      return EXIT_FAILURE;
+    }
+    else
     {
       std::ofstream myFile;
       myFile.open(openGLVersionCheckFile.c_str());
       myFile << "Compatible OpenGL version present.\n";
       myFile.close();
-    }
-    else
-    {
-      std::string msg = "A working 3.2 version of OpenGL was not found in your hardware/software combination; consequently, CaPTk's GUI will not work; all CLIs will work as expected.\n\n";
-      msg += "\tOpenGL Version : " + checker.version + "\n";
-      msg += "\tOpenGL Renderer: " + checker.renderer + "\n";
-      msg += "\tOpenGL Vendor  : " + checker.vendor;
-      ShowErrorMessage(msg);
-      return EXIT_FAILURE;
     }
   }
 
