@@ -1,6 +1,6 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.0.RC
+version: 1.7.0
 baseCommand: TrainingModule
 inputs:
   features:
@@ -37,7 +37,7 @@ inputs:
     inputBinding:
       position: 1
       prefix: -k
-    doc: The number of folds for Crossvalidation (5/10) and the size of training set for TrainTest (k<n)..
+    doc: The number of folds for Cross-validation (5/10) and the size of training set for TrainTest (k<n)..
   output:
     type: string?
     label: none
