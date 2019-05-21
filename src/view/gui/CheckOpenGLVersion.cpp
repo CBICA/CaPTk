@@ -117,7 +117,7 @@ CheckOpenGLVersion::CheckOpenGLVersion(HINSTANCE hInstance) :
 
 bool CheckOpenGLVersion::hasVersion_3_2()
 {
-//#if WIN32
+#if WIN32
   // version string should have format "4.5.0 <vendorstuff>"
   // so it is enough to parse the 0th and 2nd char
   int majorCheck = 3;
@@ -134,7 +134,7 @@ bool CheckOpenGLVersion::hasVersion_3_2()
   }
 
   return false;
-//#else
-  //return true;
-//#endif
+#else
+  return true;
+#endif
 }
