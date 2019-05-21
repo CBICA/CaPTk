@@ -215,6 +215,7 @@ int main(int argc, char** argv)
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
   if (!cbica::isFile(openGLVersionCheckFile))
   {
+    std::cout << "Checking for compatible OpenGL - this will happen only once.\n";
     std::string msg;
     bool minimumVersionNotFound = false;
 #if WIN32
