@@ -40,6 +40,12 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 
 ## Frequently Asked Questions (FAQ)
 
+### OpenGL Requirements
+- If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have OpenGL version 3.2 or above. Some useful links:
+  - https://community.khronos.org/t/how-to-update-opengl/75314
+  - https://ubuntuforums.org/showthread.php?t=2326268
+  - https://www.techwalla.com/articles/how-to-update-opengl-drivers
+
 ### **LINUX**
 - If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: 
 ```bash
