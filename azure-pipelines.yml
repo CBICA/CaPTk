@@ -6,7 +6,7 @@ trigger:
 
 resources:
   containers:
-  - container: ubuntu1404
+  - container: ubuntu1604
     image: mardy/qt:trusty-qt512
     
 jobs:
