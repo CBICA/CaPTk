@@ -43,7 +43,7 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 ## Frequently Asked Questions (FAQ)
 
 ### OpenGL Requirements
-- If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have OpenGL version 3.2 or above. Some useful resources:
+- If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
   - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]: `sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade`
   - https://community.khronos.org/t/how-to-update-opengl/75314
   - https://ubuntuforums.org/showthread.php?t=2326268
