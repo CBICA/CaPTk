@@ -313,7 +313,7 @@ mv CaPTk.bin ./pkg/
 # Move cwl in
 cp ./bin/install/appdir/usr/bin/*.cwl ./pkg/
 # Move license in
-cp ./licenses/Linux-Combined.txt ./pkg/
+cp ./LICENSE ./pkg/
 # Move installer in
 cp ./scripts/linux-makeself ./pkg/
 chmod +x ./pkg/linux-makeself
