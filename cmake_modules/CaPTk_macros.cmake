@@ -28,13 +28,13 @@ MACRO( CAPTK_ADD_EXECUTABLE APPLICATION SOURCESFILES DEPENDENT_LIBS )
 
   SET_TARGET_PROPERTIES( ${APPLICATION} PROPERTIES FOLDER "${CaPTk_CLIs_Folder}" )
 
-IF( APPLE )
-  SET_TARGET_PROPERTIES( ${APPLICATION} PROPERTIES INSTALL_RPATH 
-  "@loader_path/../Frameworks;@executable_path/../Frameworks;@loader_path/../lib;@executable_path/../lib;@loader_path/../../Frameworks;@executable_path/../../Frameworks;@loader_path/../../lib;@executable_path/../../lib" )
-ELSEIF(LINUX) 
-  SET_TARGET_PROPERTIES( ${APPLICATION} PROPERTIES INSTALL_RPATH 
-  "@loader_path/../lib;@executable_path/../lib;@loader_path/../../lib;@executable_path/../../lib" )
-ENDIF()
+  IF( APPLE )
+    SET_TARGET_PROPERTIES( ${APPLICATION} PROPERTIES INSTALL_RPATH 
+    "@loader_path/../Frameworks;@executable_path/../Frameworks;@loader_path/../lib;@executable_path/../lib;@loader_path/../../Frameworks;@executable_path/../../Frameworks;@loader_path/../../lib;@executable_path/../../lib" )
+  # ELSEIF(LINUX) 
+    # SET_TARGET_PROPERTIES( ${APPLICATION} PROPERTIES INSTALL_RPATH 
+    # "@loader_path/../lib;@executable_path/../lib;@loader_path/../../lib;@executable_path/../../lib" )
+  ENDIF()
 
   ADD_DEPENDENCIES( ${APPLICATION} ${LIBNAME_Applications} ${LIBNAME_FeatureExtractor} ${LIBNAME_CBICATK} )
 
