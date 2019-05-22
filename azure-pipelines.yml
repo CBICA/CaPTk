@@ -112,7 +112,7 @@ jobs:
 
     # Dependency manager
     - bash: |
-        sudo apt-get install -qq make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
+        sudo apt-get update && sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
       displayName: 'Install dependencies from Aptitude'
 
   # Debug info before main scripts start
