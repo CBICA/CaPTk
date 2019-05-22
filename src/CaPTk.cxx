@@ -167,10 +167,10 @@ int main(int argc, char** argv)
   }
   
 #if defined(__linux__)
-  QSurfaceFormat defaultFormat;
-  // defaultFormat.setSamples(0);
-  defaultFormat.setVersion(3, 0);
-  QSurfaceFormat::setDefaultFormat(defaultFormat);
+  //auto defaultFormat = QVTKOpenGLWidget::defaultFormat();
+  //// defaultFormat.setSamples(0);
+  //defaultFormat.setVersion(3, 0);
+  //QSurfaceFormat::setDefaultFormat(defaultFormat);
 #else
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
 #endif
@@ -215,27 +215,36 @@ int main(int argc, char** argv)
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
   if (!cbica::isFile(openGLVersionCheckFile))
   {
+    std::cout << "Checking for compatible OpenGL - this will happen only once.\n";
+    std::string msg;
+    bool minimumVersionNotFound = false;
 #if WIN32
     CheckOpenGLVersion checker(hInstance);
 #else
     CheckOpenGLVersion checker;
 #endif
 
-    if (checker.hasVersion_3_2())
-    {
-      std::ofstream myFile;
-      myFile.open(openGLVersionCheckFile.c_str());
-      myFile << "Compatible OpenGL version present.\n";
-      myFile.close();
-    }
-    else
+    if (!checker.hasVersion_3_2())
     {
       std::string msg = "A working 3.2 version of OpenGL was not found in your hardware/software combination; consequently, CaPTk's GUI will not work; all CLIs will work as expected.\n\n";
       msg += "\tOpenGL Version : " + checker.version + "\n";
       msg += "\tOpenGL Renderer: " + checker.renderer + "\n";
       msg += "\tOpenGL Vendor  : " + checker.vendor;
+#if WIN32
       ShowErrorMessage(msg);
+      cbica::sleep(1000);
+#else
+      std::cerr << msg << "\n";
+#endif
       return EXIT_FAILURE;
+    }
+    else
+    {
+      std::cout << "Compatible OpenGL was found. This check will not happen again for this machine.\n";
+      std::ofstream myFile;
+      myFile.open(openGLVersionCheckFile.c_str());
+      myFile << "Compatible OpenGL version present.\n";
+      myFile.close();
     }
   }
 

@@ -6,11 +6,8 @@ trigger:
 
 resources:
   containers:
-  - container: ubuntu1404_trusty
+  - container: ubuntu1404
     image: mardy/qt:trusty-qt512
-
-  - container: ubuntu1404_xenial
-    image: mardy/qt:xenial-qt512
     
 jobs:
 - job: 'WindowsBuild'
@@ -39,9 +36,6 @@ jobs:
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-        
-        rm -rf qt.zip
-
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile Superbuild'
@@ -53,41 +47,53 @@ jobs:
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile CaPTk'
+    
+    - script: |
+        rm -rf binaries
+        rm -rf regression
+        rm -rf scripts
+        ls -lt
+        cd bin
+        rm -rf qt.zip
+        ls -lt
+      displayName: 'Removing the binaries folder'
      
-    # - script: |
-    #     cd bin
-    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #     cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-    #     cmake --build . --target PACKAGE --config Release
-      
-    #     mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
-        
-    #     cd ../
-    #     rm -rf *
-       
-    #   displayName: 'Package CaPTk'
-    
-    # - script: | 
-    #     cd bin
-    #     rm -rf qt
-    #     rm -rf externalApps
-    #     rm -rf binaries_windows.zip
-    #     rm -rf ../src
-    #     mv CaPTk_*_Installer.exe ../
-        
-    #   displayName: 'Moving Installer one level up'
-    
-    # - task: PublishBuildArtifacts@1
-    #   inputs:
-    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #     artifactName: '$(Build.DefinitionName)_installer_windows'
-    
-    # - task: DownloadBuildArtifacts@0
-    #   inputs:
-    #     buildType: 'current'
-    #     downloadType: 'single'
-    #     artifactName: '$(Build.DefinitionName)_installer_windows'
-    #     downloadPath: '$(System.ArtifactsDirectory)'
+    #- script: |
+    #    cd bin
+    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+    #    cmake --build . --target PACKAGE --config Release
+    #
+    #    mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
+    #    
+    #    cd ../
+    #    rm -rf *
+    #    
+    #  displayName: 'Package CaPTk'
+    #
+    #- script: | 
+    #    cd bin
+    #    #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #    echo "Deleting folders to make space"
+    #    rm -rf qt
+    #    rm -rf externalApps
+    #    rm -rf binaries_windows.zip
+    #    rm -rf ../src
+    #    mv CaPTk_*_Installer.exe ../
+    #    
+    #  displayName: 'Moving Installer one level up'
+    #
+    #- task: PublishBuildArtifacts@1
+    #  inputs:
+    #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #    artifactName: '$(Build.DefinitionName)_installer_windows'
+    #
+    #- task: DownloadBuildArtifacts@0
+    #  inputs:
+    #    buildType: 'current'
+    #    downloadType: 'single'
+    #    artifactName: '$(Build.DefinitionName)_installer_windows'
+    #    downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
@@ -173,6 +179,9 @@ jobs:
         rm -rf regression
         rm -rf binaries
 
+        #make install
+
+        # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
@@ -524,145 +533,126 @@ jobs:
 #         artifactName: '$(Build.DefinitionName)_installer_macOS_selfhosted'
 #         downloadPath: '$(System.ArtifactsDirectory)'
 
-# - job: 'TrustyDockerBuild'
-#   displayName: "End-to-end Trusty build & package"
-#   timeoutInMinutes: 0
-#   cancelTimeoutInMinutes: 360
-  
-#   pool:
-#     vmImage: 'ubuntu-16.04'
-  
-#   container: ubuntu1404_trusty
-  
-#   steps:
-  
-#     # Dependency manager
-#     - bash: |
-#         sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget zlib1g-dev zlib-bin curl \
-#         libdbus-1-3 \
-#         libexpat1 \
-#         libfontconfig1 \
-#         libfreetype6 \
-#         libgl1-mesa-glx \
-#         libglib2.0-0 \
-#         libx11-6 \
-#         libx11-xcb1 \
-#         libxt-dev \
-#         software-properties-common
-
-#         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-#         #sudo apt-get update
-#         #sudo apt-get install g++-4.9
-#         gcc --version
-#       displayName: 'Install dependencies from Aptitude'
-
-#     # install LFS
-#     - bash: |
-#         curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-#         sudo apt-get install git-lfs
-#       displayName: 'Install LFS'
-
-#     # Pull LFS
-#     - bash: |
-#         git lfs pull
-#         git lfs fetch --all
-#       displayName: 'Pull LFS'
-
-#     # CMake install
-#     - script: |
-#         wget https://github.com/Kitware/CMake/releases/download/v3.12.4/cmake-3.12.4.tar.gz
-#         tar -xzvf cmake-3.12.4.tar.gz
-#         cd cmake-3.12.4
-#         ./configure --system-curl
-#         make -j2
-#         sudo make install/strip
-#         cmake --version
-#       displayName: 'Update CMake'
-
-#   # Debug info before main scripts start
-#   # - bash: |
-#   #     ls -al
-#   #   displayName: 'Get debugging information'
-
-#     # Create build dir
-#     - script: |
-#         mkdir -p bin
-#       displayName: 'Create build directory'
-
-#     # Create as much free memory as possible
-
-#     # Nuclear Option #1
-#     - script: |
-#         rm -rf binaries/*mac*.zip
-#         rm -rf binaries/*windows*.zip
-#         rm -rf history
-#         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-#       displayName: 'Take the nuclear option'
-
-#     # Create fake test dirs. Can be removed.
-#     # - bash: |   
-#     #     cd bin
-#     #     mkdir -p testing
-#     #     mkdir -p ./testing/TestData
-#     #   displayName: 'Create phony tests'
-
-#     # Configure and build superbuild
-#     - bash: |
-#         cd bin
-#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
-#         make -j2
-#       displayName: 'Configure and compile Superbuild'
-
-#     # Configure and build CaPTk
-#     - bash: |
-#         cd bin
-#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
-#         make -j2
-#         #make install/strip
-#       displayName: 'Configure and compile CaPTk'
-
-#     # Check qt
-#     - bash: |
-#         cd bin
-#         ls -a
-#         ls ./qt/
-#       displayName: 'Check qt'
-      
-#     # Check libra
-#     - bash: |
-#         cd bin/install/appdir/usr/bin/
-#         ls -l
-#       displayName: 'Checking ${installDir}/bin'
-      
-#     # Build a package
-#     - bash: |
-#         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
-#         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
-#         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-#         rm -rf regression
-#         rm -rf binaries
-
-#         ./scripts/captk-pkg
-#         ./scripts/captk-pkg
-
-#         rm -rf bin
-#         rm -rf src
-#         rm -rf docs*
-
-#         rm -rf scripts
-
-#         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
-        
-#       displayName: 'Set up environment variables for packager and build a package'
-    
-#     - task: PublishBuildArtifacts@1
-#       inputs:
-#         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#         artifactName: '$(Build.DefinitionName)_docker_installer_Linux'
-
-#     - task: DownloadBuildArtifacts@0
-#       inputs:
-#         buildType: 'current'
-#         downloadType: 'single'
-#         artifactName: '$(Build.DefinitionName)_docker_installer_Linux'
-#         downloadPath: '$(System.ArtifactsDirectory)'
+#- job: 'TrustyDockerBuild'
+#  displayName: "End-to-end Trusty build & package"
+#  timeoutInMinutes: 0
+#  cancelTimeoutInMinutes: 360
+#  
+#  pool:
+#    vmImage: 'ubuntu-16.04'
+#  
+#  container: ubuntu1404
+#  
+#  steps:
+#  
+#    # Dependency manager
+#    - bash: |
+#        sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget zlib1g-dev zlib-bin curl libxt-dev 
+#        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+#        #sudo apt-get update
+#        #sudo apt-get install g++-4.9
+#        gcc --version
+#      displayName: 'Install dependencies from Aptitude'
+#
+#    # install LFS
+#    - bash: |
+#        curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+#        sudo apt-get install git-lfs
+#      displayName: 'Install LFS'
+#
+#    # Pull LFS
+#    - bash: |
+#        git lfs pull
+#      displayName: 'Pull LFS'
+#
+#    # CMake install
+#    - script: |
+#        wget https://github.com/Kitware/CMake/releases/download/v3.12.1/cmake-3.12.1.tar.gz
+#        tar -xzvf cmake-3.12.1.tar.gz
+#        cd cmake-3.12.1
+#        ./configure --system-curl
+#        make -j2
+#        sudo make install/strip
+#        cmake --version
+#      displayName: 'Update CMake'
+#
+#  # Debug info before main scripts start
+#  # - bash: |
+#  #     ls -al
+#  #   displayName: 'Get debugging information'
+#
+#    # Create build dir
+#    - script: |
+#        mkdir -p bin
+#      displayName: 'Create build directory'
+#
+#    # Create as much free memory as possible
+#
+#    # Nuclear Option #1
+#    - script: |
+#        rm -rf binaries/*mac*.zip
+#        rm -rf binaries/*windows*.zip
+#        rm -rf history
+#        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+#      displayName: 'Take the nuclear option'
+#
+#    # Create fake test dirs. Can be removed.
+#    # - bash: |   
+#    #     cd bin
+#    #     mkdir -p testing
+#    #     mkdir -p ./testing/TestData
+#    #   displayName: 'Create phony tests'
+#
+#    # Configure and build superbuild
+#    - script: |
+#        cd bin
+#        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+#        make -j2
+#      displayName: 'Configure and compile Superbuild'
+#
+#    # Configure and build CaPTk
+#    - script: |
+#        cd bin
+#        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+#        make -j2
+#        make install/strip
+#      displayName: 'Configure and compile CaPTk'
+#
+#    # Check libra
+#    - script: |
+#        cd bin/install/appdir/usr/bin/
+#        ls -l
+#      displayName: 'Checking ${installDir}/bin'
+#      
+#    # Build a package
+#    - script: |
+#        rm -rf regression
+#        rm -rf binaries
+#
+#        make install
+#
+#        # export PKG_FAST_MODE=1
+#        ./scripts/captk-pkg
+#        # ./scripts/captk-pkg
+#
+#        rm -rf bin
+#        rm -rf src
+#        rm -rf docs*
+#
+#        rm -rf scripts
+#
+#        mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
+#        
+#      displayName: 'Set up environment variables for packager and build a package'
+#    
+#    - task: PublishBuildArtifacts@1
+#      inputs:
+#        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#        artifactName: '$(Build.DefinitionName)_installer_Linux'
+#
+#    - task: DownloadBuildArtifacts@0
+#      inputs:
+#        buildType: 'current'
+#        downloadType: 'single'
+#        artifactName: '$(Build.DefinitionName)_installer_Linux'
+#        downloadPath: '$(System.ArtifactsDirectory)'

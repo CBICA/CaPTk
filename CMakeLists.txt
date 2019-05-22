@@ -11,8 +11,8 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 0.RC )
-SET( PROJECT_VERSION_TWEAK RC )
+SET( PROJECT_VERSION_PATCH 0 )
+SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -109,7 +109,7 @@ ELSE()
   SET( PROJECT_NAME_EXTENDED "Cancer Imaging Phenomics Toolkit (${PROJECT_NAME}_${${PROJECT_NAME}_Variant})" )
 ENDIF()
 SET( PROJECT_VENDOR "CBICA - UPenn" )
-SET( LICENSE_FILE "${PROJECT_SOURCE_DIR}/licenses/Combined.txt" )
+SET( LICENSE_FILE "${PROJECT_SOURCE_DIR}/LICENSE" )
 SET( README_FILE  "${PROJECT_SOURCE_DIR}/README.txt" )
 SET( PROJECT_DOMAIN "http://www.med.upenn.edu/cbica/captk/" )
 SET( PROJECT_CONTACT "software@cbica.upenn.edu" )
