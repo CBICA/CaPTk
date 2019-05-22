@@ -106,7 +106,8 @@ jobs:
   steps:
     # Pull LFS
     - bash: |
-        git lfs pull
+        #git lfs pull
+        echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
     # Dependency manager
