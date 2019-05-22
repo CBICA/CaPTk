@@ -240,6 +240,7 @@ int main(int argc, char** argv)
     }
     else
     {
+      std::cout << "Compatible OpenGL was found. This check will not happen again for this machine.\n";
       std::ofstream myFile;
       myFile.open(openGLVersionCheckFile.c_str());
       myFile << "Compatible OpenGL version present.\n";
