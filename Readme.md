@@ -31,6 +31,8 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 
 ## Download Latest Release (1.7.0)
 
+By downloading CaPTk, you agree to our [License](./LICENSE).
+
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
 | Windows        | https://www.nitrc.org/frs/downloadlink.php/11203 |
@@ -39,6 +41,13 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
 ## Frequently Asked Questions (FAQ)
+
+### OpenGL Requirements
+- If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
+  - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]: `sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade`
+  - https://community.khronos.org/t/how-to-update-opengl/75314
+  - https://ubuntuforums.org/showthread.php?t=2326268
+  - https://www.techwalla.com/articles/how-to-update-opengl-drivers
 
 ### **LINUX**
 - If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: 
@@ -57,13 +66,13 @@ This will extract the package to the path `squashfs-root/usr/` with the binaries
 |      macOS     |     10.13    |             10.14             |   10.13  |          10.12         |
 
 ## Contact
-For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a> .
+For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.
 
 ## GitHub Distribution
 
 We currently provide only our tagged versions of the code via GitHub. Check the "tags" using your favorite Git client after cloning our repository. The analogous commands are as follows:
 
-```
+```bash
 git clone https://github.com/cbica/captk.git
 latesttag=$(git describe --tags)
 echo checking out ${latesttag}
