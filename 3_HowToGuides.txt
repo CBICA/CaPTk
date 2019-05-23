@@ -399,6 +399,7 @@ Contains the following applications:
 - \subpage BreastCancer_breastSegmentation "Breast Cancer: Breast Segmentation"
 - \subpage LungCancer_SBRT "Lung Cancer: Radiomics Analysis of Lung Cancer (SBRT Lung)"
 - \subpage Glioblastoma_Directionality "Miscellaneous: Directionality Estimator"
+- \subpage Perfusion_Alignment "Miscellaneous: Perfusion Alignment"
 - \subpage Perfusion_Derivatives "Miscellaneous: Perfusion Derivatives"
 - \subpage Diffusion_Derivatives "Miscellaneous: Diffusion Derivatives"
 - \subpage Training_Module "Miscellaneous: Training Module"
@@ -1168,6 +1169,24 @@ Reference:
 <ol>
   <li>H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.</li>
 </ol>
+
+*/
+
+/**
+\page Perfusion_Alignment Miscellaneous: Perfusion Alignment
+
+This application does perfusion alignment of the input Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan.
+
+<b> REQUIREMENTS:</b>
+	-# A single DSC-MRI scan. 
+	-# The Echo Time corresponding to the given DSC-MRI scan
+	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
+
+<b> USAGE:</b>
+	-# Launch the application from "Applications" -> "Perfusion Alignment".
+	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
+	-# Press "Confirm" button.
+	-# The extracted measurements will be saved at the specified location (~5 minutes).
 
 */
 
