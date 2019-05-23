@@ -8,9 +8,9 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DSC-MRI image.");
   parser.addRequiredParameter("d", "dicom file", cbica::Parameter::STRING, "", "The input dicom image.");
   parser.addRequiredParameter("c", "t1ce file", cbica::Parameter::STRING, "", "The input T1 post-weighted image.");
-  parser.addRequiredParameter("b", "dicom file", cbica::Parameter::STRING, "", "The number of time-points before drop.");
-  parser.addRequiredParameter("a", "dicom file", cbica::Parameter::STRING, "", "The number of time-points after drop.");
-  parser.addRequiredParameter("e", "dicom file", cbica::Parameter::STRING, "", "Echo time.");
+  parser.addRequiredParameter("b", "before points", cbica::Parameter::STRING, "", "The number of time-points before drop.");
+  parser.addRequiredParameter("a", "after points", cbica::Parameter::STRING, "", "The number of time-points after drop.");
+  parser.addRequiredParameter("e", "echo time", cbica::Parameter::FLOAT, "", "Echo time.");
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
