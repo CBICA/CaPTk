@@ -8,8 +8,9 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DSC-MRI image.");
   parser.addRequiredParameter("d", "dicom file", cbica::Parameter::STRING, "", "The input dicom image.");
   parser.addRequiredParameter("c", "t1ce file", cbica::Parameter::STRING, "", "The input T1 post-weighted image.");
-  parser.addRequiredParameter("b", "dicom file", cbica::Parameter::STRING, "", "The number of time-points before drop.");
-  parser.addRequiredParameter("a", "dicom file", cbica::Parameter::STRING, "", "The number of time-points after drop.");
+  parser.addRequiredParameter("b", "before points", cbica::Parameter::STRING, "", "The number of time-points before drop.");
+  parser.addRequiredParameter("a", "after points", cbica::Parameter::STRING, "", "The number of time-points after drop.");
+  parser.addRequiredParameter("e", "echo time", cbica::Parameter::FLOAT, "", "Echo time.");
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
@@ -24,6 +25,7 @@ int main(int argc, char **argv)
   bool loggerRequested = false;
   int tempPosition;
   int pointsbeforedrop, pointsafterdrop;
+  double echotime;
   std::string inputFileName, inputDicomName, outputDirectoryName,inputt1ceName;
 
   if (parser.compareParameter("L", tempPosition))
@@ -55,6 +57,9 @@ int main(int argc, char **argv)
   if (parser.compareParameter("a", tempPosition))
     pointsafterdrop = atoi(argv[tempPosition + 1]);
 
+  if (parser.compareParameter("e", tempPosition))
+    echotime = atoi(argv[tempPosition + 1]);
+
   // std::cout << "Input File:" << inputFileName << std::endl;
   // std::cout << "Output Directory:" << outputDirectoryName << std::endl;
   // cbica::Logging(loggerFile, "Input directory name: " + inputFileName + "\n");
@@ -74,7 +79,7 @@ int main(int argc, char **argv)
   
   PerfusionAlignment objPerfusion;
   std::vector<double> OriginalCurve, RevisedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName,inputDicomName,inputt1ceName, pointsbeforedrop,pointsafterdrop,OriginalCurve,RevisedCurve);
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName,inputDicomName,inputt1ceName, pointsbeforedrop,pointsafterdrop,OriginalCurve,RevisedCurve,echotime);
   //std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>("//cbica-cifs/hasun/comp_space/180815_Henry_Ford/Protocols/5_SSFinal/2/2/2_perf_LPS_r_SSFinal.nii.gz", "W:/perf/MSh_PERF_AX-1001_echo1_I000001.dcm", "//cbica-cifs/hasun/comp_space/180815_Henry_Ford/Protocols/5_SSFinal/2/2/2_t1ce_LPS_r_SSFinal.nii.gz", 17, 40);
   for (int index = 0; index < PerfusionAlignment.size(); index++)
   {
