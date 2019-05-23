@@ -37,6 +37,7 @@ echo "Run CaPTk Build"
 cmake ../
 cmake ../
 make -j 2
+make -j 2
 
 rm -rf *.pkg 
 rm -rf _CPack*
