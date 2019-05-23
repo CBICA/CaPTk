@@ -54,12 +54,17 @@ void fPerfusionAligner::ConfirmButtonPressed()
     ShowErrorMessage("Please specify the number of points to pick after the drop.");
     return;
   }
+  if ((inputEchoTimeName->text().isEmpty()))
+  {
+    ShowErrorMessage("Please specify the echo time.");
+    return;
+  }
   if (outputImageName->text().isEmpty())
   {
     ShowErrorMessage("Please specify the output folder.");
     return;
   }
-  emit RunPerfusionAlignmentCalculation(inputBeforePointsName->text().toInt(), inputAfterPointsName->text().toInt(), mInputPathName.toStdString(), mInputT1cePathName.toStdString(), mInputDicomPathName.toStdString(), mOutputPathName.toStdString());
+  emit RunPerfusionAlignmentCalculation(inputEchoTimeName->text().toInt(),inputBeforePointsName->text().toInt(), inputAfterPointsName->text().toInt(), mInputPathName.toStdString(), mInputT1cePathName.toStdString(), mInputDicomPathName.toStdString(), mOutputPathName.toStdString());
 
   this->close();
 }

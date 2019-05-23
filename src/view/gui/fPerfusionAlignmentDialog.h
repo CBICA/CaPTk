@@ -56,7 +56,7 @@ public:
   void SelectDicomInputImage();
 
 signals:
-  void RunPerfusionAlignmentCalculation(int before,int after, const std::string inputfile, const std::string inputt1cefile, const std::string inputdicomfile, std::string outputFolder);
+  void RunPerfusionAlignmentCalculation(double echotime, int before,int after, const std::string inputfile, const std::string inputt1cefile, const std::string inputdicomfile, std::string outputFolder);
 };
 
 
