@@ -14,6 +14,7 @@ var ht_SpecialApps =
     [ "Breast Cancer: Breast Segmentation", "BreastCancer_breastSegmentation.html", null ],
     [ "Lung Cancer: Radiomics Analysis of Lung Cancer", "LungCancer_SBRT.html", null ],
     [ "Brain Cancer: Directionality Estimator", "Glioblastoma_Directionality.html", null ],
+    [ "Miscellaneous: Perfusion Alignment", "Perfusion_Alignment.html", null ],
     [ "Miscellaneous: Perfusion Derivatives", "Perfusion_Derivatives.html", null ],
     [ "Miscellaneous: Diffusion Derivatives", "Diffusion_Derivatives.html", null ],
     [ "Miscellaneous: Training Module", "Training_Module.html", null ],
