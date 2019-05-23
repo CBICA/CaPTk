@@ -11,7 +11,7 @@ CAPTK_CMD () {
 # export LDFLAGS=""
 # export CPPFLAGS=""
 
-# git lfs install && git lfs fetch --all
+# #git lfs install && git lfs fetch --all
 
 # ### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
 # echo "Run Dependency Manager"
@@ -36,6 +36,7 @@ echo "Run CaPTk Build"
 
 cmake ../
 cmake ../
+make -j 2
 make -j 2
 
 rm -rf *.pkg 

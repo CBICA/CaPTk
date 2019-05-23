@@ -142,6 +142,12 @@ IF( BUILD_DOCUMENTATION )
   ADD_SUBDIRECTORY( docs_sources )
 ENDIF ()
 
+IF(APPLE)
+  INCLUDE(DeployQt-itksnap)
+
+  deployitksnap()
+ENDIF()
+
 IF( NOT BUILD_DOCUMENTATION_ONLY )
   # Provide build configuration option
   SET( CAPTK_BUILD_OPTION "PACKAGE_PROJECT" CACHE STRING "Toggle between packaging mode (optimized code) or developer mode (provides debugging info)" )
@@ -1041,15 +1047,16 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-      # INCLUDE(ChmodFile)
+      INCLUDE(ChmodFile)
 
-      # chmodFile(${EXE_NAME} dcm2nii)
-      # chmodFile(${EXE_NAME} ITK-SNAP)
+      chmodFile(${EXE_NAME} dcm2nii)
+      chmodFile(${EXE_NAME} ITK-SNAP)
+
+      INCLUDE(MvFile)
+      mvFile(${EXE_NAME} ITK-SNAP itksnap)
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
-    ELSE()
-      # ITK HERE
     ENDIF()
 
     INCLUDE(CPack)
