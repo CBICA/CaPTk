@@ -6,30 +6,10 @@ trigger:
 
 resources:
   containers:
-  - container: ubuntu1604
+  - container: ubuntu1404
     image: mardy/qt:trusty-qt512
     
 jobs:
-- job: 'DockerBuild'
-  displayName: "End-to-end Docker build & package"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
-  
-  pool:
-    vmImage: 'Ubuntu-16.04'
-
-  variables:
-    dockerId: cbica
-    imageName: captk
-  
-  steps:
-  - script: |
-      docker build -t $(dockerId)/$(imageName) .
-      docker push $(dockerId)/$(imageName)
- #    docker login -u $(dockerId) -p $(pswd)
-    #env:
-    #  pswd: $(dockerPassword)
-  
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
   timeoutInMinutes: 0
@@ -190,12 +170,10 @@ jobs:
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf regression
         rm -rf binaries
-
         #make install
         # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
         ./scripts/captk-pkg
-
         rm -rf bin
         rm -rf src
         rm -rf docs*
@@ -240,7 +218,7 @@ jobs:
         export CXX=""
         export LDFLAGS=""
         export CPPFLAGS=""
-        git lfs install && git lfs fetch --all
+        # git lfs install && git lfs fetch --all
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
       displayName: 'Export variables'
@@ -263,7 +241,8 @@ jobs:
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
         cmake ../
         cmake ../
-        make 
+        make -j 2
+        make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
     
     - bash: |
@@ -276,7 +255,8 @@ jobs:
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
         cmake ../
         cmake ../
-        make 
+        make -j 2
+        make -j 2
       displayName: 'Ensure documentations are picked up properly'
     
     
