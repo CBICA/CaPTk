@@ -122,7 +122,7 @@ install_captk () {
 }
 
 # Print license with a reader
-cat ./Linux-Combined.txt | more
+cat ./LICENSE | more
 
 echo ""
 for i in {1..3}
