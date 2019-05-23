@@ -84,7 +84,7 @@ public:
   std::vector<double> GetInterpolatedCurve(std::vector<double> averagecurve, double timeinseconds, double totaltimeduration);
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, std::string dicomFile, std::string t1ceFile, int pointsbeforedrop, int pointsafterdrop, std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,double & echotime);
+  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, std::string dicomFile, std::string t1ceFile, int pointsbeforedrop, int pointsafterdrop, std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,const double echotime);
 
 
   template< class ImageType, class PerfusionImageType >
@@ -101,7 +101,7 @@ public:
 };
 
 template< class ImageType, class PerfusionImageType >
-std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, std::string dicomFile, std::string t1ceFile, int pointsbeforedrop,int pointsafterdrop,std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,double & echotime)
+std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, std::string dicomFile, std::string t1ceFile, int pointsbeforedrop,int pointsafterdrop,std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,const double echotime)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
