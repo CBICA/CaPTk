@@ -57,7 +57,7 @@ typename TImageType::Pointer HoleFillForSingleAxis(typename TImageType::Pointer 
 
 
   using TImageType2D = itk::Image< typename TImageType::PixelType, 2 >;
-  auto extractor = itk::ExtractImageFilter< typename TImageType, TImageType2D >::New();
+  auto extractor = itk::ExtractImageFilter< TImageType, TImageType2D >::New();
   extractor->SetInput(input);
   extractor->SetDirectionCollapseToIdentity(); // This is required.
 

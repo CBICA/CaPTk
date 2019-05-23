@@ -7272,13 +7272,22 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
   auto dmExe = getApplicationPath("DeepMedic");
   if (!cbica::exists(dmExe))
   {
+    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
+    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
+    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
+
     ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
     updateProgress(0, "");
     return;
   }
 
+
   if (startExternalProcess(dmExe.c_str(), args) != 0)
   {
+    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
+    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
+    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
+
     ShowErrorMessage("DeepMedic returned with exit code != 0");
     updateProgress(0, "");
     return;
