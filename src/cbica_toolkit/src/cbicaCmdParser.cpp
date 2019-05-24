@@ -1536,10 +1536,6 @@ namespace cbica
 
       con++;
     }
-    exampleUsage("-d C:/here/is/my/Data/ -i fixed,moving -o output");
-
-    std::ofstream fout("d:\\Hellow.cwl");
-    fout << config;
   }
 
   void CmdParser::createNode(const std::string & nodeString)
