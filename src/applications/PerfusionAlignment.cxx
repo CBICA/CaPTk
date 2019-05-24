@@ -8,8 +8,8 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DSC-MRI image.");
   parser.addRequiredParameter("d", "dicom file", cbica::Parameter::STRING, "", "The input dicom image.");
   parser.addRequiredParameter("c", "t1ce file", cbica::Parameter::STRING, "", "The input T1 post-weighted image.");
-  parser.addRequiredParameter("b", "before points", cbica::Parameter::STRING, "", "The number of time-points before drop.");
-  parser.addRequiredParameter("a", "after points", cbica::Parameter::STRING, "", "The number of time-points after drop.");
+  parser.addRequiredParameter("b", "dicom file", cbica::Parameter::STRING, "", "The number of time-points before drop.");
+  parser.addRequiredParameter("a", "dicom file", cbica::Parameter::STRING, "", "The number of time-points after drop.");
   parser.addRequiredParameter("e", "echo time", cbica::Parameter::FLOAT, "", "Echo time.");
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
@@ -54,11 +54,11 @@ int main(int argc, char **argv)
   if (parser.compareParameter("b", tempPosition))
     pointsbeforedrop = atoi(argv[tempPosition + 1]);
 
+  if (parser.compareParameter("e", tempPosition))
+    echotime = atof(argv[tempPosition + 1]);
+
   if (parser.compareParameter("a", tempPosition))
     pointsafterdrop = atoi(argv[tempPosition + 1]);
-
-  if (parser.compareParameter("e", tempPosition))
-    echotime = atoi(argv[tempPosition + 1]);
 
   // std::cout << "Input File:" << inputFileName << std::endl;
   // std::cout << "Output Directory:" << outputDirectoryName << std::endl;

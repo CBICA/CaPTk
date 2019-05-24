@@ -43,6 +43,7 @@
         <tab type="user" visible="yes" title="Breast Cancer: Breast Segmentation" url="BreastCancer_breastSegmentation.html"/>
         <tab type="user" visible="yes" title="Lung Cancer: Radiomics Analysis of Lung Cancer (SBRT Lung)" url="LungCancer_SBRT.html"/>
         <tab type="user" visible="yes" title="Miscellaneous: Directionality Estimator" url="Glioblastoma_Directionality.html"/>
+        <tab type="user" visible="yes" title="Miscellaneous: Perfusion Alignment" url="Perfusion_Alignment.html"/>
         <tab type="user" visible="yes" title="Miscellaneous: Perfusion Derivatives" url="Perfusion_Derivatives.html"/>
         <tab type="user" visible="yes" title="Miscellaneous: Diffusion Derivatives" url="Diffusion_Derivatives.html"/>
         <tab type="user" visible="yes" title="Miscellaneous: Training Module" url="Training_Module.html"/>

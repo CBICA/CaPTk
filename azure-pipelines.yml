@@ -218,7 +218,9 @@ jobs:
         export CXX=""
         export LDFLAGS=""
         export CPPFLAGS=""
+
         # git lfs install && git lfs fetch --all
+
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
       displayName: 'Export variables'
@@ -241,6 +243,7 @@ jobs:
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
         cmake ../
         cmake ../
+
         make -j 2
         make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
@@ -255,6 +258,7 @@ jobs:
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
         cmake ../
         cmake ../
+
         make -j 2
         make -j 2
       displayName: 'Ensure documentations are picked up properly'

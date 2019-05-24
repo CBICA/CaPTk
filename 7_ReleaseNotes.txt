@@ -5,6 +5,7 @@
 ## New Applications and Tools
 
 -# Perfusion Alignment
+-# Deep Learning Inference Engine based on DeepMedic
 -# Native DICOM ingestion
 -# Preprocessing and Utilities added to create pipelines
 -# Spherical drawing
