@@ -265,7 +265,6 @@ jobs:
         cmake ../
 
         make -j 2
-        make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
     
     - bash: |

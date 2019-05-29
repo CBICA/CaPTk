@@ -6494,9 +6494,9 @@ void fMainWindow::ApplicationITKSNAP()
   QStringList itkSnapArgs;
   itkSnapArgs << "-w" << std::string(m_tempFolderLocation + "/testXML.itksnap").c_str();
 
-  for (int i = 0; i < itkSnapArgs.length(); i++) {
-    std::cout << itkSnapArgs.at(i) << "\n";
-  }
+  // for (int i = 0; i < itkSnapArgs.length(); i++) {
+  //   std::cout << itkSnapArgs.at(i) << "\n";
+  // }
 
   startExternalProcess(itkSnapLocation, itkSnapArgs);
   readMaskFile(maskFile);
