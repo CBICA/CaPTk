@@ -24,6 +24,13 @@ inputs:
       position: 1
       prefix: -c
     doc: The input T1 post-weighted image..
+  echo time:
+    type: float
+    label: none
+    inputBinding:
+      position: 1
+      prefix: -e
+    doc: Echo time..
   output:
     type: string
     label: none
