@@ -11,6 +11,25 @@ resources:
     #image: mardy/qt:trusty-qt512
     
 jobs:
+- job: 'DockerBuild'
+  displayName: "End-to-end Docker build & package"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+  
+  pool:
+    vmImage: 'Ubuntu-16.04'
+
+  variables:
+    dockerId: cbica
+    imageName: captk
+  
+  steps:
+  - script: |
+      docker build -t $(dockerId)/$(imageName) .
+      docker push $(dockerId)/$(imageName)
+ #    docker login -u $(dockerId) -p $(pswd)
+    #env:
+    #  pswd: $(dockerPassword)
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
   timeoutInMinutes: 0
