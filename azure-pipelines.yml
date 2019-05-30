@@ -4,10 +4,10 @@ trigger:
     include:
     - master
 
-# resources:
-#   containers:
-#   - container: ubuntu1404
-#     image: mardy/qt:trusty-qt512
+resources:
+  containers:
+  - container: ubuntu1404
+    image: mardy/qt:trusty-qt512
     
 jobs:
 - job: 'WindowsBuild'
