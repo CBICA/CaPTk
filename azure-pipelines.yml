@@ -6,8 +6,9 @@ trigger:
 
 resources:
   containers:
-  - container: ubuntu1404
-    image: mardy/qt:trusty-qt512
+  - container: ubuntu1604
+    image: minockj/qt:latest
+    #image: mardy/qt:trusty-qt512
     
 jobs:
 - job: 'WindowsBuild'
@@ -77,9 +78,6 @@ jobs:
         testSelector: 'testAssemblies'
         testAssemblyVer2: |
           CaPTk/testing/CMakeLists.txt
-          #  **\*test*.dll
-          #  !**\*TestAdapter.dll
-          #  !**\obj\** 
         #testPlan: # Required when testSelector == TestPlan
         #testSuite: # Required when testSelector == TestPlan
         #testConfiguration: # Required when testSelector == TestPlan
