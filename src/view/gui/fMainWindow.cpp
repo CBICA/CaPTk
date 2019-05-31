@@ -861,7 +861,7 @@ fMainWindow::fMainWindow()
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, int, int, int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
-  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(int, int,const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(int, int, const std::string, const std::string, const std::string, const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string, const std::string, const std::string)));
 
 
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -6493,6 +6493,11 @@ void fMainWindow::ApplicationITKSNAP()
   QString itkSnapLocation = getApplicationPath("itksnap").c_str();
   QStringList itkSnapArgs;
   itkSnapArgs << "-w" << std::string(m_tempFolderLocation + "/testXML.itksnap").c_str();
+
+  // for (int i = 0; i < itkSnapArgs.length(); i++) {
+  //   std::cout << itkSnapArgs.at(i) << "\n";
+  // }
+
   startExternalProcess(itkSnapLocation, itkSnapArgs);
   readMaskFile(maskFile);
   updateProgress(0, "Mask saved from ITK-SNAP loaded");
@@ -7272,13 +7277,22 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
   auto dmExe = getApplicationPath("DeepMedic");
   if (!cbica::exists(dmExe))
   {
+    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
+    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
+    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
+
     ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
     updateProgress(0, "");
     return;
   }
 
+
   if (startExternalProcess(dmExe.c_str(), args) != 0)
   {
+    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
+    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
+    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
+
     ShowErrorMessage("DeepMedic returned with exit code != 0");
     updateProgress(0, "");
     return;
@@ -8203,7 +8217,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 }
 
 
-void fMainWindow::CallPerfusionAlignmentCalculation(const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder)
+void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
@@ -8225,7 +8239,7 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const int before, const int 
   PerfusionAlignment objPerfusion;
 
   std::vector<double> OriginalCurve, RevisedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, inputdicomfilename, inputt1cefilename, before, after, OriginalCurve, RevisedCurve);
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, inputdicomfilename, inputt1cefilename, before, after, OriginalCurve, RevisedCurve,echotime);
   for (int index = 0; index < PerfusionAlignment.size(); index++)
   {
     std::cout << "Writing time-point: " << index + 1 << "/" << PerfusionAlignment.size() << std::endl;

@@ -13,13 +13,13 @@ Linux users have a CaPTk AppImage available called `CaPTk_${Version}.bin`. To ru
 After this, you will want to make sure it is runnable with the following command:
 
 \verbatim
-chmod +x CaPTk.bin
+chmod +x CaPTk_${Version}.bin
 \endverbatim
 
 After this, in the same terminal, run the following command to start CaPTk:
 
 \verbatim
-./CaPTk.bin
+./CaPTk_${Version}.bin
 \endverbatim
 
 ## macOS

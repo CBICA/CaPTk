@@ -1,5 +1,10 @@
 #include "CheckOpenGLVersion.h"
 
+#include "qoffscreensurface.h"
+#include "qopenglcontext.h"
+#include "qopenglfunctions.h"
+#include "cbicaUtilities.h"
+
 CheckOpenGLVersion::CheckOpenGLVersion()
 {
 }
@@ -117,24 +122,43 @@ CheckOpenGLVersion::CheckOpenGLVersion(HINSTANCE hInstance) :
 
 bool CheckOpenGLVersion::hasVersion_3_2()
 {
-#if WIN32
   // version string should have format "4.5.0 <vendorstuff>"
   // so it is enough to parse the 0th and 2nd char
   int majorCheck = 3;
   int minorCheck = 2;
-
-  if (this->glMajorVersion > majorCheck)
-  {
-    return true;
-  }
-
-  if (this->glMajorVersion == majorCheck && this->glMinorVersion >= minorCheck)
-  {
-    return true;
-  }
-
-  return false;
+#if WIN32
+  // everything is already populated
 #else
-  return true;
+
+  QOffscreenSurface surf;
+  surf.create();
+
+  QOpenGLContext ctx;
+  ctx.create();
+  ctx.makeCurrent(&surf);
+
+  //std::string gl_version = reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VERSION));
+  //std::string gl_extensions = reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_EXTENSIONS));
+
+  this->version = std::string(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VERSION)));
+  this->renderer = std::string(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_RENDERER)));
+  this->vendor = std::string(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VENDOR)));
+
+  //auto split_1 = cbica::stringSplit(this->version, " ");
+  //auto versions = cbica::stringSplit(split_1[0], ".");
+  //int version_major = std::atoi(versions[0].c_str());
+  //int version_minor = std::atoi(versions[1].c_str());
+
+  ctx.functions()->glGetIntegerv(GL_MAJOR_VERSION, &this->glMajorVersion);
+  ctx.functions()->glGetIntegerv(GL_MINOR_VERSION, &this->glMinorVersion);
+
 #endif
+
+  if (((this->glMajorVersion == majorCheck) && (this->glMinorVersion < minorCheck)) || // version < 3.2 
+    (this->glMajorVersion < majorCheck)) // version < 3.0
+  {
+    return false;
+  }
+
+  return true;
 }

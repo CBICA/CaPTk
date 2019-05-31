@@ -596,7 +596,10 @@ namespace cbica
       exit(EXIT_FAILURE);
     }
 
-    m_optionalParameters.push_back(Parameter(laconic, verbose, expectedDataType, dataRange, description_line1, description_line2, description_line3, description_line4, description_line5));
+    std::string verbose_wrap = verbose;
+    stringReplace(verbose_wrap, " ", "");
+
+    m_optionalParameters.push_back(Parameter(laconic, verbose_wrap, expectedDataType, dataRange, description_line1, description_line2, description_line3, description_line4, description_line5));
   }
 
   void CmdParser::addRequiredParameter(const std::string &laconic, const std::string &verbose, const int &expectedDataType, const std::string &dataRange,
@@ -627,7 +630,10 @@ namespace cbica
       exit(EXIT_FAILURE);
     }
 
-    m_requiredParameters.push_back(Parameter(laconic, verbose, expectedDataType, dataRange, description_line1, description_line2, description_line3, description_line4, description_line5));
+    std::string verbose_wrap = verbose;
+    stringReplace(verbose_wrap, " ", "");
+
+    m_requiredParameters.push_back(Parameter(laconic, verbose_wrap, expectedDataType, dataRange, description_line1, description_line2, description_line3, description_line4, description_line5));
   }
 
   void CmdParser::addParameter(const std::string &laconic, const std::string &verbose, const int &expectedDataType, const std::string &dataRange,
@@ -1514,24 +1520,22 @@ namespace cbica
       {
         type = cbica::Parameter::BOOLEAN;
       }
-      else {
+      else 
+      {
         type = cbica::Parameter::NONE;
       }
-
-
+      
       if (optional)
+      {
         addOptionalParameter(laconic, verbose, type, dataRange, desc1);
-      else {
-        //std::cout << laconic << verbose << type << dataRange << desc1 << std::endl;
+      }
+      else 
+      {
         addRequiredParameter(laconic, verbose, type, dataRange, desc1);
       }
 
       con++;
     }
-    exampleUsage("-d C:/here/is/my/Data/ -i fixed,moving -o output");
-
-    std::ofstream fout("d:\\Hellow.cwl");
-    fout << config;
   }
 
   void CmdParser::createNode(const std::string & nodeString)

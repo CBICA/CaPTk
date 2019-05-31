@@ -112,7 +112,7 @@ jobs:
 
     # Dependency manager
     - bash: |
-        sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
+        sudo apt-get update && sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
       displayName: 'Install dependencies from Aptitude'
 
   # Debug info before main scripts start
@@ -232,7 +232,7 @@ jobs:
         export LDFLAGS=""
         export CPPFLAGS=""
 
-        git lfs install && git lfs fetch --all
+        # git lfs install && git lfs fetch --all
 
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
@@ -264,7 +264,7 @@ jobs:
         cmake ../
         cmake ../
 
-        make 
+        make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
     
     - bash: |
@@ -281,7 +281,8 @@ jobs:
         cmake ../
         cmake ../
 
-        make 
+        make -j 2
+        make -j 2
       displayName: 'Ensure documentations are picked up properly'
     
     
@@ -321,7 +322,7 @@ jobs:
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
-        rm -rf *
+        sudo rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
     
     - task: PublishBuildArtifacts@1
