@@ -142,12 +142,6 @@ IF( BUILD_DOCUMENTATION )
   ADD_SUBDIRECTORY( docs_sources )
 ENDIF ()
 
-IF(APPLE)
-  INCLUDE(DeployQt-itksnap)
-
-  deployitksnap()
-ENDIF()
-
 IF( NOT BUILD_DOCUMENTATION_ONLY )
   # Provide build configuration option
   SET( CAPTK_BUILD_OPTION "PACKAGE_PROJECT" CACHE STRING "Toggle between packaging mode (optimized code) or developer mode (provides debugging info)" )
@@ -930,8 +924,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
 
-    # INSTALL(DIRECTORY "${PROJECT_BINARY_DIR}/${EXE_NAME}.app" DESTINATION .)
-
     # INSTALL( FILES "${PROJECT_BINARY_DIR}/${EXE_NAME}.app/Contents/MacOS/${EXE_NAME}"
     #   DESTINATION ${EXE_NAME}.app/Contents/MacOS
     #   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
@@ -1047,13 +1039,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
+      INCLUDE(MvFile)
+      mvFile(${EXE_NAME} itksnap ITK-SNAP)
+      
       INCLUDE(ChmodFile)
 
       chmodFile(${EXE_NAME} dcm2nii)
-      chmodFile(${EXE_NAME} ITK-SNAP)
-
-      INCLUDE(MvFile)
-      mvFile(${EXE_NAME} ITK-SNAP itksnap)
+      chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})

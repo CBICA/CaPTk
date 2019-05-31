@@ -242,6 +242,12 @@ inline std::string getApplicationPath(std::string appName)
 #ifndef __APPLE__
     return captk_currentApplicationPath + appName_wrap + winExt;
 #else
+  if (appName.compare("itksnap") == 0) {
+    return cbica::replaceString(
+    cbica::normPath(captk_currentApplicationPath + "../Resources/bin/ITK-SNAP.app/Contents/MacOS/ITK-SNAP"), 
+    "/Resources/Resources/", "/Resources/");
+  }
+
   return cbica::replaceString(
     cbica::normPath(captk_currentApplicationPath + "../Resources/bin/" + appName_wrap), 
     "/Resources/Resources/", "/Resources/");
