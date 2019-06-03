@@ -178,6 +178,8 @@ Image pre-processing is essential to quantitative image analysis. CaPTk pre-proc
   <li><b>Intensity normalization.</b> Conversion of signals across modalities to comparable quantities using histogram matching [4].</li>
   <li><b>Z-Scoring normalization.</b> Images are normalized using a z-scoring mechanism with option to do the normalization within the region of interest or across the entire image. In addition, there is an option to remove outliers & noise from the image by removing a certain percentage of the top and bottom intensity ranges [6].</li>
   <li><b>Histogram Matching</b></li>
+  <li><b>Skull Stripping (Deep Learning based)</b></li>
+  <li><b>Mammogram Pre-processing</b></li>
 </ul>
 
 <B>NOTE:</B> An extended set of algorithms are available via the command line utility <b>Preprocessing</b>. For full details, run the command:
