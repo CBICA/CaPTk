@@ -96,7 +96,7 @@ jobs:
       inputs:
         testSelector: 'testAssemblies'
         testAssemblyVer2: |
-          CaPTk/bin/install/testing/CaPTk_Tests.vcxproj
+          CaPTk/bin/install/testing/RUN_TESTS.vcxproj
         #testPlan: # Required when testSelector == TestPlan
         #testSuite: # Required when testSelector == TestPlan
         #testConfiguration: # Required when testSelector == TestPlan
