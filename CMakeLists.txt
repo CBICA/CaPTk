@@ -10,9 +10,9 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # to read the version number.
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
-SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 0 )
-SET( PROJECT_VERSION_TWEAK )
+SET( PROJECT_VERSION_MINOR 8 )
+SET( PROJECT_VERSION_PATCH 0.nonRelease )
+SET( PROJECT_VERSION_TWEAK nonRelease)
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)

@@ -56,22 +56,23 @@ void fBottomImageInfoTip::setSpacing(double x, double y, double z)
 
 void fBottomImageInfoTip::setCurrentInfo(int visibility, double x, double y, double z, double X, double Y, double Z, double value)
 {
-  //visibility = 1;
-  //
-  if (visibility) 
-  {
-    pixelPosX->setText(QString::number((int)X));
-    pixelPosY->setText(QString::number((int)Y));
-    pixelPosZ->setText(QString::number((int)Z));
-    valueLabel->setText(QString::number(value));
-  }
-  else
-  {
-    pixelPosX->setText(QString(""));
-    pixelPosY->setText(QString(""));
-    pixelPosZ->setText(QString(""));
-    valueLabel->setText(QString(""));
-  }
+	//! we always want the info to be visible, refer issue #88
+	visibility = 1;
+	//
+	if (visibility)
+	{
+		pixelPosX->setText(QString::number((int)X));
+		pixelPosY->setText(QString::number((int)Y));
+		pixelPosZ->setText(QString::number((int)Z));
+		valueLabel->setText(QString::number(value));
+	}
+	else
+	{
+		pixelPosX->setText(QString(""));
+		pixelPosY->setText(QString(""));
+		pixelPosZ->setText(QString(""));
+		valueLabel->setText(QString(""));
+	}
 }
 
 void fBottomImageInfoTip::setZSlicePosition(int zslice)
