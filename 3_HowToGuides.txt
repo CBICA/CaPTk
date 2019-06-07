@@ -938,6 +938,7 @@ This application estimates the volumetric changes and their directionality for a
 	
 <b> REQUIREMENTS:</b>
 	-# The image of timepoint 1 and a tissue seedpoint with label <b>TU</b> within the ROI at timepoint 1.
+	-# [OPTIONAL] If the second time point image is not perfectly aligned, a second tissue seedpoint with label <b>NCR</b> can be initialized and the algorithm will take that translation into consideration during computation.
 	-# Two ROI files, one for each timepoint (note that the populated voxels of the ROIs should be of Label 1).
 
 <b> USAGE:</b>

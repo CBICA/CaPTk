@@ -1567,11 +1567,18 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
         //img->SetDirection(originaldirection);
 
         //cbica::WriteImage< ImageTypeFloat3D >(img, temp_prev);
-        if (!cbica::ImageSanityCheck(fname, mSlicerManagers[0]->GetPathFileName()))
+
+        bool fourDImage = false;
+        if ((imageInfo.GetImageDimensions() == 4) || (mSlicerManagers[0]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION))
+        {
+          fourDImage = true;
+        }
+        if (!cbica::ImageSanityCheck(fname, mSlicerManagers[0]->GetPathFileName(), fourDImage))
         {
           ShowErrorMessage("The physical dimensions of the previously loaded image and current image are inconsistent; cannot load");
           return;
         }
+
       }
       //{
       //  auto temp = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
