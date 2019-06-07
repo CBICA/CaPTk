@@ -10,9 +10,9 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # to read the version number.
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
-SET( PROJECT_VERSION_MINOR 8 )
-SET( PROJECT_VERSION_PATCH 0.nonRelease )
-SET( PROJECT_VERSION_TWEAK nonRelease)
+SET( PROJECT_VERSION_MINOR 7 )
+SET( PROJECT_VERSION_PATCH 1 )
+SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -715,11 +715,14 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     SET( FLAIR_TESTTUMOR_FILE "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz")
     SET_SOURCE_FILES_PROPERTIES( ${FLAIR_TESTTUMOR_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
 
-    #FILE(GLOB survival_FILES "${DATA_DIR}/survival/*.*")
-    #SET_SOURCE_FILES_PROPERTIES(${survival_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/survival)
-
-    #FILE(GLOB egfrv3_FILES "${DATA_DIR}/egfrv3/*.*")
-    #SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/egfrv3)
+    FILE(GLOB survival_FILES "${DATA_DIR}/survival/*.*")
+    SET_SOURCE_FILES_PROPERTIES(${survival_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/survival)
+    
+    FILE(GLOB egfrv3_FILES "${DATA_DIR}/egfrv3/*.*")
+    SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/egfrv3)
+    
+    FILE(GLOB egfrv3_FILES "${DATA_DIR}/molecular/*.*")
+    SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/molecular)
     
     FILE(GLOB sri24_FILES "${DATA_DIR}/sri24/*.*")
     SET_SOURCE_FILES_PROPERTIES(${sri24_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
@@ -729,8 +732,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ELSE ()
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz" DESTINATION data)
-    #INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
-    #INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
+    INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
+    INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
+    INSTALL(DIRECTORY "${DATA_DIR}/molecular" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/sri24" DESTINATION data PATTERN ".svn" EXCLUDE)
   ENDIF()
 
