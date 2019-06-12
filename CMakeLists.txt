@@ -11,7 +11,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 0 )
+SET( PROJECT_VERSION_PATCH 1 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -141,12 +141,6 @@ ENDIF()
 IF( BUILD_DOCUMENTATION )
   ADD_SUBDIRECTORY( docs_sources )
 ENDIF ()
-
-IF(APPLE)
-  INCLUDE(DeployQt-itksnap)
-
-  deployitksnap()
-ENDIF()
 
 IF( NOT BUILD_DOCUMENTATION_ONLY )
   # Provide build configuration option
@@ -721,11 +715,14 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     SET( FLAIR_TESTTUMOR_FILE "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz")
     SET_SOURCE_FILES_PROPERTIES( ${FLAIR_TESTTUMOR_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
 
-    #FILE(GLOB survival_FILES "${DATA_DIR}/survival/*.*")
-    #SET_SOURCE_FILES_PROPERTIES(${survival_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/survival)
-
-    #FILE(GLOB egfrv3_FILES "${DATA_DIR}/egfrv3/*.*")
-    #SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/egfrv3)
+    FILE(GLOB survival_FILES "${DATA_DIR}/survival/*.*")
+    SET_SOURCE_FILES_PROPERTIES(${survival_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/survival)
+    
+    FILE(GLOB egfrv3_FILES "${DATA_DIR}/egfrv3/*.*")
+    SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/egfrv3)
+    
+    FILE(GLOB egfrv3_FILES "${DATA_DIR}/molecular/*.*")
+    SET_SOURCE_FILES_PROPERTIES(${egfrv3_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/molecular)
     
     FILE(GLOB sri24_FILES "${DATA_DIR}/sri24/*.*")
     SET_SOURCE_FILES_PROPERTIES(${sri24_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
@@ -735,8 +732,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ELSE ()
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz" DESTINATION data)
-    #INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
-    #INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
+    INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
+    INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
+    INSTALL(DIRECTORY "${DATA_DIR}/molecular" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/sri24" DESTINATION data PATTERN ".svn" EXCLUDE)
   ENDIF()
 
@@ -930,8 +928,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
 
-    # INSTALL(DIRECTORY "${PROJECT_BINARY_DIR}/${EXE_NAME}.app" DESTINATION .)
-
     # INSTALL( FILES "${PROJECT_BINARY_DIR}/${EXE_NAME}.app/Contents/MacOS/${EXE_NAME}"
     #   DESTINATION ${EXE_NAME}.app/Contents/MacOS
     #   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
@@ -1047,13 +1043,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
+      INCLUDE(MvFile)
+      mvFile(${EXE_NAME} itksnap ITK-SNAP)
+      
       INCLUDE(ChmodFile)
 
       chmodFile(${EXE_NAME} dcm2nii)
-      chmodFile(${EXE_NAME} ITK-SNAP)
-
-      INCLUDE(MvFile)
-      mvFile(${EXE_NAME} ITK-SNAP itksnap)
+      chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
 
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
