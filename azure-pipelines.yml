@@ -6,10 +6,30 @@ trigger:
 
 resources:
   containers:
-  - container: ubuntu1404
-    image: mardy/qt:trusty-qt512
+  - container: ubuntu1604
+    image: minockj/qt:latest
+    #image: mardy/qt:trusty-qt512
     
 jobs:
+#- job: 'DockerBuild'
+#  displayName: "End-to-end Docker build & package"
+#  timeoutInMinutes: 0
+#  cancelTimeoutInMinutes: 300
+  
+#  pool:
+#    vmImage: 'Ubuntu-16.04'
+
+#  variables:
+#    dockerId: cbica
+#    imageName: captk
+  
+#  steps:
+#  - script: |
+#      docker build -t $(dockerId)/$(imageName) .
+#      docker push $(dockerId)/$(imageName)
+ #    docker login -u $(dockerId) -p $(pswd)
+    #env:
+    #  pswd: $(dockerPassword)
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
   timeoutInMinutes: 0
@@ -56,6 +76,64 @@ jobs:
         rm -rf qt.zip
         ls -lt
       displayName: 'Removing the binaries folder'
+      
+    # Visual Studio Test Platform Installer
+# Acquires the test platform from nuget.org or the tools cache. Satisfies the ‘vstest’ demand and can be used for running tests and collecting diagnostic data using the Visual Studio Test task.
+    - task: VisualStudioTestPlatformInstaller@1
+      inputs:
+        packageFeedSelector: 'nugetOrg' # Options: nugetOrg, customFeed, netShare
+        versionSelector: 'latestStable' # Required when packageFeedSelector == NugetOrg || PackageFeedSelector == CustomFeed# Options: latestPreRelease, latestStable, specificVersion
+        #testPlatformVersion: # Required when versionSelector == SpecificVersion
+        #customFeed: # Required when packageFeedSelector == CustomFeed
+        #username: # Optional
+        #password: # Optional
+        #netShare: # Required when packageFeedSelector == NetShare
+      displayName: 'VSTestPlatformInstallation'
+      
+      # Visual Studio Test
+# Run unit and functional tests (Selenium, Appium, Coded UI test, etc.) using the Visual Studio Test (VsTest) runner. Test frameworks that have a Visual Studio test adapter such as MsTest, xUnit, NUnit, Chutzpah (for JavaScript tests using QUnit, Mocha and Jasmine), etc. can be run. Tests can be distributed on multiple agents using this task (version 2).
+    - task: VSTest@2
+      inputs:
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          CaPTk/bin/install/testing/RUN_TESTS.vcxproj
+        #testPlan: # Required when testSelector == TestPlan
+        #testSuite: # Required when testSelector == TestPlan
+        #testConfiguration: # Required when testSelector == TestPlan
+        #tcmTestRun: '$(test.RunId)' # Optional
+        #searchFolder: '$(System.DefaultWorkingDirectory)' 
+        #testFiltercriteria: # Optional
+        #runOnlyImpactedTests: False # Optional
+        #runAllTestsAfterXBuilds: '50' # Optional
+        #uiTests: false # Optional
+        #vstestLocationMethod: 'version' # Optional. Options: version, location
+        #vsTestVersion: 'latest' # Optional. Options: latest, 16.0, 15.0, 14.0, toolsInstaller
+        #vstestLocation: # Optional
+        #runSettingsFile: # Optional
+        #overrideTestrunParameters: # Optional
+        #pathtoCustomTestAdapters: # Optional
+        #runInParallel: False # Optional
+        #runTestsInIsolation: False # Optional
+        #codeCoverageEnabled: False # Optional
+        #otherConsoleOptions: # Optional
+        #distributionBatchType: 'basedOnTestCases' # Optional. Options: basedOnTestCases, basedOnExecutionTime, basedOnAssembly
+        #batchingBasedOnAgentsOption: 'autoBatchSize' # Optional. Options: autoBatchSize, customBatchSize
+        #customBatchSizeValue: '10' # Required when distributionBatchType == BasedOnTestCases && BatchingBasedOnAgentsOption == CustomBatchSize
+        #batchingBasedOnExecutionTimeOption: 'autoBatchSize' # Optional. Options: autoBatchSize, customTimeBatchSize
+        #customRunTimePerBatchValue: '60' # Required when distributionBatchType == BasedOnExecutionTime && BatchingBasedOnExecutionTimeOption == CustomTimeBatchSize
+        #dontDistribute: False # Optional
+        #testRunTitle: # Optional
+        #platform: # Optional
+        #configuration: # Optional
+        #publishRunAttachments: true # Optional
+        #diagnosticsEnabled: True # Optional
+        #collectDumpOn: 'onAbortOnly' # Optional. Options: onAbortOnly, always, never
+        #rerunFailedTests: False # Optional
+        #rerunType: 'basedOnTestFailurePercentage' # Optional. Options: basedOnTestFailurePercentage, basedOnTestFailureCount
+        #rerunFailedThreshold: '30' # Optional
+        #rerunFailedTestCasesMaxLimit: '5' # Optional
+        #rerunMaxAttempts: '3' # Optional
+      displayName: 'VSTest'
      
     #- script: |
     #    cd bin
@@ -218,13 +296,9 @@ jobs:
         export CXX=""
         export LDFLAGS=""
         export CPPFLAGS=""
-<<<<<<< HEAD
 
         # git lfs install && git lfs fetch --all
 
-=======
-        # git lfs install && git lfs fetch --all
->>>>>>> 64400f21ed148e3a32fe84c7b778f3b573fc1cec
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
       displayName: 'Export variables'
@@ -247,10 +321,6 @@ jobs:
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
         cmake ../
         cmake ../
-<<<<<<< HEAD
-
-=======
->>>>>>> 64400f21ed148e3a32fe84c7b778f3b573fc1cec
         make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
     
@@ -264,10 +334,6 @@ jobs:
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
         cmake ../
         cmake ../
-<<<<<<< HEAD
-
-=======
->>>>>>> 64400f21ed148e3a32fe84c7b778f3b573fc1cec
         make -j 2
         make -j 2
       displayName: 'Ensure documentations are picked up properly'
