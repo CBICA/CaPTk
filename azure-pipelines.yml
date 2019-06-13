@@ -252,7 +252,6 @@ jobs:
 =======
 >>>>>>> 64400f21ed148e3a32fe84c7b778f3b573fc1cec
         make -j 2
-        make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
     
     - bash: |
@@ -304,7 +303,7 @@ jobs:
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
-        rm -rf *
+        sudo rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
     
     - task: PublishBuildArtifacts@1
