@@ -942,7 +942,8 @@ This application estimates the volumetric changes and their directionality for a
 	-# Two ROI files, one for each timepoint (note that the populated voxels of the ROIs should be of Label 1).
 
 <b> USAGE:</b>
-	-# Load the image of timepoint 1 in CaPTk and initialize the (or load an already initialized) seedpoint with label TU defining the point within the ROI from where you want to estimate the expansion. 
+	-# Load the image of timepoint 1 in CaPTk and initialize the (or load an already initialized) seedpoint with label <b>TU</b> defining the point within the ROI from where you want to estimate the expansion. 
+  -# [OPTIONAL] Load the image of timepoint 2 in CaPTk and initialize the (or load an already initialized) seedpoint with label <b>NCR</b> defining the point within the ROI from where you want to estimate the expansion. 
 	-# Launch the Directionality Estimator application using the 'Applications -> Directionality Estimator' menu option.
 	-# Specify the Input ROI files for the 2 timepoints and the Output directory where the output masks and text files will be saved.
 	-# Click on 'Confirm" and a pop-up window will be displayed showing the total volumetric change, as well as the change per 3D octant. 
