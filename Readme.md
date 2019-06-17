@@ -42,6 +42,19 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 
 ## Frequently Asked Questions (FAQ)
 
+### Running CaPTk Applications from the Command Line
+
+- An exemplery scenario to run Applications from the command line:
+
+| Platform (x64) |   Functionality   |                              Successful Installation                             | Build From Source (after invoking "make install") | FUSE Issues (after invoking "--appimage-extract") |
+|:--------------:|:-----------------:|:--------------------------------------------------------------------------------:|:-------------------------------------------------:|:-------------------------------------------------:|
+|     Windows    |      Generic      |            ${CaPTk_InstallDir}/bin/CaPTk.exe ${ApplicationName}.cwl -h           | ${CaPTk_InstallDir}/bin/${ApplicationName}.exe -h |                        N.A.                       |
+|      Linux     |      Generic      |              ${CaPTk_InstallDir}/bin/captk ${ApplicationName}.cwl -h             |   ${CaPTk_InstallDir}/bin/${ApplicationName} -h   |      ~/CaPTk/${version}/${ApplicationName} -h     |
+|      macOS     |      Generic      | ~/Applications/CaPTk_${version}.app/Contents/Resources/bin/${ApplicationName} -h |   ${CaPTk_InstallDir}/bin/${ApplicationName} -h   |                        N.A.                       |
+|     Windows    | FeatureExtraction |            ${CaPTk_InstallDir}/bin/CaPTk.exe FeatureExtraction.cwl -h            |  ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -h |                        N.A.                       |
+|      Linux     | FeatureExtraction |              ${CaPTk_InstallDir}/bin/captk FeatureExtraction.cwl -h              |    ${CaPTk_InstallDir}/bin/FeatureExtraction -h   |      ~/CaPTk/${version}/FeatureExtraction -h      |
+|      macOS     | FeatureExtraction |  ~/Applications/CaPTk_${version}.app/Contents/Resources/bin/FeatureExtraction -h |    ${CaPTk_InstallDir}/bin/FeatureExtraction -h   |                        N.A.                       |
+
 ### OpenGL Requirements
 - If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
   - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]: `sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade`
@@ -49,7 +62,8 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
   - https://ubuntuforums.org/showthread.php?t=2326268
   - https://www.techwalla.com/articles/how-to-update-opengl-drivers
 
-### **LINUX**
+### LINUX
+
 - If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: 
 ```bash
 user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
