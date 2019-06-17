@@ -44,7 +44,7 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 
 ### Running CaPTk Applications from the Command Line
 
-- An exemplery scenario to run Applications from the command line:
+- An exemplery scenario to run Applications from the command line (the example shown is to get verbose help):
 
 | Platform (x64) |   Functionality   |                              Successful Installation                             | Build From Source (after invoking "make install") | FUSE Issues (after invoking "--appimage-extract") |
 |:--------------:|:-----------------:|:--------------------------------------------------------------------------------:|:-------------------------------------------------:|:-------------------------------------------------:|
