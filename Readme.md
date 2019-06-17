@@ -54,7 +54,21 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 ```bash
 user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
 ```
-This will extract the package to the path `squashfs-root/usr/` with the binaries present in `squashfs-root/usr/bin`.
+  - This will extract the package to the path `~/CaPTk/${version}/squashfs-root/usr/` with the binaries present in `~/CaPTk/${version}/squashfs-root/usr/bin`.
+  - To run **CaPTk** from the command line in this manner, the user would need to make the following additions:
+    - Add the path `~/CaPTk/${version}/squashfs-root/usr/lib` to their environment variable **PATH**: `export PATH=~/CaPTk/${version}/squashfs-root/usr/bin:$PATH`
+    - Add the path `~/CaPTk/${version}/squashfs-root/usr/lib` to their environment variable **LD_LIBRARY_PATH**: `export LD_LIBRARY_PATH=~/CaPTk/${version}/squashfs-root/usr/lib:$LD_LIBRARY_PATH`
+    - This will nee to be present in the user's `~/.bashrc` file for this to be available across various login sessions.
+    - All the command line applications should now be available for use. For example: 
+    ```bash
+    FeatureExtraction \ # the executable should already be in the $PATH
+      -n AAC0_timestamp \ # this is the subject ID for this run 
+      -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 \ # the co-registered input image(s) and their respective modalities
+      -m /user/path/mask.nii.gz \ # the mask file (co-registered with the input image(s)
+      -r 2,4,5 -l ED,EN,NE \ # the labels from the mask file from where features need to be extracted and their respective label identifier(s)
+      -p /usr/path/features.csv \ # the parameter file to use 
+      -o /usr/path/output.csv # the path to write the output 
+    ```
 - Currently, we support all distributions newer than Ubuntu 16.04.
 
 ### **Compatibility**

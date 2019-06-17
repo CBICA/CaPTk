@@ -352,7 +352,7 @@ References:
 	
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
 	\verbatim
-	FeatureExtraction -n AAC0_timestamp" -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
+	FeatureExtraction -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
 	\endverbatim
 	\verbatim
 	FeatureExtraction -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv # batch processing
