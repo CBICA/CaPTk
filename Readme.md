@@ -42,27 +42,35 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 
 ## Frequently Asked Questions (FAQ)
 
-### Running CaPTk Applications from the Command Line
+### How do I run CaPTk Applications from the Command Line?
 
-- An exemplery scenario to run Applications from the command line (the example shown is to get verbose help):
+- The full list of command line applications available is shown by running the following command (pretty much every application is available via the command line):
+```bash
+${CaPTk_InstallDir}/bin/CaPTk -h
+```
+
+- An exemplary scenario to run Applications from the command line (the example shown is to get verbose help):
 
 | Platform (x64) |   Functionality   |                              Successful Installation                             | Build From Source (after invoking "make install") | FUSE Issues (after invoking "--appimage-extract") |
 |:--------------:|:-----------------:|:--------------------------------------------------------------------------------:|:-------------------------------------------------:|:-------------------------------------------------:|
-|     Windows    |      Generic      |            ${CaPTk_InstallDir}/bin/CaPTk.exe ${ApplicationName}.cwl -h           | ${CaPTk_InstallDir}/bin/${ApplicationName}.exe -h |                        N.A.                       |
+|     Windows    |      Generic      |            ${CaPTk_InstallDir}/bin/${ApplicationName}.exe -h           | ${CaPTk_InstallDir}/bin/${ApplicationName}.exe -h |                        N.A.                       |
 |      Linux     |      Generic      |              ${CaPTk_InstallDir}/bin/captk ${ApplicationName}.cwl -h             |   ${CaPTk_InstallDir}/bin/${ApplicationName} -h   |      ~/CaPTk/${version}/${ApplicationName} -h     |
 |      macOS     |      Generic      | ~/Applications/CaPTk_${version}.app/Contents/Resources/bin/${ApplicationName} -h |   ${CaPTk_InstallDir}/bin/${ApplicationName} -h   |                        N.A.                       |
-|     Windows    | FeatureExtraction |            ${CaPTk_InstallDir}/bin/CaPTk.exe FeatureExtraction.cwl -h            |  ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -h |                        N.A.                       |
+|     Windows    | FeatureExtraction |            ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -h            |  ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -h |                        N.A.                       |
 |      Linux     | FeatureExtraction |              ${CaPTk_InstallDir}/bin/captk FeatureExtraction.cwl -h              |    ${CaPTk_InstallDir}/bin/FeatureExtraction -h   |      ~/CaPTk/${version}/FeatureExtraction -h      |
 |      macOS     | FeatureExtraction |  ~/Applications/CaPTk_${version}.app/Contents/Resources/bin/FeatureExtraction -h |    ${CaPTk_InstallDir}/bin/FeatureExtraction -h   |                        N.A.                       |
 
-### OpenGL Requirements
+- There are detailed examples of individual command line usage in the [How To](https://cbica.github.io/CaPTk/How_To_Guides.html) section of the documentation.
+
+### What are the OpenGL requirements to run CaPTk?
+
 - If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
   - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]: `sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade`
   - https://community.khronos.org/t/how-to-update-opengl/75314
   - https://ubuntuforums.org/showthread.php?t=2326268
   - https://www.techwalla.com/articles/how-to-update-opengl-drivers
 
-### LINUX
+### What if I am having issues with the Linux Installer?
 
 - If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: 
 ```bash
@@ -72,7 +80,7 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
   - To run **CaPTk** from the command line in this manner, the user would need to make the following additions:
     - Add the path `~/CaPTk/${version}/squashfs-root/usr/lib` to their environment variable **PATH**: `export PATH=~/CaPTk/${version}/squashfs-root/usr/bin:$PATH`
     - Add the path `~/CaPTk/${version}/squashfs-root/usr/lib` to their environment variable **LD_LIBRARY_PATH**: `export LD_LIBRARY_PATH=~/CaPTk/${version}/squashfs-root/usr/lib:$LD_LIBRARY_PATH`
-    - This will nee to be present in the user's `~/.bashrc` file for this to be available across various login sessions.
+    - This will need to be present in the user's shell start up file `.bashrc`, `.cshrc`, `.profile`, `.kshrc`, etc.` for the settings to be persistent across login sessions.
     - All the command line applications should now be available for use. For example: 
     ```bash
     FeatureExtraction \ # the executable should already be in the $PATH
@@ -85,12 +93,12 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
     ```
 - Currently, we support all distributions newer than Ubuntu 16.04.
 
-### **Compatibility**
+### What is the compatibility of various CaPTk installers?
   
 | Platform (x64) |     Build    |             Tested            | Untested |       Unsupported      |
 |:--------------:|:------------:|:-----------------------------:|:--------:|:----------------------:|
 |     Windows    |       7      |            7, 8, 10           |    N/A   |        XP, Vista       |
-|      Linux     | Ubuntu 16.04 | Ubuntu 16.04, 18.04; Debian 9 | CentOS 7 | Ubuntu 14.04; CentOS 6 |
+|      Linux     | Ubuntu 16.04 | Ubuntu 16.04, 18.04; Debian 9, CentOS 7 (source build) | N/A | Ubuntu 14.04; CentOS 6 |
 |      macOS     |     10.13    |             10.14             |   10.13  |          10.12         |
 
 ## Contact
