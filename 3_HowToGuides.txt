@@ -50,6 +50,12 @@ Informatics Technology Initiative (NIfTI) file format.
 	-# Specify the first DICOM image in series, and the output filename.
 	-# Click on "Confirm".
 
+This can also be used from the command line:
+\verbatim
+[WINDOWS] Utlities.exe -i C:/test/dicomFolderWithSingleSubject -d2n 
+[LINUX] captk Utlities -i C:/test/dicomFolderWithSingleSubject -d2n 
+\endverbatim
+
 --------
 */
 
@@ -100,7 +106,12 @@ This tool smooths an image already loaded in CaPTk, to remove any high frequency
 	-# Click on 'Save'.
 	-# The output image is saved in the specified folder and automatically loaded in CaPTk.
  
- 
+This can also be used from the command line:
+\verbatim
+[WINDOWS] Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss 
+[LINUX] captk Preprocessing -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss
+\endverbatim
+
 --------
 
 Reference:
@@ -125,6 +136,12 @@ This tool corrects an image, already loaded in CaPTk, for magnetic field inhomog
 	-# Click on 'Save'.
 	-# The output image is saved in the specified folder and automatically loaded in CaPTk.
  
+
+This can also be used from the command line:
+\verbatim
+[WINDOWS] Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4 
+[LINUX] captk Preprocessing -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4
+\endverbatim
 
 --------
 
@@ -198,23 +215,6 @@ Reference:
 </ol>
 
 */
-
-/**  
-\page preprocessing_dcm2nii DICOM to NIfTI conversion
-This tool converts a DICOM series into the Neuroimaging
-Informatics Technology Initiative (NIfTI) file format.
-
-<b>REQUIREMENTS:</b>
-	-# A folder with the continuous sequence of a DICOM series.
-	
-<b>USAGE:</b>
-	-# Launch the tool using the 'Preprocessing' -> 'DICOM to NIfTI' menu option.
-	-# Specify the first DICOM image in series, and the output filename.
-	-# Click on "Confirm".
-
---------
-*/
-
 
 
 
