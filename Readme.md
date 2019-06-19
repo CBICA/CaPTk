@@ -63,7 +63,7 @@ This will extract the package to the path `squashfs-root/usr/` with the binaries
 |:--------------:|:------------:|:-----------------------------:|:--------:|:----------------------:|
 |     Windows    |       7      |            7, 8, 10           |    N/A   |        XP, Vista       |
 |      Linux     | Ubuntu 16.04 | Ubuntu 16.04, 18.04; Debian 9 | CentOS 7 | Ubuntu 14.04; CentOS 6 |
-|      macOS     |     10.13    |             10.14             |   10.13  |          10.12         |
+|      macOS     |     10.13    |          10.13, 10.14         |    N/A   |          10.12         |
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.
