@@ -16,6 +16,7 @@
       <tab type="user" visible="yes" title="Segmentation" url="gs_segmentation.html"/>
       <tab type="user" visible="yes" title="Feature Extraction" url="gs_features.html"/>
       <tab type="user" visible="yes" title="Specialized Applications" url="gs_specializedApps.html"/>
+      <tab type="user" visible="yes" title="Command Line Usage" url="gs_commandLineUsage.html"/>
     </tab>
     <tab type="usergroup" visible="yes" title="How-To Guides" url="How_To_Guides.html">
       <tab type="usergroup" visible="yes" title="Pre-processing" url="ht_Preprocessing.html">

@@ -18,6 +18,7 @@ Table of Contents
   - \subpage gs_segmentation "Segmentation"
   - \subpage gs_features "Feature Extraction"
   - \subpage gs_specializedApps "Specialized Applications"
+  - \subpage gs_commandLineUsage "Command Line Usage"
 
 --------
 */
@@ -345,6 +346,25 @@ Various <a href="ht_SpecialApps.html">Specialized Applications</a> are currently
 
 \image html applications_resize.png "Feature Panel screenshot"
 \image latex applications_resize.png "Feature Panel screenshot"
+
+--------
+*/
+
+/**
+\page gs_commandLineUsage Command Line Usage
+
+Almost every application offered by CaPTk can be used from the command line and utilizing the CaPTk's powerful command line APIs is relatively straight-forward.
+
+An example to show the verbose help for an application called <b>${Application}</b>:
+
+<table border="0.5">
+  <tr><th>Platform (x64) <th> Command
+  <tr><td align="center" width="100px">Windows <td align="center">${CaPTk_InstallDir}/bin/${ApplicationName}.exe -h
+  <tr><td align="center" width="100px">Linux <td align="center">${CaPTk_InstallDir}/bin/${ApplicationName} -h
+  <tr><td align="center" width="100px">macOS <td align="center">~/Applications/CaPTk_${version}.app/Contents/Resources/bin/${ApplicationName} -h
+</table>
+
+Detailed explanation of using the command line is available in the following section.
 
 --------
 
