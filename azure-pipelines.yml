@@ -68,6 +68,11 @@ jobs:
       displayName: 'Configure and compile CaPTk'
     
     - script: |
+        cd bin
+        cmake --build . --target RUN_TESTS --config Release
+      displayName: 'Running Tests'
+    
+    - script: |
         rm -rf binaries
         rm -rf regression
         rm -rf scripts
