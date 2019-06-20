@@ -40,7 +40,9 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11212 |
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
-## Frequently Asked Questions (FAQ)
+## [Frequently Asked Questions (FAQ)](FAQ)
+
+Please see our dedicated [FAQ](FAQ) section.
 
 ### How do I run CaPTk Applications from the Command Line?
 
