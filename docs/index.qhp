@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.0" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.1" ref="index.html">
         <section title="Overview" ref="index.html" />
         <section title="Installation Instructions" ref="Installation.html" />
         <section title="Getting Started" ref="Getting_Started.html">
@@ -22,6 +22,7 @@
           <section title="Segmentation" ref="gs_segmentation.html" />
           <section title="Feature Extraction" ref="gs_features.html" />
           <section title="Specialized Applications" ref="gs_specializedApps.html" />
+          <section title="Command Line Usage" ref="gs_commandLineUsage.html" />
         </section>
         <section title="How To Guides" ref="How_To_Guides.html">
           <section title="Pre-processing" ref="ht_Preprocessing.html">
@@ -88,6 +89,7 @@
       <keyword name="Segmentation" id="Segmentation" ref="gs_segmentation.html" />
       <keyword name="Feature Extraction" id="Feature Extraction" ref="gs_features.html" />
       <keyword name="Specialized Applications" id="Specialized Applications" ref="gs_specializedApps.html" />
+      <keyword name="Command Line Usage" id="Command Line Usage" ref="gs_commandLineUsage.html" />
       <keyword name="How To Guides" id="How To Guides" ref="How_To_Guides.html" />
       <keyword name="Pre-processing" id="Pre-processing" ref="ht_Preprocessing.html" />
       <keyword name="DICOM to NIfTI conversion" id="DICOM to NIfTI conversion" ref="preprocessing_dcm2nii.html" />
@@ -164,6 +166,7 @@
       <file>gs_segmentation.html</file>
       <file>gs_features.html</file>
       <file>gs_specializedApps.html</file>
+      <file>gs_commandLineUsage.html</file>
       <file>How_To_Guides.html</file>
       <file>ht_Preprocessing.html</file>
       <file>preprocessing_dcm2nii.html</file>
