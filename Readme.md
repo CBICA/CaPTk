@@ -93,7 +93,7 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
     ```
 - Currently, we support all distributions newer than Ubuntu 16.04.
 
-### What is the compatibility of various CaPTk installers?
+### Which platforms are supported by CaPTk installers?
   
 | Platform (x64) |                         Tested                         |       Unsupported      |
 |:--------------:|:------------------------------------------------------:|:----------------------:|
