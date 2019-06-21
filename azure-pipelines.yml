@@ -106,8 +106,8 @@ jobs:
   steps:
     # Pull LFS
     - bash: |
-        #git lfs pull
-        echo "Not doing this until quota is improved on GitHub"
+        git lfs pull
+        #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
     # Dependency manager
@@ -232,7 +232,7 @@ jobs:
         export LDFLAGS=""
         export CPPFLAGS=""
 
-        # git lfs install && git lfs fetch --all
+        git lfs install && git lfs fetch --all
 
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
