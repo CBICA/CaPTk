@@ -28,6 +28,7 @@ jobs:
     - bash: |
         git lfs fetch --include=binaries/qt5.12.1_windows.zip
         git lfs fetch --include=binaries/sourceBuild_extra_windows.zip
+        git lfs fetch --include=binaries/MCR.zip
         #git lfs pull
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
