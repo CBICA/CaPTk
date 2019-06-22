@@ -221,7 +221,6 @@ inline std::string getApplicationPath(std::string appName)
 #if WIN32
     winExt = ".bat";
 #elif linux
-    appName_wrap = "itksnap-wt";
     winExt = "";
 #endif
   }
