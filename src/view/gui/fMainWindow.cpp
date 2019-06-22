@@ -6499,7 +6499,7 @@ void fMainWindow::ApplicationITKSNAP()
 
   QString itkSnapLocation = getApplicationPath("itksnap").c_str();
   QStringList itkSnapArgs;
-  itkSnapArgs << "-w" << std::string(m_tempFolderLocation + "/testXML.itksnap").c_str();
+  itkSnapArgs << "-i" << std::string(m_tempFolderLocation + "/testXML.itksnap").c_str();
 
   // for (int i = 0; i < itkSnapArgs.length(); i++) {
   //   std::cout << itkSnapArgs.at(i) << "\n";
