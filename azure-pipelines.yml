@@ -21,7 +21,8 @@ jobs:
   steps:
   
     - script: |
-        choco install doxygen.install
+        choco install doxygen.install git-lfs.install
+        git lfs install
       displayName: 'Install dependencies'
   
     # Pull LFS
@@ -110,17 +111,24 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
+    # Dependency manager
+    - bash: |
+        sudo apt-get update && sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
+      displayName: 'Install dependencies from Aptitude'
+
+    # Dependency manager - LFS
+    - bash: |
+        curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+        sudo apt-get install git-lfs
+        git lfs install
+      displayName: 'Install dependencies from Aptitude'
+
     # Pull LFS
     - bash: |
         git lfs fetch --include "*linux.*"
         #git lfs pull
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-
-    # Dependency manager
-    - bash: |
-        sudo apt-get update && sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
-      displayName: 'Install dependencies from Aptitude'
 
   # Debug info before main scripts start
   # - bash: |
@@ -225,6 +233,11 @@ jobs:
     - bash: |
         brew install caskroom/cask/mactex make doxygen llvm
       displayName: 'Brew dependencies'
+    
+    - bash: |
+        brew install git-lfs
+        git lfs install
+      displayName: 'Brew dependency install LFS'
     
     # Pull LFS
     - bash: |
