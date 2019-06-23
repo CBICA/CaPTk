@@ -224,22 +224,26 @@ SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/externalApps )
 SET( SOURCE_APPLICATIONS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/individualApps )
 SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
 SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps" )
+SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps" )
 
 IF(WIN32)
   SET( FILENAME_TO_EXTRACT "binaries_windows")
   SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/windows.zip" )
+  SET( LFS_FILE_TO_CHECK "${LFS_FILE_TO_CHECK}/windows.zip" )
   #SET( DOWNLOAD_URL "https://1drv.ms/u/s!AgvRZZtXCbbOm_dlcWxY1pELtqFR0A?e=QnQlXw")
   #MESSAGE( STATUS "Copying ${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_windows.zip to ${FILE_TO_EXTRACT}" )
   #CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_windows.zip ${FILE_TO_EXTRACT})
 ELSEIF(APPLE)
   SET( FILENAME_TO_EXTRACT "binaries_mac")
   SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/macos.zip" )
+  SET( LFS_FILE_TO_CHECK "${LFS_FILE_TO_CHECK}/macos.zip" )
   #SET( DOWNLOAD_URL "https://1drv.ms/u/s!AgvRZZtXCbbOm_dkspbXgX1e0T0e2A?e=B0Hqa9")
   #CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_macos.zip ${FILE_TO_EXTRACT})
   #MESSAGE( STATUS "Copying ${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_macos.zip to ${FILE_TO_EXTRACT}" )
 ELSE()
   SET( FILENAME_TO_EXTRACT "binaries_linux")
   SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/linux.zip" )
+  SET( LFS_FILE_TO_CHECK "${LFS_FILE_TO_CHECK}/linux.zip" )
   #SET( DOWNLOAD_URL "https://1drv.ms/u/s!AgvRZZtXCbbOm_djLgf110iob6RgOg?e=2aHBDe")
   #CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_linux.zip ${FILE_TO_EXTRACT})
   #MESSAGE( STATUS "Copying ${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_linux.zip to ${FILE_TO_EXTRACT}" )
@@ -247,6 +251,11 @@ ENDIF()
 
 # putting this condition so that the extraction doesn't happen every single time
 IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
+
+  # copy from LFS folder
+  IF( EXISTS ${LFS_FILE_TO_CHECK} )
+    CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
+  ENDIF()
 
   IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
     # download exe from url
