@@ -26,9 +26,7 @@ jobs:
   
     # Pull LFS
     - bash: |
-        #git lfs fetch --include=binaries/qt_5.12.1/windows.zip
-        #git lfs fetch --include=binaries/precompiledApps/windows.zip
-        git lfs pull
+        git lfs fetch --include "*windows.*"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
@@ -114,9 +112,8 @@ jobs:
   steps:
     # Pull LFS
     - bash: |
-        #git lfs fetch --include=binaries/qt_5.12.1/linux.zip
-        #git lfs fetch --include=binaries/precompiledApps/linux.zip
-        git lfs pull
+        git lfs fetch --include "*linux.*"
+        #git lfs pull
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
@@ -231,9 +228,8 @@ jobs:
     
     # Pull LFS
     - bash: |
-        #git lfs fetch --include=binaries/qt_5.12.1/macos.zip
-        #git lfs fetch --include=binaries/precompiledApps/macos.zip
-        git lfs pull
+        git lfs fetch --include "*macos.*"
+        #git lfs pull
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
