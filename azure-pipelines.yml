@@ -302,7 +302,7 @@ jobs:
 
         make -j 2
         make -j 2
-      displayName: 'Ensure documentations are picked up properly'
+      displayName: 'Ensure documentation is picked up properly'
     
     
     - bash: |
