@@ -252,10 +252,10 @@ ENDIF()
 # putting this condition so that the extraction doesn't happen every single time
 IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
 
-  ## copy from LFS folder
-  #IF( EXISTS ${LFS_FILE_TO_CHECK} )
-  #  CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
-  #ENDIF()
+  # copy from LFS folder
+  IF( EXISTS ${LFS_FILE_TO_CHECK} )
+    CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
+  ENDIF()
 
   IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
     # download exe from url
