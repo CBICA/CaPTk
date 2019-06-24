@@ -43,6 +43,8 @@ jobs:
     - script: |
         mkdir bin
         cd bin
+        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
+        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
@@ -160,6 +162,7 @@ jobs:
     - bash: |
         cd bin
         mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
+        mv ../binaries/qt_5.12.1/linux.zip ./qt.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
       displayName: 'Configure and compile Superbuild'
@@ -260,6 +263,8 @@ jobs:
         export LDFLAGS=""
         export CPPFLAGS=""
 
+        mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
+        mv ../binaries/qt_5.12.1/macos.zip ./qt.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
         #git lfs install && git lfs pull --all
 
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
