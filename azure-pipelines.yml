@@ -27,16 +27,18 @@ jobs:
   
     # Pull LFS
     - bash: |
-        git lfs fetch --include "*windows.*"
+        export GIT_LFS_SKIP_SMUDGE=1 # this ensures not all LFS files get downloaded, thereby saving time and bandwidth
+        git lfs pull --include "binaries/precompiledApps/windows.zip"
+        git lfs pull --include "binaries/qt_5.12.1/windows.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
-    - bash: |
-        rm -rf binaries/*mac*.zip
-        rm -rf binaries/*linux*.zip
-        rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-      displayName: 'Take the nuclear option'
+    #- bash: |
+    #    rm -rf binaries/*mac*.zip
+    #    rm -rf binaries/*linux*.zip
+    #    rm -rf history
+    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    #  displayName: 'Take the nuclear option'
 
     - script: |
         mkdir bin
@@ -125,8 +127,9 @@ jobs:
 
     # Pull LFS
     - bash: |
-        git lfs fetch --include "*linux.*"
-        #git lfs pull
+        export GIT_LFS_SKIP_SMUDGE=1 # this ensures not all LFS files get downloaded, thereby saving time and bandwidth
+        git lfs pull --include "binaries/precompiledApps/linux.zip"
+        git lfs pull --include "binaries/qt_5.12.1/linux.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
@@ -142,13 +145,13 @@ jobs:
 
     # Create as much free memory as possible
 
-    # Nuclear Option #1
-    - bash: |
-        rm -rf binaries/*mac*.zip
-        rm -rf binaries/*windows*.zip
-        rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-      displayName: 'Take the nuclear option'
+    ## Nuclear Option #1
+    #- bash: |
+    #    rm -rf binaries/*mac*.zip
+    #    rm -rf binaries/*windows*.zip
+    #    rm -rf history
+    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    #  displayName: 'Take the nuclear option'
 
     # Create fake test dirs. Can be removed.
     # - bash: |   
@@ -241,17 +244,18 @@ jobs:
     
     # Pull LFS
     - bash: |
-        git lfs fetch --include "*macos.*"
-        #git lfs pull
+        export GIT_LFS_SKIP_SMUDGE=1 # this ensures not all LFS files get downloaded, thereby saving time and bandwidth
+        git lfs pull --include "binaries/precompiledApps/macos.zip"
+        git lfs pull --include "binaries/qt_5.12.1/macos.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
-    - bash: |
-        rm -rf binaries/*linux*.zip
-        rm -rf binaries/*windows*.zip
-        rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-      displayName: 'Take the nuclear option'
+    #- bash: |
+    #    rm -rf binaries/*linux*.zip
+    #    rm -rf binaries/*windows*.zip
+    #    rm -rf history
+    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    #  displayName: 'Take the nuclear option'
 
     - bash: |
         export CC=""
@@ -259,7 +263,7 @@ jobs:
         export LDFLAGS=""
         export CPPFLAGS=""
 
-        git lfs install && git lfs fetch --all
+        #git lfs install && git lfs pull --all
 
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
@@ -456,7 +460,7 @@ jobs:
 #         export LDFLAGS=""
 #         export CPPFLAGS=""
 
-#         git lfs install && git lfs fetch --all
+#         git lfs install && git lfs pull --all
 
 #         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 #         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
