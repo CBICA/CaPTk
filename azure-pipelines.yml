@@ -153,8 +153,8 @@ jobs:
     - bash: |
         mkdir bin
         cd bin
-        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
-        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
+        mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+        mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
 
@@ -280,8 +280,8 @@ jobs:
     - bash: |
         mkdir bin
         cd bin
-        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
-        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
+        mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+        mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
 
