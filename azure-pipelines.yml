@@ -33,6 +33,12 @@ jobs:
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
+    # Testing LFS
+    - bash: |
+        ls -lt binaries/qt_5.12.1/
+        ls -lt binaries/precompiledApps/
+      displayName: 'Testing LFS pull'
+
     #- bash: |
     #    rm -rf binaries/*mac*.zip
     #    rm -rf binaries/*linux*.zip
@@ -130,6 +136,12 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/linux.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
+
+    # Testing LFS
+    - bash: |
+        ls -lt binaries/qt_5.12.1/
+        ls -lt binaries/precompiledApps/
+      displayName: 'Testing LFS pull'
 
   # Debug info before main scripts start
   # - bash: |
@@ -249,6 +261,12 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/macos.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
+
+    # Testing LFS
+    - bash: |
+        ls -lt binaries/qt_5.12.1/
+        ls -lt binaries/precompiledApps/
+      displayName: 'Testing LFS pull'
 
     #- bash: |
     #    rm -rf binaries/*linux*.zip
