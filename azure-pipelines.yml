@@ -303,10 +303,6 @@ jobs:
       displayName: 'Export variables'
 
     - bash: |
-        mkdir bin
-      displayName: 'Create build directory'
-    
-    - bash: |
         cd bin
 
         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
