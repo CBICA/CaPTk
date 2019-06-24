@@ -254,7 +254,8 @@ jobs:
 
   steps:
     - bash: |
-        brew install caskroom/cask/mactex make doxygen llvm
+        brew install make doxygen llvm
+        #brew install caskroom/cask/mactex # latex is not used for documentation right now
       displayName: 'Brew dependencies'
     
     - bash: |
