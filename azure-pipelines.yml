@@ -21,9 +21,16 @@ jobs:
   steps:
   
     - script: |
-        choco install doxygen.install
+        choco install doxygen.install git-lfs.install
+        git lfs install
       displayName: 'Install dependencies'
   
+    # Pull LFS
+    - bash: |
+        git lfs fetch --include "*windows.*"
+        #echo "Not doing this until quota is improved on GitHub"
+      displayName: 'Pull LFS'
+
     - bash: |
         rm -rf binaries/*mac*.zip
         rm -rf binaries/*linux*.zip
@@ -104,16 +111,24 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-    # Pull LFS
-    - bash: |
-        #git lfs pull
-        echo "Not doing this until quota is improved on GitHub"
-      displayName: 'Pull LFS'
-
     # Dependency manager
     - bash: |
         sudo apt-get update && sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
       displayName: 'Install dependencies from Aptitude'
+
+    # Dependency manager - LFS
+    - bash: |
+        curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+        sudo apt-get install git-lfs
+        git lfs install
+      displayName: 'Install dependencies from Aptitude'
+
+    # Pull LFS
+    - bash: |
+        git lfs fetch --include "*linux.*"
+        #git lfs pull
+        #echo "Not doing this until quota is improved on GitHub"
+      displayName: 'Pull LFS'
 
   # Debug info before main scripts start
   # - bash: |
@@ -220,6 +235,18 @@ jobs:
       displayName: 'Brew dependencies'
     
     - bash: |
+        brew install git-lfs
+        git lfs install
+      displayName: 'Brew dependency install LFS'
+    
+    # Pull LFS
+    - bash: |
+        git lfs fetch --include "*macos.*"
+        #git lfs pull
+        #echo "Not doing this until quota is improved on GitHub"
+      displayName: 'Pull LFS'
+
+    - bash: |
         rm -rf binaries/*linux*.zip
         rm -rf binaries/*windows*.zip
         rm -rf history
@@ -232,7 +259,7 @@ jobs:
         export LDFLAGS=""
         export CPPFLAGS=""
 
-        # git lfs install && git lfs fetch --all
+        git lfs install && git lfs fetch --all
 
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
@@ -283,7 +310,7 @@ jobs:
 
         make -j 2
         make -j 2
-      displayName: 'Ensure documentations are picked up properly'
+      displayName: 'Ensure documentation is picked up properly'
     
     
     - bash: |
