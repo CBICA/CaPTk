@@ -46,11 +46,17 @@ jobs:
     #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
     #  displayName: 'Take the nuclear option'
 
-    - script: |
+    # Moving LFS Files
+    - bash: |
         mkdir bin
         cd bin
-        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
-        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
+        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
+        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin'
+
+    - script: |
+        cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
@@ -143,15 +149,19 @@ jobs:
         ls -lt binaries/precompiledApps/
       displayName: 'Testing LFS pull'
 
+    # Moving LFS Files
+    - bash: |
+        mkdir bin
+        cd bin
+        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
+        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin'
+
   # Debug info before main scripts start
   # - bash: |
   #     ls -al
   #   displayName: 'Get debugging information'
-
-    # Create build dir
-    - bash: |
-        mkdir -p bin
-      displayName: 'Create build directory'
 
     # Create as much free memory as possible
 
@@ -173,8 +183,6 @@ jobs:
     # Configure and build superbuild
     - bash: |
         cd bin
-        mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
-        mv ../binaries/qt_5.12.1/linux.zip ./qt.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
       displayName: 'Configure and compile Superbuild'
@@ -268,6 +276,15 @@ jobs:
         ls -lt binaries/precompiledApps/
       displayName: 'Testing LFS pull'
 
+    # Moving LFS Files
+    - bash: |
+        mkdir bin
+        cd bin
+        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
+        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin'
+
     #- bash: |
     #    rm -rf binaries/*linux*.zip
     #    rm -rf binaries/*windows*.zip
@@ -280,10 +297,6 @@ jobs:
         export CXX=""
         export LDFLAGS=""
         export CPPFLAGS=""
-
-        mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
-        mv ../binaries/qt_5.12.1/macos.zip ./qt.zip # this is needed because the parsing in CMake doesn't happen properly on Pipelines
-        #git lfs install && git lfs pull --all
 
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
