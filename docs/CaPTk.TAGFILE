@@ -76,6 +76,11 @@
     <filename>gs_specializedApps</filename>
   </compound>
   <compound kind="page">
+    <name>gs_commandLineUsage</name>
+    <title>Command Line Usage</title>
+    <filename>gs_commandLineUsage</filename>
+  </compound>
+  <compound kind="page">
     <name>How_To_Guides</name>
     <title>How To Guides</title>
     <filename>How_To_Guides</filename>
