@@ -102,6 +102,7 @@ int main(int argc, char** argv)
   {
     for (auto & file : cwlFiles)
     {
+
       auto cwlFileBase = cbica::getFilenameBase(file);
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
       auto argv_1 = std::string(argv[1]);
