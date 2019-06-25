@@ -70,8 +70,9 @@
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
   m_NumberOfUnfinishedExternalProcesses++;
-  cbica::Logging(loggerFile, application.toStdString() + " " + arguments.join(" ").toStdString());
-  int returnVal = std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
+  auto fullCommand = application.toStdString() + " " + arguments.join(" ").toStdString();
+  cbica::Logging(loggerFile, fullCommand);
+  int returnVal = std::system(fullCommand.c_str());
   m_NumberOfUnfinishedExternalProcesses--;
   return returnVal;
 
