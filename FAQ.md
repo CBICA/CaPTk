@@ -56,7 +56,7 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
     
 ### GLIBCXX or GLIBC Issues
 
-- This is happening because the Linux binaries are compiled using GCC 4.9.4 on Ubuntu 16.04; therefore you will need to update GCC to 4.9.4 or above in order to get it to work.
+- This is happening because the Linux binaries are compiled using GCC 4.8.5 on Ubuntu 16.04; therefore you will need to update GCC 4.8.5 or newer in order to get CaPTk to work. Some examples are shown:
 
   - Ubuntu [[ref](https://askubuntu.com/a/581497)]:
 
