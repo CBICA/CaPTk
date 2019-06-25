@@ -93,15 +93,16 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("c", "comparisonMode", cbica::Parameter::BOOLEAN, "true or false", "Enable/Disable comparison mode", "comparison mode during loading");
 
   //parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
-  parser.addExampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt", 
+  parser.addExampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt",
     "Load the input images and ROI with seed points");
   parser.addApplicationDescription("Entry point for all CaPTk applications");
-  
+
   // check for CWL command coming in through the command line after "CaPTk"
   if (argc > 1)
   {
     for (auto & file : cwlFiles)
     {
+
       auto cwlFileBase = cbica::getFilenameBase(file);
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
       auto argv_1 = std::string(argv[1]);
@@ -165,7 +166,7 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("c", comparisonMode);
   }
-  
+
 #if defined(__linux__)
   //auto defaultFormat = QVTKOpenGLWidget::defaultFormat();
   //// defaultFormat.setSamples(0);
@@ -211,7 +212,7 @@ int main(int argc, char** argv)
   //QSurfaceFormat::setDefaultFormat(defaultFormat);
 
   //VTK_MODULE_INIT(vtkRenderingFreeType);
-  
+
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
   if (!cbica::isFile(openGLVersionCheckFile))
   {
@@ -352,13 +353,13 @@ int main(int argc, char** argv)
   // show the "about" screen in the first run
   if (!cbica::fileExists(tutorialScreen))
   {
-      auto rec = QApplication::desktop()->screenGeometry();
-      // std::cout << "Detected Size: " << rec.width() << "x" << rec.height() << "\n";
+    auto rec = QApplication::desktop()->screenGeometry();
+    // std::cout << "Detected Size: " << rec.width() << "x" << rec.height() << "\n";
     window.about();
   }
-  
 
-  
+
+
 #ifndef _WIN32
   setlocale(LC_NUMERIC, old_locale.c_str());
 #endif

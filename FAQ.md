@@ -56,7 +56,23 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
     
 ### GLIBCXX or GLIBC Issues
 
-- This is happening because the Linux binaries are compiled using Ubuntu 16.04; therefore, any distribution with older GLIBC/GLIBCXX versions will not be compatible. 
+- This is happening because the Linux binaries are compiled using GCC 4.9.4 on Ubuntu 16.04; therefore you will need to update GCC to 4.9.4 or above in order to get it to work.
+
+  - Ubuntu [[ref](https://askubuntu.com/a/581497)]:
+
+  ```bash
+  sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+  sudo apt-get update
+  sudo apt-get install gcc-4.9 g++-4.9
+  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+  ```  
+
+  - CentOS [[ref](https://www.softwarecollections.org/en/scls/user/rhscl/?search=devtoolset&policy=&repo=&order_by=-create_date&per_page=10)]:
+
+  ```bash
+  sudo yum install centos-release-scl
+  sudo yum install devtoolset-6
+  ```  
 
 - You can still build CaPTk from source using the instructions in [Technical Reference](https://cbica.github.io/CaPTk/Technical_Reference.html).
 
