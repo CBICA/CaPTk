@@ -58,7 +58,7 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
 
 - This is happening because the Linux binaries are compiled using GCC 4.9.4 on Ubuntu 16.04; therefore you will need to update GCC to 4.9.4 or above in order to get it to work.
 
-  - Ubuntu [[ref](https://askubuntu.com/a/581497):
+  - Ubuntu [[ref](https://askubuntu.com/a/581497)]:
 
   ```bash
   sudo add-apt-repository ppa:ubuntu-toolchain-r/test
