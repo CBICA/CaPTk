@@ -176,10 +176,10 @@ int main(int argc, char** argv)
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
 #endif
 
-#if __APPLE__
+//#if __APPLE__
   // this->
   QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
+//#endif
 
   //! Support for High DPI monitors..works on windows but still some menu issues are seen
   //! Needs to be tested on Linux and Mac
