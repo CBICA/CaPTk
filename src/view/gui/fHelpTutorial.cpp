@@ -22,7 +22,7 @@ fHelpTutorial::~fHelpTutorial()
 fHelpTutorial::fHelpTutorial()
 {
 
-  // system("open -a ~/3d-nii-visualizer/dist/Theia.app");
+	// system("open -a ~/3d-nii-visualizer/dist/Theia.app");
 
 	this->m_zoomValue = 100;
 	zoomInButton = new QPushButton();
@@ -52,66 +52,71 @@ fHelpTutorial::fHelpTutorial()
 	percentLabel->setText("%");
 
 
-  QVBoxLayout *mainLayout = new QVBoxLayout(this);
+	QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-  m_dataDir = getCaPTkDataDir();
+	m_dataDir = getCaPTkDataDir();
 #if CAPTK_PACKAGE_PROJECT
-  m_docDir = cbica::normPath(m_dataDir + "/../share/doc/");
+	m_docDir = cbica::normPath(m_dataDir + "/../share/doc/");
 #else
-  m_docDir = std::string(PROJECT_SOURCE_DIR) + "../docs/html/";
+	m_docDir = std::string(PROJECT_SOURCE_DIR) + "../docs/html/";
 #endif
-  m_helpFileFullPath = m_docDir + "/1_credits.html";
+	m_helpFileFullPath = m_docDir + "/1_credits.html";
 
-  QHBoxLayout *toolbar = new QHBoxLayout();
+	QHBoxLayout *toolbar = new QHBoxLayout();
 
-  confirmationCheckBox = new QCheckBox();
-  confirmationCheckBox->setObjectName("confirmationCheckBox");
-  confirmationCheckBox->setText("Never show again");
-  confirmationCheckBox->setChecked(false);
+	confirmationCheckBox = new QCheckBox();
+	confirmationCheckBox->setObjectName("confirmationCheckBox");
+	confirmationCheckBox->setText("Never show again");
+	confirmationCheckBox->setChecked(false);
 
-  connect(confirmationCheckBox, SIGNAL(toggled(bool)), this, SLOT(on_skipTutorialOnNextRun(bool)));
-  connect(zoomInButton, SIGNAL(clicked()), this, SLOT(onZoomInBtnClicked()));
-  connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(onZoomOutBtnClicked()));
-  connect(zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(onZoomSliderMoved(int)));
+	connect(confirmationCheckBox, SIGNAL(toggled(bool)), this, SLOT(on_skipTutorialOnNextRun(bool)));
+	connect(zoomInButton, SIGNAL(clicked()), this, SLOT(onZoomInBtnClicked()));
+	connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(onZoomOutBtnClicked()));
+	connect(zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(onZoomSliderMoved(int)));
 
-  // m_webView = new QWebView();
-  // NEW CHANGES
-  m_webView = new QWebEngineView();
+	// m_webView = new QWebView();
+	// NEW CHANGES
+	m_webView = new QWebEngineView();
 
-  this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+	//! we want to let the webpage take the max space
+    //! this also makes sure that the labels do not get 
+    //! preferrence to occupy area thereby resolving issue #548
+	m_webView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-  if (!cbica::fileExists(m_helpFileFullPath))
-  {
-    cbica::Logging(loggerFile, "Unable to start help page, file '" + m_helpFileFullPath + "' not found");
-  }
-  else
-  {
-    m_webView->load(QUrl((
+	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
+	if (!cbica::fileExists(m_helpFileFullPath))
+	{
+		cbica::Logging(loggerFile, "Unable to start help page, file '" + m_helpFileFullPath + "' not found");
+	}
+	else
+	{
+		m_webView->load(QUrl((
 #ifndef _WIN32
-      "file://" +
+			"file://" +
 #endif
-    m_helpFileFullPath).c_str()));
-  }
+			m_helpFileFullPath).c_str()));
+	}
 
-  toolbar->addWidget(confirmationCheckBox);
-  toolbar->addStretch();
-  toolbar->addWidget(zoomOutButton);
-  toolbar->addWidget(zoomSlider);
-  toolbar->addWidget(zoomInButton);
-  toolbar->addWidget(zoomValueLabel);
-  toolbar->addWidget(percentLabel);
+	toolbar->addWidget(confirmationCheckBox);
+	toolbar->addStretch();
+	toolbar->addWidget(zoomOutButton);
+	toolbar->addWidget(zoomSlider);
+	toolbar->addWidget(zoomInButton);
+	toolbar->addWidget(zoomValueLabel);
+	toolbar->addWidget(percentLabel);
 
-  mainLayout->addWidget(m_webView);
-  mainLayout->addLayout(toolbar);
+	mainLayout->addWidget(m_webView);
+	mainLayout->addLayout(toolbar);
 
-  this->setWindowTitle("About CaPTk");
-  this->setModal(true);
-  QRect rec = QApplication::desktop()->screenGeometry();
-  this->setMinimumSize(rec.width() * 0.5, rec.height() * 0.5);
-  //this->m_webView->setTextSizeMultiplier(QApplication::desktop()->screen()->logicalDpiX() / 96.0);
-  //this->show();
+	this->setWindowTitle("About CaPTk");
+	this->setModal(true);
+	QRect rec = QApplication::desktop()->screenGeometry();
+	this->setMinimumSize(rec.width() * 0.5, rec.height() * 0.5);
+	//this->m_webView->setTextSizeMultiplier(QApplication::desktop()->screen()->logicalDpiX() / 96.0);
+	//this->show();
 
-  QCoreApplication::processEvents();
+	QCoreApplication::processEvents();
 
 }
 
