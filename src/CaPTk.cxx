@@ -189,7 +189,7 @@ int main(int argc, char** argv)
   QApplication app(argc, argv);
 
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
-  cbica::setEnvironmentVariable("QT_OPENGL", "software");
+  //cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
   ///// debug
   //HANDLE hLogFile;
