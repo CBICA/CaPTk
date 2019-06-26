@@ -1,7 +1,7 @@
 /**
 \file  PerfusionAlignment.h
 
-\brief The header file containing the PerfusionAlignment class, used to calculate PSR, RCBV, and PH
+\brief The header file containing the PerfusionAlignment class, used to align DSC-MRI curves. 
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
 
@@ -30,7 +30,6 @@ See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
 #include "ApplicationBase.h"
 #endif
 
-#define NO_OF_PCS 5 // total number of principal components used 
 
 #include <cstdio>
 #include <cstdlib>
@@ -41,22 +40,7 @@ See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
 /**
 \class PerfusionAlignment
 
-\brief Calculates Perfusion Derivatives
-
-Reference:
-
-@article{paulson2008comparison,
-title={Comparison of dynamic susceptibility-weighted contrast-enhanced MR methods: recommendations for measuring relative cerebral blood volume in brain tumors},
-author={Paulson, Eric S and Schmainda, Kathleen M},
-journal={Radiology},
-volume={249},
-number={2},
-pages={601--613},
-year={2008},
-publisher={Radiological Society of North America}
-}
-
-}
+\brief Calculates Aligned Perfusion Curve
 
 */
 
@@ -76,26 +60,35 @@ public:
 
   //! Default destructor
   ~PerfusionAlignment() {};
+  
   NiftiDataManager mNiftiLocalPtr;
 
+  //This function calculates characteristics of a given DSC-MRI curve
   void GetParametersFromTheCurve(std::vector<double> curve, double &base, double&drop, double &maxval, double &minval);
 
+  //This function retrieves the value of a specific tag from the header of given dicom file
   std::string ReadMetaDataTags(std::string filepath,std::string tagstrng);
+  
+  //This function interpolates the given DSC-MRI curve based on th given parameters
   std::vector<double> GetInterpolatedCurve(std::vector<double> averagecurve, double timeinseconds, double totaltimeduration);
 
+  //This is the main function of PerfusionAlignment class that is called from .cxx file with all the required parameters.  
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, std::string dicomFile, std::string t1ceFile, int pointsbeforedrop, int pointsafterdrop, std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,const double echotime);
 
-
+//This function calculates average 3D image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType, class PerfusionImageType >
   std::vector<double> CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask, int start, int end);
 
+  //This function calculates 3D standard deviation image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, int start, int end);
 
+  
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti, const double TE);
 
+  //This function returns 3D image volume of 4D DSC-MRI image specified by the index parameter
   template< class ImageType, class PerfusionImageType>
   typename ImageType::Pointer GetOneImageVolume(typename PerfusionImageType::Pointer perfImagePointerNifti, int index);
 };
