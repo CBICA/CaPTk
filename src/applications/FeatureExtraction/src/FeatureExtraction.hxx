@@ -291,7 +291,7 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
   //neighbouring grey level dependece based features (IBSI 3.11)
-  std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM" << std::endl;
+  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM" << std::endl;
   //offset should be always 26 (3D) or 8 (2D): this feature family is rotationally invariant
 
   NGLDMFeatures< TImage > ngldmCalculator;
@@ -345,7 +345,7 @@ template< class TImage >
 void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer itkImage,
   const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
-  std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
+  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
 
   NGTDMFeatures< TImage > ngtdmCalculator;
   ngtdmCalculator.SetInputImage(itkImage);
