@@ -1181,14 +1181,17 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 
 <b> REQUIREMENTS:</b>
 	-# A single DSC-MRI scan. 
-	-# The Echo Time corresponding to the given DSC-MRI scan
+	-# A single dicom slide. 
+	-# A single T1 post-contrast MRI scan.
+	-# The Echo Time corresponding to the given DSC-MRI scan.
+	-# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
 	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Alignment".
-	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
+	-# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
 	-# Press "Confirm" button.
-	-# The extracted measurements will be saved at the specified location (~5 minutes).
+	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
 
 */
 
