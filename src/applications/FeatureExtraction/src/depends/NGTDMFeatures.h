@@ -104,7 +104,8 @@ public:
 
       m_radius.Fill(m_range);
 
-      if (this->m_debugMode){
+      if (this->m_debugMode)
+      {
         std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() : m_minimum = " << this->m_minimum << std::endl;
         std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() : m_maximum = " << this->m_maximum << std::endl;
         std::cout << "\n[DEBUG] NGTDMFeatures.h - Update() : itk::LabelStatisticsImageFilter->SetHistogramParameters: (m_Bins=" << this->m_Bins << " | m_minimum=" << this->m_minimum << " | m_maximum=" << this->m_maximum << ")" << std::endl;
