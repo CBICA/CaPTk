@@ -1012,6 +1012,9 @@ public slots:
   */
   void SaveImage();
 
+  //! Save an image by passing the file name as a QString
+  void SaveImage_withFile(int indexOfInputImageToWrite, QString saveFileName);
+
   /**
   \brief Save the current selected DICOM image
   */

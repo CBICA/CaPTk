@@ -1192,20 +1192,9 @@ void fMainWindow::EnableThresholdOfMask()
   thresholdSpinBox->setValue((actualMin + actualMax) / 2);
 }
 
-
-
-void fMainWindow::SaveImage()
+void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveFileName)
 {
-  auto items = m_imagesTable->selectedItems();
-  if (items.empty()) {
-    return;
-  }
-  int index = GetSlicerIndexFromItem(items[0]);
-  if (index < 0 || index >= (int)mSlicerManagers.size()) {
-    return;
-  }
-  //
-  QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "_new.nii.gz");
+  auto index = indexOfInputImageToWrite;
   if (!saveFileName.isEmpty())
   {
     auto saveFileName_string = saveFileName.toStdString();
@@ -1220,7 +1209,6 @@ void fMainWindow::SaveImage()
     originaldirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
     originaldirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
     originaldirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
-
 
     if (mSlicerManagers[index]->GetPreset() == PRESET_THRESHOLD)
     {
@@ -1314,6 +1302,23 @@ void fMainWindow::SaveImage()
       updateProgress(0, "Image saved! (" + saveFileName_string + ")");
     }
   }
+}
+
+void fMainWindow::SaveImage()
+{
+  auto items = m_imagesTable->selectedItems();
+  if (items.empty()) 
+  {
+    return;
+  }
+  int index = GetSlicerIndexFromItem(items[0]);
+  if (index < 0 || index >= (int)mSlicerManagers.size()) 
+  {
+    return;
+  }
+  //
+  QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "_new.nii.gz");
+  SaveImage_withFile(index, saveFileName);
 }
 
 void fMainWindow::InitMask(vtkImageData* image)
@@ -3101,7 +3106,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
       }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
-        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
+        SaveImage_withFile(0, temp_prev.c_str());
         if (!cbica::ImageSanityCheck(maskFileName, temp_prev))
         {
           ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
