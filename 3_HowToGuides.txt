@@ -1267,7 +1267,10 @@ Input features file (CSV) and a target label file (CSV).
 <b> USAGE:</b>parameterize
 	-# Launch the application from "Applications" -> "Training Module".
 	-# Specify the features (.csv) file and the corresponding target (.csv) file.
-	-# Specify the kernel of SVM using either of the two radio buttons, number of folds and output directory. Number of folds could be 5 or 10. 
+	-# Specify the kernel of SVM using either of the two radio buttons. 
+	-# Specify the cross-validation method which could be either k-fold cross-validation or split-train-test mechanism. 
+	=# Specify the number of folds for k-fold cross-validation. 
+	-# Specify the number of training samples X in case of split-train-test method. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing. 
 	-# Press "Confirm" button. 
 	-# The model will be developed and saved in the output directory.
 
