@@ -41,17 +41,50 @@ jobs:
   steps:
   
     - script: |
-        choco install doxygen.install
+        choco install doxygen.install git-lfs.install
+        git lfs install
       displayName: 'Install dependencies'
   
+    # Pull LFS
     - bash: |
+<<<<<<< HEAD
         rm -rf binaries/*mac*.zip
         rm -rf binaries/*linux*.zip
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
     - script: |
+=======
+        export GIT_LFS_SKIP_SMUDGE=1
+        git lfs pull --include "binaries/precompiledApps/windows.zip"
+        git lfs pull --include "binaries/qt_5.12.1/windows.zip"
+        #echo "Not doing this until quota is improved on GitHub"
+      displayName: 'Pull LFS'
+
+    # Testing LFS
+    - bash: |
+        ls -lt binaries/qt_5.12.1/
+        ls -lt binaries/precompiledApps/
+      displayName: 'Testing LFS pull'
+
+    #- bash: |
+    #    rm -rf binaries/*mac*.zip
+    #    rm -rf binaries/*linux*.zip
+    #    rm -rf history
+    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    #  displayName: 'Take the nuclear option'
+
+    # Moving LFS Files
+    - bash: |
+>>>>>>> 28176acf872e6eb7c58e4b42ce2b9a96ced75778
         mkdir bin
+        cd bin
+        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
+        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin'
+
+    - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
@@ -181,20 +214,50 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
+    # Dependency manager
+    - bash: |
+        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
+        curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+        sudo apt-get install git-lfs
+        git lfs install
+      displayName: 'Install dependencies from Aptitude'
+
     # Pull LFS
     - bash: |
-        #git lfs pull
-        echo "Not doing this until quota is improved on GitHub"
+        export GIT_LFS_SKIP_SMUDGE=1
+        git lfs pull --include "binaries/precompiledApps/linux.zip"
+        git lfs pull --include "binaries/qt_5.12.1/linux.zip"
+        #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
+<<<<<<< HEAD
     # Dependency manager
     - bash: |
         sudo apt-get update && sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
       displayName: 'Install dependencies from Aptitude'
+=======
+
+    # Testing LFS
+    - bash: |
+        ls -lt binaries/qt_5.12.1/
+        ls -lt binaries/precompiledApps/
+      displayName: 'Testing LFS pull'
+
+    # Moving LFS Files
+    - bash: |
+        mkdir bin
+        cd bin
+        mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+        mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin'
+
+>>>>>>> 28176acf872e6eb7c58e4b42ce2b9a96ced75778
   # Debug info before main scripts start
   # - bash: |
   #     ls -al
   #   displayName: 'Get debugging information'
 
+<<<<<<< HEAD
     # Create build dir
     - bash: |
         mkdir -p bin
@@ -208,6 +271,18 @@ jobs:
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
+=======
+    # Create as much free memory as possible
+
+    ## Nuclear Option #1
+    #- bash: |
+    #    rm -rf binaries/*mac*.zip
+    #    rm -rf binaries/*windows*.zip
+    #    rm -rf history
+    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    #  displayName: 'Take the nuclear option'
+
+>>>>>>> 28176acf872e6eb7c58e4b42ce2b9a96ced75778
     # Create fake test dirs. Can be removed.
     # - bash: |   
     #     cd bin
@@ -282,30 +357,62 @@ jobs:
 
   steps:
     - bash: |
-        brew install caskroom/cask/mactex make doxygen llvm
+        brew install make doxygen llvm
+        #brew install caskroom/cask/mactex # latex is not used for documentation right now
       displayName: 'Brew dependencies'
     
     - bash: |
+<<<<<<< HEAD
         rm -rf binaries/*linux*.zip
         rm -rf binaries/*windows*.zip
         rm -rf history
         rm -rf src/applications/individualApps/libra/MCRInstaller.zip
       displayName: 'Take the nuclear option'
+=======
+        brew install git-lfs
+        git lfs install
+      displayName: 'Brew dependency install LFS'
+    
+    # Pull LFS
+    - bash: |
+        export GIT_LFS_SKIP_SMUDGE=1
+        git lfs pull --include "binaries/precompiledApps/macos.zip"
+        git lfs pull --include "binaries/qt_5.12.1/macos.zip"
+        #echo "Not doing this until quota is improved on GitHub"
+      displayName: 'Pull LFS'
+
+    # Testing LFS
+    - bash: |
+        ls -lt binaries/qt_5.12.1/
+        ls -lt binaries/precompiledApps/
+      displayName: 'Testing LFS pull'
+
+    # Moving LFS Files
+    - bash: |
+        mkdir bin
+        cd bin
+        mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+        mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin'
+
+    #- bash: |
+    #    rm -rf binaries/*linux*.zip
+    #    rm -rf binaries/*windows*.zip
+    #    rm -rf history
+    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    #  displayName: 'Take the nuclear option'
+
+>>>>>>> 28176acf872e6eb7c58e4b42ce2b9a96ced75778
     - bash: |
         export CC=""
         export CXX=""
         export LDFLAGS=""
         export CPPFLAGS=""
 
-        # git lfs install && git lfs fetch --all
-
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
       displayName: 'Export variables'
-    - bash: |
-        mkdir bin
-      displayName: 'Create build directory'
-    
     - bash: |
         cd bin
         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
@@ -336,7 +443,7 @@ jobs:
         cmake ../
         make -j 2
         make -j 2
-      displayName: 'Ensure documentations are picked up properly'
+      displayName: 'Ensure documentation is picked up properly'
     
     
     - bash: |
@@ -476,7 +583,7 @@ jobs:
 #         export LDFLAGS=""
 #         export CPPFLAGS=""
 
-#         git lfs install && git lfs fetch --all
+#         git lfs install && git lfs pull --all
 
 #         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 #         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"

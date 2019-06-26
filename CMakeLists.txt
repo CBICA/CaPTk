@@ -11,8 +11,8 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 1 )
-SET( PROJECT_VERSION_TWEAK )
+SET( PROJECT_VERSION_PATCH 1.RC )
+SET( PROJECT_VERSION_TWEAK RC )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -133,6 +133,7 @@ ADD_DEFINITIONS(-DPROJECT_VARIANT="${${PROJECT_NAME}_Variant}")
 ## The following 4 lines are for generation of public documentation
 SET( BUILD_DOCUMENTATION ON CACHE BOOL "Do you want to build Documentation (needs Doxygen)?" )
 SET( BUILD_DOCUMENTATION_ONLY OFF CACHE BOOL "This doesn't build anything else in the project" )
+SET( CAPTK_UPDATE_DOCS OFF CACHE BOOL "Copy HTML files to $PROJECT_SOURCE_DIR/docs for git commit" )
 MARK_AS_ADVANCED(BUILD_DOCUMENTATION)
 MARK_AS_ADVANCED(BUILD_DOCUMENTATION_ONLY)
 IF( BUILD_DOCUMENTATION_ONLY )
@@ -151,6 +152,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   IF( CAPTK_BUILD_OPTION STREQUAL PACKAGE_PROJECT)
 
     SET( CAPTK_PACKAGE_PROJECT ON )
+    SET( CAPTK_UPDATE_DOCS ON CACHE BOOL "Copy HTML files to $PROJECT_SOURCE_DIR/docs for git commit" )
     SET( CMAKE_CONFIGURATION_TYPES "Release" CACHE STRING "Default configuration types" FORCE )
     ADD_DEFINITIONS(-DCAPTK_PACKAGE_PROJECT)
 

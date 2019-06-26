@@ -1,6 +1,6 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.0
+version: 1.7.1
 baseCommand: Preprocessing
 inputs:
   runtest:
