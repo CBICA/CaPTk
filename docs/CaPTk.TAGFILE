@@ -76,6 +76,11 @@
     <filename>gs_specializedApps</filename>
   </compound>
   <compound kind="page">
+    <name>gs_commandLineUsage</name>
+    <title>Command Line Usage</title>
+    <filename>gs_commandLineUsage</filename>
+  </compound>
+  <compound kind="page">
     <name>How_To_Guides</name>
     <title>How To Guides</title>
     <filename>How_To_Guides</filename>
@@ -199,6 +204,11 @@
     <name>LungCancer_SBRT</name>
     <title>Lung Cancer: Radiomics Analysis of Lung Cancer</title>
     <filename>LungCancer_SBRT</filename>
+  </compound>
+  <compound kind="page">
+    <name>Perfusion_Alignment</name>
+    <title>Miscellaneous: Perfusion Alignment</title>
+    <filename>Perfusion_Alignment</filename>
   </compound>
   <compound kind="page">
     <name>Perfusion_Derivatives</name>
