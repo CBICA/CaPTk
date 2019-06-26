@@ -55,7 +55,7 @@ public:
       //connected->SetBackgroundValue(0);
       connected->Update();
 
-      cbica::WriteImage< TShapeImageType >(connected->GetOutput(), "C:/Projects/CaPTk_myFork/src/applications/FeatureExtraction/data/ibsi_phantom/connected.nii.gz");
+      //cbica::WriteImage< TShapeImageType >(connected->GetOutput(), "C:/Projects/CaPTk_myFork/src/applications/FeatureExtraction/data/ibsi_phantom/connected.nii.gz");
 
       /* TBD
       // using this provides distance threshold https://itk.org/Doxygen/html/classitk_1_1NeighborhoodConnectedImageFilter.html
