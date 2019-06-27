@@ -362,15 +362,15 @@ private:
     vectorOfPreprocessingActionsAndNames, // for preprocessing algorithms
     vectorOfDeepLearningActionsAndNames; // for deep learning applications
 
+  QTableWidget * m_imagesTable;
+  QTableWidget * m_nonVisImagesTable;
+
 public:
   //! Default constructor
   fMainWindow();
 
   //! Default destructor
   ~fMainWindow();
-
-  QTableWidget * m_imagesTable;
-  QTableWidget * m_nonVisImagesTable;
 
   //! Check if a valid mask is defined for the current instance of the 
   bool isMaskDefined();
