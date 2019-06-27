@@ -758,7 +758,7 @@ public slots:
   void CallForNewMolecularSubtypePredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory);
 
   /**
-  \brief Call the Skull Stripping module from ITK
+  \brief Call the Skull Stripping module from ITK with the inputs
 
   \param referenceAtlas The reference atlas (defaults to SRI24 atlas)
   \param referenceMask The reference mask (defaults to SRI24 mask)
@@ -766,10 +766,30 @@ public slots:
   \param outputImageFile The output file to save
   */
   void CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask, const std::string inputImageFile, const std::string outputImageFile);
-  void CallPCACalculation(const int, const std::string inputFolder, const std::string outputFolder);
+
+  /**
+  \brief Call the PCA calculation application with the inputs
+
+  \param number The number of PCA components to extract
+  \param inputFolder The input folder
+  \param outputFolder The folder to save results
+  */
+  void CallPCACalculation(const int number, const std::string inputFolder, const std::string outputFolder);
+
+  /**
+  \brief Call the Perfusion alignment application with the inputs
+
+  \param echotime The echo time of the input Perfusion image
+  \param before Number of time-points before the standard perfusion curve that we want our image to be aligned with.
+  \param after Number of time-points after the standard perfusion curve that we want our image to be aligned with.
+  \param inputfilename The input perfusion image file name
+  \param inputt1cefilename The input T1-Gd file name
+  \param inputdicomfilename The input DICOM slide 
+  \param outputFolder The output folder to write all results
+  */
   void CallPerfusionAlignmentCalculation(const double echotime,const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder);
     
-    void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
+  void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
   void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
   void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int, int, int);
 
