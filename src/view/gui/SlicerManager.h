@@ -273,19 +273,32 @@ public:
   //! Update visualized slice for selected Slicer
   void UpdateSlice(int slicer);
 
-  //! Update visualized slice for selected Slicer
+  //! Update slice range for selected Slicer
   void UpdateSliceRange(int slicer);
 
+  //! Add tissue point (no radius information)
   void AddLandmark(float x, float y, float z);
   //void AddLoadedLandmark(double x, double y,double z,int landmarktype);
+
+  //! Remove tissue point (no radius information)
   void RemoveLandmark(float x, float y, float z);
+
+  //! Add tumor point (with radius information taken from the second point initialized with Ctrl+Space)
   void AddLandmarkRadius(float x, float y, float z);
+
+  //! Shift tumor point 
   void AddLandmarkShift(float x, float y, float z);
 
+  //! Change selected image to the one defined with order
   void NextImageWithOrder(int order);
+
+  //! Left button release event
   void LeftButtonReleaseEvent(int slicer);
+
+  //! Function to control change in the vertical sliders
   void VerticalSliderHasChanged(int slicer, int slice);
-  double GetScalarComponentAsDouble(vtkSmartPointer< vtkImageData > image, double X, double Y, double Z, int component = 0);
+
+  //double GetScalarComponentAsDouble(vtkSmartPointer< vtkImageData > image, double X, double Y, double Z, int component = 0);
 
   void SetCurrentLandmarksType(int type, int row, int col);
 
