@@ -304,24 +304,22 @@ public:
   //! Set current landmarks type
   void SetCurrentLandmarksType(int type, int row, int col);
 
-  Landmarks* mLandmarks;
-  Landmarks* mSeedPoints;
-  Landmarks* mTissuePoints;
-  int mCurrentLandmarksType;
-  int mCurrentLandmarksRow;
-  int mCurrentLandmarksCol;
-  int mTissueSelectedEntry;
-
-  std::string m_tempFolderLocation;
+  //! Set temporary folder location
   inline void setTempFolderLocation(const std::string &tempFolder)
   {
     m_tempFolderLocation = tempFolder;
   }
 
-  std::string GetFileNameInADicomDirectory(QString directoryname);
+  //! Update border coordinates for x and y axes
   void UpdateBorderCoordinates(double startX, double startY, double endX, double endY);
+
+  //! Update border coordinates for the z axis
   void UpdateBorderCoordinates(double startZ, double endZ);
+
+  //! Add an action - used for undo
   void ActionAdded(std::vector<PointVal>& points);
+
+  //! Get the 3D image at the current index for 4D image
   void Get3DImageAtCurrentPerfusionIndex(int index);
    
 signals:
@@ -349,6 +347,16 @@ signals:
   void UpdateActionInMain(const QVariantList& points);
 
 public:
+
+  Landmarks* mLandmarks;
+  Landmarks* mSeedPoints;
+  Landmarks* mTissuePoints;
+  int mCurrentLandmarksType;
+  int mCurrentLandmarksRow;
+  int mCurrentLandmarksCol;
+  int mTissueSelectedEntry;
+
+  std::string m_tempFolderLocation;
   vtkSmartPointer<vtkImageData> mImage;
   ImageTypeFloat3D::Pointer mITKImage;
   ImageTypeFloat3D::DirectionType mDirection;

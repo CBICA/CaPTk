@@ -1149,17 +1149,6 @@ void SlicerManager::RemoveLandmark(float x, float y, float z)
     }
   }
 }
-std::string SlicerManager::GetFileNameInADicomDirectory(QString directoryname)
-{
-  std::string FirstFileName = "";
-  QDirIterator directoryIterator(directoryname, QStringList() << "*.dcm", QDir::Files, QDirIterator::Subdirectories);
-  while (directoryIterator.hasNext())
-  {
-    FirstFileName = directoryIterator.next().toStdString();
-    break;
-  }
-  return FirstFileName;
-}
 void SlicerManager::ActionAdded(std::vector<PointVal>& points)
 {
   QVariantList list;
