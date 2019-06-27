@@ -375,8 +375,10 @@ public:
   //! Check if a valid mask is defined for the current instance of the 
   bool isMaskDefined();
 
-  //! Get/Set Comparison Mode
+  //! Set Comparison Mode
   void SetComparisonMode(bool mode);
+
+  //! Get Comparison Mode status
   bool GetComparisonMode();
 
   /*
@@ -419,9 +421,7 @@ public:
   \brief Initialize drawing mask on the image
   */
   void InitMask(vtkImageData* image);
-
-
-
+   
   /**
   \brief Initializer for the entire rendering pipeline
   */
@@ -455,7 +455,6 @@ public:
   /**
   \brief Construct near and far indeces from the initialized mask
   */
-
   template <class TImageType>
   typename TImageType::Pointer GetImageWithLabels(std::vector<double> labels, typename TImageType::Pointer inputimage)
   {
@@ -486,27 +485,6 @@ public:
       ++outputIt;
     }
     return output;
-  }
-
-  template<class TImageType>
-  void FormulateNearFarPoints(std::vector<typename TImageType::IndexType> &nearIndices, std::vector<typename TImageType::IndexType> &farIndices)
-  {
-    if (mSlicerManagers.size() <= 0)
-      return;
-
-    typename TImageType::Pointer img = convertVtkToItk<typename TImageType::PixelType, 3>(mSlicerManagers[0]->mMask);
-    itk::ImageRegionIteratorWithIndex <TImageType> maskIt(img, img->GetLargestPossibleRegion());
-    maskIt.GoToBegin();
-    while (!maskIt.IsAtEnd())
-    {
-      if (maskIt.Get() == 1)
-      {
-        nearIndices.push_back(maskIt.GetIndex());
-      }
-      else if (maskIt.Get() == 2)
-        farIndices.push_back(maskIt.GetIndex());
-      ++maskIt;
-    }
   }
 
   /**

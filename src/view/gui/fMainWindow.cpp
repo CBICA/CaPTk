@@ -6246,7 +6246,22 @@ void fMainWindow::ApplicationEGFR()
 
   std::vector<ImageTypeFloat3D::IndexType> nearIndices;
   std::vector<ImageTypeFloat3D::IndexType> farIndices;
-  FormulateNearFarPoints<ImageTypeFloat3D>(nearIndices, farIndices);
+
+  // formulate near and far indices from the mask
+  auto currentMaskImage = getMaskImage();
+  itk::ImageRegionIteratorWithIndex< ImageTypeFloat3D > maskIt(currentMaskImage, currentMaskImage->GetLargestPossibleRegion());
+  maskIt.GoToBegin();
+  while (!maskIt.IsAtEnd())
+  {
+    if (maskIt.Get() == 1)
+    {
+      nearIndices.push_back(maskIt.GetIndex());
+    }
+    else if (maskIt.Get() == 2)
+      farIndices.push_back(maskIt.GetIndex());
+    ++maskIt;
+  }
+
   std::string imagetype_string = "";
 
   for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
