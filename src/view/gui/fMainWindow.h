@@ -565,14 +565,14 @@ signals:
 
 public slots:
 
-    //! set Z slice position on image info panel
-    void SetImageInfoZSlicePosition(int zslice);
+  //! set Z slice position on image info panel
+  void SetImageInfoZSlicePosition(int zslice);
 
-    //! set voxel intensity value at cursor position on image info panel
-    void SetImageInfoIntensityValue(double value);
+  //! set voxel intensity value at cursor position on image info panel
+  void SetImageInfoIntensityValue(double value);
 
-    //! slot on movement of slider in comparison mode
-    void OnSliderMovedInComparisonMode(int);
+  //! slot on movement of slider in comparison mode
+  void OnSliderMovedInComparisonMode(int);
 
   /**
   \brief Updates draw mode when drawing panel changes
@@ -784,11 +784,21 @@ public slots:
   \param after Number of time-points after the standard perfusion curve that we want our image to be aligned with.
   \param inputfilename The input perfusion image file name
   \param inputt1cefilename The input T1-Gd file name
-  \param inputdicomfilename The input DICOM slide 
+  \param inputdicomfilename The input DICOM slide
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionAlignmentCalculation(const double echotime,const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder);
-    
+  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder);
+
+  /**
+  \brief Call the Perfusion alignment application with the inputs
+
+  \param TE The echo time of the input Perfusion image
+  \param rcbv Flag that enables RCBV calculation
+  \param psr Flag that enables PSR calculation
+  \param ph Flag that enables PH calculation
+  \param inputfile The input DSC-MRI image
+  \param outputFolder The output folder to write all results
+  */
   void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
   void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
   void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int, int, int);
@@ -909,14 +919,14 @@ public slots:
     auto currentApp = action->text().toStdString();
     std::string path = getCaPTkDataDir();
     auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-//    std::string link =
-//#ifdef _WIN32
-//      path + "/GnuWin32/bin/wget.exe"
-//#else
-//      "wget"
-//#endif
-//      + currentLink +
-//      " -O " + captk_SampleDataFolder + "/" + currentApp + ".zip";
+    //    std::string link =
+    //#ifdef _WIN32
+    //      path + "/GnuWin32/bin/wget.exe"
+    //#else
+    //      "wget"
+    //#endif
+    //      + currentLink +
+    //      " -O " + captk_SampleDataFolder + "/" + currentApp + ".zip";
 
     cbica::Logging(loggerFile, currentLink);
 
