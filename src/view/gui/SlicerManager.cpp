@@ -142,6 +142,16 @@ void SlicerManager::SetPerfImage(ImageTypeFloat4D::Pointer image)
   UpdateVtkImage();
 }
 
+void SlicerManager::SetOriginalOrigin(itk::Point< double, 3 > origin)
+{
+  std::vector< double > actualOriginVector;
+  actualOriginVector.resize(3);
+  for (size_t i = 0; i < 3; i++)
+  {
+    actualOriginVector[i] = origin[i];
+  }
+  SetOriginalOrigin(actualOriginVector);
+}
 void SlicerManager::SetOriginalOrigin(std::vector< double > origin)
 {
   mOrigin[0] = origin[0];

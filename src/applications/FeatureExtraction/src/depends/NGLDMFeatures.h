@@ -143,7 +143,7 @@ mitk::NGLDMMatrixHolder::NGLDMMatrixHolder(double min, double max, int number, i
 	m_NumberOfCompleteNeighbourhoods(0)
 {
 	m_Matrix.resize(number, depenence);
-	std::cout << "[DEBUG] NGLDMFeatures.h::mitk::NGLDMMatrixHolder::NGLDMMatrixHolder:: number = " << number << " | depenence = " << depenence << std::endl;
+	//std::cout << "[DEBUG] NGLDMFeatures.h::mitk::NGLDMMatrixHolder::NGLDMMatrixHolder:: number = " << number << " | depenence = " << depenence << std::endl;
 
 	m_Matrix.fill(0);
 	//std::cout << "[DEBUG] NGLDMFeatures.h::mitk::NGLDMMatrixHolder::NGLDMMatrixHolder:: m_Matrix = " << m_Matrix << std::endl;
@@ -154,7 +154,7 @@ mitk::NGLDMMatrixHolder::NGLDMMatrixHolder(double min, double max, int number, i
 
 void mitk::NGLDMMatrixHolder::Print()
 {
-	std::cout << "[DEBUG] NGLDMFeatures.h::mitk::NGLDMMatrixHolder::NGLDMMatrixHolder::Print:: m_Matrix = \n\n" << m_Matrix << std::endl;
+	//std::cout << "[DEBUG] NGLDMFeatures.h::mitk::NGLDMMatrixHolder::NGLDMMatrixHolder::Print:: m_Matrix = \n\n" << m_Matrix << std::endl;
 }
 
 int mitk::NGLDMMatrixHolder::IntensityToIndex(double intensity)
@@ -236,8 +236,8 @@ public:
 				}
 			}
 
-			std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - this->m_minimum = " << this->m_minimum << std::endl;
-			std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - this->m_maximum = " << this->m_maximum << std::endl;
+			//std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - this->m_minimum = " << this->m_minimum << std::endl;
+			//std::cout << "\n[DEBUG] NGLDMFeatures.h - Update() - this->m_maximum = " << this->m_maximum << std::endl;
 
 			//TBD - Hard Coded for Phantom for now
 			int alpha = 0;
@@ -248,11 +248,11 @@ public:
 
 
 			//NGLDMMatrixHolder holderOverall(rangeMin, rangeMax, numberOfBins, numberofDependency);
-			std::cout << "[DEBUG] mitk::NGLDMMatrixHolder::holderOverall(" << this->m_minimum << ", " << this->m_maximum << ", " << this->m_Bins << ", " << max_number_of_dependence << ")" << std::endl;
+			//std::cout << "[DEBUG] mitk::NGLDMMatrixHolder::holderOverall(" << this->m_minimum << ", " << this->m_maximum << ", " << this->m_Bins << ", " << max_number_of_dependence << ")" << std::endl;
 			mitk::NGLDMMatrixHolder holderOverall(this->m_minimum, this->m_maximum, this->m_Bins, max_number_of_dependence);
 			mitk::NGLDMMatrixFeatures overallFeature;
 			CalculateNGLDMMatrix(this->m_inputImage, this->m_Mask, alpha, range, direction, holderOverall);
-			std::cout << "[DEBUG] NGLDMFeatures.h||print " << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h||print " << std::endl;
 			holderOverall.Print();
 
 			LocalCalculateFeatures(holderOverall, overallFeature);
@@ -286,12 +286,12 @@ private:
 
 		if ((direction > 1) && (direction - 2 < TImageType::ImageDimension))
 		{
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::direction = " << direction << std::endl;
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::TImageType::ImageDimension = " << TImageType::ImageDimension << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::direction = " << direction << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::TImageType::ImageDimension = " << TImageType::ImageDimension << std::endl;
 			radius[direction - 2] = 0;
 		}
 
-		std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::radius = " << radius << std::endl;
+		//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::radius = " << radius << std::endl;
 
 		ShapeIterType imageIter(radius, itkImage, itkImage->GetLargestPossibleRegion());
 		ShapeMaskIterType maskIter(radius, mask, mask->GetLargestPossibleRegion());
@@ -299,10 +299,10 @@ private:
 		auto region = mask->GetLargestPossibleRegion();
 
 		auto center = imageIter.Size() / 2;
-		std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::center = " << center << std::endl; //phantom 13
+		//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::center = " << center << std::endl; //phantom 13
 
 		auto iterSize = imageIter.Size();
-		std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::iterSize = " << iterSize << std::endl; //phantom 27
+		//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::iterSize = " << iterSize << std::endl; //phantom 27
 
 		holder.m_NeighbourhoodSize = iterSize - 1; //phantom 26
 		
@@ -312,14 +312,14 @@ private:
 			int sameValues = 0;
 			bool completeNeighbourhood = true;
 
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::imageIter.GetCenterPixel() = " << imageIter.GetCenterPixel() << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::imageIter.GetCenterPixel() = " << imageIter.GetCenterPixel() << std::endl;
 
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::imageIter.GetCenterPointer() = " << imageIter.GetCenterPointer() << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::imageIter.GetCenterPointer() = " << imageIter.GetCenterPointer() << std::endl;
 
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::iteration_count = " << iteration_count << "\n\n"<< std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::iteration_count = " << iteration_count << "\n\n"<< std::endl;
 
 			int i = holder.IntensityToIndex(imageIter.GetCenterPixel());
-			std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << std::endl;
+			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i (Index of CenterVoxel) = " << i << std::endl;
 			//std::cout << "[DEBUG] NGLDMFeatures.h::CalculateNGLDMMatrix::maskInteration::i intensity = " << imageIter.GetCenterPixel() << std::endl;
 
 
@@ -506,61 +506,61 @@ private:
 		results.PercentageOfCompleteNeighbourhoods = (1.0 * holder.m_NumberOfCompleteNeighbourhoods) / (1.0 * holder.m_NumberOfNeighbourhoods);
 		results.PercentageOfDependenceNeighbours = holder.m_NumberOfDependenceNeighbourVoxels / (1.0 * holder.m_NumberOfNeighbourVoxels);
 
-		std::cout << "[DEBUG] LowDependenceEmphasis = " << results.LowDependenceEmphasis << std::endl;
+		//std::cout << "[DEBUG] LowDependenceEmphasis = " << results.LowDependenceEmphasis << std::endl;
 		this->m_features["LowDependenceEmphasis"] = results.LowDependenceEmphasis;
 
-		std::cout << "[DEBUG] HighDependenceEmphasis = " << results.HighDependenceEmphasis << std::endl;
+		//std::cout << "[DEBUG] HighDependenceEmphasis = " << results.HighDependenceEmphasis << std::endl;
 		this->m_features["HighDependenceEmphasis"] = results.HighDependenceEmphasis;
 
-		std::cout << "[DEBUG] LowGreyLevelCountEmphasis = " << results.LowGreyLevelCountEmphasis << std::endl;
+		//std::cout << "[DEBUG] LowGreyLevelCountEmphasis = " << results.LowGreyLevelCountEmphasis << std::endl;
 		this->m_features["LowGreyLevelCountEmphasis"] = results.LowGreyLevelCountEmphasis;
 
-		std::cout << "[DEBUG] HighGreyLevelCountEmphasis = " << results.HighGreyLevelCountEmphasis << std::endl;
+		//std::cout << "[DEBUG] HighGreyLevelCountEmphasis = " << results.HighGreyLevelCountEmphasis << std::endl;
 		this->m_features["HighGreyLevelCountEmphasis"] = results.HighGreyLevelCountEmphasis;
 
-		std::cout << "[DEBUG] LowDependenceLowGreyLevelEmphasis = " << results.LowDependenceLowGreyLevelEmphasis << std::endl;
+		//std::cout << "[DEBUG] LowDependenceLowGreyLevelEmphasis = " << results.LowDependenceLowGreyLevelEmphasis << std::endl;
 		this->m_features["LowDependenceLowGreyLevelEmphasis"] = results.LowDependenceLowGreyLevelEmphasis;
 
-		std::cout << "[DEBUG] LowDependenceHighGreyLevelEmphasis = " << results.LowDependenceHighGreyLevelEmphasis << std::endl;
+		//std::cout << "[DEBUG] LowDependenceHighGreyLevelEmphasis = " << results.LowDependenceHighGreyLevelEmphasis << std::endl;
 		this->m_features["LowDependenceHighGreyLevelEmphasis"] = results.LowDependenceHighGreyLevelEmphasis;
 
-		std::cout << "[DEBUG] HighDependenceLowGreyLevelEmphasis = " << results.HighDependenceLowGreyLevelEmphasis << std::endl;
+		//std::cout << "[DEBUG] HighDependenceLowGreyLevelEmphasis = " << results.HighDependenceLowGreyLevelEmphasis << std::endl;
 		this->m_features["HighDependenceLowGreyLevelEmphasis"] = results.HighDependenceLowGreyLevelEmphasis;
 
-		std::cout << "[DEBUG] HighDependenceHighGreyLevelEmphasis = " << results.HighDependenceHighGreyLevelEmphasis << std::endl;
+		//std::cout << "[DEBUG] HighDependenceHighGreyLevelEmphasis = " << results.HighDependenceHighGreyLevelEmphasis << std::endl;
 		this->m_features["HighDependenceHighGreyLevelEmphasis"] = results.HighDependenceHighGreyLevelEmphasis;
 
-		std::cout << "[DEBUG] GreyLevelNonUniformity = " << results.GreyLevelNonUniformity << std::endl;
+		//std::cout << "[DEBUG] GreyLevelNonUniformity = " << results.GreyLevelNonUniformity << std::endl;
 		this->m_features["GreyLevelNonUniformity"] = results.GreyLevelNonUniformity;
 
-		std::cout << "[DEBUG] GreyLevelNonUniformityNormalised = " << results.GreyLevelNonUniformityNormalised << std::endl;
+		//std::cout << "[DEBUG] GreyLevelNonUniformityNormalised = " << results.GreyLevelNonUniformityNormalised << std::endl;
 		this->m_features["GreyLevelNonUniformityNormalised"] = results.GreyLevelNonUniformityNormalised;
 
-		std::cout << "[DEBUG] DependenceCountNonUniformity = " << results.DependenceCountNonUniformity << std::endl;
+		//std::cout << "[DEBUG] DependenceCountNonUniformity = " << results.DependenceCountNonUniformity << std::endl;
 		this->m_features["DependenceCountNonUniformity"] = results.DependenceCountNonUniformity;
 
-		std::cout << "[DEBUG] DependenceCountNonUniformityNormalised = " << results.DependenceCountNonUniformityNormalised << std::endl;
+		//std::cout << "[DEBUG] DependenceCountNonUniformityNormalised = " << results.DependenceCountNonUniformityNormalised << std::endl;
 		this->m_features["DependenceCountNonUniformityNormalised"] = results.DependenceCountNonUniformityNormalised;
 
-		std::cout << "[DEBUG] DependenceCountPercentage = " << results.DependenceCountPercentage << std::endl;
+		//std::cout << "[DEBUG] DependenceCountPercentage = " << results.DependenceCountPercentage << std::endl;
 		this->m_features["DependenceCountPercentage"] = results.DependenceCountPercentage;
 
-		std::cout << "[DEBUG] GreyLevelVariance = " << results.GreyLevelVariance << std::endl;
+		//std::cout << "[DEBUG] GreyLevelVariance = " << results.GreyLevelVariance << std::endl;
 		this->m_features["GreyLevelVariance"] = results.GreyLevelVariance;
 
-		std::cout << "[DEBUG] DependenceCountVariance = " << results.DependenceCountVariance << std::endl;
+		//std::cout << "[DEBUG] DependenceCountVariance = " << results.DependenceCountVariance << std::endl;
 		this->m_features["DependenceCountVariance"] = results.DependenceCountVariance;
 		
-		std::cout << "[DEBUG] DependenceCountEntropy = " << results.DependenceCountEntropy << std::endl;
+		//std::cout << "[DEBUG] DependenceCountEntropy = " << results.DependenceCountEntropy << std::endl;
 		this->m_features["DependenceCountEntropy"] = results.DependenceCountEntropy;
 
-		std::cout << "[DEBUG] DependenceCountEnergy = " << results.DependenceCountEnergy << std::endl;
+		//std::cout << "[DEBUG] DependenceCountEnergy = " << results.DependenceCountEnergy << std::endl;
 		this->m_features["DependenceCountEnergy"] = results.DependenceCountEnergy;
 
-		std::cout << "[DEBUG] MeanGreyLevelCount = " << results.MeanGreyLevelCount << std::endl;
+		//std::cout << "[DEBUG] MeanGreyLevelCount = " << results.MeanGreyLevelCount << std::endl;
 		this->m_features["MeanGreyLevelCount"] = results.MeanGreyLevelCount;
 
-		std::cout << "[DEBUG] MeanDependenceCount = " << results.MeanDependenceCount << std::endl;
+		//std::cout << "[DEBUG] MeanDependenceCount = " << results.MeanDependenceCount << std::endl;
 		this->m_features["MeanDependenceCount"] = results.MeanDependenceCount;
 
 

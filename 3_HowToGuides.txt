@@ -805,7 +805,7 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
 		-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
-    -# NOTE: in the sample data, we are providing multiple duplicates of 5 unique subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM for calculating perfusion derivatives. 
+    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM for calculating perfusion derivatives. 
 \verbatim
 PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionModel
 \endverbatim
@@ -1181,14 +1181,17 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 
 <b> REQUIREMENTS:</b>
 	-# A single DSC-MRI scan. 
-	-# The Echo Time corresponding to the given DSC-MRI scan
+	-# A single dicom slide. 
+	-# A single T1 post-contrast MRI scan.
+	-# The Echo Time corresponding to the given DSC-MRI scan.
+	-# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
 	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Alignment".
-	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
+	-# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
 	-# Press "Confirm" button.
-	-# The extracted measurements will be saved at the specified location (~5 minutes).
+	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
 
 */
 
@@ -1264,7 +1267,10 @@ Input features file (CSV) and a target label file (CSV).
 <b> USAGE:</b>parameterize
 	-# Launch the application from "Applications" -> "Training Module".
 	-# Specify the features (.csv) file and the corresponding target (.csv) file.
-	-# Specify the kernel of SVM using either of the two radio buttons, number of folds and output directory. Number of folds could be 5 or 10. 
+	-# Specify the kernel of SVM using either of the two radio buttons. 
+	-# Specify the cross-validation method which could be either k-fold cross-validation or split-train-test mechanism. 
+	=# Specify the number of folds for k-fold cross-validation. 
+	-# Specify the number of training samples X in case of split-train-test method. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing. 
 	-# Press "Confirm" button. 
 	-# The model will be developed and saved in the output directory.
 

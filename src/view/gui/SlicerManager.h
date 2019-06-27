@@ -79,6 +79,8 @@ public:
 
   void SetOriginalOrigin(std::vector< double > origin);
 
+  void SetOriginalOrigin(itk::Point< double, 3 > origin);
+
   inline void SetOriginalDirection(ImageTypeFloat3D::DirectionType direction)
   {
     mDirection = direction;
