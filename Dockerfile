@@ -37,11 +37,7 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.14.3/cmake-3.14.3
     tar -xzf cmake-3.14.3-Linux-x86_64.tar.gz
 
 # clone the current repo
-#RUN git clone https://github.com/CBICA/CaPTk.git
-RUN wget https://github.com/CBICA/CaPTk/archive/master.zip; \
-    unzip master.zip; \
-    rm -rf master.zip; \
-    mv CaPTk-master CaPTk
+RUN git clone https://github.com/CBICA/CaPTk.git
 
 # start superbuild and then build CaPTk
 RUN export PATH=/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
