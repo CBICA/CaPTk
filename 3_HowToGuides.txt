@@ -1181,7 +1181,7 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 
 <b> REQUIREMENTS:</b>
 	-# A single DSC-MRI scan. 
-	-# A single dicom slide. 
+	-# A single dicom slice from the original DICOM corresponding to the DSC-MRI scan. 
 	-# A single T1 post-contrast MRI scan.
 	-# The Echo Time corresponding to the given DSC-MRI scan.
 	-# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
