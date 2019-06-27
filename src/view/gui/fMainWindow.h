@@ -578,11 +578,10 @@ public slots:
   void StartEGFREstimate();
 
   /**
-  \brief get the mask image
+  \brief Get the mask as an ITK image as it is currently displayed
   */
   ImageTypeFloat3D::Pointer getMaskImage();
-
-
+  
   /**
   \brief function that performs segmentation and UI measurements of Featl Ventriculomegaly application
   */
@@ -710,8 +709,7 @@ public slots:
   \param outputdirectory The output directory to save the data
   */
   void CallForNewSurvivalPredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory);
-
-
+  
   /**
   \brief EGFRvIII estimation using Existing model
 
@@ -728,8 +726,7 @@ public slots:
   \param outputdirectory The output directory to save the data
   */
   void CallForNewEGFRvIIIPredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory);
-
-
+  
   /**
   \brief MolecularSubtype using Existing model
 
@@ -780,7 +777,7 @@ public slots:
   void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder);
 
   /**
-  \brief Call the Perfusion alignment application with the inputs
+  \brief Call the Perfusion Measures application with the inputs
 
   \param TE The echo time of the input Perfusion image
   \param rcbv Flag that enables RCBV calculation
@@ -790,6 +787,20 @@ public slots:
   \param outputFolder The output folder to write all results
   */
   void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
+
+  /**
+  \brief Call the Diffusion Measures application with the inputs
+
+  \param inputImage The input DSC-MRI image
+  \param maskImage The mask file
+  \param BValFile The BVal file
+  \param BVecFile The BVec file
+  \param ax Flag that enables AX calculation
+  \param FA Flag that enables FA calculation
+  \param RAD Flag that enables RAD calculation
+  \param TR Flag that enables TR calculation
+  \param outputFolder The output folder to write all results
+  */
   void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
   void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int, int, int);
 
