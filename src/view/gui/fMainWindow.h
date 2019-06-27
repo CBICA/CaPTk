@@ -860,8 +860,8 @@ public slots:
   void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputImageFile);
 
   /**
-\brief Generete SBRT Nodule
-*/
+  \brief Generete SBRT Nodule
+  */
   void CallSBRTNodule(const std::string seedImage, const int labelValue);
 
   /**
