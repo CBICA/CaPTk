@@ -802,6 +802,17 @@ public slots:
   \param outputFolder The output folder to write all results
   */
   void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
+
+  /**
+  \brief Call the Diffusion Measures application with the inputs
+
+  \param featuresfile The input features 
+  \param targetfile The labels, rows should be same as those in featuresfile
+  \param outputFolder The output folder to write all results
+  \param classifier The classifer type
+  \param conf The configuration type
+  \param folds The number of folds
+  */
   void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int classifier, int conf, int folds);
 
   void PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
