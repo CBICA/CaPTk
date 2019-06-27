@@ -607,8 +607,20 @@ public slots:
   param cbDistData Whether Distance feature need to be used or not
   */
   void StartRecurrenceEstimate(const std::string &outputdirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistData);
+
+  /**
+  \brief Load the subjects for an existing Reccurence model estimate
+  param outputdirectory The directory where recurrence map will be written
+  param outputdirectory The output directory
+  param modeldirectory The input model directory
+  param cbT1Data Whether T1 data is present or not
+  param cbPerfData Whether Perfusion data is present or not
+  param cbT2Data Whether T2 data is present or not
+  param cbDistData Whether Distance data is present or not
+  param cbDTIData Whether DTI data is present or not
+  */
   void LoadedSubjectExistingRecurrenceEstimate(const std::string &outputdirectory, const std::string &modeldirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistData);
-  //void StartSurvivalEstimate(const std::string output, const std::string model, double age);
+
   /**
   \brief Main function that estimates recurrence on test subjects by using an existing model
   param modeldirectory The directory where model related files are stored
@@ -651,7 +663,7 @@ public slots:
   param cbDistData Whether Distance feature need to be used or not
   */
   void LoadedSubjectExistingPseudoprogressionEstimate(const std::string &outputdirectory, const std::string &modeldirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistData);
-  //void StartSurvivalEstimate(const std::string output, const std::string model, double age);
+
   /**
   \brief Main function that estimates PseudoProgression on test subjects by using an existing model
   param modeldirectory The directory where model related files are stored
