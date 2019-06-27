@@ -55,9 +55,13 @@ class SlicerManager : public QObject
 
 public:
 
+  //! Default contructor
   SlicerManager(int numberOfSlicers, Landmarks* landmarks, Landmarks* seedPoints, Landmarks* tissuePoints);
+
+  //! Default destructor
   ~SlicerManager();
 
+  //! Get last error
   std::string GetLastError()
   {
     return mLastError;
@@ -65,6 +69,8 @@ public:
 
   //! Get/Set Comparison mode
   void SetComparisonMode(bool mode);
+
+  //! Get/Set Comparison mode
   bool GetComparisonMode();
 
   //! set image on a specific slicer
@@ -73,126 +79,201 @@ public:
   //! Get image as ITK image
   ImageTypeFloat3D::Pointer GetITKImage();
 
+  //! Update VTK image
   void UpdateVtkImage();
 
+  //! Set new ITK image
   void SetImage(ImageTypeFloat3D::Pointer t1ceimage);
 
+  //! Set the original Origin (since we are setting directions to identity) using a std::vector
   void SetOriginalOrigin(std::vector< double > origin);
 
-  void SetOriginalOrigin(itk::Point< double, 3 > origin);
+  //! Set the original Origin (since we are setting directions to identity) using itk::Point
+  void SetOriginalOrigin(ImageTypeFloat3D::PointType origin);
 
+  //! Set the original direction (since we are setting directions to identity) 
   inline void SetOriginalDirection(ImageTypeFloat3D::DirectionType direction)
   {
     mDirection = direction;
   }
 
+  //! Set new 4D image 
   void SetPerfImage(ImageTypeFloat4D::Pointer image);
 
+  //! Set the vtk mask
   void SetMask(vtkSmartPointer< vtkImageData >  mask);
 
-  vtkSmartPointer< vtkImageData >  GetMask()
+  //! Get the mask
+  vtkSmartPointer< vtkImageData > GetMask()
   {
     return mMask;
   }
 
+  //! Get the full file path of input image
   std::string GetPathFileName()
   {
     return mPathFileName;
   }
+  //! Get the full file name of input image
   std::string GetFileName()
   {
     return mFileName;
   }
+  //! Get the base file name of input image
   std::string GetBaseFileName()
   {
     return mBaseFileName;
   }
 
+  //! Enable/Disable interpolation for all vktImage actors
   void ToggleInterpolation();
+
+  //! Get the Slicer from the index
   Slicer* GetSlicer(int i);
+
+  //! Update selected Slicer
   void UpdateSlicer(int num, bool state);
+
+  //! Set Slicer Window for selected Slicer with the defined vtkRenderWindow
   void SetSlicerWindow(int i, vtkRenderWindow* RW);
+
+  //! Set Slicer style navigator for selected Slicer with the defined vtkInteractorStyle
   void SetInteractorStyleNavigator(int i, vtkInteractorStyle* style);
 
+  //! Get the total number of Slicers
   int GetNumberOfSlicers()
   {
     return mSlicers.size();
   }
+
+  //! Get the vtkImage
   vtkSmartPointer< vtkImageData >  GetImage()
   {
     return mImage;
   }
 
+  //! Set ID of the SlicerManager
   inline void SetId(const std::string &id)
   {
     mId = id;
   }
+
+  //! Get ID of the SlicerManager
   inline std::string GetId()
   {
     return mId;
   }
 
+  //! Get Dimension (always returns 3 for CaPTk)
   int GetDimension();
 
+  //! Set order for the Slicer
   inline void SetOrder(int order)
   {
     mOrder = order;
   }
+
+  //! Get order for the Slicer
   inline int GetOrder()
   {
     return mOrder;
   }
 
+  //! Set the file name of the input image
   void SetFilename(const std::string &f);
-  void SetSliceOrientation(int slicer, int orientation);
-  void SetTSlice(int slice);
-  void SetNextTSlice(int originating_slicer);
-  void SetPreviousTSlice(int originating_slicer);
-  void SetTSliceInSlicer(int tslice, int slicer);
 
+  //! Set the orientation of the selected slicer
+  void SetSliceOrientation(int slicer, int orientation);
+  //void SetTSlice(int slice);
+  //void SetNextTSlice(int originating_slicer);
+  //void SetPreviousTSlice(int originating_slicer);
+  //void SetTSliceInSlicer(int tslice, int slicer);
+
+  //! Generate default LUT
   void GenerateDefaultLookupTable();
+
+  //! Set the color window
   void SetColorWindow(double s);
+
+  //! Set the color level
   void SetColorLevel(double s);
+
+  //! Get the color level
+  double GetColorLevel();
+
+  //! Get the color level
+  double GetColorWindow();
+
+  //! Set the opacity for the selected slicer
   void SetOpacity(int i, double factor);
+
+  //! Set the rendering preset
   void SetPreset(int preset);
+
+  //! Get the rendering preset
+  inline int GetPreset()
+  {
+    return mPreset;
+  }
+
+  //! Set the threshold index 
   inline void SetThresholdIndex(double i)
   {
     mThresholdIndex = i;
   }
 
-  double GetColorWindow();
-  double GetColorLevel();
-  inline int GetPreset()
-  {
-    return mPreset;
-  }
+  //! Get the threshold index 
   inline double GetThresholdIndex()
   {
     return mThresholdIndex;
   }
 
+  //! Update views for selected Slicer
   void UpdateViews(int slicer);
+
+  //! Update linked views for selected Slicer
   void UpdateLinked(int slicer);
+
+  //! Update views to the reference camera
   void updateToRefCam(Slicer *refSlicer);
+
+  //! Update all transforms to identity
   void ResetTransformationToIdentity();
+
+  //! Render all Slicers
   void Render();
 
+  //! Add Link ID
   void AddLink(const std::string &newId);
 
+  //! Remove Link ID
   void RemoveLink(const std::string &oldId);
 
+  //! Check link status
   inline bool IsLinked()
   {
     return mLinkedId.size() > 0;
   }
 
+  //! Remove actors from all Slicers
   void RemoveActors();
+
+  //! Check if Slicer is activated on image panel - used to check when an image focus get changed
   void Activated();
+
+  //! Check if Slicer is picked on image panel
   void Picked();
+
+  //! Update image information on current cursor position
   void UpdateInfoOnCursorPosition(int slicer);
-  void UpdateInfoOnCurrentPosition(int slicer);
+
+  //! Update Window Level
   void UpdateWindowLevel();
+
+  //! Update visualized slice for selected Slicer
   void UpdateSlice(int slicer);
+
+  //! Update visualized slice for selected Slicer
   void UpdateSliceRange(int slicer);
 
   void AddLandmark(float x, float y, float z);

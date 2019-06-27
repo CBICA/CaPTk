@@ -1012,7 +1012,7 @@ public slots:
   */
   void SaveImage();
 
-  //! Save an image by passing the file name as a QString
+  //! Save an image by passing the index of the input image that needs to be saved and the appropriate file name as a QString
   void SaveImage_withFile(int indexOfInputImageToWrite, QString saveFileName);
 
   /**
