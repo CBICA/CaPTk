@@ -1050,6 +1050,11 @@ This application extracts the Texture Features as described in the paper [1]. It
 	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
 	-# Specify the output directory. 
 
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
+\verbatim
+BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1 
+\endverbatim
+
 <br>
 
 --------
