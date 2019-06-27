@@ -274,12 +274,6 @@ void SlicerManager::SetSlicerWindow(int i, vtkRenderWindow* RW)
 {
   mSlicers[i]->SetRenderWindow(i, RW);
 }
-void SlicerManager::EraseCompleteNearDrawing()
-{
-}
-void SlicerManager::EraseCompleteFarDrawing()
-{
-}
 
 void SlicerManager::SetInteractorStyleNavigator(int i, vtkInteractorStyle* style)
 {

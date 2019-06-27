@@ -298,12 +298,11 @@ public:
   //! Function to control change in the vertical sliders
   void VerticalSliderHasChanged(int slicer, int slice);
 
-  //double GetScalarComponentAsDouble(vtkSmartPointer< vtkImageData > image, double X, double Y, double Z, int component = 0);
+  //! Get scalar component as double
+  double GetScalarComponentAsDouble(vtkSmartPointer< vtkImageData > image, double X, double Y, double Z, int component = 0);
 
+  //! Set current landmarks type
   void SetCurrentLandmarksType(int type, int row, int col);
-
-  void EraseCompleteNearDrawing();
-  void EraseCompleteFarDrawing();
 
   Landmarks* mLandmarks;
   Landmarks* mSeedPoints;
