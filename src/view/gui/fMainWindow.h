@@ -407,7 +407,6 @@ public:
   */
   void LoadSlicerImages(const std::string &fileName, const int &imagetype_int, bool bSkipDup = true);
 
-
   /**
   \brief Load non-viewing images into memory
 
@@ -503,37 +502,17 @@ public:
   void dropEvent(QDropEvent *event);
 
   /*
-  \brief For fast developer testing .TBD:  remove or disable.
+  \brief This function is used to load parameters from the command line
+
+  \param files The input image file(s)
+  \param comparisonMode Flag that enables/disables comparison mode
+  \param maskImage The mask image corresponding to the input image(s)
+  \param maskOpacity The opacity of the loaded ROI labels
+  \param tumorPointFile The tumor points file (containing radius information)
+  \param tissuePointFile The tissue points file (containing no radius information)
   */
   void loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage = "", const float maskOpacity = 1.0,
-    const std::string &tumorPointFile = "", const std::string &tissuePointFile = "", bool firstRun = false)
-  {
-    auto qvectorString = QVector< QString >::fromStdVector(files);
-    auto lst = QStringList::fromVector(QVector< QString >::fromStdVector(files));
-    this->openImages(lst, true);
-    if (!maskImage.empty())
-    {
-      this->readMaskFile(maskImage);
-      this->ChangeMaskOpacity(maskOpacity * 10);
-    }
-    if (!tumorPointFile.empty())
-    {
-      this->tumorPanel->sLoad(tumorPointFile.c_str());
-    }
-    if (!tissuePointFile.empty())
-    {
-      this->tumorPanel->tLoad(tissuePointFile.c_str());
-    }
-    if (comparisonMode)
-      this->imagesPanel->CompareButtonClick();
-
-#ifdef CAPTK_PACKAGE_PROJECT
-    if (firstRun)
-    {
-      this->CloseAllImages();
-    }
-#endif
-  }
+    const std::string &tumorPointFile = "", const std::string &tissuePointFile = "", bool firstRun = false);
 
 signals:
   void SelectedImageHasChanged(SlicerManager *);

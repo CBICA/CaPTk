@@ -985,6 +985,38 @@ fMainWindow::~fMainWindow()
 
 }
 
+  void fMainWindow::loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage = "", const float maskOpacity = 1.0,
+    const std::string &tumorPointFile = "", const std::string &tissuePointFile = "", bool firstRun = false)
+  {
+    auto qvectorString = QVector< QString >::fromStdVector(files);
+    auto lst = QStringList::fromVector(QVector< QString >::fromStdVector(files));
+    this->openImages(lst, true);
+    if (!maskImage.empty())
+    {
+      this->readMaskFile(maskImage);
+      this->ChangeMaskOpacity(maskOpacity * 10);
+    }
+    if (!tumorPointFile.empty())
+    {
+      this->tumorPanel->sLoad(tumorPointFile.c_str());
+    }
+    if (!tissuePointFile.empty())
+    {
+      this->tumorPanel->tLoad(tissuePointFile.c_str());
+    }
+    if (comparisonMode)
+    {
+      this->imagesPanel->CompareButtonClick();
+    }
+
+#ifdef CAPTK_PACKAGE_PROJECT
+    if (firstRun)
+    {
+      this->CloseAllImages();
+    }
+#endif
+  }
+
 void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage)
 {
   using ImageTypeFloat2D = itk::Image< float, 2 >;
