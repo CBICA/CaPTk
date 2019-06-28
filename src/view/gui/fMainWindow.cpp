@@ -8889,7 +8889,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
           filePath_lower = filePath;
           std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
           if ((filePath_lower.find("atlas") != std::string::npos || filePath_lower.find("jakob_label") != std::string::npos)
-            && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+            && isExtensionSupported(extension))
             atlasPath = subjectPath + "/SEGMENTATION" + "/" + files[i];
           else if ((filePath_lower.find("segmentation") != std::string::npos)
             && (extension == HDR_EXT || extension
@@ -8910,13 +8910,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string filePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
           t1ceFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
           t1FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
           t2FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
       }
     }
@@ -8931,13 +8931,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         filePath_lower = filePath;
         std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
         if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
-          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          && isExtensionSupported(extension))
           rcbvFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
         else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
-          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          && isExtensionSupported(extension))
           psrFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
         else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
-          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          && isExtensionSupported(extension))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
     }
@@ -8950,13 +8950,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
@@ -9015,10 +9015,10 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
       filePath_lower = filePath;
       std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
       if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG)
-        && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        && isExtensionSupported(extension))
         labelPath = subjectPath + "/" + files[i];
       else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-        && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        && isExtensionSupported(extension))
         perfFilePath = subjectPath + "/SEGMENTATION" + "/" + files[i];
     }
 
@@ -9083,7 +9083,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
       {
         std::string filePath = subjectPath + "/SEGMENTATION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && isExtensionSupported(extension))
           labelPath = subjectPath + "/SEGMENTATION/" + files[i];
       }
     }
@@ -9094,7 +9094,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
       {
         std::string filePath = subjectPath + "/PERFUSION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION) && isExtensionSupported(extension))
           perfFilePath = subjectPath + "/PERFUSION/" + files[i];
       }
     }
@@ -9106,13 +9106,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/CONVENTIONAL/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
           t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
           t1FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
           t2FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
       }
     }
@@ -9126,13 +9126,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
@@ -9221,9 +9221,9 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
       {
         std::string filePath = subjectPath + "/SEGMENTATION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && isExtensionSupported(extension))
           labelPath = subjectPath + "/SEGMENTATION/" + files[i];
-        else if ((files[i].find("atlas") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((files[i].find("atlas") != std::string::npos) && isExtensionSupported(extension))
           atlasPath = subjectPath + "/SEGMENTATION/" + files[i];
       }
     }
@@ -9237,16 +9237,16 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         filePath_lower = filePath;
         std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
         if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
-          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          && isExtensionSupported(extension))
           rcbvFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
         else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
-          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          && isExtensionSupported(extension))
           psrFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
         else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
-          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          && isExtensionSupported(extension))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
         else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+          && isExtensionSupported(extension))
           perfFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
     }
@@ -9258,19 +9258,19 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/CONVENTIONAL/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        //if ((files[i].find("t1t1ce") != std::string::npos || files[i].find("T1T1CE") != std::string::npos || files[i].find("T1T1ce") != std::string::npos || files[i].find("T1-T1-gd") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        //if ((files[i].find("t1t1ce") != std::string::npos || files[i].find("T1T1CE") != std::string::npos || files[i].find("T1T1ce") != std::string::npos || files[i].find("T1-T1-gd") != std::string::npos) && isExtensionSupported(extension))
         //  t1t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        //else if ((files[i].find("t2t2flair") != std::string::npos || files[i].find("T2T2FLAIR") != std::string::npos || files[i].find("T2T2Flair") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        //else if ((files[i].find("t2t2flair") != std::string::npos || files[i].find("T2T2FLAIR") != std::string::npos || files[i].find("T2T2Flair") != std::string::npos) && isExtensionSupported(extension))
         //  t2t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
         //else
         
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
           t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
           t1FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
           t2FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
       }
     }
@@ -9284,13 +9284,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
