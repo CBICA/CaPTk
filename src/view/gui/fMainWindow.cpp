@@ -8630,13 +8630,13 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
   std::vector<std::string> affineMatrix;
   std::vector<std::string> outputImage;
 
-  //updateProgress(5, "Starting Registration");
+  updateProgress(5, "Starting Registration");
 
   //auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
 
   if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
   {
-    //ShowErrorMessage("Number of input, matrix and output file names do not match");
+    ShowErrorMessage("Number of input, matrix and output file names do not match");
     return;
   }
 
@@ -8647,10 +8647,10 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
   {
     if (!cbica::isFile(inputFileNames[i]))
     {
-      //ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
+      ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
       return;
     }
-    //updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
+    updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
 
     std::string fixedFileCommand = "-f " + fixedFileName;
     std::string movingFileCommand = " -i " + inputFileNames[i];
@@ -8677,7 +8677,7 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
 
     if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
     {
-      //ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
+      ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
       return;
     }
     else
@@ -8685,21 +8685,20 @@ void fMainWindow::RegistrationWorker(std::vector<std::string> compVector, std::v
       affineMatrix.push_back(matrixFileNames[i] + ".mat");
     }
 
-
     if (matrixFileNames[i].find("remove") != std::string::npos)
     {
       if (cbica::isFile(matrixFileNames[i]))
       {
         if (std::remove(matrixFileNames[i].c_str()) == 0)
         {
-          //updateProgress(80, "Cleaning temporary files");
+          updateProgress(80, "Cleaning temporary files");
         }
       }
 
-      //updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
+      updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
     }
 
-    //updateProgress(100, "Registration Complete.");
+    updateProgress(100, "Registration Complete.");
 
     time_t t = std::time(0);
     long int now = static_cast<long int> (t);
