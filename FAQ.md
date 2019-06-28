@@ -1,4 +1,4 @@
-# Frequently Asked Questions (FAQ)
+**Frequently Asked Questions (FAQ)**
 
 <details>
   <summary>How do I run CaPTk Applications from the Command Line?</summary>
@@ -87,6 +87,7 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
 ### Others
 
 Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
+</details>
 
 <details>
   <summary>Which platforms are supported by CaPTk installers?</summary>
