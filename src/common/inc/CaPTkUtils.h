@@ -204,12 +204,3 @@ inline bool isExtensionSupported(const std::string inputExtension)
     return false;
   }
 }
-
-//! The modality strings that are used in the GUI 
-static const char ImageModalityString[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES + 1][15] =
-{ "DEF", "T1", "T1Gd", "T2",
-"FLAIR", "DTI_AX", "DTI_FA", "DTI_RAD", "DTI_TR", 
-"PERFUSION", "DTI", "REC", "PP", "CT", 
-"PET", "pSR", "PH", "RCBV", "SEG", 
-"ATLAS", "PARAMS", "SUDOID", "NEAR", "FAR", 
-"FFDM", "FEAT" };
