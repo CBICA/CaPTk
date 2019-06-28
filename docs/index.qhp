@@ -33,7 +33,12 @@
             <section title="Histogram Matching" ref="preprocessing_histoMatch.html" />
             <section title="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
           </section>
-          <section title="Segmentation" ref="ht_Segmentation.html" />
+          <section title="Segmentation" ref="ht_Segmentation.html">
+            <section title="Geodesic Training Segmentation" ref="seg_GeoTrain.html" />
+            <section title="Geodesic Distance Transform-based Segmentation" ref="seg_Geodesic.html" />
+            <section title="ITK-SNAP" ref="seg_SNAP.html" />
+            <section title="Deep Learning Segmentation" ref="seg_DL.html" />
+          </section>
           <section title="Feature Extraction" ref="ht_FeatureExtraction.html" />
           <section title="Specialized Applications (SAs) Usage" ref="ht_SpecialApps.html">
             <section title="Brain Cancer: WhiteStripe Normalization" ref="Glioblastoma_WhiteStripe.html" />
@@ -99,6 +104,10 @@
       <keyword name="Histogram Matching" id="Histogram Matching" ref="preprocessing_histoMatch.html" />
       <keyword name="Z-Scoring Normalization" id="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
       <keyword name="Segmentation" id="Segmentation" ref="ht_Segmentation.html" />
+      <keyword name="Geodesic Training Segmentation" id="Geodesic Training Segmentation" ref="seg_GeoTrain.html" />
+      <keyword name="Geodesic Distance Transform-based Segmentation" id="Geodesic Distance Transform-based Segmentation" ref="seg_Geodesic.html" />
+      <keyword name="ITK-SNAP" id="ITK-SNAP" ref="seg_SNAP.html" />
+      <keyword name="Deep Learning Segmentation" id="Deep Learning Segmentation" ref="seg_DL.html" />
       <keyword name="Feature Extraction" id="Feature Extraction" ref="ht_FeatureExtraction.html" />
       <keyword name="Specialized Applications (SAs) Usage" id="Specialized Applications (SAs) Usage" ref="ht_SpecialApps.html" />
       <keyword name="Brain Cancer: Glioblastoma Molecular Subtype Prediction" id="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
@@ -176,6 +185,10 @@
       <file>preprocessing_histoMatch.html</file>
       <file>preprocessing_zScoreNorm.html</file>
       <file>ht_Segmentation.html</file>
+      <file>seg_GeoTrain.html</file>
+      <file>seg_Geodesic.html</file>
+      <file>seg_SNAP.html</file>
+      <file>seg_DL.html</file>
       <file>ht_FeatureExtraction.html</file>
       <file>ht_SpecialApps.html</file>
       <file>Glioblastoma_Molecular.html</file>
