@@ -26,6 +26,7 @@ CAPTK_CMD () {
 # make -j 2
 
 rm CMakeCache.txt
+sudo rm -rf CaPTk_*
 
 export CC=/usr/local/opt/llvm/bin/clang
 export CXX=/usr/local/opt/llvm/bin/clang++
@@ -38,9 +39,14 @@ cmake ../
 cmake ../
 make -j 2
 
+
 version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
 pkgname="_Installer"
 pkgname="$version$pkgname"
+
+sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
+
+make -j 2
 
 chmod +x CaPTk_$version.app/Contents/Resources/bin/dcm2nii
 
