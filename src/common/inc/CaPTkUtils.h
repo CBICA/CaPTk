@@ -4,6 +4,7 @@
 #include <string>
 #include <QMetaType>
 #include "CaPTkEnums.h"
+#include "CaPTkDefines.h"
 
 //! Structure to define a point value to check if it is defined in the image or not
 struct PointVal
