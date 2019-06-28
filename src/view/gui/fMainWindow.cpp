@@ -985,8 +985,8 @@ fMainWindow::~fMainWindow()
 
 }
 
-  void fMainWindow::loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage = "", const float maskOpacity = 1.0,
-    const std::string &tumorPointFile = "", const std::string &tissuePointFile = "", bool firstRun = false)
+  void fMainWindow::loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage, const float maskOpacity,
+    const std::string &tumorPointFile, const std::string &tissuePointFile, bool firstRun)
   {
     auto qvectorString = QVector< QString >::fromStdVector(files);
     auto lst = QStringList::fromVector(QVector< QString >::fromStdVector(files));
