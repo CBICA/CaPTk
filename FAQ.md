@@ -26,7 +26,10 @@ ${CaPTk_InstallDir}/bin/CaPTk -h
   <summary>What are the OpenGL requirements to run CaPTk?</summary>
 
 - If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
-  - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]: `sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade`
+  - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]:
+  ```bash
+  sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade
+  ```
   - https://community.khronos.org/t/how-to-update-opengl/75314
   - https://ubuntuforums.org/showthread.php?t=2326268
   - https://www.techwalla.com/articles/how-to-update-opengl-drivers
@@ -49,26 +52,41 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
   - Add the path `~/CaPTk/${version}/squashfs-root/usr/lib` to their environment variable **LD_LIBRARY_PATH**: `export LD_LIBRARY_PATH=~/CaPTk/${version}/squashfs-root/usr/lib:$LD_LIBRARY_PATH`
   - This will need to be present in the user's shell start up file `.bashrc`, `.cshrc`, `.profile`, `.kshrc`, etc.` for the settings to be persistent across login sessions.
   - All the command line applications should now be available for use. For example: 
-  ```bash
-  FeatureExtraction \ # the executable should already be in the $PATH
-    -n AAC0_timestamp \ # this is the subject ID for this run 
-    -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 \ # the co-registered input image(s) and their respective modalities
-    -m /user/path/mask.nii.gz \ # the mask file (co-registered with the input image(s)
-    -r 2,4,5 -l ED,EN,NE \ # the labels from the mask file from where features need to be extracted and their respective label identifier(s)
-    -p /usr/path/features.csv \ # the parameter file to use 
-    -o /usr/path/output.csv # the path to write the output 
+    ```bash
+    FeatureExtraction \ # the executable should already be in the $PATH
+      -n AAC0_timestamp \ # this is the subject ID for this run 
+      -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 \ # the co-registered input image(s) and their respective modalities
+      -m /user/path/mask.nii.gz \ # the mask file (co-registered with the input image(s)
+      -r 2,4,5 -l ED,EN,NE \ # the labels from the mask file from where features need to be extracted and their respective label identifier(s)
+      -p /usr/path/features.csv \ # the parameter file to use 
+      -o /usr/path/output.csv # the path to write the output 
     ```
     
 ### GLIBCXX or GLIBC Issues
 
-- This is happening because the Linux binaries are compiled using Ubuntu 16.04; therefore, any distribution with older GLIBC/GLIBCXX versions will not be compatible. 
+- This is happening because the Linux binaries are compiled using GCC 4.8.5 on Ubuntu 16.04; therefore you will need to update GCC 4.8.5 or newer in order to get CaPTk to work. Some examples are shown:
+
+  - Ubuntu [[ref](https://askubuntu.com/a/581497)]:
+
+  ```bash
+  sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+  sudo apt-get update
+  sudo apt-get install gcc-4.9 g++-4.9
+  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+  ```  
+
+  - CentOS [[ref](https://www.softwarecollections.org/en/scls/user/rhscl/?search=devtoolset&policy=&repo=&order_by=-create_date&per_page=10)]:
+
+  ```bash
+  sudo yum install centos-release-scl
+  sudo yum install devtoolset-6
+  ```  
 
 - You can still build CaPTk from source using the instructions in [Technical Reference](https://cbica.github.io/CaPTk/Technical_Reference.html).
 
 ### Others
 
-Please get in touch with us in our issues section and we will do our best to resolve it.
-</details>
+Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
 
 <details>
   <summary>Which platforms are supported by CaPTk installers?</summary>

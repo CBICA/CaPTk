@@ -70,8 +70,9 @@
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
   m_NumberOfUnfinishedExternalProcesses++;
-  cbica::Logging(loggerFile, application.toStdString() + " " + arguments.join(" ").toStdString());
-  int returnVal = std::system((application.toStdString() + " " + arguments.join(" ").toStdString()).c_str());
+  auto fullCommand = application.toStdString() + " " + arguments.join(" ").toStdString();
+  cbica::Logging(loggerFile, fullCommand);
+  int returnVal = std::system(fullCommand.c_str());
   m_NumberOfUnfinishedExternalProcesses--;
   return returnVal;
 
@@ -1191,35 +1192,26 @@ void fMainWindow::EnableThresholdOfMask()
   thresholdSpinBox->setValue((actualMin + actualMax) / 2);
 }
 
-
-
-void fMainWindow::SaveImage()
+void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveFileName)
 {
-  auto items = m_imagesTable->selectedItems();
-  if (items.empty()) {
-    return;
-  }
-  int index = GetSlicerIndexFromItem(items[0]);
-  if (index < 0 || index >= (int)mSlicerManagers.size()) {
-    return;
-  }
-  //
-  QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "_new.nii.gz");
+  auto index = indexOfInputImageToWrite;
   if (!saveFileName.isEmpty())
   {
     auto saveFileName_string = saveFileName.toStdString();
     typedef ImageTypeFloat3D ImageType;
-    ImageType::DirectionType originaldirection;
-    originaldirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
-    originaldirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
-    originaldirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
-    originaldirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
-    originaldirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
-    originaldirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
-    originaldirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
-    originaldirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
-    originaldirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
+    ImageType::DirectionType originalDirection;
+    originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
+    originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
+    originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
+    originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
+    originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
+    originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
+    originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
+    originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
+    originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
 
+    ImageType::PointType originalOrigin;
+    originalOrigin = mSlicerManagers[index]->mOrigin;
 
     if (mSlicerManagers[index]->GetPreset() == PRESET_THRESHOLD)
     {
@@ -1245,66 +1237,143 @@ void fMainWindow::SaveImage()
         }
       }
       //
-      cbica::WriteImage< ImageTypeFloat3D >(seg, correctExtension(saveFileName_string));
+
+      auto infoChanger = itk::ChangeInformationImageFilter< ImageType >::New();
+      infoChanger->SetInput(seg);
+      infoChanger->ChangeDirectionOn();
+      infoChanger->ChangeOriginOn();
+      infoChanger->SetOutputDirection(originalDirection);
+      infoChanger->SetOutputOrigin(originalOrigin);
+      infoChanger->Update();
+
+      cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
     }
     else
     {
+      auto img = convertVtkToItk< ImageType::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+
+      auto infoChanger = itk::ChangeInformationImageFilter< ImageType >::New();
+      infoChanger->SetInput(img);
+      infoChanger->ChangeDirectionOn();
+      infoChanger->ChangeOriginOn();
+      infoChanger->SetOutputDirection(originalDirection);
+      infoChanger->SetOutputOrigin(originalOrigin);
+      infoChanger->Update();
+
+      cbica::WriteImage< ImageType >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
+
       std::string InputPixelType = mSlicerManagers[index]->mImage->GetScalarTypeAsString();
       if (InputPixelType == "short")
       {
         using ImageTypeToWrite = itk::Image<short, ImageTypeFloat3D::ImageDimension>;
         auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
-        img->SetDirection(originaldirection);
-        cbica::WriteImage< ImageTypeToWrite >(img, correctExtension(saveFileName_string));
+        auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
+        infoChanger->SetInput(img);
+        infoChanger->ChangeDirectionOn();
+        infoChanger->ChangeOriginOn();
+        infoChanger->SetOutputDirection(originalDirection);
+        infoChanger->SetOutputOrigin(originalOrigin);
+        infoChanger->Update();
+
+        cbica::WriteImage< ImageTypeToWrite >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
       }
       else if (InputPixelType == "unsigned short")
       {
         using ImageTypeToWrite = itk::Image<unsigned short, ImageTypeFloat3D::ImageDimension>;
         auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
-        img->SetDirection(originaldirection);
-        cbica::WriteImage< ImageTypeToWrite >(img, correctExtension(saveFileName_string));
+        auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
+        infoChanger->SetInput(img);
+        infoChanger->ChangeDirectionOn();
+        infoChanger->ChangeOriginOn();
+        infoChanger->SetOutputDirection(originalDirection);
+        infoChanger->SetOutputOrigin(originalOrigin);
+        infoChanger->Update();
+
+        cbica::WriteImage< ImageTypeToWrite >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
       }
       else if (InputPixelType == "char")
       {
         using ImageTypeToWrite = itk::Image<char, ImageTypeFloat3D::ImageDimension>;
         auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
-        img->SetDirection(originaldirection);
-        cbica::WriteImage< ImageTypeToWrite >(img, correctExtension(saveFileName_string));
+        auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
+        infoChanger->SetInput(img);
+        infoChanger->ChangeDirectionOn();
+        infoChanger->ChangeOriginOn();
+        infoChanger->SetOutputDirection(originalDirection);
+        infoChanger->SetOutputOrigin(originalOrigin);
+        infoChanger->Update();
+
+        cbica::WriteImage< ImageTypeToWrite >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
       }
       else if (InputPixelType == "unsigned char")
       {
         using ImageTypeToWrite = itk::Image<unsigned char, ImageTypeFloat3D::ImageDimension>;
         auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
-        img->SetDirection(originaldirection);
-        cbica::WriteImage< ImageTypeToWrite >(img, correctExtension(saveFileName_string));
+        auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
+        infoChanger->SetInput(img);
+        infoChanger->ChangeDirectionOn();
+        infoChanger->ChangeOriginOn();
+        infoChanger->SetOutputDirection(originalDirection);
+        infoChanger->SetOutputOrigin(originalOrigin);
+        infoChanger->Update();
+
+        cbica::WriteImage< ImageTypeToWrite >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
       }
       else if (InputPixelType == "int")
       {
         using ImageTypeToWrite = itk::Image<int, ImageTypeFloat3D::ImageDimension>;
         auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
-        img->SetDirection(originaldirection);
-        cbica::WriteImage< ImageTypeToWrite >(img, correctExtension(saveFileName_string));
+        auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
+        infoChanger->SetInput(img);
+        infoChanger->ChangeDirectionOn();
+        infoChanger->ChangeOriginOn();
+        infoChanger->SetOutputDirection(originalDirection);
+        infoChanger->SetOutputOrigin(originalOrigin);
+        infoChanger->Update();
+
+        cbica::WriteImage< ImageTypeToWrite >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
       }
       else if (InputPixelType == "unsigned int")
       {
         using ImageTypeToWrite = itk::Image<unsigned int, ImageTypeFloat3D::ImageDimension>;
         auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
-        img->SetDirection(originaldirection);
-        cbica::WriteImage< ImageTypeToWrite >(img, correctExtension(saveFileName_string));
+        auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
+        infoChanger->SetInput(img);
+        infoChanger->ChangeDirectionOn();
+        infoChanger->ChangeOriginOn();
+        infoChanger->SetOutputDirection(originalDirection);
+        infoChanger->SetOutputOrigin(originalOrigin);
+        infoChanger->Update();
+
+        cbica::WriteImage< ImageTypeToWrite >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
       }
       else if (InputPixelType == "double")
       {
         using ImageTypeToWrite = itk::Image<double, ImageTypeFloat3D::ImageDimension>;
         auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
-        img->SetDirection(originaldirection);
-        cbica::WriteImage< ImageTypeToWrite >(img, correctExtension(saveFileName_string));
+        auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
+        infoChanger->SetInput(img);
+        infoChanger->ChangeDirectionOn();
+        infoChanger->ChangeOriginOn();
+        infoChanger->SetOutputDirection(originalDirection);
+        infoChanger->SetOutputOrigin(originalOrigin);
+        infoChanger->Update();
+
+        cbica::WriteImage< ImageTypeToWrite >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
       }
       else if (InputPixelType == "float")
       {
         using ImageTypeToWrite = itk::Image<float, ImageTypeFloat3D::ImageDimension>;
         auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
-        img->SetDirection(originaldirection);
-        cbica::WriteImage< ImageTypeToWrite >(img, correctExtension(saveFileName_string));
+        auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
+        infoChanger->SetInput(img);
+        infoChanger->ChangeDirectionOn();
+        infoChanger->ChangeOriginOn();
+        infoChanger->SetOutputDirection(originalDirection);
+        infoChanger->SetOutputOrigin(originalOrigin);
+        infoChanger->Update();
+
+        cbica::WriteImage< ImageTypeToWrite >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
       }
       else
       {
@@ -1313,6 +1382,23 @@ void fMainWindow::SaveImage()
       updateProgress(0, "Image saved! (" + saveFileName_string + ")");
     }
   }
+}
+
+void fMainWindow::SaveImage()
+{
+  auto items = m_imagesTable->selectedItems();
+  if (items.empty()) 
+  {
+    return;
+  }
+  int index = GetSlicerIndexFromItem(items[0]);
+  if (index < 0 || index >= (int)mSlicerManagers.size()) 
+  {
+    return;
+  }
+  //
+  QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "_new.nii.gz");
+  SaveImage_withFile(index, saveFileName);
 }
 
 void fMainWindow::InitMask(vtkImageData* image)
@@ -1652,6 +1738,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins());
       auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fname);
       imageManager->SetOriginalDirection(currentImage->GetDirection());
+      imageManager->SetOriginalOrigin(currentImage->GetOrigin());
       currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fname));
       imageManager->SetImage(currentImage);
       imageManager->mImageSubType = guessImageType(fname);
@@ -3100,7 +3187,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
       }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
-        cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, temp_prev);
+        SaveImage_withFile(0, temp_prev.c_str());
         if (!cbica::ImageSanityCheck(maskFileName, temp_prev))
         {
           ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
