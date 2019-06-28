@@ -9126,13 +9126,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((files[i].find("Axial") != std::string::npos || files[i].find("axial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Fractional") != std::string::npos || files[i].find("fractional") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Radial") != std::string::npos || files[i].find("radial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Trace") != std::string::npos || files[i].find("trace") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
@@ -9221,7 +9221,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
       {
         std::string filePath = subjectPath + "/SEGMENTATION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((files[i].find("label-map") != std::string::npos || files[i].find("label") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           labelPath = subjectPath + "/SEGMENTATION/" + files[i];
         else if ((files[i].find("atlas") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           atlasPath = subjectPath + "/SEGMENTATION/" + files[i];
@@ -9236,16 +9236,16 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string extension = cbica::getFilenameExtension(filePath, false);
         filePath_lower = filePath;
         std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-        if ((filePath_lower.find("rcbv") != std::string::npos)
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           rcbvFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("psr") != std::string::npos)
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           psrFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("ph") != std::string::npos)
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("perf") != std::string::npos)
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           perfFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
@@ -9284,13 +9284,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((files[i].find("Axial") != std::string::npos || files[i].find("axial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Fractional") != std::string::npos || files[i].find("fractional") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Radial") != std::string::npos || files[i].find("radial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Trace") != std::string::npos || files[i].find("trace") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
