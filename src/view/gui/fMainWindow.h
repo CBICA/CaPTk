@@ -542,11 +542,6 @@ public slots:
   void UpdateNumberOfPointsInTable();
 
   /**
-  \check whether all the ROIs are present for recurrence estimation or not
-  */
-  //bool CheckSeedPointsForRecurrence();
-
-  /**
   \brief Initializes preset combo-box with the default options
   */
   void SetPresetComboBox();
