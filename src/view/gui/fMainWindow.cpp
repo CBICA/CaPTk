@@ -8892,8 +8892,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
             && isExtensionSupported(extension))
             atlasPath = subjectPath + "/SEGMENTATION" + "/" + files[i];
           else if ((filePath_lower.find("segmentation") != std::string::npos)
-            && (extension == HDR_EXT || extension
-              == NII_EXT || extension == NII_GZ_EXT))
+            && isExtensionSupported(extension))
             labelPath = subjectPath + "/SEGMENTATION" + "/" + files[i];
           else if ((filePath_lower.find("parameter") != std::string::npos)
             && (extension == PARAM_EXT))
