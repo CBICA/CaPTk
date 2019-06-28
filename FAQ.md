@@ -1,6 +1,17 @@
 # Frequently Asked Questions (FAQ)
 
 <details>
+  <summary>Which platforms are supported by CaPTk installers?</summary>
+  
+| Platform (x64) |                         Tested                         |       Unsupported      |
+|:--------------:|:------------------------------------------------------:|:----------------------:|
+|     Windows    |                        7, 8, 10                        |        XP, Vista       |
+|      Linux     | Ubuntu 16.04, 18.04; Debian 9, CentOS 7 (source build) | Ubuntu 14.04; CentOS 6 |
+|      macOS     |                      10.13, 10.14                      |          10.12         |
+
+</details>
+
+<details>
   <summary>How do I run CaPTk Applications from the Command Line?</summary>
 
 - The full list of command line applications available is shown by running the following command (pretty much every application is available via the command line):
@@ -84,18 +95,11 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
 
 - You can still build CaPTk from source using the instructions in [Technical Reference](https://cbica.github.io/CaPTk/Technical_Reference.html).
 
-### Others
-
-Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
 </details>
 
 <details>
-  <summary>Which platforms are supported by CaPTk installers?</summary>
+  <summary>What if I am having an issue not shown here?</summary>
   
-| Platform (x64) |                         Tested                         |       Unsupported      |
-|:--------------:|:------------------------------------------------------:|:----------------------:|
-|     Windows    |                        7, 8, 10                        |        XP, Vista       |
-|      Linux     | Ubuntu 16.04, 18.04; Debian 9, CentOS 7 (source build) | Ubuntu 14.04; CentOS 6 |
-|      macOS     |                      10.13, 10.14                      |          10.12         |
+Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
 
 </details>
