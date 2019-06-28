@@ -4,32 +4,7 @@ trigger:
     include:
     - master
 
-resources:
-  containers:
-  - container: ubuntu1604
-    image: minockj/qt:latest
-    #image: mardy/qt:trusty-qt512
-    
 jobs:
-#- job: 'DockerBuild'
-#  displayName: "End-to-end Docker build & package"
-#  timeoutInMinutes: 0
-#  cancelTimeoutInMinutes: 300
-  
-#  pool:
-#    vmImage: 'Ubuntu-16.04'
-
-#  variables:
-#    dockerId: cbica
-#    imageName: captk
-  
-#  steps:
-#  - script: |
-#      docker build -t $(dockerId)/$(imageName) .
-#      docker push $(dockerId)/$(imageName)
- #    docker login -u $(dockerId) -p $(pswd)
-    #env:
-    #  pswd: $(dockerPassword)
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
   timeoutInMinutes: 0
@@ -47,14 +22,6 @@ jobs:
   
     # Pull LFS
     - bash: |
-<<<<<<< HEAD
-        rm -rf binaries/*mac*.zip
-        rm -rf binaries/*linux*.zip
-        rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-      displayName: 'Take the nuclear option'
-    - script: |
-=======
         export GIT_LFS_SKIP_SMUDGE=1
         git lfs pull --include "binaries/precompiledApps/windows.zip"
         git lfs pull --include "binaries/qt_5.12.1/windows.zip"
@@ -76,7 +43,6 @@ jobs:
 
     # Moving LFS Files
     - bash: |
->>>>>>> 28176acf872e6eb7c58e4b42ce2b9a96ced75778
         mkdir bin
         cd bin
         mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
@@ -109,64 +75,6 @@ jobs:
         rm -rf qt.zip
         ls -lt
       displayName: 'Removing the binaries folder'
-      
-    # Visual Studio Test Platform Installer
-# Acquires the test platform from nuget.org or the tools cache. Satisfies the ‘vstest’ demand and can be used for running tests and collecting diagnostic data using the Visual Studio Test task.
-    - task: VisualStudioTestPlatformInstaller@1
-      inputs:
-        packageFeedSelector: 'nugetOrg' # Options: nugetOrg, customFeed, netShare
-        versionSelector: 'latestStable' # Required when packageFeedSelector == NugetOrg || PackageFeedSelector == CustomFeed# Options: latestPreRelease, latestStable, specificVersion
-        #testPlatformVersion: # Required when versionSelector == SpecificVersion
-        #customFeed: # Required when packageFeedSelector == CustomFeed
-        #username: # Optional
-        #password: # Optional
-        #netShare: # Required when packageFeedSelector == NetShare
-      displayName: 'VSTestPlatformInstallation'
-      
-      # Visual Studio Test
-# Run unit and functional tests (Selenium, Appium, Coded UI test, etc.) using the Visual Studio Test (VsTest) runner. Test frameworks that have a Visual Studio test adapter such as MsTest, xUnit, NUnit, Chutzpah (for JavaScript tests using QUnit, Mocha and Jasmine), etc. can be run. Tests can be distributed on multiple agents using this task (version 2).
-    - task: VSTest@2
-      inputs:
-        testSelector: 'testAssemblies'
-        testAssemblyVer2: |
-          CaPTk/bin/install/testing/RUN_TESTS.vcxproj
-        #testPlan: # Required when testSelector == TestPlan
-        #testSuite: # Required when testSelector == TestPlan
-        #testConfiguration: # Required when testSelector == TestPlan
-        #tcmTestRun: '$(test.RunId)' # Optional
-        #searchFolder: '$(System.DefaultWorkingDirectory)' 
-        #testFiltercriteria: # Optional
-        #runOnlyImpactedTests: False # Optional
-        #runAllTestsAfterXBuilds: '50' # Optional
-        #uiTests: false # Optional
-        #vstestLocationMethod: 'version' # Optional. Options: version, location
-        #vsTestVersion: 'latest' # Optional. Options: latest, 16.0, 15.0, 14.0, toolsInstaller
-        #vstestLocation: # Optional
-        #runSettingsFile: # Optional
-        #overrideTestrunParameters: # Optional
-        #pathtoCustomTestAdapters: # Optional
-        #runInParallel: False # Optional
-        #runTestsInIsolation: False # Optional
-        #codeCoverageEnabled: False # Optional
-        #otherConsoleOptions: # Optional
-        #distributionBatchType: 'basedOnTestCases' # Optional. Options: basedOnTestCases, basedOnExecutionTime, basedOnAssembly
-        #batchingBasedOnAgentsOption: 'autoBatchSize' # Optional. Options: autoBatchSize, customBatchSize
-        #customBatchSizeValue: '10' # Required when distributionBatchType == BasedOnTestCases && BatchingBasedOnAgentsOption == CustomBatchSize
-        #batchingBasedOnExecutionTimeOption: 'autoBatchSize' # Optional. Options: autoBatchSize, customTimeBatchSize
-        #customRunTimePerBatchValue: '60' # Required when distributionBatchType == BasedOnExecutionTime && BatchingBasedOnExecutionTimeOption == CustomTimeBatchSize
-        #dontDistribute: False # Optional
-        #testRunTitle: # Optional
-        #platform: # Optional
-        #configuration: # Optional
-        #publishRunAttachments: true # Optional
-        #diagnosticsEnabled: True # Optional
-        #collectDumpOn: 'onAbortOnly' # Optional. Options: onAbortOnly, always, never
-        #rerunFailedTests: False # Optional
-        #rerunType: 'basedOnTestFailurePercentage' # Optional. Options: basedOnTestFailurePercentage, basedOnTestFailureCount
-        #rerunFailedThreshold: '30' # Optional
-        #rerunFailedTestCasesMaxLimit: '5' # Optional
-        #rerunMaxAttempts: '3' # Optional
-      displayName: 'VSTest'
      
     #- script: |
     #    cd bin
@@ -229,12 +137,6 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/linux.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-<<<<<<< HEAD
-    # Dependency manager
-    - bash: |
-        sudo apt-get update && sudo apt-get install -qq gcc g++ make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
-      displayName: 'Install dependencies from Aptitude'
-=======
 
     # Testing LFS
     - bash: |
@@ -251,27 +153,11 @@ jobs:
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
 
->>>>>>> 28176acf872e6eb7c58e4b42ce2b9a96ced75778
   # Debug info before main scripts start
   # - bash: |
   #     ls -al
   #   displayName: 'Get debugging information'
 
-<<<<<<< HEAD
-    # Create build dir
-    - bash: |
-        mkdir -p bin
-      displayName: 'Create build directory'
-    # Create as much free memory as possible
-
-    # Nuclear Option #1
-    - bash: |
-        rm -rf binaries/*mac*.zip
-        rm -rf binaries/*windows*.zip
-        rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-      displayName: 'Take the nuclear option'
-=======
     # Create as much free memory as possible
 
     ## Nuclear Option #1
@@ -282,7 +168,6 @@ jobs:
     #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
     #  displayName: 'Take the nuclear option'
 
->>>>>>> 28176acf872e6eb7c58e4b42ce2b9a96ced75778
     # Create fake test dirs. Can be removed.
     # - bash: |   
     #     cd bin
@@ -296,6 +181,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
       displayName: 'Configure and compile Superbuild'
+
     # Configure and build CaPTk
     - bash: |
         cd bin
@@ -303,6 +189,7 @@ jobs:
         make -j2
         #make install/strip
       displayName: 'Configure and compile CaPTk'
+
     # Check qt
     - bash: |
         cd bin
@@ -323,14 +210,19 @@ jobs:
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf regression
         rm -rf binaries
+
         #make install
+
         # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
         ./scripts/captk-pkg
+
         rm -rf bin
         rm -rf src
         rm -rf docs*
+
         rm -rf scripts
+
         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
         
       displayName: 'Set up environment variables for packager and build a package'
@@ -362,13 +254,6 @@ jobs:
       displayName: 'Brew dependencies'
     
     - bash: |
-<<<<<<< HEAD
-        rm -rf binaries/*linux*.zip
-        rm -rf binaries/*windows*.zip
-        rm -rf history
-        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-      displayName: 'Take the nuclear option'
-=======
         brew install git-lfs
         git lfs install
       displayName: 'Brew dependency install LFS'
@@ -403,7 +288,6 @@ jobs:
     #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
     #  displayName: 'Take the nuclear option'
 
->>>>>>> 28176acf872e6eb7c58e4b42ce2b9a96ced75778
     - bash: |
         export CC=""
         export CXX=""
@@ -413,34 +297,46 @@ jobs:
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
       displayName: 'Export variables'
+
     - bash: |
         cd bin
+
         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+
         make -j2
       displayName: 'Configure and compile Superbuild'
+
     - bash: |
         cd bin
+
         rm CMakeCache.txt
+
         export CC=/usr/local/opt/llvm/bin/clang
         export CXX=/usr/local/opt/llvm/bin/clang++
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
+
         cmake ../
         cmake ../
+
         make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
     
     - bash: |
         cd bin
+
         rm CMakeCache.txt
         rm -rf CaPTk*.app
+
         export CC=/usr/local/opt/llvm/bin/clang
         export CXX=/usr/local/opt/llvm/bin/clang++
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
+
         cmake ../
         cmake ../
+
         make -j 2
         make -j 2
       displayName: 'Ensure documentation is picked up properly'
@@ -450,11 +346,15 @@ jobs:
         cd bin 
         
         make package
+
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
         pkgname="_Installer"
         pkgname="$version$pkgname"
+
         pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
+
         productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
+
         xml='<?xml version="1.0" encoding="utf-8"?>
         <installer-gui-script minSpecVersion="1">
             <title>CaPTk_'"$version"'</title>
@@ -472,7 +372,9 @@ jobs:
             </choice>
             <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
         </installer-gui-script>' 
+
         echo $xml > "./distribution.xml"
+
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
@@ -686,127 +588,3 @@ jobs:
 #         downloadType: 'single'
 #         artifactName: '$(Build.DefinitionName)_installer_macOS_selfhosted'
 #         downloadPath: '$(System.ArtifactsDirectory)'
-
-#- job: 'TrustyDockerBuild'
-#  displayName: "End-to-end Trusty build & package"
-#  timeoutInMinutes: 0
-#  cancelTimeoutInMinutes: 360
-#  
-#  pool:
-#    vmImage: 'ubuntu-16.04'
-#  
-#  container: ubuntu1404
-#  
-#  steps:
-#  
-#    # Dependency manager
-#    - bash: |
-#        sudo apt-get install -qq gcc g++ make libglu1-mesa-dev freeglut3-dev mesa-common-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen wget zlib1g-dev zlib-bin curl libxt-dev 
-#        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-#        #sudo apt-get update
-#        #sudo apt-get install g++-4.9
-#        gcc --version
-#      displayName: 'Install dependencies from Aptitude'
-#
-#    # install LFS
-#    - bash: |
-#        curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-#        sudo apt-get install git-lfs
-#      displayName: 'Install LFS'
-#
-#    # Pull LFS
-#    - bash: |
-#        git lfs pull
-#      displayName: 'Pull LFS'
-#
-#    # CMake install
-#    - script: |
-#        wget https://github.com/Kitware/CMake/releases/download/v3.12.1/cmake-3.12.1.tar.gz
-#        tar -xzvf cmake-3.12.1.tar.gz
-#        cd cmake-3.12.1
-#        ./configure --system-curl
-#        make -j2
-#        sudo make install/strip
-#        cmake --version
-#      displayName: 'Update CMake'
-#
-#  # Debug info before main scripts start
-#  # - bash: |
-#  #     ls -al
-#  #   displayName: 'Get debugging information'
-#
-#    # Create build dir
-#    - script: |
-#        mkdir -p bin
-#      displayName: 'Create build directory'
-#
-#    # Create as much free memory as possible
-#
-#    # Nuclear Option #1
-#    - script: |
-#        rm -rf binaries/*mac*.zip
-#        rm -rf binaries/*windows*.zip
-#        rm -rf history
-#        rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-#      displayName: 'Take the nuclear option'
-#
-#    # Create fake test dirs. Can be removed.
-#    # - bash: |   
-#    #     cd bin
-#    #     mkdir -p testing
-#    #     mkdir -p ./testing/TestData
-#    #   displayName: 'Create phony tests'
-#
-#    # Configure and build superbuild
-#    - script: |
-#        cd bin
-#        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-#        make -j2
-#      displayName: 'Configure and compile Superbuild'
-#
-#    # Configure and build CaPTk
-#    - script: |
-#        cd bin
-#        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-#        make -j2
-#        make install/strip
-#      displayName: 'Configure and compile CaPTk'
-#
-#    # Check libra
-#    - script: |
-#        cd bin/install/appdir/usr/bin/
-#        ls -l
-#      displayName: 'Checking ${installDir}/bin'
-#      
-#    # Build a package
-#    - script: |
-#        rm -rf regression
-#        rm -rf binaries
-#
-#        make install
-#
-#        # export PKG_FAST_MODE=1
-#        ./scripts/captk-pkg
-#        # ./scripts/captk-pkg
-#
-#        rm -rf bin
-#        rm -rf src
-#        rm -rf docs*
-#
-#        rm -rf scripts
-#
-#        mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
-#        
-#      displayName: 'Set up environment variables for packager and build a package'
-#    
-#    - task: PublishBuildArtifacts@1
-#      inputs:
-#        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#        artifactName: '$(Build.DefinitionName)_installer_Linux'
-#
-#    - task: DownloadBuildArtifacts@0
-#      inputs:
-#        buildType: 'current'
-#        downloadType: 'single'
-#        artifactName: '$(Build.DefinitionName)_installer_Linux'
-#        downloadPath: '$(System.ArtifactsDirectory)'

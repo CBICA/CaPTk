@@ -165,16 +165,16 @@ ADD_TEST(NAME DirectionalityEstimateVersionTest COMMAND DirectionalityEstimate -
 
 # EGFRvIIIIndexPredictor Tests
 
-ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ./TrainingData/ -t 0 -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor )
-
+ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1 -t 0 -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictorModel )
+ADD_TEST(NAME EGFRvIIIIndexPredictorUseModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1 -t 0 -m ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictorModel -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor )
 ADD_TEST(NAME EGFRvIIIIndexPredictorHelpTest COMMAND EGFRvIIIIndexPredictor -h )
 ADD_TEST(NAME EGFRvIIIIndexPredictorVersionTest COMMAND EGFRvIIIIndexPredictor -v )
 
 # EGFRvIIISurrogateIndex Tests
 
-ADD_TEST(NAME EGFRvIIISurrogateDSCMRITest COMMAND EGFRvIIISurrogateIndex -i ${TESTING_DATA_DIR}/egfrsur/DSC-MRI_data.nii.gz -m ${TESTING_DATA_DIR}/egfrsur/Near_Far_masks.nii.gz )
-ADD_TEST(NAME EGFRvIIISurrogateT1GDTest COMMAND EGFRvIIISurrogateIndex -i ${TESTING_DATA_DIR}/egfrsur/T1-Gd_data.nii.gz -m ${TESTING_DATA_DIR}/egfrsur/Near_Far_masks.nii.gz )
-ADD_TEST(NAME EGFRvIIISurrogateT2FlairTest COMMAND EGFRvIIISurrogateIndex -i ${TESTING_DATA_DIR}/egfrsur/T2-FLAIR_data.nii.gz -m ${TESTING_DATA_DIR}/egfrsur/Near_Far_masks.nii.gz )
+ADD_TEST(NAME EGFRvIIISurrogateDSCMRITest COMMAND EGFRvIIISurrogateIndex -i ${TESTING_DATA_DIR}/EGFRvIIISurrogate/DSC-MRI_data.nii.gz -m ${TESTING_DATA_DIR}/EGFRvIIISurrogate/Near_Far_masks.nii.gz )
+ADD_TEST(NAME EGFRvIIISurrogateT1GDTest COMMAND EGFRvIIISurrogateIndex -i ${TESTING_DATA_DIR}/EGFRvIIISurrogate/T1-Gd_data.nii.gz -m ${TESTING_DATA_DIR}/EGFRvIIISurrogate/Near_Far_masks.nii.gz )
+ADD_TEST(NAME EGFRvIIISurrogateT2FlairTest COMMAND EGFRvIIISurrogateIndex -i ${TESTING_DATA_DIR}/EGFRvIIISurrogate/T2-FLAIR_data.nii.gz -m ${TESTING_DATA_DIR}/EGFRvIIISurrogate/Near_Far_masks.nii.gz )
 
 ADD_TEST(NAME EGFRvIIISurrogateIndexHelpTest COMMAND EGFRvIIISurrogateIndex -h )
 ADD_TEST(NAME EGFRvIIISurrogateIndexVersionTest COMMAND EGFRvIIISurrogateIndex -v )
@@ -185,7 +185,7 @@ ADD_TEST(NAME EGFRvIIISurrogateIndexVersionTest COMMAND EGFRvIIISurrogateIndex -
 
 ADD_TEST(NAME FeatureExtractionParams1Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam1.csv -t FL -r 1 -l ED,NC )
 # ADD_TEST(NAME FeatureExtractionParams1R2Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam1.csv -t FL -r 1,2 -l ED,NC )
-ADD_TEST(NAME FeatureExtractionParams2Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam2.csv -t FL -r 1 -l ED,NC )
+#ADD_TEST(NAME FeatureExtractionParams2Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam2.csv -t FL -r 1 -l ED,NC )
 ADD_TEST(NAME FeatureExtractionVerticalConcTest COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExVertConc.csv -t FL -r 1 -l ED,NC --verticalConc )
 ADD_TEST(NAME FeatureExtractionFeatureMapsWriteTest COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite1.csv -t FL -r 1 -l ED,NC --featureMapsWrite )
 # ADD_TEST(NAME FeatureExtractionBatchTest COMMAND FeatureExtraction )
@@ -215,8 +215,8 @@ ADD_TEST(NAME GreedyRegistrationVersionTest COMMAND GreedyRegistration -v )
 
 # Molecular Subtype Predictor Tests
 
-ADD_TEST(NAME MolecularSubtypePredictorT0Test COMMAND MolecularSubtypePredictor -t 0 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -o ${TESTING_OUTPUT_DIR}/molsub/ )
-ADD_TEST(NAME MolecularSubtypePredictorT1Test COMMAND MolecularSubtypePredictor -t 1 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -o ${TESTING_OUTPUT_DIR}/molsub/ )
+ADD_TEST(NAME MolecularSubtypePredictorT0Test COMMAND MolecularSubtypePredictor -t 0 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -o ${TESTING_OUTPUT_DIR}/molsub_model/ )
+ADD_TEST(NAME MolecularSubtypePredictorT1Test COMMAND MolecularSubtypePredictor -t 1 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -m ${TESTING_OUTPUT_DIR}/molsub_model/ -o ${TESTING_OUTPUT_DIR}/molsub/ )
 
 ADD_TEST(NAME MolecularSubtypePredictorHelpTest COMMAND MolecularSubtypePredictor -h )
 ADD_TEST(NAME MolecularSubtypePredictorVersionTest COMMAND MolecularSubtypePredictor -v )
@@ -226,15 +226,15 @@ ADD_TEST(NAME MolecularSubtypePredictorVersionTest COMMAND MolecularSubtypePredi
 # NOTE: I am very bothered by the fact that PerfusionDerivatives -r and -p flags be not only required arguments
 # but apparently they *also* have default values which completely defeats the purpose of them being required.
 
-ADD_TEST(NAME PerfusionDerivativesP1R1pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 1)
-ADD_TEST(NAME PerfusionDerivativesP1R1pH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 0)
-ADD_TEST(NAME PerfusionDerivativesP0R0pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 0 -pH 1)
-ADD_TEST(NAME PerfusionDerivativesP1R0pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 0 -pH 1)
-ADD_TEST(NAME PerfusionDerivativesP0R1pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 1 -pH 1)
-ADD_TEST(NAME PerfusionDerivativesP1R0pH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 0 -pH 0)
-ADD_TEST(NAME PerfusionDerivativesP0R1pH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 1 -pH 0)
-ADD_TEST(NAME PerfusionDerivativesEcho5Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 5 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 1)
-ADD_TEST(NAME PerfusionDerivativesEcho10Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 10 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesP1R1pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/PerfusionDerivatives/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/PerfusionDerivatives -p 1 -r 1 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesP1R1pH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/PerfusionDerivatives/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/PerfusionDerivatives -p 1 -r 1 -pH 0)
+ADD_TEST(NAME PerfusionDerivativesP0R0pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/PerfusionDerivatives/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/PerfusionDerivatives -p 0 -r 0 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesP1R0pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/PerfusionDerivatives/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/PerfusionDerivatives -p 1 -r 0 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesP0R1pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/PerfusionDerivatives/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/PerfusionDerivatives -p 0 -r 1 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesP1R0pH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/PerfusionDerivatives/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/PerfusionDerivatives -p 1 -r 0 -pH 0)
+ADD_TEST(NAME PerfusionDerivativesP0R1pH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/PerfusionDerivatives/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/PerfusionDerivatives -p 0 -r 1 -pH 0)
+ADD_TEST(NAME PerfusionDerivativesEcho5Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/PerfusionDerivatives/AAAC_PreOp_perf_pp.nii.gz -e 5 -o ${TESTING_OUTPUT_DIR}/PerfusionDerivatives -p 1 -r 1 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesEcho10Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/PerfusionDerivatives/AAAC_PreOp_perf_pp.nii.gz -e 10 -o ${TESTING_OUTPUT_DIR}/PerfusionDerivatives -p 1 -r 1 -pH 1)
 
 ADD_TEST(NAME PerfusionDerivativesHelpTest COMMAND PerfusionDerivatives -h )
 ADD_TEST(NAME PerfusionDerivativesVersionTest COMMAND PerfusionDerivatives -v )
@@ -296,8 +296,8 @@ ADD_TEST(NAME SBRT_NoduleVersionTest COMMAND SBRT_Nodule -v )
 
 # Survival Predictor Tests
 
-ADD_TEST(NAME SurvivalPredictorT0Test COMMAND SurvivalPredictor -t 0 -i ${TESTING_DATA_DIR}/survival/samples -o ${TESTING_OUTPUT_DIR}/survival/ )
-ADD_TEST(NAME SurvivalPredictorT1Test COMMAND SurvivalPredictor -t 1 -i ${TESTING_DATA_DIR}/survival/samples -o ${TESTING_OUTPUT_DIR}/survival/ )
+ADD_TEST(NAME SurvivalPredictorT0Test COMMAND SurvivalPredictor -t 0 -i ${TESTING_DATA_DIR}/survival/samples -o ${TESTING_OUTPUT_DIR}/survival_model/ )
+ADD_TEST(NAME SurvivalPredictorT1Test COMMAND SurvivalPredictor -t 1 -i ${TESTING_DATA_DIR}/survival/samples -m ${TESTING_OUTPUT_DIR}/survival_model/ -o ${TESTING_OUTPUT_DIR}/survival/ )
 
 ADD_TEST(NAME SurvivalPredictorHelpTest COMMAND SurvivalPredictor -h )
 ADD_TEST(NAME SurvivalPredictorVersionTest COMMAND SurvivalPredictor -v )
@@ -337,7 +337,7 @@ ADD_TEST(NAME WhiteStripeVersionTest COMMAND WhiteStripe -v )
 ADD_TEST(NAME BufferTest COMMAND ${TEST_EXE_NAME} --bufferTest "random" )
 
 # geodesic test
-ADD_TEST(NAME GeodesicTest COMMAND ${TEST_EXE_NAME} --geodesic "${TESTING_DATA_DIR}/Geodesic/" )
+#ADD_TEST(NAME GeodesicTest COMMAND ${TEST_EXE_NAME} --geodesic "${TESTING_DATA_DIR}/Geodesic/" )
 
 # EGFRvIII test
-ADD_TEST(NAME EGFRvIIITest COMMAND ${TEST_EXE_NAME} --egfrviii "${TESTING_DATA_DIR}/EGFRvIII/" )
+#ADD_TEST(NAME EGFRvIIITest COMMAND ${TEST_EXE_NAME} --egfrviii "${TESTING_DATA_DIR}/EGFRvIII/" )
