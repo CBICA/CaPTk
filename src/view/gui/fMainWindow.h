@@ -557,10 +557,18 @@ public slots:
   ImageTypeFloat3D::Pointer getMaskImage();
   
   /**
-  \brief function that performs segmentation and UI measurements of Featl Ventriculomegaly application
+  \brief Function that performs segmentation and UI measurements of Fetal Ventriculomegaly application
   */
   void FetalBrain_SkullStripfunc();
+  
+  /**
+  \brief Function that performs prediction of Fetal Ventriculomegaly application
+  */
   void FetalBrain_Predict();
+  
+  /**
+  \brief Function that performs new model training for Fetal Ventriculomegaly application
+  */
   void FetalBrain_TrainNewModel(const std::string &directory, const std::string &outputdirectory);
 
   /**
