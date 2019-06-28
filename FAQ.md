@@ -98,7 +98,7 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
 </details>
 
 <details>
-  <summary>What if I am having an issue not shown here?</summary>
+  <summary>What if I am having an issue not listed here?</summary>
   
 Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
 
