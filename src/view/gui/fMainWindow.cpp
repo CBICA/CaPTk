@@ -709,22 +709,22 @@ fMainWindow::fMainWindow()
     else if (vectorOfMiscApps[i].name.find("PerfusionDerivatives") != std::string::npos)
     {
       vectorOfMiscApps[i].action->setText("  Perfusion Derivatives"); //TBD set at source
-      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(PerfusionMeasuresCalculation()));
+      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPerfusionMeasuresCalculation()));
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionAlignment") != std::string::npos)
     {
       vectorOfMiscApps[i].action->setText("  Perfusion Alignment"); //TBD set at source
-      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(PerfusionAlignmentCalculation()));
+      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPerfusionAlignmentCalculation()));
     }
     else if (vectorOfMiscApps[i].name.find("DiffusionDerivatives") != std::string::npos)
     {
       vectorOfMiscApps[i].action->setText("  Diffusion Derivatives"); //TBD set at source
-      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(DiffusionMeasuresCalculation()));
+      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationDiffusionMeasuresCalculation()));
     }
     else if (vectorOfMiscApps[i].name.find("TrainingModule") != std::string::npos)
     {
       vectorOfMiscApps[i].action->setText("  Training Module"); //TBD set at source
-      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ClassifierTraining()));
+      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationTrainingModule()));
     }
   }
 
@@ -793,9 +793,9 @@ fMainWindow::fMainWindow()
     }
   }
 
-  connect(&fetalbrainpanel, SIGNAL(skullstripfun()), this, SLOT(skullstripfunc()));
-  connect(&fetalbrainpanel, SIGNAL(drawlinear()), this, SLOT(Predict()));
-  connect(&fetalbrainpanel, SIGNAL(TrainNewFetalModel(std::string, std::string)), this, SLOT(TrainNewFetalModel(const std::string &, const std::string &)));
+  connect(&fetalbrainpanel, SIGNAL(skullstripfun()), this, SLOT(FetalBrain_SkullStripfunc()));
+  connect(&fetalbrainpanel, SIGNAL(drawlinear()), this, SLOT(FetalBrain_Predict()));
+  connect(&fetalbrainpanel, SIGNAL(TrainNewFetalModel(std::string, std::string)), this, SLOT(FetalBrain_TrainNewModel(const std::string &, const std::string &)));
 
 
   connect(m_imagesTable, SIGNAL(itemSelectionChanged()), this, SLOT(DisplayChanged()));
@@ -985,6 +985,38 @@ fMainWindow::~fMainWindow()
 
 }
 
+  void fMainWindow::loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage, const float maskOpacity,
+    const std::string &tumorPointFile, const std::string &tissuePointFile, bool firstRun)
+  {
+    auto qvectorString = QVector< QString >::fromStdVector(files);
+    auto lst = QStringList::fromVector(QVector< QString >::fromStdVector(files));
+    this->openImages(lst, true);
+    if (!maskImage.empty())
+    {
+      this->readMaskFile(maskImage);
+      this->ChangeMaskOpacity(maskOpacity * 10);
+    }
+    if (!tumorPointFile.empty())
+    {
+      this->tumorPanel->sLoad(tumorPointFile.c_str());
+    }
+    if (!tissuePointFile.empty())
+    {
+      this->tumorPanel->tLoad(tissuePointFile.c_str());
+    }
+    if (comparisonMode)
+    {
+      this->imagesPanel->CompareButtonClick();
+    }
+
+#ifdef CAPTK_PACKAGE_PROJECT
+    if (firstRun)
+    {
+      this->CloseAllImages();
+    }
+#endif
+  }
+
 void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage)
 {
   using ImageTypeFloat2D = itk::Image< float, 2 >;
@@ -1081,87 +1113,24 @@ void fMainWindow::help_Interactions()
   mHelpDlg->show();
 }
 
-void fMainWindow::help_Discussion()
+void fMainWindow::help_Download(QAction* action)
 {
-  std::string link = "https://www.nitrc.org/forum/forum.php?forum_id=6500", command;
-#if WIN32
-  command = "start ";
-#elif __linux__
-  command = "xdg-open ";
-#else
-  command = "open ";
-#endif
-  if (std::system((command + link).c_str()) != 0)
+  auto currentApp = action->text().toStdString();
+  std::string path = getCaPTkDataDir();
+  auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
+  cbica::Logging(loggerFile, currentLink);
+  if (!openLink(currentLink))
   {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Discussion Forum");
-    return;
-  }
-}
-
-void fMainWindow::help_Downloads()
-{
-  std::string link = "https://www.nitrc.org/frs/?group_id=1059", command;
-#if WIN32
-  command = "start ";
-#elif __linux__
-  command = "xdg-open ";
-#else
-  command = "open ";
-#endif
-  if (std::system((command + link).c_str()) != 0)
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Downloads page");
-    return;
-  }
-}
-
-void fMainWindow::help_HelpForum()
-{
-  std::string link = "https://www.nitrc.org/forum/forum.php?forum_id=6501", command;
-#if WIN32
-  command = "start ";
-#elif __linux__
-  command = "xdg-open ";
-#else
-  command = "open ";
-#endif
-  if (std::system((command + link).c_str()) != 0)
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Help Forum");
+      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
     return;
   }
 }
 
 void fMainWindow::help_BugTracker()
 {
-  std::string link = "https://github.com/CBICA/CaPTk/issues", command;
-#if WIN32
-  command = "start ";
-#elif __linux__
-  command = "xdg-open ";
-#else
-  command = "open ";
-#endif
-  if (std::system((command + link).c_str()) != 0)
+  if (!openLink("https://github.com/CBICA/CaPTk/issues"))
   {
     ShowErrorMessage("CaPTk couldn't open the browser to open the Bug Tracker");
-    return;
-  }
-}
-
-void fMainWindow::help_FeatureRequests()
-{
-  std::string link = "https://www.nitrc.org/tracker/?atid=3995&group_id=1059&func=browse ", command;
-#if WIN32
-  command = "start ";
-#elif __linux__
-  command = "xdg-open ";
-#else
-  command = "open ";
-#endif
-  if (std::system((command + link).c_str()) != 0)
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Feature Requests");
     return;
   }
 }
@@ -2718,6 +2687,19 @@ void fMainWindow::MoveSlicerCursor(double x, double y, double z, int mode)
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
   }
   propogateSlicerPosition();
+}
+
+void fMainWindow::toolTabDockChanged(bool bUnDocked)
+{
+  if (bUnDocked)
+  {
+    m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight() * 10);
+    m_toolTabdock->show();
+  }
+  else
+  {
+    m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
+  }
 }
 
 VectorVectorDouble fMainWindow::FormulateDrawingPointsForEdemaSegmentation()
@@ -6129,7 +6111,7 @@ void fMainWindow::ApplicationFetalBrain()
 
 }
 #endif
-void fMainWindow::TrainNewFetalModel(const std::string &datadirectory, const std::string &outputdirectory)
+void fMainWindow::FetalBrain_TrainNewModel(const std::string &datadirectory, const std::string &outputdirectory)
 {
   updateProgress(0, "Parsing Input directory");
   updateProgress(30, "Feature Extraction");
@@ -6139,7 +6121,7 @@ void fMainWindow::TrainNewFetalModel(const std::string &datadirectory, const std
 
 }
 
-void fMainWindow::skullstripfunc()
+void fMainWindow::FetalBrain_SkullStripfunc()
 {
   fetalbrainpanel.setModal(false);
   std::string msg = "";
@@ -6191,7 +6173,7 @@ void fMainWindow::skullstripfunc()
   updateProgress(50, "Segmentation finished");
 }
 
-void fMainWindow::Predict()
+void fMainWindow::FetalBrain_Predict()
 {
   ImageTypeFloat3D::Pointer mask = convertVtkToItk< ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension >(mSlicerManagers[0]->mMask);
   cbica::WriteImage(mask, m_tempFolderLocation + "/corrected_ventri.nii");
@@ -6246,7 +6228,22 @@ void fMainWindow::ApplicationEGFR()
 
   std::vector<ImageTypeFloat3D::IndexType> nearIndices;
   std::vector<ImageTypeFloat3D::IndexType> farIndices;
-  FormulateNearFarPoints<ImageTypeFloat3D>(nearIndices, farIndices);
+
+  // formulate near and far indices from the mask
+  auto currentMaskImage = getMaskImage();
+  itk::ImageRegionIteratorWithIndex< ImageTypeFloat3D > maskIt(currentMaskImage, currentMaskImage->GetLargestPossibleRegion());
+  maskIt.GoToBegin();
+  while (!maskIt.IsAtEnd())
+  {
+    if (maskIt.Get() == 1)
+    {
+      nearIndices.push_back(maskIt.GetIndex());
+    }
+    else if (maskIt.Get() == 2)
+      farIndices.push_back(maskIt.GetIndex());
+    ++maskIt;
+  }
+
   std::string imagetype_string = "";
 
   for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
@@ -7071,21 +7068,21 @@ void fMainWindow::ApplicationPCA()
 
   pcaPanel.exec();
 }
-void fMainWindow::PerfusionMeasuresCalculation()
+void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 {
   perfmeasuresPanel.exec();
 }
-void fMainWindow::PerfusionAlignmentCalculation()
+void fMainWindow::ApplicationPerfusionAlignmentCalculation()
 {
   perfalignPanel.exec();
 }
-void fMainWindow::DiffusionMeasuresCalculation()
+void fMainWindow::ApplicationDiffusionMeasuresCalculation()
 {
   //open a simple dialog box with input and output images
   diffmeasuresPanel.exec();
 }
 
-void fMainWindow::ClassifierTraining()
+void fMainWindow::ApplicationTrainingModule()
 {
   //open a simple dialog box with input and output images
   trainingPanel.exec();
