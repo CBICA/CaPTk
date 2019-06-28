@@ -709,17 +709,17 @@ fMainWindow::fMainWindow()
     else if (vectorOfMiscApps[i].name.find("PerfusionDerivatives") != std::string::npos)
     {
       vectorOfMiscApps[i].action->setText("  Perfusion Derivatives"); //TBD set at source
-      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(PerfusionMeasuresCalculation()));
+      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPerfusionMeasuresCalculation()));
     }
     else if (vectorOfMiscApps[i].name.find("PerfusionAlignment") != std::string::npos)
     {
       vectorOfMiscApps[i].action->setText("  Perfusion Alignment"); //TBD set at source
-      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(PerfusionAlignmentCalculation()));
+      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPerfusionAlignmentCalculation()));
     }
     else if (vectorOfMiscApps[i].name.find("DiffusionDerivatives") != std::string::npos)
     {
       vectorOfMiscApps[i].action->setText("  Diffusion Derivatives"); //TBD set at source
-      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(DiffusionMeasuresCalculation()));
+      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationDiffusionMeasuresCalculation()));
     }
     else if (vectorOfMiscApps[i].name.find("TrainingModule") != std::string::npos)
     {
@@ -7068,15 +7068,15 @@ void fMainWindow::ApplicationPCA()
 
   pcaPanel.exec();
 }
-void fMainWindow::PerfusionMeasuresCalculation()
+void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 {
   perfmeasuresPanel.exec();
 }
-void fMainWindow::PerfusionAlignmentCalculation()
+void fMainWindow::ApplicationPerfusionAlignmentCalculation()
 {
   perfalignPanel.exec();
 }
-void fMainWindow::DiffusionMeasuresCalculation()
+void fMainWindow::ApplicationDiffusionMeasuresCalculation()
 {
   //open a simple dialog box with input and output images
   diffmeasuresPanel.exec();

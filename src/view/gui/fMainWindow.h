@@ -1275,76 +1275,137 @@ public slots:
     return tumorPanel->mTumorPointsSelected;
   }
 
+  //! GUI control for breast segmentation
   void ApplicationBreastSegmentation();
+
+  //! GUI control for breast texture feature extraction
   void ApplicationTexturePipeline();
+
+  //! GUI control for LIBRA single image mode
   void ApplicationLIBRASingle();
+
+  //! GUI control for LIBRA batch image mode
   void ApplicationLIBRABatch();
+
+  //! GUI control for Confetti
   void ApplicationConfetti();
+
+  //! GUI control for SBRT Lung Field segmentation
   void ApplicationSBRTLungField();
+
+  //! GUI control for SBRT Lung Nodule segmentation
   void ApplicationSBRTNodule();
+
+  //! GUI control for SBRT Lung Analysis
   void ApplicationSBRTAnalysis();
 
   //! Convert 2D image to 3D image with a single slice and write to temp folder
   void ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage = false);
 
+  //! GUI control for Directionality Analysis
   void ApplicationDirectionality();
 #ifdef BUILD_FETALBRAIN
+  //! GUI control for Fetal Brain
   void ApplicationFetalBrain();
 #endif
 
 #ifdef BUILD_EGFRvIII
+  //! GUI control for EGFRvIII PHI
   void ApplicationEGFR();
 #endif
 #ifdef BUILD_RECURRENCE
+  //! GUI control for Recurrence
   void ApplicationRecurrence();
 #endif
 #ifdef BUILD_PSEUDOPROGRESSION
+  //! GUI control for Pseudo Progression
   void ApplicationPseudoProgression();
 #endif
 #ifdef BUILD_ATLAS
+  //! GUI control for Population Atlas
   void ApplicationPopulationAtlas();
 #endif
 #ifdef BUILD_ISUBTYPE
+  //! GUI control for Imaging Subtype
   void ApplicationImagingSubtype();
 #endif
 #ifdef BUILD_MSUBTYPE
+  //! GUI control for Molecular Subtype
   void ApplicationMolecularSubtype();
 #endif
 #ifdef BUILD_SURVIVAL
+  //! GUI control for Survival
   void ApplicationSurvival();
 #endif
 #ifdef BUILD_EGFRvIIISVM
+  //! GUI control for EGFRvIII SVM
   void ApplicationEGFRvIIISVM();
 #endif
 #ifdef BUILD_GEODESIC
+  //! GUI control for Geodesic Segmentation
   void ApplicationGeodesic();
 #endif
 #ifdef BUILD_GEODESICTRAINING
+  //! GUI control for Geodesic Training
   void ApplicationGeodesicTraining();
 #endif
+  //! GUI control for Geodesic Threshold - TBD
   void ApplicationGeodesicTreshold();
 #ifdef BUILD_ITKSNAP
+  //! GUI control for ITKSNAP
   void ApplicationITKSNAP();
 #endif
 #ifdef BUILD_WHITESTRIPE
+  //! GUI control for WhiteStripe
   void ApplicationWhiteStripe();
 #endif
-  void ImageDenoising();
-  void ImageMamogramPreprocess();
-  void ImageBiasCorrection();
-  void ImageRegistration();
-  void ImageHistogramMatching();
-  void ImageDeepMedicNormalizer();
-  void ImageSkullStripping();
-  void DCM2NIfTIConversion();
-  void CustomPreprocessing();
-  void ApplicationPCA();
-  void PerfusionMeasuresCalculation();
-  void PerfusionAlignmentCalculation();
-  void DiffusionMeasuresCalculation();
-  void ClassifierTraining();
+
+  //! GUI control for all DeepMedic segmentations
   void ApplicationDeepMedicSegmentation(int type);
+
+  //! GUI control for Theia
   void ApplicationTheia();
+
+  //! GUI control for all PCA analysis
+  void ApplicationPCA();
+  
+  //! GUI control for Perfusion Measures calculation
+  void ApplicationPerfusionMeasuresCalculation();
+  
+  //! GUI control for Perfusion Alignment calculation
+  void ApplicationPerfusionAlignmentCalculation();
+  
+  //! GUI control for Diffusion Measures calculation
+  void ApplicationDiffusionMeasuresCalculation();
+
+  //! Preprocessing for denoising
+  void ImageDenoising();
+
+  //! Preprocessing for mammogram preprocessing
+  void ImageMamogramPreprocess();
+
+  //! Preprocessing for bias correction
+  void ImageBiasCorrection();
+
+  //! Preprocessing for image registration
+  void ImageRegistration();
+
+  //! Preprocessing for histogram matching
+  void ImageHistogramMatching();
+
+  //! Preprocessing for Z-Scoring normalizer
+  void ImageDeepMedicNormalizer();
+
+  //! Preprocessing for skull-stripping
+  void ImageSkullStripping();
+
+  //! Preprocessing for DCM-to-NIfTI conversion
+  void DCM2NIfTIConversion();
+
+  //! Preprocessing for customized preprocessing
+  void CustomPreprocessing();
+
+  void ClassifierTraining();
 
   //! Enable/Disable comparison mode
   void EnableComparisonMode(bool);
