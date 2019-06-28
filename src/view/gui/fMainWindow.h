@@ -1260,19 +1260,9 @@ public slots:
   */
   void UpdateLinkedNavigation(Slicer* refSlicer);
 
-  void toolTabDockChanged(bool bUnDocked)//TBD - move to cpp file 
-  {
-    if (bUnDocked)
-    {
+  //! Dock/undock behaviour changed
+  void toolTabDockChanged(bool bUnDocked);
 
-      m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight() * 10);
-      m_toolTabdock->show();
-    }
-    else
-    {
-      m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
-    }
-  }
   //! Returns the active tab from the tab widget
   int getActiveTabId()
   {

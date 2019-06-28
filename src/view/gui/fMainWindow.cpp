@@ -2689,6 +2689,19 @@ void fMainWindow::MoveSlicerCursor(double x, double y, double z, int mode)
   propogateSlicerPosition();
 }
 
+void fMainWindow::toolTabDockChanged(bool bUnDocked)
+{
+  if (bUnDocked)
+  {
+    m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight() * 10);
+    m_toolTabdock->show();
+  }
+  else
+  {
+    m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
+  }
+}
+
 VectorVectorDouble fMainWindow::FormulateDrawingPointsForEdemaSegmentation()
 {
   VectorVectorDouble Indices;
