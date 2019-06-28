@@ -909,8 +909,14 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
+  //! Open the github issue tracker
   void help_BugTracker();
 
+  /**
+  \brief Get contextual help 
+  
+  \param startPage The starting page for the web engine view
+  */
   void help_contextual(const std::string startPage);
 
   /**
