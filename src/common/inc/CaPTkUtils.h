@@ -4,6 +4,7 @@
 #include <string>
 #include <QMetaType>
 #include "CaPTkEnums.h"
+
 //! Structure to define a point value to check if it is defined in the image or not
 struct PointVal
 {
@@ -203,6 +204,7 @@ inline bool isExtensionSupported(const std::string inputExtension)
   }
 }
 
+//! The modality strings that are used in the GUI 
 static const char ImageModalityString[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES + 1][15] =
 { "DEF", "T1", "T1Gd", "T2",
 "FLAIR", "DTI_AX", "DTI_FA", "DTI_RAD", "DTI_TR", 
