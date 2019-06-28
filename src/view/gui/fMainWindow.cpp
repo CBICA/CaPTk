@@ -9257,12 +9257,6 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/CONVENTIONAL/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        //if ((files[i].find("t1t1ce") != std::string::npos || files[i].find("T1T1CE") != std::string::npos || files[i].find("T1T1ce") != std::string::npos || files[i].find("T1-T1-gd") != std::string::npos) && isExtensionSupported(extension))
-        //  t1t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        //else if ((files[i].find("t2t2flair") != std::string::npos || files[i].find("T2T2FLAIR") != std::string::npos || files[i].find("T2T2Flair") != std::string::npos) && isExtensionSupported(extension))
-        //  t2t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        //else
-        
         if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
           t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
         else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
