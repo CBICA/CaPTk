@@ -946,7 +946,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
 
-    MESSAGE("Setting up post-install symlink behavior for Linux")
     INSTALL(CODE "execute_process( \
       COMMAND ${CMAKE_COMMAND} -E create_symlink \
       ${CMAKE_INSTALL_PREFIX}/bin/CaPTk \
