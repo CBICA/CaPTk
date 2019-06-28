@@ -8910,13 +8910,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string filePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((files[i].find("t1ce") != std::string::npos || files[i].find("T1CE") != std::string::npos || files[i].find("T1ce") != std::string::npos || files[i].find("T1-gd") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t1ceFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("t1") != std::string::npos || files[i].find("T1") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t1FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("t2") != std::string::npos || files[i].find("T2") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t2FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("flair") != std::string::npos || files[i].find("FLAIR") != std::string::npos || files[i].find("Flair") != std::string::npos || files[i].find("T2-Flair") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
       }
     }
@@ -8930,13 +8930,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string extension = cbica::getFilenameExtension(filePath, false);
         filePath_lower = filePath;
         std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-        if ((filePath_lower.find("rcbv") != std::string::npos)
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           rcbvFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("psr") != std::string::npos)
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           psrFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("ph") != std::string::npos)
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
@@ -8950,13 +8950,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((files[i].find("AX") != std::string::npos || files[i].find("axial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("FA") != std::string::npos || files[i].find("fractional") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("RAD") != std::string::npos || files[i].find("radial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("TR") != std::string::npos || files[i].find("trace") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
@@ -9263,13 +9263,14 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         //else if ((files[i].find("t2t2flair") != std::string::npos || files[i].find("T2T2FLAIR") != std::string::npos || files[i].find("T2T2Flair") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
         //  t2t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
         //else
-        if ((files[i].find("t1ce") != std::string::npos || files[i].find("T1CE") != std::string::npos || files[i].find("T1ce") != std::string::npos || files[i].find("T1-gd") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        
+        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((files[i].find("t1") != std::string::npos || files[i].find("T1") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t1FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((files[i].find("t2") != std::string::npos || files[i].find("T2") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t2FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((files[i].find("flair") != std::string::npos || files[i].find("FLAIR") != std::string::npos || files[i].find("Flair") != std::string::npos || files[i].find("T2-Flair") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
       }
     }
