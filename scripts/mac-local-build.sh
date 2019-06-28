@@ -39,22 +39,21 @@ cmake ../
 cmake ../
 make -j 2
 
-
 version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
 pkgname="_Installer"
 pkgname="$version$pkgname"
 
-sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
+sudo rm -rf CaPTk_*.app/Contents/Resources/bin/*.app
 
 make -j 2
 
-chmod +x CaPTk_$version.app/Contents/Resources/bin/dcm2nii
+chmod +x CaPTk_*.app/Contents/Resources/bin/dcm2nii
 
 rm -rf *.pkg 
 rm -rf _CPack*
 make package
 
-chmod +x CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app/Contents/MacOS/ITK-SNAP
+chmod +x CaPTk_*.app/Contents/Resources/bin/ITK-SNAP.app/Contents/MacOS/ITK-SNAP
 
 pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
