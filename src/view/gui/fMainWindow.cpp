@@ -793,9 +793,9 @@ fMainWindow::fMainWindow()
     }
   }
 
-  connect(&fetalbrainpanel, SIGNAL(skullstripfun()), this, SLOT(skullstripfunc()));
-  connect(&fetalbrainpanel, SIGNAL(drawlinear()), this, SLOT(Predict()));
-  connect(&fetalbrainpanel, SIGNAL(TrainNewFetalModel(std::string, std::string)), this, SLOT(TrainNewFetalModel(const std::string &, const std::string &)));
+  connect(&fetalbrainpanel, SIGNAL(skullstripfun()), this, SLOT(FetalBrain_SkullStripfunc()));
+  connect(&fetalbrainpanel, SIGNAL(drawlinear()), this, SLOT(FetalBrain_Predict()));
+  connect(&fetalbrainpanel, SIGNAL(TrainNewFetalModel(std::string, std::string)), this, SLOT(FetalBrain_TrainNewModel(const std::string &, const std::string &)));
 
 
   connect(m_imagesTable, SIGNAL(itemSelectionChanged()), this, SLOT(DisplayChanged()));
@@ -6161,7 +6161,7 @@ void fMainWindow::ApplicationFetalBrain()
 
 }
 #endif
-void fMainWindow::TrainNewFetalModel(const std::string &datadirectory, const std::string &outputdirectory)
+void fMainWindow::FetalBrain_TrainNewModel(const std::string &datadirectory, const std::string &outputdirectory)
 {
   updateProgress(0, "Parsing Input directory");
   updateProgress(30, "Feature Extraction");
@@ -6171,7 +6171,7 @@ void fMainWindow::TrainNewFetalModel(const std::string &datadirectory, const std
 
 }
 
-void fMainWindow::skullstripfunc()
+void fMainWindow::FetalBrain_SkullStripfunc()
 {
   fetalbrainpanel.setModal(false);
   std::string msg = "";
@@ -6223,7 +6223,7 @@ void fMainWindow::skullstripfunc()
   updateProgress(50, "Segmentation finished");
 }
 
-void fMainWindow::Predict()
+void fMainWindow::FetalBrain_Predict()
 {
   ImageTypeFloat3D::Pointer mask = convertVtkToItk< ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension >(mSlicerManagers[0]->mMask);
   cbica::WriteImage(mask, m_tempFolderLocation + "/corrected_ventri.nii");

@@ -559,9 +559,9 @@ public slots:
   /**
   \brief function that performs segmentation and UI measurements of Featl Ventriculomegaly application
   */
-  void skullstripfunc();
-  void Predict();
-  void TrainNewFetalModel(const std::string &directory, const std::string &outputdirectory);
+  void FetalBrain_SkullStripfunc();
+  void FetalBrain_Predict();
+  void FetalBrain_TrainNewModel(const std::string &directory, const std::string &outputdirectory);
 
   /**
   \brief get images loaded and their file names
