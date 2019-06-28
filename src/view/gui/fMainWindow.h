@@ -908,30 +908,7 @@ public slots:
   /**
   \brief Help for downloading Sample Data
   */
-  void help_Download(QAction* action)
-  {
-    auto currentApp = action->text().toStdString();
-    std::string path = getCaPTkDataDir();
-    auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-    //    std::string link =
-    //#ifdef _WIN32
-    //      path + "/GnuWin32/bin/wget.exe"
-    //#else
-    //      "wget"
-    //#endif
-    //      + currentLink +
-    //      " -O " + captk_SampleDataFolder + "/" + currentApp + ".zip";
-
-    cbica::Logging(loggerFile, currentLink);
-
-    //ShowMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
-
-    if /*(std::system((link).c_str()) != 0)*/ (!openLink(currentLink))
-    {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
-      return;
-    }
-  }
+  void help_Download(QAction* action);
   void help_Discussion();
   void help_Downloads();
   void help_HelpForum();
