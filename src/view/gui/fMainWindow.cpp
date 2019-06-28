@@ -1118,7 +1118,7 @@ void fMainWindow::help_Download(QAction* action)
   auto currentApp = action->text().toStdString();
   std::string path = getCaPTkDataDir();
   auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-  cbica::Logging(loggerFile, currentLink)
+  cbica::Logging(loggerFile, currentLink);
   if (!openLink(currentLink))
   {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
