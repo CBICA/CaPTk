@@ -909,11 +909,7 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
-  void help_Discussion();
-  void help_Downloads();
-  void help_HelpForum();
   void help_BugTracker();
-  void help_FeatureRequests();
 
   void help_contextual(const std::string startPage);
 

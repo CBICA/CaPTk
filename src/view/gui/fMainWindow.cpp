@@ -1118,70 +1118,10 @@ void fMainWindow::help_Download(QAction* action)
   auto currentApp = action->text().toStdString();
   std::string path = getCaPTkDataDir();
   auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-  //    std::string link =
-  //#ifdef _WIN32
-  //      path + "/GnuWin32/bin/wget.exe"
-  //#else
-  //      "wget"
-  //#endif
-  //      + currentLink +
-  //      " -O " + captk_SampleDataFolder + "/" + currentApp + ".zip"
   cbica::Logging(loggerFile, currentLink)
-  //ShowMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...")
-  if /*(std::system((link).c_str()) != 0)*/ (!openLink(currentLink))
+  if (!openLink(currentLink))
   {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
-    return;
-  }
-}
-
-void fMainWindow::help_Discussion()
-{
-  std::string link = "https://www.nitrc.org/forum/forum.php?forum_id=6500", command;
-#if WIN32
-  command = "start ";
-#elif __linux__
-  command = "xdg-open ";
-#else
-  command = "open ";
-#endif
-  if (std::system((command + link).c_str()) != 0)
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Discussion Forum");
-    return;
-  }
-}
-
-void fMainWindow::help_Downloads()
-{
-  std::string link = "https://www.nitrc.org/frs/?group_id=1059", command;
-#if WIN32
-  command = "start ";
-#elif __linux__
-  command = "xdg-open ";
-#else
-  command = "open ";
-#endif
-  if (std::system((command + link).c_str()) != 0)
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Downloads page");
-    return;
-  }
-}
-
-void fMainWindow::help_HelpForum()
-{
-  std::string link = "https://www.nitrc.org/forum/forum.php?forum_id=6501", command;
-#if WIN32
-  command = "start ";
-#elif __linux__
-  command = "xdg-open ";
-#else
-  command = "open ";
-#endif
-  if (std::system((command + link).c_str()) != 0)
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Help Forum");
     return;
   }
 }
@@ -1199,23 +1139,6 @@ void fMainWindow::help_BugTracker()
   if (std::system((command + link).c_str()) != 0)
   {
     ShowErrorMessage("CaPTk couldn't open the browser to open the Bug Tracker");
-    return;
-  }
-}
-
-void fMainWindow::help_FeatureRequests()
-{
-  std::string link = "https://www.nitrc.org/tracker/?atid=3995&group_id=1059&func=browse ", command;
-#if WIN32
-  command = "start ";
-#elif __linux__
-  command = "xdg-open ";
-#else
-  command = "open ";
-#endif
-  if (std::system((command + link).c_str()) != 0)
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Feature Requests");
     return;
   }
 }
