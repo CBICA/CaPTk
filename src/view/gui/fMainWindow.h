@@ -914,7 +914,7 @@ public slots:
 
   /**
   \brief Get contextual help 
-  
+
   \param startPage The starting page for the web engine view
   */
   void help_contextual(const std::string startPage);
@@ -956,15 +956,19 @@ public slots:
   */
   void CloseNonViewingDTIImage(QTableWidgetItem* item);
 
-
+  //! Clear the mask image
   void clearMask(int label = -1);
 
+  //! Make a drawing "stroke" - which can be fed into the "undo" system
   void makeStroke(std::vector<itk::Image<short, 3>::IndexType>& indices, const int value);
 
+  //! Get selected drawing label
   int getSelectedDrawLabel()
   {
     return drawingPanel->getSelectedDrawLabel();
   }
+  
+  //! Get selected drawing size
   int getSelectedDrawSize()
   {
     return drawingPanel->getSelectedDrawSize();
