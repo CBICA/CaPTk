@@ -191,7 +191,7 @@ inline int guessImageType(const std::string &fileName)
 }
 
 //! Checks for common file types that CaPTk can read properly, specially for DTI and DWI images
-bool isExtensionSupported(const std::string inputExtension)
+inline bool isExtensionSupported(const std::string inputExtension)
 {
   if ((inputExtension == IMG_EXT || inputExtension == NII_EXT || inputExtension == NII_GZ_EXT))
   {
