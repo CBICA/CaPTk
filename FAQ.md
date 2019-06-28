@@ -99,3 +99,9 @@ Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&l
 |      macOS     |                      10.13, 10.14                      |          10.12         |
 
 </details>
+
+<details>
+  <summary>Is there a minimum recommended screen resolution for running CaPTk?</summary>
+  
+  The minimum recommended resolution is 1200x1024. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
+</details>
