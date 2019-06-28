@@ -1,4 +1,4 @@
-**Frequently Asked Questions (FAQ)**
+# Frequently Asked Questions (FAQ)
 
 <details>
   <summary>How do I run CaPTk Applications from the Command Line?</summary>
