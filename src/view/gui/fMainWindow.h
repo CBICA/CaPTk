@@ -994,14 +994,9 @@ public slots:
   */
   void LoadDrawing();
 
-  ///**
-  //\brief Load near/far drawing from a DICOM file
-  //*/
-  //void LoadDicomDrawing();
-
-    /**
-    \brief Load annotated ROI from filename
-    */
+  /**
+  \brief Load annotated ROI from filename
+  */
   void LoadDrawing(const std::string &maskFile);
 
   /**
@@ -1057,7 +1052,6 @@ public slots:
   */
   bool CheckCompletenessOfInputData(bool & convDataPresent, bool & perfusionDataPresent, bool & dtiDataPresent, bool existingmodel);
 
-
   /**
   \brief Checks whether required images are present for the EGFRvIII estimation application
   */
@@ -1073,6 +1067,7 @@ public slots:
   */
   void panelChanged(int current);
 
+  //! Propagate the Slicer position in accordance with the selected Slicer and image IDs
   void propogateSlicerPosition(int slicerId = 0, int imageId = -1);
 
 
