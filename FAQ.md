@@ -75,7 +75,7 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
     
 ### GLIBCXX or GLIBC Issues
 
-- This is happening because the Linux binaries are compiled using GCC 4.8.5 on Ubuntu 16.04; therefore you will need to update GCC 4.8.5 or newer in order to get CaPTk to work. Some examples are shown:
+- This is happening because the Linux binaries are compiled using the [GCC-4.8 package on Ubuntu 16.04](https://packages.ubuntu.com/xenial/gcc-4.8); therefore you will need to update GCC 4.8.5 or newer in order to get CaPTk to work. Some examples are shown:
 
   - Ubuntu [[ref](https://askubuntu.com/a/581497)]:
 
@@ -93,7 +93,7 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
   sudo yum install devtoolset-6
   ```  
 
-- You can still build CaPTk from source using the instructions in [Technical Reference](https://cbica.github.io/CaPTk/Technical_Reference.html).
+- You can still build CaPTk from source using the instructions in [Technical Reference](https://cbica.github.io/CaPTk/Technical_Reference.html). Note that you will need a [C++11 compliant compiler](https://en.cppreference.com/w/cpp/compiler_support#cpp11).
 
 </details>
 
