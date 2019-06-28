@@ -3306,8 +3306,8 @@ std::vector<ImageTypeFloat3D::Pointer> fMainWindow::getLodedImages(std::vector<s
       int index = GetSlicerIndexFromItem(items[0]);
       images.push_back(mSlicerManagers[index]->mITKImage);
       fileNames.push_back(mSlicerManagers[index]->mFileName);
-      std::string pp = ImageModalityString[mSlicerManagers[index]->mImageSubType];
-      modality.push_back(ImageModalityString[mSlicerManagers[index]->mImageSubType]);
+      std::string pp = CAPTK::ImageModalityString[mSlicerManagers[index]->mImageSubType];
+      modality.push_back(CAPTK::ImageModalityString[mSlicerManagers[index]->mImageSubType]);
     }
   }
   else
@@ -3316,7 +3316,7 @@ std::vector<ImageTypeFloat3D::Pointer> fMainWindow::getLodedImages(std::vector<s
     {
       images.push_back(mSlicerManagers[index]->mITKImage);
       fileNames.push_back(mSlicerManagers[index]->mFileName);
-      modality.push_back(ImageModalityString[mSlicerManagers[index]->mImageSubType]);
+      modality.push_back(CAPTK::ImageModalityString[mSlicerManagers[index]->mImageSubType]);
     }
   }
   return images;
