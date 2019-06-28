@@ -724,7 +724,7 @@ fMainWindow::fMainWindow()
     else if (vectorOfMiscApps[i].name.find("TrainingModule") != std::string::npos)
     {
       vectorOfMiscApps[i].action->setText("  Training Module"); //TBD set at source
-      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ClassifierTraining()));
+      connect(vectorOfMiscApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationTrainingModule()));
     }
   }
 
@@ -7082,7 +7082,7 @@ void fMainWindow::ApplicationDiffusionMeasuresCalculation()
   diffmeasuresPanel.exec();
 }
 
-void fMainWindow::ClassifierTraining()
+void fMainWindow::ApplicationTrainingModule()
 {
   //open a simple dialog box with input and output images
   trainingPanel.exec();

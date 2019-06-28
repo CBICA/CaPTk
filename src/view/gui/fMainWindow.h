@@ -1378,6 +1378,9 @@ public slots:
   //! GUI control for Diffusion Measures calculation
   void ApplicationDiffusionMeasuresCalculation();
 
+  //! GUI control for Training Module
+  void ApplicationTrainingModule();
+
   //! Preprocessing for denoising
   void ImageDenoising();
 
@@ -1405,17 +1408,19 @@ public slots:
   //! Preprocessing for customized preprocessing
   void CustomPreprocessing();
 
-  void ClassifierTraining();
-
   //! Enable/Disable comparison mode
   void EnableComparisonMode(bool);
 
   //! Get Comparison Viewers
   std::vector<vtkSmartPointer<Slicer>> GetComparisonViewers();
 
+  //! Geodesic Training Finished Handler
   void GeodesicTrainingFinishedHandler();
+
+  //! Geodesic Training Finished with Error Handler
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
+  //! Performs the registration
   void Registration(std::string fixedfilename, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
 
   //confirm before exit
@@ -1424,6 +1429,7 @@ public slots:
   // Progress Update
   void updateProgress(int progress, std::string message = "", int max = 100);
 
+  //! Enables "advanced mode" - no image checks are done - disabled by default
   void EnableAdvancedVisualizer()
   {
     m_advancedVisualizer = true;
