@@ -12,5 +12,6 @@ var Getting_Started =
     [ "Utilities (Command-line only)", "gs_utilities.html", null ],
     [ "Segmentation", "gs_segmentation.html", null ],
     [ "Feature Extraction", "gs_features.html", null ],
-    [ "Specialized Applications", "gs_specializedApps.html", null ]
+    [ "Specialized Applications", "gs_specializedApps.html", null ],
+    [ "Command Line Usage", "gs_commandLineUsage.html", null ]
 ];

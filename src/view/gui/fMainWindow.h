@@ -362,6 +362,9 @@ private:
     vectorOfPreprocessingActionsAndNames, // for preprocessing algorithms
     vectorOfDeepLearningActionsAndNames; // for deep learning applications
 
+  QTableWidget * m_imagesTable;
+  QTableWidget * m_nonVisImagesTable;
+
 public:
   //! Default constructor
   fMainWindow();
@@ -369,14 +372,13 @@ public:
   //! Default destructor
   ~fMainWindow();
 
-  QTableWidget * m_imagesTable;
-  QTableWidget * m_nonVisImagesTable;
-
   //! Check if a valid mask is defined for the current instance of the 
   bool isMaskDefined();
 
-  //! Get/Set Comparison Mode
+  //! Set Comparison Mode
   void SetComparisonMode(bool mode);
+
+  //! Get Comparison Mode status
   bool GetComparisonMode();
 
   /*
@@ -405,7 +407,6 @@ public:
   */
   void LoadSlicerImages(const std::string &fileName, const int &imagetype_int, bool bSkipDup = true);
 
-
   /**
   \brief Load non-viewing images into memory
 
@@ -419,9 +420,7 @@ public:
   \brief Initialize drawing mask on the image
   */
   void InitMask(vtkImageData* image);
-
-
-
+   
   /**
   \brief Initializer for the entire rendering pipeline
   */
@@ -455,7 +454,6 @@ public:
   /**
   \brief Construct near and far indeces from the initialized mask
   */
-
   template <class TImageType>
   typename TImageType::Pointer GetImageWithLabels(std::vector<double> labels, typename TImageType::Pointer inputimage)
   {
@@ -488,27 +486,6 @@ public:
     return output;
   }
 
-  template<class TImageType>
-  void FormulateNearFarPoints(std::vector<typename TImageType::IndexType> &nearIndices, std::vector<typename TImageType::IndexType> &farIndices)
-  {
-    if (mSlicerManagers.size() <= 0)
-      return;
-
-    typename TImageType::Pointer img = convertVtkToItk<typename TImageType::PixelType, 3>(mSlicerManagers[0]->mMask);
-    itk::ImageRegionIteratorWithIndex <TImageType> maskIt(img, img->GetLargestPossibleRegion());
-    maskIt.GoToBegin();
-    while (!maskIt.IsAtEnd())
-    {
-      if (maskIt.Get() == 1)
-      {
-        nearIndices.push_back(maskIt.GetIndex());
-      }
-      else if (maskIt.Get() == 2)
-        farIndices.push_back(maskIt.GetIndex());
-      ++maskIt;
-    }
-  }
-
   /**
   \brief Rescales image intensity in the range of 0-255
   */
@@ -525,37 +502,17 @@ public:
   void dropEvent(QDropEvent *event);
 
   /*
-  \brief For fast developer testing .TBD:  remove or disable.
+  \brief This function is used to load parameters from the command line
+
+  \param files The input image file(s)
+  \param comparisonMode Flag that enables/disables comparison mode
+  \param maskImage The mask image corresponding to the input image(s)
+  \param maskOpacity The opacity of the loaded ROI labels
+  \param tumorPointFile The tumor points file (containing radius information)
+  \param tissuePointFile The tissue points file (containing no radius information)
   */
   void loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage = "", const float maskOpacity = 1.0,
-    const std::string &tumorPointFile = "", const std::string &tissuePointFile = "", bool firstRun = false)
-  {
-    auto qvectorString = QVector< QString >::fromStdVector(files);
-    auto lst = QStringList::fromVector(QVector< QString >::fromStdVector(files));
-    this->openImages(lst, true);
-    if (!maskImage.empty())
-    {
-      this->readMaskFile(maskImage);
-      this->ChangeMaskOpacity(maskOpacity * 10);
-    }
-    if (!tumorPointFile.empty())
-    {
-      this->tumorPanel->sLoad(tumorPointFile.c_str());
-    }
-    if (!tissuePointFile.empty())
-    {
-      this->tumorPanel->tLoad(tissuePointFile.c_str());
-    }
-    if (comparisonMode)
-      this->imagesPanel->CompareButtonClick();
-
-#ifdef CAPTK_PACKAGE_PROJECT
-    if (firstRun)
-    {
-      this->CloseAllImages();
-    }
-#endif
-  }
+    const std::string &tumorPointFile = "", const std::string &tissuePointFile = "", bool firstRun = false);
 
 signals:
   void SelectedImageHasChanged(SlicerManager *);
@@ -565,14 +522,14 @@ signals:
 
 public slots:
 
-    //! set Z slice position on image info panel
-    void SetImageInfoZSlicePosition(int zslice);
+  //! set Z slice position on image info panel
+  void SetImageInfoZSlicePosition(int zslice);
 
-    //! set voxel intensity value at cursor position on image info panel
-    void SetImageInfoIntensityValue(double value);
+  //! set voxel intensity value at cursor position on image info panel
+  void SetImageInfoIntensityValue(double value);
 
-    //! slot on movement of slider in comparison mode
-    void OnSliderMovedInComparisonMode(int);
+  //! slot on movement of slider in comparison mode
+  void OnSliderMovedInComparisonMode(int);
 
   /**
   \brief Updates draw mode when drawing panel changes
@@ -585,11 +542,6 @@ public slots:
   void UpdateNumberOfPointsInTable();
 
   /**
-  \check whether all the ROIs are present for recurrence estimation or not
-  */
-  //bool CheckSeedPointsForRecurrence();
-
-  /**
   \brief Initializes preset combo-box with the default options
   */
   void SetPresetComboBox();
@@ -600,17 +552,24 @@ public slots:
   void StartEGFREstimate();
 
   /**
-  \brief get the mask image
+  \brief Get the mask as an ITK image as it is currently displayed
   */
   ImageTypeFloat3D::Pointer getMaskImage();
-
-
+  
   /**
-  \brief function that performs segmentation and UI measurements of Featl Ventriculomegaly application
+  \brief Function that performs segmentation and UI measurements of Fetal Ventriculomegaly application
   */
-  void skullstripfunc();
-  void Predict();
-  void TrainNewFetalModel(const std::string &directory, const std::string &outputdirectory);
+  void FetalBrain_SkullStripfunc();
+  
+  /**
+  \brief Function that performs prediction of Fetal Ventriculomegaly application
+  */
+  void FetalBrain_Predict();
+  
+  /**
+  \brief Function that performs new model training for Fetal Ventriculomegaly application
+  */
+  void FetalBrain_TrainNewModel(const std::string &directory, const std::string &outputdirectory);
 
   /**
   \brief get images loaded and their file names
@@ -629,8 +588,20 @@ public slots:
   param cbDistData Whether Distance feature need to be used or not
   */
   void StartRecurrenceEstimate(const std::string &outputdirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistData);
+
+  /**
+  \brief Load the subjects for an existing Reccurence model estimate
+  param outputdirectory The directory where recurrence map will be written
+  param outputdirectory The output directory
+  param modeldirectory The input model directory
+  param cbT1Data Whether T1 data is present or not
+  param cbPerfData Whether Perfusion data is present or not
+  param cbT2Data Whether T2 data is present or not
+  param cbDistData Whether Distance data is present or not
+  param cbDTIData Whether DTI data is present or not
+  */
   void LoadedSubjectExistingRecurrenceEstimate(const std::string &outputdirectory, const std::string &modeldirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistData);
-  //void StartSurvivalEstimate(const std::string output, const std::string model, double age);
+
   /**
   \brief Main function that estimates recurrence on test subjects by using an existing model
   param modeldirectory The directory where model related files are stored
@@ -673,7 +644,7 @@ public slots:
   param cbDistData Whether Distance feature need to be used or not
   */
   void LoadedSubjectExistingPseudoprogressionEstimate(const std::string &outputdirectory, const std::string &modeldirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistData);
-  //void StartSurvivalEstimate(const std::string output, const std::string model, double age);
+
   /**
   \brief Main function that estimates PseudoProgression on test subjects by using an existing model
   param modeldirectory The directory where model related files are stored
@@ -720,8 +691,7 @@ public slots:
   \param outputdirectory The output directory to save the data
   */
   void CallForNewSurvivalPredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory);
-
-
+  
   /**
   \brief EGFRvIII estimation using Existing model
 
@@ -738,8 +708,7 @@ public slots:
   \param outputdirectory The output directory to save the data
   */
   void CallForNewEGFRvIIIPredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory);
-
-
+  
   /**
   \brief MolecularSubtype using Existing model
 
@@ -758,7 +727,7 @@ public slots:
   void CallForNewMolecularSubtypePredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory);
 
   /**
-  \brief Call the Skull Stripping module from ITK
+  \brief Call the Skull Stripping module from ITK with the inputs
 
   \param referenceAtlas The reference atlas (defaults to SRI24 atlas)
   \param referenceMask The reference mask (defaults to SRI24 mask)
@@ -766,15 +735,70 @@ public slots:
   \param outputImageFile The output file to save
   */
   void CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask, const std::string inputImageFile, const std::string outputImageFile);
-  void CallPCACalculation(const int, const std::string inputFolder, const std::string outputFolder);
-  void CallPerfusionAlignmentCalculation(const double echotime,const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder);
-    
-    void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
+
+  /**
+  \brief Call the PCA calculation application with the inputs
+
+  \param number The number of PCA components to extract
+  \param inputFolder The input folder
+  \param outputFolder The folder to save results
+  */
+  void CallPCACalculation(const int number, const std::string inputFolder, const std::string outputFolder);
+
+  /**
+  \brief Call the Perfusion alignment application with the inputs
+
+  \param echotime The echo time of the input Perfusion image
+  \param before Number of time-points before the standard perfusion curve that we want our image to be aligned with.
+  \param after Number of time-points after the standard perfusion curve that we want our image to be aligned with.
+  \param inputfilename The input perfusion image file name
+  \param inputt1cefilename The input T1-Gd file name
+  \param inputdicomfilename The input DICOM slide
+  \param outputFolder The output folder to write all results
+  */
+  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder);
+
+  /**
+  \brief Call the Perfusion Measures application with the inputs
+
+  \param TE The echo time of the input Perfusion image
+  \param rcbv Flag that enables RCBV calculation
+  \param psr Flag that enables PSR calculation
+  \param ph Flag that enables PH calculation
+  \param inputfile The input DSC-MRI image
+  \param outputFolder The output folder to write all results
+  */
+  void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
+
+  /**
+  \brief Call the Diffusion Measures application with the inputs
+
+  \param inputImage The input DSC-MRI image
+  \param maskImage The mask file
+  \param BValFile The BVal file
+  \param BVecFile The BVec file
+  \param ax Flag that enables AX calculation
+  \param FA Flag that enables FA calculation
+  \param RAD Flag that enables RAD calculation
+  \param TR Flag that enables TR calculation
+  \param outputFolder The output folder to write all results
+  */
   void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
-  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int, int, int);
+
+  /**
+  \brief Call the Diffusion Measures application with the inputs
+
+  \param featuresfile The input features 
+  \param targetfile The labels, rows should be same as those in featuresfile
+  \param outputFolder The output folder to write all results
+  \param classifier The classifer type
+  \param conf The configuration type
+  \param folds The number of folds
+  */
+  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int classifier, int conf, int folds);
 
   void PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
-  void TrainNewPCAModelOnGivenData(const std::string &, const std::string &);
+  void TrainNewPCAModelOnGivenData(const std::string &inputdirectory, const std::string &outputdirectory);
   /**
   \brief Call DCM2NII for DICOM conversion and load the image into CaPTk
 
@@ -830,8 +854,8 @@ public slots:
   void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputImageFile);
 
   /**
-\brief Generete SBRT Nodule
-*/
+  \brief Generete SBRT Nodule
+  */
   void CallSBRTNodule(const std::string seedImage, const int labelValue);
 
   /**
@@ -884,36 +908,15 @@ public slots:
   /**
   \brief Help for downloading Sample Data
   */
-  void help_Download(QAction* action)
-  {
-    auto currentApp = action->text().toStdString();
-    std::string path = getCaPTkDataDir();
-    auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-//    std::string link =
-//#ifdef _WIN32
-//      path + "/GnuWin32/bin/wget.exe"
-//#else
-//      "wget"
-//#endif
-//      + currentLink +
-//      " -O " + captk_SampleDataFolder + "/" + currentApp + ".zip";
-
-    cbica::Logging(loggerFile, currentLink);
-
-    //ShowMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
-
-    if /*(std::system((link).c_str()) != 0)*/ (!openLink(currentLink))
-    {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
-      return;
-    }
-  }
-  void help_Discussion();
-  void help_Downloads();
-  void help_HelpForum();
+  void help_Download(QAction* action);
+  //! Open the github issue tracker
   void help_BugTracker();
-  void help_FeatureRequests();
 
+  /**
+  \brief Get contextual help 
+
+  \param startPage The starting page for the web engine view
+  */
   void help_contextual(const std::string startPage);
 
   /**
@@ -953,15 +956,19 @@ public slots:
   */
   void CloseNonViewingDTIImage(QTableWidgetItem* item);
 
-
+  //! Clear the mask image
   void clearMask(int label = -1);
 
+  //! Make a drawing "stroke" - which can be fed into the "undo" system
   void makeStroke(std::vector<itk::Image<short, 3>::IndexType>& indices, const int value);
 
+  //! Get selected drawing label
   int getSelectedDrawLabel()
   {
     return drawingPanel->getSelectedDrawLabel();
   }
+  
+  //! Get selected drawing size
   int getSelectedDrawSize()
   {
     return drawingPanel->getSelectedDrawSize();
@@ -987,14 +994,9 @@ public slots:
   */
   void LoadDrawing();
 
-  ///**
-  //\brief Load near/far drawing from a DICOM file
-  //*/
-  //void LoadDicomDrawing();
-
-    /**
-    \brief Load annotated ROI from filename
-    */
+  /**
+  \brief Load annotated ROI from filename
+  */
   void LoadDrawing(const std::string &maskFile);
 
   /**
@@ -1011,6 +1013,9 @@ public slots:
   \brief Save the current selected Nifti image
   */
   void SaveImage();
+
+  //! Save an image by passing the index of the input image that needs to be saved and the appropriate file name as a QString
+  void SaveImage_withFile(int indexOfInputImageToWrite, QString saveFileName);
 
   /**
   \brief Save the current selected DICOM image
@@ -1047,7 +1052,6 @@ public slots:
   */
   bool CheckCompletenessOfInputData(bool & convDataPresent, bool & perfusionDataPresent, bool & dtiDataPresent, bool existingmodel);
 
-
   /**
   \brief Checks whether required images are present for the EGFRvIII estimation application
   */
@@ -1063,6 +1067,7 @@ public slots:
   */
   void panelChanged(int current);
 
+  //! Propagate the Slicer position in accordance with the selected Slicer and image IDs
   void propogateSlicerPosition(int slicerId = 0, int imageId = -1);
 
 
@@ -1255,19 +1260,9 @@ public slots:
   */
   void UpdateLinkedNavigation(Slicer* refSlicer);
 
-  void toolTabDockChanged(bool bUnDocked)//TBD - move to cpp file 
-  {
-    if (bUnDocked)
-    {
+  //! Dock/undock behaviour changed
+  void toolTabDockChanged(bool bUnDocked);
 
-      m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight() * 10);
-      m_toolTabdock->show();
-    }
-    else
-    {
-      m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
-    }
-  }
   //! Returns the active tab from the tab widget
   int getActiveTabId()
   {
@@ -1280,76 +1275,138 @@ public slots:
     return tumorPanel->mTumorPointsSelected;
   }
 
+  //! GUI control for breast segmentation
   void ApplicationBreastSegmentation();
+
+  //! GUI control for breast texture feature extraction
   void ApplicationTexturePipeline();
+
+  //! GUI control for LIBRA single image mode
   void ApplicationLIBRASingle();
+
+  //! GUI control for LIBRA batch image mode
   void ApplicationLIBRABatch();
+
+  //! GUI control for Confetti
   void ApplicationConfetti();
+
+  //! GUI control for SBRT Lung Field segmentation
   void ApplicationSBRTLungField();
+
+  //! GUI control for SBRT Lung Nodule segmentation
   void ApplicationSBRTNodule();
+
+  //! GUI control for SBRT Lung Analysis
   void ApplicationSBRTAnalysis();
 
   //! Convert 2D image to 3D image with a single slice and write to temp folder
   void ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage = false);
 
+  //! GUI control for Directionality Analysis
   void ApplicationDirectionality();
 #ifdef BUILD_FETALBRAIN
+  //! GUI control for Fetal Brain
   void ApplicationFetalBrain();
 #endif
 
 #ifdef BUILD_EGFRvIII
+  //! GUI control for EGFRvIII PHI
   void ApplicationEGFR();
 #endif
 #ifdef BUILD_RECURRENCE
+  //! GUI control for Recurrence
   void ApplicationRecurrence();
 #endif
 #ifdef BUILD_PSEUDOPROGRESSION
+  //! GUI control for Pseudo Progression
   void ApplicationPseudoProgression();
 #endif
 #ifdef BUILD_ATLAS
+  //! GUI control for Population Atlas
   void ApplicationPopulationAtlas();
 #endif
 #ifdef BUILD_ISUBTYPE
+  //! GUI control for Imaging Subtype
   void ApplicationImagingSubtype();
 #endif
 #ifdef BUILD_MSUBTYPE
+  //! GUI control for Molecular Subtype
   void ApplicationMolecularSubtype();
 #endif
 #ifdef BUILD_SURVIVAL
+  //! GUI control for Survival
   void ApplicationSurvival();
 #endif
 #ifdef BUILD_EGFRvIIISVM
+  //! GUI control for EGFRvIII SVM
   void ApplicationEGFRvIIISVM();
 #endif
 #ifdef BUILD_GEODESIC
+  //! GUI control for Geodesic Segmentation
   void ApplicationGeodesic();
 #endif
 #ifdef BUILD_GEODESICTRAINING
+  //! GUI control for Geodesic Training
   void ApplicationGeodesicTraining();
 #endif
+  //! GUI control for Geodesic Threshold - TBD
   void ApplicationGeodesicTreshold();
 #ifdef BUILD_ITKSNAP
+  //! GUI control for ITKSNAP
   void ApplicationITKSNAP();
 #endif
 #ifdef BUILD_WHITESTRIPE
+  //! GUI control for WhiteStripe
   void ApplicationWhiteStripe();
 #endif
-  void ImageDenoising();
-  void ImageMamogramPreprocess();
-  void ImageBiasCorrection();
-  void ImageRegistration();
-  void ImageHistogramMatching();
-  void ImageDeepMedicNormalizer();
-  void ImageSkullStripping();
-  void DCM2NIfTIConversion();
-  void CustomPreprocessing();
-  void ApplicationPCA();
-  void PerfusionMeasuresCalculation();
-  void PerfusionAlignmentCalculation();
-  void DiffusionMeasuresCalculation();
-  void ClassifierTraining();
+
+  //! GUI control for all DeepMedic segmentations
   void ApplicationDeepMedicSegmentation(int type);
+
+  //! GUI control for Theia
   void ApplicationTheia();
+
+  //! GUI control for all PCA analysis
+  void ApplicationPCA();
+  
+  //! GUI control for Perfusion Measures calculation
+  void ApplicationPerfusionMeasuresCalculation();
+  
+  //! GUI control for Perfusion Alignment calculation
+  void ApplicationPerfusionAlignmentCalculation();
+  
+  //! GUI control for Diffusion Measures calculation
+  void ApplicationDiffusionMeasuresCalculation();
+
+  //! GUI control for Training Module
+  void ApplicationTrainingModule();
+
+  //! Preprocessing for denoising
+  void ImageDenoising();
+
+  //! Preprocessing for mammogram preprocessing
+  void ImageMamogramPreprocess();
+
+  //! Preprocessing for bias correction
+  void ImageBiasCorrection();
+
+  //! Preprocessing for image registration
+  void ImageRegistration();
+
+  //! Preprocessing for histogram matching
+  void ImageHistogramMatching();
+
+  //! Preprocessing for Z-Scoring normalizer
+  void ImageDeepMedicNormalizer();
+
+  //! Preprocessing for skull-stripping
+  void ImageSkullStripping();
+
+  //! Preprocessing for DCM-to-NIfTI conversion
+  void DCM2NIfTIConversion();
+
+  //! Preprocessing for customized preprocessing
+  void CustomPreprocessing();
 
   //! Enable/Disable comparison mode
   void EnableComparisonMode(bool);
@@ -1357,9 +1414,13 @@ public slots:
   //! Get Comparison Viewers
   std::vector<vtkSmartPointer<Slicer>> GetComparisonViewers();
 
+  //! Geodesic Training Finished Handler
   void GeodesicTrainingFinishedHandler();
+
+  //! Geodesic Training Finished with Error Handler
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
+  //! Performs the registration
   void Registration(std::string fixedfilename, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
 
   //confirm before exit
@@ -1368,6 +1429,7 @@ public slots:
   // Progress Update
   void updateProgress(int progress, std::string message = "", int max = 100);
 
+  //! Enables "advanced mode" - no image checks are done - disabled by default
   void EnableAdvancedVisualizer()
   {
     m_advancedVisualizer = true;

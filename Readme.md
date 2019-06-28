@@ -3,7 +3,7 @@
 <p align="center">
     <img src="https://www.med.upenn.edu/cbica/assets/user-content/images/captk/baseScreenshot.png" />
     <br></br>
-    <a href="https://dev.azure.com/CBICA/CaPTk/_build" alt="Build Status"><img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
+    <a href="https://dev.azure.com/CBICA/CaPTk/_build?definitionId=2" alt="Build Status"><img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues/CBICA/CaPTk.svg" /></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues-closed/CBICA/CaPTk.svg" /></a>
     <img src="https://img.shields.io/badge/language-c%2B%2B11-blue.svg" />
@@ -40,30 +40,7 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11212 |
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
-## Frequently Asked Questions (FAQ)
-
-### OpenGL Requirements
-- If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
-  - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]: `sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade`
-  - https://community.khronos.org/t/how-to-update-opengl/75314
-  - https://ubuntuforums.org/showthread.php?t=2326268
-  - https://www.techwalla.com/articles/how-to-update-opengl-drivers
-
-### **LINUX**
-- If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: 
-```bash
-user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
-```
-This will extract the package to the path `squashfs-root/usr/` with the binaries present in `squashfs-root/usr/bin`.
-- Currently, we support all distributions newer than Ubuntu 16.04.
-
-### **Compatibility**
-  
-| Platform (x64) |     Build    |             Tested            | Untested |       Unsupported      |
-|:--------------:|:------------:|:-----------------------------:|:--------:|:----------------------:|
-|     Windows    |       7      |            7, 8, 10           |    N/A   |        XP, Vista       |
-|      Linux     | Ubuntu 16.04 | Ubuntu 16.04, 18.04; Debian 9 | CentOS 7 | Ubuntu 14.04; CentOS 6 |
-|      macOS     |     10.13    |          10.13, 10.14         |    N/A   |          10.12         |
+## [Frequently Asked Questions (FAQ)](FAQ.md)
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.

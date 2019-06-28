@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.0</span>
+   &#160;<span id="projectnumber">1.7.1.RC</span>
    </div>
   </td>
  </tr>
@@ -69,7 +69,9 @@ $(document).ready(function(){initNavTree('Training_Module.html','');});
 <p><b> USAGE:</b>parameterize</p><ol type="1">
 <li>Launch the application from "Applications" -&gt; "Training Module".</li>
 <li>Specify the features (.csv) file and the corresponding target (.csv) file.</li>
-<li>Specify the kernel of SVM using either of the two radio buttons, number of folds and output directory. Number of folds could be 5 or 10.</li>
+<li>Specify the kernel of SVM using either of the two radio buttons.</li>
+<li>Specify the cross-validation method which could be either k-fold cross-validation or split-train-test mechanism. =# Specify the number of folds for k-fold cross-validation.</li>
+<li>Specify the number of training samples X in case of split-train-test method. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing.</li>
 <li>Press "Confirm" button.</li>
 <li>The model will be developed and saved in the output directory.</li>
 </ol>
