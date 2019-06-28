@@ -946,11 +946,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
 
-    INSTALL(CODE "execute_process( \
-      COMMAND ${CMAKE_COMMAND} -E create_symlink \
-      ${CMAKE_INSTALL_PREFIX}/bin/CaPTk \
-      ${CMAKE_INSTALL_PREFIX}/bin/captk \
-      )")
   ENDIF()
 
   IF(CAPTK_PACKAGE_PROJECT)
@@ -1098,9 +1093,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     #  #ENDIF()
     #ENDIF()
 
-    # Execute a post install step. Make sure this is the last install command ran!
-    INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/PostInstall.cmake )
-
   ENDIF(CAPTK_PACKAGE_PROJECT)
+
+  # Execute a post install step. Make sure this is the last install command ran!
+  INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/PostInstall.cmake )
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )
