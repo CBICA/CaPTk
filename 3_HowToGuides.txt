@@ -1050,6 +1050,11 @@ This application extracts the Texture Features as described in the paper [1]. It
 	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
 	-# Specify the output directory. 
 
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
+\verbatim
+BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1 
+\endverbatim
+
 <br>
 
 --------
@@ -1181,7 +1186,7 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 
 <b> REQUIREMENTS:</b>
 	-# A single DSC-MRI scan. 
-	-# A single dicom slide. 
+	-# A single dicom slice from the original DICOM corresponding to the DSC-MRI scan. 
 	-# A single T1 post-contrast MRI scan.
 	-# The Echo Time corresponding to the given DSC-MRI scan.
 	-# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
@@ -1218,8 +1223,9 @@ This application extracts various measurements from a Dynamic-Susceptibility Con
 This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).
 
 <b> REQUIREMENTS:</b>
-A single DW-MRI image, its accompanying bvec and bval files, and a mask for which the measurements will be extracted. 
-	-# Note: bvaec and bval files should be calculated by dcm2nii or any other appropriate software. 
+  -# A single DW-MRI image
+  -# Its accompanying BVec and BVal files [Note: these files should be calculated by 'dcm2nii' or any other appropriate software.]
+  -# A mask for which the measurements will be extracted
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Diffusion Derivatives".
