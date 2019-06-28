@@ -169,6 +169,16 @@ inline int guessImageType(const std::string &fileName)
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_PH;
   }
+  else if ((fileName_wrap.find("perf") != std::string::npos) || (fileName_wrap.find("PERF") != std::string::npos) || 
+    (fileName_wrap.find("DSC") != std::string::npos))
+  {
+    ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION;
+  }
+  else if ((fileName_wrap.find("label-map") != std::string::npos) || (fileName_wrap.find("label") != std::string::npos) ||
+    (fileName_wrap.find("segmentation") != std::string::npos))
+  {
+    ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_SEG;
+  }
   else if ((fileName_wrap.find("ct2pet") != std::string::npos) || (fileName_wrap.find("_ct.") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_CT;
@@ -178,6 +188,19 @@ inline int guessImageType(const std::string &fileName)
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_PET;
   }
   return ImageSubType;
+}
+
+//! Checks for common file types that CaPTk can read properly, specially for DTI and DWI images
+bool isExtensionSupported(const std::string inputExtension)
+{
+  if ((inputExtension == IMG_EXT || inputExtension == NII_EXT || inputExtension == NII_GZ_EXT))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 static const char ImageModalityString[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES + 1][15] =
