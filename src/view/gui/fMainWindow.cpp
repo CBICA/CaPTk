@@ -1128,15 +1128,7 @@ void fMainWindow::help_Download(QAction* action)
 
 void fMainWindow::help_BugTracker()
 {
-  std::string link = "https://github.com/CBICA/CaPTk/issues", command;
-#if WIN32
-  command = "start ";
-#elif __linux__
-  command = "xdg-open ";
-#else
-  command = "open ";
-#endif
-  if (std::system((command + link).c_str()) != 0)
+  if (!openLink("https://github.com/CBICA/CaPTk/issues"))
   {
     ShowErrorMessage("CaPTk couldn't open the browser to open the Bug Tracker");
     return;
