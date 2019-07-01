@@ -11,8 +11,8 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 1.RC )
-SET( PROJECT_VERSION_TWEAK RC )
+SET( PROJECT_VERSION_PATCH 1 )
+SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -945,6 +945,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
+
   ENDIF()
 
   IF(CAPTK_PACKAGE_PROJECT)
@@ -1093,9 +1094,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     #  #ENDIF()
     #ENDIF()
 
-    # Execute a post install step. Make sure this is the last install command ran!
-    INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/PostInstall.cmake )
-
   ENDIF(CAPTK_PACKAGE_PROJECT)
+
+  # Execute a post install step. Make sure this is the last install command ran!
+  IF( CMAKE_HOST_UNIX )
+    INSTALL(CODE "EXECUTE_PROCESS(COMMAND ln -sf CaPTk captk WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)")
+  ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )
