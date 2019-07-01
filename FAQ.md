@@ -1,6 +1,7 @@
 # Frequently Asked Questions (FAQ)
 
-## How do I run CaPTk Applications from the Command Line?
+<details>
+  <summary>How do I run CaPTk Applications from the Command Line?</summary>
 
 - The full list of command line applications available is shown by running the following command (pretty much every application is available via the command line):
 ```bash
@@ -19,8 +20,10 @@ ${CaPTk_InstallDir}/bin/CaPTk -h
 |      macOS     | FeatureExtraction |  ~/Applications/CaPTk_${version}.app/Contents/Resources/bin/FeatureExtraction -h |    ${CaPTk_InstallDir}/bin/FeatureExtraction -h   |                        N.A.                       |
 
 - There are detailed examples of individual command line usage in the [How To](https://cbica.github.io/CaPTk/How_To_Guides.html) section of the documentation.
+</details>
 
-## What are the OpenGL requirements to run CaPTk?
+<details>
+  <summary>What are the OpenGL requirements to run CaPTk?</summary>
 
 - If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
   - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]:
@@ -30,8 +33,10 @@ ${CaPTk_InstallDir}/bin/CaPTk -h
   - https://community.khronos.org/t/how-to-update-opengl/75314
   - https://ubuntuforums.org/showthread.php?t=2326268
   - https://www.techwalla.com/articles/how-to-update-opengl-drivers
+</details>
 
-## What if I am having issues with the Linux Installer?
+<details>
+  <summary>What if I am having issues with the Linux Installer?</summary>
 
 ### FUSE Issues
 
@@ -82,11 +87,21 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
 ### Others
 
 Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
+</details>
 
-## Which platforms are supported by CaPTk installers?
+<details>
+  <summary>Which platforms are supported by CaPTk installers?</summary>
   
 | Platform (x64) |                         Tested                         |       Unsupported      |
 |:--------------:|:------------------------------------------------------:|:----------------------:|
 |     Windows    |                        7, 8, 10                        |        XP, Vista       |
 |      Linux     | Ubuntu 16.04, 18.04; Debian 9, CentOS 7 (source build) | Ubuntu 14.04; CentOS 6 |
 |      macOS     |                      10.13, 10.14                      |          10.12         |
+
+</details>
+
+<details>
+  <summary>Is there a minimum recommended screen resolution for running CaPTk?</summary>
+  
+  The minimum recommended resolution is 1200x1024. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
+</details>
