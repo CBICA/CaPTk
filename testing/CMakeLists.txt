@@ -165,8 +165,8 @@ ADD_TEST(NAME DirectionalityEstimateVersionTest COMMAND DirectionalityEstimate -
 
 # EGFRvIIIIndexPredictor Tests
 
-ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ./TrainingData/ -t 0 -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor )
-
+ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1/samples/ -t 0 -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictorModel )
+ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1/samples/ -t 1 -m ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictorModel -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor )
 ADD_TEST(NAME EGFRvIIIIndexPredictorHelpTest COMMAND EGFRvIIIIndexPredictor -h )
 ADD_TEST(NAME EGFRvIIIIndexPredictorVersionTest COMMAND EGFRvIIIIndexPredictor -v )
 
@@ -185,7 +185,7 @@ ADD_TEST(NAME EGFRvIIISurrogateIndexVersionTest COMMAND EGFRvIIISurrogateIndex -
 
 ADD_TEST(NAME FeatureExtractionParams1Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam1.csv -t FL -r 1 -l ED,NC )
 # ADD_TEST(NAME FeatureExtractionParams1R2Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam1.csv -t FL -r 1,2 -l ED,NC )
-ADD_TEST(NAME FeatureExtractionParams2Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam2.csv -t FL -r 1 -l ED,NC )
+#ADD_TEST(NAME FeatureExtractionParams2Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam2.csv -t FL -r 1 -l ED,NC )
 ADD_TEST(NAME FeatureExtractionVerticalConcTest COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExVertConc.csv -t FL -r 1 -l ED,NC --verticalConc )
 ADD_TEST(NAME FeatureExtractionFeatureMapsWriteTest COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite1.csv -t FL -r 1 -l ED,NC --featureMapsWrite )
 # ADD_TEST(NAME FeatureExtractionBatchTest COMMAND FeatureExtraction )
@@ -215,8 +215,8 @@ ADD_TEST(NAME GreedyRegistrationVersionTest COMMAND GreedyRegistration -v )
 
 # Molecular Subtype Predictor Tests
 
-ADD_TEST(NAME MolecularSubtypePredictorT0Test COMMAND MolecularSubtypePredictor -t 0 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -o ${TESTING_OUTPUT_DIR}/molsub/ )
-ADD_TEST(NAME MolecularSubtypePredictorT1Test COMMAND MolecularSubtypePredictor -t 1 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -o ${TESTING_OUTPUT_DIR}/molsub/ )
+ADD_TEST(NAME MolecularSubtypePredictorT0Test COMMAND MolecularSubtypePredictor -t 0 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -o ${TESTING_OUTPUT_DIR}/molsub_model/ )
+ADD_TEST(NAME MolecularSubtypePredictorT1Test COMMAND MolecularSubtypePredictor -t 1 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -m ${TESTING_OUTPUT_DIR}/molsub_model/ -o ${TESTING_OUTPUT_DIR}/molsub/ )
 
 ADD_TEST(NAME MolecularSubtypePredictorHelpTest COMMAND MolecularSubtypePredictor -h )
 ADD_TEST(NAME MolecularSubtypePredictorVersionTest COMMAND MolecularSubtypePredictor -v )
@@ -229,10 +229,10 @@ ADD_TEST(NAME MolecularSubtypePredictorVersionTest COMMAND MolecularSubtypePredi
 ADD_TEST(NAME PerfusionDerivativesP1R1pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 1)
 ADD_TEST(NAME PerfusionDerivativesP1R1pH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 0)
 ADD_TEST(NAME PerfusionDerivativesP0R0pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 0 -pH 1)
-ADD_TEST(NAME PerfusionDerivativesP1R0pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 0 -pH 1)
-ADD_TEST(NAME PerfusionDerivativesP0R1pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 1 -pH 1)
 ADD_TEST(NAME PerfusionDerivativesP1R0pH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 0 -pH 0)
+ADD_TEST(NAME PerfusionDerivativesP1R0pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 0 -pH 1)
 ADD_TEST(NAME PerfusionDerivativesP0R1pH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 1 -pH 0)
+ADD_TEST(NAME PerfusionDerivativesP0R1pH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 1 -pH 1)
 ADD_TEST(NAME PerfusionDerivativesEcho5Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 5 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 1)
 ADD_TEST(NAME PerfusionDerivativesEcho10Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 10 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 1)
 
@@ -264,8 +264,8 @@ ADD_TEST(NAME PseudoProgressionEstimatorVersionTest COMMAND PseudoProgressionEst
 
 # Recurrence Estimator Tests
 
-ADD_TEST(NAME RecurrenceEstimatorType0Test COMMAND RecurrenceEstimator -t 0 -i ${TESTING_DATA_DIR}/recurrence/training_samples -o ${TESTING_OUTPUT_DIR}/recurrence/ )
-ADD_TEST(NAME RecurrenceEstimatorType1Test COMMAND RecurrenceEstimator -t 1 -i ${TESTING_DATA_DIR}/recurrence/test_samples -o ${TESTING_OUTPUT_DIR}/recurrence/  -m ${TESTING_DATA_DIR}/recurrence/RecurrenceEstimator_PretrainedModel_1.6.1)
+ADD_TEST(NAME RecurrenceEstimatorType0Test COMMAND RecurrenceEstimator -t 0 -i ${TESTING_DATA_DIR}/recurrence/training_samples -o ${TESTING_OUTPUT_DIR}/recurrence_model/ )
+ADD_TEST(NAME RecurrenceEstimatorType1Test COMMAND RecurrenceEstimator -t 1 -i ${TESTING_DATA_DIR}/recurrence/test_samples -o ${TESTING_OUTPUT_DIR}/recurrence/ -m ${TESTING_OUTPUT_DIR}/recurrence_model/)
 
 ADD_TEST(NAME RecurrenceEstimatorHelpTest COMMAND RecurrenceEstimator -h )
 ADD_TEST(NAME RecurrenceEstimatorVersionTest COMMAND RecurrenceEstimator -v )
