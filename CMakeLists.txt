@@ -1096,6 +1096,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF(CAPTK_PACKAGE_PROJECT)
 
   # Execute a post install step. Make sure this is the last install command ran!
-  INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/PostInstall.cmake )
+  IF( CMAKE_HOST_UNIX )
+    INSTALL(CODE "EXECUTE_PROCESS(COMMAND ln -sf CaPTk captk WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)")
+  ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )
