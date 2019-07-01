@@ -169,7 +169,7 @@ ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor 
 ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1/samples/ -t 1 -m ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictorModel -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor )
 ADD_TEST(NAME EGFRvIIIIndexPredictorHelpTest COMMAND EGFRvIIIIndexPredictor -h )
 ADD_TEST(NAME EGFRvIIIIndexPredictorVersionTest COMMAND EGFRvIIIIndexPredictor -v )
-#[[
+
 # EGFRvIIISurrogateIndex Tests
 
 ADD_TEST(NAME EGFRvIIISurrogateDSCMRITest COMMAND EGFRvIIISurrogateIndex -i ${TESTING_DATA_DIR}/egfrsur/DSC-MRI_data.nii.gz -m ${TESTING_DATA_DIR}/egfrsur/Near_Far_masks.nii.gz )
@@ -341,4 +341,3 @@ ADD_TEST(NAME GeodesicTest COMMAND ${TEST_EXE_NAME} --geodesic "${TESTING_DATA_D
 
 # EGFRvIII test
 ADD_TEST(NAME EGFRvIIITest COMMAND ${TEST_EXE_NAME} --egfrviii "${TESTING_DATA_DIR}/EGFRvIII/" )
-]]

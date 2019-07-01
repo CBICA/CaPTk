@@ -585,4 +585,3 @@ jobs:
 #         downloadType: 'single'
 #         artifactName: '$(Build.DefinitionName)_installer_macOS_selfhosted'
 #         downloadPath: '$(System.ArtifactsDirectory)'
-

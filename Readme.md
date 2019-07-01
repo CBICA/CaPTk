@@ -27,7 +27,6 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 ## Disclaimer
 - The software has been designed for research purposes only and has neither been reviewed nor approved for clinical use by the Food and Drug Administration (FDA) or by any other federal/state agency.
 - This code (excluding dependent libraries) is governed by the license provided in http://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
-- The minimum recommended resolution is 1200x1024. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
 
 ## Download Latest Release (1.7.0)
 
@@ -40,30 +39,7 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11212 |
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
-## Frequently Asked Questions (FAQ)
-
-### OpenGL Requirements
-- If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
-  - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]: `sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade`
-  - https://community.khronos.org/t/how-to-update-opengl/75314
-  - https://ubuntuforums.org/showthread.php?t=2326268
-  - https://www.techwalla.com/articles/how-to-update-opengl-drivers
-
-### **LINUX**
-- If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: 
-```bash
-user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
-```
-This will extract the package to the path `squashfs-root/usr/` with the binaries present in `squashfs-root/usr/bin`.
-- Currently, we support all distributions newer than Ubuntu 16.04.
-
-### **Compatibility**
-  
-| Platform (x64) |     Build    |             Tested            | Untested |       Unsupported      |
-|:--------------:|:------------:|:-----------------------------:|:--------:|:----------------------:|
-|     Windows    |       7      |            7, 8, 10           |    N/A   |        XP, Vista       |
-|      Linux     | Ubuntu 16.04 | Ubuntu 16.04, 18.04; Debian 9 | CentOS 7 | Ubuntu 14.04; CentOS 6 |
-|      macOS     |     10.13    |             10.14             |   10.13  |          10.12         |
+## [Frequently Asked Questions (FAQ)](FAQ.md)
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.

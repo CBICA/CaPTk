@@ -1,5 +1,7 @@
 # Binaries, binary folders
 
+binaries_*
+
 bin_debug
 bin
 CaPTk*.bin
@@ -21,7 +23,7 @@ src/applications/individualApps/libra/MCRInstaller.zip
 # Misc
 .vs
 .vscode/
-/.DS_Store
+*/.DS_Store
 
 # Linux Testing. Will be removed or implemented better
 src/applications/individualApps/libra/MCR

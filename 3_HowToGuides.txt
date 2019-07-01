@@ -50,6 +50,12 @@ Informatics Technology Initiative (NIfTI) file format.
 	-# Specify the first DICOM image in series, and the output filename.
 	-# Click on "Confirm".
 
+This can also be used from the command line:
+\verbatim
+[WINDOWS] Utlities.exe -i C:/test/dicomFolderWithSingleSubject -d2n 
+[LINUX] captk Utlities -i C:/test/dicomFolderWithSingleSubject -d2n 
+\endverbatim
+
 --------
 */
 
@@ -100,7 +106,12 @@ This tool smooths an image already loaded in CaPTk, to remove any high frequency
 	-# Click on 'Save'.
 	-# The output image is saved in the specified folder and automatically loaded in CaPTk.
  
- 
+This can also be used from the command line:
+\verbatim
+[WINDOWS] Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss 
+[LINUX] captk Preprocessing -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss
+\endverbatim
+
 --------
 
 Reference:
@@ -125,6 +136,12 @@ This tool corrects an image, already loaded in CaPTk, for magnetic field inhomog
 	-# Click on 'Save'.
 	-# The output image is saved in the specified folder and automatically loaded in CaPTk.
  
+
+This can also be used from the command line:
+\verbatim
+[WINDOWS] Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4 
+[LINUX] captk Preprocessing -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4
+\endverbatim
 
 --------
 
@@ -198,23 +215,6 @@ Reference:
 </ol>
 
 */
-
-/**  
-\page preprocessing_dcm2nii DICOM to NIfTI conversion
-This tool converts a DICOM series into the Neuroimaging
-Informatics Technology Initiative (NIfTI) file format.
-
-<b>REQUIREMENTS:</b>
-	-# A folder with the continuous sequence of a DICOM series.
-	
-<b>USAGE:</b>
-	-# Launch the tool using the 'Preprocessing' -> 'DICOM to NIfTI' menu option.
-	-# Specify the first DICOM image in series, and the output filename.
-	-# Click on "Confirm".
-
---------
-*/
-
 
 
 
@@ -352,7 +352,7 @@ References:
 	
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
 	\verbatim
-	FeatureExtraction -n AAC0_timestamp" -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
+	FeatureExtraction -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
 	\endverbatim
 	\verbatim
 	FeatureExtraction -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv # batch processing
@@ -360,7 +360,7 @@ References:
 	
 	- As intermediate results of the "Custom_lattice", the user also has the option to save feature maps, i.e., images that represent the spatial distribution of the corresponding feature measurements as sampled by the lattice over the ROI, using the following CLI format:
 	\verbatim
-	FeatureExtraction -n AAC0_timestamp" -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv -f 1
+	FeatureExtraction -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv -f 1
 	\endverbatim
   
 An example of the list file for batch processing can be found in <b>CAPTK_INSTALL_DIR/share/featureExtractionBatch/batch_featureextraction.csv</b>.
@@ -805,7 +805,7 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
 		-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
-    -# NOTE: in the sample data, we are providing multiple duplicates of 5 unique subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM for calculating perfusion derivatives. 
+    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM for calculating perfusion derivatives. 
 \verbatim
 PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionModel
 \endverbatim
@@ -942,7 +942,8 @@ This application estimates the volumetric changes and their directionality for a
 	-# Two ROI files, one for each timepoint (note that the populated voxels of the ROIs should be of Label 1).
 
 <b> USAGE:</b>
-	-# Load the image of timepoint 1 in CaPTk and initialize the (or load an already initialized) seedpoint with label TU defining the point within the ROI from where you want to estimate the expansion. 
+	-# Load the image of timepoint 1 in CaPTk and initialize the (or load an already initialized) seedpoint with label <b>TU</b> defining the point within the ROI from where you want to estimate the expansion. 
+  -# [OPTIONAL] Load the image of timepoint 2 in CaPTk and initialize the (or load an already initialized) seedpoint with label <b>NCR</b> defining the point within the ROI from where you want to estimate the expansion. 
 	-# Launch the Directionality Estimator application using the 'Applications -> Directionality Estimator' menu option.
 	-# Specify the Input ROI files for the 2 timepoints and the Output directory where the output masks and text files will be saved.
 	-# Click on 'Confirm" and a pop-up window will be displayed showing the total volumetric change, as well as the change per 3D octant. 
@@ -1048,6 +1049,11 @@ This application extracts the Texture Features as described in the paper [1]. It
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
 	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
 	-# Specify the output directory. 
+
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
+\verbatim
+BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1 
+\endverbatim
 
 <br>
 
@@ -1180,14 +1186,17 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 
 <b> REQUIREMENTS:</b>
 	-# A single DSC-MRI scan. 
-	-# The Echo Time corresponding to the given DSC-MRI scan
+	-# A single dicom slice from the original DICOM corresponding to the DSC-MRI scan. 
+	-# A single T1 post-contrast MRI scan.
+	-# The Echo Time corresponding to the given DSC-MRI scan.
+	-# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
 	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Alignment".
-	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
+	-# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
 	-# Press "Confirm" button.
-	-# The extracted measurements will be saved at the specified location (~5 minutes).
+	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
 
 */
 
@@ -1214,8 +1223,9 @@ This application extracts various measurements from a Dynamic-Susceptibility Con
 This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).
 
 <b> REQUIREMENTS:</b>
-A single DW-MRI image, its accompanying bvec and bval files, and a mask for which the measurements will be extracted. 
-	-# Note: bvaec and bval files should be calculated by dcm2nii or any other appropriate software. 
+  -# A single DW-MRI image
+  -# Its accompanying BVec and BVal files [Note: these files should be calculated by 'dcm2nii' or any other appropriate software.]
+  -# A mask for which the measurements will be extracted
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Diffusion Derivatives".
@@ -1263,7 +1273,10 @@ Input features file (CSV) and a target label file (CSV).
 <b> USAGE:</b>parameterize
 	-# Launch the application from "Applications" -> "Training Module".
 	-# Specify the features (.csv) file and the corresponding target (.csv) file.
-	-# Specify the kernel of SVM using either of the two radio buttons, number of folds and output directory. Number of folds could be 5 or 10. 
+	-# Specify the kernel of SVM using either of the two radio buttons. 
+	-# Specify the cross-validation method which could be either k-fold cross-validation or split-train-test mechanism. 
+	=# Specify the number of folds for k-fold cross-validation. 
+	-# Specify the number of training samples X in case of split-train-test method. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing. 
 	-# Press "Confirm" button. 
 	-# The model will be developed and saved in the output directory.
 

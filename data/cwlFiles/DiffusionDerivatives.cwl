@@ -1,6 +1,10 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.0
+<<<<<<< HEAD
+version: 1.7.1
+=======
+version: 1.7.1.RC
+>>>>>>> 920f9d251b1c7b049d6be9f67d7615cf9db0d1f4
 baseCommand: DiffusionDerivatives
 inputs:
   input:
