@@ -791,11 +791,12 @@ public slots:
   \param featuresfile The input features 
   \param targetfile The labels, rows should be same as those in featuresfile
   \param outputFolder The output folder to write all results
+  \brief modeldirectory The directory with saved model
   \param classifier The classifer type
   \param conf The configuration type
   \param folds The number of folds
   */
-  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int classifier, int conf, int folds);
+  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds);
 
   void PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
   void TrainNewPCAModelOnGivenData(const std::string &inputdirectory, const std::string &outputdirectory);
