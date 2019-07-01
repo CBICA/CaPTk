@@ -51,9 +51,6 @@ rm -rf *.pkg
 rm -rf _CPack*
 make package
 
-# chmod +x CaPTk_$version.app/Contents/Resources/bin/dcm2nii
-# chmod +x CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app/Contents/MacOS/ITK-SNAP
-
 pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
 productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
