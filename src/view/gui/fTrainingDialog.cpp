@@ -17,6 +17,8 @@ fTrainingSimulator::fTrainingSimulator()
   connect(inputImageButton, SIGNAL(clicked()), this, SLOT(OpenInputImage()));
   connect(inputMaskButton, SIGNAL(clicked()), this, SLOT(OpenInputMaskImage()));
   connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputImage()));
+  connect(mSplitModelDirectoryButton, SIGNAL(clicked()), this, SLOT(SelectSplitModelDirectory()));
+  
 
 }
 fTrainingSimulator::~fTrainingSimulator()
@@ -91,12 +93,20 @@ void fTrainingSimulator::ConfirmButtonPressed()
     configuration = 1;
     folds = cvValue->text().toInt();
   }
-  else
+  else if (mSplitTrainTest->isChecked())
   {
     configuration = 2;
     folds = ttValue->text().toInt();
   }
-  emit RunTrainingSimulation(mInputPathName.toStdString(), mInputMaskName.toStdString(), mOutputPathName.toStdString(),classifier, configuration, folds);
+  else if (mSplitTrain->isChecked())
+  {
+    configuration = 3;
+  }
+  else
+    configuration = 4;
+
+
+  emit RunTrainingSimulation(mInputPathName.toStdString(), mInputMaskName.toStdString(), mOutputPathName.toStdString(),mModelDirectoryName.toStdString(), classifier, configuration, folds);
   this->close();
 }
 
@@ -136,4 +146,15 @@ void fTrainingSimulator::SelectOutputImage()
     outputImageName->setText(directory);
 
   mOutputPathName = directory;
+}
+
+void fTrainingSimulator::SelectSplitModelDirectory()
+{
+  QString directory = getExistingDirectory(this, mInputPathName);
+  if (directory.isNull())
+    return;
+  else
+    mSplitModelDirectory->setText(directory);
+
+  mModelDirectoryName = directory;
 }

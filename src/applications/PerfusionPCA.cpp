@@ -123,7 +123,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
   return RevisedPerfusionMap;
 }
 
-void PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects, const std::string modelDirectoryName)
+bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects, const std::string modelDirectoryName)
 {
   PerfusionMapType PerfusionDataMap;
 
@@ -233,6 +233,7 @@ void PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
       cbica::WriteImage<ImageType>(PCAsOfOnePatient[index2], filename);
     }
   }
+  return true;
 }
 
 bool PerfusionPCA::PrepareNewPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects)
