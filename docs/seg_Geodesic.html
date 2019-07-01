@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.15"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): DICOM to NIfTI conversion</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): Geodesic Distance Transform-based Segmentation</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -55,27 +55,30 @@
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('preprocessing_dcm2nii.html','');});
+$(document).ready(function(){initNavTree('seg_Geodesic.html','');});
 /* @license-end */
 </script>
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">DICOM to NIfTI conversion </div>  </div>
+<div class="title">Geodesic Distance Transform-based Segmentation </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This tool converts a DICOM series into the Neuroimaging Informatics Technology Initiative (NIfTI) file format.</p>
-<p><b>REQUIREMENTS:</b></p><ol type="1">
-<li>A folder with the continuous sequence of a DICOM series.</li>
+<div class="textblock"><p>The geodesic distance transform based segmentation is a semi-automatic technique to delineate structures of distinct intensity.</p>
+<p><b> REQUIREMENTS:</b> A single image with distinct boundaries for the structure that needs to be segmented [1].</p>
+<p><b> USAGE:</b></p><ol type="1">
+<li>Load in CaPTk the image that you want to segment.</li>
+<li>Using Label 1 from the drawing tab, annotate a region of the tissue you would like to segment in the image.</li>
+<li>Launch the application using the 'Applications' -&gt; 'Geodesic Segmentation' menu option.</li>
+<li>The mask is populated within ~5 minutes, showing the progress at the bottom right corner of CaPTk.</li>
+<li>The mask is visualized automatically in the visualization panels.</li>
+<li>You can revise the resulted segmentation mask (Label:1), by selecting the "Geodesic" preset and changing the "Threshold" at the bottom right corner of CaPTk.</li>
 </ol>
-<p><b>USAGE:</b></p><ol type="1">
-<li>Launch the tool using the 'Preprocessing' -&gt; 'DICOM to NIfTI' menu option.</li>
-<li>Specify the first DICOM image in series, and the output filename.</li>
-<li>Click on "Confirm".</li>
-</ol>
-<p>This can also be used from the command line: </p><pre class="fragment">[WINDOWS] Utlities.exe -i C:/test/dicomFolderWithSingleSubject -d2n 
-[LINUX] captk Utlities -i C:/test/dicomFolderWithSingleSubject -d2n 
-</pre><hr/>
+<p>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format: </p><pre class="fragment">[WINDOWS] GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
+[LINUX] captk GeodesicSegmentation -i /mnt/c/inputImage.nii.gz -m /mnt/c/maskWithOneLabel.nii.gz -o /mnt/c/outputImage.nii.gz -t 20
+</pre><p><br />
+</p>
+<hr/>
  </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

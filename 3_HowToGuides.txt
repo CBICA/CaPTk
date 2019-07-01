@@ -230,7 +230,19 @@ Reference:
 /**
 \page ht_Segmentation Segmentation
 
-## Geodesic Training Segmentation
+There are various segmentation tools available within CaPTk. They are enumerated as follows:
+
+- \subpage seg_GeoTrain "Geodesic Training Segmentation"
+- \subpage seg_Geodesic "Geodesic Distance Transform-based Segmentation"
+- \subpage seg_SNAP "ITK-SNAP"
+- \subpage seg_DL "Deep Learning Segmentation"
+
+*/
+
+/**
+
+\page seg_GeoTrain Geodesic Training Segmentation
+
 'GeodesicTraining' builds upon the geodesic distance based segmentation by using machine learning (SVMs). 
 
 It also adds support for multiple areas of interest, multiple modalities, the ability to iterate the algorithm until a desired outcome is achieved and no need for thresholding. 
@@ -254,9 +266,11 @@ One or more co-register images of the same subject. A ROI image has to be drawn 
 
 --------
 
+*/
 
+/**
 
-## Geodesic Distance Transform-based Segmentation
+\page seg_Geodesic Geodesic Distance Transform-based Segmentation
 The geodesic distance transform based segmentation is a semi-automatic technique to delineate structures of distinct intensity.
 
 <b> REQUIREMENTS:</b>
@@ -280,7 +294,11 @@ This application is also available as with a stand-alone CLI for data analysts t
 
 --------
 
-## ITK-SNAP
+*/
+
+/**
+
+\page seg_SNAP ITK-SNAP
 ITK-SNAP is a stand-alone software application used to segment structures in 3D medical images and other utilities [2] - http://www.itksnap.org/pmwiki/pmwiki.php.
 
 Within CaPTk specifically, ITK-SNAP is tightly integrated as a tool used for segmentation, accepting files chosen through the CaPTk interface and returning results for further use within CaPTk. ITK-SNAP uses a combination of random forests and level sets to obtain precise segmentations of structures [2]. Please see the following video for detailed instructions: https://www.youtube.com/watch?v=-gBcFxKf-7Q
@@ -300,7 +318,10 @@ References:
 
 --------
 
-## Deep Learning Segmentation
+*/
+
+/**
+\page seg_DL Deep Learning Segmentation
 
 For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the pre-processing).
 
