@@ -165,8 +165,8 @@ ADD_TEST(NAME DirectionalityEstimateVersionTest COMMAND DirectionalityEstimate -
 
 # EGFRvIIIIndexPredictor Tests
 
-ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1 -t 0 -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictorModel )
-ADD_TEST(NAME EGFRvIIIIndexPredictorUseModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1 -t 0 -m ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictorModel -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor )
+ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1/samples/ -t 0 -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictorModel )
+ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1/samples/ -t 1 -m ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictorModel -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor )
 ADD_TEST(NAME EGFRvIIIIndexPredictorHelpTest COMMAND EGFRvIIIIndexPredictor -h )
 ADD_TEST(NAME EGFRvIIIIndexPredictorVersionTest COMMAND EGFRvIIIIndexPredictor -v )
 
@@ -264,8 +264,8 @@ ADD_TEST(NAME PseudoProgressionEstimatorVersionTest COMMAND PseudoProgressionEst
 
 # Recurrence Estimator Tests
 
-ADD_TEST(NAME RecurrenceEstimatorType0Test COMMAND RecurrenceEstimator -t 0 -i ${TESTING_DATA_DIR}/recurrence/training_samples -o ${TESTING_OUTPUT_DIR}/recurrence/ )
-ADD_TEST(NAME RecurrenceEstimatorType1Test COMMAND RecurrenceEstimator -t 1 -i ${TESTING_DATA_DIR}/recurrence/test_samples -o ${TESTING_OUTPUT_DIR}/recurrence/  -m ${TESTING_DATA_DIR}/recurrence/RecurrenceEstimator_PretrainedModel_1.6.1)
+ADD_TEST(NAME RecurrenceEstimatorType0Test COMMAND RecurrenceEstimator -t 0 -i ${TESTING_DATA_DIR}/recurrence/training_samples -o ${TESTING_OUTPUT_DIR}/recurrence_model/ )
+ADD_TEST(NAME RecurrenceEstimatorType1Test COMMAND RecurrenceEstimator -t 1 -i ${TESTING_DATA_DIR}/recurrence/test_samples -o ${TESTING_OUTPUT_DIR}/recurrence/ -m ${TESTING_OUTPUT_DIR}/recurrence_model/)
 
 ADD_TEST(NAME RecurrenceEstimatorHelpTest COMMAND RecurrenceEstimator -h )
 ADD_TEST(NAME RecurrenceEstimatorVersionTest COMMAND RecurrenceEstimator -v )
