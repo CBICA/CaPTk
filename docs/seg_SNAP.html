@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.15"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): DICOM to NIfTI conversion</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): ITK-SNAP</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -55,27 +55,30 @@
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('preprocessing_dcm2nii.html','');});
+$(document).ready(function(){initNavTree('seg_SNAP.html','');});
 /* @license-end */
 </script>
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">DICOM to NIfTI conversion </div>  </div>
+<div class="title">ITK-SNAP </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This tool converts a DICOM series into the Neuroimaging Informatics Technology Initiative (NIfTI) file format.</p>
-<p><b>REQUIREMENTS:</b></p><ol type="1">
-<li>A folder with the continuous sequence of a DICOM series.</li>
+<div class="textblock"><p>ITK-SNAP is a stand-alone software application used to segment structures in 3D medical images and other utilities [2] - <a href="http://www.itksnap.org/pmwiki/pmwiki.php">http://www.itksnap.org/pmwiki/pmwiki.php</a>.</p>
+<p>Within CaPTk specifically, ITK-SNAP is tightly integrated as a tool used for segmentation, accepting files chosen through the CaPTk interface and returning results for further use within CaPTk. ITK-SNAP uses a combination of random forests and level sets to obtain precise segmentations of structures [2]. Please see the following video for detailed instructions: <a href="https://www.youtube.com/watch?v=-gBcFxKf-7Q">https://www.youtube.com/watch?v=-gBcFxKf-7Q</a></p>
+<p><br />
+</p>
+<hr/>
+<p>References:</p>
+<ol>
+<li>
+B.Gaonkar, L.Shu, G.Hermosillo, Y.Zhan, "Adaptive geodesic transform for segmentation of vertebrae on CT images", Proceedings Volume 9035, Medical Imaging 2014: Computer-Aided Diagnosis; 9035:16, 2014. DOI:10.1117/12.2043527. </li>
+<li>
+P.Yushkevich, Y.Gao, G.Gerig, "ITK-SNAP: An interactive tool for semi-automatic segmentation of multi-modality biomedical images", Conf Proc IEEE Eng Med Biol Soc. 2016:3342-3345, 2016. DOI:10.1109/EMBC.2016.7591443. </li>
 </ol>
-<p><b>USAGE:</b></p><ol type="1">
-<li>Launch the tool using the 'Preprocessing' -&gt; 'DICOM to NIfTI' menu option.</li>
-<li>Specify the first DICOM image in series, and the output filename.</li>
-<li>Click on "Confirm".</li>
-</ol>
-<p>This can also be used from the command line: </p><pre class="fragment">[WINDOWS] Utlities.exe -i C:/test/dicomFolderWithSingleSubject -d2n 
-[LINUX] captk Utlities -i C:/test/dicomFolderWithSingleSubject -d2n 
-</pre><hr/>
+<p><br />
+</p>
+<hr/>
  </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
