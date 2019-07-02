@@ -99,6 +99,9 @@ RUN_FIXES () {
   cd ./appdir/usr/
   USR_DIR=`pwd`
 
+  echo "[:] Deleting the sym-link that was created by CMake to ensure packaging happens properly"
+  rm -rf bin/captk
+
   echo "[:] Adding proper qmake to PATH..."
   export PATH=$PATH:`pwd`/bin/qt/5.12.1/bin
 

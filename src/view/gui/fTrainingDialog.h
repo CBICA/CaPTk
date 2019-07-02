@@ -40,11 +40,13 @@ public:
     outputImageName->setText(mInputPathName);
   }
 
+  QString mModelDirectoryName;
   QString mInputPathName;
   QString mInputMaskName;
   QString mInputBValName;
   QString mInputBVecName;
   QString mOutputPathName;
+
 
 
 public slots:
@@ -53,9 +55,10 @@ public slots:
   void OpenInputImage();
   void OpenInputMaskImage();
   void SelectOutputImage();
+  void SelectSplitModelDirectory();
 
 signals:
-  void RunTrainingSimulation(const std::string inputImageFile, const std::string inputMaskFile, const std::string outputFolder,int classifier,int configuration,int folds);
+  void RunTrainingSimulation(const std::string inputImageFile, const std::string inputMaskFile, const std::string outputFolder, const std::string modelFolder, int classifier,int configuration,int folds);
 };
 
 

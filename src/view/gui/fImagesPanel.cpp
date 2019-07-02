@@ -100,7 +100,7 @@ void fImagesPanel::NewImageLoaded(QString idstr, const std::string &filename, in
   modalitySwitcher->setToolTip(QString("Select the Image Modality"));
   for (int i = 0; i < CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES + 1; i++)
   {
-    modalitySwitcher->insertItem(i, ImageModalityString[i]);
+    modalitySwitcher->insertItem(i, CAPTK::ImageModalityString[i]);
   }
 
   //modalitySwitcher->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);

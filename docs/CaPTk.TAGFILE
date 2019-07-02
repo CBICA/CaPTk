@@ -126,6 +126,26 @@
     <filename>ht_Segmentation</filename>
   </compound>
   <compound kind="page">
+    <name>seg_GeoTrain</name>
+    <title>Geodesic Training Segmentation</title>
+    <filename>seg_GeoTrain</filename>
+  </compound>
+  <compound kind="page">
+    <name>seg_Geodesic</name>
+    <title>Geodesic Distance Transform-based Segmentation</title>
+    <filename>seg_Geodesic</filename>
+  </compound>
+  <compound kind="page">
+    <name>seg_SNAP</name>
+    <title>ITK-SNAP</title>
+    <filename>seg_SNAP</filename>
+  </compound>
+  <compound kind="page">
+    <name>seg_DL</name>
+    <title>Deep Learning Segmentation</title>
+    <filename>seg_DL</filename>
+  </compound>
+  <compound kind="page">
     <name>ht_FeatureExtraction</name>
     <title>Feature Extraction</title>
     <filename>ht_FeatureExtraction</filename>
