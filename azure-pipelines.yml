@@ -53,9 +53,9 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DBUILD_TESTING=OFF -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        cmake -DBUILD_TESTING=OFF --build . --target ALL_BUILD --config Release
+        cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile Superbuild'
     
     - script: |
@@ -178,7 +178,7 @@ jobs:
     # Configure and build superbuild
     - bash: |
         cd bin
-        cmake -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
       displayName: 'Configure and compile Superbuild'
 
@@ -301,8 +301,8 @@ jobs:
     - bash: |
         cd bin
 
-        cmake -DBUILD_TESTING=OFF ../ -DCMAKE_INSTALL_PREFIX="./install"
-        cmake -DBUILD_TESTING=OFF ../ -DCMAKE_INSTALL_PREFIX="./install"
+        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
         make -j2
       displayName: 'Configure and compile Superbuild'
