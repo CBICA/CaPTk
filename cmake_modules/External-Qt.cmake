@@ -79,10 +79,13 @@ IF( (NOT Qt5Core_FOUND) OR QT_DOWNLOAD_FORCE )
       CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
     ENDIF()
 
-    MESSAGE( STATUS "Downloading pre-compiled Qt with open source license (see Qt site for more details)" )
-    FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
-    IF(NOT STATUS_CODE EQUAL 0)
-      MESSAGE(FATAL_ERROR "Failed to download pre-compiled packages. Status=${STATUS_CODE}")
+    # do not re-download if the LFS fetch worked
+    IF(NOT EXISTS ${FILE_TO_EXTRACT})
+      MESSAGE( STATUS "Downloading pre-compiled Qt with open source license (see Qt site for more details)" )
+      FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+      IF(NOT STATUS_CODE EQUAL 0)
+        MESSAGE(FATAL_ERROR "Failed to download pre-compiled packages. Status=${STATUS_CODE}")
+      ENDIF()
     ENDIF()
 
   ENDIF()

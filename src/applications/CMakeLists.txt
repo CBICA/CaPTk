@@ -259,11 +259,14 @@ IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
       CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
     ENDIF()
 
-    # download exe from url
-    MESSAGE( STATUS "Downloading pre-compiled external applications" )
-    FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
-    IF(NOT STATUS_CODE EQUAL 0)
-      MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
+    # do not re-download if the LFS fetch worked
+    IF(NOT EXISTS ${FILE_TO_EXTRACT})
+      # download exe from url
+      MESSAGE( STATUS "Downloading pre-compiled external applications" )
+      FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+      IF(NOT STATUS_CODE EQUAL 0)
+        MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
+      ENDIF()
     ENDIF()
   ENDIF()
 
