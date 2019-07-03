@@ -53,8 +53,7 @@ typename TImageType::Pointer HoleFillForSingleAxis(typename TImageType::Pointer 
   permuter->SetOrder(order);
   permuter->Update();
   cbica::WriteImage< TImageType >(permuter->GetOutput(), 
-    "C:/Projects/CaPTk_myFork/data/deepMedic/testing/pred_AAAC_2008.03.30_Segm_permuter" + std::to_string(axisToIterate) + ".nii.gz");
-
+    outputDirectory + "/segm_permuter" + std::to_string(axisToIterate) + ".nii.gz");
 
   using TImageType2D = itk::Image< typename TImageType::PixelType, 2 >;
   auto extractor = itk::ExtractImageFilter< TImageType, TImageType2D >::New();
