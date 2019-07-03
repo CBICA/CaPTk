@@ -61,9 +61,9 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DBUILD_TESTING=OFF -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON ..
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        cmake -DBUILD_TESTING=OFF --build . --target ALL_BUILD --config Release
+        cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile CaPTk'
     
     - script: |
@@ -79,8 +79,8 @@ jobs:
     #- script: |
     #    cd bin
     #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #    cmake -DBUILD_TESTING=OFF -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-    #    cmake -DBUILD_TESTING=OFF --build . --target PACKAGE --config Release
+    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+    #    cmake --build . --target PACKAGE --config Release
     #
     #    mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
     #    
@@ -185,7 +185,7 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        cmake -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
         #make install/strip
       displayName: 'Configure and compile CaPTk'
@@ -317,8 +317,8 @@ jobs:
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-        cmake -DBUILD_TESTING=OFF ../
-        cmake -DBUILD_TESTING=OFF ../
+        cmake ../
+        cmake ../
 
         make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
@@ -340,8 +340,8 @@ jobs:
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-        cmake -DBUILD_TESTING=OFF ../
-        cmake -DBUILD_TESTING=OFF ../
+        cmake ../
+        cmake ../
 
         make -j 2
         sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
@@ -425,14 +425,14 @@ jobs:
 #     # Configure and build superbuild
 #     - bash: |
 #         cd bin
-#         cmake -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
 #         make -j2
 #       displayName: 'Configure and compile Superbuild'
 
 #     # Configure and build CaPTk
 #     - bash: |
 #         cd bin
-#         cmake -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
 #         make -j2
 #         make install/strip
 #       displayName: 'Configure and compile CaPTk'
@@ -507,8 +507,8 @@ jobs:
 #     - bash: |
 #         cd bin
 
-#         cmake -DBUILD_TESTING=OFF ../ -DCMAKE_INSTALL_PREFIX="./install"
-#         cmake -DBUILD_TESTING=OFF ../ -DCMAKE_INSTALL_PREFIX="./install"
+#         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+#         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
 #         make -j2
 #       displayName: 'Configure and compile Superbuild'
@@ -523,8 +523,8 @@ jobs:
 #         export LDFLAGS="-L/usr/local/opt/llvm/lib"
 #         export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-#         cmake -DBUILD_TESTING=OFF ../
-#         cmake -DBUILD_TESTING=OFF ../
+#         cmake ../
+#         cmake ../
 
 #         make 
 #       displayName: 'Export variables for llvm then configure and compile CaPTk'
@@ -540,8 +540,8 @@ jobs:
 #         export LDFLAGS="-L/usr/local/opt/llvm/lib"
 #         export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-#         cmake -DBUILD_TESTING=OFF ../
-#         cmake -DBUILD_TESTING=OFF ../
+#         cmake ../
+#         cmake ../
 
 #         make 
 #       displayName: 'Ensure documentations are picked up properly'
