@@ -1295,18 +1295,20 @@ Input features file (CSV) and a target label file (CSV).
 	-# Launch the application from "Applications" -> "Training Module".
 	-# Specify the features (.csv) file and the corresponding target (.csv) file.
 	-# Specify the kernel of SVM using either of the two radio buttons. 
-	-# Specify the cross-validation method which could be either k-fold cross-validation or split-train-test mechanism. 
-	=# Specify the number of folds for k-fold cross-validation. 
-	-# Specify the number of training samples X in case of split-train-test method. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing. 
+	-# Specify the cross-validation method which could be either k-fold cross-validation, split-train-test, training only, or inference only.
+	-# In case of k-fold cross-validation, specify the number of folds in the corresponding edit box. In case of split-train-test method, specify the number of training samples X. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing. For training only option, no additional parameter is required in 'Configuration' section. For testing only option, the directory containing the trained model files should be provided. 
 	-# Press "Confirm" button. 
-	-# The model will be developed and saved in the output directory.
+	-# The model or the predicted output, depending on the configuration, will be calculated and saved in the output directory.
 
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format. 
  	\verbatim
-    TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 2 -k 40 
+    K-Fold CrossValidation option: 	TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 1 -k 10 
+	Split Train-Test option: 		TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 2 -k 40
+	Train only option: 				TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 3 -k 10
+	Test only option: 				TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 4 -k 10 -m C:/ModelDirectory
 	\endverbatim
 	c is the classifier type (-c 1 for Linear SVM, -c 2 for RBF SVM)
-	n is the configuration type (-n 1 for cross-validation, -n 2 for split train-test)
+	n is the configuration type (-n 1 for cross-validation, -n 2 for split train-test, -n 3 for training only, -n 4 for testing only)
 	k is the # of folds for cross-validation configuration, and size of train dataset for split train-test configuration
 
 --------
