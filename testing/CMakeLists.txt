@@ -147,9 +147,9 @@ TARGET_LINK_LIBRARIES(${TEST_EXE_NAME} ${DEPENDENT_LIBS} ${LIBNAME_CBICATK} ${LI
 # " -fl " + file_flNorm +
 # " -o " + outputDirectory).c_str());
 
-IF(WIN32)
-  ADD_TEST(NAME DeepMedicTest COMMAND DeepMedic -t1 ${TESTING_DATA_DIR}/deepmedic/ -t1c ${TESTING_DATA_DIR}/deepmedic/ -t2 ${TESTING_DATA_DIR}/deepmedic/ -fl ${TESTING_DATA_DIR}/deepmedic/ -o ${TESTING_OUTPUT_DIR}/deepmedic/ )
-ENDIF()
+# DeepMedic Tests
+ADD_TEST(NAME DeepMedicTestSeg COMMAND DeepMedic -md ${PROJECT_SOURCE_DIR}/data/deepMedic/saved_models/brainTumorSegmentation -t1 ${TESTING_DATA_DIR}/deepmedic/ -t1c ${TESTING_DATA_DIR}/deepmedic/ -t2 ${TESTING_DATA_DIR}/deepmedic/ -fl ${TESTING_DATA_DIR}/deepmedic/ -o ${TESTING_OUTPUT_DIR}/deepmedic/ )
+ADD_TEST(NAME DeepMedicTestSkull COMMAND DeepMedic -md ${PROJECT_SOURCE_DIR}/data/deepMedic/saved_models/skullStripping -t1 ${TESTING_DATA_DIR}/deepmedic/ -t1c ${TESTING_DATA_DIR}/deepmedic/ -t2 ${TESTING_DATA_DIR}/deepmedic/ -fl ${TESTING_DATA_DIR}/deepmedic/ -o ${TESTING_OUTPUT_DIR}/deepmedic/ )
 
 # Diffusion Derivatives (Incomplete)
 
