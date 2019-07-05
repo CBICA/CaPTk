@@ -5,7 +5,6 @@ trigger:
     - master
 
 jobs:
-
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
   timeoutInMinutes: 0
@@ -54,7 +53,7 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./installLibs" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile Superbuild'
@@ -67,21 +66,16 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile CaPTk'
     
-    - script: |
-        cd bin
-        cmake --build . --target RUN_TESTS --config Release
-      displayName: 'Running Tests'
+    #- script: |
+    #    cd bin
+    #    export GIT_LFS_SKIP_SMUDGE=1
+    #    git lfs pull --include "data/TestData.zip"
+    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
+    #    setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+    #    cmake --build . --target RUN_TESTS --config Release
+    #  displayName: 'Performing the Tests'
     
-    - script: |
-        rm -rf binaries
-        rm -rf regression
-        rm -rf scripts
-        ls -lt
-        cd bin
-        rm -rf qt.zip
-        ls -lt
-      displayName: 'Removing the binaries folder'
-     
     #- script: |
     #    cd bin
     #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
@@ -159,28 +153,6 @@ jobs:
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
 
-  # Debug info before main scripts start
-  # - bash: |
-  #     ls -al
-  #   displayName: 'Get debugging information'
-
-    # Create as much free memory as possible
-
-    ## Nuclear Option #1
-    #- bash: |
-    #    rm -rf binaries/*mac*.zip
-    #    rm -rf binaries/*windows*.zip
-    #    rm -rf history
-    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-    #  displayName: 'Take the nuclear option'
-
-    # Create fake test dirs. Can be removed.
-    # - bash: |   
-    #     cd bin
-    #     mkdir -p testing
-    #     mkdir -p ./testing/TestData
-    #   displayName: 'Create phony tests'
-
     # Configure and build superbuild
     - bash: |
         cd bin
@@ -232,6 +204,13 @@ jobs:
         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
         
       displayName: 'Set up environment variables for packager and build a package'
+    
+    #- script: |
+    #    cd bin
+    #    export GIT_LFS_SKIP_SMUDGE=1
+    #    git lfs pull --include "data/TestData.zip"
+    #    make tests
+    #  displayName: 'Performing the Tests'
     
     - task: PublishBuildArtifacts@1
       inputs:
@@ -395,6 +374,13 @@ jobs:
         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
         sudo rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
+    
+    #- script: |
+    #    cd bin
+    #    export GIT_LFS_SKIP_SMUDGE=1
+    #    git lfs pull --include "data/TestData.zip"
+    #    make tests
+    #  displayName: 'Performing the Tests'
     
     - task: PublishBuildArtifacts@1
       inputs:
