@@ -21,8 +21,9 @@
 <ul>
   <li>Sarthak Pati,   v.0.0.1 - present (http://www.med.upenn.edu/sbia/spati.html)</li>
   <li>Saima Rathore,   v.0.0.1 - present (http://www.med.upenn.edu/sbia/srathore.html)</li>
-  <li>Ashish Singh,   v.1.6.0 </li>
-  <li>Phuc Ngo,   v.1.6.0 </li>
+  <li>Ashish Singh,   v.1.6.0 - present </li>
+  <li>Phuc Ngo,   v.1.6.0 - present</li>
+  <li>James Minock,   v.1.7.0 </li>
   <li>Grayson Murphy,   v.1.6.0 </li>
   <li>Sung Min Ha,   v.1.6.0 (https://www.med.upenn.edu/sbia/smha.html)</li>
   <li>Amit Bhattarai,   v.1.6.0 </li>
