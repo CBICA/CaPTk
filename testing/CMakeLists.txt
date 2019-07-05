@@ -15,15 +15,24 @@ ADD_DEFINITIONS( -DTEST_DATA_DIR=${TESTING_DATA_DIR} )
 
 IF( NOT EXISTS "${TESTING_DATA_DIR}" )  
   
+  SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/data/TestData.zip" )
   SET( FILE_TO_EXTRACT "${CMAKE_CURRENT_BINARY_DIR}/TestData.zip")
   SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/SampleData_1.5.0/TestData.zip" )
   
   IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
     
-    MESSAGE( STATUS "Downloading all the sample data using following link: ${DOWNLOAD_URL}" )
-    FILE(DOWNLOAD "${DOWNLOAD_URL}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
-    IF(NOT STATUS_CODE EQUAL 0)
-      MESSAGE(FATAL_ERROR "Failed to download TestData. Status=${STATUS_CODE}")
+    # copy from LFS folder
+    IF( EXISTS ${LFS_FILE_TO_CHECK} )
+      CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
+    ENDIF()
+
+    # do not re-download if the LFS fetch worked
+    IF(NOT EXISTS ${FILE_TO_EXTRACT})
+      MESSAGE( STATUS "Downloading all the sample data using following link: ${DOWNLOAD_URL}" )
+      FILE(DOWNLOAD "${DOWNLOAD_URL}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+      IF(NOT STATUS_CODE EQUAL 0)
+        MESSAGE(FATAL_ERROR "Failed to download TestData. Status=${STATUS_CODE}")
+      ENDIF()
     ENDIF()
     
   ENDIF()
