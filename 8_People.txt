@@ -6,23 +6,24 @@
 ## Advisors:
 <ul>
   <li>Christos Davatzikos (http://www.cbica.upenn.edu/sbia/christos/)
-  <li>Despina Kontos (http://www.med.upenn.edu/apps/faculty/index.php/g275/p8123294)
+  <li>Despina Kontos (https://www.med.upenn.edu/apps/faculty/index.php/g275/p8123294)
   <li>Ragini Verma (http://www.cbica.upenn.edu/sbia/rverma/)
-  <li>Yong Fan (http://www.med.upenn.edu/apps/faculty/index.php/g275/p4257219)
-  <li>Russell Taki Shinohara (http://www.med.upenn.edu/apps/faculty/index.php/g359/c1806/p8574254)
+  <li>Yong Fan (https://www.med.upenn.edu/apps/faculty/index.php/g275/p4257219)
+  <li>Russell Taki Shinohara (https://www.med.upenn.edu/apps/faculty/index.php/g359/c1806/p8574254)
   <li>Paul Yushkevich (http://picsl.upenn.edu/people/faculty-staff/paul-yushkevich/)
-  <li>Aimilia Gastounioti (http://www.med.upenn.edu/sbia/aimiliag.html)
-  <li>Spyridon Bakas (http://www.med.upenn.edu/cbica/sbakas/)
+  <li>Aimilia Gastounioti (https://www.med.upenn.edu/sbia/aimiliag.html)
+  <li>Spyridon Bakas (https://www.med.upenn.edu/cbica/sbakas/)
 </ul>
 
 <br>
 
 ## Developers:
 <ul>
-  <li>Sarthak Pati,   v.0.0.1 - present (http://www.med.upenn.edu/sbia/spati.html)</li>
-  <li>Saima Rathore,   v.0.0.1 - present (http://www.med.upenn.edu/sbia/srathore.html)</li>
-  <li>Ashish Singh,   v.1.6.0 </li>
-  <li>Phuc Ngo,   v.1.6.0 </li>
+  <li>Sarthak Pati,   v.0.0.1 - present (https://www.med.upenn.edu/sbia/spati.html)</li>
+  <li>Saima Rathore,   v.0.0.1 - present (https://www.med.upenn.edu/sbia/srathore.html)</li>
+  <li>Ashish Singh,   v.1.6.0 - present </li>
+  <li>Phuc Ngo,   v.1.6.0 - present</li>
+  <li>James Minock,   v.1.7.0 </li>
   <li>Grayson Murphy,   v.1.6.0 </li>
   <li>Sung Min Ha,   v.1.6.0 (https://www.med.upenn.edu/sbia/smha.html)</li>
   <li>Amit Bhattarai,   v.1.6.0 </li>
@@ -30,15 +31,15 @@
   <li>Hongming Li,   v.1.6.0 (https://www.med.upenn.edu/sbia/hli.html)</li>
   <li>Ratheesh Kalarot,   v.0.0.2 - 1.3.0</li>
   <li>Patmaa Sridharan,   v.0.0.2 - 1.3.0</li>
-  <li>Spyridon Bakas,   v.0.0.1 (http://www.med.upenn.edu/cbica/sbakas/)</li>
+  <li>Spyridon Bakas,   v.0.0.1 (https://www.med.upenn.edu/cbica/sbakas/)</li>
 </ul>
 
 <br>
 
 ## Collaborators:
 <ul>
-  <li>Mark Bergman (http://www.med.upenn.edu/sbia/mbergman.html)</li>
-  <li>Hamed Akbari (http://www.med.upenn.edu/sbia/hakbari.html)</li>
+  <li>Mark Bergman (https://www.med.upenn.edu/sbia/mbergman.html)</li>
+  <li>Hamed Akbari (https://www.med.upenn.edu/sbia/hakbari.html)</li>
   <li>Aristeidis Sotiras (http://www.asotiras.com/)</li>
 </ul>
 
