@@ -4,7 +4,7 @@
 
 - Better high DPI support for all supported platforms
 - Updated documentation for whole package
-- Generic bug fixes and impovements 
+- Generic bug fixes and improvements 
 
 ## Known Issues
 
