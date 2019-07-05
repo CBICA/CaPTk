@@ -3,11 +3,11 @@
 
 \brief Implementation of the ImageInfo class
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2016 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
+See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 
 */
 #include "cbicaITKImageInfo.h"

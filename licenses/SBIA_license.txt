@@ -9,7 +9,7 @@
   3700 Hamilton Walk, Floor 7
   Philadelphia, PA 19104
 
-  Web:   http://www.med.upenn.edu/sbia/
+  Web:   https://www.med.upenn.edu/sbia/
   Email: software at cbica.upenn.edu
 
 

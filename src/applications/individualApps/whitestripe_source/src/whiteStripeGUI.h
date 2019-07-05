@@ -3,11 +3,11 @@
 
 \brief Declaration of the WhiteStripe GUI class
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2017 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or http://www.med.upenn.edu/sbia/software/license.html
+See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 
 */
 
@@ -183,7 +183,7 @@ public:
 		centralWidget->setLayout(mainLayout);
 		setCentralWidget(centralWidget);
 		this->setWindowTitle(tr("WhiteStripe"));
-		this->log("WhiteStripe© launch Success!");
+		this->log("WhiteStripeï¿½ launch Success!");
 
 		m_hWdg = NULL;
 		m_vtkImg = NULL;
