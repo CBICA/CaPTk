@@ -306,8 +306,8 @@ ADD_TEST(NAME SurvivalPredictorVersionTest COMMAND SurvivalPredictor -v )
 
 ADD_TEST(NAME TrainingModuleTest5FoldsXValidation COMMAND TrainingModule -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 5 -n 1)
 ADD_TEST(NAME TrainingModuleTest5FoldsSplitTrainTest COMMAND TrainingModule -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 5 -n 2)
-ADD_TEST(NAME TrainingModuleTest5FoldsTrain COMMAND TrainingModule -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 5 -n 3)
-ADD_TEST(NAME TrainingModuleTest5FoldsTest COMMAND TrainingModule -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 5 -n 4)
+ADD_TEST(NAME TrainingModuleTest5FoldsTrain COMMAND TrainingModule -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training_model/ -k 5 -n 3)
+ADD_TEST(NAME TrainingModuleTest5FoldsTest COMMAND TrainingModule -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -m ${TESTING_OUTPUT_DIR}/training_model/ -o ${TESTING_OUTPUT_DIR}/training/ -k 5 -n 4)
 ADD_TEST(NAME TrainingModuleTest10Folds COMMAND TrainingModule -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 10 -n 1)
 
 ADD_TEST(NAME TrainingModuleHelpTest COMMAND TrainingModule -h )
