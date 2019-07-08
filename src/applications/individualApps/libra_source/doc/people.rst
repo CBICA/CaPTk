@@ -55,7 +55,7 @@ Contributors
 - Diane L. Nathan, M.D.
 - `Emily F. Conant, M.D. <https://www.med.upenn.edu/apps/faculty/index.php/g334/p18112>`_
 - Yan Wang, Ph.D. 
-- `James C. Gee, Ph.D. <http://www.med.upenn.edu/apps/faculty/index.php/g5455356/p10656>`_
+- `James C. Gee, Ph.D. <https://www.med.upenn.edu/apps/faculty/index.php/g5455356/p10656>`_
 - Yuanjie Zheng, Ph.D.
 - Said Pertuz Ph.D
 

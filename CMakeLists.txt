@@ -11,8 +11,8 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 1.RC )
-SET( PROJECT_VERSION_TWEAK RC )
+SET( PROJECT_VERSION_PATCH 1 )
+SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -111,9 +111,10 @@ ENDIF()
 SET( PROJECT_VENDOR "CBICA - UPenn" )
 SET( LICENSE_FILE "${PROJECT_SOURCE_DIR}/LICENSE" )
 SET( README_FILE  "${PROJECT_SOURCE_DIR}/README.txt" )
-SET( PROJECT_DOMAIN "http://www.med.upenn.edu/cbica/captk/" )
+SET( PROJECT_DOMAIN "https://www.med.upenn.edu/cbica/captk/" )
 SET( PROJECT_CONTACT "software@cbica.upenn.edu" )
-set(IDENTIFIER "")
+SET( COPYRIGHT "Copyright (c) 2019 CBICA. All rights reserved.")
+SET( IDENTIFIER "")
 ADD_DEFINITIONS(-DPROJECT_NAME="${PROJECT_NAME}" )
 ADD_DEFINITIONS(-DPROJECT_VERSION="${PROJECT_VERSION}" )
 ADD_DEFINITIONS(-DEXE_NAME="${EXE_NAME}")
@@ -636,7 +637,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     SET( BUILD_TESTING TRUE CACHE BOOL "Build testing" )
     IF( BUILD_TESTING )
       ENABLE_TESTING()
-      ADD_SUBDIRECTORY( testing )
+      #ADD_SUBDIRECTORY( testing )
       #INCLUDE(CTest)
     ENDIF( BUILD_TESTING )
   #ENDIF()
@@ -827,7 +828,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       SET (ICON_FILE "${DATA_DIR}/icons/application/apple/CaPTk.icns")
       SET_SOURCE_FILES_PROPERTIES(${ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
-      FOREACH(CAPTK_MACOSX_BUNDLE_FILE ${CAPTK_MACOSX_BUNDLE_FILES_INSTALL_TARGETS})  
+      FOREACH(CAPTK_MACOSX_BUNDLE_FILE ${CAPTK_MACOSX_BUNDLE_FILES_INSTALL_TARGETS}) 
+          # MESSAGE(STATUS ${CAPTK_MACOSX_BUNDLE_FILES_INSTALL_TARGETS}) 
           SET_SOURCE_FILES_PROPERTIES(${CAPTK_MACOSX_BUNDLE_FILE} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin )
 
           SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${CAPTK_MACOSX_BUNDLE_FILE})
@@ -943,6 +945,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       CONFIGURATIONS "${CMAKE_CONFIGURATION_TYPES}"
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
+
   ENDIF()
 
   IF(CAPTK_PACKAGE_PROJECT)
@@ -1045,16 +1048,17 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-      INCLUDE(MvFile)
-      mvFile(${EXE_NAME} itksnap ITK-SNAP)
-      
       INCLUDE(ChmodFile)
 
       chmodFile(${EXE_NAME} dcm2nii)
-      chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
-
+      
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
+
+      INCLUDE(MvFile)
+      mvFile(${EXE_NAME} itksnap ITK-SNAP)
+      
+      chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
     ENDIF()
 
     INCLUDE(CPack)
@@ -1090,9 +1094,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     #  #ENDIF()
     #ENDIF()
 
-    # Execute a post install step. Make sure this is the last install command ran!
-    INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/PostInstall.cmake )
-
   ENDIF(CAPTK_PACKAGE_PROJECT)
+
+  # Execute a post install step. Make sure this is the last install command ran!
+  IF( CMAKE_HOST_UNIX )
+    INSTALL(CODE "EXECUTE_PROCESS(COMMAND ln -sf CaPTk captk WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)")
+  ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )

@@ -3,7 +3,7 @@
 
 \brief Declaration of fMainWindow class
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -737,15 +737,6 @@ public slots:
   void CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask, const std::string inputImageFile, const std::string outputImageFile);
 
   /**
-  \brief Call the PCA calculation application with the inputs
-
-  \param number The number of PCA components to extract
-  \param inputFolder The input folder
-  \param outputFolder The folder to save results
-  */
-  void CallPCACalculation(const int number, const std::string inputFolder, const std::string outputFolder);
-
-  /**
   \brief Call the Perfusion alignment application with the inputs
 
   \param echotime The echo time of the input Perfusion image
@@ -791,13 +782,27 @@ public slots:
   \param featuresfile The input features 
   \param targetfile The labels, rows should be same as those in featuresfile
   \param outputFolder The output folder to write all results
+  \brief modeldirectory The directory with saved model
   \param classifier The classifer type
   \param conf The configuration type
   \param folds The number of folds
   */
-  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, int classifier, int conf, int folds);
+  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds);
 
+  /**
+  \brief Call the PCA calculation application with the inputs
+
+  \param modeldirectory The trained model directory
+  \param outputdirectory The folder to save results
+  */
   void PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
+  
+  /**
+  \brief Call the PCA calculation application with the inputs
+
+  \param inputdirectory The input folder containing the image(s)
+  \param outputdirectory The folder to save the trained model
+  */
   void TrainNewPCAModelOnGivenData(const std::string &inputdirectory, const std::string &outputdirectory);
   /**
   \brief Call DCM2NII for DICOM conversion and load the image into CaPTk

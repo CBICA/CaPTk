@@ -26,17 +26,17 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 
 ## Disclaimer
 - The software has been designed for research purposes only and has neither been reviewed nor approved for clinical use by the Food and Drug Administration (FDA) or by any other federal/state agency.
-- This code (excluding dependent libraries) is governed by the license provided in http://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
+- This code (excluding dependent libraries) is governed by the license provided in https://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
 
-## Download Latest Release (1.7.0)
+## Download Latest Release (1.7.1)
 
 By downloading CaPTk, you agree to our [License](./LICENSE).
 
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
-| Windows        | https://www.nitrc.org/frs/downloadlink.php/11203 |
-| Linux          | https://www.nitrc.org/frs/downloadlink.php/11226 |
-| macOS          | https://www.nitrc.org/frs/downloadlink.php/11212 |
+| Windows        | https://www.nitrc.org/frs/downloadlink.php/11479 |
+| Linux          | https://www.nitrc.org/frs/downloadlink.php/11480 |
+| macOS          | https://www.nitrc.org/frs/downloadlink.php/11481 |
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
 ## [Frequently Asked Questions (FAQ)](FAQ.md)

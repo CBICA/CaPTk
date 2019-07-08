@@ -4,7 +4,7 @@
 
 <strong>Advisors:</strong> 
 <ul>
-  <li><a href="http://www.med.upenn.edu/apps/faculty/index.php/g359/c1806/p8574254">Taki Shinohara</a>
+  <li><a href="https://www.med.upenn.edu/apps/faculty/index.php/g359/c1806/p8574254">Taki Shinohara</a>
 </ul>
 
 <strong>Developers:</strong>
