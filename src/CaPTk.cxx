@@ -208,13 +208,15 @@ int main(int argc, char** argv)
 #if WIN32
       ShowErrorMessage(msg);
       cbica::sleep(1000);
+      return EXIT_FAILURE;
 #else
 #ifdef Q_WS_X11
       cbica::setEnvironmentVariable("QT_OPENGL", "software");
+      std::cerr << /*msg*/"Falling back on software rendering for X11 windowing system.\n";
 #endif
-      std::cerr << /*msg*/"Falling back on software rendering" << "\n";
+      std::cerr << msg << "\n";
+      return EXIT_FAILURE;
 #endif
-      //return EXIT_FAILURE;
     }
     else
     {
