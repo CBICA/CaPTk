@@ -212,7 +212,7 @@ int main(int argc, char** argv)
 #else
 #ifdef Q_WS_X11
       cbica::setEnvironmentVariable("QT_OPENGL", "software");
-      std::cerr << "Falling back on software rendering for X11 windowing system.\n";
+      std::cerr << "Falling back on software rendering" << "\n";
 #else
       std::cerr << msg << "\n";
       return EXIT_FAILURE;
