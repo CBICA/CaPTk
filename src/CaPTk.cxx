@@ -188,11 +188,6 @@ int main(int argc, char** argv)
 
   // starting the OpenGL version checking 
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
-#ifdef Q_WS_X11
-
-#else
-
-#endif
   if (!cbica::isFile(openGLVersionCheckFile))
   {
     std::cout << "Checking for compatible OpenGL - this will happen only once.\n";
@@ -214,9 +209,12 @@ int main(int argc, char** argv)
       ShowErrorMessage(msg);
       cbica::sleep(1000);
 #else
-      std::cerr << msg << "\n";
+#ifdef Q_WS_X11
+      cbica::setEnvironmentVariable("QT_OPENGL", "software");
 #endif
-      return EXIT_FAILURE;
+      std::cerr << /*msg*/"Falling back on software rendering" << "\n";
+#endif
+      //return EXIT_FAILURE;
     }
     else
     {
