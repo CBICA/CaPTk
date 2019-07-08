@@ -176,13 +176,8 @@ int main(int argc, char** argv)
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
 #endif
 
-//#if __APPLE__
-  // this->
+  // high DPI fixes
   QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-//#endif
-
-  //! Support for High DPI monitors..works on windows but still some menu issues are seen
-  //! Needs to be tested on Linux and Mac
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
@@ -191,29 +186,13 @@ int main(int argc, char** argv)
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
   //cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
-  ///// debug
-  //HANDLE hLogFile;
-
-  //hLogFile = CreateFile("MemoryLeaks.txt", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-  //
-  //_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-  //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-  //_CrtSetReportFile(_CRT_WARN, hLogFile);
-  //_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
-  //_CrtSetReportFile(_CRT_ERROR, hLogFile);
-  //_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
-  //_CrtSetReportFile(_CRT_ASSERT, hLogFile);
-  ///// debug
-
-  //vtkOpenGLRenderWindow::SetGlobalMaximumNumberOfMultiSamples(0);
-
-  //auto defaultFormat = QVTKOpenGLWidget::defaultFormat();
-  //defaultFormat.setSamples(0);
-  //QSurfaceFormat::setDefaultFormat(defaultFormat);
-
-  //VTK_MODULE_INIT(vtkRenderingFreeType);
-
+  // starting the OpenGL version checking 
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
+#ifdef Q_WS_X11
+
+#else
+
+#endif
   if (!cbica::isFile(openGLVersionCheckFile))
   {
     std::cout << "Checking for compatible OpenGL - this will happen only once.\n";
