@@ -210,13 +210,8 @@ int main(int argc, char** argv)
       cbica::sleep(1000);
       return EXIT_FAILURE;
 #else
- #ifdef Q_WS_X11
-      std::cerr << "Falling back on software rendering" << "\n";
       cbica::setEnvironmentVariable("QT_OPENGL", "software");
- #else
-       std::cerr << msg << "\n";
-       return EXIT_FAILURE;
- #endif
+      std::cerr << "WARNING: Trying to run CaPTk GUI using software rendering - this might not work on all systems and in those cases, only the CLI will be available.\n";
 #endif
     }
     else
