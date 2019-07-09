@@ -80,9 +80,22 @@
           <section title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer" ref="libraPapers.html" />
         </section>
         <section title="Technical Reference" ref="Technical_Reference.html">
-          <section title="Further Application Details and Assumptions" ref="tr_Apps.html" />
-          <section title="Build CaPTk from Source" ref="tr_buildFromSource.html" />
-          <section title="For Developers" ref="tr_forDeves.html" />
+          <section title="Further Application Details and Assumptions" ref="Technical_Reference.html#tr_Apps">
+            <section title="Image Visualization" ref="Technical_Reference.html#appsVisualization" />
+            <section title="Extracted Features" ref="Technical_Reference.html#appsFeatures" />
+          </section>
+          <section title="Build CaPTk from Source" ref="Technical_Reference.html#tr_buildFromSource">
+            <section title="Prerequisites" ref="Technical_Reference.html#prerequisites" />
+            <section title="Build" ref="Technical_Reference.html#actualBuild" />
+            <section title="Documentation &amp; Tests" ref="Technical_Reference.html#optionalBuilds" />
+            <section title="Linux Build Guide" ref="Technical_Reference.html#linuxBuild" />
+          </section>
+          <section title="For Developers" ref="Technical_Reference.html#tr_forDeves">
+            <section title="General Information" ref="Technical_Reference.html#generalInfo" />
+            <section title="Dependencies" ref="Technical_Reference.html#dependencies" />
+            <section title="Integrating your C++ application into CaPTk" ref="Technical_Reference.html#cppIntegration" />
+            <section title="Integrating your Python application into CaPTk" ref="Technical_Reference.html#pyIntegration" />
+          </section>
         </section>
         <section title="Download Instructions" ref="Download.html" />
         <section title="Changelog: Release Notes" ref="ReleaseNotes.html" />
@@ -147,9 +160,6 @@
       <keyword name="Probability Maps of Potential Recurrence of Glioblastoma Tumors" id="Probability Maps of Potential Recurrence of Glioblastoma Tumors" ref="recurrencePredictor.html" />
       <keyword name="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer" id="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer" ref="libraPapers.html" />
       <keyword name="Technical Reference" id="Technical Reference" ref="Technical_Reference.html" />
-      <keyword name="Further Application Details and Assumptions" id="Further Application Details and Assumptions" ref="tr_Apps.html" />
-      <keyword name="Build CaPTk from Source" id="Build CaPTk from Source" ref="tr_buildFromSource.html" />
-      <keyword name="For Developers" id="For Developers" ref="tr_forDeves.html" />
       <keyword name="Download Instructions" id="Download Instructions" ref="Download.html" />
       <keyword name="Changelog: Release Notes" id="Changelog: Release Notes" ref="ReleaseNotes.html" />
       <keyword name="People (Credits)" id="People (Credits)" ref="People.html" />
@@ -229,9 +239,6 @@
       <file>recurrencePredictor.html</file>
       <file>libraPapers.html</file>
       <file>Technical_Reference.html</file>
-      <file>tr_Apps.html</file>
-      <file>tr_buildFromSource.html</file>
-      <file>tr_forDeves.html</file>
       <file>Download.html</file>
       <file>ReleaseNotes.html</file>
       <file>People.html</file>

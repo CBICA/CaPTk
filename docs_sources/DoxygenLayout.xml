@@ -64,11 +64,7 @@
       <tab type="user" visible="yes" title="Recurrence Prediction in GBM" url="recurrencePredictor.html"/>
       <tab type="user" visible="yes" title="Breast Cancer Imaging Biomarkers" url="libraPapers.html"/>
     </tab>
-    <tab type="usergroup" visible="yes" title="Technical Reference" url="Technical_Reference.html">
-      <tab type="user" visible="yes" title="Further Application Details and Assumptions" url="tr_Apps.html"/>
-      <tab type="user" visible="yes" title="Build CaPTk from Source" url="tr_buildFromSource.html"/>
-      <tab type="user" visible="yes" title="For Developers" url="tr_forDeves.html"/>
-	</tab>
+    <tab type="user" visible="yes" title="Technical Reference" url="Technical_Reference.html"/>
 	<tab type="user" visible="yes" title="Download Instructions" url="Download.html"/> 
 	<tab type="user" visible="yes" title="Installation Instructions" url="Installation.html"/>
   <tab type="user" visible="yes" title="Release Notes" url="ReleaseNotes.html"/>

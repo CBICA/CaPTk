@@ -292,21 +292,19 @@
     <name>Technical_Reference</name>
     <title>Technical Reference</title>
     <filename>Technical_Reference</filename>
-  </compound>
-  <compound kind="page">
-    <name>tr_Apps</name>
-    <title>Further Application Details and Assumptions</title>
-    <filename>tr_Apps</filename>
-  </compound>
-  <compound kind="page">
-    <name>tr_buildFromSource</name>
-    <title>Build CaPTk from Source</title>
-    <filename>tr_buildFromSource</filename>
-  </compound>
-  <compound kind="page">
-    <name>tr_forDeves</name>
-    <title>For Developers</title>
-    <filename>tr_forDeves</filename>
+    <docanchor file="Technical_Reference" title="Further Application Details and Assumptions">tr_Apps</docanchor>
+    <docanchor file="Technical_Reference" title="Image Visualization">appsVisualization</docanchor>
+    <docanchor file="Technical_Reference" title="Extracted Features">appsFeatures</docanchor>
+    <docanchor file="Technical_Reference" title="Build CaPTk from Source">tr_buildFromSource</docanchor>
+    <docanchor file="Technical_Reference" title="Prerequisites">prerequisites</docanchor>
+    <docanchor file="Technical_Reference" title="Build">actualBuild</docanchor>
+    <docanchor file="Technical_Reference" title="Documentation &amp; Tests">optionalBuilds</docanchor>
+    <docanchor file="Technical_Reference" title="Linux Build Guide">linuxBuild</docanchor>
+    <docanchor file="Technical_Reference" title="For Developers">tr_forDeves</docanchor>
+    <docanchor file="Technical_Reference" title="General Information">generalInfo</docanchor>
+    <docanchor file="Technical_Reference" title="Dependencies">dependencies</docanchor>
+    <docanchor file="Technical_Reference" title="Integrating your C++ application into CaPTk">cppIntegration</docanchor>
+    <docanchor file="Technical_Reference" title="Integrating your Python application into CaPTk">pyIntegration</docanchor>
   </compound>
   <compound kind="page">
     <name>Download</name>
