@@ -267,26 +267,10 @@
     <name>Science</name>
     <title>Scientific Findings using CaPTk</title>
     <filename>Science</filename>
-  </compound>
-  <compound kind="page">
-    <name>phiEstimator</name>
-    <title>Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients</title>
-    <filename>phiEstimator</filename>
-  </compound>
-  <compound kind="page">
-    <name>survivalPredictor</name>
-    <title>Prediction of Overall Survival in Glioblastoma Patients</title>
-    <filename>survivalPredictor</filename>
-  </compound>
-  <compound kind="page">
-    <name>recurrencePredictor</name>
-    <title>Probability Maps of Potential Recurrence of Glioblastoma Tumors</title>
-    <filename>recurrencePredictor</filename>
-  </compound>
-  <compound kind="page">
-    <name>libraPapers</name>
-    <title>Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer</title>
-    <filename>libraPapers</filename>
+    <docanchor file="Science" title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients">phiEstimator</docanchor>
+    <docanchor file="Science" title="Prediction of Overall Survival in Glioblastoma Patients">survivalPredictor</docanchor>
+    <docanchor file="Science" title="Probability Maps of Potential Recurrence of Glioblastoma Tumors">recurrencePredictor</docanchor>
+    <docanchor file="Science" title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer">libraPapers</docanchor>
   </compound>
   <compound kind="page">
     <name>Technical_Reference</name>

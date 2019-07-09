@@ -28,7 +28,12 @@ var NAVTREE =
     [ "Installation Instructions", "Installation.html", null ],
     [ "Getting Started", "Getting_Started.html", "Getting_Started" ],
     [ "How To Guides", "How_To_Guides.html", "How_To_Guides" ],
-    [ "Scientific Findings using CaPTk", "Science.html", "Science" ],
+    [ "Scientific Findings using CaPTk", "Science.html", [
+      [ "Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients", "Science.html#phiEstimator", null ],
+      [ "Prediction of Overall Survival in Glioblastoma Patients", "Science.html#survivalPredictor", null ],
+      [ "Probability Maps of Potential Recurrence of Glioblastoma Tumors", "Science.html#recurrencePredictor", null ],
+      [ "Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer", "Science.html#libraPapers", null ]
+    ] ],
     [ "Technical Reference", "Technical_Reference.html", [
       [ "Further Application Details and Assumptions", "Technical_Reference.html#tr_Apps", [
         [ "Image Visualization", "Technical_Reference.html#appsVisualization", null ],
