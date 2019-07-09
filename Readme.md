@@ -39,7 +39,7 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11481 |
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
-## [Frequently Asked Questions (FAQ)](sarthakpati.github.io/CaPTk/gs_FAQ.html)
+## [Frequently Asked Questions (FAQ)](https://sarthakpati.github.io/CaPTk/gs_FAQ.html)
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.
