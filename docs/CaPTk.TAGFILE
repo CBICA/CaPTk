@@ -97,171 +97,43 @@
     <name>How_To_Guides</name>
     <title>How To Guides</title>
     <filename>How_To_Guides</filename>
-  </compound>
-  <compound kind="page">
-    <name>ht_Preprocessing</name>
-    <title>Pre-processing</title>
-    <filename>ht_Preprocessing</filename>
-  </compound>
-  <compound kind="page">
-    <name>preprocessing_dcm2nii</name>
-    <title>DICOM to NIfTI conversion</title>
-    <filename>preprocessing_dcm2nii</filename>
-  </compound>
-  <compound kind="page">
-    <name>preprocessing_reg</name>
-    <title>Image Co-registration</title>
-    <filename>preprocessing_reg</filename>
-  </compound>
-  <compound kind="page">
-    <name>preprocessing_susan</name>
-    <title>Denoise-SUSAN (ITK filter)</title>
-    <filename>preprocessing_susan</filename>
-  </compound>
-  <compound kind="page">
-    <name>preprocessing_biasN4</name>
-    <title>N4 Bias Correction (ITK filter)</title>
-    <filename>preprocessing_biasN4</filename>
-  </compound>
-  <compound kind="page">
-    <name>preprocessing_histoMatch</name>
-    <title>Histogram Matching</title>
-    <filename>preprocessing_histoMatch</filename>
-  </compound>
-  <compound kind="page">
-    <name>preprocessing_zScoreNorm</name>
-    <title>Z-Scoring Normalization</title>
-    <filename>preprocessing_zScoreNorm</filename>
-  </compound>
-  <compound kind="page">
-    <name>ht_Segmentation</name>
-    <title>Segmentation</title>
-    <filename>ht_Segmentation</filename>
-  </compound>
-  <compound kind="page">
-    <name>seg_GeoTrain</name>
-    <title>Geodesic Training Segmentation</title>
-    <filename>seg_GeoTrain</filename>
-  </compound>
-  <compound kind="page">
-    <name>seg_Geodesic</name>
-    <title>Geodesic Distance Transform-based Segmentation</title>
-    <filename>seg_Geodesic</filename>
-  </compound>
-  <compound kind="page">
-    <name>seg_SNAP</name>
-    <title>ITK-SNAP</title>
-    <filename>seg_SNAP</filename>
-  </compound>
-  <compound kind="page">
-    <name>seg_DL</name>
-    <title>Deep Learning Segmentation</title>
-    <filename>seg_DL</filename>
-  </compound>
-  <compound kind="page">
-    <name>ht_FeatureExtraction</name>
-    <title>Feature Extraction</title>
-    <filename>ht_FeatureExtraction</filename>
-  </compound>
-  <compound kind="page">
-    <name>ht_SpecialApps</name>
-    <title>Specialized Applications (SAs) Usage</title>
-    <filename>ht_SpecialApps</filename>
-  </compound>
-  <compound kind="page">
-    <name>Glioblastoma_Molecular</name>
-    <title>Brain Cancer: Glioblastoma Molecular Subtype Prediction</title>
-    <filename>Glioblastoma_Molecular</filename>
-  </compound>
-  <compound kind="page">
-    <name>Glioblastoma_WhiteStripe</name>
-    <title>Brain Cancer: WhiteStripe Normalization</title>
-    <filename>Glioblastoma_WhiteStripe</filename>
-  </compound>
-  <compound kind="page">
-    <name>Glioblastoma_PHI</name>
-    <title>Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)</title>
-    <filename>Glioblastoma_PHI</filename>
-  </compound>
-  <compound kind="page">
-    <name>Glioblastoma_Recurrence</name>
-    <title>Brain Cancer: Glioblastoma Infiltration Index (Recurrence)</title>
-    <filename>Glioblastoma_Recurrence</filename>
-  </compound>
-  <compound kind="page">
-    <name>Glioblastoma_Survival</name>
-    <title>Brain Cancer: Glioblastoma Survival Prediction Index</title>
-    <filename>Glioblastoma_Survival</filename>
-  </compound>
-  <compound kind="page">
-    <name>Glioblastoma_EGFRvIII</name>
-    <title>Brain Cancer: Glioblastoma EGFRvIII SVM Index</title>
-    <filename>Glioblastoma_EGFRvIII</filename>
-  </compound>
-  <compound kind="page">
-    <name>Glioblastoma_Pseudoprogression</name>
-    <title>Brain Cancer: Pseudoprogression Infiltration Index</title>
-    <filename>Glioblastoma_Pseudoprogression</filename>
-  </compound>
-  <compound kind="page">
-    <name>Glioblastoma_Atlas</name>
-    <title>Brain Cancer: Population Atlas</title>
-    <filename>Glioblastoma_Atlas</filename>
-  </compound>
-  <compound kind="page">
-    <name>Glioblastoma_Confetti</name>
-    <title>Brain Cancer: Confetti</title>
-    <filename>Glioblastoma_Confetti</filename>
-  </compound>
-  <compound kind="page">
-    <name>Glioblastoma_Directionality</name>
-    <title>Brain Cancer: Directionality Estimator</title>
-    <filename>Glioblastoma_Directionality</filename>
-  </compound>
-  <compound kind="page">
-    <name>BreastCancer_LIBRA</name>
-    <title>Breast Cancer: Breast Density Estimation (LIBRA)</title>
-    <filename>BreastCancer_LIBRA</filename>
-  </compound>
-  <compound kind="page">
-    <name>BreastCancer_texture</name>
-    <title>Breast Cancer: Texture Feature Extraction</title>
-    <filename>BreastCancer_texture</filename>
-  </compound>
-  <compound kind="page">
-    <name>BreastCancer_breastSegmentation</name>
-    <title>Breast Cancer: Breast Segmentation</title>
-    <filename>BreastCancer_breastSegmentation</filename>
-  </compound>
-  <compound kind="page">
-    <name>LungCancer_SBRT</name>
-    <title>Lung Cancer: Radiomics Analysis of Lung Cancer</title>
-    <filename>LungCancer_SBRT</filename>
-  </compound>
-  <compound kind="page">
-    <name>Perfusion_Alignment</name>
-    <title>Miscellaneous: Perfusion Alignment</title>
-    <filename>Perfusion_Alignment</filename>
-  </compound>
-  <compound kind="page">
-    <name>Perfusion_Derivatives</name>
-    <title>Miscellaneous: Perfusion Derivatives</title>
-    <filename>Perfusion_Derivatives</filename>
-  </compound>
-  <compound kind="page">
-    <name>Diffusion_Derivatives</name>
-    <title>Miscellaneous: Diffusion Derivatives</title>
-    <filename>Diffusion_Derivatives</filename>
-  </compound>
-  <compound kind="page">
-    <name>PCA_Extraction</name>
-    <title>Miscellaneous: PCA Volume Extraction</title>
-    <filename>PCA_Extraction</filename>
-  </compound>
-  <compound kind="page">
-    <name>Training_Module</name>
-    <title>Miscellaneous: Training Module</title>
-    <filename>Training_Module</filename>
+    <docanchor file="How_To_Guides" title="Pre-processing">ht_Preprocessing</docanchor>
+    <docanchor file="How_To_Guides" title="DICOM to NIfTI conversion">preprocessing_dcm2nii</docanchor>
+    <docanchor file="How_To_Guides" title="Image Co-registration">preprocessing_reg</docanchor>
+    <docanchor file="How_To_Guides" title="Denoise-SUSAN (ITK filter)">preprocessing_susan</docanchor>
+    <docanchor file="How_To_Guides" title="N4 Bias Correction (ITK filter)">preprocessing_biasN4</docanchor>
+    <docanchor file="How_To_Guides" title="Histogram Matching">preprocessing_histoMatch</docanchor>
+    <docanchor file="How_To_Guides" title="Z-Scoring Normalization">preprocessing_zScoreNorm</docanchor>
+    <docanchor file="How_To_Guides" title="Segmentation">ht_Segmentation</docanchor>
+    <docanchor file="How_To_Guides" title="Geodesic Training Segmentation">seg_GeoTrain</docanchor>
+    <docanchor file="How_To_Guides" title="Geodesic Distance Transform-based Segmentation">seg_Geodesic</docanchor>
+    <docanchor file="How_To_Guides" title="ITK-SNAP">seg_SNAP</docanchor>
+    <docanchor file="How_To_Guides" title="Deep Learning Segmentation">seg_DL</docanchor>
+    <docanchor file="How_To_Guides" title="Feature Extraction">ht_FeatureExtraction</docanchor>
+    <docanchor file="How_To_Guides" title="Specialized Applications (SAs) Usage">ht_SpecialApps</docanchor>
+    <docanchor file="How_To_Guides" title="Brain Cancer">Glioblastoma</docanchor>
+    <docanchor file="How_To_Guides" title="Glioblastoma Molecular Subtype Prediction">Glioblastoma_Molecular</docanchor>
+    <docanchor file="How_To_Guides" title="WhiteStripe Normalization">Glioblastoma_WhiteStripe</docanchor>
+    <docanchor file="How_To_Guides" title="Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)">Glioblastoma_PHI</docanchor>
+    <docanchor file="How_To_Guides" title="Glioblastoma Infiltration Index (Recurrence)">Glioblastoma_Recurrence</docanchor>
+    <docanchor file="How_To_Guides" title="Glioblastoma Survival Prediction Index">Glioblastoma_Survival</docanchor>
+    <docanchor file="How_To_Guides" title="Glioblastoma EGFRvIII SVM Index">Glioblastoma_EGFRvIII</docanchor>
+    <docanchor file="How_To_Guides" title="Pseudoprogression Infiltration Index">Glioblastoma_Pseudoprogression</docanchor>
+    <docanchor file="How_To_Guides" title="Population Atlas">Glioblastoma_Atlas</docanchor>
+    <docanchor file="How_To_Guides" title="Confetti">Glioblastoma_Confetti</docanchor>
+    <docanchor file="How_To_Guides" title="Directionality Estimator">Glioblastoma_Directionality</docanchor>
+    <docanchor file="How_To_Guides" title="Breast Cancer">BreastCancer</docanchor>
+    <docanchor file="How_To_Guides" title="Breast Density Estimation (LIBRA)">BreastCancer_LIBRA</docanchor>
+    <docanchor file="How_To_Guides" title="Texture Feature Extraction">BreastCancer_texture</docanchor>
+    <docanchor file="How_To_Guides" title="Breast Segmentation">BreastCancer_breastSegmentation</docanchor>
+    <docanchor file="How_To_Guides" title="Lung Cancer">LungCancer</docanchor>
+    <docanchor file="How_To_Guides" title="Radiomics Analysis of Lung Cancer">LungCancer_SBRT</docanchor>
+    <docanchor file="How_To_Guides" title="Miscellaneous Applications">Miscellaneous</docanchor>
+    <docanchor file="How_To_Guides" title="Perfusion Alignment">misc_Perfusion_Alignment</docanchor>
+    <docanchor file="How_To_Guides" title="Perfusion Derivatives">misc_Perfusion_Derivatives</docanchor>
+    <docanchor file="How_To_Guides" title="Diffusion Derivatives">misc_Diffusion_Derivatives</docanchor>
+    <docanchor file="How_To_Guides" title="PCA Volume Extraction">misc_PCA_Extraction</docanchor>
+    <docanchor file="How_To_Guides" title="Training Module">misc_Training_Module</docanchor>
   </compound>
   <compound kind="page">
     <name>Science</name>

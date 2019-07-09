@@ -2,43 +2,18 @@
 
 \page How_To_Guides How To Guides
 
-This section provides step-by-step guidance to apply the CaPTk functionalities:
+This section provides step-by-step guidance to apply the CaPTk functionalities.
 
-- \subpage ht_Preprocessing "Pre-processing"
-- \subpage ht_Segmentation "Segmentation"
-- \subpage ht_FeatureExtraction "Feature Extraction"
-- \subpage ht_SpecialApps "Specialized Applications Usage"
+\tableofcontents
 
 Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
 
 --------
-*/
 
+\section ht_Preprocessing Pre-processing
+Contains the preprocessing applications for data processing.
 
-
-
-
-
-
-
-
-
-/**
-\page ht_Preprocessing Pre-processing
-Contains the following applications: 
-
-- \subpage preprocessing_dcm2nii "DICOM to NIfTI conversion"
-- \subpage preprocessing_reg "Registration"
-- \subpage preprocessing_susan "Denoise-SUSAN (ITK filter)"
-- \subpage preprocessing_biasN4 "N4 Bias Correction (ITK filter)"
-- \subpage preprocessing_histoMatch "Histogram Matching"
-- \subpage preprocessing_zScoreNorm "Z-Score Normalization"
-
---------
-*/
-
-/**  
-\page preprocessing_dcm2nii DICOM to NIfTI conversion
+\subsection preprocessing_dcm2nii DICOM to NIfTI conversion
 This tool converts a DICOM series into the Neuroimaging
 Informatics Technology Initiative (NIfTI) file format.
 
@@ -56,11 +31,7 @@ This can also be used from the command line:
 [LINUX] captk Utlities -i C:/test/dicomFolderWithSingleSubject -d2n 
 \endverbatim
 
---------
-*/
-
-/**  
-\page preprocessing_reg Image Co-registration
+\subsection preprocessing_reg Image Co-registration
 This tool registers multiple moving images to a single target image using the Greedy Registration technique [1].
 
 <b>REQUIREMENTS:</b>
@@ -85,15 +56,10 @@ This can also be used from the command line:
 
 References:
 
-<ol>
-  <li>P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI, Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127</li>
-  <li>www.github.com/pyushkevich/greedy
-</ol>
+- P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI, Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127
+- www.github.com/pyushkevich/greedy
 
-*/
-
-/**  
-\page preprocessing_susan Denoise-SUSAN (ITK filter)
+\subsection preprocessing_susan Denoise-SUSAN (ITK filter)
 This tool smooths an image already loaded in CaPTk, to remove any high frequency intensity variations (i.e., noise), using the SUSAN algorithm [1].
 
 <b>REQUIREMENTS:</b>
@@ -116,14 +82,9 @@ This can also be used from the command line:
 
 Reference:
 
-<ol>
-  <li>S.M.Smith, J.M.Brady. "SUSAN-A new approach to low level image processing", International Journal of Computer Vision. 23(1):45-78, 1997.</li>
-</ol>
+- S.M.Smith, J.M.Brady. "SUSAN-A new approach to low level image processing", International Journal of Computer Vision. 23(1):45-78, 1997.
 
-*/
-
-/**  
-\page preprocessing_biasN4 N4 Bias Correction (ITK filter)
+\subsection preprocessing_biasN4 N4 Bias Correction (ITK filter)
 This tool corrects an image, already loaded in CaPTk, for magnetic field inhomogeneities using a non-parametric method [1].
 
 <b>REQUIREMENTS:</b>
@@ -147,14 +108,9 @@ This can also be used from the command line:
 
 Reference:
 
-<ol>
-  <li>J.G.Sled, A.P.Zijdenbos, A.C.Evans. "A nonparametric method for automatic correction of intensity nonuniformity in MRI data" IEEE Trans Med Imaging. 17(1):87-97, 1998.</li>
-</ol>
+- J.G.Sled, A.P.Zijdenbos, A.C.Evans. "A nonparametric method for automatic correction of intensity nonuniformity in MRI data" IEEE Trans Med Imaging. 17(1):87-97, 1998.
 
-*/
-
-/**  
-\page preprocessing_histoMatch Histogram Matching
+\subsection preprocessing_histoMatch Histogram Matching
 This tool normalizes the intensity profile of an input image based on the intensity profile of a reference image [1].
 
 <b>REQUIREMENTS:</b>
@@ -178,13 +134,9 @@ This can also be used from the command line:
 
 Reference:
 
-<ol>
-  <li>L.G.Nyul, J.K.Udupa, X.Zhang, "New Variants of a Method of MRI Scale Standardization", IEEE Trans Med Imaging. 19(2):143-50, 2000. DOI:10.1109/42.836373</li>
-</ol>
-*/
+- L.G.Nyul, J.K.Udupa, X.Zhang, "New Variants of a Method of MRI Scale Standardization", IEEE Trans Med Imaging. 19(2):143-50, 2000. DOI:10.1109/42.836373
 
-/**  
-\page preprocessing_zScoreNorm Z-Scoring Normalization
+\subsection preprocessing_zScoreNorm Z-Scoring Normalization
 This tool does a z-scoring based normalization on the loaded image.
 
 <b>REQUIREMENTS:</b>
@@ -210,38 +162,14 @@ Preprocessing.exe -i C:/test/input.nii.gz -m C:/test/input_binaryMask.nii.gz -o 
 
 Reference:
 
-<ol>
-  <li>T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010. DOI:10.1002/hbm.20906</li>
-</ol>
-
-*/
+- T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010. DOI:10.1002/hbm.20906
 
 
+\section ht_Segmentation Segmentation
 
+There are various segmentation tools available within CaPTk. They are enumerated in the following sub-sections.
 
-
-
-
-
-
-
-
-
-/**
-\page ht_Segmentation Segmentation
-
-There are various segmentation tools available within CaPTk. They are enumerated as follows:
-
-- \subpage seg_GeoTrain "Geodesic Training Segmentation"
-- \subpage seg_Geodesic "Geodesic Distance Transform-based Segmentation"
-- \subpage seg_SNAP "ITK-SNAP"
-- \subpage seg_DL "Deep Learning Segmentation"
-
-*/
-
-/**
-
-\page seg_GeoTrain Geodesic Training Segmentation
+\subsection seg_GeoTrain Geodesic Training Segmentation
 
 'GeodesicTraining' builds upon the geodesic distance based segmentation by using machine learning (SVMs). 
 
@@ -266,11 +194,7 @@ One or more co-register images of the same subject. A ROI image has to be drawn 
 
 --------
 
-*/
-
-/**
-
-\page seg_Geodesic Geodesic Distance Transform-based Segmentation
+\subsection seg_Geodesic Geodesic Distance Transform-based Segmentation
 The geodesic distance transform based segmentation is a semi-automatic technique to delineate structures of distinct intensity.
 
 <b> REQUIREMENTS:</b>
@@ -294,11 +218,8 @@ This application is also available as with a stand-alone CLI for data analysts t
 
 --------
 
-*/
 
-/**
-
-\page seg_SNAP ITK-SNAP
+\subsection seg_SNAP ITK-SNAP
 ITK-SNAP is a stand-alone software application used to segment structures in 3D medical images and other utilities [2] - http://www.itksnap.org/pmwiki/pmwiki.php.
 
 Within CaPTk specifically, ITK-SNAP is tightly integrated as a tool used for segmentation, accepting files chosen through the CaPTk interface and returning results for further use within CaPTk. ITK-SNAP uses a combination of random forests and level sets to obtain precise segmentations of structures [2]. Please see the following video for detailed instructions: https://www.youtube.com/watch?v=-gBcFxKf-7Q
@@ -309,19 +230,15 @@ Within CaPTk specifically, ITK-SNAP is tightly integrated as a tool used for seg
 
 References:
 
-<ol>
-  <li>B.Gaonkar, L.Shu, G.Hermosillo, Y.Zhan, "Adaptive geodesic transform for segmentation of vertebrae on CT images", Proceedings Volume 9035, Medical Imaging 2014: Computer-Aided Diagnosis; 9035:16, 2014. DOI:10.1117/12.2043527.</li>
-  <li>P.Yushkevich, Y.Gao, G.Gerig, "ITK-SNAP: An interactive tool for semi-automatic segmentation of multi-modality biomedical images", Conf Proc IEEE Eng Med Biol Soc. 2016:3342-3345, 2016. DOI:10.1109/EMBC.2016.7591443.</li>
-</ol>
+- B.Gaonkar, L.Shu, G.Hermosillo, Y.Zhan, "Adaptive geodesic transform for segmentation of vertebrae on CT images", Proceedings Volume 9035, Medical Imaging 2014: Computer-Aided Diagnosis; 9035:16, 2014. DOI:10.1117/12.2043527.
+- P.Yushkevich, Y.Gao, G.Gerig, "ITK-SNAP: An interactive tool for semi-automatic segmentation of multi-modality biomedical images", Conf Proc IEEE Eng Med Biol Soc. 2016:3342-3345, 2016. DOI:10.1109/EMBC.2016.7591443.
 
 <br>
 
 --------
 
-*/
 
-/**
-\page seg_DL Deep Learning Segmentation
+\subsection seg_DL Deep Learning Segmentation
 
 For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the pre-processing).
 
@@ -345,16 +262,12 @@ DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.
 
 References:
 
-<ol>
-  <li>K.Kamnitsas, C.Ledig, V.F.J.Newcombe, J.P.Simpson, A.D.Kane, D.K.Menon, D.Rueckert, B.Glocker, "Efficient Multi-Scale 3D CNN with Fully Connected CRF for Accurate Brain Lesion Segmentation", Medical Image Analysis, 2016.</li>
-  <li>K.Kamnitsas, L.Chen, C.Ledig, D.Rueckert, B.Glocker, "Multi-Scale 3D CNNs for segmentation of brain Lesions in multi-modal MRI", in proceeding of ISLES challenge, MICCAI 2015.</li>
-</ol>
-
-*/
+- K.Kamnitsas, C.Ledig, V.F.J.Newcombe, J.P.Simpson, A.D.Kane, D.K.Menon, D.Rueckert, B.Glocker, "Efficient Multi-Scale 3D CNN with Fully Connected CRF for Accurate Brain Lesion Segmentation", Medical Image Analysis, 2016.
+- K.Kamnitsas, L.Chen, C.Ledig, D.Rueckert, B.Glocker, "Multi-Scale 3D CNNs for segmentation of brain Lesions in multi-modal MRI", in proceeding of ISLES challenge, MICCAI 2015.
 
 
-/**
-\page ht_FeatureExtraction Feature Extraction
+\section ht_FeatureExtraction Feature Extraction
+
 <b>REQUIREMENTS:</b>
 	-# An image or a set of co-registered images.
 	-# An ROI file containing various labels, for which features will be extracted.
@@ -393,44 +306,20 @@ NOTE: The output of Feature Extraction can be used to run the <a href="Training_
 
 References:
 
-<ol>
-  <li>Y.Zheng, B.M.Keller, S.Ray, Y.Wang, E.F.Conant, J.C.Gee, D.Kontos, "Parenchymal texture analysis in digital mammography: A fully automated pipeline for breast cancer risk assessment", Medical Physics, 2015.</li>
-  <li>H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.</li>
-</ol>
+- Y.Zheng, B.M.Keller, S.Ray, Y.Wang, E.F.Conant, J.C.Gee, D.Kontos, "Parenchymal texture analysis in digital mammography: A fully automated pipeline for breast cancer risk assessment", Medical Physics, 2015.
+- H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.
 
 --------
 
-*/
+\section ht_SpecialApps Specialized Applications (SAs) Usage
 
-/**
-\page ht_SpecialApps Specialized Applications (SAs) Usage
-Contains the following applications: 
-
-- \subpage Glioblastoma_WhiteStripe "Brain Cancer: WhiteStripe Normalization"
-- \subpage Glioblastoma_Atlas "Brain Cancer: Population Atlas"
-- \subpage Glioblastoma_Confetti "Brain Cancer: Confetti"
-- \subpage Glioblastoma_Recurrence "Brain Cancer: Glioblastoma Infiltration Index (Recurrence)"
-- \subpage Glioblastoma_Pseudoprogression "Brain Cancer: Pseudoprogression Infiltration Index"
-- \subpage Glioblastoma_Survival "Brain Cancer: Glioblastoma Survival Prediction Index"
-- \subpage Glioblastoma_PHI "Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)"
-- \subpage Glioblastoma_EGFRvIII "Brain Cancer: Glioblastoma EGFRvIII SVM Index"
-- \subpage Glioblastoma_Molecular "Brain Cancer: Glioblastoma Molecular Subtype Prediction"
-- \subpage BreastCancer_LIBRA "Breast Cancer: Breast Density Estimation (LIBRA)"
-- \subpage BreastCancer_texture "Breast Cancer: Texture Feature Extraction"
-- \subpage BreastCancer_breastSegmentation "Breast Cancer: Breast Segmentation"
-- \subpage LungCancer_SBRT "Lung Cancer: Radiomics Analysis of Lung Cancer (SBRT Lung)"
-- \subpage Glioblastoma_Directionality "Miscellaneous: Directionality Estimator"
-- \subpage Perfusion_Alignment "Miscellaneous: Perfusion Alignment"
-- \subpage Perfusion_Derivatives "Miscellaneous: Perfusion Derivatives"
-- \subpage Diffusion_Derivatives "Miscellaneous: Diffusion Derivatives"
-- \subpage Training_Module "Miscellaneous: Training Module"
-- \subpage PCA_Extraction "Miscellaneous: PCA Volume Extraction"
+Each of the specialized applications are described in the following sub-sections.
 
 --------
-*/
 
-/**
-\page Glioblastoma_Molecular Brain Cancer: Glioblastoma Molecular Subtype Prediction
+\subsection Glioblastoma Brain Cancer
+
+\subsubsection Glioblastoma_Molecular Glioblastoma Molecular Subtype Prediction
 This application provides the prediction of the molecular subtype of <i>de novo</i> glioblastoma patients using baseline pre-operative multi-parametric MRI analysis [1].
 
 <b>REQUIREMENTS:</b>
@@ -490,15 +379,12 @@ MolecularSubtypePredictor.exe -t 1 -i C:/MolecularSubtypeInput -m C:/MolecularSu
 
 References:
 
-<ul>
-  <li>L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127.</li>
-</ul>
+- L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127.
 
-*/
+--------
 
+\subsubsection Glioblastoma_WhiteStripe WhiteStripe Normalization
 
-/**
-\page Glioblastoma_WhiteStripe Brain Cancer: WhiteStripe Normalization
 This algorithm normalizes conventional brain MRI scans [1] by detecting a latent subdistribution of normal tissue and linearly scaling the histogram of images. It is to be used on structural modalities only.
 
 <b>REQUIREMENTS:</b>
@@ -523,14 +409,12 @@ WhiteStripe.exe -i C:/inputImage.nii.gz -o C:/outputImage.nii.gz
 
 Reference:
 
-<ol>
-  <li>R.T.Shinohara, E.M.Sweeney, J.Goldsmith, N.Shiee, F.J.Mateen, P.A.Calabresi, S.Jarso, D.L.Pham, D.S.Reich, C.M.Crainiceanu, Australian Imaging Biomarkers Lifestyle Flagship Study of Ageing, Alzheimer's Disease Neuroimaging Initiative. "Statistical normalization techniques for magnetic resonance imaging", Neuroimage Clin. 6:9-19, 2014. DOI:10.1016/j.nicl.2014.08.008</li>
-</ol>
+- R.T.Shinohara, E.M.Sweeney, J.Goldsmith, N.Shiee, F.J.Mateen, P.A.Calabresi, S.Jarso, D.L.Pham, D.S.Reich, C.M.Crainiceanu, Australian Imaging Biomarkers Lifestyle Flagship Study of Ageing, Alzheimer's Disease Neuroimaging Initiative. "Statistical normalization techniques for magnetic resonance imaging", Neuroimage Clin. 6:9-19, 2014. DOI:10.1016/j.nicl.2014.08.008
 
-*/
-  
-/**  
-\page Glioblastoma_PHI Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)
+--------
+
+\subsubsection Glioblastoma_PHI Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)
+
 This application evaluates the Epidermal Growth Factor Receptor splice variant III (EGFRvIII) status in primary glioblastoma, by quantitative pattern analysis of the spatial heterogeneity of peritumoral perfusion dynamics from Dynamic Susceptibility Contrast (DSC) MRI scans, through the Peritumoral Heterogeneity Index (PHI / &phi;-index) [1-3].
 
 <b>REQUIREMENTS:</b>
@@ -568,17 +452,14 @@ Please note that during annotation:
 
 References:
 
-<ol>
-  <li>S.Bakas, H.Akbari, J.Pisapia, M.Rozycki, D.M.O'Rourke, C.Davatzikos. "Identification of Imaging Signatures of the Epidermal Growth Factor Receptor Variant III (EGFRvIII) in Glioblastoma", Neuro Oncol. 17(Suppl 5):v154, 2015. DOI:10.1093/neuonc/nov225.05</li>
-  <li>S.Bakas, Z.A.Binder, H.Akbari, M.Martinez-Lage, M.Rozycki, J.J.D.Morrissette, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "Highly-expressed wild-type EGFR and EGFRvIII mutant glioblastomas have similar MRI signature, consistent with deep peritumoral infiltration", Neuro Oncol. 18(Suppl 6):vi125-vi126, 2016. DOI:10.1093/neuonc/now212.523</li>
-  <li>S.Bakas, H.Akbari, J.Pisapia, M.Martinez-Lage, M.Rozycki, S.Rathore, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "In vivo detection of EGFRvIII in glioblastoma via perfusion magnetic resonance imaging signature consistent with deep peritumoral infiltration: the phi-index", Clin Cancer Res. 23(16):4724-4734, 2017. DOI:10.1158/1078-0432.CCR-16-1871</li>
-</ol>
+- S.Bakas, H.Akbari, J.Pisapia, M.Rozycki, D.M.O'Rourke, C.Davatzikos. "Identification of Imaging Signatures of the Epidermal Growth Factor Receptor Variant III (EGFRvIII) in Glioblastoma", Neuro Oncol. 17(Suppl 5):v154, 2015. DOI:10.1093/neuonc/nov225.05
+- S.Bakas, Z.A.Binder, H.Akbari, M.Martinez-Lage, M.Rozycki, J.J.D.Morrissette, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "Highly-expressed wild-type EGFR and EGFRvIII mutant glioblastomas have similar MRI signature, consistent with deep peritumoral infiltration", Neuro Oncol. 18(Suppl 6):vi125-vi126, 2016. DOI:10.1093/neuonc/now212.523
+- S.Bakas, H.Akbari, J.Pisapia, M.Martinez-Lage, M.Rozycki, S.Rathore, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "In vivo detection of EGFRvIII in glioblastoma via perfusion magnetic resonance imaging signature consistent with deep peritumoral infiltration: the phi-index", Clin Cancer Res. 23(16):4724-4734, 2017. DOI:10.1158/1078-0432.CCR-16-1871
 
-*/
+--------
 
-/**
+\subsubsection Glioblastoma_Recurrence Glioblastoma Infiltration Index (Recurrence)
 
-\page Glioblastoma_Recurrence Brain Cancer: Glioblastoma Infiltration Index (Recurrence)
 This application provides a probability map of deeply infiltrating tumor in the peritumoral edema/invasion region that largely agrees with subsequent recurrence in <i>de novo</i> glioblastoma patients, via multi-parametric MRI analysis, as shown in [1-3].
 
 <b>REQUIREMENTS:</b>
@@ -645,16 +526,14 @@ RecurrenceEstimator.exe -t 1 -i C:/RecurrenceSubjects -o C:/RecurrenceOutput -m 
 
 References:
 
-<ol>
-  <li>H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458</li>
-  <li>H.Akbari, L.Macyszyn, J.Pisapia, X.Da, M.Attiah, Y.Bi, S.Pal, R.Davuluri, L.Roccograndi, N.Dahmane, R.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos, "Survival Prediction in Glioblastoma Patients Using Multi-parametric MRI Biomarkers and Machine Learning Methods", American Society of Neuroradiology, O-525:2042-2044, 2015. (http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf)</li>
-  <li>H.Akbari, L.Macyszyn, X.Da, M.Bilello, R.L.Wolf, M.Martinez-Lage, G.Biros, M.Alonso-Basanta, D.M.O'Rourke, C.Davatzikos. "Imaging Surrogates of Infiltration Obtained Via Multiparametric Imaging Pattern Analysis Predict Subsequent Location of Recurrence of Glioblastoma", Neurosurgery. 78(4):572-80, 2016. DOI:10.1227/NEU.0000000000001202</li>
-</ol>
+- H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458
+- H.Akbari, L.Macyszyn, J.Pisapia, X.Da, M.Attiah, Y.Bi, S.Pal, R.Davuluri, L.Roccograndi, N.Dahmane, R.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos, "Survival Prediction in Glioblastoma Patients Using Multi-parametric MRI Biomarkers and Machine Learning Methods", American Society of Neuroradiology, O-525:2042-2044, 2015. (http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf)
+- H.Akbari, L.Macyszyn, X.Da, M.Bilello, R.L.Wolf, M.Martinez-Lage, G.Biros, M.Alonso-Basanta, D.M.O'Rourke, C.Davatzikos. "Imaging Surrogates of Infiltration Obtained Via Multiparametric Imaging Pattern Analysis Predict Subsequent Location of Recurrence of Glioblastoma", Neurosurgery. 78(4):572-80, 2016. DOI:10.1227/NEU.0000000000001202
 
-*/
-  
-/**
-\page Glioblastoma_Survival Brain Cancer: Glioblastoma Survival Prediction Index
+--------
+
+\subsubsection Glioblastoma_Survival Glioblastoma Survival Prediction Index
+
 This application provides the survival prediction index (SPI) of <i>de novo</i> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].
 
 <b>REQUIREMENTS:</b>
@@ -714,14 +593,12 @@ SurvivalPredictor.exe -t 1 -i C:/SurvivalInput -m C:/SurvivalModel -o C:/Surviva
 
 Reference:
 
-<ol>
-  <li>L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127</li>
-</ol>
+- L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127
 
-*/
+--------
 
-/**
-\page Glioblastoma_EGFRvIII Brain Cancer: Glioblastoma EGFRvIII SVM Index
+\subsubsection Glioblastoma_EGFRvIII Glioblastoma EGFRvIII SVM Index
+
 This application provides the detection of EGFRvIII mutation status of <i>de novo</i> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].
 
 <b>REQUIREMENTS:</b>
@@ -781,14 +658,12 @@ EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInput -m C:/EGFRvIIIModel -o C:/EG
 
 Reference:
 
-<ol>
-  <li>H. Akbari, S. Bakas, J.M. Pisapia, M.P. Nasrallah, M. Rozycki, M. Martinez-Lage, J.J.D. Morrissette, N. Dahmane, D.M.O’Rourke, C. Davatzikos. "In vivo evaluation of EGFRvIII mutation in primary glioblastoma patients via complex multiparametric MRI signature", Neuro Oncol. 20(8):1068-1079, 2018</li>
-</ol>  
+- H. Akbari, S. Bakas, J.M. Pisapia, M.P. Nasrallah, M. Rozycki, M. Martinez-Lage, J.J.D. Morrissette, N. Dahmane, D.M.O’Rourke, C. Davatzikos. "In vivo evaluation of EGFRvIII mutation in primary glioblastoma patients via complex multiparametric MRI signature", Neuro Oncol. 20(8):1068-1079, 2018
+ 
+--------
 
-*/
+\subsubsection Glioblastoma_Pseudoprogression Pseudoprogression Infiltration Index
 
-/**
-\page Glioblastoma_Pseudoprogression Brain Cancer: Pseudoprogression Infiltration Index
 This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].
 
 <b>REQUIREMENTS:</b>
@@ -853,14 +728,11 @@ PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionSubjects -o C:/Pseudo
 
 Reference:
 
-<ol>
-  <li>H.Akbari, S.Bakas, M.Martinez-Lage, M.Nasrallah, M.Rozycki, S.Rathore, G.Shukla, S.Mohan, M.Bilello, C.Davatzikos, "Quantitative radiomics and machine learning to distinguish true progression from pseudoprogression in patients with GBM", ASNR 56th Annual Meeting, 2018.</li>
-</ol>
+- H.Akbari, S.Bakas, M.Martinez-Lage, M.Nasrallah, M.Rozycki, S.Rathore, G.Shukla, S.Mohan, M.Bilello, C.Davatzikos, "Quantitative radiomics and machine learning to distinguish true progression from pseudoprogression in patients with GBM", ASNR 56th Annual Meeting, 2018.
 
-*/
-  
-/**
-\page Glioblastoma_Atlas Brain Cancer: Population Atlas
+--------
+
+\subsubsection Glioblastoma_Atlas Population Atlas
 This application facilitates the users to generate population atlases for patients with different tumor subgroups [1] to emphasize their heterogeneity.
 
 <b>REQUIREMENTS:</b>
@@ -891,14 +763,11 @@ PopulationAtlases.exe -i C:/PopulationAtlasesInput -l C:/GroupFile -a C:/AtlasFi
 
 Reference:
 
-<ol>
-  <li>M. Bilello, H. Akbari, X. Da, J.M.Pisapia, S.Mohan, R.L.Wolf, D.M.O'Rourke, M.Martinez-Lage, C.Davatzikos. "Population-based MRI atlases of spatial distribution are specific to patient and tumor characteristics in glioblastoma", Neuroimage Clin. 12:34-40, 2016. DOI:10.1016/j.nicl.2016.03.007</li>
-</ol>
+- M. Bilello, H. Akbari, X. Da, J.M.Pisapia, S.Mohan, R.L.Wolf, D.M.O'Rourke, M.Martinez-Lage, C.Davatzikos. "Population-based MRI atlases of spatial distribution are specific to patient and tumor characteristics in glioblastoma", Neuroimage Clin. 12:34-40, 2016. DOI:10.1016/j.nicl.2016.03.007
 
-*/
+--------
 
-/**
-\page Glioblastoma_Confetti Brain Cancer: Confetti
+\subsubsection Glioblastoma_Confetti Confetti
 This is a method for automated extraction of white matter tracts of interest in a consistent and comparable manner over a large group of subjects without drawing the inclusion and exclusion ROIs, facilitating an easy correspondence between different subjects, as well as providing a representation that is robust to edema, mass effect, and tract infiltration [1-3]. Confetti includes three main steps: 
 -# Connectivity signature generation for fibers
 -# Clustering of fibers using a mixture of multinomials (MNs) clustering method and Expectation-Maximization (EM) optimization framework
@@ -941,20 +810,17 @@ This is a method for automated extraction of white matter tracts of interest in 
 
 References:
 
-<ol>
-  <li>B.Tunc, M.Ingalhalikar, W.A.Parker, J.Lecoeur, N.Singh, R.L.Wolf, L.Macyszyn, S.Brem, R.Verma, "Individualized Map of White Matter Pathways: Connectivity-based Paradigm for Neurosurgical Planning", Neurosurgery. 79(4):568-77, 2016. DOI:10.1227/NEU.0000000000001183.</li>
-  <li>B.Tunc, W.A.Parker, M.Ingalhalikar, R.Verma, "Automated tract extraction via atlas based Adaptive Clustering", NeuroImage. 102(2):596-607, 2014. DOI:10.1016/j.neuroimage.2014.08.021</li>
-  <li>B.Tunc, A.R.Smith, D.Wasserman, X.Pennec, W.M.Wells, R.Verma, K.M.Pohl, "Multinomial Probabilistic Fiber Representation for Connectivity Driven Clustering", Inf Process Med Imaging. 23:730-41, 2013.</li>
-  <li>B.Fischl, M.I.Sereno, A.M.Dale, "Cortical surface-based analysis. II: Inflation, flattening, and a surface-based coordinate system", NeuroImage. 9:195-207, 1999. DOI:10.1006/nimg.1998.0396 </li>
-  <li>R.S.Desikan, F.Segonne, B.Fischl, B.Quinn, B.Dickerson, D.Blacker, R.Buckner, A.Dale, R.Maguire, B.Hyman, M.Albert, R.Killiany, "An automated labeling system for subdividing the human cerebral cortex on MRI scans into gyral based regions of interest", NeuroImage. 31(3):968-80, 2006. DOI:10.1016/j.neuroimage.2006.01.021</li>
-  <li>M.Jenkinson, C.F.Beckmann, T.E.J.Behrens, M.W.Woolrich, S.M.Smith, "FSL", Neuroimage. 62(2):782-790, 2012. DOI:10.1016/j.neuroimage.2011.09.015</li>
-</ol>
+- B.Tunc, M.Ingalhalikar, W.A.Parker, J.Lecoeur, N.Singh, R.L.Wolf, L.Macyszyn, S.Brem, R.Verma, "Individualized Map of White Matter Pathways: Connectivity-based Paradigm for Neurosurgical Planning", Neurosurgery. 79(4):568-77, 2016. DOI:10.1227/NEU.0000000000001183.
+- B.Tunc, W.A.Parker, M.Ingalhalikar, R.Verma, "Automated tract extraction via atlas based Adaptive Clustering", NeuroImage. 102(2):596-607, 2014. DOI:10.1016/j.neuroimage.2014.08.021
+- B.Tunc, A.R.Smith, D.Wasserman, X.Pennec, W.M.Wells, R.Verma, K.M.Pohl, "Multinomial Probabilistic Fiber Representation for Connectivity Driven Clustering", Inf Process Med Imaging. 23:730-41, 2013.
+- B.Fischl, M.I.Sereno, A.M.Dale, "Cortical surface-based analysis. II: Inflation, flattening, and a surface-based coordinate system", NeuroImage. 9:195-207, 1999. DOI:10.1006/nimg.1998.0396 
+- R.S.Desikan, F.Segonne, B.Fischl, B.Quinn, B.Dickerson, D.Blacker, R.Buckner, A.Dale, R.Maguire, B.Hyman, M.Albert, R.Killiany, "An automated labeling system for subdividing the human cerebral cortex on MRI scans into gyral based regions of interest", NeuroImage. 31(3):968-80, 2006. DOI:10.1016/j.neuroimage.2006.01.021
+- M.Jenkinson, C.F.Beckmann, T.E.J.Behrens, M.W.Woolrich, S.M.Smith, "FSL", Neuroimage. 62(2):782-790, 2012. DOI:10.1016/j.neuroimage.2011.09.015
 
-*/
+--------
 
+\subsubsection Glioblastoma_Directionality Directionality Estimator
 
-/**
-\page Glioblastoma_Directionality Brain Cancer: Directionality Estimator
 This application estimates the volumetric changes and their directionality for a given ROI across two timepoints [1] and also returns the projections of the boundary point with the maximum distance from a seedpoint (with label <b>TU</b>) in each of the 3 2D visualized planes. 
 	
 <b> REQUIREMENTS:</b>
@@ -993,16 +859,15 @@ The following files are saved in the output folder:
 
 Reference
 
--# M.E.Schweitzer, M.A.Stavarache, N.Petersen, S.Bakas, A.J.Tsiouris, C.Davatzikos, M.G.Kaplitt, M.M.Souweidane, "Modulation of Convection Enhanced Delivery (CED) distribution using Focused Ultrasound (FUS)", Neuro Oncol. 19(Suppl 6):vi272, 2017. DOI:10.1093/neuonc/nox168.1118
+- M.E.Schweitzer, M.A.Stavarache, N.Petersen, S.Bakas, A.J.Tsiouris, C.Davatzikos, M.G.Kaplitt, M.M.Souweidane, "Modulation of Convection Enhanced Delivery (CED) distribution using Focused Ultrasound (FUS)", Neuro Oncol. 19(Suppl 6):vi272, 2017. DOI:10.1093/neuonc/nox168.1118
 
 <br>
 
 --------
-*/
 
+\subsection BreastCancer Breast Cancer
 
-/**
-\page BreastCancer_LIBRA Breast Cancer: Breast Density Estimation (LIBRA)
+\subsubsection BreastCancer_LIBRA Breast Density Estimation (LIBRA)
 The Laboratory for Individualized Breast Radiodensity Assessment (LIBRA) is a software application for fully-automated breast density segmentation in full-field digital mammography (FFDM) [1]. LIBRA is available in single and batch mode. 
 
 <b>REQUIREMENTS:</b>
@@ -1049,15 +914,11 @@ ${captk_install_dir}/bin/libra --input C:/inputDICOMDir --output C:/outputDir # 
 
 Reference:
 
-<ol>
-  <li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530</li>
-</ol>
+- B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530
 
-*/
+--------
 
-
-/**
-\page BreastCancer_texture Breast Cancer: Texture Feature Extraction
+\subsubsection BreastCancer_texture Texture Feature Extraction
 
 This application extracts the Texture Features as described in the paper [1]. It uses the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the computation. 
 
@@ -1082,15 +943,11 @@ BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1
 
 Reference:
 
-<ol>
-  <li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530</li>
-</ol>
+- B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530
 
-*/
+--------
 
-
-/**
-\page BreastCancer_breastSegmentation Breast Cancer: Breast Segmentation
+\subsubsection BreastCancer_breastSegmentation Breast Segmentation
 
 This application uses LIBRA [1] to extract the breast region in the loaded image. 
 
@@ -1110,15 +967,14 @@ This application uses LIBRA [1] to extract the breast region in the loaded image
 
 Reference:
 
-<ol>
-  <li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530</li>
-</ol>
+- B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530
 
-*/
+--------
 
+\subsection LungCancer Lung Cancer
 
-/**
-\page LungCancer_SBRT Lung Cancer: Radiomics Analysis of Lung Cancer
+\subsubsection LungCancer_SBRT Radiomics Analysis of Lung Cancer
+
 This application provides a fully automatic segmentation of lung nodules and prediction of survival and nodal failure risks as a three step workflow[1].
 
 <b>REQUIREMENTS:</b>
@@ -1194,14 +1050,13 @@ It will calculate and print the predicted risks regarding survival and nodal fai
 
 Reference:
 
-<ol>
-  <li>H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.</li>
-</ol>
+- H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.
 
-*/
+--------
 
-/**
-\page Perfusion_Alignment Miscellaneous: Perfusion Alignment
+\subsection Miscellaneous Miscellaneous Applications
+
+\subsubsection misc_Perfusion_Alignment Perfusion Alignment
 
 This application does perfusion alignment of the input Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan.
 
@@ -1219,10 +1074,9 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 	-# Press "Confirm" button.
 	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
 
-*/
+--------
 
-/**
-\page Perfusion_Derivatives Miscellaneous: Perfusion Derivatives
+\subsubsection misc_Perfusion_Derivatives Perfusion Derivatives
 This application extracts various measurements from a Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan. The exact measurements comprise i) an automatically-extracted proxy to relative Cerebral Blood Volume (ap-rCBV), ii) peak height (PH), iii) percent signal recovery (PSR). Note that the ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.
 
 <b> REQUIREMENTS:</b>
@@ -1237,10 +1091,8 @@ This application extracts various measurements from a Dynamic-Susceptibility Con
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
 
 --------
-*/
 
-/**
-\page Diffusion_Derivatives Miscellaneous: Diffusion Derivatives
+\subsubsection misc_Diffusion_Derivatives Diffusion Derivatives
 This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).
 
 <b> REQUIREMENTS:</b>
@@ -1256,10 +1108,8 @@ This application extracts various measurements from a Diffusion Weighted MRI sca
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
 
 --------
-*/
 
-/**
-\page PCA_Extraction Miscellaneous: PCA Volume Extraction
+\subsubsection misc_PCA_Extraction PCA Volume Extraction
 This application extracts the principal components from DSC-MRI scans as mentioned in [1].
 
 <b> REQUIREMENTS:</b>
@@ -1278,14 +1128,12 @@ A single DSC-MRI image and a mask for which the measurements will be extracted.
 
 Reference:
 
-<ol>
-  <li>H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458</li>
-</ol>
 
-*/
+- H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458
 
-/**
-\page Training_Module Miscellaneous: Training Module
+--------
+
+\subsubsection misc_Training_Module Training Module
 This applicatiparameterizeachine">Support Vector Machineparameterize
 
 <b> REQUIREMENTS:</b>

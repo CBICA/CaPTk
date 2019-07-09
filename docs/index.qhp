@@ -36,41 +36,49 @@
           <section title="Command Line Usage" ref="gs_commandLineUsage.html" />
         </section>
         <section title="How To Guides" ref="How_To_Guides.html">
-          <section title="Pre-processing" ref="ht_Preprocessing.html">
-            <section title="DICOM to NIfTI conversion" ref="preprocessing_dcm2nii.html" />
-            <section title="Image Co-registration" ref="preprocessing_reg.html" />
-            <section title="Denoise-SUSAN (ITK filter)" ref="preprocessing_susan.html" />
-            <section title="N4 Bias Correction (ITK filter)" ref="preprocessing_biasN4.html" />
-            <section title="Histogram Matching" ref="preprocessing_histoMatch.html" />
-            <section title="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
+          <section title="Pre-processing" ref="How_To_Guides.html#ht_Preprocessing">
+            <section title="DICOM to NIfTI conversion" ref="How_To_Guides.html#preprocessing_dcm2nii" />
+            <section title="Image Co-registration" ref="How_To_Guides.html#preprocessing_reg" />
+            <section title="Denoise-SUSAN (ITK filter)" ref="How_To_Guides.html#preprocessing_susan" />
+            <section title="N4 Bias Correction (ITK filter)" ref="How_To_Guides.html#preprocessing_biasN4" />
+            <section title="Histogram Matching" ref="How_To_Guides.html#preprocessing_histoMatch" />
+            <section title="Z-Scoring Normalization" ref="How_To_Guides.html#preprocessing_zScoreNorm" />
           </section>
-          <section title="Segmentation" ref="ht_Segmentation.html">
-            <section title="Geodesic Training Segmentation" ref="seg_GeoTrain.html" />
-            <section title="Geodesic Distance Transform-based Segmentation" ref="seg_Geodesic.html" />
-            <section title="ITK-SNAP" ref="seg_SNAP.html" />
-            <section title="Deep Learning Segmentation" ref="seg_DL.html" />
+          <section title="Segmentation" ref="How_To_Guides.html#ht_Segmentation">
+            <section title="Geodesic Training Segmentation" ref="How_To_Guides.html#seg_GeoTrain" />
+            <section title="Geodesic Distance Transform-based Segmentation" ref="How_To_Guides.html#seg_Geodesic" />
+            <section title="ITK-SNAP" ref="How_To_Guides.html#seg_SNAP" />
+            <section title="Deep Learning Segmentation" ref="How_To_Guides.html#seg_DL" />
           </section>
-          <section title="Feature Extraction" ref="ht_FeatureExtraction.html" />
-          <section title="Specialized Applications (SAs) Usage" ref="ht_SpecialApps.html">
-            <section title="Brain Cancer: WhiteStripe Normalization" ref="Glioblastoma_WhiteStripe.html" />
-            <section title="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
-            <section title="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
-            <section title="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />
-            <section title="Brain Cancer: Pseudoprogression Infiltration Index" ref="Glioblastoma_Pseudoprogression.html" />
-            <section title="Brain Cancer: Glioblastoma Survival Prediction Index" ref="Glioblastoma_Survival.html" />
-            <section title="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
-            <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
-            <section title="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
-            <section title="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
-            <section title="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
-            <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
-            <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
-            <section title="Brain Cancer: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
-            <section title="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
-            <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-            <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
-            <section title="Miscellaneous: Training Module" ref="Training_Module.html" />
-            <section title="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
+          <section title="Feature Extraction" ref="How_To_Guides.html#ht_FeatureExtraction" />
+          <section title="Specialized Applications (SAs) Usage" ref="How_To_Guides.html#ht_SpecialApps">
+            <section title="Brain Cancer" ref="How_To_Guides.html#Glioblastoma">
+              <section title="Glioblastoma Molecular Subtype Prediction" ref="How_To_Guides.html#Glioblastoma_Molecular" />
+              <section title="WhiteStripe Normalization" ref="How_To_Guides.html#Glioblastoma_WhiteStripe" />
+              <section title="Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="How_To_Guides.html#Glioblastoma_PHI" />
+              <section title="Glioblastoma Infiltration Index (Recurrence)" ref="How_To_Guides.html#Glioblastoma_Recurrence" />
+              <section title="Glioblastoma Survival Prediction Index" ref="How_To_Guides.html#Glioblastoma_Survival" />
+              <section title="Glioblastoma EGFRvIII SVM Index" ref="How_To_Guides.html#Glioblastoma_EGFRvIII" />
+              <section title="Pseudoprogression Infiltration Index" ref="How_To_Guides.html#Glioblastoma_Pseudoprogression" />
+              <section title="Population Atlas" ref="How_To_Guides.html#Glioblastoma_Atlas" />
+              <section title="Confetti" ref="How_To_Guides.html#Glioblastoma_Confetti" />
+              <section title="Directionality Estimator" ref="How_To_Guides.html#Glioblastoma_Directionality" />
+            </section>
+            <section title="Breast Cancer" ref="How_To_Guides.html#BreastCancer">
+              <section title="Breast Density Estimation (LIBRA)" ref="How_To_Guides.html#BreastCancer_LIBRA" />
+              <section title="Texture Feature Extraction" ref="How_To_Guides.html#BreastCancer_texture" />
+              <section title="Breast Segmentation" ref="How_To_Guides.html#BreastCancer_breastSegmentation" />
+            </section>
+            <section title="Lung Cancer" ref="How_To_Guides.html#LungCancer">
+              <section title="Radiomics Analysis of Lung Cancer" ref="How_To_Guides.html#LungCancer_SBRT" />
+            </section>
+            <section title="Miscellaneous Applications" ref="How_To_Guides.html#Miscellaneous">
+              <section title="Perfusion Alignment" ref="How_To_Guides.html#misc_Perfusion_Alignment" />
+              <section title="Perfusion Derivatives" ref="How_To_Guides.html#misc_Perfusion_Derivatives" />
+              <section title="Diffusion Derivatives" ref="How_To_Guides.html#misc_Diffusion_Derivatives" />
+              <section title="PCA Volume Extraction" ref="How_To_Guides.html#misc_PCA_Extraction" />
+              <section title="Training Module" ref="How_To_Guides.html#misc_Training_Module" />
+            </section>
           </section>
         </section>
         <section title="Scientific Findings using CaPTk" ref="Science.html">
@@ -121,39 +129,6 @@
       <keyword name="Specialized Applications" id="Specialized Applications" ref="gs_specializedApps.html" />
       <keyword name="Command Line Usage" id="Command Line Usage" ref="gs_commandLineUsage.html" />
       <keyword name="How To Guides" id="How To Guides" ref="How_To_Guides.html" />
-      <keyword name="Pre-processing" id="Pre-processing" ref="ht_Preprocessing.html" />
-      <keyword name="DICOM to NIfTI conversion" id="DICOM to NIfTI conversion" ref="preprocessing_dcm2nii.html" />
-      <keyword name="Image Co-registration" id="Image Co-registration" ref="preprocessing_reg.html" />
-      <keyword name="Denoise-SUSAN (ITK filter)" id="Denoise-SUSAN (ITK filter)" ref="preprocessing_susan.html" />
-      <keyword name="N4 Bias Correction (ITK filter)" id="N4 Bias Correction (ITK filter)" ref="preprocessing_biasN4.html" />
-      <keyword name="Histogram Matching" id="Histogram Matching" ref="preprocessing_histoMatch.html" />
-      <keyword name="Z-Scoring Normalization" id="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
-      <keyword name="Segmentation" id="Segmentation" ref="ht_Segmentation.html" />
-      <keyword name="Geodesic Training Segmentation" id="Geodesic Training Segmentation" ref="seg_GeoTrain.html" />
-      <keyword name="Geodesic Distance Transform-based Segmentation" id="Geodesic Distance Transform-based Segmentation" ref="seg_Geodesic.html" />
-      <keyword name="ITK-SNAP" id="ITK-SNAP" ref="seg_SNAP.html" />
-      <keyword name="Deep Learning Segmentation" id="Deep Learning Segmentation" ref="seg_DL.html" />
-      <keyword name="Feature Extraction" id="Feature Extraction" ref="ht_FeatureExtraction.html" />
-      <keyword name="Specialized Applications (SAs) Usage" id="Specialized Applications (SAs) Usage" ref="ht_SpecialApps.html" />
-      <keyword name="Brain Cancer: Glioblastoma Molecular Subtype Prediction" id="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
-      <keyword name="Brain Cancer: WhiteStripe Normalization" id="Brain Cancer: WhiteStripe Normalization" ref="Glioblastoma_WhiteStripe.html" />
-      <keyword name="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" id="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
-      <keyword name="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" id="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />
-      <keyword name="Brain Cancer: Glioblastoma Survival Prediction Index" id="Brain Cancer: Glioblastoma Survival Prediction Index" ref="Glioblastoma_Survival.html" />
-      <keyword name="Brain Cancer: Glioblastoma EGFRvIII SVM Index" id="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
-      <keyword name="Brain Cancer: Pseudoprogression Infiltration Index" id="Brain Cancer: Pseudoprogression Infiltration Index" ref="Glioblastoma_Pseudoprogression.html" />
-      <keyword name="Brain Cancer: Population Atlas" id="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
-      <keyword name="Brain Cancer: Confetti" id="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
-      <keyword name="Brain Cancer: Directionality Estimator" id="Brain Cancer: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
-      <keyword name="Breast Cancer: Breast Density Estimation (LIBRA)" id="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
-      <keyword name="Breast Cancer: Texture Feature Extraction" id="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
-      <keyword name="Breast Cancer: Breast Segmentation" id="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
-      <keyword name="Lung Cancer: Radiomics Analysis of Lung Cancer" id="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
-      <keyword name="Miscellaneous: Perfusion Alignment" id="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
-      <keyword name="Miscellaneous: Perfusion Derivatives" id="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-      <keyword name="Miscellaneous: Diffusion Derivatives" id="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
-      <keyword name="Miscellaneous: PCA Volume Extraction" id="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
-      <keyword name="Miscellaneous: Training Module" id="Miscellaneous: Training Module" ref="Training_Module.html" />
       <keyword name="Scientific Findings using CaPTk" id="Scientific Findings using CaPTk" ref="Science.html" />
       <keyword name="Technical Reference" id="Technical Reference" ref="Technical_Reference.html" />
       <keyword name="Download Instructions" id="Download Instructions" ref="Download.html" />
@@ -196,39 +171,6 @@
       <file>gs_specializedApps.html</file>
       <file>gs_commandLineUsage.html</file>
       <file>How_To_Guides.html</file>
-      <file>ht_Preprocessing.html</file>
-      <file>preprocessing_dcm2nii.html</file>
-      <file>preprocessing_reg.html</file>
-      <file>preprocessing_susan.html</file>
-      <file>preprocessing_biasN4.html</file>
-      <file>preprocessing_histoMatch.html</file>
-      <file>preprocessing_zScoreNorm.html</file>
-      <file>ht_Segmentation.html</file>
-      <file>seg_GeoTrain.html</file>
-      <file>seg_Geodesic.html</file>
-      <file>seg_SNAP.html</file>
-      <file>seg_DL.html</file>
-      <file>ht_FeatureExtraction.html</file>
-      <file>ht_SpecialApps.html</file>
-      <file>Glioblastoma_Molecular.html</file>
-      <file>Glioblastoma_WhiteStripe.html</file>
-      <file>Glioblastoma_PHI.html</file>
-      <file>Glioblastoma_Recurrence.html</file>
-      <file>Glioblastoma_Survival.html</file>
-      <file>Glioblastoma_EGFRvIII.html</file>
-      <file>Glioblastoma_Pseudoprogression.html</file>
-      <file>Glioblastoma_Atlas.html</file>
-      <file>Glioblastoma_Confetti.html</file>
-      <file>Glioblastoma_Directionality.html</file>
-      <file>BreastCancer_LIBRA.html</file>
-      <file>BreastCancer_texture.html</file>
-      <file>BreastCancer_breastSegmentation.html</file>
-      <file>LungCancer_SBRT.html</file>
-      <file>Perfusion_Alignment.html</file>
-      <file>Perfusion_Derivatives.html</file>
-      <file>Diffusion_Derivatives.html</file>
-      <file>PCA_Extraction.html</file>
-      <file>Training_Module.html</file>
       <file>Science.html</file>
       <file>Technical_Reference.html</file>
       <file>Download.html</file>

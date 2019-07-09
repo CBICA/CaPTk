@@ -64,15 +64,1138 @@ $(document).ready(function(){initNavTree('How_To_Guides.html','');});
 <div class="title">How To Guides </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This section provides step-by-step guidance to apply the CaPTk functionalities:</p>
-<ul>
-<li><a class="el" href="ht_Preprocessing.html">Pre-processing</a></li>
-<li><a class="el" href="ht_Segmentation.html">Segmentation</a></li>
-<li><a class="el" href="ht_FeatureExtraction.html">Feature Extraction</a></li>
-<li><a class="el" href="ht_SpecialApps.html">Specialized Applications Usage</a></li>
+<div class="toc"><h3>Table of Contents</h3>
+<ul><li class="level1"><a href="#ht_Preprocessing">Pre-processing</a><ul><li class="level2"><a href="#preprocessing_dcm2nii">DICOM to NIfTI conversion</a></li>
+<li class="level2"><a href="#preprocessing_reg">Image Co-registration</a></li>
+<li class="level2"><a href="#preprocessing_susan">Denoise-SUSAN (ITK filter)</a></li>
+<li class="level2"><a href="#preprocessing_biasN4">N4 Bias Correction (ITK filter)</a></li>
+<li class="level2"><a href="#preprocessing_histoMatch">Histogram Matching</a></li>
+<li class="level2"><a href="#preprocessing_zScoreNorm">Z-Scoring Normalization</a></li>
 </ul>
+</li>
+<li class="level1"><a href="#ht_Segmentation">Segmentation</a><ul><li class="level2"><a href="#seg_GeoTrain">Geodesic Training Segmentation</a></li>
+<li class="level2"><a href="#seg_Geodesic">Geodesic Distance Transform-based Segmentation</a></li>
+<li class="level2"><a href="#seg_SNAP">ITK-SNAP</a></li>
+<li class="level2"><a href="#seg_DL">Deep Learning Segmentation</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#ht_FeatureExtraction">Feature Extraction</a></li>
+<li class="level1"><a href="#ht_SpecialApps">Specialized Applications (SAs) Usage</a><ul><li class="level2"><a href="#Glioblastoma">Brain Cancer</a><ul><li class="level3"><a href="#Glioblastoma_Molecular">Glioblastoma Molecular Subtype Prediction</a></li>
+<li class="level3"><a href="#Glioblastoma_WhiteStripe">WhiteStripe Normalization</a></li>
+<li class="level3"><a href="#Glioblastoma_PHI">Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)</a></li>
+<li class="level3"><a href="#Glioblastoma_Recurrence">Glioblastoma Infiltration Index (Recurrence)</a></li>
+<li class="level3"><a href="#Glioblastoma_Survival">Glioblastoma Survival Prediction Index</a></li>
+<li class="level3"><a href="#Glioblastoma_EGFRvIII">Glioblastoma EGFRvIII SVM Index</a></li>
+<li class="level3"><a href="#Glioblastoma_Pseudoprogression">Pseudoprogression Infiltration Index</a></li>
+<li class="level3"><a href="#Glioblastoma_Atlas">Population Atlas</a></li>
+<li class="level3"><a href="#Glioblastoma_Confetti">Confetti</a></li>
+<li class="level3"><a href="#Glioblastoma_Directionality">Directionality Estimator</a></li>
+</ul>
+</li>
+<li class="level2"><a href="#BreastCancer">Breast Cancer</a><ul><li class="level3"><a href="#BreastCancer_LIBRA">Breast Density Estimation (LIBRA)</a></li>
+<li class="level3"><a href="#BreastCancer_texture">Texture Feature Extraction</a></li>
+<li class="level3"><a href="#BreastCancer_breastSegmentation">Breast Segmentation</a></li>
+</ul>
+</li>
+<li class="level2"><a href="#LungCancer">Lung Cancer</a><ul><li class="level3"><a href="#LungCancer_SBRT">Radiomics Analysis of Lung Cancer</a></li>
+</ul>
+</li>
+<li class="level2"><a href="#Miscellaneous">Miscellaneous Applications</a><ul><li class="level3"><a href="#misc_Perfusion_Alignment">Perfusion Alignment</a></li>
+<li class="level3"><a href="#misc_Perfusion_Derivatives">Perfusion Derivatives</a></li>
+<li class="level3"><a href="#misc_Diffusion_Derivatives">Diffusion Derivatives</a></li>
+<li class="level3"><a href="#misc_PCA_Extraction">PCA Volume Extraction</a></li>
+<li class="level3"><a href="#misc_Training_Module">Training Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="textblock"><p>This section provides step-by-step guidance to apply the CaPTk functionalities.</p>
 <p>Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.</p>
 <hr/>
+<h1><a class="anchor" id="ht_Preprocessing"></a>
+Pre-processing</h1>
+<p>Contains the preprocessing applications for data processing.</p>
+<h2><a class="anchor" id="preprocessing_dcm2nii"></a>
+DICOM to NIfTI conversion</h2>
+<p>This tool converts a DICOM series into the Neuroimaging Informatics Technology Initiative (NIfTI) file format.</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>A folder with the continuous sequence of a DICOM series.</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Launch the tool using the 'Preprocessing' -&gt; 'DICOM to NIfTI' menu option.</li>
+<li>Specify the first DICOM image in series, and the output filename.</li>
+<li>Click on "Confirm".</li>
+</ol>
+<p>This can also be used from the command line: </p><pre class="fragment">[WINDOWS] Utlities.exe -i C:/test/dicomFolderWithSingleSubject -d2n 
+[LINUX] captk Utlities -i C:/test/dicomFolderWithSingleSubject -d2n 
+</pre><h2><a class="anchor" id="preprocessing_reg"></a>
+Image Co-registration</h2>
+<p>This tool registers multiple moving images to a single target image using the Greedy Registration technique [1].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>A Target image.</li>
+<li>Up to 5 moving images</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Launch the "Registration" dialog from the "Preprocessing" menu.</li>
+<li>Customize the parameters (Metrics, Radius and Iterations) as needed; for details regarding the parameters and their usage, please refer to the Greedy manual [2].</li>
+<li>Specify the moving images (up to 5) and their respective output images.</li>
+<li>Click on 'Register'.</li>
+<li>The output image is saved in the specified locations.</li>
+</ol>
+<p>This can also be used from the command line: </p><pre class="fragment">[WINDOWS] GreedyRegistration.exe -i C:/test/moving.nii.gz -f C:/test/fixed.nii.gz -o C:/test/output.nii.gz -t C:/test/output.mat -reg -trf -a -m MI -n 100x50x5 -th 4
+[LINUX] captk GreedyRegistration -i /mnt/c/test/moving.nii.gz -f /mnt/c/test/fixed.nii.gz -o /mnt/c/test/output.nii.gz -t /mnt/c/test/output.mat -reg -trf -a -m MI -n 100x50x5 -th 4
+</pre><hr/>
+<p>References:</p>
+<ul>
+<li>P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI, Alzheimer's &amp; Dementia: The Journal of Alzheimer's Association, 12(7), P126-127</li>
+<li>www.github.com/pyushkevich/greedy</li>
+</ul>
+<h2><a class="anchor" id="preprocessing_susan"></a>
+Denoise-SUSAN (ITK filter)</h2>
+<p>This tool smooths an image already loaded in CaPTk, to remove any high frequency intensity variations (i.e., noise), using the SUSAN algorithm [1].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>An image loaded in CaPTk.</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Load an image in CaPTk.</li>
+<li>Launch the tool using the 'Preprocessing' -&gt; 'Denoise-SUSAN' menu option.</li>
+<li>Specify the output filename.</li>
+<li>Click on 'Save'.</li>
+<li>The output image is saved in the specified folder and automatically loaded in CaPTk.</li>
+</ol>
+<p>This can also be used from the command line: </p><pre class="fragment">[WINDOWS] Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss 
+[LINUX] captk Preprocessing -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss
+</pre><hr/>
+<p>Reference:</p>
+<ul>
+<li>S.M.Smith, J.M.Brady. "SUSAN-A new approach to low level image processing", International Journal of Computer Vision. 23(1):45-78, 1997.</li>
+</ul>
+<h2><a class="anchor" id="preprocessing_biasN4"></a>
+N4 Bias Correction (ITK filter)</h2>
+<p>This tool corrects an image, already loaded in CaPTk, for magnetic field inhomogeneities using a non-parametric method [1].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>An image loaded in CaPTk.</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Load an image in CaPTk.</li>
+<li>Launch the tool using the 'Preprocessing' -&gt; 'BiasCorrection' menu option.</li>
+<li>Specify the output filename.</li>
+<li>Click on 'Save'.</li>
+<li>The output image is saved in the specified folder and automatically loaded in CaPTk.</li>
+</ol>
+<p>This can also be used from the command line: </p><pre class="fragment">[WINDOWS] Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4 
+[LINUX] captk Preprocessing -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4
+</pre><hr/>
+<p>Reference:</p>
+<ul>
+<li>J.G.Sled, A.P.Zijdenbos, A.C.Evans. "A nonparametric method for automatic correction of intensity nonuniformity in MRI data" IEEE Trans Med Imaging. 17(1):87-97, 1998.</li>
+</ul>
+<h2><a class="anchor" id="preprocessing_histoMatch"></a>
+Histogram Matching</h2>
+<p>This tool normalizes the intensity profile of an input image based on the intensity profile of a reference image [1].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>A reference and an input image.</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Launch the tool using the 'Preprocessing' -&gt; 'HistogramMatching' menu option.</li>
+<li>Specify the Reference and Input images, and the output filename.</li>
+<li>Click on 'Confirm'.</li>
+<li>The output image is saved in the specified folder.</li>
+</ol>
+<p>This can also be used from the command line: </p><pre class="fragment">[WINDOWS] Preprocessing.exe -i C:/test/input.nii.gz -o C:/test/output.nii.gz -hi C:/test/target.nii.gz -hb 100 -hq 50
+[LINUX] captk Preprocessing -i /mnt/c/test/input.nii.gz -o /mnt/c/test/output.nii.gz -hi /mnt/c/test/target.nii.gz -hb 100 -hq 50
+</pre><p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>L.G.Nyul, J.K.Udupa, X.Zhang, "New Variants of a Method of MRI Scale Standardization", IEEE Trans Med Imaging. 19(2):143-50, 2000. DOI:10.1109/42.836373</li>
+</ul>
+<h2><a class="anchor" id="preprocessing_zScoreNorm"></a>
+Z-Scoring Normalization</h2>
+<p>This tool does a z-scoring based normalization on the loaded image.</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>An input image.</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Launch the tool using the 'Preprocessing' -&gt; 'ZScoringNormalizer' menu option.</li>
+<li>Specify the input image and the (optional) mask</li>
+<li>Specify the parameters (quantization upper/lower and cut-off upper/lower) to remove the outliers</li>
+<li>Specify the output image</li>
+<li>Click on 'Confirm'.</li>
+<li>The output image is saved in the specified folder.</li>
+</ol>
+<p>This can also be used from the command line: </p><pre class="fragment">Preprocessing.exe -i C:/test/input.nii.gz -m C:/test/input_binaryMask.nii.gz -o C:/test/output.nii.gz -zn 1 -zq 5,95 -zc 3,3
+[LINUX] captk Preprocessing -i /mnt/c/test/input.nii.gz -m /mnt/c/test/input_binaryMask.nii.gz -o /mnt/c/test/output.nii.gz -zn 1 -zq 5,95 -zc 3,3
+</pre><p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010. DOI:10.1002/hbm.20906</li>
+</ul>
+<h1><a class="anchor" id="ht_Segmentation"></a>
+Segmentation</h1>
+<p>There are various segmentation tools available within CaPTk. They are enumerated in the following sub-sections.</p>
+<h2><a class="anchor" id="seg_GeoTrain"></a>
+Geodesic Training Segmentation</h2>
+<p>'GeodesicTraining' builds upon the geodesic distance based segmentation by using machine learning (SVMs).</p>
+<p>It also adds support for multiple areas of interest, multiple modalities, the ability to iterate the algorithm until a desired outcome is achieved and no need for thresholding.</p>
+<p><b> REQUIREMENTS:</b> One or more co-register images of the same subject. A ROI image has to be drawn which will containing sample labels for the different areas the user wants to segment (see usage for details).</p>
+<p><b> USAGE:</b></p><ol type="1">
+<li>Load the different images, that are different modalities of the same subject into CaPTk. It doesn't matter which image you have selected from the ones that are loaded. Everything that is loaded is passed to the algorithm.</li>
+<li>Draw over the images using CaPTk's drawing tools. Example: Suppose that you have an image of a brain tumor and you are interested in segmenting the image into 3 different sections, tumor core (the main tumor), edema (a fluid surrounding the tumor core) and healthy tissue (the reset of the brain). You have to use three different colors. Suppose you use RED for tumor core, GREEN for edema and BLUE for healthy tissue (it's up to you to pick the colors). Draw a little bit over the tumor core with the red marker, a little bit over the edema with the green one and a little bit anywhere else that is not an affected area with the blue marker. Keep in mind to always use a color for areas that are not of interest (like we used now for healthy tissue), otherwise the algorithm will try to classify the healthy tissue as one of the colors you have actually drawn. Obviously, whatever you do you have to use at least two different colors. You don't need to draw excessively. In fact it is advised not to go overboard, as this leaves you room for better corrections later on (see below). It's best to stick to the free-hand drawing tool with 1x1 or 3x3 marker size.</li>
+<li>After you have drawn, Click Applications&gt;'Geodesic Training Segmentation' from the menu and wait ~30 seconds (depends on the number of images, the images' size and your computer specs).</li>
+<li>Now you will see the output segmentation where your labels were previously drawn. You can keep this segmentation if it's ok. Chances are though that it contains mistakes. Using the drawing tools again, draw over <em>some</em> of those mistakes (right on the output segmentation!) and then click Applications&gt;'Geodesic Training Segmentation' again. You can repeat this as many times as you want. (There probably won't be a need for more than 2-3 runs though). Something that you might not know about about CaPTk is that you can change the opacity of the ROI by clicking an image, then the 'opacity' checkbox next to the same image and using the slider.</li>
+<li>Once you are satisfied with the segmentation you can save it using File&gt;Save&gt;ROI. Most of the time people don't want their segmentations to contain labels for the healthy tissue. If you wish for something similar then, before saving, select the color you used for healthy tissues from the 'label selector' in the drawing tools and click 'Clear selected label' and save.</li>
+</ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format (more advanced usage inside (src/applications/GeodesicTraining/GeodesicTraining/README.md) (use GeodesicTraining instead of GeodesicTraining.exe under linux): <pre class="fragment">  GeodesicTraining.exe -i C:/inputImage1.nii.gz,C:/inputImage2.nii.gz,... -l C:/maskWithAtLeastTwoDifferentClasses.nii.gz -o C:/outputDirectoryNotFilename</pre></li>
+</ul>
+<p>You have to draw the ROI image somewhere else to use the CLI executable. This image should be zero everywhere, except for the voxels that you have drawn. These voxels should be the same value if they belong to the same area. For instance in the example we discussed before, you can use value 1 for tumor core, value 2 for edema and value 3 for healthy tissue. If you don't want the output to contain the healthy tissue you can use parameter "-cl 3/0" which means that value 3 will be changed to 0. Keep in mind that values for healthy tissue are still needed, they just not going to show up in the output segmentation. If you want to iterate (correct mistakes in the segmentation), it's a bit harder to do with the CLI. You have to add new values to the input ROI (not the output segmentation) and run again. If you are going to use the CLI it is recommended to spend a little bit more time when you draw your input ROI so the first segmentation you get is good and you don't have to iterate the algorithm often. <br />
+</p>
+<hr/>
+<h2><a class="anchor" id="seg_Geodesic"></a>
+Geodesic Distance Transform-based Segmentation</h2>
+<p>The geodesic distance transform based segmentation is a semi-automatic technique to delineate structures of distinct intensity.</p>
+<p><b> REQUIREMENTS:</b> A single image with distinct boundaries for the structure that needs to be segmented [1].</p>
+<p><b> USAGE:</b></p><ol type="1">
+<li>Load in CaPTk the image that you want to segment.</li>
+<li>Using Label 1 from the drawing tab, annotate a region of the tissue you would like to segment in the image.</li>
+<li>Launch the application using the 'Applications' -&gt; 'Geodesic Segmentation' menu option.</li>
+<li>The mask is populated within ~5 minutes, showing the progress at the bottom right corner of CaPTk.</li>
+<li>The mask is visualized automatically in the visualization panels.</li>
+<li>You can revise the resulted segmentation mask (Label:1), by selecting the "Geodesic" preset and changing the "Threshold" at the bottom right corner of CaPTk.</li>
+</ol>
+<p>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format: </p><pre class="fragment">[WINDOWS] GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
+[LINUX] captk GeodesicSegmentation -i /mnt/c/inputImage.nii.gz -m /mnt/c/maskWithOneLabel.nii.gz -o /mnt/c/outputImage.nii.gz -t 20
+</pre><p><br />
+</p>
+<hr/>
+<h2><a class="anchor" id="seg_SNAP"></a>
+ITK-SNAP</h2>
+<p>ITK-SNAP is a stand-alone software application used to segment structures in 3D medical images and other utilities [2] - <a href="http://www.itksnap.org/pmwiki/pmwiki.php">http://www.itksnap.org/pmwiki/pmwiki.php</a>.</p>
+<p>Within CaPTk specifically, ITK-SNAP is tightly integrated as a tool used for segmentation, accepting files chosen through the CaPTk interface and returning results for further use within CaPTk. ITK-SNAP uses a combination of random forests and level sets to obtain precise segmentations of structures [2]. Please see the following video for detailed instructions: <a href="https://www.youtube.com/watch?v=-gBcFxKf-7Q">https://www.youtube.com/watch?v=-gBcFxKf-7Q</a></p>
+<p><br />
+</p>
+<hr/>
+<p>References:</p>
+<ul>
+<li>B.Gaonkar, L.Shu, G.Hermosillo, Y.Zhan, "Adaptive geodesic transform for segmentation of vertebrae on CT images", Proceedings Volume 9035, Medical Imaging 2014: Computer-Aided Diagnosis; 9035:16, 2014. DOI:10.1117/12.2043527.</li>
+<li>P.Yushkevich, Y.Gao, G.Gerig, "ITK-SNAP: An interactive tool for semi-automatic segmentation of multi-modality biomedical images", Conf Proc IEEE Eng Med Biol Soc. 2016:3342-3345, 2016. DOI:10.1109/EMBC.2016.7591443.</li>
+</ul>
+<p><br />
+</p>
+<hr/>
+<h2><a class="anchor" id="seg_DL"></a>
+Deep Learning Segmentation</h2>
+<p>For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the pre-processing).</p>
+<p><b> REQUIREMENTS:</b> The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.</p>
+<p><b> USAGE:</b></p><ol type="1">
+<li>Load the images that you want to segment in CaPTk.</li>
+<li>[OPTIONAL] Load the brain mask - this is used for normalization.</li>
+<li>[OPTIONAL] Select the appropriate pre-trained model folder (either brain tumor segmentation or skull stripping is available): for custom models, select appropriate option and browse to the model directory.</li>
+<li>Select the output folder.</li>
+<li>Click on 'Applications' -&gt; 'Brain Tumor Segmentation' or 'Skull Stripping'</li>
+</ol>
+<p>This can also be used from the command line: </p><pre class="fragment">DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -o C:/data/output/ -m C:/data/optionalMask.nii.gz -md C:/data/pretrainedModelFolder/
+</pre><p> <br />
+</p>
+<hr/>
+<p>References:</p>
+<ul>
+<li>K.Kamnitsas, C.Ledig, V.F.J.Newcombe, J.P.Simpson, A.D.Kane, D.K.Menon, D.Rueckert, B.Glocker, "Efficient Multi-Scale 3D CNN with Fully Connected CRF for Accurate Brain Lesion Segmentation", Medical Image Analysis, 2016.</li>
+<li>K.Kamnitsas, L.Chen, C.Ledig, D.Rueckert, B.Glocker, "Multi-Scale 3D CNNs for segmentation of brain Lesions in multi-modal MRI", in proceeding of ISLES challenge, MICCAI 2015.</li>
+</ul>
+<h1><a class="anchor" id="ht_FeatureExtraction"></a>
+Feature Extraction</h1>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>An image or a set of co-registered images.</li>
+<li>An ROI file containing various labels, for which features will be extracted.</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Once image(s) and an ROI file are loaded, go to the "Feature Extraction" panel.</li>
+<li>In the "Customization" section, you can select one of the preset of features to extract from the drop-down menu:<ul>
+<li><b>Custom</b>: allows the manual selection &amp; customization of specific features.</li>
+<li><b>Custom_Lattice</b>: allows the manual selection &amp; customization of specific features using a lattice-based strategy for feature extraction [1]. A regular lattice is virtually overlaid on the ROI and features are computed on local square (for 2D images) or cubic (for 3D images) regions centered on each lattice point. The final feature estimates are then calculated as summary statistics of the corresponding feature measurements across all regions defined by the lattice. The parameterization of the lattice is described in the <a href="tr_Apps.html#appsFeatures">Technical Reference</a> section.</li>
+<li><b>Lung_SBRT</b>: enables the extraction of features that are used in [2].</li>
+</ul>
+</li>
+<li>For the "Custom" and "Custom_lattice" presets, and once specific features are selected, you can use the <b>Advanced</b> button (in "Customization") to parameterize further the individual selected features.</li>
+<li>In the <b>Image Selection</b> section, you can select the radio button of "&lt;b&gt;Selected Image&lt;/b&gt;" or "&lt;b&gt;All Images&lt;/b&gt;" to extract features for either the visualized image or all the images loaded in CaPTk, respectively.</li>
+<li>In the <b>Mask Selection</b> section, you have the option to define the label number(s) for which you want to extract features. Note that when more than one label number is entered the 'pipe' symbol should be used as a separator, i.e. |. Equivalently, text labels should be provided corresponding to each label number, again separated by a 'pipe'.</li>
+<li>Once the output CSV file is defined you can click on <b>Compute + Save</b>. (Note that the CSV file should be in ASCII format)</li>
+<li>For the command line interface, a user can copy the file <b>${CaPTk_Installation_Folder}/data/features/1_params_default.csv</b> to a location where they would have write access, change the parameters as they see fit and then pass that to the CLI under the "-b" parameter (example shown below).</li>
+</ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format: <pre class="fragment">  FeatureExtraction -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv</pre> <pre class="fragment">  FeatureExtraction -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv # batch processing</pre></li>
+<li>As intermediate results of the "Custom_lattice", the user also has the option to save feature maps, i.e., images that represent the spatial distribution of the corresponding feature measurements as sampled by the lattice over the ROI, using the following CLI format: <pre class="fragment">  FeatureExtraction -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv -f 1</pre></li>
+</ul>
+<p>An example of the list file for batch processing can be found in <b>CAPTK_INSTALL_DIR/share/featureExtractionBatch/batch_featureextraction.csv</b>.</p>
+<p>NOTE: The output of Feature Extraction can be used to run the <a href="Training_Module.html">Training Module</a>.</p>
+<hr/>
+<p>References:</p>
+<ul>
+<li>Y.Zheng, B.M.Keller, S.Ray, Y.Wang, E.F.Conant, J.C.Gee, D.Kontos, "Parenchymal texture analysis in digital mammography: A fully automated pipeline for breast cancer risk assessment", Medical Physics, 2015.</li>
+<li>H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.</li>
+</ul>
+<hr/>
+<h1><a class="anchor" id="ht_SpecialApps"></a>
+Specialized Applications (SAs) Usage</h1>
+<p>Each of the specialized applications are described in the following sub-sections.</p>
+<hr/>
+<h2><a class="anchor" id="Glioblastoma"></a>
+Brain Cancer</h2>
+<h3><a class="anchor" id="Glioblastoma_Molecular"></a>
+Glioblastoma Molecular Subtype Prediction</h3>
+<p>This application provides the prediction of the molecular subtype of <em>de novo</em> glioblastoma patients using baseline pre-operative multi-parametric MRI analysis [1].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>Co-registered Multi-modal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.</li>
+<li>Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)</li>
+<li>Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and molecular subtype (in second column) for training a new model, and age only for molecular subtype prediction of new patients.</li>
+<li>The data for each patient should be organized in the following directory structure.<ul>
+<li>Subject_ID<ol type="a">
+<li>features.csv file</li>
+<li>CONVENTIONAL<ul>
+<li>"my_T1_file.nii.gz"</li>
+<li>"my_T2_file.nii.gz"</li>
+<li>"my_T1CE_file.nii.gz"</li>
+<li>"my_FLAIR_file.nii.gz"</li>
+</ul>
+</li>
+<li>DTI<ul>
+<li>"my_AX_file.nii.gz"</li>
+<li>"my_FA_file.nii.gz"</li>
+<li>"my_RAD_file.nii.gz"</li>
+<li>"my_TR_file.nii.gz"</li>
+</ul>
+</li>
+<li>PERFUSION<ul>
+<li>"my_rCBV_file.nii.gz"</li>
+<li>"my_PSR_file.nii.gz"</li>
+<li>"my_PH_file.nii.gz"</li>
+</ul>
+</li>
+<li>SEGMENTATION<ul>
+<li>"original_segmentation_file.nii.gz"</li>
+<li>"segmentation_file_in_atlas_space.nii.gz"</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:<ul>
+<li>Data_of_multiple_patients<ol type="a">
+<li>Subject_ID1</li>
+<li>Subject_ID2</li>
+<li>...</li>
+<li>Subject_IDn</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<p><b>USAGE:</b></p><ul>
+<li>Train New Model:<ol type="1">
+<li>"Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.</li>
+<li>"Output". Select the folder where the trained model will be saved.</li>
+<li>A pop-up window appears displaying the completion of model building. (Time depends on the number of patients: ~2*Patients minutes).</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">MolecularSubtypePredictor.exe -t 0 -i C:/MolecularSubtypeInput -o C:/MolecularSubtypeModel
+</pre></li>
+</ol>
+</li>
+<li>Use Existing Model<ol type="1">
+<li>"Model Directory". Choose the directory of a saved model.</li>
+<li>"Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.</li>
+<li>"Output". Select the output directory where a .csv file with the predicted molecular subtypes for all patients will be saved, and click on 'Confirm'.</li>
+<li>A pop-up window appears displaying the completion of subtype calculation. The window will also show the molecular subtype of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">MolecularSubtypePredictor.exe -t 1 -i C:/MolecularSubtypeInput -m C:/MolecularSubtypeModel -o C:/MolecularSubtypeOutput
+</pre></li>
+</ol>
+</li>
+</ul>
+<p><br />
+</p>
+<hr/>
+<p>References:</p>
+<ul>
+<li>L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127.</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="Glioblastoma_WhiteStripe"></a>
+WhiteStripe Normalization</h3>
+<p>This algorithm normalizes conventional brain MRI scans [1] by detecting a latent subdistribution of normal tissue and linearly scaling the histogram of images. It is to be used on structural modalities only.</p>
+<p><b>REQUIREMENTS:</b></p><ul>
+<li>Bias-corrected (N3 or N4) T1-weighted or T2-weighted images, ideally either skull-stripped or rigidly aligned to MNI space.</li>
+</ul>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Launch the WhiteStripe UI using the 'Applications -&gt; WhiteStripe Normalization' menu option.</li>
+<li>Specify the Input and Output files and different parameters (defaults are populated).</li>
+<li>For T1-Gd images, use the "T1" option and for T2-FLAIR images, use the "T2" option.</li>
+<li>Click on 'Run WhiteStripe" and the results can be seen in a slice format using "Toggle Mask/Image" checkbox.</li>
+<li>Use 'Level Display' when needed.</li>
+</ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">WhiteStripe.exe -i C:/inputImage.nii.gz -o C:/outputImage.nii.gz
+</pre></li>
+</ul>
+<p>NOTE: WhiteStripe uses the KernelFit library from Lentner (<a href="https://github.com/glentner/KernelFit">https://github.com/glentner/KernelFit</a>).</p>
+<p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>R.T.Shinohara, E.M.Sweeney, J.Goldsmith, N.Shiee, F.J.Mateen, P.A.Calabresi, S.Jarso, D.L.Pham, D.S.Reich, C.M.Crainiceanu, Australian Imaging Biomarkers Lifestyle Flagship Study of Ageing, Alzheimer's Disease Neuroimaging Initiative. "Statistical normalization techniques for magnetic resonance imaging", Neuroimage Clin. 6:9-19, 2014. DOI:10.1016/j.nicl.2014.08.008</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="Glioblastoma_PHI"></a>
+Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)</h3>
+<p>This application evaluates the Epidermal Growth Factor Receptor splice variant III (EGFRvIII) status in primary glioblastoma, by quantitative pattern analysis of the spatial heterogeneity of peritumoral perfusion dynamics from Dynamic Susceptibility Contrast (DSC) MRI scans, through the Peritumoral Heterogeneity Index (PHI / &phi;-index) [1-3].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>T1-Gd: To annotate the immediate peritumoral ROI.</li>
+<li>T2-FLAIR: To annotate the distant peritumoral ROI.</li>
+<li>DSC-MRI: To perform the analysis and extract the PHI.</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Annotate 2 ROIs: one near (Label:1) the enhancing tumor and another far (Label:2) from it (but still within the peritumoral region). Rules for ROI annotation are provided below [3].</li>
+<li>Once the 2 ROIs are annotated, the application can be launched by using the menu option: 'Applications -&gt; EGFRvIII Surrogate Index'.</li>
+<li>A pop-up window appears displaying the results (within &lt;1 minute).</li>
+</ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">EGFRvIIISurrogateIndex.exe -i C:/inputImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
+</pre></li>
+</ul>
+<p><b>Rules for ROI Annotation</b> These two ROIs are used to sample tissue located on the two boundaries of the peritumoaral edema/invasion area: near to and far from the tumor, respectively, and hence to evaluate the heterogeneity or spatial gradient of perfusion signals [1-3].</p>
+<p>The "near" ROI is initially defined in the T1-Gd volume, adjacent to the enhancing part of the tumor, described by hyperintense signal on T1-Gd. The T2-FLAIR volume is then used to revise this ROI in terms of all its voxels being within the peritumoral edematous tissue, described by hyperintense signal on the T2-FLAIR volume.</p>
+<p>The T2-FLAIR volume is also used to define the ROI at the farthest from the tumor but still within the edematous tissue, i.e., the enhancing FLAIR abnormality signal.</p>
+<p>These ROIs are described by lines drawn in multiple slices of each image (T1-Gd and T2-FLAIR) for each subject.</p>
+<p>Please note that during annotation:</p><ul>
+<li>Both ROIs are always within the peritumoral edema/invasion area,</li>
+<li>None of the ROIs are in proximity to the ventricles,</li>
+<li>Both ROIs are representative of infiltration into white matter and not into gray matter,</li>
+<li>The distant ROI is at the farthest possible distance from the enhancing part of the tumor while still within edema, and</li>
+<li>No vessels are involved within any of the defined ROIs, as denoted in the T1-Gd volume.</li>
+</ul>
+<hr/>
+<p>References:</p>
+<ul>
+<li>S.Bakas, H.Akbari, J.Pisapia, M.Rozycki, D.M.O'Rourke, C.Davatzikos. "Identification of Imaging Signatures of the Epidermal Growth Factor Receptor Variant III (EGFRvIII) in Glioblastoma", Neuro Oncol. 17(Suppl 5):v154, 2015. DOI:10.1093/neuonc/nov225.05</li>
+<li>S.Bakas, Z.A.Binder, H.Akbari, M.Martinez-Lage, M.Rozycki, J.J.D.Morrissette, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "Highly-expressed wild-type EGFR and EGFRvIII mutant glioblastomas have similar MRI signature, consistent with deep peritumoral infiltration", Neuro Oncol. 18(Suppl 6):vi125-vi126, 2016. DOI:10.1093/neuonc/now212.523</li>
+<li>S.Bakas, H.Akbari, J.Pisapia, M.Martinez-Lage, M.Rozycki, S.Rathore, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "In vivo detection of EGFRvIII in glioblastoma via perfusion magnetic resonance imaging signature consistent with deep peritumoral infiltration: the phi-index", Clin Cancer Res. 23(16):4724-4734, 2017. DOI:10.1158/1078-0432.CCR-16-1871</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="Glioblastoma_Recurrence"></a>
+Glioblastoma Infiltration Index (Recurrence)</h3>
+<p>This application provides a probability map of deeply infiltrating tumor in the peritumoral edema/invasion region that largely agrees with subsequent recurrence in <em>de novo</em> glioblastoma patients, via multi-parametric MRI analysis, as shown in [1-3].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
+<li>Segmentation labels of the tumor sub-regions in a single NIfTI (.nii.gz) file: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)</li>
+<li>The data for each patient should be organized in the following directory structure.<ul>
+<li>SubjectID<ol type="a">
+<li>CONVENTIONAL<ul>
+<li>"my_T1_file.nii.gz"</li>
+<li>"my_T2_file.nii.gz"</li>
+<li>"my_T1CE_file.nii.gz"</li>
+<li>"my_FLAIR_file.nii.gz"</li>
+</ul>
+</li>
+<li>DTI<ul>
+<li>"my_AX_file.nii.gz"</li>
+<li>"my_FA_file.nii.gz"</li>
+<li>"my_RAD_file.nii.gz"</li>
+<li>"my_TR_file.nii.gz"</li>
+</ul>
+</li>
+<li>PERFUSION<ul>
+<li>"my_PERFUSION_file.nii.gz"</li>
+</ul>
+</li>
+<li>SEGMENTATION<ul>
+<li>"my_segmentation_file.nii.gz"</li>
+<li>"my_near_region_file.nii.gz" (only for training a new model)</li>
+<li>"my_far_region_file.nii.gz" (only for training a new model)</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:<ul>
+<li>Data_of_multiple_patients<ol type="a">
+<li>Subject_ID1</li>
+<li>Subject_ID2</li>
+<li>...</li>
+<li>Subject_IDn</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<p><b>USAGE:</b></p><ul>
+<li>Infiltration prediction on loaded subject.<ol type="1">
+<li>Load the required images in CaPTk and correctly assign the modality label in the drop-down menu.</li>
+<li>Load the segmentation labels of the tumor sub-regions from a single NIfTI (.nii.gz) file. The labels included in the file should represent the Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), and Edema (Label=2).</li>
+<li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip</a></li>
+<li>Select the "Output Directory" and click on "Confirm".</li>
+<li>The result is saved in the output folder and also loaded in the list of modalities (within ~2 minutes).</li>
+</ol>
+</li>
+<li>Infiltration prediction on a batch of subjects.<ul>
+<li>"Train a new model":<ol type="1">
+<li>Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
+<li>Select the "Output Directory" where the trained model should be saved.</li>
+<li>Click on 'Confirm'.</li>
+<li>A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around. <pre class="fragment">RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o C:/RecurrenceModel
+</pre></li>
+</ol>
+</li>
+<li>"Use existing model":<ol type="1">
+<li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip</a></li>
+<li>Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
+<li>Select the "Output Directory", where the user wants to save the infiltration maps.</li>
+<li>Click on 'Confirm'.</li>
+<li>A pop-up window will confirm the completion of infiltration map calculations (~1.5*NoOfSubjects minutes).</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">RecurrenceEstimator.exe -t 1 -i C:/RecurrenceSubjects -o C:/RecurrenceOutput -m C:/RecurrenceModel
+</pre></li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<p><br />
+</p>
+<hr/>
+<p>References:</p>
+<ul>
+<li>H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458</li>
+<li>H.Akbari, L.Macyszyn, J.Pisapia, X.Da, M.Attiah, Y.Bi, S.Pal, R.Davuluri, L.Roccograndi, N.Dahmane, R.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos, "Survival Prediction in Glioblastoma Patients Using Multi-parametric MRI Biomarkers and Machine Learning Methods", American Society of Neuroradiology, O-525:2042-2044, 2015. (<a href="http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf">http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf</a>)</li>
+<li>H.Akbari, L.Macyszyn, X.Da, M.Bilello, R.L.Wolf, M.Martinez-Lage, G.Biros, M.Alonso-Basanta, D.M.O'Rourke, C.Davatzikos. "Imaging Surrogates of Infiltration Obtained Via Multiparametric Imaging Pattern Analysis Predict Subsequent Location of Recurrence of Glioblastoma", Neurosurgery. 78(4):572-80, 2016. DOI:10.1227/NEU.0000000000001202</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="Glioblastoma_Survival"></a>
+Glioblastoma Survival Prediction Index</h3>
+<p>This application provides the survival prediction index (SPI) of <em>de novo</em> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.</li>
+<li>Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)</li>
+<li>Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and survival (in second column) for training a new model, and age only for survival prediction of new patients.</li>
+<li>The data for each patient should be organized in the following directory structure.<ul>
+<li>Subject_ID<ol type="a">
+<li>features.csv file</li>
+<li>CONVENTIONAL<ul>
+<li>"my_T1_file.nii.gz"</li>
+<li>"my_T2_file.nii.gz"</li>
+<li>"my_T1CE_file.nii.gz"</li>
+<li>"my_FLAIR_file.nii.gz"</li>
+</ul>
+</li>
+<li>DTI<ul>
+<li>"my_AX_file.nii.gz"</li>
+<li>"my_FA_file.nii.gz"</li>
+<li>"my_RAD_file.nii.gz"</li>
+<li>"my_TR_file.nii.gz"</li>
+</ul>
+</li>
+<li>PERFUSION<ul>
+<li>"my_rCBV_file.nii.gz"</li>
+<li>"my_PSR_file.nii.gz"</li>
+<li>"my_PH_file.nii.gz"</li>
+</ul>
+</li>
+<li>SEGMENTATION<ul>
+<li>"original_segmentation_file.nii.gz"</li>
+<li>"segmentation_file_in_atlas_space.nii.gz"</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:<ul>
+<li>Data_of_multiple_patients<ol type="a">
+<li>Subject_ID1</li>
+<li>Subject_ID2</li>
+<li>...</li>
+<li>Subject_IDn</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<p><b>USAGE:</b></p><ul>
+<li>Train New Model:<ol type="1">
+<li>"Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.</li>
+<li>"Output". Select the folder where the trained model will be saved.</li>
+<li>A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">SurvivalPredictor.exe -t 0 -i C:/SurvivalInput -o C:/SurvivalModel
+</pre></li>
+</ol>
+</li>
+<li>Use Existing Model<ol type="1">
+<li>"Model Directory". Choose the directory of a saved model.</li>
+<li>"Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.</li>
+<li>"Output". Select the output directory where a .csv file with the classification scores for all patients will be saved, and click on 'Confirm'. The first column and the second column of .csv will be distancce of sample from the hyperplance of 6-months model and 18-months model, respectively.</li>
+<li>A pop-up window appears displaying the completion of results. The window will also show the SPI index (distance) of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">SurvivalPredictor.exe -t 1 -i C:/SurvivalInput -m C:/SurvivalModel -o C:/SurvivalOutput
+</pre></li>
+</ol>
+</li>
+</ul>
+<p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="Glioblastoma_EGFRvIII"></a>
+Glioblastoma EGFRvIII SVM Index</h3>
+<p>This application provides the detection of EGFRvIII mutation status of <em>de novo</em> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.</li>
+<li>Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)</li>
+<li>Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and EGFRvIII status (in second column, binarized values like 0 and 1) for training a new model, and age only for mutation detection of new patients.</li>
+<li>The data for each patient should be organized in the following directory structure.<ul>
+<li>Subject_ID<ol type="a">
+<li>features.csv file</li>
+<li>CONVENTIONAL<ul>
+<li>"my_T1_file.nii.gz"</li>
+<li>"my_T2_file.nii.gz"</li>
+<li>"my_T1CE_file.nii.gz"</li>
+<li>"my_FLAIR_file.nii.gz"</li>
+</ul>
+</li>
+<li>DTI<ul>
+<li>"my_AX_file.nii.gz"</li>
+<li>"my_FA_file.nii.gz"</li>
+<li>"my_RAD_file.nii.gz"</li>
+<li>"my_TR_file.nii.gz"</li>
+</ul>
+</li>
+<li>PERFUSION<ul>
+<li>"my_rCBV_file.nii.gz"</li>
+<li>"my_PSR_file.nii.gz"</li>
+<li>"my_PH_file.nii.gz"</li>
+</ul>
+</li>
+<li>SEGMENTATION<ul>
+<li>"original_segmentation_file.nii.gz"</li>
+<li>"segmentation_file_in_atlas_space.nii.gz"</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:<ul>
+<li>Data_of_multiple_patients<ol type="a">
+<li>Subject_ID1</li>
+<li>Subject_ID2</li>
+<li>...</li>
+<li>Subject_IDn</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<p><b>USAGE:</b></p><ul>
+<li>Train New Model:<ol type="1">
+<li>"Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.</li>
+<li>"Output". Select the folder where the trained model will be saved.</li>
+<li>A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInput -o C:/EGFRvIIIModel
+</pre></li>
+</ol>
+</li>
+<li>Use Existing Model<ol type="1">
+<li>"Model Directory". Choose the directory of a saved model.</li>
+<li>"Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.</li>
+<li>"Output". Select the output directory where a .csv file with the mutation status for all patients will be saved, and click on 'Confirm'.</li>
+<li>A pop-up window appears displaying the completion of result calculation. The window will also show the detected mutation status of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInput -m C:/EGFRvIIIModel -o C:/EGFRvIIIOutput
+</pre></li>
+</ol>
+</li>
+</ul>
+<p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>H. Akbari, S. Bakas, J.M. Pisapia, M.P. Nasrallah, M. Rozycki, M. Martinez-Lage, J.J.D. Morrissette, N. Dahmane, D.M.O’Rourke, C. Davatzikos. "In vivo evaluation of EGFRvIII mutation in primary glioblastoma patients via complex multiparametric MRI signature", Neuro Oncol. 20(8):1068-1079, 2018</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="Glioblastoma_Pseudoprogression"></a>
+Pseudoprogression Infiltration Index</h3>
+<p>This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
+<li>Segmentation label of the demarcated region of interest (Label=1) in a single NIfTI (.nii.gz) file.</li>
+<li>The data for each patient should be organized in the following directory structure.<ul>
+<li>SubjectID<ol type="a">
+<li>CONVENTIONAL<ul>
+<li>"my_T1_file.nii.gz"</li>
+<li>"my_T2_file.nii.gz"</li>
+<li>"my_T1CE_file.nii.gz"</li>
+<li>"my_FLAIR_file.nii.gz"</li>
+</ul>
+</li>
+<li>DTI<ul>
+<li>"my_AX_file.nii.gz"</li>
+<li>"my_FA_file.nii.gz"</li>
+<li>"my_RAD_file.nii.gz"</li>
+<li>"my_TR_file.nii.gz"</li>
+</ul>
+</li>
+<li>PERFUSION<ul>
+<li>"my_PERFUSION_file.nii.gz"</li>
+</ul>
+</li>
+<li>SEGMENTATION<ul>
+<li>"my_segmentation_file.nii.gz"</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:<ul>
+<li>Data_of_multiple_patients<ol type="a">
+<li>Subject_ID1</li>
+<li>Subject_ID2</li>
+<li>...</li>
+<li>Subject_IDn</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<p><b>USAGE:</b></p>
+<ul>
+<li>Pseudoprogression assessment on a batch of subjects.<ul>
+<li>"Train a new model":<ol type="1">
+<li>Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
+<li>Select the "Output Directory" where the trained model should be saved.</li>
+<li>Click on 'Confirm'.</li>
+<li>A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around.</li>
+<li>NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM for calculating perfusion derivatives. <pre class="fragment">PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionModel
+</pre></li>
+</ol>
+</li>
+<li>"Use existing model":<ol type="1">
+<li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/pseudoprogression.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/pseudoprogression.zip</a></li>
+<li>Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
+<li>Select the "Output Directory", where the user wants to save the output. The first and the second column of .csv will be distancce of sample from the hyperplance of pseudoprogression model and true recurrence model, respectively.</li>
+<li>Click on 'Confirm'.</li>
+<li>A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionOutput -m C:/PseudoprogressionModel
+</pre></li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<p><b> RESULT INTERPRETATION: </b></p>
+<ul>
+<li>1st column: distance to hyperplane that classifies pseudo-progression versus the rest</li>
+<li>2nd column: distance to hyperplane that classifies true-progression versus the rest</li>
+</ul>
+<p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>H.Akbari, S.Bakas, M.Martinez-Lage, M.Nasrallah, M.Rozycki, S.Rathore, G.Shukla, S.Mohan, M.Bilello, C.Davatzikos, "Quantitative radiomics and machine learning to distinguish true progression from pseudoprogression in patients with GBM", ASNR 56th Annual Meeting, 2018.</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="Glioblastoma_Atlas"></a>
+Population Atlas</h3>
+<p>This application facilitates the users to generate population atlases for patients with different tumor subgroups [1] to emphasize their heterogeneity.</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4)</li>
+<li>Groups: A csv file having patient's label file name e.g. SegmentationLabel.nii.gz (in first column) and group (in second column). (Note that the CSV file should be in ASCII format)</li>
+<li>Standard atlas: A standard atlas to map all the patients in a unified space.</li>
+<li>The data (segmentation label files) of multiple patients should reside under the same folder, e.g.:<ul>
+<li>Data_of_multiple_patients<ol type="a">
+<li>Subject_ID1.nii.gz</li>
+<li>Subject_ID2.nii.gz</li>
+<li>...</li>
+<li>Subject_IDn.nii.gz</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Launch the Population Atlases application using the 'Applications -&gt; Population Atlas' menu option.</li>
+<li>Specify the Input (e.g., Data_of_multiple_patients) and Output directories, groups and atlas files.</li>
+<li>Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window.</li>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">PopulationAtlases.exe -i C:/PopulationAtlasesInput -l C:/GroupFile -a C:/AtlasFile -o C:/populationAtlasesOutput
+</pre></li>
+</ol>
+<p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>M. Bilello, H. Akbari, X. Da, J.M.Pisapia, S.Mohan, R.L.Wolf, D.M.O'Rourke, M.Martinez-Lage, C.Davatzikos. "Population-based MRI atlases of spatial distribution are specific to patient and tumor characteristics in glioblastoma", Neuroimage Clin. 12:34-40, 2016. DOI:10.1016/j.nicl.2016.03.007</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="Glioblastoma_Confetti"></a>
+Confetti</h3>
+<p>This is a method for automated extraction of white matter tracts of interest in a consistent and comparable manner over a large group of subjects without drawing the inclusion and exclusion ROIs, facilitating an easy correspondence between different subjects, as well as providing a representation that is robust to edema, mass effect, and tract infiltration [1-3]. Confetti includes three main steps:</p><ol type="1">
+<li>Connectivity signature generation for fibers</li>
+<li>Clustering of fibers using a mixture of multinomials (MNs) clustering method and Expectation-Maximization (EM) optimization framework</li>
+<li>Extraction of predefined white matter tracts.</li>
+</ol>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>Fiber set (Streamline) to be clustered: The fiber set can be generated using any tractography model, but the file should be saved in .Bfloat format (i.e. fiber format of Camino package). Different converters can be be used to convert .trk to .Bfloat and vice-versa.</li>
+<li>Track Density Images (TDI): When using GUI, it needs to be generated in the manner explained below; this constraint is not present when using Confetti via the command line.</li>
+<li>Parcellation of the brain into 87 Desikan/Freesurfer gray matter (GM) regions [4]</li>
+</ol>
+<p><b>Generation of TDI Images with GUI:</b></p><ol type="1">
+<li>Freesurfer [4] is used with the Desikan atlas [5] to define 87 gray matter ROIs in the user diffusion space.</li>
+<li>Region IDs of the ROIs as used by Freesurfer is provided in the example file "{CaPTk_Sample_Data}/Confetti/input/freesurfer_ROIs.csv". (Note that the CSV file should be in ASCII format)</li>
+<li>TDIs must be generated using the probtrackx utility of FSL package [6] with its default parameters and 5000 seeds per voxel.</li>
+<li>Each TDI image is a whole brain voxel-map, with each voxel having the number of fibers passing through this voxel and reaching to one of the 87 gray matter ROIs defined by Freesurfer.</li>
+<li>In total, you should have 87 TDI, each corresponding to one ROI.</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Open Confetti UI using the 'Applications -&gt; Confetti' menu option.</li>
+<li>Load the required images using "Streamline File" and "TDI Directory".</li>
+<li>Specify the output directory and click on 'Run Confetti'.</li>
+<li>Visually review the output tracks by double clicking respective fields on the populated list view.</li>
+</ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:</li>
+</ul>
+<ol type="1">
+<li>Generation of connectivity signatures of the fibers that will be clustered into bundles:<br />
+ <pre class="fragment">  Confetti signature -i tdi_paths_freesurfer_87ROIs.csv -f fibers.Bfloat -o signatures.csv</pre></li>
+<li>Clustering of the generated fibers into bundles:<br />
+ <pre class="fragment">  Confetti cluster -s signatures.csv -k 200 -o clusterIDs.csv</pre></li>
+<li>Identification of specific tracts (requires an annotated example):<br />
+ <pre class="fragment">  Confetti extract -t template/ -f fibers.Bfloat -c clusterIDs.csv -o tracts_</pre></li>
+</ol>
+<p><br />
+</p>
+<hr/>
+<p>References:</p>
+<ul>
+<li>B.Tunc, M.Ingalhalikar, W.A.Parker, J.Lecoeur, N.Singh, R.L.Wolf, L.Macyszyn, S.Brem, R.Verma, "Individualized Map of White Matter Pathways: Connectivity-based Paradigm for Neurosurgical Planning", Neurosurgery. 79(4):568-77, 2016. DOI:10.1227/NEU.0000000000001183.</li>
+<li>B.Tunc, W.A.Parker, M.Ingalhalikar, R.Verma, "Automated tract extraction via atlas based Adaptive Clustering", NeuroImage. 102(2):596-607, 2014. DOI:10.1016/j.neuroimage.2014.08.021</li>
+<li>B.Tunc, A.R.Smith, D.Wasserman, X.Pennec, W.M.Wells, R.Verma, K.M.Pohl, "Multinomial Probabilistic Fiber Representation for Connectivity Driven Clustering", Inf Process Med Imaging. 23:730-41, 2013.</li>
+<li>B.Fischl, M.I.Sereno, A.M.Dale, "Cortical surface-based analysis. II: Inflation, flattening, and a surface-based coordinate system", NeuroImage. 9:195-207, 1999. DOI:10.1006/nimg.1998.0396</li>
+<li>R.S.Desikan, F.Segonne, B.Fischl, B.Quinn, B.Dickerson, D.Blacker, R.Buckner, A.Dale, R.Maguire, B.Hyman, M.Albert, R.Killiany, "An automated labeling system for subdividing the human cerebral cortex on MRI scans into gyral based regions of interest", NeuroImage. 31(3):968-80, 2006. DOI:10.1016/j.neuroimage.2006.01.021</li>
+<li>M.Jenkinson, C.F.Beckmann, T.E.J.Behrens, M.W.Woolrich, S.M.Smith, "FSL", Neuroimage. 62(2):782-790, 2012. DOI:10.1016/j.neuroimage.2011.09.015</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="Glioblastoma_Directionality"></a>
+Directionality Estimator</h3>
+<p>This application estimates the volumetric changes and their directionality for a given ROI across two timepoints [1] and also returns the projections of the boundary point with the maximum distance from a seedpoint (with label <b>TU</b>) in each of the 3 2D visualized planes.</p>
+<p><b> REQUIREMENTS:</b></p><ol type="1">
+<li>The image of timepoint 1 and a tissue seedpoint with label <b>TU</b> within the ROI at timepoint 1.</li>
+<li>[OPTIONAL] If the second time point image is not perfectly aligned, a second tissue seedpoint with label <b>NCR</b> can be initialized and the algorithm will take that translation into consideration during computation.</li>
+<li>Two ROI files, one for each timepoint (note that the populated voxels of the ROIs should be of Label 1).</li>
+</ol>
+<p><b> USAGE:</b></p><ol type="1">
+<li>Load the image of timepoint 1 in CaPTk and initialize the (or load an already initialized) seedpoint with label <b>TU</b> defining the point within the ROI from where you want to estimate the expansion.</li>
+<li>[OPTIONAL] Load the image of timepoint 2 in CaPTk and initialize the (or load an already initialized) seedpoint with label <b>NCR</b> defining the point within the ROI from where you want to estimate the expansion.</li>
+<li>Launch the Directionality Estimator application using the 'Applications -&gt; Directionality Estimator' menu option.</li>
+<li>Specify the Input ROI files for the 2 timepoints and the Output directory where the output masks and text files will be saved.</li>
+<li>Click on 'Confirm" and a pop-up window will be displayed showing the total volumetric change, as well as the change per 3D octant.</li>
+<li>A parametric map is automatically loaded as an image in the visualization panels of CaPTk dividing the ROI of timepoint 1 in octants and assigning a value in the range [0,1] on each octant. Smaller and larger values represent the octants with smaller and larger relative volumetric change.</li>
+<li>A multi-label map is also automatically loaded as an ROI in the visualization panels of CaPTk depicting with i) label 1 (red) and label 3 (yellow) the intersection of the timepoint 1 and timepoint 2 ROIs, ii) label 3 (yellow) the octant of maximum expansion, and iii) label 2 (green) the voxels of expansion in timepoint 2, i.e. the voxels that did not exist in the timepoint 1 ROI but only in the ROI of timepoint 2. Note that the visualization of the multi-label map can be controlled from the "Drawing" panel.</li>
+<li>Tissue point table gets updated with 3 points marked "CSF" (which are correspond to the direction of max point along the different planes) and 1 point marked "RTN" (which is the actual 3D point of max distance from initialized seed point).</li>
+<li>The results as well as the actual distances are automatically saved in a text file in the Output folder together with the multi-label ROI images.</li>
+<li>The user can save both the actual and the projection points of max distance in a location of their choosing.</li>
+</ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">DirectionalityEstimate.exe -l C:/labelMap.nii.gz -o C:/output.txt -i 40,25,60
+</pre></li>
+</ul>
+<p><b> OUTPUT:</b> The following files are saved in the output folder:</p><ul>
+<li><b>directionalityOutput.txt</b>, which includes the total volumetric change and the change per 3D octant (as shown in the output window), as well as the coordinates of the point of the largest distance (i.e., RTN) from the TU seedpoint together with its projections in the 3 2D planes (i.e., CSF).</li>
+<li><b>roi_DE_octantImage.nii.gz</b>, which describes the partitioned version of timepoint_2_ROI in octants with the corresponding numbering of octants accompanying the numbering included in the output text file.</li>
+<li><b>roi_DE_visualizationRatio.nii.gz</b>, which describes the ratio of the timepoint_2_ROI over timepoint_1_ROI of the volumetric differences per octant.</li>
+<li><b>roiDE_visualizationProbability.nii.gz</b>, which describes the parametric map dividing the ROI of timepoint 1 in octants and assigning a value in the range [0,1] on each octant. Smaller and larger values represent the octants with smaller and larger relative volumetric change. This is the same result as roi_DE_visualizationRatio.nii.gz but scaled between 0 and 1.</li>
+<li><b>roi_DE_visualizationIncrease.nii.gz</b>, which describes the multi-label map depicting with i) label 1 (red) and label 3 (yellow) the intersection of the timepoint 1 and timepoint 2 ROIs, ii) label 3 (yellow) the octant of maximum expansion based on distance and not based on volumetric difference, and iii) label 2 (green) the voxels of expansion in timepoint 2, i.e. the voxels that did not exist in the timepoint 1 ROI but only in the ROI of timepoint 2. Note that the visualization of the multi-label map can be controlled from the "Drawing" panel.</li>
+</ul>
+<p><br />
+</p>
+<hr/>
+<p>Reference</p>
+<ul>
+<li>M.E.Schweitzer, M.A.Stavarache, N.Petersen, S.Bakas, A.J.Tsiouris, C.Davatzikos, M.G.Kaplitt, M.M.Souweidane, "Modulation of Convection Enhanced Delivery (CED) distribution using Focused Ultrasound (FUS)", Neuro Oncol. 19(Suppl 6):vi272, 2017. DOI:10.1093/neuonc/nox168.1118</li>
+</ul>
+<p><br />
+</p>
+<hr/>
+<h2><a class="anchor" id="BreastCancer"></a>
+Breast Cancer</h2>
+<h3><a class="anchor" id="BreastCancer_LIBRA"></a>
+Breast Density Estimation (LIBRA)</h3>
+<p>The Laboratory for Individualized Breast Radiodensity Assessment (LIBRA) is a software application for fully-automated breast density segmentation in full-field digital mammography (FFDM) [1]. LIBRA is available in single and batch mode.</p>
+<p><b>REQUIREMENTS:</b></p><ul>
+<li>Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.</li>
+<li>FFDM vendors currently supported: GE Healthcare and Hologic.</li>
+<li>For single mode: Each image stored in a separate folder.</li>
+<li>For batch mode: All images stored in a single folder.</li>
+</ul>
+<p><b>USAGE:</b></p><ul>
+<li>Single mode:<ol type="1">
+<li>Load the FFDM image using the 'File -&gt; Load -&gt; Images' menu option.</li>
+<li>Launch LIBRA using the 'Applications -&gt; LIBRA_SingleImage' menu option.</li>
+<li>LIBRA is executed and the segmentation mask is automatically loaded back to CaPTk.</li>
+<li>LIBRA outputs (described in the Outputs section below) are automatically saved in a temp folder under the CaPTk directory.</li>
+</ol>
+</li>
+<li>Batch mode:<ol type="1">
+<li>Launch LIBRA using the 'Applications -&gt; LIBRA_BatchMode' menu option.</li>
+<li>The user is prompted to select the folder which contains the images for analysis.</li>
+<li>The user is then prompted to select an output folder where the density scores and density segmentation images .jpg files will be stored. Note: If the folder already exists and contains density estimates (e.g., from a previous run of LIBRA), it will append the new results to the results file.</li>
+<li>Lastly, the user will be asked whether they wish to store a processing log file and intermediate graphics in addition to the density segmentation outline which may be on interest for publication or visualization purposes, and are further described in the Outputs section below.</li>
+<li>LIBRA will then begin processing all the FFDM images; the progress of the software can be monitored via the related command-prompt window that opens when LIBRA starts running. When analysis is complete, a prompt appears asking the user if they want to open the results folder and if they want to perform additional analyses.</li>
+</ol>
+</li>
+</ul>
+<p><b>OUTPUT:</b></p><ul>
+<li>The following outputs are always generated:<ul>
+<li>Masks_&lt;Image-Analyzed&gt;.mat: A MATLAB datafile containing a structure array that stores the breast area (res.BreastArea), dense area (res.DenseArea), and area percent density estimates (res.PD_SVM) for the FFDM analyzed (res.dcm_fname). This structure array also stores the binary masks of the breast (res.BreastMask) and dense tissue segmentations (res.DenseMask), which may be useful for further processing and analysis.</li>
+<li>Density.csv: A comma separated file (open-able by spreadsheet programs like Excel) that stores the breast area, dense area, and percent density estimates for each FFDM image analyzed, listed by file name. The Manufacturer, Laterality and View-Position of the mammogram are also provided for reference. (Note that the CSV file should be in ASCII format)</li>
+<li>&lt;Image-Analyzed-Filename&gt;_density_segmentation.jpg: In the Result_Images sub-directory, the breast and density segmentation results are provided for each image analyzed. The breast is outlined in red, the density segmentation is in green. Note that for visualization purposes, the image is window-leveled to between the 5th and 95th percentile of the intensity values of the pixels within the breast region.</li>
+</ul>
+</li>
+<li>In single mode the following outputs are generated by default, while in batch mode they are only generated if the user specifies to save intermediate files:<ul>
+<li>LIBRA-logfile_&lt;time-stamp&gt;.txt: A log of the programs outputs during the session, this text file is time-stamped at the start of the LIBRA sessions so that multiple sessions writing to the same output folder each have their own unique log of events. The &lt;time-stamp&gt; takes the form of &lt;Month&gt;--&lt;YYYY&gt;_HH-MM-SS, in 24-hour format. .. _fig_log_file.</li>
+<li>&lt;Image-Analyzed-Filename&gt;_Windowed_Original.jpg: In the Result_Images sub-directory, the analyzed image window-leveled to between the 5th and 95th percentile of the intensity values of the pixels within the breast region is also provided with out the breast density segmentation overlay for comparison purposes.</li>
+<li>&lt;Image-Analyzed&gt;_density_imagesc.jpg: In the Result_Images sub-directory, the image clusters (grouped by colors) generated by the Fuzzy C-Means stage of the LIBRA algorithm is provided.</li>
+<li>&lt;Image-Analyzed&gt;_intensity_histogram.jpg: In the Result_Images sub-directory, the breast intensity histogram (z-scored) and FCM-cluster centers are plotted in this image.</li>
+</ul>
+</li>
+</ul>
+<p>Please see the LIBRA manual for more details: <a href="https://www.med.upenn.edu/sbia/libra.html">https://www.med.upenn.edu/sbia/libra.html</a></p>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${captk_install_dir}/bin/libra.bat --input C:/inputDICOMDir --output C:/outputDir # windows
+${captk_install_dir}/bin/libra --input C:/inputDICOMDir --output C:/outputDir # linux
+</pre></li>
+</ul>
+<p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="BreastCancer_texture"></a>
+Texture Feature Extraction</h3>
+<p>This application extracts the Texture Features as described in the paper [1]. It uses the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the computation.</p>
+<p><b>REQUIREMENTS:</b></p><ul>
+<li>Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.</li>
+<li>FFDM vendors currently supported: GE Healthcare and Hologic.</li>
+<li>Each image stored in a separate folder.</li>
+</ul>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Load the FFDM image using the 'File -&gt; Load -&gt; Images' menu option.</li>
+<li>Launch LIBRA using the 'Applications -&gt; Breast Segmentation' menu option.</li>
+<li>Specify the output directory.</li>
+</ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands: <pre class="fragment">BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1 
+</pre></li>
+</ul>
+<p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="BreastCancer_breastSegmentation"></a>
+Breast Segmentation</h3>
+<p>This application uses LIBRA [1] to extract the breast region in the loaded image.</p>
+<p><b>REQUIREMENTS:</b></p><ul>
+<li>Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.</li>
+<li>FFDM vendors currently supported: GE Healthcare and Hologic.</li>
+<li>Each image stored in a separate folder.</li>
+</ul>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Load the FFDM image using the 'File -&gt; Load -&gt; Images' menu option.</li>
+<li>Launch LIBRA using the 'Applications -&gt; Breast Segmentation' menu option.</li>
+<li>Output is loaded automatically.</li>
+</ol>
+<p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530</li>
+</ul>
+<hr/>
+<h2><a class="anchor" id="LungCancer"></a>
+Lung Cancer</h2>
+<h3><a class="anchor" id="LungCancer_SBRT"></a>
+Radiomics Analysis of Lung Cancer</h3>
+<p>This application provides a fully automatic segmentation of lung nodules and prediction of survival and nodal failure risks as a three step workflow[1].</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>CT image</li>
+<li>PET image (co-registered to the CT image)</li>
+<li>Additional requirements for each of the three steps(Lung Field Segmentation, Lung Nodule Segmentation, Prognostic Modeling) as described in Usage.</li>
+</ol>
+<p><b>USAGE:</b></p>
+<p><b>Step 1: Lung Field Segmentation</b></p><ol type="1">
+<li>Load the required co-registered CT and PET images.</li>
+<li>Load the optional mask image (for example, body mask) within which the lung field will be extracted.</li>
+<li>Launch the segmentation step using the 'Applications -&gt; <b>Lung Field Segmentation</b>' menu.</li>
+<li>The lung field is automatically generated and displayed.</li>
+</ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands: <pre class="fragment">SBRT_LungField.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -o C:/outputBasename -m C:/foregroundMask.nii.gz # optional mask
+</pre></li>
+</ul>
+<p>It will generate the lung field mask image with name C:/outputBasename_lf.nii.gz. The mask image will contain 2 labels, label 3 for foreground and label 2 for lung field.</p>
+<p><b>Step 2: Lung Nodule Segmentation</b></p><ol type="1">
+<li>Load the required co-registered CT and PET images.</li>
+<li>Load the required mask image(for example, lung field mask or a region containing the nodule within lung field with default label value of 2) within which the lung nodule will be extracted.</li>
+<li>Load the optional seed image containing foreground seeds(for nodule) and background seeds for nodule segmentation.The foreground seeds should be with label 2, background seeds with label 1, and others with label 0.</li>
+<li>Specify the label value for the foreground seeds(default value of 2).</li>
+<li>Launch the segmentation step using 'Applications -&gt; <b>Lung Nodule Segmentation</b>' menu.</li>
+<li>The nodule is automatically generated and displayed.</li>
+</ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands: <pre class="fragment">SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename
+</pre></li>
+</ul>
+<p>It will generate two output images (seed image for nodule segmentation and nodule mask image) with names C:/outputBasename_seeds.nii.gz and C:/outputBasename_segmentation.nii.gz</p>
+<pre class="fragment">SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename -s C:/seedImage.nii.gz
+</pre><p>It will generate the nodule mask image with name C:/outputBasename_segmentation.nii.gz.</p>
+<pre class="fragment">SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename -s C:/seedImage.nii.gz -l 2 
+</pre><p>"Label_value" indicates the label of lung field in the input mask image, default value is 2.</p>
+<p><b>Step 3: Prognostic Modeling</b></p><ol type="1">
+<li>Load the required PET image.</li>
+<li>Load the required nodule mask generated from step 2.</li>
+<li>Launch the modeling step using 'Applications -&gt; <b>Prognostic Modeling</b>' menu.</li>
+<li>The predicted risks for survival and nodal failure are automatically calculated and displayed.[Note: The prediction models were obtained based on PET images with spatial resolution 4mm x 4mm x 4mm.]</li>
+</ol>
+<p>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:</p>
+<pre class="fragment">SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1
+</pre><p>It will calculate and print the predicted risks regarding survival and nodal failure.</p>
+<pre class="fragment">SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1 -o C:/outputFile
+</pre><p>It will calculate and print the predicted risks regarding survival and nodal failure, it will also save the radiomic features used for the prediction into the assigned file.</p>
+<p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.</li>
+</ul>
+<hr/>
+<h2><a class="anchor" id="Miscellaneous"></a>
+Miscellaneous Applications</h2>
+<h3><a class="anchor" id="misc_Perfusion_Alignment"></a>
+Perfusion Alignment</h3>
+<p>This application does perfusion alignment of the input Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan.</p>
+<p><b> REQUIREMENTS:</b></p><ol type="1">
+<li>A single DSC-MRI scan.</li>
+<li>A single dicom slice from the original DICOM corresponding to the DSC-MRI scan.</li>
+<li>A single T1 post-contrast MRI scan.</li>
+<li>The Echo Time corresponding to the given DSC-MRI scan.</li>
+<li>Number of time-points before and after the standard perfusion curve that we want our image to be aligned with.</li>
+<li>System should have atleast 32GB RAM for calculating perfusion derivatives.</li>
+</ol>
+<p><b> USAGE:</b></p><ol type="1">
+<li>Launch the application from "Applications" -&gt; "Perfusion Alignment".</li>
+<li>Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.</li>
+<li>Press "Confirm" button.</li>
+<li>The aligned perfusion images will be saved at the specified location (~5 minutes).</li>
+</ol>
+<hr/>
+<h3><a class="anchor" id="misc_Perfusion_Derivatives"></a>
+Perfusion Derivatives</h3>
+<p>This application extracts various measurements from a Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan. The exact measurements comprise i) an automatically-extracted proxy to relative Cerebral Blood Volume (ap-rCBV), ii) peak height (PH), iii) percent signal recovery (PSR). Note that the ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.</p>
+<p><b> REQUIREMENTS:</b></p><ol type="1">
+<li>A single DSC-MRI scan.</li>
+<li>The Echo Time corresponding to the given DSC-MRI scan</li>
+<li>System should have atleast 32GB RAM for calculating perfusion derivatives.</li>
+</ol>
+<p><b> USAGE:</b></p><ol type="1">
+<li>Launch the application from "Applications" -&gt; "Perfusion Derivatives".</li>
+<li>Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.</li>
+<li>Press "Confirm" button.</li>
+<li>The extracted measurements will be saved at the specified location (~5 minutes).</li>
+</ol>
+<hr/>
+<h3><a class="anchor" id="misc_Diffusion_Derivatives"></a>
+Diffusion Derivatives</h3>
+<p>This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).</p>
+<p><b> REQUIREMENTS:</b></p><ol type="1">
+<li>A single DW-MRI image</li>
+<li>Its accompanying BVec and BVal files [Note: these files should be calculated by 'dcm2nii' or any other appropriate software.]</li>
+<li>A mask for which the measurements will be extracted</li>
+</ol>
+<p><b> USAGE:</b></p><ol type="1">
+<li>Launch the application from "Applications" -&gt; "Diffusion Derivatives".</li>
+<li>Specify the paths to the input DW-MRI image, bval and bvec files with the gradient information, and the mask defining the voxels to extract the measurements.</li>
+<li>Identify the diffusion measurements to be extracted, and the output directory.</li>
+<li>Press the "Confirm" button.</li>
+<li>The extracted measurements will be saved at the specified location (~5 minutes).</li>
+</ol>
+<hr/>
+<h3><a class="anchor" id="misc_PCA_Extraction"></a>
+PCA Volume Extraction</h3>
+<p>This application extracts the principal components from DSC-MRI scans as mentioned in [1].</p>
+<p><b> REQUIREMENTS:</b> A single DSC-MRI image and a mask for which the measurements will be extracted.</p>
+<p><b> USAGE:</b></p><ol type="1">
+<li>Load a DSC-MRI in CaPTk and the mask (Label:1) defining the voxels to extract the measurements.</li>
+<li>Launch the application from "Applications" -&gt; "PCA Volume Extraction".</li>
+<li>Specify the number of principal components required and the output directory.</li>
+<li>Press "Confirm" button.</li>
+<li>The principal components will be extracted at the specified location and also loaded in CaPTk (~5 minutes).</li>
+</ol>
+<p><br />
+</p>
+<hr/>
+<p>Reference:</p>
+<ul>
+<li>H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458</li>
+</ul>
+<hr/>
+<h3><a class="anchor" id="misc_Training_Module"></a>
+Training Module</h3>
+<p>This applicatiparameterizeachine"&gt;Support Vector Machineparameterize</p>
+<p><b> REQUIREMENTS:</b> Input features file (CSV) and a target label file (CSV).</p>
+<p><b> USAGE:</b>parameterize</p><ol type="1">
+<li>Launch the application from "Applications" -&gt; "Training Module".</li>
+<li>Specify the features (.csv) file and the corresponding target (.csv) file.</li>
+<li>Specify the kernel of SVM using either of the two radio buttons.</li>
+<li>Specify the cross-validation method which could be either k-fold cross-validation, split-train-test, training only, or inference only.</li>
+<li>In case of k-fold cross-validation, specify the number of folds in the corresponding edit box. In case of split-train-test method, specify the number of training samples X. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing. For training only option, no additional parameter is required in 'Configuration' section. For testing only option, the directory containing the trained model files should be provided.</li>
+<li>Press "Confirm" button.</li>
+<li>The model or the predicted output, depending on the configuration, will be calculated and saved in the output directory.</li>
+</ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following formats:<ul>
+<li>K-Fold CrossValidation option: <pre class="fragment">    TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 1 -k 10 </pre></li>
+<li>Split Train-Test option: <pre class="fragment">    TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 2 -k 40</pre></li>
+<li>Train only option: <pre class="fragment">    TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 3 -k 10</pre></li>
+<li>Test only option: <pre class="fragment">    TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 4 -k 10 -m C:/ModelDirectory</pre></li>
+</ul>
+</li>
+</ul>
+<p><b>c</b> is the classifier type (-c 1 for Linear SVM, -c 2 for RBF SVM) <b>n</b> is the configuration type (-n 1 for cross-validation, -n 2 for split train-test, -n 3 for training only, -n 4 for testing only) <b>k</b> is the # of folds for cross-validation configuration, and size of train dataset for split train-test configuration</p>
+<hr/>
+<hr/>
+<p>  
+<div align="right"><a href="Science.html"><b>Next (Scientific Findings using CaPTk)<b></a></div>
+ </p><hr/>
  </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
