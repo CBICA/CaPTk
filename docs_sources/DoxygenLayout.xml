@@ -4,6 +4,7 @@
   <navindex>
     <tab type="mainpage" visible="yes" title="Overview"/>
     <tab type="usergroup" visible="yes" title="Getting Started" url="Getting_Started.html">
+      <tab type="user" visible="yes" title="FAQ" url="gs_FAQ.html"/>
       <tab type="user" visible="yes" title="Components" url="gs_components.html"/>
       <tab type="user" visible="yes" title="Supported Images" url="gs_supportedImages.html"/>
       <tab type="user" visible="yes" title="Image Loading" url="gs_imageLoading.html"/>

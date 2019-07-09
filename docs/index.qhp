@@ -9,6 +9,17 @@
         <section title="Overview" ref="index.html" />
         <section title="Installation Instructions" ref="Installation.html" />
         <section title="Getting Started" ref="Getting_Started.html">
+          <section title="Frequently Asked Questions" ref="gs_FAQ.html">
+            <section title="Which platforms are supported by CaPTk installers?" ref="gs_FAQ.html#gs_FAQ_1" />
+            <section title="How do I run CaPTk Applications from the Command Line?" ref="gs_FAQ.html#gs_FAQ_2" />
+            <section title="What are the OpenGL requirements to run CaPTk?" ref="gs_FAQ.html#gs_FAQ_3" />
+            <section title="What if I am having issues with the Linux Installer?" ref="gs_FAQ.html#gs_FAQ_4">
+              <section title="FUSE Issues" ref="gs_FAQ.html#gs_FAQ_4_1" />
+              <section title="GLIBCXX or GLIBC Issues" ref="gs_FAQ.html#gs_FAQ_4_2" />
+            </section>
+            <section title="Is there a minimum recommended screen resolution for running CaPTk?" ref="gs_FAQ.html#gs_FAQ_5" />
+            <section title="What if I am having an issue not listed here?" ref="gs_FAQ.html#gs_FAQ_6" />
+          </section>
           <section title="Keyboard Shortcuts" ref="gs_keyboard.html" />
           <section title="Components" ref="gs_components.html" />
           <section title="Supported Images" ref="gs_supportedImages.html" />
@@ -81,6 +92,7 @@
     <keywords>
       <keyword name="Installation Instructions" id="Installation Instructions" ref="Installation.html" />
       <keyword name="Getting Started" id="Getting Started" ref="Getting_Started.html" />
+      <keyword name="Frequently Asked Questions" id="Frequently Asked Questions" ref="gs_FAQ.html" />
       <keyword name="Keyboard Shortcuts" id="Keyboard Shortcuts" ref="gs_keyboard.html" />
       <keyword name="Components" id="Components" ref="gs_components.html" />
       <keyword name="Supported Images" id="Supported Images" ref="gs_supportedImages.html" />
@@ -162,6 +174,7 @@
       <file>dynsections.js</file>
       <file>Installation.html</file>
       <file>Getting_Started.html</file>
+      <file>gs_FAQ.html</file>
       <file>gs_keyboard.html</file>
       <file>gs_components.html</file>
       <file>gs_supportedImages.html</file>
