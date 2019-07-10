@@ -1,11 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <tagfile>
   <compound kind="page">
-    <name>Installation</name>
-    <title>Installation Instructions</title>
-    <filename>Installation</filename>
-  </compound>
-  <compound kind="page">
     <name>Getting_Started</name>
     <title>Getting Started</title>
     <filename>Getting_Started</filename>
@@ -239,6 +234,11 @@
     <name>Download</name>
     <title>Download Instructions</title>
     <filename>Download</filename>
+  </compound>
+  <compound kind="page">
+    <name>Installation</name>
+    <title>Installation Instructions</title>
+    <filename>Installation</filename>
   </compound>
   <compound kind="page">
     <name>ReleaseNotes</name>

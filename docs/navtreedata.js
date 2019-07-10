@@ -25,7 +25,6 @@ var NAVTREE =
 [
   [ "Cancer Imaging Phenomics Toolkit (CaPTk)", "index.html", [
     [ "Overview", "index.html", null ],
-    [ "Installation Instructions", "Installation.html", null ],
     [ "Getting Started", "Getting_Started.html", [
       [ "Frequently Asked Questions", "Getting_Started.html#gs_FAQ", null ],
       [ "Keyboard Shortcuts", "Getting_Started.html#gs_keyboard", null ],
@@ -80,6 +79,7 @@ var NAVTREE =
       ] ]
     ] ],
     [ "Download Instructions", "Download.html", null ],
+    [ "Installation Instructions", "Installation.html", null ],
     [ "Changelog: Release Notes", "ReleaseNotes.html", null ],
     [ "People (Credits)", "People.html", null ]
   ] ]
