@@ -334,7 +334,7 @@ An example to show the verbose help for an application called <b>${Application}<
 |      Linux     |                   ${CaPTk_InstallDir}/bin/${ApplicationName} -h                  |
 |      macOS     | ~/Applications/CaPTk_${version}.app/Contents/Resources/bin/${ApplicationName} -h |
 
-Detailed explanation of using the command line is available in the following section.
+Detailed explanation of using the command line is available in the \ref How_To_Guides.
 
 --------
 
