@@ -28,6 +28,7 @@ CAPTK_CMD () {
 # rm CMakeCache.txt
 sudo rm -rf CaPTk_*
 
+export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 export CC=/usr/local/opt/llvm/bin/clang
 export CXX=/usr/local/opt/llvm/bin/clang++
 export LDFLAGS="-L/usr/local/opt/llvm/lib"

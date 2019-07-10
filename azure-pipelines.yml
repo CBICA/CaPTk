@@ -233,7 +233,14 @@ jobs:
     vmImage: 'MacOS-10.13'
 
   steps:
+    - task: Cache@0
+      inputs:
+        path: '/usr/local/Cellar/*, $(Pipeline.Workspace)/bin/*build, $(Pipeline.Workspace)/bin/qt'
+        key: '*'
+      displayName: 'Caching'
+
     - bash: |
+        echo $(Pipeline.Workspace)
         brew install make doxygen llvm
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
       displayName: 'Brew dependencies'
@@ -297,6 +304,7 @@ jobs:
 
         rm CMakeCache.txt
 
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
         export CC=/usr/local/opt/llvm/bin/clang
         export CXX=/usr/local/opt/llvm/bin/clang++
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
