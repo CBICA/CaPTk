@@ -1,9 +1,27 @@
 /**
 
 \page Getting_Started Getting Started
+
+CaPTk has been designed as a modular platform, currently incorporating components for:
+-# User interaction (e.g., coordinate definition, region annotation, and spherical approximation of abnormalities)
+  - \ref gs_imageLoading
+  - \ref gs_imageVisualization
+  - \ref gs_tabDocking
+  - \ref gs_seedpoints
+  - \ref gs_utilities
+  - \ref gs_drawing
+-# \ref gs_preprocessing (e.g., smoothing, bias correction, co-registration, normalization) 
+-# Image segmentation
+-# Feature extraction
+-# Specialized diagnostic analysis 
+
+The components of interaction and pre-processing are available for all integrated applications giving a researcher (whether clinical or computational) a single point of entry and exit for all their tasks.
+
 The following sections give a high-level overview of CaPTk, with the intention of familiarizing a new user with the platform functionalities and interface.
 
 \tableofcontents
+
+--------
 
 \section gs_FAQ Frequently Asked Questions
 
@@ -15,66 +33,55 @@ Please see the dedicated [FAQ](FAQ.html) section.
 
 These are the keyboard shortcuts available on CaPTk:
 
-<table border="0">
-  <tr><th>Key Stroke <th>Function
-  <tr><td align="center" width="100px">1-9 <td align="center">[IMAGES] Show selected image from table
-  <tr><td align="center" width="100px">"m" <td align="center">[DRAWING] Show/Hide all regions; picks up last used opacity
-  <tr><td align="center" width="100px">Control + 1-9 <td align="center">[DRAWING] Only show selected label
-  <tr><td align="center" width="100px">Alt + 1-9 <td align="center">[DRAWING] Add selected label to visualization
-  <tr><td align="center" width="100px">Control/Alt + 0 <td align="center">[DRAWING] Reset label visualization; i.e., show all
-  <tr><td align="center" width="100px">Shift + Space <td align="center">[SEED POINT] Set initial tumor center
-  <tr><td align="center">Ctrl + Space <td align="center">[SEED POINT] Update tumor radius; on macOS, this is "Fn + Command + Space"
-  <tr><td align="center">Space <td align="center">[SEED POINT] Update tumor center
-</table>
-
-
---------
-
-\section gs_components Components
-CaPTk has been designed as a modular platform, currently incorporating components for:
--# User interaction (e.g., coordinate definition, region annotation, and spherical approximation of abnormalities)
--# Image pre-processing (e.g., smoothing, bias correction, co-registration, normalization) 
--# Image segmentation
--# Feature extraction
--# Specialized diagnostic analysis 
-
-The components of interaction and pre-processing are available for all integrated applications giving a researcher (whether clinical or computational) a single point of entry and exit for all their tasks.
+|    Key Stroke   |                               Function/Action                              |
+|:---------------:|:--------------------------------------------------------------------------:|
+|       1-9       |                   [IMAGES] Show selected image from table                  |
+|       "m"       |         [DRAWING] Show/Hide all regions; picks up last used opacity        |
+|  Control + 1-9  |                     [DRAWING] Only show selected label                     |
+|    Alt + 1-9    |                [DRAWING] Add selected label to visualization               |
+| Control/Alt + 0 |             [DRAWING] Reset label visualization; i.e., show all            |
+|  Shift + Space  |                    [SEED POINT] Set initial tumor center                   |
+| Control + Space | [SEED POINT] Update tumor radius; on macOS, this is "Fn + Command + Space" |
+|      Space      |                      [SEED POINT] Update tumor center                      |
 
 --------
 
 \section gs_supportedImages Supported Images
 Currently, CaPTk supports visualization of <b>MR, CT, PET, X-Ray and Full-field Digital Mammography (FFDM) </b> images in both NIfTI (i.e., <b>.nii</b>, <b>.nii.gz</b>) and DICOM (i.e., <b>.dcm</b>) formats. For MRI, the following modalities are currently supported (the image modality box equivalent is shown in parenthesis):
--# <b>Native T1-weighted</b> (T1)
--# <b>Post-contrast T1-weighted</b> (T1-Gd, also known as T1c, and T1-CE)
--# <b>T2-weighted</b> (T2)
--# <b>T2-weighted Fluid Attenuated Inversion Recovery</b> (T2-FLAIR)
--# <b>Dynamic susceptibility contrast-enhanced</b> (DSC or PERFUSION)
--# <b>Diffusion Tensor Imaging</b> (DTI) *
--# <b>Diffusion Weighted Imaging</b> (DWI) *
--# <b>Recurrence Maps</b> (REC)
+
+|   Acronym   |                               Image Type                              |
+|:-----------:|:---------------------------------------------------------------------:|
+|      T1     |                      Native T1-weighted MR Image                      |
+|     T1Gd    |     Post-contrast T1-weighted MR Image (also known as T1c, T1-CE)     |
+|      T2     |                      Native T2-weighted MR Image                      |
+|    FLAIR    |        T2-weighted Fluid Attenuated Inversion Recovery MR Image       |
+| DSC-ap-rCBV |    automatically-extracted proxy to relative Cerebral Blood Volume    |
+|  PERFUSION  | Dynamic Susceptibility Contrast-enhanced MR Image (also known as DSC) |
+|     DTI     |                         Diffusion Tensor Image                        |
+|     DWI     |                        Diffusion Weighted Image                       |
+|     REC     |                            Recurrence Maps                            |
 
 <b>*</b> These modalities are currently visualized only within the "Confetti" application.
 
 In addition, CaPTk offers the ability to extract and visualize commonly used measurements from DTI [1] and DSC-MRI, while accounting for leakage correction [2]. The exact measurements supported are:
 
-   -<b>DTI-FA</b> (Fractional Anisotropy)
-   -<b>DTI-AX</b> (Axial Diffusivity)
-   -<b>DTI-RAD</b> (Radial Diffusivity)
-   -<b>DTI-TR</b> (Trace)
-   -<b>DSC-ap-rCBV</b> (automatically-extracted proxy to relative Cerebral Blood Volume)
-   -<b>DSC-PH</b> (Peak Height)
-   -<b>DSC-PSR</b> (Percentage Signal Recovery)
-
-
-<br>
+|   Acronym   |                            Image Type                           |
+|:-----------:|:---------------------------------------------------------------:|
+|    DTI-FA   |                      Fractional Anisotropy                      |
+|    DTI-AX   |                        Axial Diffusivity                        |
+|   DTI-RAD   |                        Radial Diffusivity                       |
+|    DTI-TR   |                              Trace                              |
+| DSC-ap-rCBV | automatically-extracted proxy to relative Cerebral Blood Volume |
+|    DSC-PH   |                           Peak Height                           |
+|   DSC-PSR   |                    Percentage Signal Recovery                   |
 
 --------------------------------------------------------------------
 
 References:
 
-- J.M.Soares, P.Marques, V.Alves, N.Sousa. "A hitchhiker's guide to diffusion tensor imaging", Front Neurosci. 7:31, 2013. DOI: 10.33
+-# J.M.Soares, P.Marques, V.Alves, N.Sousa. "A hitchhiker's guide to diffusion tensor imaging", Front Neurosci. 7:31, 2013. DOI: 10.33
 fnins.2013.00031
-- E.S.Paulson, K.M.Schmainda, "Comparison of dynamic susceptibility-weighted contrast-enhanced MR methods: recommendations for measuring relative cerebral blood volume in brain tumors", Radiology. 249(2):601-613, 2008. DOI: 10.1148/radiol.2492071659
+-# E.S.Paulson, K.M.Schmainda, "Comparison of dynamic susceptibility-weighted contrast-enhanced MR methods: recommendations for measuring relative cerebral blood volume in brain tumors", Radiology. 249(2):601-613, 2008. DOI: 10.1148/radiol.2492071659
 
 --------
 
@@ -125,6 +132,101 @@ Double clicking on the tab bar will dock/undock the entire section, resulting in
 
 --------
 
+\section gs_seedpoints Coordinate definition (Seed-point initialization)
+The <b>Seed Points</b> tab includes two general types of initialization (i.e., tumor and tissue points), controlled by the respective radio buttons. 
+
+\image html seeds_resize.png "Seed point initialization"
+\image latex seeds_resize.png "Seed point initialization"
+
+Loading and saving is done via text files in a format consistent with respective applications. Seedpoint files are needed for the following applications (and all derivatives): GLISTR (https://www.cbica.upenn.edu/sbia/software/glistr/) [1-3], GLISTRboost (BraTS 2015 top-ranked algorithm - https://www.med.upenn.edu/sbia/glistrboost.html) [4-6], and PORTR (https://www.cbica.upenn.edu/sbia/software/portr/) [7].
+
+The controls to add/remove points are the shown below.
+
+--------
+\subsection Tumor Points
+These are seed-points used to approximate a tumor by a parametric spherical model, using a seed-point for its center and another for defining its radius. These are helpful for applications like tumor growth model estimation as currently incorporated in GLISTR and GLISTRboost. The controls are as follows:
+
+<table border="0">
+  <tr><th>Key Stroke <th>Function
+  <tr><td align="center" width="100px">Shift + Space <td align="center">Set initial tumor center
+  <tr><td align="center">Ctrl + Space <td align="center">Update tumor radius
+  <tr><td align="center">Space <td align="center">Update tumor center
+</table>
+
+--------
+\subsection Tissue Points
+These are seed-points with coordinate information. They can be used for a multitude of applications where manual initialization(s) are required for a semi-automated algorithm, e.g, segmentation. At the moment these points are being assigned various brain tissue labels, as follows:
+<table border="0">
+  <tr><th>Tissue Acronym <th>Full Form
+  <tr><td align="center">CSF <td align="center">Cerebrospinal Fluid
+  <tr><td align="center">VT <td align="center">Ventricular Cerebrospinal Fluid
+  <tr><td align="center">GM <td align="center">Gray Matter
+  <tr><td align="center">WM <td align="center">White Matter
+  <tr><td align="center">VS <td align="center">Vessels
+  <tr><td align="center">ED <td align="center">Edema
+  <tr><td align="center">NCR <td align="center">Necrosis
+  <tr><td align="center">TU <td align="center">Enhancing Tumor
+  <tr><td align="center">NE <td align="center">Non-Enhancing Tumor
+  <tr><td align="center">CB <td align="center">Cerebellum
+  <tr><td align="center">CAE <td align="center">Enhancing Cavity
+  <tr><td align="center">CAN <td align="center">Non-Enhancing Cavity
+  <tr><td align="center">RTN <td align="center">Tumor Recurrence
+  <tr><td align="center">RTE <td align="center">Enhanced Tumor Recurrence
+</table>
+
+--------
+Application-specific tissue types are automatically enabled when the corresponding application is selected. For example, when trying to initialize tissue points for GLISTR/GLISTRboost, only CSF, GM, WM, VS, ED, NCR, TU, NE and CB buttons will be enabled and the rest will be disabled. If there are some required tissue types missing for an application, CaPTk will display a warning and not let the user save an incomplete set of tissue points.
+
+<br>
+
+--------------------------------------------------------------------
+
+References:
+
+-# A.Gooya, K.M.Pohl, M.Billelo, G.Biros, C. Davatzikos, "Joint segmentation and deformable registration of brain scans guided by a tumog rowth model", Med Image Comput Comput Assist Interv. 14(Pt 2):532-40, 2011. DOI:10.1007/978-3-642-23629-7_65
+-# A.Gooya, K.M.Pohl, M.Bilello, L.Cirillo, G.Biros, E.R.Melhem, C.Davatzikos, "GLISTR: glioma image segmentation and registration", IEET rans Med Imaging. 31(10):1941-54, 2012. DOI:10.1109/TMI.2012.2210558
+-# D.Kwon, R.T.Shinohara, H.Akbari, C.Davatzikos, "Combining Generative Models for Multifocal Glioma Segmentation and Registration", MeI mage Comput Comput Assist Interv. 17(Pt 1):763-70, 2014. DOI:10.1007/978-3-319-10404-1_95
+-# S.Bakas, K.Zeng, A.Sotiras, S.Rathore, H.Akbari, B.Gaonkar, M.Rozycki, S.Pati, C.Davatzikos, "Segmentation of gliomas in multimodam agnetic resonance imaging volumes based on a hybrid generative-discriminative framework", In Proc. Multimodal Brain Tumor Segmentation (BraTS) Challenge. 4:5-12, 2015.
+-# S.Bakas, K.Zeng, A.Sotiras, S.Rathore, H.Akbari, B.Gaonkar, M.Rozycki, S.Pati, C.Davatzikos, "GLISTRboost: combining multimodal MRs egmentation, registration, and biophysical tumor growth modeling with gradient boosting machines for glioma segmentation", Brainlesion (2015). 9556:144-155, 2016. DOI:10.1007/978-3-319-30858-6_1
+-# S.Bakas, H.Akbari, A.Sotiras, M.Bilello, M.Rozycki, J.Kirby, J.Freymann, K.Farahani, C.Davatzikos, "Advancing The Cancer Genome Atlag lioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data 4:170117, 2017. DOI:10.103s data.2017.117
+-# D.Kwon, M.Niethammer, H.Akbari, M.Bilello, C.Davatzikos, K.M.Pohl, "PORTR: Pre-Operative and Post-Recurrence Brain Tumor Registration", IEEE Trans Med Imaging. 33(3):651-667, 2014. DOI:10.1109/TMI.2013.2293478
+
+--------
+
+\section gs_drawing Label Annotation/Drawing Panel
+This panel provides the ability to annotate Regions of Interest (ROIs) and save them as masks.
+
+\image html drawing_resize.png "Drawing functions"
+\image latex drawing_resize.png "Drawing functions"
+
+While drawing, you can switch across the image volumes loaded in CaPTk, by pressing the numbers 1-9 on your keyboard.
+
+Toggle between non-zero (taken from the opacity box) and zero opacity of the entire annotated mask by using the keyboard key "m".
+
+Visualize a single label using "Control + <label number>" and add labels to the visualization using "Alt + <label number>". To reset, press "Control/Alt + 0".
+
+There are the following controls underneath the <b>Drawing</b> tab:
+ 
+<table border="0">
+  <tr><th>Button/Box <th>Description
+  <tr><td align="center" width="15%">View Mode <td>Switch from drawing mode (which is enabled when either Near or Far ROI drawing is selected) to normal viewing mode.
+  <tr><td align="center" width="15%">Line <td>Draw a line of selected label color and size.
+  <tr><td align="center" width="15%">Rectangle <td>Draw a rectangle of selected label color and size.
+  <tr><td align="center" width="15%">Circle <td>Draw a circle of selected label color and size.
+  <tr><td align="center" width="15%">Free-Hand <td>Draw selected label using brush of specified size using mouse left button drag.
+  <tr><td align="center" width="15%">Fill <td>Fill a closed boundary with selected label - uses ITK's connected component filter.
+  <tr><td align="center" width="15%">Eraser <td>Erases all labels using brush of specified size.
+  <tr><td align="center">Label Selector <td>Label selector between 1-9.
+  <tr><td align="center">Marker Size <td>A square marker of specific voxel size.
+  <tr><td align="center">Marker Opacity <td>Sets the opacity of the marker between 0.0 (transparent) and 1.0 (opaque).
+  <tr><td align="center">Clear Selected Label <td>Remove selected label completely from the mask.
+  <tr><td align="center">Clear All Labels <td>Remove all labels completely from the mask.
+  <tr><td align="center">Undo <td>Undo last drawing action.
+  <tr><td align="center">Change Values <td>By providing the same number of old and new values in the format <b>AxBxC</b>, the values of the annotated region can be quickly changed.
+</table>
+
+--------
+
 \section gs_utilities Utilities (Command-line only)
 
 To make pipeline construction using CaPTk easier, a bunch of utilities have been provided. They include 
@@ -172,109 +274,12 @@ Preprocessing.exe -u
 References:
 
 
-- S.M.Smith, J.M.Brady, "SUSAN - a new approach to low level image processing", Int. J. Comput. Vis. 23(1):45-78, 1997. DOI:10.102A :1007963824710
-- N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee, "N4ITK: Improved N3 Bias Correction", IEEE Trans MeI maging. 29(6):1310-20, 2010. doi: 10.1109/TMI.2010.2046908
-- S.Bauer, L.P.Nolte, M.Reyes, "Skull-stripping for Tumor-bearing Brain Images", arXiv. abs/1204.0357, 2012.
-- L.G.Nyul, J.K.Udupa, X.Zhang, "New Variants of a Method of MRI Scale Standardization", IEEE Trans Med Imaging. 19(2):143-50, 2000D OI:10.1109/42.836373
-- P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI, Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127 
-  <br>
-- T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010. DOI:10.1002/hbm.20906 
-
---------
-
-\section gs_seedpoints Coordinate definition (Seed-point initialization)
-The <b>Seed Points</b> tab includes two general types of initialization (i.e., tumor and tissue points), controlled by the respective radio buttons. 
-
-\image html seeds_resize.png "Seed point initialization"
-\image latex seeds_resize.png "Seed point initialization"
-
-Loading and saving is done via text files in a format consistent with respective applications. Seedpoint files are needed for the following applications (and all derivatives): GLISTR (https://www.cbica.upenn.edu/sbia/software/glistr/) [1-3], GLISTRboost (BraTS 2015 top-ranked algorithm - https://www.med.upenn.edu/sbia/glistrboost.html) [4-6], and PORTR (https://www.cbica.upenn.edu/sbia/software/portr/) [7].
-
-The controls to add/remove points are the shown below.
-
---------
-### Tumor Points
-These are seed-points used to approximate a tumor by a parametric spherical model, using a seed-point for its center and another for defining its radius. These are helpful for applications like tumor growth model estimation as currently incorporated in GLISTR and GLISTRboost. The controls are as follows:
-
-<table border="0">
-  <tr><th>Key Stroke <th>Function
-  <tr><td align="center" width="100px">Shift + Space <td align="center">Set initial tumor center
-  <tr><td align="center">Ctrl + Space <td align="center">Update tumor radius
-  <tr><td align="center">Space <td align="center">Update tumor center
-</table>
-
---------
-### Tissue Points
-These are seed-points with coordinate information. They can be used for a multitude of applications where manual initialization(s) are required for a semi-automated algorithm, e.g, segmentation. At the moment these points are being assigned various brain tissue labels, as follows:
-<table border="0">
-  <tr><th>Tissue Acronym <th>Full Form
-  <tr><td align="center">CSF <td align="center">Cerebrospinal Fluid
-  <tr><td align="center">VT <td align="center">Ventricular Cerebrospinal Fluid
-  <tr><td align="center">GM <td align="center">Gray Matter
-  <tr><td align="center">WM <td align="center">White Matter
-  <tr><td align="center">VS <td align="center">Vessels
-  <tr><td align="center">ED <td align="center">Edema
-  <tr><td align="center">NCR <td align="center">Necrosis
-  <tr><td align="center">TU <td align="center">Enhancing Tumor
-  <tr><td align="center">NE <td align="center">Non-Enhancing Tumor
-  <tr><td align="center">CB <td align="center">Cerebellum
-  <tr><td align="center">CAE <td align="center">Enhancing Cavity
-  <tr><td align="center">CAN <td align="center">Non-Enhancing Cavity
-  <tr><td align="center">RTN <td align="center">Tumor Recurrence
-  <tr><td align="center">RTE <td align="center">Enhanced Tumor Recurrence
-</table>
-
---------
-Application-specific tissue types are automatically enabled when the corresponding application is selected. For example, when trying to initialize tissue points for GLISTR/GLISTRboost, only CSF, GM, WM, VS, ED, NCR, TU, NE and CB buttons will be enabled and the rest will be disabled. If there are some required tissue types missing for an application, CaPTk will display a warning and not let the user save an incomplete set of tissue points.
-
-<br>
-
---------------------------------------------------------------------
-
-References:
-
-
-- A.Gooya, K.M.Pohl, M.Billelo, G.Biros, C. Davatzikos, "Joint segmentation and deformable registration of brain scans guided by a tumog rowth model", Med Image Comput Comput Assist Interv. 14(Pt 2):532-40, 2011. DOI:10.1007/978-3-642-23629-7_65
-- A.Gooya, K.M.Pohl, M.Bilello, L.Cirillo, G.Biros, E.R.Melhem, C.Davatzikos, "GLISTR: glioma image segmentation and registration", IEET rans Med Imaging. 31(10):1941-54, 2012. DOI:10.1109/TMI.2012.2210558
-- D.Kwon, R.T.Shinohara, H.Akbari, C.Davatzikos, "Combining Generative Models for Multifocal Glioma Segmentation and Registration", MeI mage Comput Comput Assist Interv. 17(Pt 1):763-70, 2014. DOI:10.1007/978-3-319-10404-1_95
-- S.Bakas, K.Zeng, A.Sotiras, S.Rathore, H.Akbari, B.Gaonkar, M.Rozycki, S.Pati, C.Davatzikos, "Segmentation of gliomas in multimodam agnetic resonance imaging volumes based on a hybrid generative-discriminative framework", In Proc. Multimodal Brain Tumor ImagS egmentation (BraTS) Challenge. 4:5-12, 2015.
-- S.Bakas, K.Zeng, A.Sotiras, S.Rathore, H.Akbari, B.Gaonkar, M.Rozycki, S.Pati, C.Davatzikos, "GLISTRboost: combining multimodal MRs egmentation, registration, and biophysical tumor growth modeling with gradient boosting machines for glioma segmentation", Brainlesio( 2015). 9556:144-155, 2016. DOI:10.1007/978-3-319-30858-6_1
-- S.Bakas, H.Akbari, A.Sotiras, M.Bilello, M.Rozycki, J.Kirby, J.Freymann, K.Farahani, C.Davatzikos, "Advancing The Cancer Genome Atlag lioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data 4:170117, 2017. DOI:10.103s data.2017.117
-- D.Kwon, M.Niethammer, H.Akbari, M.Bilello, C.Davatzikos, K.M.Pohl, "PORTR: Pre-Operative and Post-Recurrence Brain Tumor Registration", IEEE Trans Med Imaging. 33(3):651-667, 2014. DOI:10.1109/TMI.2013.2293478
-
---------
-
-\section gs_drawing Label Annotation/Drawing Panel
-This panel provides the ability to annotate Regions of Interest (ROIs) and save them as masks.
-
-\image html drawing_resize.png "Drawing functions"
-\image latex drawing_resize.png "Drawing functions"
-
-While drawing, you can switch across the image volumes loaded in CaPTk, by pressing the numbers 1-9 on your keyboard.
-
-Toggle between non-zero (taken from the opacity box) and zero opacity of the entire annotated mask by using the keyboard key "m".
-
-Visualize a single label using "Control + <label number>" and add labels to the visualization using "Alt + <label number>". To reset, press "Control/Alt + 0".
-
-There are the following controls underneath the <b>Drawing</b> tab:
- 
-<table border="0">
-  <tr><th>Button/Box <th>Description
-  <tr><td align="center" width="15%">View Mode <td>Switch from drawing mode (which is enabled when either Near or Far ROI drawing is selected) to normal viewing mode.
-  <tr><td align="center" width="15%">Line <td>Draw a line of selected label color and size.
-  <tr><td align="center" width="15%">Rectangle <td>Draw a rectangle of selected label color and size.
-  <tr><td align="center" width="15%">Circle <td>Draw a circle of selected label color and size.
-  <tr><td align="center" width="15%">Free-Hand <td>Draw selected label using brush of specified size using mouse left button drag.
-  <tr><td align="center" width="15%">Fill <td>Fill a closed boundary with selected label - uses ITK's connected component filter.
-  <tr><td align="center" width="15%">Eraser <td>Erases all labels using brush of specified size.
-  <tr><td align="center">Label Selector <td>Label selector between 1-9.
-  <tr><td align="center">Marker Size <td>A square marker of specific voxel size.
-  <tr><td align="center">Marker Opacity <td>Sets the opacity of the marker between 0.0 (transparent) and 1.0 (opaque).
-  <tr><td align="center">Clear Selected Label <td>Remove selected label completely from the mask.
-  <tr><td align="center">Clear All Labels <td>Remove all labels completely from the mask.
-  <tr><td align="center">Undo <td>Undo last drawing action.
-  <tr><td align="center">Change Values <td>By providing the same number of old and new values in the format <b>AxBxC</b>, the values of the annotated region can be quickly changed.
-</table>
+-# S.M.Smith, J.M.Brady, "SUSAN - a new approach to low level image processing", Int. J. Comput. Vis. 23(1):45-78, 1997. DOI:10.102A :1007963824710
+-# N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee, "N4ITK: Improved N3 Bias Correction", IEEE Trans MeI maging. 29(6):1310-20, 2010. doi: 10.1109/TMI.2010.2046908
+-# S.Bauer, L.P.Nolte, M.Reyes, "Skull-stripping for Tumor-bearing Brain Images", arXiv. abs/1204.0357, 2012.
+-# L.G.Nyul, J.K.Udupa, X.Zhang, "New Variants of a Method of MRI Scale Standardization", IEEE Trans Med Imaging. 19(2):143-50, 2000D OI:10.1109/42.836373
+-# P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI, Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127 
+-# T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010. DOI:10.1002/hbm.20906 
 
 --------
 
