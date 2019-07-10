@@ -146,12 +146,11 @@ The controls to add/remove points are the shown below.
 \subsection Tumor Points
 These are seed-points used to approximate a tumor by a parametric spherical model, using a seed-point for its center and another for defining its radius. These are helpful for applications like tumor growth model estimation as currently incorporated in GLISTR and GLISTRboost. The controls are as follows:
 
-<table border="0">
-  <tr><th>Key Stroke <th>Function
-  <tr><td align="center" width="100px">Shift + Space <td align="center">Set initial tumor center
-  <tr><td align="center">Ctrl + Space <td align="center">Update tumor radius
-  <tr><td align="center">Space <td align="center">Update tumor center
-</table>
+|    Key Stroke   |                               Function/Action                              |
+|:---------------:|:--------------------------------------------------------------------------:|
+|  Shift + Space  |                    [SEED POINT] Set initial tumor center                   |
+| Control + Space | [SEED POINT] Update tumor radius; on macOS, this is "Fn + Command + Space" |
+|      Space      |                      [SEED POINT] Update tumor center                      |
 
 --------
 \subsection Tissue Points
