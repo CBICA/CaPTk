@@ -5,7 +5,7 @@
 
 This needs c++11 flag enabled in gcc < 5.
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>

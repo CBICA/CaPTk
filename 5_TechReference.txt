@@ -1,37 +1,19 @@
-﻿	/**
+﻿/**
 
 \page Technical_Reference Technical Reference
 
 This section gives further technical details for all previous documentation material.
 
-- \subpage tr_Apps "Further Application Details and Assumptions"
-- \subpage tr_buildFromSource "Build CaPTk from Source"
-- \subpage tr_forDeves "For Developers"
-*/
+\tableofcontents
 
-/**
+\section tr_Apps Further Application Details and Assumptions
 
-\page tr_Apps Further Application Details and Assumptions
+\subsection appsVisualization Image Visualization
 
-Contents
-- <a href="#appsVisualization"><u>Image Visualization</u></a><br>
-- <a href="#appsFeatures"><u>Extracted Features</u></a><br>
-
---------
-
-
-
-### <a name="appsVisualization">Image Visualization</a>
 The visualization of images is based on the physical coordinate system of each image (i.e., the origin and direction information from within the image file is used for rendering). In practice, use of a consistent coordinate framework results in images with different origins to appear misaligned (shifted) when compared to other neuro-imaging software packages that do rendering based on the Cartesian coordinate information in the image.
-<br>
-<br>
-CaPTk has been optimized for monitors with 16:9 resolution, especially 1920x1080 at 100% scaling. More resolutions and scaling options are being actively tested and support will increase in subsequent releases.
 
---------
+\subsection appsFeatures Extracted Features
 
-
-
-### <a name="appsFeatures">Extracted Features</a>
 <table border="1">
     <tr>
       <td align="center"><b>Feature Family</b></td>
@@ -253,32 +235,20 @@ CaPTk has been optimized for monitors with 16:9 resolution, especially 1920x1080
         All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.
     </tr>
 </table>
-\latexonly
-The complete list of features, their parameterization options and mathematical descriptions can be found in <code>share/doc/feaUsage.html</code> or in our web page (http://captk.projects.nitrc.org/feaUsage.html).
-\endlatexonly
+
 
 The parameterization of the <b>lattice-based strategy</b> for feature extraction is defined by:
 - The grid spacing representing the distance between consecutive lattice points (Default: 6.3mm). 
 - The size of the local region centered at each lattice point (Default: 6.3mm).
 
-*/
+\section tr_buildFromSource Build CaPTk from Source
 
-
-/**
-\page tr_buildFromSource Build CaPTk from Source
 Source code for the CaPTk graphical interface and applications is distributed for sites that wish to examine the code, collaborate with CBICA in future development, and for compatibility.
-
-Contents
-- <a href="#prerequisites"><u>Pre-requisites</u></a><br>
-- <a href="#actualBuild"><u>Build</u></a><br>
-- <a href="#cMakeForBuildTree"><u>Build Tree Configuration through CMake</u></a><br>
-- <a href="#actualCompile"><u>Compile the project</u></a><br>
-- <a href="#optionalBuilds"><u>Optional</u></a><br>
-- <a href="#linuxBuild"><u>Linux Build Guide</u></a><br>
 
 --------
 
-### <a name="prerequisites">PRE-REQUISITES</a>
+\subsection prerequisites Prerequisites
+
 Before building CaPTk, the following software libraries are required to be installed. <strong>Please note</strong> that to build in Windows, CMake needs to be used an appropriate compiler (Win64 version of Visual Studio is recommended). The selected solution platform is needed to match with dependent libraries.
 
 <table border="0">
@@ -333,7 +303,8 @@ Ensure all dependencies are met before proceeding.
 
 --------
 
-### <a name="actualBuild">BUILD</a>
+\subsection actualBuild Build
+
 Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org/software/bash/)). They will configure and build CaPTk using GNU Make (http://www.gnu.org/software/make/). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface.
 
 Extract source files and create the build directory:
@@ -423,13 +394,13 @@ Upon the success of the above compilation and build process, CaPTk is installed 
 
 --------
 
-### <a name="optionalBuilds">[OPTIONAL]</a>
+\subsection optionalBuilds Documentation & Tests
 
 <ul><li><b>Compile the documentation</b></li></ul>
 To build the documentation from scratch, the <code>BUILD_DOCUMENTATION</code> option in the CMake configuration needs to be enabled.
 
 \verbatim
-make doc
+make Documentation
 \endverbatim
 
 <b>Windows Users</b>: the documentation is built automatically if <code>BUILD_DOCUMENTATION</code> is enabled. 
@@ -470,7 +441,7 @@ sudo dpkg -i CaPTk-Linux.deb
 
 --------
 
-### <a name="linuxBuild">Linux Build Guide</a>
+\subsection linuxBuild Linux Build Guide
 
 <b>Note:</b> Make sure you have Qt 5.10.0 installed and in your PATH. You can download the open source version installer for free from the Qt website.
 
@@ -506,13 +477,7 @@ This will generate an CaPTk.bin file in the root of CaPTk. Feel free to move thi
 \endverbatim
 
 
---------
-
-
-*/
-/**
-
-\page tr_forDeves For Developers
+\section tr_forDeves For Developers
 
 Contents
 - <a href="#generalInfo"><u>General Information</u></a><br>
@@ -522,7 +487,8 @@ Contents
 
 --------
 
-### <a name="generalInfo">General Information</a>
+\subsection generalInfo General Information
+
 CaPTk is developed and maintained by the Center for Biomedical Image Computing and Analytics (CBICA) at the University of Pennsylvania, and draws upon research from several groups within the Center.
 
 New applications, written in any programming language, can be integrated into CaPTk at different levels. These applications can then run within CaPTk, while having direct access to the full breadth of CaPTk’s interactive capabilities.
@@ -551,7 +517,8 @@ Applications written in any language can be integrated with CaPTk via calls to s
 
 --------
 
-### <a name="dependencies">Dependencies</a>
+\subsection dependencies Dependencies
+
 <ol type="1">
 
   <li>The <b>Graphical Layer</b> is currently written on a Qt4 (https://download.qt.io/archive/qt/4.8/) based framework on C++ for speed, stability and extensibility. Qt, thus, becomes the first dependency for compiling CaPTk. Qt was chosen because it is a well-known tool for developing GUI applications both in academia and also in industry. </li>  
@@ -564,7 +531,8 @@ Applications written in any language can be integrated with CaPTk via calls to s
 
 --------
 
-### <a name="cppIntegration">Integrating your C++ application into CaPTk</a>
+\subsection cppIntegration Integrating your C++ application into CaPTk
+
 Let’s say the name of your application is <b>yourSourceApp</b>. The following steps highlight the steps required for you to integrate your application into CaPTk:
 
 <ul style="list-style-type:disc">
@@ -580,7 +548,8 @@ Let’s say the name of your application is <b>yourSourceApp</b>. The following 
 
 --------
 
-### <a name="pyIntegration">Integrating your Python application into CaPTk</a>
+\subsection pyIntegration Integrating your Python application into CaPTk
+
 Let’s say the name of your application is <b>yourPythonApp</b>. The following steps give a brief high-level overview regarding the steps required for integrating it with CaPTk:
 
 <ul style="list-style-type:disc">
@@ -596,11 +565,11 @@ Let’s say the name of your application is <b>yourPythonApp</b>. The following 
 
 --------
 
-
-
+--------
 \htmlonly
 <div align="right"><a href="Download.html"><b>Next (Download)<b></a>
 \endhtmlonly
+--------
 
 
-**/
+*/

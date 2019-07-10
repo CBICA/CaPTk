@@ -1,0 +1,44 @@
+/**
+
+\page Installation Installation Instructions
+
+## Windows
+
+The Windows executable package contains all required dependencies and does not need administrative privileges for installation. This is a standard MSI installer. If a security prompt comes up, click on "Run Anyway".
+
+## Linux
+
+Linux users have a CaPTk AppImage available called `CaPTk_${Version}.bin`. To run the AppImage, first open a terminal in the same directory as the .bin file.
+
+After this, you will want to make sure it is runnable with the following command:
+
+\verbatim
+chmod +x CaPTk_${Version}.bin
+\endverbatim
+
+After this, in the same terminal, run the following command to start CaPTk:
+
+\verbatim
+./CaPTk_${Version}.bin
+\endverbatim
+
+## macOS
+
+Users will download the ".pkg" file from NITRC; double-click the file. 
+
+If there is a window saying that this is an "unidentified developer", hit "OK" and then go to "System Preferences > Security and Privacy" and you need to click on "Open Anyway" beside the "CaPTk_$version.pkg" (this will prompt for your password).
+
+Double click on the pkg file and click on "Open". This will guide you through the installation screen with licensing information.
+
+Before installation begins, you may be prompted for your password again.
+
+You will find CaPTk under your "Applications" folder and you can delete the disk image.
+
+--------------------------------------------------------------------
+
+--------------------------------------------------------------------
+\htmlonly
+<div align="right"><a href="ReleaseNotes.html"><b>Next (Changelog)<b></a>
+\endhtmlonly
+--------------------------------------------------------------------
+*/

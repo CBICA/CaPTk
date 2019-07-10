@@ -3,7 +3,7 @@
 
 \brief Declaration of fMainWindow class
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -290,6 +290,7 @@ private:
   QAction *actionLoad_Nifti_Images;
   QAction *actionLoad_Nifti_ROI;
   QAction *actionLoad_Dicom_Images;
+  QAction *actionPreferences;
 
 
   QAction *actionSave_Nifti_Images;
@@ -521,6 +522,8 @@ signals:
   void TissuePointsFocused(bool bFocused);
 
 public slots:
+	//!display Preferences dialog
+	void OnPreferencesMenuClicked();
 
   //! set Z slice position on image info panel
   void SetImageInfoZSlicePosition(int zslice);

@@ -1,0 +1,68 @@
+/**
+
+\page Download Download Instructions
+
+Visit our <b>Download Page</b> hosted in NIH-supported NITRC (https://www.nitrc.org/frs/?group_id=1059), to download the CaPTk <b>source code</b> and <b>binaries</b>.
+
+CaPTk is currently distributed in the form of pre-compiled (executable) Windows installer, as well as in the form of its source code. We are actively working on producing pre-compiled binaries for Linux and macOS machines too. The Windows executable package contains all required dependencies and does not need administrative privileges for installation.
+
+The Linux executable assumes Qt 4.8.x installed on the system and in the PATH and was built using GCC 4.8.6 (default with Ubuntu 14.04); the custom path for installation can be specified using the following command: 
+
+\verbatim
+$package --target $desiredInstallDir
+\endverbatim
+
+<b>NOTE:</b> For Linux users, the following packages are needed to install the binary: <b>wget zip</b>. As an example, the installation command on Ubuntu for these packages will be:
+\verbatim
+sudo apt-get install wget zip
+\endverbatim
+<br>
+<br>
+
+--------------------------------------------------------------------
+### Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following paper:
+<ul>
+  <li>C.Davatzikos, S.Rathore, S.Bakas, S.Pati, M.Bergman, R.Kalarot, P.Sridharan, A.Gastounioti, N.Jahani, E.Cohen, H.Akbari, B.Tunc, J.Doshi, D.Parker, M.Hsieh, A.Sotiras, H.Li, Y.Ou, R.K.Doot, M.Bilello, Y.Fan, R.T.Shinohara, P.Yushkevich, R.Verma, D.Kontos, "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome", J Med Imaging, 5(1):011018, 2018. DOI:10.1117/1.JMI.5.1.011018</li>
+</ul>  
+  
+In addition, if the journal/conference where you submit your paper does not restrict you from citing abstracts you might also cite the following:
+<ul>
+  <li>S.Rathore, S.Bakas, S.Pati, H.Akbari, R.Kalarot, P.Sridharan, M.Rozycki, M.Bergman, B.Tunc, R.Verma, M.Bilello, C.Davatzikos. "Brain Cancer Imaging Phenomics Toolkit (brain-CaPTk): An Interactive Platform for Quantitative Analysis of Glioblastoma", BrainLes 2017. LNCS Springer, 10670:133-145, 2017. DOI:10.1007/978-3-319-75238-9_12</li>
+  <li>S.Pati, S.Bakas, A.Sotiras, R.Kalarot, P.Sridharan, M.Bergman, S.Rathore, H.Akbari, P.Yushkevich, T.Shinohara, Y.Fan, D.Kontos, R.Verma, C.Davatzikos. "Cancer Imaging Phenomics Toolkit (CaPTk): A Radio(geno)mics Software Platform Leveraging Quantitative Imaging Analytics for Computational Oncology", 103rd Scientific Assembly and Annual Meeting of the Radiological Society of North America (RSNA), Nov.26-Dec.1, 2017, Chicago IL.</li>
+  <li>S.Pati, S.Rathore, R.Kalarot, P.Sridharan, M.Bergman, T.Shinohara, P.Yushkevich, Y.Fan, R.Verma, D.Kontos, C.Davatzikos. "Cancer and Phenomics Toolkit (CaPTk): A Software Suite for Computational Oncology and Radiomics", 102nd Scientific Assembly and Annual Meeting of the Radiological Society of North America (RSNA), Nov.27-Dec.2, 2016, Chicago IL. archive.rsna.org/2016/16014589.html</li>
+</ul>
+
+--------------------------------------------------------------------
+## License
+
+By installing the CaPTk, the user agrees to the following licenses, which pertain to the code and its different constituents:
+
+1. SBIA Software License - https://www.med.upenn.edu/sbia/software-agreement.html
+2. SBIA Non-Commercial Software License - https://www.med.upenn.edu/sbia/software-agreement-non-commercial.html
+3. Insight Toolkit License - https://cmake.org/Wiki/ITK/License_Information
+4. Visualization Toolkit License - http://www.vtk.org/licensing/
+5. Qt Open Source License - https://doc.qt.io/qt-4.8/opensourceedition.html
+6. CC Attribution-ShareAlike for SRI24 data - https://creativecommons.org/licenses/by-sa/3.0/us/legalcode 
+7. MRIcroGL License - BSD
+
+The CaPTk software family (which includes the interactive framework and available applications) incorporates 3rd party libraries and toolkits. All rights to these components are subject to the terms and licenses of their respective owners. All trademarks are the property of their respective owners.
+
+The incorporated packages include but are not limited to:
+
+  -# Qt (https://www.qt.io/), The QT Company, Qt FOR APPLICATION DEVELOPMENT LICENSE (https://www.qt.io/terms-conditions/).
+  -# ITK (https://www.itk.org/), Insight Software Consortium, Apache 2.0 License (https://itk.org/ITK/project/licenseversion1.html).
+  -# VTK (http://www.vtk.org/), Kitware, BSD License (http://www.vtk.org/licensing/).
+  -# OpenCV (http://www.opencv.org/), OpenCV, 3-Clause BSD License (http://opencv.org/license.html)
+  -# KernelFit (https://github.com/glentner/KernelFit), Geoffrey Lentner, GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html).
+  -# MATLAB Runtime (https://www.mathworks.com/products/compiler/mcr.html), MathWorks, see MCR_license.txt within the Licenses folder of the CaPTk installation.
+  -# ITK-SNAP (http://www.itksnap.org),Paul A. Yushkevich, Joseph Piven, Heather Cody Hazlett, Rachel Gimpel Smith, Sean Ho, James C. Gee, and Guido Gerig. User-guided 3D active contour segmentation of anatomical structures: Significantly improved efficiency and reliability. Neuroimage 2006 Jul 1;31(3):1116-28, GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+
+--------------------------------------------------------------------
+
+--------------------------------------------------------------------
+\htmlonly
+<div align="right"><a href="Installation.html"><b>Next (Installation)<b></a>
+\endhtmlonly
+--------------------------------------------------------------------
+*/
