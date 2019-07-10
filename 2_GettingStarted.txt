@@ -12,9 +12,9 @@ CaPTk has been designed as a modular platform, currently incorporating component
   - \ref gs_drawing
   - \ref gs_keyboard
 -# \ref gs_preprocessing (e.g., smoothing, bias correction, co-registration, normalization) 
--# Image segmentation
--# Feature extraction
--# Specialized diagnostic analysis 
+-# \ref gs_segmentation
+-# \ref gs_features
+-# \ref gs_specializedApps
 
 The components of interaction and pre-processing are available for all integrated applications giving a researcher (whether clinical or computational) a single point of entry and exit for all their tasks.
 
@@ -337,10 +337,6 @@ An example to show the verbose help for an application called <b>${Application}<
 Detailed explanation of using the command line is available in the \ref How_To_Guides.
 
 --------
-
-\htmlonly
-<div align="right"><a href="How_To_Guides.html"><b>Next (How To Guides)<b></a></div>
-\endhtmlonly
 
 */
 
