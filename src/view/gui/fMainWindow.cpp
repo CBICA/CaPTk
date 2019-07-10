@@ -556,11 +556,7 @@ fMainWindow::fMainWindow()
   connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
   connect(actionHelp_Interactions, SIGNAL(triggered()), this, SLOT(help_Interactions()));
-  connect(help_discussion, SIGNAL(triggered()), this, SLOT(help_Discussion()));
-  connect(help_download, SIGNAL(triggered()), this, SLOT(help_Downloads()));
-  connect(help_forum, SIGNAL(triggered()), this, SLOT(help_HelpForum()));
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
-  connect(help_features, SIGNAL(triggered()), this, SLOT(help_FeatureRequests()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 

@@ -1323,4 +1323,11 @@ Input features file (CSV) and a target label file (CSV).
 	<b>k</b> is the # of folds for cross-validation configuration, and size of train dataset for split train-test configuration
 
 --------
+
+--------
+\htmlonly
+<div align="right"><a href="Science.html"><b>Next (Scientific Findings using CaPTk)<b></a></div>
+\endhtmlonly
+--------
+
 */
