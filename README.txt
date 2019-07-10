@@ -21,6 +21,10 @@ CaPTk is developed and maintained by the Center for Biomedical Image Computing a
  
 We coordinate our bugs and feature requests via out GitHub page: https://github.com/CBICA/CaPTk/issues
 
+## Frequently Asked Questions (FAQ)
+
+Please see our [FAQ Section](gs_FAQ.html).
+
 ## Supporting Grant
 This work is supported by the NIH/NCI/ITCR* grant U24-CA189523.
 <br>* National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research

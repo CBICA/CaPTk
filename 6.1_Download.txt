@@ -60,9 +60,9 @@ The incorporated packages include but are not limited to:
 
 --------------------------------------------------------------------
 
-
+--------------------------------------------------------------------
 \htmlonly
-<div align="right"><a href="ReleaseNotes.html"><b>Next (Changelog)<b></a>
+<div align="right"><a href="Installation.html"><b>Next (Installation)<b></a>
 \endhtmlonly
-
+--------------------------------------------------------------------
 */

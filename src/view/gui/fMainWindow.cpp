@@ -187,6 +187,7 @@ fMainWindow::fMainWindow()
   actionAppGeodesicTraining = new QAction(this);
   actionHelp_Interactions = new QAction(this);
   actionAbout = new QAction(this);
+  actionPreferences = new QAction(this);
 
   //---------------setting menu and status bar for the main window---------------
   this->setStatusBar(statusbar);
@@ -300,6 +301,7 @@ fMainWindow::fMainWindow()
   menuSaveFile->addAction(actionSave_Nifti_Images);
   menuSaveFile->addAction(actionSave_ROI_Images);
 
+  menuFile->addAction(actionPreferences);
   menuFile->addAction(actionExit);
 
   menuDownload->addAction("GreedyRegistration");
@@ -547,17 +549,14 @@ fMainWindow::fMainWindow()
   connect(actionSave_ROI_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomDrawing()));
   connect(actionSave_Nifti_Images, SIGNAL(triggered()), this, SLOT(SaveImage()));
   connect(actionSave_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomImage()));
+  connect(actionPreferences, SIGNAL(triggered()), this, SLOT(OnPreferencesMenuClicked()));
 
   connect(actionLoad_Nifti_ROI, SIGNAL(triggered()), this, SLOT(LoadDrawing()));
 
   connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
   connect(actionHelp_Interactions, SIGNAL(triggered()), this, SLOT(help_Interactions()));
-  connect(help_discussion, SIGNAL(triggered()), this, SLOT(help_Discussion()));
-  connect(help_download, SIGNAL(triggered()), this, SLOT(help_Downloads()));
-  connect(help_forum, SIGNAL(triggered()), this, SLOT(help_HelpForum()));
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
-  connect(help_features, SIGNAL(triggered()), this, SLOT(help_FeatureRequests()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
@@ -926,6 +925,7 @@ fMainWindow::fMainWindow()
   actionLoad_Nifti_ROI->setText(QApplication::translate("fMainWindow", "ROI", 0));
   actionLoad_Dicom_Images->setText(QApplication::translate("fMainWindow", "Dicom", 0));
 
+  actionPreferences->setText(QApplication::translate("fMainWindow", "Preferences", 0));
   actionSave_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image (NIfTI)", 0));
   actionSave_Dicom_Images->setText(QApplication::translate("fMainWindow", "Image (DICOM)", 0));
   actionSave_ROI_Images->setText(QApplication::translate("fMainWindow", "ROI (NIfTI)", 0));
@@ -9558,4 +9558,18 @@ std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(c
   //}
 
   return returnVector;
+}
+
+void fMainWindow::OnPreferencesMenuClicked()
+{
+	bool ok;
+	QFont font = QFontDialog::getFont(
+		&ok,
+		qApp->font(),
+		this,
+		tr("Pick a font"));
+	if (ok)
+	{
+		qApp->setFont(font);
+	}
 }
