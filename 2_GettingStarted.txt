@@ -314,6 +314,8 @@ Various <a href="ht_SpecialApps.html">Specialized Applications</a> are currently
 \image html applications_resize.png "Feature Panel screenshot"
 \image latex applications_resize.png "Feature Panel screenshot"
 
+For details, please see \ref ht_SpecialApps.
+
 --------
 
 \section gs_commandLineUsage Command Line Usage
