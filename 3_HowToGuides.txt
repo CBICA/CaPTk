@@ -219,10 +219,6 @@ Reference:
 
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> parent of 449788a... how to guide has been converted to a proper strucutre
 
 
 
@@ -230,10 +226,7 @@ Reference:
 
 
 
-<<<<<<< HEAD
-=======
 
->>>>>>> parent of 449788a... how to guide has been converted to a proper strucutre
 /**
 \page ht_Segmentation Segmentation
 
@@ -1059,17 +1052,10 @@ Reference:
 <ol>
   <li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530</li>
 </ol>
-<<<<<<< HEAD
 
 */
 
 
-=======
-
-*/
-
-
->>>>>>> parent of 449788a... how to guide has been converted to a proper strucutre
 /**
 \page BreastCancer_texture Breast Cancer: Texture Feature Extraction
 
@@ -1099,17 +1085,10 @@ Reference:
 <ol>
   <li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530</li>
 </ol>
-<<<<<<< HEAD
 
 */
 
 
-=======
-
-*/
-
-
->>>>>>> parent of 449788a... how to guide has been converted to a proper strucutre
 /**
 \page BreastCancer_breastSegmentation Breast Cancer: Breast Segmentation
 
@@ -1344,4 +1323,11 @@ Input features file (CSV) and a target label file (CSV).
 	<b>k</b> is the # of folds for cross-validation configuration, and size of train dataset for split train-test configuration
 
 --------
+
+--------
+\htmlonly
+<div align="right"><a href="Science.html"><b>Next (Scientific Findings using CaPTk)<b></a></div>
+\endhtmlonly
+--------
+
 */
