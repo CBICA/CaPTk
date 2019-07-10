@@ -155,23 +155,23 @@ These are seed-points used to approximate a tumor by a parametric spherical mode
 --------
 \subsection Tissue Points
 These are seed-points with coordinate information. They can be used for a multitude of applications where manual initialization(s) are required for a semi-automated algorithm, e.g, segmentation. At the moment these points are being assigned various brain tissue labels, as follows:
-<table border="0">
-  <tr><th>Tissue Acronym <th>Full Form
-  <tr><td align="center">CSF <td align="center">Cerebrospinal Fluid
-  <tr><td align="center">VT <td align="center">Ventricular Cerebrospinal Fluid
-  <tr><td align="center">GM <td align="center">Gray Matter
-  <tr><td align="center">WM <td align="center">White Matter
-  <tr><td align="center">VS <td align="center">Vessels
-  <tr><td align="center">ED <td align="center">Edema
-  <tr><td align="center">NCR <td align="center">Necrosis
-  <tr><td align="center">TU <td align="center">Enhancing Tumor
-  <tr><td align="center">NE <td align="center">Non-Enhancing Tumor
-  <tr><td align="center">CB <td align="center">Cerebellum
-  <tr><td align="center">CAE <td align="center">Enhancing Cavity
-  <tr><td align="center">CAN <td align="center">Non-Enhancing Cavity
-  <tr><td align="center">RTN <td align="center">Tumor Recurrence
-  <tr><td align="center">RTE <td align="center">Enhanced Tumor Recurrence
-</table>
+
+| Tissue Acronym |            Full Form            |
+|:--------------:|:-------------------------------:|
+| CSF            | Cerebrospinal Fluid             |
+| VT             | Ventricular Cerebrospinal Fluid |
+| GM             | Gray Matter                     |
+| WM             | White Matter                    |
+| VS             | Vessels                         |
+| ED             | Edema                           |
+| NCR            | Necrosis                        |
+| ET             | Enhancing Tumor                 |
+| NE             | Non-Enhancing Tumor             |
+| CB             | Cerebellum                      |
+| CAE            | Enhancing Cavity                |
+| CAN            | Non-Enhancing Cavity            |
+| RTN            | Tumor Recurrence                |
+| RTE            | Enhanced Tumor Recurrence       |
 
 --------
 Application-specific tissue types are automatically enabled when the corresponding application is selected. For example, when trying to initialize tissue points for GLISTR/GLISTRboost, only CSF, GM, WM, VS, ED, NCR, TU, NE and CB buttons will be enabled and the rest will be disabled. If there are some required tissue types missing for an application, CaPTk will display a warning and not let the user save an incomplete set of tissue points.
