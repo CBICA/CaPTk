@@ -318,16 +318,21 @@ Various <a href="ht_SpecialApps.html">Specialized Applications</a> are currently
 
 \section gs_commandLineUsage Command Line Usage
 
-Almost every application offered by CaPTk can be used from the command line and utilizing the CaPTk's powerful command line APIs is relatively straight-forward.
+Almost every application offered by CaPTk can be used from the command line and utilizing the CaPTk's powerful command line APIs is relatively straight-forward. The following parameters are present in every CLI:
+
+| Laconic | Verbose |                                        Function/Action                                       |
+|:-------:|:-------:|:--------------------------------------------------------------------------------------------:|
+|    u    |  usage  |              Usage message giving all the possible parameters of an application              |
+|    h    |   help  | Help message giving details of parameters (including defaults and ranges) with some examples |
+|    v    | version |                          The version information of the application                          |
 
 An example to show the verbose help for an application called <b>${Application}</b>:
 
-<table border="0.5">
-  <tr><th>Platform (x64) <th> Command
-  <tr><td align="center" width="100px">Windows <td align="center">${CaPTk_InstallDir}/bin/${ApplicationName}.exe -h
-  <tr><td align="center" width="100px">Linux <td align="center">${CaPTk_InstallDir}/bin/${ApplicationName} -h
-  <tr><td align="center" width="100px">macOS <td align="center">~/Applications/CaPTk_${version}.app/Contents/Resources/bin/${ApplicationName} -h
-</table>
+| Platform (x64) |                                      Command                                     |
+|:--------------:|:--------------------------------------------------------------------------------:|
+|     Windows    |                 ${CaPTk_InstallDir}/bin/${ApplicationName}.exe -h                |
+|      Linux     |                   ${CaPTk_InstallDir}/bin/${ApplicationName} -h                  |
+|      macOS     | ~/Applications/CaPTk_${version}.app/Contents/Resources/bin/${ApplicationName} -h |
 
 Detailed explanation of using the command line is available in the following section.
 
