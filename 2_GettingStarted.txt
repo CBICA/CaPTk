@@ -10,6 +10,7 @@ CaPTk has been designed as a modular platform, currently incorporating component
   - \ref gs_seedpoints
   - \ref gs_utilities
   - \ref gs_drawing
+  - \ref gs_keyboard
 -# \ref gs_preprocessing (e.g., smoothing, bias correction, co-registration, normalization) 
 -# Image segmentation
 -# Feature extraction
@@ -26,23 +27,6 @@ The following sections give a high-level overview of CaPTk, with the intention o
 \section gs_FAQ Frequently Asked Questions
 
 Please see the dedicated [FAQ](FAQ.html) section.
-
---------
-
-\section gs_keyboard Keyboard Shortcuts
-
-These are the keyboard shortcuts available on CaPTk:
-
-|    Key Stroke   |                               Function/Action                              |
-|:---------------:|:--------------------------------------------------------------------------:|
-|       1-9       |                   [IMAGES] Show selected image from table                  |
-|       "m"       |         [DRAWING] Show/Hide all regions; picks up last used opacity        |
-|  Control + 1-9  |                     [DRAWING] Only show selected label                     |
-|    Alt + 1-9    |                [DRAWING] Add selected label to visualization               |
-| Control/Alt + 0 |             [DRAWING] Reset label visualization; i.e., show all            |
-|  Shift + Space  |                    [SEED POINT] Set initial tumor center                   |
-| Control + Space | [SEED POINT] Update tumor radius; on macOS, this is "Fn + Command + Space" |
-|      Space      |                      [SEED POINT] Update tumor center                      |
 
 --------
 
@@ -158,20 +142,20 @@ These are seed-points with coordinate information. They can be used for a multit
 
 | Tissue Acronym |            Full Form            |
 |:--------------:|:-------------------------------:|
-| CSF            | Cerebrospinal Fluid             |
-| VT             | Ventricular Cerebrospinal Fluid |
-| GM             | Gray Matter                     |
-| WM             | White Matter                    |
-| VS             | Vessels                         |
-| ED             | Edema                           |
-| NCR            | Necrosis                        |
-| ET             | Enhancing Tumor                 |
-| NE             | Non-Enhancing Tumor             |
-| CB             | Cerebellum                      |
-| CAE            | Enhancing Cavity                |
-| CAN            | Non-Enhancing Cavity            |
-| RTN            | Tumor Recurrence                |
-| RTE            | Enhanced Tumor Recurrence       |
+|       CSF      |       Cerebrospinal Fluid       |
+|       VT       | Ventricular Cerebrospinal Fluid |
+|       GM       |           Gray Matter           |
+|       WM       |           White Matter          |
+|       VS       |             Vessels             |
+|       ED       |              Edema              |
+|       NCR      |             Necrosis            |
+|       ET       |         Enhancing Tumor         |
+|       NE       |       Non-Enhancing Tumor       |
+|       CB       |            Cerebellum           |
+|       CAE      |         Enhancing Cavity        |
+|       CAN      |       Non-Enhancing Cavity      |
+|       RTN      |         Tumor Recurrence        |
+|       RTE      |    Enhanced Tumor Recurrence    |
 
 --------
 Application-specific tissue types are automatically enabled when the corresponding application is selected. For example, when trying to initialize tissue points for GLISTR/GLISTRboost, only CSF, GM, WM, VS, ED, NCR, TU, NE and CB buttons will be enabled and the rest will be disabled. If there are some required tissue types missing for an application, CaPTk will display a warning and not let the user save an incomplete set of tissue points.
@@ -205,24 +189,41 @@ Toggle between non-zero (taken from the opacity box) and zero opacity of the ent
 Visualize a single label using "Control + <label number>" and add labels to the visualization using "Alt + <label number>". To reset, press "Control/Alt + 0".
 
 There are the following controls underneath the <b>Drawing</b> tab:
- 
-<table border="0">
-  <tr><th>Button/Box <th>Description
-  <tr><td align="center" width="15%">View Mode <td>Switch from drawing mode (which is enabled when either Near or Far ROI drawing is selected) to normal viewing mode.
-  <tr><td align="center" width="15%">Line <td>Draw a line of selected label color and size.
-  <tr><td align="center" width="15%">Rectangle <td>Draw a rectangle of selected label color and size.
-  <tr><td align="center" width="15%">Circle <td>Draw a circle of selected label color and size.
-  <tr><td align="center" width="15%">Free-Hand <td>Draw selected label using brush of specified size using mouse left button drag.
-  <tr><td align="center" width="15%">Fill <td>Fill a closed boundary with selected label - uses ITK's connected component filter.
-  <tr><td align="center" width="15%">Eraser <td>Erases all labels using brush of specified size.
-  <tr><td align="center">Label Selector <td>Label selector between 1-9.
-  <tr><td align="center">Marker Size <td>A square marker of specific voxel size.
-  <tr><td align="center">Marker Opacity <td>Sets the opacity of the marker between 0.0 (transparent) and 1.0 (opaque).
-  <tr><td align="center">Clear Selected Label <td>Remove selected label completely from the mask.
-  <tr><td align="center">Clear All Labels <td>Remove all labels completely from the mask.
-  <tr><td align="center">Undo <td>Undo last drawing action.
-  <tr><td align="center">Change Values <td>By providing the same number of old and new values in the format <b>AxBxC</b>, the values of the annotated region can be quickly changed.
-</table>
+
+|      Button/Box      |                                                                Description                                                               |
+|:--------------------:|:----------------------------------------------------------------------------------------------------------------------------------------:|
+|       View Mode      |            Switch from drawing mode (which is enabled when either Near or Far ROI drawing is selected) to normal viewing mode            |
+|         Line         |                                               Draw a line of selected label color and size                                               |
+|       Rectangle      |                                             Draw a rectangle of selected label color and size                                            |
+|        Circle        |                                              Draw a circle of selected label color and size                                              |
+|        Sphere        |                           Draw a sphere of selected label color and pre-determined size from the size combo-box                          |
+|       Free-Hand      |                              Draw selected label using brush of specified size using mouse left button drag                              |
+|         Fill         |                            Fill a closed boundary with selected label - uses ITK's connected component filter                            |
+|        Eraser        |                                              Erases all labels using brush of specified size                                             |
+|    Label Selector    |                                                        Label selector between 1-9                                                        |
+|      Marker Size     |                                                  A square marker of specific voxel size                                                  |
+|    Marker Opacity    |                                 Sets the opacity of the marker between 0.0 (transparent) and 1.0 (opaque)                                |
+| Clear Selected Label |                                              Remove selected label completely from the mask                                              |
+|   Clear All Labels   |                                                Remove all labels completely from the mask                                                |
+|         Undo         |    By providing the same number of old and new values in the format  AxBxC, the values of the annotated region can be quickly changed    |
+|     Change Values    | By providing the same number of old and new values in the format <b>AxBxC</b>, the values of the annotated region can be quickly changed |
+
+--------
+
+\section gs_keyboard Keyboard Shortcuts
+
+These are the keyboard shortcuts available on CaPTk:
+
+|    Key Stroke   |                               Function/Action                              |
+|:---------------:|:--------------------------------------------------------------------------:|
+|       1-9       |                   [IMAGES] Show selected image from table                  |
+|       "m"       |         [DRAWING] Show/Hide all regions; picks up last used opacity        |
+|  Control + 1-9  |                     [DRAWING] Only show selected label                     |
+|    Alt + 1-9    |                [DRAWING] Add selected label to visualization               |
+| Control/Alt + 0 |             [DRAWING] Reset label visualization; i.e., show all            |
+|  Shift + Space  |                    [SEED POINT] Set initial tumor center                   |
+| Control + Space | [SEED POINT] Update tumor radius; on macOS, this is "Fn + Command + Space" |
+|      Space      |                      [SEED POINT] Update tumor center                      |
 
 --------
 
@@ -271,7 +272,6 @@ Preprocessing.exe -u
 --------------------------------------------------------------------
 
 References:
-
 
 -# S.M.Smith, J.M.Brady, "SUSAN - a new approach to low level image processing", Int. J. Comput. Vis. 23(1):45-78, 1997. DOI:10.102A :1007963824710
 -# N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee, "N4ITK: Improved N3 Bias Correction", IEEE Trans MeI maging. 29(6):1310-20, 2010. doi: 10.1109/TMI.2010.2046908
