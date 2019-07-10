@@ -127,7 +127,7 @@ Loading and saving is done via text files in a format consistent with respective
 The controls to add/remove points are the shown below.
 
 --------
-\subsection Tumor Points
+\subsection gs_seedpoints_tumor Tumor Points
 These are seed-points used to approximate a tumor by a parametric spherical model, using a seed-point for its center and another for defining its radius. These are helpful for applications like tumor growth model estimation as currently incorporated in GLISTR and GLISTRboost. The controls are as follows:
 
 |    Key Stroke   |                               Function/Action                              |
@@ -137,7 +137,7 @@ These are seed-points used to approximate a tumor by a parametric spherical mode
 |      Space      |                      [SEED POINT] Update tumor center                      |
 
 --------
-\subsection Tissue Points
+\subsection gs_seedpoints_tissue Tissue Points
 These are seed-points with coordinate information. They can be used for a multitude of applications where manual initialization(s) are required for a semi-automated algorithm, e.g, segmentation. At the moment these points are being assigned various brain tissue labels, as follows:
 
 | Tissue Acronym |            Full Form            |
