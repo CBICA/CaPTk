@@ -62,15 +62,7 @@
             <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
             <section title="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
             <section title="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
-            <section title="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
-            <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
-            <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
             <section title="Brain Cancer: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
-            <section title="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
-            <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-            <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
-            <section title="Miscellaneous: Training Module" ref="Training_Module.html" />
-            <section title="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
           </section>
         </section>
         <section title="Scientific Findings using CaPTk" ref="Science.html">
@@ -133,14 +125,6 @@
       <keyword name="Brain Cancer: Confetti" id="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
       <keyword name="Brain Cancer: Directionality Estimator" id="Brain Cancer: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
       <keyword name="Breast Cancer: Breast Density Estimation (LIBRA)" id="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
-      <keyword name="Breast Cancer: Texture Feature Extraction" id="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
-      <keyword name="Breast Cancer: Breast Segmentation" id="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
-      <keyword name="Lung Cancer: Radiomics Analysis of Lung Cancer" id="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
-      <keyword name="Miscellaneous: Perfusion Alignment" id="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
-      <keyword name="Miscellaneous: Perfusion Derivatives" id="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-      <keyword name="Miscellaneous: Diffusion Derivatives" id="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
-      <keyword name="Miscellaneous: PCA Volume Extraction" id="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
-      <keyword name="Miscellaneous: Training Module" id="Miscellaneous: Training Module" ref="Training_Module.html" />
       <keyword name="Scientific Findings using CaPTk" id="Scientific Findings using CaPTk" ref="Science.html" />
       <keyword name="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients" id="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients" ref="phiEstimator.html" />
       <keyword name="Prediction of Overall Survival in Glioblastoma Patients" id="Prediction of Overall Survival in Glioblastoma Patients" ref="survivalPredictor.html" />
@@ -215,14 +199,6 @@
       <file>Glioblastoma_Confetti.html</file>
       <file>Glioblastoma_Directionality.html</file>
       <file>BreastCancer_LIBRA.html</file>
-      <file>BreastCancer_texture.html</file>
-      <file>BreastCancer_breastSegmentation.html</file>
-      <file>LungCancer_SBRT.html</file>
-      <file>Perfusion_Alignment.html</file>
-      <file>Perfusion_Derivatives.html</file>
-      <file>Diffusion_Derivatives.html</file>
-      <file>PCA_Extraction.html</file>
-      <file>Training_Module.html</file>
       <file>Science.html</file>
       <file>phiEstimator.html</file>
       <file>survivalPredictor.html</file>
