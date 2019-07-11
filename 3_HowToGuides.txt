@@ -220,7 +220,7 @@ One or more co-register images of the same subject. A ROI image has to be drawn 
 	-# Once you are satisfied with the segmentation you can save it using File>Save>ROI. Most of the time people don't want their segmentations to contain labels for the healthy tissue. If you wish for something similar then, before saving, select the color you used for healthy tissues from the 'label selector' in the drawing tools and click 'Clear selected label' and save.
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
 \verbatim
-GeodesicTraining.exe -i C:/inputImage1.nii.gz,C:/inputImage2.nii.gz,... -l C:/maskWithAtLeastTwoDifferentClasses.nii.gz -o C:/outputDirectoryNotFilename
+${CaPTk_InstallDir}/bin/GeodesicTraining.exe -i C:/inputImage1.nii.gz,C:/inputImage2.nii.gz,... -l C:/maskWithAtLeastTwoDifferentClasses.nii.gz -o C:/outputDirectoryNotFilename
 \endverbatim
 	
 	You have to draw the ROI image somewhere else to use the CLI executable. This image should be zero everywhere, except for the voxels that you have drawn. These voxels should be the same value if they belong to the same area. For instance in the example we discussed before, you can use value 1 for tumor core, value 2 for edema and value 3 for healthy tissue. If you don't want the output to contain the healthy tissue you can use parameter "-cl 3/0" which means that value 3 will be changed to 0. Keep in mind that values for healthy tissue are still needed, they just not going to show up in the output segmentation. If you want to iterate (correct mistakes in the segmentation), it's a bit harder to do with the CLI. You have to add new values to the input ROI (not the output segmentation) and run again. If you are going to use the CLI it is recommended to spend a little bit more time when you draw your input ROI so the first segmentation you get is good and you don't have to iterate the algorithm often.
@@ -290,11 +290,10 @@ The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are 
   -# [OPTIONAL] Load the brain mask - this is used for normalization.
   -# [OPTIONAL] Select the appropriate pre-trained model folder (either brain tumor segmentation or skull stripping is available): for custom models, select appropriate option and browse to the model directory.
   -# Select the output folder.
-  -# Click on 'Applications' -> 'Brain Tumor Segmentation' or 'Skull Stripping' 
-
-This can also be used from the command line:
+  -# Click on 'Applications' -> 'Brain Tumor Segmentation' or 'Skull Stripping'
+  -# This can also be used from the command line:
 \verbatim
-DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -o C:/data/output/ -m C:/data/optionalMask.nii.gz -md C:/data/pretrainedModelFolder/
+${CaPTk_InstallDir}/bin/DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -o C:/data/output/ -m C:/data/optionalMask.nii.gz -md C:/data/pretrainedModelFolder/
 \endverbatim
 <br>
 
@@ -302,10 +301,8 @@ DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.
 
 References:
 
-
 -# K.Kamnitsas, C.Ledig, V.F.J.Newcombe, J.P.Simpson, A.D.Kane, D.K.Menon, D.Rueckert, B.Glocker, "Efficient Multi-Scale 3D CNN with Fully Connected CRF for Accurate Brain Lesion Segmentation", Medical Image Analysis, 2016.
 -# K.Kamnitsas, L.Chen, C.Ledig, D.Rueckert, B.Glocker, "Multi-Scale 3D CNNs for segmentation of brain Lesions in multi-modal MRI", in proceeding of ISLES challenge, MICCAI 2015.
-
 
 */
 
@@ -327,37 +324,36 @@ References:
 	-# In the <b>Mask Selection</b> section, you have the option to define the label number(s) for which you want to extract features. Note that when more than one label number is entered the 'pipe' symbol should be used as a separator, i.e. |. Equivalently, text labels should be provided corresponding to each label number, again separated by a 'pipe'.
 	-# Once the output CSV file is defined you can click on <b>Compute + Save</b>. (Note that the CSV file should be in ASCII format)
   -# For the command line interface, a user can copy the file <b>${CaPTk_Installation_Folder}/data/features/1_params_default.csv</b> to a location where they would have write access, change the parameters as they see fit and then pass that to the CLI under the "-b" parameter (example shown below).
-	
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
-	\verbatim
-	FeatureExtraction -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
-	\endverbatim
-	\verbatim
-	FeatureExtraction -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv # batch processing
-	\endverbatim
-	
-	- As intermediate results of the "Custom_lattice", the user also has the option to save feature maps, i.e., images that represent the spatial distribution of the corresponding feature measurements as sampled by the lattice over the ROI, using the following CLI format:
-	\verbatim
-	FeatureExtraction -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv -f 1
-	\endverbatim
+  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
+\verbatim
+${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
+\endverbatim
   
-An example of the list file for batch processing can be found in <b>CAPTK_INSTALL_DIR/share/featureExtractionBatch/batch_featureextraction.csv</b>.
+  -# Batch processing is also available:
+\verbatim
+${CaPTk_InstallDir}/bin/FeatureExtraction.exe -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv
+\endverbatim
+	
+  -# As intermediate results of the "Custom_lattice", the user also has the option to save feature maps, i.e., images that represent the spatial distribution of the corresponding feature measurements as sampled by the lattice over the ROI, using the following CLI format:
+\verbatim
+${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv -f 1
+\endverbatim
+  
+An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureextraction.csv</b>.
 	
 NOTE: The output of Feature Extraction can be used to run the <a href="Training_Module.html">Training Module</a>.
-
 
 --------
 
 References:
 
-
 -# Y.Zheng, B.M.Keller, S.Ray, Y.Wang, E.F.Conant, J.C.Gee, D.Kontos, "Parenchymal texture analysis in digital mammography: A fully automated pipeline for breast cancer risk assessment", Medical Physics, 2015.
 -# H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.
-
 
 --------
 
 */
+
 
 /**
 \page ht_SpecialApps Specialized Applications (SAs) Usage
