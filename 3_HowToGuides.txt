@@ -876,7 +876,7 @@ References:
 
 
 /**
-\page Glioblastoma_Directionality Brain Cancer: Directionality Estimator
+\page Glioblastoma_Directionality Miscellaneous: Directionality Estimator
 
 This application estimates the volumetric changes and their directionality for a given ROI across two timepoints [1] and also returns the projections of the boundary point with the maximum distance from a seedpoint (with label <b>TU</b>) in each of the 3 2D visualized planes. 
 	
