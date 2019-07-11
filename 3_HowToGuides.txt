@@ -1168,16 +1168,15 @@ A single DSC-MRI image and a mask for which the measurements will be extracted.
 	-# Specify the number of principal components required and the output directory.
 	-# Press "Confirm" button. 
 	-# The principal components will be extracted at the specified location and also loaded in CaPTk (~5 minutes).
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands: 
+  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
+    - This will train a new model based on the samples in the `inputDir` using 5 principal components
 \verbatim
 ${CaPTk_InstallDir}/bin/PerfusionPCA.exe -t 0 -i C:/properly/formatted/inputDir -o C:/outputDir -n 5
 \endverbatim
-    - This will train a new model based on the samples in the `inputDir`
-
+    - This will perform inference using an existing model for inputs in 'C:/input' based on 'C:/modelDir' using 5 principal components
 \verbatim
 ${CaPTk_InstallDir}/bin/PerfusionPCA.exe -t 0 -i C:/properly/formatted/inputDir -o C:/outputDir -n 5
 \endverbatim
-    - This will perform inference using an existing model for inputs in 'C:/input' based on 'C:/modelDir'
 
 --------
 
