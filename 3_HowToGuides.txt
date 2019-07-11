@@ -45,7 +45,7 @@ Informatics Technology Initiative (NIfTI) file format.
 
 This can also be used from the command line:
 \verbatim
-Utlities.exe -i C:/test/dicomFolderWithSingleSubject -d2n 
+${CaPTk_InstallDir}/bin/Utlities.exe -i C:/test/dicomFolderWithSingleSubject -d2n 
 \endverbatim
 
 --------
@@ -69,7 +69,7 @@ This tool registers multiple moving images to a single target image using the Gr
 
 This can also be used from the command line:
 \verbatim
-GreedyRegistration.exe -i C:/test/moving.nii.gz -f C:/test/fixed.nii.gz -o C:/test/output.nii.gz -t C:/test/output.mat -reg -trf -a -m MI -n 100x50x5 -th 4
+${CaPTk_InstallDir}/bin/GreedyRegistration.exe -i C:/test/moving.nii.gz -f C:/test/fixed.nii.gz -o C:/test/output.nii.gz -t C:/test/output.mat -reg -trf -a -m MI -n 100x50x5 -th 4
 \endverbatim
  
 --------
@@ -98,19 +98,17 @@ This tool smooths an image already loaded in CaPTk, to remove any high frequency
  
 This can also be used from the command line:
 \verbatim
-[WINDOWS] Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss 
-[LINUX] captk Preprocessing -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss
+${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss
 \endverbatim
 
 --------
 
 Reference:
 
-
 -# S.M.Smith, J.M.Brady. "SUSAN-A new approach to low level image processing", International Journal of Computer Vision. 23(1):45-78, 1997.
 
-
 */
+
 
 /**  
 \page preprocessing_biasN4 N4 Bias Correction (ITK filter)
@@ -129,19 +127,17 @@ This tool corrects an image, already loaded in CaPTk, for magnetic field inhomog
 
 This can also be used from the command line:
 \verbatim
-[WINDOWS] Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4 
-[LINUX] captk Preprocessing -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4
+${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4
 \endverbatim
 
 --------
 
 Reference:
 
-
 -# J.G.Sled, A.P.Zijdenbos, A.C.Evans. "A nonparametric method for automatic correction of intensity nonuniformity in MRI data" IEEE Trans Med Imaging. 17(1):87-97, 1998.
 
-
 */
+
 
 /**  
 \page preprocessing_histoMatch Histogram Matching
@@ -158,20 +154,17 @@ This tool normalizes the intensity profile of an input image based on the intens
 
 This can also be used from the command line:
 \verbatim
-[WINDOWS] Preprocessing.exe -i C:/test/input.nii.gz -o C:/test/output.nii.gz -hi C:/test/target.nii.gz -hb 100 -hq 50
-[LINUX] captk Preprocessing -i /mnt/c/test/input.nii.gz -o /mnt/c/test/output.nii.gz -hi /mnt/c/test/target.nii.gz -hb 100 -hq 50
+${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/input.nii.gz -o C:/test/output.nii.gz -hi C:/test/target.nii.gz -hb 100 -hq 50
 \endverbatim
-
-<br>
 
 --------
 
 Reference:
 
-
 -# L.G.Nyul, J.K.Udupa, X.Zhang, "New Variants of a Method of MRI Scale Standardization", IEEE Trans Med Imaging. 19(2):143-50, 2000. DOI:10.1109/42.836373
 
 */
+
 
 /**  
 \page preprocessing_zScoreNorm Z-Scoring Normalization
@@ -276,7 +269,7 @@ A single image with distinct boundaries for the structure that needs to be segme
 	
 This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
 \verbatim
-[WINDOWS] GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
+${CaPTk_InstallDir}/bin/GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
 [LINUX] captk GeodesicSegmentation -i /mnt/c/inputImage.nii.gz -m /mnt/c/maskWithOneLabel.nii.gz -o /mnt/c/outputImage.nii.gz -t 20
 \endverbatim
 
