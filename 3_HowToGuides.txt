@@ -1148,6 +1148,9 @@ This application extracts various measurements from a Diffusion Weighted MRI sca
 	-# Identify the diffusion measurements to be extracted, and the output directory.
 	-# Press the "Confirm" button.
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
+\verbatim
+${CaPTk_InstallDir}/bin/ DiffusionDerivatives.exe -i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -v C:/input.bvec -a 1 -f 1 -r 1 -t 1 -o C:/output
+\endverbatim
 
 --------
 */
