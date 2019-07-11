@@ -1106,7 +1106,7 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
   -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
 \verbatim
-${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTI_image.nii.gz -d C:/InputImage_originalDicom/singleSlice.dcm -o C:/InputImage_output
+${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -d C:/InputImage_originalDicom/singleSlice.dcm -o C:/InputImage_output
 \endverbatim
 
 */
@@ -1125,6 +1125,10 @@ This application extracts various measurements from a Dynamic-Susceptibility Con
 	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
 	-# Press "Confirm" button.
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
+  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
+\verbatim
+${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -e 1 -p 1 -r 1 -o C:/InputImage_output
+\endverbatim
 
 --------
 */
