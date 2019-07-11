@@ -807,27 +807,24 @@ This application facilitates the users to generate population atlases for patien
 <b>USAGE:</b>
 	-# Launch the Population Atlases application using the 'Applications -> Population Atlas' menu option.
 	-# Specify the Input (e.g., Data_of_multiple_patients) and Output directories, groups and atlas files.
-	-# Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window. 
-	
+	-# Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window. 	
 	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-PopulationAtlases.exe -i C:/PopulationAtlasesInput -l C:/GroupFile -a C:/AtlasFile -o C:/populationAtlasesOutput
+${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -l C:/GroupFile -a C:/AtlasFile -o C:/populationAtlasesOutput
 \endverbatim
 
-<br>
-	
 --------
 
 Reference:
 
-
 -# M. Bilello, H. Akbari, X. Da, J.M.Pisapia, S.Mohan, R.L.Wolf, D.M.O'Rourke, M.Martinez-Lage, C.Davatzikos. "Population-based MRI atlases of spatial distribution are specific to patient and tumor characteristics in glioblastoma", Neuroimage Clin. 12:34-40, 2016. DOI:10.1016/j.nicl.2016.03.007
-
 
 */
 
+
 /**
 \page Glioblastoma_Confetti Brain Cancer: Confetti
+
 This is a method for automated extraction of white matter tracts of interest in a consistent and comparable manner over a large group of subjects without drawing the inclusion and exclusion ROIs, facilitating an easy correspondence between different subjects, as well as providing a representation that is robust to edema, mass effect, and tract infiltration [1-3]. Confetti includes three main steps: 
 -# Connectivity signature generation for fibers
 -# Clustering of fibers using a mixture of multinomials (MNs) clustering method and Expectation-Maximization (EM) optimization framework
@@ -851,25 +848,22 @@ This is a method for automated extraction of white matter tracts of interest in 
 	-# Specify the output directory and click on 'Run Confetti'.
 	-# Visually review the output tracks by double clicking respective fields on the populated list view.
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
-	-# Generation of connectivity signatures of the fibers that will be clustered into bundles:<br>
-	\verbatim
-	Confetti signature -i tdi_paths_freesurfer_87ROIs.csv -f fibers.Bfloat -o signatures.csv
-	\endverbatim
-	-# Clustering of the generated fibers into bundles:<br>
-	\verbatim
-	Confetti cluster -s signatures.csv -k 200 -o clusterIDs.csv
-	\endverbatim
-	-# Identification of specific tracts (requires an annotated example):<br>
-	\verbatim
-	Confetti extract -t template/ -f fibers.Bfloat -c clusterIDs.csv -o tracts_
-	\endverbatim
-
-<br>
+	-# Generation of connectivity signatures of the fibers that will be clustered into bundles:
+\verbatim
+${CaPTk_InstallDir}/bin/Confetti signature -i tdi_paths_freesurfer_87ROIs.csv -f fibers.Bfloat -o signatures.csv
+\endverbatim
+	-# Clustering of the generated fibers into bundles:
+\verbatim
+${CaPTk_InstallDir}/bin/Confetti cluster -s signatures.csv -k 200 -o clusterIDs.csv
+\endverbatim
+	-# Identification of specific tracts (requires an annotated example):
+\verbatim
+${CaPTk_InstallDir}/bin/Confetti extract -t template/ -f fibers.Bfloat -c clusterIDs.csv -o tracts_
+\endverbatim
 
 --------
 
 References:
-
 
 -# B.Tunc, M.Ingalhalikar, W.A.Parker, J.Lecoeur, N.Singh, R.L.Wolf, L.Macyszyn, S.Brem, R.Verma, "Individualized Map of White Matter Pathways: Connectivity-based Paradigm for Neurosurgical Planning", Neurosurgery. 79(4):568-77, 2016. DOI:10.1227/NEU.0000000000001183.
 -# B.Tunc, W.A.Parker, M.Ingalhalikar, R.Verma, "Automated tract extraction via atlas based Adaptive Clustering", NeuroImage. 102(2):596-607, 2014. DOI:10.1016/j.neuroimage.2014.08.021
@@ -878,12 +872,12 @@ References:
 -# R.S.Desikan, F.Segonne, B.Fischl, B.Quinn, B.Dickerson, D.Blacker, R.Buckner, A.Dale, R.Maguire, B.Hyman, M.Albert, R.Killiany, "An automated labeling system for subdividing the human cerebral cortex on MRI scans into gyral based regions of interest", NeuroImage. 31(3):968-80, 2006. DOI:10.1016/j.neuroimage.2006.01.021
 -# M.Jenkinson, C.F.Beckmann, T.E.J.Behrens, M.W.Woolrich, S.M.Smith, "FSL", Neuroimage. 62(2):782-790, 2012. DOI:10.1016/j.neuroimage.2011.09.015
 
-
 */
 
 
 /**
 \page Glioblastoma_Directionality Brain Cancer: Directionality Estimator
+
 This application estimates the volumetric changes and their directionality for a given ROI across two timepoints [1] and also returns the projections of the boundary point with the maximum distance from a seedpoint (with label <b>TU</b>) in each of the 3 2D visualized planes. 
 	
 <b> REQUIREMENTS:</b>
@@ -902,10 +896,9 @@ This application estimates the volumetric changes and their directionality for a
 	-# Tissue point table gets updated with 3 points marked "CSF" (which are correspond to the direction of max point along the different planes) and 1 point marked "RTN" (which is the actual 3D point of max distance from initialized seed point).
 	-# The results as well as the actual distances are automatically saved in a text file in the Output folder together with the multi-label ROI images.
 	-# The user can save both the actual and the projection points of max distance in a location of their choosing.
-
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-DirectionalityEstimate.exe -l C:/labelMap.nii.gz -o C:/output.txt -i 40,25,60
+${CaPTk_InstallDir}/bin/DirectionalityEstimate.exe -l C:/labelMap.nii.gz -o C:/output.txt -i 40,25,60
 \endverbatim
 	
 <b> OUTPUT:</b>
