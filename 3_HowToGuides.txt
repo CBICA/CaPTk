@@ -982,7 +982,7 @@ This application extracts the Texture Features as described in the paper [1]. It
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
 	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
 	-# Specify the output directory. 
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
+  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1 
 \endverbatim
@@ -1104,7 +1104,10 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 	-# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
 	-# Press "Confirm" button.
 	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands: 
+  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
+\verbatim
+${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTI_image.nii.gz -d C:/InputImage_originalDicom/singleSlice.dcm -o C:/InputImage_output
+\endverbatim
 
 */
 
