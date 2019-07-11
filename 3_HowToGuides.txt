@@ -249,7 +249,7 @@ A single image with distinct boundaries for the structure that needs to be segme
 	-# The mask is populated within ~5 minutes, showing the progress at the bottom right corner of CaPTk.
 	-# The mask is visualized automatically in the visualization panels.
 	-# You can revise the resulted segmentation mask (Label:1), by selecting the "Geodesic" preset and changing the "Threshold" at the bottom right corner of CaPTk.
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
 \verbatim
 ${CaPTk_InstallDir}/bin/GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
 \endverbatim
@@ -324,7 +324,7 @@ References:
 	-# In the <b>Mask Selection</b> section, you have the option to define the label number(s) for which you want to extract features. Note that when more than one label number is entered the 'pipe' symbol should be used as a separator, i.e. |. Equivalently, text labels should be provided corresponding to each label number, again separated by a 'pipe'.
 	-# Once the output CSV file is defined you can click on <b>Compute + Save</b>. (Note that the CSV file should be in ASCII format)
   -# For the command line interface, a user can copy the file <b>${CaPTk_Installation_Folder}/data/features/1_params_default.csv</b> to a location where they would have write access, change the parameters as they see fit and then pass that to the CLI under the "-b" parameter (example shown below).
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format:
 \verbatim
 ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
 \endverbatim
@@ -422,7 +422,7 @@ This application provides the prediction of the molecular subtype of <i>de novo<
 	-# "Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
 	-# "Output". Select the folder where the trained model will be saved.
 	-# A pop-up window appears displaying the completion of model building. (Time depends on the number of patients: ~2*Patients minutes).
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/MolecularSubtypePredictor.exe -t 0 -i C:/MolecularSubtypeInput -o C:/MolecularSubtypeModel
 \endverbatim
@@ -432,7 +432,7 @@ ${CaPTk_InstallDir}/bin/MolecularSubtypePredictor.exe -t 0 -i C:/MolecularSubtyp
 	-# "Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
 	-# "Output". Select the output directory where a .csv file with the predicted molecular subtypes for all patients will be saved, and click on 'Confirm'.
 	-# A pop-up window appears displaying the completion of subtype calculation. The window will also show the molecular subtype of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/MolecularSubtypePredictor.exe -t 1 -i C:/MolecularSubtypeInput -m C:/MolecularSubtypeModel -o C:/MolecularSubtypeOutput
 \endverbatim
@@ -461,7 +461,7 @@ This algorithm normalizes conventional brain MRI scans [1] by detecting a latent
   -# For T1-Gd images, use the "T1" option and for T2-FLAIR images, use the "T2" option.
 	-# Click on 'Run WhiteStripe" and the results can be seen in a slice format using "Toggle Mask/Image" checkbox.
 	-# Use 'Level Display' when needed.
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/WhiteStripe.exe -i C:/inputImage.nii.gz -o C:/outputImage.nii.gz
 \endverbatim
@@ -490,7 +490,7 @@ This application evaluates the Epidermal Growth Factor Receptor splice variant I
 	-# Annotate 2 ROIs: one near (Label:1) the enhancing tumor and another far (Label:2) from it (but still within the peritumoral region). Rules for ROI annotation are provided below [3].
 	-# Once the 2 ROIs are annotated, the application can be launched by using the menu option: 'Applications -> EGFRvIII Surrogate Index'.
 	-# A pop-up window appears displaying the results (within <1 minute).
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -i C:/inputImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
 \endverbatim
@@ -565,7 +565,7 @@ This application provides a probability map of deeply infiltrating tumor in the 
 		-# Select the "Output Directory" where the trained model should be saved.
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
-		-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
+		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
 \verbatim
 ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o C:/RecurrenceModel
 \endverbatim
@@ -576,7 +576,7 @@ ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o
 		-# Select the "Output Directory", where the user wants to save the infiltration maps.
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of infiltration map calculations (~1.5*NoOfSubjects minutes).
-		-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
+		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
 \verbatim
 ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 1 -i C:/RecurrenceSubjects -o C:/RecurrenceOutput -m C:/RecurrenceModel
 \endverbatim
@@ -633,7 +633,7 @@ This application provides the survival prediction index (SPI) of <i>de novo</i> 
 	-# "Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
 	-# "Output". Select the folder where the trained model will be saved.
 	-# A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 0 -i C:/SurvivalInput -o C:/SurvivalModel
 \endverbatim
@@ -643,7 +643,7 @@ ${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 0 -i C:/SurvivalInput -o C:/Sur
 	-# "Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
 	-# "Output". Select the output directory where a .csv file with the classification scores for all patients will be saved, and click on 'Confirm'. The first column and the second column of .csv will be distancce of sample from the hyperplance of 6-months model and 18-months model, respectively. 
 	-# A pop-up window appears displaying the completion of results. The window will also show the SPI index (distance) of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 1 -i C:/SurvivalInput -m C:/SurvivalModel -o C:/SurvivalOutput
 \endverbatim
@@ -697,7 +697,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 	-# "Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
 	-# "Output". Select the folder where the trained model will be saved.
 	-# A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInput -o C:/EGFRvIIIModel
 \endverbatim
@@ -707,7 +707,7 @@ ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInput -o C
 	-# "Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
 	-# "Output". Select the output directory where a .csv file with the mutation status for all patients will be saved, and click on 'Confirm'.
 	-# A pop-up window appears displaying the completion of result calculation. The window will also show the detected mutation status of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInput -m C:/EGFRvIIIModel -o C:/EGFRvIIIOutput
 \endverbatim
@@ -759,7 +759,7 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Select the "Output Directory" where the trained model should be saved.
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
-		-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
+		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
     -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM for calculating perfusion derivatives. 
 \verbatim
 ${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionModel
@@ -771,7 +771,7 @@ ${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/Pseudoprogress
 		-# Select the "Output Directory", where the user wants to save the output. The first and the second column of .csv will be distancce of sample from the hyperplance of pseudoprogression model and true recurrence model, respectively. 
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).
-		-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
+		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
 \verbatim
 ${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionOutput -m C:/PseudoprogressionModel
 \endverbatim
@@ -808,7 +808,7 @@ This application facilitates the users to generate population atlases for patien
 	-# Launch the Population Atlases application using the 'Applications -> Population Atlas' menu option.
 	-# Specify the Input (e.g., Data_of_multiple_patients) and Output directories, groups and atlas files.
 	-# Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window. 	
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -l C:/GroupFile -a C:/AtlasFile -o C:/populationAtlasesOutput
 \endverbatim
@@ -896,7 +896,7 @@ This application estimates the volumetric changes and their directionality for a
 	-# Tissue point table gets updated with 3 points marked "CSF" (which are correspond to the direction of max point along the different planes) and 1 point marked "RTN" (which is the actual 3D point of max distance from initialized seed point).
 	-# The results as well as the actual distances are automatically saved in a text file in the Output folder together with the multi-label ROI images.
 	-# The user can save both the actual and the projection points of max distance in a location of their choosing.
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/DirectionalityEstimate.exe -l C:/labelMap.nii.gz -o C:/output.txt -i 40,25,60
 \endverbatim
@@ -983,7 +983,7 @@ This application extracts the Texture Features as described in the paper [1]. It
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
 	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
 	-# Specify the output directory. 
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1 
 \endverbatim
@@ -1052,7 +1052,7 @@ It will generate the lung field mask image with name C:/outputBasename_lf.nii.gz
   -# Specify the label value for the foreground seeds(default value of 2).
   -# Launch the segmentation step using 'Applications -> <b>Lung Nodule Segmentation</b>' menu.
   -# The nodule is automatically generated and displayed.  
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
     - The following command will generate two output images (seed image for nodule segmentation and nodule mask image) with names `C:/outputBasename_seeds.nii.gz` and `C:/outputBasename_segmentation.nii.gz`:
 \verbatim
 ${CaPTk_InstallDir}/bin/SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename
@@ -1069,7 +1069,7 @@ ${CaPTk_InstallDir}/bin/SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/m
   -# Load the required nodule mask generated from step 2.
   -# Launch the modeling step using 'Applications -> <b>Prognostic Modeling</b>' menu.
   -# The predicted risks for survival and nodal failure are automatically calculated and displayed.[Note: The prediction models were obtained based on PET images with spatial resolution 4mm x 4mm x 4mm.]
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
     - The following command will calculate and print the predicted risks regarding survival and nodal failure:
 \verbatim
 ${CaPTk_InstallDir}/bin/SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1
@@ -1105,7 +1105,7 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 	-# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
 	-# Press "Confirm" button.
 	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
 \verbatim
 ${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -d C:/InputImage_originalDicom/singleSlice.dcm -o C:/InputImage_output
 \endverbatim
@@ -1126,7 +1126,7 @@ This application extracts various measurements from a Dynamic-Susceptibility Con
 	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
 	-# Press "Confirm" button.
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
 \verbatim
 ${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -e 1 -p 1 -r 1 -o C:/InputImage_output
 \endverbatim
@@ -1169,7 +1169,7 @@ A single DSC-MRI image and a mask for which the measurements will be extracted.
 	-# Specify the number of principal components required and the output directory.
 	-# Press "Confirm" button. 
 	-# The principal components will be extracted at the specified location and also loaded in CaPTk (~5 minutes).
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
     - The following command will train a new model based on the samples in the `inputDir` using 5 principal components
 \verbatim
 ${CaPTk_InstallDir}/bin/PerfusionPCA.exe -t 0 -i C:/properly/formatted/inputDir -o C:/outputDir -n 5
@@ -1203,7 +1203,7 @@ Input features file (CSV) and a target label file (CSV).
 	-# In case of k-fold cross-validation, specify the number of folds in the corresponding edit box. In case of split-train-test method, specify the number of training samples X. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing. For training only option, no additional parameter is required in 'Configuration' section. For testing only option, the directory containing the trained model files should be provided. 
 	-# Press "Confirm" button. 
 	-# The model or the predicted output, depending on the configuration, will be calculated and saved in the output directory.
-	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following formats:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following formats:
     - K-Fold CrossValidation option:
 \verbatim
 ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 1 -k 10 
