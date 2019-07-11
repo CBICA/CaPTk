@@ -376,8 +376,8 @@ Contains the following applications:
 - \subpage Perfusion_Alignment "Miscellaneous: Perfusion Alignment"
 - \subpage Perfusion_Derivatives "Miscellaneous: Perfusion Derivatives"
 - \subpage Diffusion_Derivatives "Miscellaneous: Diffusion Derivatives"
-- \subpage Training_Module "Miscellaneous: Training Module"
 - \subpage PCA_Extraction "Miscellaneous: PCA Volume Extraction"
+- \subpage Training_Module "Miscellaneous: Training Module"
 
 --------
 */
