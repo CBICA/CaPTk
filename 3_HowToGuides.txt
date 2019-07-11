@@ -1051,21 +1051,14 @@ It will generate the lung field mask image with name C:/outputBasename_lf.nii.gz
   -# Specify the label value for the foreground seeds(default value of 2).
   -# Launch the segmentation step using 'Applications -> <b>Lung Nodule Segmentation</b>' menu.
   -# The nodule is automatically generated and displayed.  
-  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:  
+  -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
+    - The following command will generate two output images (seed image for nodule segmentation and nodule mask image) with names `C:/outputBasename_seeds.nii.gz` and `C:/outputBasename_segmentation.nii.gz`:
 \verbatim
 ${CaPTk_InstallDir}/bin/SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename
 \endverbatim
-
-    - This will generate two output images (seed image for nodule segmentation and nodule mask image) with names C:/outputBasename_seeds.nii.gz and C:/outputBasename_segmentation.nii.gz
-  
+    - The following command will generate the nodule mask image with name `C:/outputBasename_segmentation.nii.gz`:
 \verbatim
 ${CaPTk_InstallDir}/bin/SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename -s C:/seedImage.nii.gz
-\endverbatim
-
-    - This will generate the nodule mask image with name C:/outputBasename_segmentation.nii.gz.
-
-\verbatim
-${CaPTk_InstallDir}/bin/SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename -s C:/seedImage.nii.gz -l 2 
 \endverbatim
 
 "Label_value" indicates the label of lung field in the input mask image, default value is 2.
@@ -1076,17 +1069,14 @@ ${CaPTk_InstallDir}/bin/SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/m
   -# Launch the modeling step using 'Applications -> <b>Prognostic Modeling</b>' menu.
   -# The predicted risks for survival and nodal failure are automatically calculated and displayed.[Note: The prediction models were obtained based on PET images with spatial resolution 4mm x 4mm x 4mm.]
   -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
+    - The following command will calculate and print the predicted risks regarding survival and nodal failure:
 \verbatim
 ${CaPTk_InstallDir}/bin/SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1
 \endverbatim
-
-    - This will calculate and print the predicted risks regarding survival and nodal failure.
-		
+    - The following command will calculate and print the predicted risks regarding survival and nodal failure, it will also save the radiomic features used for the prediction into the assigned file:
 \verbatim
 ${CaPTk_InstallDir}/bin/SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1 -o C:/outputFile
 \endverbatim
-
-    - This will calculate and print the predicted risks regarding survival and nodal failure, it will also save the radiomic features used for the prediction into the assigned file.
 
 --------
 
@@ -1169,11 +1159,11 @@ A single DSC-MRI image and a mask for which the measurements will be extracted.
 	-# Press "Confirm" button. 
 	-# The principal components will be extracted at the specified location and also loaded in CaPTk (~5 minutes).
   -# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
-    - This will train a new model based on the samples in the `inputDir` using 5 principal components
+    - The following command will train a new model based on the samples in the `inputDir` using 5 principal components
 \verbatim
 ${CaPTk_InstallDir}/bin/PerfusionPCA.exe -t 0 -i C:/properly/formatted/inputDir -o C:/outputDir -n 5
 \endverbatim
-    - This will perform inference using an existing model for inputs in 'C:/input' based on 'C:/modelDir' using 5 principal components
+    - The following command will perform inference using an existing model for inputs in `C:/input` based on `C:/modelDir` using 5 principal components
 \verbatim
 ${CaPTk_InstallDir}/bin/PerfusionPCA.exe -t 0 -i C:/properly/formatted/inputDir -o C:/outputDir -n 5
 \endverbatim
@@ -1202,28 +1192,27 @@ Input features file (CSV) and a target label file (CSV).
 	-# In case of k-fold cross-validation, specify the number of folds in the corresponding edit box. In case of split-train-test method, specify the number of training samples X. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing. For training only option, no additional parameter is required in 'Configuration' section. For testing only option, the directory containing the trained model files should be provided. 
 	-# Press "Confirm" button. 
 	-# The model or the predicted output, depending on the configuration, will be calculated and saved in the output directory.
-
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following formats:
+	-# This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following formats:
     - K-Fold CrossValidation option:
-    \verbatim
-    TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 1 -k 10 
-    \endverbatim
+\verbatim
+${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 1 -k 10 
+\endverbatim
     - Split Train-Test option:
-    \verbatim
-    TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 2 -k 40
-    \endverbatim
+\verbatim
+${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 2 -k 40
+\endverbatim
     - Train only option:
-    \verbatim
-    TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 3 -k 10
-    \endverbatim
+\verbatim
+${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 3 -k 10
+\endverbatim
     - Test only option:
-    \verbatim
-    TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 4 -k 10 -m C:/ModelDirectory
-    \endverbatim
+\verbatim
+${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 4 -k 10 -m C:/ModelDirectory
+\endverbatim
     
-	<b>c</b> is the classifier type (-c 1 for Linear SVM, -c 2 for RBF SVM)
-	<b>n</b> is the configuration type (-n 1 for cross-validation, -n 2 for split train-test, -n 3 for training only, -n 4 for testing only)
-	<b>k</b> is the # of folds for cross-validation configuration, and size of train dataset for split train-test configuration
+<b>c</b> is the classifier type (-c 1 for Linear SVM, -c 2 for RBF SVM)
+<b>n</b> is the configuration type (-n 1 for cross-validation, -n 2 for split train-test, -n 3 for training only, -n 4 for testing only)
+<b>k</b> is the # of folds for cross-validation configuration, and size of train dataset for split train-test configuration
 
 --------
 
