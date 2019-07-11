@@ -33,4 +33,12 @@ Double click on the pkg file and click on "Open". This will guide you through th
 Before installation begins, you may be prompted for your password again.
 
 You will find CaPTk under your "Applications" folder and you can delete the disk image.
+
+--------------------------------------------------------------------
+
+--------------------------------------------------------------------
+\htmlonly
+<div align="right"><a href="ReleaseNotes.html"><b>Next (Changelog)<b></a>
+\endhtmlonly
+--------------------------------------------------------------------
 */
