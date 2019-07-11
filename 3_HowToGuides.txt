@@ -903,11 +903,12 @@ ${CaPTk_InstallDir}/bin/DirectionalityEstimate.exe -l C:/labelMap.nii.gz -o C:/o
 	
 <b> OUTPUT:</b>
 The following files are saved in the output folder:
+
 - <b>directionalityOutput.txt</b>, which includes the total volumetric change and the change per 3D octant (as shown in the output window), as well as the coordinates of the point of the largest distance (i.e., RTN) from the TU seedpoint together with its projections in the 3 2D planes (i.e., CSF). 
 - <b>roi_DE_octantImage.nii.gz</b>, which describes the partitioned version of timepoint_2_ROI in octants with the corresponding numbering of octants accompanying the numbering included in the output text file. 
 - <b>roi_DE_visualizationRatio.nii.gz</b>, which describes the ratio of the timepoint_2_ROI over timepoint_1_ROI of the volumetric differences per octant.
 - <b>roiDE_visualizationProbability.nii.gz</b>, which describes the parametric map dividing the ROI of timepoint 1 in octants and assigning a value in the range [0,1] on each octant. Smaller and larger values represent the octants with smaller and larger relative volumetric change. This is the same result as roi_DE_visualizationRatio.nii.gz but scaled between 0 and 1.
-- <b>roi_DE_visualizationIncrease.nii.gz</b>, which describes the multi-label map depicting with i) label 1 (red) and label 3 (yellow) the intersection of the timepoint 1 and timepoint 2 ROIs, ii) label 3 (yellow) the octant of maximum expansion based on distance and not based on volumetric difference, and iii) label 2 (green) the voxels of expansion in timepoint 2, i.e. the voxels that did not exist in the timepoint 1 ROI but only in the ROI of timepoint 2. Note that the visualization of the multi-label map can be controlled from the "Drawing" panel.
+- <b>roi_DE_visualizationIncrease.nii.gz</b>, which describes the multi-label map depicting the intersection of the timepoint 1 and timepoint 2 ROIs using i) label 1 (red) and label 3 (yellow), ii) the octant of maximum expansion based on distance and not based on volumetric difference using label 4 (blue), and iii) the voxels of expansion in timepoint 2, i.e. the voxels that did not exist in the timepoint 1 ROI but only in the ROI of timepoint 2 using label 2 (green). Note that the visualization of the multi-label map can be controlled from the "Drawing" panel.
 
 --------
 
