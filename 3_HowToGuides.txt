@@ -183,19 +183,14 @@ This tool does a z-scoring based normalization on the loaded image.
  
 This can also be used from the command line:
 \verbatim
-Preprocessing.exe -i C:/test/input.nii.gz -m C:/test/input_binaryMask.nii.gz -o C:/test/output.nii.gz -zn 1 -zq 5,95 -zc 3,3
-[LINUX] captk Preprocessing -i /mnt/c/test/input.nii.gz -m /mnt/c/test/input_binaryMask.nii.gz -o /mnt/c/test/output.nii.gz -zn 1 -zq 5,95 -zc 3,3
+${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/input.nii.gz -m C:/test/input_binaryMask.nii.gz -o C:/test/output.nii.gz -zn 1 -zq 5,95 -zc 3,3
 \endverbatim
-
-<br>
 
 --------
 
 Reference:
 
-
 -# T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010. DOI:10.1002/hbm.20906
-
 
 */
 
