@@ -2351,31 +2351,31 @@ The Laboratory for Individualized Breast Radiodensity Assessment (LIBRA) is a so
 	
 <b>USAGE:</b>
 - Single mode:
-  -# Load the FFDM image using the 'File -> Load -> Images' menu option.
-  -# Launch LIBRA using the 'Applications -> LIBRA_SingleImage' menu option.
-  -# LIBRA is executed and the segmentation mask is automatically loaded back to CaPTk. 
-  -# LIBRA outputs (described in the Outputs section below) are automatically saved in a temp folder under the CaPTk directory.
+	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
+	-# Launch LIBRA using the 'Applications -> LIBRA_SingleImage' menu option.
+	-# LIBRA is executed and the segmentation mask is automatically loaded back to CaPTk. 
+	-# LIBRA outputs (described in the Outputs section below) are automatically saved in a temp folder under the CaPTk directory.
 - Batch mode:
-  -# Launch LIBRA using the 'Applications -> LIBRA_BatchMode' menu option.
-  -# The user is prompted to select the folder which contains the images for analysis.
-  -# The user is then prompted to select an output folder where the density scores and density segmentation images .jpg files will be stored. Note: If the folder already exists and contains density estimates (e.g., from a previous run of LIBRA), it will append  the new results to the results file.
-  -# Lastly, the user will be asked whether they wish to store a processing log file and intermediate graphics in addition to the density segmentation outline which may be on interest for publication or visualization purposes, and are further described in the   Outputs section below.
-  -# LIBRA will then begin processing all the FFDM images; the progress of the software can be monitored via the related command-prompt window that opens when LIBRA starts running. When analysis is complete, a prompt appears asking the user if they want to open the results folder and if they want to perform additional analyses.
+	-# Launch LIBRA using the 'Applications -> LIBRA_BatchMode' menu option.
+	-# The user is prompted to select the folder which contains the images for analysis.
+	-# The user is then prompted to select an output folder where the density scores and density segmentation images .jpg files will be stored. Note: If the folder already exists and contains density estimates (e.g., from a previous run of LIBRA), it will append the new results to the results file.
+	-# Lastly, the user will be asked whether they wish to store a processing log file and intermediate graphics in addition to the density segmentation outline which may be on interest for publication or visualization purposes, and are further described in the Outputs section below.
+	-# LIBRA will then begin processing all the FFDM images; the progress of the software can be monitored via the related command-prompt window that opens when LIBRA starts running. When analysis is complete, a prompt appears asking the user if they want to open the results folder and if they want to perform additional analyses.
 
 <b>OUTPUT:</b>
 - The following outputs are always generated:
-  - Masks_<Image-Analyzed>.mat: A MATLAB datafile containing a structure array that stores the breast area (res.BreastArea), dense area (res.DenseArea), and area percent density estimates (res.PD_SVM) for the FFDM analyzed (res.dcm_fname). This structure array also stores the binary masks of the breast (res.BreastMask) and dense tissue segmentations (res.DenseMask), which may be useful for further processing and analysis.
-  - Density.csv: A comma separated file (open-able by spreadsheet programs like Excel) that stores the breast area, dense area, and percent density estimates for each FFDM image analyzed, listed by file name. The Manufacturer, Laterality and View-Position of the mammogram are also provided for reference. (Note that the CSV file should be in ASCII format)
-  - <Image-Analyzed-Filename>_density_segmentation.jpg: In the Result_Images sub-directory, the breast and density segmentation results are provided for each image analyzed. The breast is outlined in red, the density segmentation is in green. Note that for visualization purposes, the image is window-leveled to between the 5th and 95th percentile of the intensity values of the pixels within the breast region.
+	- Masks_<Image-Analyzed>.mat: A MATLAB datafile containing a structure array that stores the breast area (res.BreastArea), dense area (res.DenseArea), and area percent density estimates (res.PD_SVM) for the FFDM analyzed (res.dcm_fname). This structure array also stores the binary masks of the breast (res.BreastMask) and dense tissue segmentations (res.DenseMask), which may be useful for further processing and analysis.
+	- Density.csv: A comma separated file (open-able by spreadsheet programs like Excel) that stores the breast area, dense area, and percent density estimates for each FFDM image analyzed, listed by file name. The Manufacturer, Laterality and View-Position of the mammogram are also provided for reference. (Note that the CSV file should be in ASCII format)
+	- <Image-Analyzed-Filename>_density_segmentation.jpg: In the Result_Images sub-directory, the breast and density segmentation results are provided for each image analyzed. The breast is outlined in red, the density segmentation is in green. Note that for visualization purposes, the image is window-leveled to between the 5th and 95th percentile of the intensity values of the pixels within the breast region.
 - In single mode the following outputs are generated by default, while in batch mode they are only generated if the user specifies to save intermediate files:
-  - LIBRA-logfile_<time-stamp>.txt: A log of the programs outputs during the session, this text file is time-stamped at the start of the LIBRA sessions so that multiple sessions writing to the same output folder each have their own unique log of events. The   <time-stamp> takes the form of <Month>-<DD>-<YYYY>_HH-MM-SS, in 24-hour format. .. _fig_log_file.
-  - <Image-Analyzed-Filename>_Windowed_Original.jpg: In the Result_Images sub-directory, the analyzed image window-leveled to between the 5th and 95th percentile of the intensity values of the pixels within the breast region is also provided with out the breast   density segmentation overlay for comparison purposes.
-  - <Image-Analyzed>_density_imagesc.jpg: In the Result_Images sub-directory, the image clusters (grouped by colors) generated by the Fuzzy C-Means stage of the LIBRA algorithm is provided.
-  - <Image-Analyzed>_intensity_histogram.jpg: In the Result_Images sub-directory, the breast intensity histogram (z-scored) and FCM-cluster centers are plotted in this image.
+	- LIBRA-logfile_<time-stamp>.txt: A log of the programs outputs during the session, this text file is time-stamped at the start of the LIBRA sessions so that multiple sessions writing to the same output folder each have their own unique log of events. The <time-stamp> takes the form of <Month>-<DD>-<YYYY>_HH-MM-SS, in 24-hour format. .. _fig_log_file.
+	- <Image-Analyzed-Filename>_Windowed_Original.jpg: In the Result_Images sub-directory, the analyzed image window-leveled to between the 5th and 95th percentile of the intensity values of the pixels within the breast region is also provided with out the breast density segmentation overlay for comparison purposes.
+	- <Image-Analyzed>_density_imagesc.jpg: In the Result_Images sub-directory, the image clusters (grouped by colors) generated by the Fuzzy C-Means stage of the LIBRA algorithm is provided.
+	- <Image-Analyzed>_intensity_histogram.jpg: In the Result_Images sub-directory, the breast intensity histogram (z-scored) and FCM-cluster centers are plotted in this image.
 
 Please see the LIBRA manual for more details: https://www.med.upenn.edu/sbia/libra.html
 
-  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${captk_install_dir}/bin/libra.bat --input C:/inputDICOMDir --output C:/outputDir # windows
 ${captk_install_dir}/bin/libra --input C:/inputDICOMDir --output C:/outputDir # linux
@@ -2387,7 +2387,9 @@ ${captk_install_dir}/bin/libra --input C:/inputDICOMDir --output C:/outputDir # 
 
 Reference:
 
+
 -# B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530
+
 
 */
 
@@ -2418,7 +2420,9 @@ BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1
 
 Reference:
 
+
 -# B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530
+
 
 */
 
@@ -2429,14 +2433,14 @@ Reference:
 This application uses LIBRA [1] to extract the breast region in the loaded image. 
 
 <b>REQUIREMENTS:</b>
-  - Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
-  - FFDM vendors currently supported: GE Healthcare and Hologic.
-  - Each image stored in a separate folder.
+	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
+	- FFDM vendors currently supported: GE Healthcare and Hologic.
+	- Each image stored in a separate folder.
 	
 <b>USAGE:</b>
-  -# Load the FFDM image using the 'File -> Load -> Images' menu option.
-  -# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
-  -# Output is loaded automatically. 
+	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
+	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
+	-# Output is loaded automatically. 
 
 <br>
 
@@ -2444,7 +2448,9 @@ This application uses LIBRA [1] to extract the breast region in the loaded image
 
 Reference:
 
+
 -# B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530
+
 
 */
 
@@ -2461,10 +2467,10 @@ This application provides a fully automatic segmentation of lung nodules and pre
 <b>USAGE:</b>
 
 <b>Step 1: Lung Field Segmentation</b>
-  -# Load the required co-registered CT and PET images.
+	-# Load the required co-registered CT and PET images.
   -# Load the optional mask image (for example, body mask) within which the lung field will be extracted.
-  -# Launch the segmentation step using the 'Applications -> <b>Lung Field Segmentation</b>' menu.
-  -# The lung field is automatically generated and displayed.
+	-# Launch the segmentation step using the 'Applications -> <b>Lung Field Segmentation</b>' menu.
+	-# The lung field is automatically generated and displayed.
   
   - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
 \verbatim
@@ -2474,7 +2480,7 @@ SBRT_LungField.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -o C:/outputBasename -m C:/f
 It will generate the lung field mask image with name C:/outputBasename_lf.nii.gz. The mask image will contain 2 labels, label 3 for foreground and label 2 for lung field.
 
 <b>Step 2: Lung Nodule Segmentation</b>
-  -# Load the required co-registered CT and PET images.
+	-# Load the required co-registered CT and PET images.
   -# Load the required mask image(for example, lung field mask or a region containing the nodule within lung field with default label value of 2) within which the lung nodule will be extracted.
   -# Load the optional seed image containing foreground seeds(for nodule) and background seeds for nodule segmentation.The foreground seeds should be with label 2, background seeds with label 1, and others with label 0.
   -# Specify the label value for the foreground seeds(default value of 2).
@@ -2526,7 +2532,9 @@ It will calculate and print the predicted risks regarding survival and nodal fai
 
 Reference:
 
+
 -# H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.
+
 
 */
 
@@ -2536,18 +2544,18 @@ Reference:
 This application does perfusion alignment of the input Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan.
 
 <b> REQUIREMENTS:</b>
-  -# A single DSC-MRI scan. 
-  -# A single dicom slice from the original DICOM corresponding to the DSC-MRI scan. 
-  -# A single T1 post-contrast MRI scan.
-  -# The Echo Time corresponding to the given DSC-MRI scan.
-  -# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
-  -# System should have atleast 32GB RAM for calculating perfusion derivatives. 
+	-# A single DSC-MRI scan. 
+	-# A single dicom slice from the original DICOM corresponding to the DSC-MRI scan. 
+	-# A single T1 post-contrast MRI scan.
+	-# The Echo Time corresponding to the given DSC-MRI scan.
+	-# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
+	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
 
 <b> USAGE:</b>
-  -# Launch the application from "Applications" -> "Perfusion Alignment".
-  -# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
-  -# Press "Confirm" button.
-  -# The aligned perfusion images will be saved at the specified location (~5 minutes).
+	-# Launch the application from "Applications" -> "Perfusion Alignment".
+	-# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
+	-# Press "Confirm" button.
+	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
 
 */
 
@@ -2556,15 +2564,15 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 This application extracts various measurements from a Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan. The exact measurements comprise i) an automatically-extracted proxy to relative Cerebral Blood Volume (ap-rCBV), ii) peak height (PH), iii) percent signal recovery (PSR). Note that the ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.
 
 <b> REQUIREMENTS:</b>
-  -# A single DSC-MRI scan. 
-  -# The Echo Time corresponding to the given DSC-MRI scan
-  -# System should have atleast 32GB RAM for calculating perfusion derivatives. 
+	-# A single DSC-MRI scan. 
+	-# The Echo Time corresponding to the given DSC-MRI scan
+	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
 
 <b> USAGE:</b>
-  -# Launch the application from "Applications" -> "Perfusion Derivatives".
-  -# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
-  -# Press "Confirm" button.
-  -# The extracted measurements will be saved at the specified location (~5 minutes).
+	-# Launch the application from "Applications" -> "Perfusion Derivatives".
+	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
+	-# Press "Confirm" button.
+	-# The extracted measurements will be saved at the specified location (~5 minutes).
 
 --------
 */
@@ -2579,11 +2587,11 @@ This application extracts various measurements from a Diffusion Weighted MRI sca
   -# A mask for which the measurements will be extracted
 
 <b> USAGE:</b>
-  -# Launch the application from "Applications" -> "Diffusion Derivatives".
-  -# Specify the paths to the input DW-MRI image, bval and bvec files with the gradient information, and the mask defining the voxels to extract the measurements.
-  -# Identify the diffusion measurements to be extracted, and the output directory.
-  -# Press the "Confirm" button.
-  -# The extracted measurements will be saved at the specified location (~5 minutes).
+	-# Launch the application from "Applications" -> "Diffusion Derivatives".
+	-# Specify the paths to the input DW-MRI image, bval and bvec files with the gradient information, and the mask defining the voxels to extract the measurements.
+	-# Identify the diffusion measurements to be extracted, and the output directory.
+	-# Press the "Confirm" button.
+	-# The extracted measurements will be saved at the specified location (~5 minutes).
 
 --------
 */
@@ -2596,11 +2604,11 @@ This application extracts the principal components from DSC-MRI scans as mention
 A single DSC-MRI image and a mask for which the measurements will be extracted.
 
 <b> USAGE:</b>
-  -# Load a DSC-MRI in CaPTk and the mask (Label:1) defining the voxels to extract the measurements.
-  -# Launch the application from "Applications" -> "PCA Volume Extraction".
-  -# Specify the number of principal components required and the output directory.
-  -# Press "Confirm" button. 
-  -# The principal components will be extracted at the specified location and also loaded in CaPTk (~5 minutes).
+	-# Load a DSC-MRI in CaPTk and the mask (Label:1) defining the voxels to extract the measurements.
+	-# Launch the application from "Applications" -> "PCA Volume Extraction".
+	-# Specify the number of principal components required and the output directory.
+	-# Press "Confirm" button. 
+	-# The principal components will be extracted at the specified location and also loaded in CaPTk (~5 minutes).
 
 <br>
 
@@ -2608,7 +2616,9 @@ A single DSC-MRI image and a mask for which the measurements will be extracted.
 
 Reference:
 
+
 -# H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458
+
 
 */
 
@@ -2620,15 +2630,15 @@ This applicatiparameterizeachine">Support Vector Machineparameterize
 Input features file (CSV) and a target label file (CSV).
 
 <b> USAGE:</b>parameterize
-  -# Launch the application from "Applications" -> "Training Module".
-  -# Specify the features (.csv) file and the corresponding target (.csv) file.
-  -# Specify the kernel of SVM using either of the two radio buttons. 
-  -# Specify the cross-validation method which could be either k-fold cross-validation, split-train-test, training only, or inference only.
-  -# In case of k-fold cross-validation, specify the number of folds in the corresponding edit box. In case of split-train-test method, specify the number of training samples X. The starting X entries (out of the total N) of the feature and target file will be  used for training and the remaining n-X entries will be used for testing. For training only option, no additional parameter is required in 'Configuration' section. For testing only option, the directory containing the trained model files should be provided. 
-  -# Press "Confirm" button. 
-  -# The model or the predicted output, depending on the configuration, will be calculated and saved in the output directory.
+	-# Launch the application from "Applications" -> "Training Module".
+	-# Specify the features (.csv) file and the corresponding target (.csv) file.
+	-# Specify the kernel of SVM using either of the two radio buttons. 
+	-# Specify the cross-validation method which could be either k-fold cross-validation, split-train-test, training only, or inference only.
+	-# In case of k-fold cross-validation, specify the number of folds in the corresponding edit box. In case of split-train-test method, specify the number of training samples X. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing. For training only option, no additional parameter is required in 'Configuration' section. For testing only option, the directory containing the trained model files should be provided. 
+	-# Press "Confirm" button. 
+	-# The model or the predicted output, depending on the configuration, will be calculated and saved in the output directory.
 
-  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following formats:
+	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following formats:
     - K-Fold CrossValidation option:
     \verbatim
     TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 1 -k 10 
