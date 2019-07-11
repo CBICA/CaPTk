@@ -15,14 +15,6 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 */
 
 
-
-
-
-
-
-
-
-
 /**
 \page ht_Preprocessing Pre-processing
 Contains the following applications: 
