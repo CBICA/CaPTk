@@ -361,9 +361,9 @@ Detailed explanation of using the command line is available in the \ref How_To_G
 
 
 - The full list of command line applications available is shown by running the following command (pretty much every application is available via the command line):
-```bash
+\verbatim
 ${CaPTk_InstallDir}/bin/CaPTk -h
-```
+\endverbatim
 
 - An exemplary scenario to run Applications from the command line (the example shown is to get verbose help):
 
@@ -382,9 +382,9 @@ ${CaPTk_InstallDir}/bin/CaPTk -h
 
 - If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
   - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]:
-  ```bash
-  sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade
-  ```
+\verbatim
+sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade
+\endverbatim
   - https://community.khronos.org/t/how-to-update-opengl/75314
   - https://ubuntuforums.org/showthread.php?t=2326268
   - https://www.techwalla.com/articles/how-to-update-opengl-drivers
@@ -396,10 +396,9 @@ This section highlights some of the common issues on Linux machines.
 \subsection gs_FAQ_4_1 FUSE Issues
 
 If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: 
-
-```bash
+\verbatim
 user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
-```
+\endverbatim
 
 - This will extract the package to the path `~/CaPTk/${version}/squashfs-root/usr/` with the binaries present in `~/CaPTk/${version}/squashfs-root/usr/bin`.
 - To run **CaPTk** from the command line in this manner, the user would need to make the following additions:
@@ -407,35 +406,33 @@ user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
   - Add the path `~/CaPTk/${version}/squashfs-root/usr/lib` to their environment variable **LD_LIBRARY_PATH**: `export LD_LIBRARY_PATH=~/CaPTk/${version}/squashfs-root/usr/lib:$LD_LIBRARY_PATH`
   - This will need to be present in the user's shell start up file `.bashrc`, `.cshrc`, `.profile`, `.kshrc`, etc.` for the settings to be persistent across login sessions.
   - All the command line applications should now be available for use. For example: 
-    ```bash
-    FeatureExtraction \ # the executable should already be in the $PATH
-      -n AAC0_timestamp \ # this is the subject ID for this run 
-      -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 \ # the co-registered input image(s) and their respective modalities
-      -m /user/path/mask.nii.gz \ # the mask file (co-registered with the input image(s)
-      -r 2,4,5 -l ED,EN,NE \ # the labels from the mask file from where features need to be extracted and their respective label identifier(s)
-      -p /usr/path/features.csv \ # the parameter file to use 
-      -o /usr/path/output.csv # the path to write the output 
-    ```
+\verbatim
+FeatureExtraction \ # the executable should already be in the $PATH
+-n AAC0_timestamp \ # this is the subject ID for this run 
+-i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 \ # the co-registered input image(s) and their respective modalities
+-m /user/path/mask.nii.gz \ # the mask file (co-registered with the input image(s)
+-r 2,4,5 -l ED,EN,NE \ # the labels from the mask file from where features need to be extracted and their respective label identifier(s)
+-p /usr/path/features.csv \ # the parameter file to use 
+-o /usr/path/output.csv # the path to write the output 
+\endverbatim
     
 \subsection gs_FAQ_4_2 GLIBCXX or GLIBC Issues
 
 - This is happening because the Linux binaries are compiled using the [GCC-4.8 package on Ubuntu 16.04](https://packages.ubuntu.com/xenial/gcc-4.8); therefore you will need to update GCC 4.8.5 or newer in order to get CaPTk to work. Some examples are shown:
 
   - Ubuntu [[ref](https://askubuntu.com/a/581497)]:
-
-  ```bash
-  sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-  sudo apt-get update
-  sudo apt-get install gcc-4.9 g++-4.9
-  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
-  ```  
+\verbatim
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install gcc-4.9 g++-4.9
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+\endverbatim  
 
   - CentOS [[ref](https://www.softwarecollections.org/en/scls/user/rhscl/?search=devtoolset&policy=&repo=&order_by=-create_date&per_page=10)]:
-
-  ```bash
-  sudo yum install centos-release-scl
-  sudo yum install devtoolset-6
-  ```  
+\verbatim
+sudo yum install centos-release-scl
+sudo yum install devtoolset-6
+\endverbatim  
 
 - You can still build CaPTk from source using the instructions in [Technical Reference](Technical_Reference.html). Note that you will need a [C++11 compliant compiler](https://en.cppreference.com/w/cpp/compiler_support#cpp11).
 
