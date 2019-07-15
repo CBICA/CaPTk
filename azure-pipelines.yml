@@ -236,9 +236,8 @@ jobs:
     - task: CacheBeta@0
       inputs:
         key: |
-        precompiledApps/macos.zip
-        qt_5.12.1/macos.zip
-        path: $(Build.SourcesDirectory)/binaries
+        macos.zip
+        path: $(Build.SourcesDirectory)/binaries/precompiledApps
       displayName: 'Caching'
       cacheHitVar: CACHE_RESTORED
 
