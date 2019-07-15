@@ -239,9 +239,9 @@ jobs:
           precompiledApps/macos.zip
           qt_5.12.1/macos.zip
         path: $(Build.SourcesDirectory)/binaries
+        cacheHitVar: CACHE_RESTORED
         # rolling : true
       displayName: 'Caching'
-      cacheHitVar: CACHE_RESTORED
 
     - bash: |
         brew install make doxygen llvm
