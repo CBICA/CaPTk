@@ -20,6 +20,15 @@ jobs:
         git lfs install
       displayName: 'Install dependencies'
   
+    - task: CacheBeta@0
+      inputs:
+        key: |
+          $(Build.SourcesDirectory)/precompiledApps/windows.zip |
+          $(Build.SourcesDirectory)/qt_5.12.1/windows.zip
+        path: $(Build.SourcesDirectory)/binaries
+        cacheHitVar: CACHE_RESTORED
+      displayName: Caching LFS
+
     # Pull LFS
     - bash: |
         export GIT_LFS_SKIP_SMUDGE=1
@@ -27,13 +36,6 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/windows.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-
-    - task: CacheBeta@0
-      inputs:
-        key: $(Build.SourcesDirectory)/precompiledApps/windows.zip,$(Build.SourcesDirectory)/qt_5.12.1/windows.zip
-        path: $(Build.SourcesDirectory)/binaries
-        cacheHitVar: CACHE_RESTORED
-      displayName: Caching LFS
 
     # Testing LFS
     - bash: |
@@ -137,6 +139,15 @@ jobs:
         git lfs install
       displayName: 'Install dependencies from Aptitude'
 
+    - task: CacheBeta@0
+      inputs:
+        key: |
+          $(Build.SourcesDirectory)/precompiledApps/linux.zip |
+          $(Build.SourcesDirectory)/qt_5.12.1/linux.zip
+        path: $(Build.SourcesDirectory)/binaries
+        cacheHitVar: CACHE_RESTORED
+      displayName: Caching LFS
+
     # Pull LFS
     - bash: |
         export GIT_LFS_SKIP_SMUDGE=1
@@ -144,13 +155,6 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/linux.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-
-    - task: CacheBeta@0
-      inputs:
-        key: $(Build.SourcesDirectory)/precompiledApps/linux.zip,$(Build.SourcesDirectory)/qt_5.12.1/linux.zip
-        path: $(Build.SourcesDirectory)/binaries
-        cacheHitVar: CACHE_RESTORED
-      displayName: Caching LFS
 
     # Testing LFS
     - bash: |
@@ -257,6 +261,15 @@ jobs:
         git lfs install
       displayName: 'Brew dependency install LFS'
     
+    - task: CacheBeta@0
+      inputs:
+        key: |
+          $(Build.SourcesDirectory)/precompiledApps/macos.zip |
+          $(Build.SourcesDirectory)/qt_5.12.1/macos.zip
+        path: $(Build.SourcesDirectory)/binaries
+        cacheHitVar: CACHE_RESTORED
+      displayName: Caching LFS
+
     # Pull LFS
     - bash: |
         export GIT_LFS_SKIP_SMUDGE=1
@@ -264,13 +277,6 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/macos.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-
-    - task: CacheBeta@0
-      inputs:
-        key: $(Build.SourcesDirectory)/precompiledApps/macos.zip,$(Build.SourcesDirectory)/qt_5.12.1/macos.zip
-        path: $(Build.SourcesDirectory)/binaries
-        cacheHitVar: CACHE_RESTORED
-      displayName: Caching LFS
 
     # Testing LFS
     - bash: |
