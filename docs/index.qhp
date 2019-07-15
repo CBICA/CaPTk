@@ -9,16 +9,18 @@
         <section title="Overview" ref="index.html" />
         <section title="Getting Started" ref="Getting_Started.html">
           <section title="Frequently Asked Questions" ref="Getting_Started.html#gs_FAQ" />
-          <section title="Keyboard Shortcuts" ref="Getting_Started.html#gs_keyboard" />
-          <section title="Components" ref="Getting_Started.html#gs_components" />
           <section title="Supported Images" ref="Getting_Started.html#gs_supportedImages" />
           <section title="Image Loading" ref="Getting_Started.html#gs_imageLoading" />
           <section title="Image Visualization" ref="Getting_Started.html#gs_imageVisualization" />
           <section title="Tab Docking (Windows-only)" ref="Getting_Started.html#gs_tabDocking" />
+          <section title="Coordinate definition (Seed-point initialization)" ref="Getting_Started.html#gs_seedpoints">
+            <section title="Tumor Points" ref="Getting_Started.html#gs_seedpoints_tumor" />
+            <section title="Tissue Points" ref="Getting_Started.html#gs_seedpoints_tissue" />
+          </section>
+          <section title="Label Annotation/Drawing Panel" ref="Getting_Started.html#gs_drawing" />
+          <section title="Keyboard Shortcuts" ref="Getting_Started.html#gs_keyboard" />
           <section title="Utilities (Command-line only)" ref="Getting_Started.html#gs_utilities" />
           <section title="Pre-processing" ref="Getting_Started.html#gs_preprocessing" />
-          <section title="Coordinate definition (Seed-point initialization)" ref="Getting_Started.html#gs_seedpoints" />
-          <section title="Label Annotation/Drawing Panel" ref="Getting_Started.html#gs_drawing" />
           <section title="Segmentation" ref="Getting_Started.html#gs_segmentation" />
           <section title="Feature Extraction" ref="Getting_Started.html#gs_features" />
           <section title="Specialized Applications" ref="Getting_Started.html#gs_specializedApps" />
@@ -65,12 +67,12 @@
             <section title="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
             <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
             <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
-            <section title="Brain Cancer: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
+            <section title="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
             <section title="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
             <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
             <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
-            <section title="Miscellaneous: Training Module" ref="Training_Module.html" />
             <section title="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
+            <section title="Miscellaneous: Training Module" ref="Training_Module.html" />
           </section>
         </section>
         <section title="Scientific Findings using CaPTk" ref="Science.html">
@@ -130,7 +132,7 @@
       <keyword name="Brain Cancer: Pseudoprogression Infiltration Index" id="Brain Cancer: Pseudoprogression Infiltration Index" ref="Glioblastoma_Pseudoprogression.html" />
       <keyword name="Brain Cancer: Population Atlas" id="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
       <keyword name="Brain Cancer: Confetti" id="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
-      <keyword name="Brain Cancer: Directionality Estimator" id="Brain Cancer: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
+      <keyword name="Miscellaneous: Directionality Estimator" id="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
       <keyword name="Breast Cancer: Breast Density Estimation (LIBRA)" id="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
       <keyword name="Breast Cancer: Texture Feature Extraction" id="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
       <keyword name="Breast Cancer: Breast Segmentation" id="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />

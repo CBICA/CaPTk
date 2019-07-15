@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.15"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): Brain Cancer: Directionality Estimator</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): Miscellaneous: Directionality Estimator</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,7 +61,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Directionality.html','');
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Brain Cancer: Directionality Estimator </div>  </div>
+<div class="title">Miscellaneous: Directionality Estimator </div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>This application estimates the volumetric changes and their directionality for a given ROI across two timepoints [1] and also returns the projections of the boundary point with the maximum distance from a seedpoint (with label <b>TU</b>) in each of the 3 2D visualized planes.</p>
@@ -83,25 +83,22 @@ $(document).ready(function(){initNavTree('Glioblastoma_Directionality.html','');
 <li>The user can save both the actual and the projection points of max distance in a location of their choosing.</li>
 </ol>
 <ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">DirectionalityEstimate.exe -l C:/labelMap.nii.gz -o C:/output.txt -i 40,25,60
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/DirectionalityEstimate.exe -l C:/labelMap.nii.gz -o C:/output.txt -i 40,25,60
 </pre></li>
 </ul>
-<p><b> OUTPUT:</b> The following files are saved in the output folder:</p><ul>
+<p><b> OUTPUT:</b> The following files are saved in the output folder:</p>
+<ul>
 <li><b>directionalityOutput.txt</b>, which includes the total volumetric change and the change per 3D octant (as shown in the output window), as well as the coordinates of the point of the largest distance (i.e., RTN) from the TU seedpoint together with its projections in the 3 2D planes (i.e., CSF).</li>
 <li><b>roi_DE_octantImage.nii.gz</b>, which describes the partitioned version of timepoint_2_ROI in octants with the corresponding numbering of octants accompanying the numbering included in the output text file.</li>
 <li><b>roi_DE_visualizationRatio.nii.gz</b>, which describes the ratio of the timepoint_2_ROI over timepoint_1_ROI of the volumetric differences per octant.</li>
 <li><b>roiDE_visualizationProbability.nii.gz</b>, which describes the parametric map dividing the ROI of timepoint 1 in octants and assigning a value in the range [0,1] on each octant. Smaller and larger values represent the octants with smaller and larger relative volumetric change. This is the same result as roi_DE_visualizationRatio.nii.gz but scaled between 0 and 1.</li>
-<li><b>roi_DE_visualizationIncrease.nii.gz</b>, which describes the multi-label map depicting with i) label 1 (red) and label 3 (yellow) the intersection of the timepoint 1 and timepoint 2 ROIs, ii) label 3 (yellow) the octant of maximum expansion based on distance and not based on volumetric difference, and iii) label 2 (green) the voxels of expansion in timepoint 2, i.e. the voxels that did not exist in the timepoint 1 ROI but only in the ROI of timepoint 2. Note that the visualization of the multi-label map can be controlled from the "Drawing" panel.</li>
+<li><b>roi_DE_visualizationIncrease.nii.gz</b>, which describes the multi-label map depicting the intersection of the timepoint 1 and timepoint 2 ROIs using i) label 1 (red) and label 3 (yellow), ii) the octant of maximum expansion based on distance and not based on volumetric difference using label 4 (blue), and iii) the voxels of expansion in timepoint 2, i.e. the voxels that did not exist in the timepoint 1 ROI but only in the ROI of timepoint 2 using label 2 (green). Note that the visualization of the multi-label map can be controlled from the "Drawing" panel.</li>
 </ul>
-<p><br />
-</p>
 <hr/>
 <p>Reference</p>
 <ol type="1">
 <li>M.E.Schweitzer, M.A.Stavarache, N.Petersen, S.Bakas, A.J.Tsiouris, C.Davatzikos, M.G.Kaplitt, M.M.Souweidane, "Modulation of Convection Enhanced Delivery (CED) distribution using Focused Ultrasound (FUS)", Neuro Oncol. 19(Suppl 6):vi272, 2017. DOI:10.1093/neuonc/nox168.1118</li>
 </ol>
-<p><br />
-</p>
 <hr/>
  </div></div><!-- PageDoc -->
 </div><!-- contents -->

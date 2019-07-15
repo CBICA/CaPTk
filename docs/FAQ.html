@@ -91,7 +91,8 @@ Which platforms are supported by CaPTk installers?</h1>
 <h1><a class="anchor" id="gs_FAQ_2"></a>
 How do I run CaPTk Applications from the Command Line?</h1>
 <ul>
-<li>The full list of command line applications available is shown by running the following command (pretty much every application is available via the command line): <div class="fragment"><div class="line">${CaPTk_InstallDir}/bin/CaPTk -h</div></div><!-- fragment --></li>
+<li>The full list of command line applications available is shown by running the following command (pretty much every application is available via the command line): <pre class="fragment">${CaPTk_InstallDir}/bin/CaPTk -h
+</pre></li>
 <li>An exemplary scenario to run Applications from the command line (the example shown is to get verbose help):</li>
 </ul>
 <table class="markdownTable">
@@ -117,7 +118,8 @@ How do I run CaPTk Applications from the Command Line?</h1>
 What are the OpenGL requirements to run CaPTk?</h1>
 <ul>
 <li>If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have <b>OpenGL version 3.2 or above</b>. Some useful resources:<ul>
-<li>OpenGL update for Ubuntu [<a href="https://www.phoronix.com/scan.php?page=news_item&amp;px=Ubuntu-16.04-OI-Intel-GL-4.2">ref</a>]: <div class="fragment"><div class="line">sudo apt-add-repository ppa:oibaf/graphics-drivers &amp;&amp; sudo apt-get update &amp;&amp; sudo apt-get dist-upgrade</div></div><!-- fragment --></li>
+<li>OpenGL update for Ubuntu [<a href="https://www.phoronix.com/scan.php?page=news_item&amp;px=Ubuntu-16.04-OI-Intel-GL-4.2">ref</a>]: <pre class="fragment">sudo apt-add-repository ppa:oibaf/graphics-drivers &amp;&amp; sudo apt-get update &amp;&amp; sudo apt-get dist-upgrade
+</pre></li>
 <li><a href="https://community.khronos.org/t/how-to-update-opengl/75314">https://community.khronos.org/t/how-to-update-opengl/75314</a></li>
 <li><a href="https://ubuntuforums.org/showthread.php?t=2326268">https://ubuntuforums.org/showthread.php?t=2326268</a></li>
 <li><a href="https://www.techwalla.com/articles/how-to-update-opengl-drivers">https://www.techwalla.com/articles/how-to-update-opengl-drivers</a></li>
@@ -129,14 +131,21 @@ What if I am having issues with the Linux Installer?</h1>
 <p>This section highlights some of the common issues on Linux machines.</p>
 <h2><a class="anchor" id="gs_FAQ_4_1"></a>
 FUSE Issues</h2>
-<p>If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive:</p>
-<div class="fragment"><div class="line">user@pc:~# ~/CaPTk/${version}/captk --appimage-extract</div></div><!-- fragment --><ul>
+<p>If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: </p><pre class="fragment">user@pc:~# ~/CaPTk/${version}/captk --appimage-extract
+</pre><ul>
 <li>This will extract the package to the path <code>~/CaPTk/${version}/squashfs-root/usr/</code> with the binaries present in <code>~/CaPTk/${version}/squashfs-root/usr/bin</code>.</li>
 <li>To run <b>CaPTk</b> from the command line in this manner, the user would need to make the following additions:<ul>
 <li>Add the path <code>~/CaPTk/${version}/squashfs-root/usr/lib</code> to their environment variable <b>PATH</b>: <code>export PATH=~/CaPTk/${version}/squashfs-root/usr/bin:$PATH</code></li>
 <li>Add the path <code>~/CaPTk/${version}/squashfs-root/usr/lib</code> to their environment variable <b>LD_LIBRARY_PATH</b>: <code>export LD_LIBRARY_PATH=~/CaPTk/${version}/squashfs-root/usr/lib:$LD_LIBRARY_PATH</code></li>
 <li>This will need to be present in the user's shell start up file <code>.bashrc</code>, <code>.cshrc</code>, <code>.profile</code>, <code>.kshrc</code>, etc.` for the settings to be persistent across login sessions.</li>
-<li>All the command line applications should now be available for use. For example: ```bash FeatureExtraction \ # the executable should already be in the $PATH -n AAC0_timestamp \ # this is the subject ID for this run -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 \ # the co-registered input image(s) and their respective modalities -m /user/path/mask.nii.gz \ # the mask file (co-registered with the input image(s) -r 2,4,5 -l ED,EN,NE \ # the labels from the mask file from where features need to be extracted and their respective label identifier(s) -p /usr/path/features.csv \ # the parameter file to use -o /usr/path/output.csv # the path to write the output ```</li>
+<li>All the command line applications should now be available for use. For example: <pre class="fragment">FeatureExtraction \ # the executable should already be in the $PATH
+-n AAC0_timestamp \ # this is the subject ID for this run 
+-i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 \ # the co-registered input image(s) and their respective modalities
+-m /user/path/mask.nii.gz \ # the mask file (co-registered with the input image(s)
+-r 2,4,5 -l ED,EN,NE \ # the labels from the mask file from where features need to be extracted and their respective label identifier(s)
+-p /usr/path/features.csv \ # the parameter file to use 
+-o /usr/path/output.csv # the path to write the output 
+</pre></li>
 </ul>
 </li>
 </ul>
@@ -144,14 +153,16 @@ FUSE Issues</h2>
 GLIBCXX or GLIBC Issues</h2>
 <ul>
 <li>This is happening because the Linux binaries are compiled using the <a href="https://packages.ubuntu.com/xenial/gcc-4.8">GCC-4.8 package on Ubuntu 16.04</a>; therefore you will need to update GCC 4.8.5 or newer in order to get CaPTk to work. Some examples are shown:<ul>
-<li>Ubuntu [<a href="https://askubuntu.com/a/581497">ref</a>]:</li>
+<li>Ubuntu [<a href="https://askubuntu.com/a/581497">ref</a>]: <pre class="fragment">sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install gcc-4.9 g++-4.9
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+</pre></li>
+<li>CentOS [<a href="https://www.softwarecollections.org/en/scls/user/rhscl/?search=devtoolset&amp;policy=&amp;repo=&amp;order_by=-create_date&amp;per_page=10">ref</a>]: <pre class="fragment">sudo yum install centos-release-scl
+sudo yum install devtoolset-6
+</pre></li>
 </ul>
 </li>
-</ul>
-<div class="fragment"><div class="line">sudo add-apt-repository ppa:ubuntu-toolchain-r/test</div><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install gcc-4.9 g++-4.9</div><div class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9</div></div><!-- fragment --><ul>
-<li>CentOS [<a href="https://www.softwarecollections.org/en/scls/user/rhscl/?search=devtoolset&amp;policy=&amp;repo=&amp;order_by=-create_date&amp;per_page=10">ref</a>]:</li>
-</ul>
-<div class="fragment"><div class="line">sudo yum install centos-release-scl</div><div class="line">sudo yum install devtoolset-6</div></div><!-- fragment --><ul>
 <li>You can still build CaPTk from source using the instructions in <a href="Technical_Reference.html">Technical Reference</a>. Note that you will need a <a href="https://en.cppreference.com/w/cpp/compiler_support#cpp11">C++11 compliant compiler</a>.</li>
 </ul>
 <h1><a class="anchor" id="gs_FAQ_5"></a>

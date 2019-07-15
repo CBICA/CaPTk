@@ -76,7 +76,8 @@ $(document).ready(function(){initNavTree('Diffusion_Derivatives.html','');});
 <li>Specify the paths to the input DW-MRI image, bval and bvec files with the gradient information, and the mask defining the voxels to extract the measurements.</li>
 <li>Identify the diffusion measurements to be extracted, and the output directory.</li>
 <li>Press the "Confirm" button.</li>
-<li>The extracted measurements will be saved at the specified location (~5 minutes).</li>
+<li>The extracted measurements will be saved at the specified location (~5 minutes). <pre class="fragment">${CaPTk_InstallDir}/bin/ DiffusionDerivatives.exe -i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -v C:/input.bvec -a 1 -f 1 -r 1 -t 1 -o C:/output
+</pre></li>
 </ol>
 <hr/>
  </div></div><!-- PageDoc -->

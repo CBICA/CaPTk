@@ -74,10 +74,10 @@ $(document).ready(function(){initNavTree('seg_Geodesic.html','');});
 <li>The mask is visualized automatically in the visualization panels.</li>
 <li>You can revise the resulted segmentation mask (Label:1), by selecting the "Geodesic" preset and changing the "Threshold" at the bottom right corner of CaPTk.</li>
 </ol>
-<p>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format: </p><pre class="fragment">[WINDOWS] GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
-[LINUX] captk GeodesicSegmentation -i /mnt/c/inputImage.nii.gz -m /mnt/c/maskWithOneLabel.nii.gz -o /mnt/c/outputImage.nii.gz -t 20
-</pre><p><br />
-</p>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format: <pre class="fragment">${CaPTk_InstallDir}/bin/GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
+</pre></li>
+</ul>
 <hr/>
  </div></div><!-- PageDoc -->
 </div><!-- contents -->

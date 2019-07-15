@@ -20,9 +20,6 @@
       <tab type="user" visible="yes" title="Command Line Usage" url="gs_commandLineUsage.html"/>
     </tab>
     <tab type="usergroup" visible="yes" title="How-To Guides" url="How_To_Guides.html"/>
-    <tab type="usergroup" visible="yes" title="Segmentation" url="ht_Segmentation.html"/>
-    <tab type="user" visible="yes" title="Feature Extraction" url="ht_FeatureExtraction.html"/>
-    <tab type="usergroup" visible="yes" title="Specialized Applications Usage" url="ht_SpecialApps.html"/>
     <tab type="usergroup" visible="yes" title="Scientific Findings" url="Science.html"/>
     <tab type="user" visible="yes" title="Technical Reference" url="Technical_Reference.html"/>
     <tab type="user" visible="yes" title="Download Instructions" url="Download.html"/> 
