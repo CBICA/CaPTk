@@ -233,7 +233,7 @@ jobs:
     vmImage: 'MacOS-10.13'
 
   steps:
-    - task: Cache@0
+    - task: CacheBeta@0
       inputs:
         path: '/usr/local/Cellar/*, $(Pipeline.Workspace)/bin/*build, $(Pipeline.Workspace)/bin/qt'
         key: '*'
