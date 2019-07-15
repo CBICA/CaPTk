@@ -235,13 +235,38 @@ jobs:
   steps:
     - task: CacheBeta@0
       inputs:
-        key: $(Build.SourcesDirectory)/bin/qt.zip
+        key: |
+          CaPTk_Tests
+          Confetti
+          DeepMedic
+          DiffusionDerivatives
+          DirectionalityEstimate
+          EGFRvIIIIndexPredictor
+          EGFRvIIISurrogateIndex
+          FeatureExtraction
+          GeodesicSegmentation
+          GeodesicTraining
+          GreedyRegistration
+          MolecularSubtypePredictor
+          PerfusionAlignment
+          PerfusionDerivatives
+          PerfusionPCA
+          PopulationAtlases
+          Preprocessing
+          PseudoProgressionEstimator
+          RecurrenceEstimator
+          SBRT_Analysis
+          SBRT_LungField
+          SBRT_Nodule
+          SurvivalPredictor
+          TrainingModule
+          Utilities
+          WhiteStripe
         path: $(Build.SourcesDirectory)/bin
         rolling : true
       displayName: 'Caching'
 
     - bash: |
-        echo $(Pipeline.Workspace)
         brew install make doxygen llvm
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
       displayName: 'Brew dependencies'
