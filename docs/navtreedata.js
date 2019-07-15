@@ -27,16 +27,18 @@ var NAVTREE =
     [ "Overview", "index.html", null ],
     [ "Getting Started", "Getting_Started.html", [
       [ "Frequently Asked Questions", "Getting_Started.html#gs_FAQ", null ],
-      [ "Keyboard Shortcuts", "Getting_Started.html#gs_keyboard", null ],
-      [ "Components", "Getting_Started.html#gs_components", null ],
       [ "Supported Images", "Getting_Started.html#gs_supportedImages", null ],
       [ "Image Loading", "Getting_Started.html#gs_imageLoading", null ],
       [ "Image Visualization", "Getting_Started.html#gs_imageVisualization", null ],
       [ "Tab Docking (Windows-only)", "Getting_Started.html#gs_tabDocking", null ],
+      [ "Coordinate definition (Seed-point initialization)", "Getting_Started.html#gs_seedpoints", [
+        [ "Tumor Points", "Getting_Started.html#gs_seedpoints_tumor", null ],
+        [ "Tissue Points", "Getting_Started.html#gs_seedpoints_tissue", null ]
+      ] ],
+      [ "Label Annotation/Drawing Panel", "Getting_Started.html#gs_drawing", null ],
+      [ "Keyboard Shortcuts", "Getting_Started.html#gs_keyboard", null ],
       [ "Utilities (Command-line only)", "Getting_Started.html#gs_utilities", null ],
       [ "Pre-processing", "Getting_Started.html#gs_preprocessing", null ],
-      [ "Coordinate definition (Seed-point initialization)", "Getting_Started.html#gs_seedpoints", null ],
-      [ "Label Annotation/Drawing Panel", "Getting_Started.html#gs_drawing", null ],
       [ "Segmentation", "Getting_Started.html#gs_segmentation", null ],
       [ "Feature Extraction", "Getting_Started.html#gs_features", null ],
       [ "Specialized Applications", "Getting_Started.html#gs_specializedApps", null ],

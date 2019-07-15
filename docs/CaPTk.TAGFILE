@@ -5,16 +5,17 @@
     <title>Getting Started</title>
     <filename>Getting_Started</filename>
     <docanchor file="Getting_Started" title="Frequently Asked Questions">gs_FAQ</docanchor>
-    <docanchor file="Getting_Started" title="Keyboard Shortcuts">gs_keyboard</docanchor>
-    <docanchor file="Getting_Started" title="Components">gs_components</docanchor>
     <docanchor file="Getting_Started" title="Supported Images">gs_supportedImages</docanchor>
     <docanchor file="Getting_Started" title="Image Loading">gs_imageLoading</docanchor>
     <docanchor file="Getting_Started" title="Image Visualization">gs_imageVisualization</docanchor>
     <docanchor file="Getting_Started" title="Tab Docking (Windows-only)">gs_tabDocking</docanchor>
+    <docanchor file="Getting_Started" title="Coordinate definition (Seed-point initialization)">gs_seedpoints</docanchor>
+    <docanchor file="Getting_Started" title="Tumor Points">gs_seedpoints_tumor</docanchor>
+    <docanchor file="Getting_Started" title="Tissue Points">gs_seedpoints_tissue</docanchor>
+    <docanchor file="Getting_Started" title="Label Annotation/Drawing Panel">gs_drawing</docanchor>
+    <docanchor file="Getting_Started" title="Keyboard Shortcuts">gs_keyboard</docanchor>
     <docanchor file="Getting_Started" title="Utilities (Command-line only)">gs_utilities</docanchor>
     <docanchor file="Getting_Started" title="Pre-processing">gs_preprocessing</docanchor>
-    <docanchor file="Getting_Started" title="Coordinate definition (Seed-point initialization)">gs_seedpoints</docanchor>
-    <docanchor file="Getting_Started" title="Label Annotation/Drawing Panel">gs_drawing</docanchor>
     <docanchor file="Getting_Started" title="Segmentation">gs_segmentation</docanchor>
     <docanchor file="Getting_Started" title="Feature Extraction">gs_features</docanchor>
     <docanchor file="Getting_Started" title="Specialized Applications">gs_specializedApps</docanchor>
@@ -155,7 +156,7 @@
   </compound>
   <compound kind="page">
     <name>Glioblastoma_Directionality</name>
-    <title>Brain Cancer: Directionality Estimator</title>
+    <title>Miscellaneous: Directionality Estimator</title>
     <filename>Glioblastoma_Directionality</filename>
   </compound>
   <compound kind="page">
