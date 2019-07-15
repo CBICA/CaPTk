@@ -239,7 +239,6 @@ jobs:
         precompiledApps/macos.zip
         qt_5.12.1/macos.zip
         path: $(Build.SourcesDirectory)/binaries
-        # rolling : true
       displayName: 'Caching'
       cacheHitVar: CACHE_RESTORED
 
