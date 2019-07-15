@@ -5,224 +5,224 @@ trigger:
     - master
 
 jobs:
-- job: 'WindowsBuild'
-  displayName: "End-to-end Windows build & package"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
+# - job: 'WindowsBuild'
+#   displayName: "End-to-end Windows build & package"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 300
 
-  pool:
-    vmImage: 'vs2017-win2016'
+#   pool:
+#     vmImage: 'vs2017-win2016'
 
-  steps:
+#   steps:
   
-    - script: |
-        choco install doxygen.install git-lfs.install
-        git lfs install
-      displayName: 'Install dependencies'
+#     - script: |
+#         choco install doxygen.install git-lfs.install
+#         git lfs install
+#       displayName: 'Install dependencies'
   
-    # Pull LFS
-    - bash: |
-        export GIT_LFS_SKIP_SMUDGE=1
-        git lfs pull --include "binaries/precompiledApps/windows.zip"
-        git lfs pull --include "binaries/qt_5.12.1/windows.zip"
-        #echo "Not doing this until quota is improved on GitHub"
-      displayName: 'Pull LFS'
+#     # Pull LFS
+#     - bash: |
+#         export GIT_LFS_SKIP_SMUDGE=1
+#         git lfs pull --include "binaries/precompiledApps/windows.zip"
+#         git lfs pull --include "binaries/qt_5.12.1/windows.zip"
+#         #echo "Not doing this until quota is improved on GitHub"
+#       displayName: 'Pull LFS'
 
-    # Testing LFS
-    - bash: |
-        ls -lt binaries/qt_5.12.1/
-        ls -lt binaries/precompiledApps/
-      displayName: 'Testing LFS pull'
+#     # Testing LFS
+#     - bash: |
+#         ls -lt binaries/qt_5.12.1/
+#         ls -lt binaries/precompiledApps/
+#       displayName: 'Testing LFS pull'
 
-    #- bash: |
-    #    rm -rf binaries/*mac*.zip
-    #    rm -rf binaries/*linux*.zip
-    #    rm -rf history
-    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-    #  displayName: 'Take the nuclear option'
+#     #- bash: |
+#     #    rm -rf binaries/*mac*.zip
+#     #    rm -rf binaries/*linux*.zip
+#     #    rm -rf history
+#     #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+#     #  displayName: 'Take the nuclear option'
 
-    # Moving LFS Files
-    - bash: |
-        mkdir bin
-        cd bin
-        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
-        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
-        ls -lt
-      displayName: 'Moving LFS files to the appropriate location under bin'
+#     # Moving LFS Files
+#     - bash: |
+#         mkdir bin
+#         cd bin
+#         mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
+#         mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
+#         ls -lt
+#       displayName: 'Moving LFS files to the appropriate location under bin'
 
-    - script: |
-        cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./installLibs" ..
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        cmake --build . --target ALL_BUILD --config Release
-      displayName: 'Configure and compile Superbuild'
+#     - script: |
+#         cd bin
+#         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./installLibs" ..
+#         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+#         cmake --build . --target ALL_BUILD --config Release
+#       displayName: 'Configure and compile Superbuild'
     
-    - script: |
-        cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        cmake --build . --target ALL_BUILD --config Release
-      displayName: 'Configure and compile CaPTk'
+#     - script: |
+#         cd bin
+#         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
+#         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+#         cmake --build . --target ALL_BUILD --config Release
+#       displayName: 'Configure and compile CaPTk'
     
-    #- script: |
-    #    cd bin
-    #    export GIT_LFS_SKIP_SMUDGE=1
-    #    git lfs pull --include "data/TestData.zip"
-    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
-    #    setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-    #    cmake --build . --target RUN_TESTS --config Release
-    #  displayName: 'Performing the Tests'
+#     #- script: |
+#     #    cd bin
+#     #    export GIT_LFS_SKIP_SMUDGE=1
+#     #    git lfs pull --include "data/TestData.zip"
+#     #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#     #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
+#     #    setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+#     #    cmake --build . --target RUN_TESTS --config Release
+#     #  displayName: 'Performing the Tests'
     
-    #- script: |
-    #    cd bin
-    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-    #    cmake --build . --target PACKAGE --config Release
-    #
-    #    mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
-    #    
-    #    cd ../
-    #    rm -rf *
-    #    
-    #  displayName: 'Package CaPTk'
-    #
-    #- script: | 
-    #    cd bin
-    #    #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #    echo "Deleting folders to make space"
-    #    rm -rf qt
-    #    rm -rf externalApps
-    #    rm -rf binaries_windows.zip
-    #    rm -rf ../src
-    #    mv CaPTk_*_Installer.exe ../
-    #    
-    #  displayName: 'Moving Installer one level up'
-    #
-    #- task: PublishBuildArtifacts@1
-    #  inputs:
-    #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #    artifactName: '$(Build.DefinitionName)_installer_windows'
-    #
-    #- task: DownloadBuildArtifacts@0
-    #  inputs:
-    #    buildType: 'current'
-    #    downloadType: 'single'
-    #    artifactName: '$(Build.DefinitionName)_installer_windows'
-    #    downloadPath: '$(System.ArtifactsDirectory)'
+#     #- script: |
+#     #    cd bin
+#     #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#     #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+#     #    cmake --build . --target PACKAGE --config Release
+#     #
+#     #    mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
+#     #    
+#     #    cd ../
+#     #    rm -rf *
+#     #    
+#     #  displayName: 'Package CaPTk'
+#     #
+#     #- script: | 
+#     #    cd bin
+#     #    #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+#     #    echo "Deleting folders to make space"
+#     #    rm -rf qt
+#     #    rm -rf externalApps
+#     #    rm -rf binaries_windows.zip
+#     #    rm -rf ../src
+#     #    mv CaPTk_*_Installer.exe ../
+#     #    
+#     #  displayName: 'Moving Installer one level up'
+#     #
+#     #- task: PublishBuildArtifacts@1
+#     #  inputs:
+#     #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#     #    artifactName: '$(Build.DefinitionName)_installer_windows'
+#     #
+#     #- task: DownloadBuildArtifacts@0
+#     #  inputs:
+#     #    buildType: 'current'
+#     #    downloadType: 'single'
+#     #    artifactName: '$(Build.DefinitionName)_installer_windows'
+#     #    downloadPath: '$(System.ArtifactsDirectory)'
 
-- job: 'XenialBuild'
-  displayName: "End-to-end Linux (Xenial) build"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
+# - job: 'XenialBuild'
+#   displayName: "End-to-end Linux (Xenial) build"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 300
 
-  pool:
-    vmImage: 'Ubuntu-16.04'
+#   pool:
+#     vmImage: 'Ubuntu-16.04'
 
-  steps:
-    # Dependency manager
-    - bash: |
-        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
-        curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-        sudo apt-get install git-lfs
-        git lfs install
-      displayName: 'Install dependencies from Aptitude'
+#   steps:
+#     # Dependency manager
+#     - bash: |
+#         sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
+#         curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+#         sudo apt-get install git-lfs
+#         git lfs install
+#       displayName: 'Install dependencies from Aptitude'
 
-    # Pull LFS
-    - bash: |
-        export GIT_LFS_SKIP_SMUDGE=1
-        git lfs pull --include "binaries/precompiledApps/linux.zip"
-        git lfs pull --include "binaries/qt_5.12.1/linux.zip"
-        #echo "Not doing this until quota is improved on GitHub"
-      displayName: 'Pull LFS'
+#     # Pull LFS
+#     - bash: |
+#         export GIT_LFS_SKIP_SMUDGE=1
+#         git lfs pull --include "binaries/precompiledApps/linux.zip"
+#         git lfs pull --include "binaries/qt_5.12.1/linux.zip"
+#         #echo "Not doing this until quota is improved on GitHub"
+#       displayName: 'Pull LFS'
 
-    # Testing LFS
-    - bash: |
-        ls -lt binaries/qt_5.12.1/
-        ls -lt binaries/precompiledApps/
-      displayName: 'Testing LFS pull'
+#     # Testing LFS
+#     - bash: |
+#         ls -lt binaries/qt_5.12.1/
+#         ls -lt binaries/precompiledApps/
+#       displayName: 'Testing LFS pull'
 
-    # Moving LFS Files
-    - bash: |
-        mkdir bin
-        cd bin
-        mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
-        mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
-        ls -lt
-      displayName: 'Moving LFS files to the appropriate location under bin'
+#     # Moving LFS Files
+#     - bash: |
+#         mkdir bin
+#         cd bin
+#         mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+#         mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+#         ls -lt
+#       displayName: 'Moving LFS files to the appropriate location under bin'
 
-    # Configure and build superbuild
-    - bash: |
-        cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
-        make -j2
-      displayName: 'Configure and compile Superbuild'
+#     # Configure and build superbuild
+#     - bash: |
+#         cd bin
+#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+#         make -j2
+#       displayName: 'Configure and compile Superbuild'
 
-    # Configure and build CaPTk
-    - bash: |
-        cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
-        make -j2
-        #make install/strip
-      displayName: 'Configure and compile CaPTk'
+#     # Configure and build CaPTk
+#     - bash: |
+#         cd bin
+#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+#         make -j2
+#         #make install/strip
+#       displayName: 'Configure and compile CaPTk'
 
-    # Check qt
-    - bash: |
-        cd bin
-        ls -a
-        ls ./qt/
-      displayName: 'Check qt'
+#     # Check qt
+#     - bash: |
+#         cd bin
+#         ls -a
+#         ls ./qt/
+#       displayName: 'Check qt'
       
-    # Check libra
-    - bash: |
-        cd bin/install/appdir/usr/bin/
-        ls -l
-      displayName: 'Checking ${installDir}/bin'
+#     # Check libra
+#     - bash: |
+#         cd bin/install/appdir/usr/bin/
+#         ls -l
+#       displayName: 'Checking ${installDir}/bin'
       
-    # Build a package
-    - bash: |
-        export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
-        export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        rm -rf regression
-        rm -rf binaries
+#     # Build a package
+#     - bash: |
+#         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
+#         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+#         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+#         rm -rf regression
+#         rm -rf binaries
 
-        #make install
+#         #make install
 
-        # export PKG_FAST_MODE=1
-        ./scripts/captk-pkg
-        ./scripts/captk-pkg
+#         # export PKG_FAST_MODE=1
+#         ./scripts/captk-pkg
+#         ./scripts/captk-pkg
 
-        rm -rf bin
-        rm -rf src
-        rm -rf docs*
+#         rm -rf bin
+#         rm -rf src
+#         rm -rf docs*
 
-        rm -rf scripts
+#         rm -rf scripts
 
-        mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
+#         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
         
-      displayName: 'Set up environment variables for packager and build a package'
+#       displayName: 'Set up environment variables for packager and build a package'
     
-    #- script: |
-    #    cd bin
-    #    export GIT_LFS_SKIP_SMUDGE=1
-    #    git lfs pull --include "data/TestData.zip"
-    #    make tests
-    #  displayName: 'Performing the Tests'
+#     #- script: |
+#     #    cd bin
+#     #    export GIT_LFS_SKIP_SMUDGE=1
+#     #    git lfs pull --include "data/TestData.zip"
+#     #    make tests
+#     #  displayName: 'Performing the Tests'
     
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+#     - task: PublishBuildArtifacts@1
+#       inputs:
+#         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#         artifactName: '$(Build.DefinitionName)_installer_Linux'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
-        downloadPath: '$(System.ArtifactsDirectory)'
+#     - task: DownloadBuildArtifacts@0
+#       inputs:
+#         buildType: 'current'
+#         downloadType: 'single'
+#         artifactName: '$(Build.DefinitionName)_installer_Linux'
+#         downloadPath: '$(System.ArtifactsDirectory)'
     
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
@@ -235,8 +235,9 @@ jobs:
   steps:
     - task: CacheBeta@0
       inputs:
-        path: '/usr/local/Cellar/*, $(Pipeline.Workspace)/bin/*build, $(Pipeline.Workspace)/bin/qt'
-        key: '*'
+        key: $(Build.SourcesDirectory)/bin/qt.zip
+        path: $(Build.SourcesDirectory)/bin
+        rolling : true
       displayName: 'Caching'
 
     - bash: |
