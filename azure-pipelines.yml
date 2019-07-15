@@ -236,35 +236,12 @@ jobs:
     - task: CacheBeta@0
       inputs:
         key: |
-          CaPTk_Tests
-          Confetti
-          DeepMedic
-          DiffusionDerivatives
-          DirectionalityEstimate
-          EGFRvIIIIndexPredictor
-          EGFRvIIISurrogateIndex
-          FeatureExtraction
-          GeodesicSegmentation
-          GeodesicTraining
-          GreedyRegistration
-          MolecularSubtypePredictor
-          PerfusionAlignment
-          PerfusionDerivatives
-          PerfusionPCA
-          PopulationAtlases
-          Preprocessing
-          PseudoProgressionEstimator
-          RecurrenceEstimator
-          SBRT_Analysis
-          SBRT_LungField
-          SBRT_Nodule
-          SurvivalPredictor
-          TrainingModule
-          Utilities
-          WhiteStripe
-        path: $(Build.SourcesDirectory)/bin
-        rolling : true
+        precompiledApps/macos.zip
+        qt_5.12.1/macos.zip
+        path: $(Build.SourcesDirectory)/binaries
+        # rolling : true
       displayName: 'Caching'
+      cacheHitVar: CACHE_RESTORED
 
     - bash: |
         brew install make doxygen llvm
@@ -275,6 +252,7 @@ jobs:
         brew install git-lfs
         git lfs install
       displayName: 'Brew dependency install LFS'
+      condition: ne(variables.CACHE_RESTORED, 'true')
     
     # Pull LFS
     - bash: |
@@ -283,12 +261,13 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/macos.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
+      condition: ne(variables.CACHE_RESTORED, 'true')
 
     # Testing LFS
     - bash: |
         ls -lt binaries/qt_5.12.1/
         ls -lt binaries/precompiledApps/
-      displayName: 'Testing LFS pull'
+      displayName: 'Testing binaries'
 
     # Moving LFS Files
     - bash: |
