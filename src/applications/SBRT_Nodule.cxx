@@ -1,4 +1,5 @@
 #include <time.h>
+#include "CaPTkUtils.h"
 #include "SBRT_Nodule.h"
 
 #include "cbicaCmdParser.h"
@@ -99,7 +100,18 @@ int main(int argc, char** argv)
   int smoothR = 1;
   int minNumFgSeed = 25;
 
-  //
+  if (petName.empty() || ctName.empty() || maskName.empty())
+  {
+	  std::cout << "CT, PET and Mask images need to be loaded for SBRT Nodule calculation." << std::endl;
+	  return 0;
+  }
+  if ((guessImageType(ctName) != CAPTK::ImageModalityType::IMAGE_TYPE_CT) ||
+	  (guessImageType(petName) != CAPTK::ImageModalityType::IMAGE_TYPE_PET))
+  {
+	  std::cout << "Only CT and PET images need to be loaded for SBRT Nodule calculation along with mask." << std::endl;
+	  return 0;
+  }
+
   SBRT_Nodule< float, imageDimension, inputImageNum > segObject;
 
   if (!logName.empty())

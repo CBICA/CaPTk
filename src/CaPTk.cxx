@@ -92,16 +92,21 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
   parser.addOptionalParameter("c", "comparisonMode", cbica::Parameter::BOOLEAN, "true or false", "Enable/Disable comparison mode", "comparison mode during loading");
 
-  parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
-  
+  //parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
+  parser.addExampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt",
+    "Load the input images and ROI with seed points");
+  parser.addApplicationDescription("Entry point for all CaPTk applications");
+
   // check for CWL command coming in through the command line after "CaPTk"
-  if (cmd_inputs.empty() && (argc > 1))
+  if (argc > 1)
   {
     for (auto & file : cwlFiles)
     {
+
       auto cwlFileBase = cbica::getFilenameBase(file);
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
       auto argv_1 = std::string(argv[1]);
+      argv_1 = cbica::getFilenameBase(argv_1, false);
       std::transform(argv_1.begin(), argv_1.end(), argv_1.begin(), ::tolower);
 
       // Check for filename without cwl extension
@@ -162,69 +167,60 @@ int main(int argc, char** argv)
     parser.getParameterValue("c", comparisonMode);
   }
 
+#if defined(__linux__)
+  //auto defaultFormat = QVTKOpenGLWidget::defaultFormat();
+  //// defaultFormat.setSamples(0);
+  //defaultFormat.setVersion(3, 0);
+  //QSurfaceFormat::setDefaultFormat(defaultFormat);
+#else
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWidget::defaultFormat());
-
-#if __APPLE__
-  // this->
-  QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
-  //! Support for High DPI monitors..works on windows but still some menu issues are seen
-  //! Needs to be tested on Linux and Mac
+  // high DPI fixes
+  QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
   QApplication app(argc, argv);
 
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
-  cbica::setEnvironmentVariable("QT_OPENGL", "software");
+  //cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
-  ///// debug
-  //HANDLE hLogFile;
-
-  //hLogFile = CreateFile("MemoryLeaks.txt", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-  //
-  //_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-  //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-  //_CrtSetReportFile(_CRT_WARN, hLogFile);
-  //_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
-  //_CrtSetReportFile(_CRT_ERROR, hLogFile);
-  //_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
-  //_CrtSetReportFile(_CRT_ASSERT, hLogFile);
-  ///// debug
-
-  //vtkOpenGLRenderWindow::SetGlobalMaximumNumberOfMultiSamples(0);
-
-  //auto defaultFormat = QVTKOpenGLWidget::defaultFormat();
-  //defaultFormat.setSamples(0);
-  //QSurfaceFormat::setDefaultFormat(defaultFormat);
-
-  //VTK_MODULE_INIT(vtkRenderingFreeType);
-  
+  // starting the OpenGL version checking 
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
   if (!cbica::isFile(openGLVersionCheckFile))
   {
+    std::cout << "Checking for compatible OpenGL - this will happen only once.\n";
+    std::string msg;
+    bool minimumVersionNotFound = false;
 #if WIN32
     CheckOpenGLVersion checker(hInstance);
 #else
     CheckOpenGLVersion checker;
 #endif
 
-    if (checker.hasVersion_3_2())
-    {
-      std::ofstream myFile;
-      myFile.open(openGLVersionCheckFile.c_str());
-      myFile << "Compatible OpenGL version present.\n";
-      myFile.close();
-    }
-    else
+    if (!checker.hasVersion_3_2())
     {
       std::string msg = "A working 3.2 version of OpenGL was not found in your hardware/software combination; consequently, CaPTk's GUI will not work; all CLIs will work as expected.\n\n";
       msg += "\tOpenGL Version : " + checker.version + "\n";
       msg += "\tOpenGL Renderer: " + checker.renderer + "\n";
       msg += "\tOpenGL Vendor  : " + checker.vendor;
+#if WIN32
       ShowErrorMessage(msg);
+      cbica::sleep(1000);
       return EXIT_FAILURE;
+#else
+      cbica::setEnvironmentVariable("QT_OPENGL", "software");
+      std::cerr << "WARNING: Trying to run CaPTk GUI using software rendering - this might not work on all systems and in those cases, only the CLI will be available.\n";
+#endif
+    }
+    else
+    {
+      std::cout << "Compatible OpenGL was found. This check will not happen again for this machine.\n";
+      std::ofstream myFile;
+      myFile.open(openGLVersionCheckFile.c_str());
+      myFile << "Compatible OpenGL version present.\n";
+      myFile.close();
     }
   }
 
@@ -332,13 +328,13 @@ int main(int argc, char** argv)
   // show the "about" screen in the first run
   if (!cbica::fileExists(tutorialScreen))
   {
-      auto rec = QApplication::desktop()->screenGeometry();
-      // std::cout << "Detected Size: " << rec.width() << "x" << rec.height() << "\n";
+    auto rec = QApplication::desktop()->screenGeometry();
+    // std::cout << "Detected Size: " << rec.width() << "x" << rec.height() << "\n";
     window.about();
   }
-  
 
-  
+
+
 #ifndef _WIN32
   setlocale(LC_NUMERIC, old_locale.c_str());
 #endif

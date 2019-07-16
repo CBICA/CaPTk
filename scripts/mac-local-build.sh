@@ -11,7 +11,7 @@ CAPTK_CMD () {
 # export LDFLAGS=""
 # export CPPFLAGS=""
 
-# git lfs install && git lfs fetch --all
+# #git lfs install && git lfs fetch --all
 
 # ### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
 # echo "Run Dependency Manager"
@@ -25,7 +25,8 @@ CAPTK_CMD () {
 
 # make -j 2
 
-rm CMakeCache.txt
+# rm CMakeCache.txt
+sudo rm -rf CaPTk_*
 
 export CC=/usr/local/opt/llvm/bin/clang
 export CXX=/usr/local/opt/llvm/bin/clang++
@@ -38,13 +39,17 @@ cmake ../
 cmake ../
 make -j 2
 
-rm -rf *.pkg 
-rm -rf _CPack*
-make package
-
 version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
 pkgname="_Installer"
 pkgname="$version$pkgname"
+
+sudo rm -rf CaPTk_*.app/Contents/Resources/bin/*.app
+
+make -j 2
+
+rm -rf *.pkg 
+rm -rf _CPack*
+make package
 
 pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
 

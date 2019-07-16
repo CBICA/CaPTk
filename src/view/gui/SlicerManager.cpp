@@ -3,7 +3,7 @@
 
 \brief Implementation of SlicerManager class
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -142,6 +142,16 @@ void SlicerManager::SetPerfImage(ImageTypeFloat4D::Pointer image)
   UpdateVtkImage();
 }
 
+void SlicerManager::SetOriginalOrigin(ImageTypeFloat3D::PointType origin)
+{
+  std::vector< double > actualOriginVector;
+  actualOriginVector.resize(3);
+  for (size_t i = 0; i < 3; i++)
+  {
+    actualOriginVector[i] = origin[i];
+  }
+  SetOriginalOrigin(actualOriginVector);
+}
 void SlicerManager::SetOriginalOrigin(std::vector< double > origin)
 {
   mOrigin[0] = origin[0];
@@ -263,12 +273,6 @@ void SlicerManager::UpdateSlicer(int num, bool state)
 void SlicerManager::SetSlicerWindow(int i, vtkRenderWindow* RW)
 {
   mSlicers[i]->SetRenderWindow(i, RW);
-}
-void SlicerManager::EraseCompleteNearDrawing()
-{
-}
-void SlicerManager::EraseCompleteFarDrawing()
-{
 }
 
 void SlicerManager::SetInteractorStyleNavigator(int i, vtkInteractorStyle* style)
@@ -607,39 +611,6 @@ void SlicerManager::UpdateInfoOnCursorPosition(int slicer)
 #endif
   {
     //	mSlicers[slicer]->GetInput()
-    value = this->GetScalarComponentAsDouble(mSlicers[slicer]->GetInput(), X, Y, Z);
-
-    emit UpdatePosition(mSlicers[slicer]->GetCursorVisibility(), x, y, z, X, Y, Z, value);
-  }
-}
-void SlicerManager::UpdateInfoOnCurrentPosition(int slicer)
-{
-  double x = mSlicers[slicer]->GetCurrentPosition()[0];
-  double y = mSlicers[slicer]->GetCurrentPosition()[1];
-  double z = mSlicers[slicer]->GetCurrentPosition()[2];
-  double X = (x - mSlicers[slicer]->GetInput()->GetOrigin()[0]) / mSlicers[slicer]->GetInput()->GetSpacing()[0];
-  double Y = (y - mSlicers[slicer]->GetInput()->GetOrigin()[1]) / mSlicers[slicer]->GetInput()->GetSpacing()[1];
-  double Z = (z - mSlicers[slicer]->GetInput()->GetOrigin()[2]) / mSlicers[slicer]->GetInput()->GetSpacing()[2];
-  //
-  // round up pixel values
-  X = ROUND(X);
-  Y = ROUND(Y);
-  Z = ROUND(Z);
-  x = X * mSlicers[slicer]->GetInput()->GetSpacing()[0] + mSlicers[slicer]->GetInput()->GetOrigin()[0];
-  y = Y * mSlicers[slicer]->GetInput()->GetSpacing()[1] + mSlicers[slicer]->GetInput()->GetOrigin()[1];
-  z = Z * mSlicers[slicer]->GetInput()->GetSpacing()[2] + mSlicers[slicer]->GetInput()->GetOrigin()[2];
-  //
-  double value = -VTK_DOUBLE_MAX;
-#if VTK_MAJOR_VERSION <= 5
-  if (X >= mSlicers[slicer]->GetInput()->GetWholeExtent()[0] && X <= mSlicers[slicer]->GetInput()->GetWholeExtent()[1] &&
-    Y >= mSlicers[slicer]->GetInput()->GetWholeExtent()[2] && Y <= mSlicers[slicer]->GetInput()->GetWholeExtent()[3] &&
-    Z >= mSlicers[slicer]->GetInput()->GetWholeExtent()[4] && Z <= mSlicers[slicer]->GetInput()->GetWholeExtent()[5])
-#else
-  if (X >= mSlicers[slicer]->GetInput()->GetExtent()[0] && X <= mSlicers[slicer]->GetInput()->GetExtent()[1] &&
-    Y >= mSlicers[slicer]->GetInput()->GetExtent()[2] && Y <= mSlicers[slicer]->GetInput()->GetExtent()[3] &&
-    Z >= mSlicers[slicer]->GetInput()->GetExtent()[4] && Z <= mSlicers[slicer]->GetInput()->GetExtent()[5])
-#endif
-  {
     value = this->GetScalarComponentAsDouble(mSlicers[slicer]->GetInput(), X, Y, Z);
 
     emit UpdatePosition(mSlicers[slicer]->GetCursorVisibility(), x, y, z, X, Y, Z, value);
@@ -1177,17 +1148,6 @@ void SlicerManager::RemoveLandmark(float x, float y, float z)
 
     }
   }
-}
-std::string SlicerManager::GetFileNameInADicomDirectory(QString directoryname)
-{
-  std::string FirstFileName = "";
-  QDirIterator directoryIterator(directoryname, QStringList() << "*.dcm", QDir::Files, QDirIterator::Subdirectories);
-  while (directoryIterator.hasNext())
-  {
-    FirstFileName = directoryIterator.next().toStdString();
-    break;
-  }
-  return FirstFileName;
 }
 void SlicerManager::ActionAdded(std::vector<PointVal>& points)
 {

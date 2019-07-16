@@ -65,6 +65,7 @@ public:
   QLineEdit	*outputImageName;
   QLabel		*outputImageLabel;
   QPushButton *outputImageButton;
+  QPushButton *mSplitModelDirectoryButton;
 
   QPushButton *confirmButton;
   QPushButton *cancelButton;
@@ -73,6 +74,9 @@ public:
   QRadioButton *mRBFKernel;
   QRadioButton *mCrossValidation;
   QRadioButton *mSplitTrainTest;
+  QRadioButton *mSplitTrain;
+  QRadioButton *mSplitTest;
+
   
   QHBoxLayout * horizontalLayout;
 
@@ -87,6 +91,7 @@ public:
 
   QLineEdit	*cvValue;
   QLineEdit	*ttValue;
+  QLineEdit	*mSplitModelDirectory;
 
   void setupUi(QDialog *fTrainingSimulator)
   {
@@ -165,6 +170,12 @@ public:
     mCrossValidation->setEnabled(true);
     mSplitTrainTest = new QRadioButton("Split TrainTest");
     mSplitTrainTest->setEnabled(true);
+    mSplitTrain = new QRadioButton("Split Train");
+    mSplitTrain->setEnabled(true);
+    mSplitTest = new QRadioButton("Split Test");
+    mSplitTest->setEnabled(true);
+
+
     cvValue = new QLineEdit("");
     cvValue->setObjectName(QString::fromUtf8("cvValue"));
     sizePolicy.setHeightForWidth(cvValue->sizePolicy().hasHeightForWidth());
@@ -176,10 +187,28 @@ public:
     ttValue->setSizePolicy(sizePolicy);
     ttValue->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
+    mSplitModelDirectory = new QLineEdit("");
+    mSplitModelDirectory->setObjectName(QString::fromUtf8("mSplitModelDirectory"));
+    sizePolicy.setHeightForWidth(mSplitModelDirectory->sizePolicy().hasHeightForWidth());
+    mSplitModelDirectory->setSizePolicy(sizePolicy);
+    mSplitModelDirectory->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    mSplitModelDirectoryButton = new QPushButton(configurationGroupBox);
+    mSplitModelDirectoryButton->setObjectName(QString::fromUtf8("mSplitModelDirectoryButton"));
+    mSplitModelDirectoryButton->setText(QString("Browse"));
+
+
+
     configurationGridLayout->addWidget(mCrossValidation, 0, 0, 1, 1);
     configurationGridLayout->addWidget(cvValue, 0, 1, 1, 1);
     configurationGridLayout->addWidget(mSplitTrainTest, 0, 2, 1, 1);
     configurationGridLayout->addWidget(ttValue, 0, 3, 1, 1);
+    configurationGridLayout->addWidget(mSplitTrain, 0, 4, 1, 1);
+    configurationGridLayout->addWidget(mSplitTest, 0, 5, 1, 1);
+    configurationGridLayout->addWidget(mSplitModelDirectory, 0, 6, 1, 1);
+    configurationGridLayout->addWidget(mSplitModelDirectoryButton, 0, 7, 1, 1);
+
+
 
     inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
     inputGridLayout->addWidget(inputImageName, 0, 1, 1, 1);

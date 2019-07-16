@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.0.RC</span>
+   &#160;<span id="projectnumber">1.7.1</span>
    </div>
   </td>
  </tr>
@@ -117,27 +117,28 @@ $(document).ready(function(){initNavTree('Glioblastoma_EGFRvIII.html','');});
 <li>"Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.</li>
 <li>"Output". Select the folder where the trained model will be saved.</li>
 <li>A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).</li>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInput -o C:/EGFRvIIIModel
-</pre></li>
 </ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInput -o C:/EGFRvIIIModel
+</pre></li>
+</ul>
 </li>
 <li>Use Existing Model<ol type="1">
 <li>"Model Directory". Choose the directory of a saved model.</li>
 <li>"Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.</li>
 <li>"Output". Select the output directory where a .csv file with the mutation status for all patients will be saved, and click on 'Confirm'.</li>
 <li>A pop-up window appears displaying the completion of result calculation. The window will also show the detected mutation status of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).</li>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInput -m C:/EGFRvIIIModel -o C:/EGFRvIIIOutput
-</pre></li>
 </ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInput -m C:/EGFRvIIIModel -o C:/EGFRvIIIOutput
+</pre></li>
+</ul>
 </li>
 </ul>
-<p><br />
-</p>
 <hr/>
 <p>Reference:</p>
-<ol>
-<li>
-H. Akbari, S. Bakas, J.M. Pisapia, M.P. Nasrallah, M. Rozycki, M. Martinez-Lage, J.J.D. Morrissette, N. Dahmane, D.M.O’Rourke, C. Davatzikos. "In vivo evaluation of EGFRvIII mutation in primary glioblastoma patients via complex multiparametric MRI signature", Neuro Oncol. 20(8):1068-1079, 2018 </li>
+<ol type="1">
+<li>H. Akbari, S. Bakas, J.M. Pisapia, M.P. Nasrallah, M. Rozycki, M. Martinez-Lage, J.J.D. Morrissette, N. Dahmane, D.M.O’Rourke, C. Davatzikos. "In vivo evaluation of EGFRvIII mutation in primary glioblastoma patients via complex multiparametric MRI signature", Neuro Oncol. 20(8):1068-1079, 2018 </li>
 </ol>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->

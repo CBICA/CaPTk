@@ -64,12 +64,12 @@ shopt -s globstar
 SRC_DIR=`pwd`
 
 # Check to make sure MCR is present
-if [ ! -d "./src/applications/individualApps/libra/MCR" ]; then
-  echo "[!] MCR Not found, installing..."
-  unzip ./binaries/MCR.zip
-  mv MCR ./src/applications/individualApps/libra/
-  echo "[:] Done installing MCR component."
-fi
+#if [ ! -d "./src/applications/individualApps/libra/MCR" ]; then
+  #echo "[!] MCR Not found, installing..."
+  #unzip ./binaries/MCR.zip
+  #mv MCR ./src/applications/individualApps/libra/
+  #echo "[:] Done installing MCR component."
+#fi
 
 # get version of GNU tool - taken from https://stackoverflow.com/a/25845393
 toolversion() {
@@ -98,6 +98,9 @@ RUN_FIXES () {
   # Save the usr dir location
   cd ./appdir/usr/
   USR_DIR=`pwd`
+
+  echo "[:] Deleting the sym-link that was created by CMake to ensure packaging happens properly"
+  rm -rf bin/captk
 
   echo "[:] Adding proper qmake to PATH..."
   export PATH=$PATH:`pwd`/bin/qt/5.12.1/bin
@@ -189,7 +192,7 @@ RUN_DEPLOYQT () {
   # The issue is that linuxdeployqt cannot for the life of it process globstars (**) for some reason, meaning we cannot simply exclude MCR/** and be done,
   # no, we need to manually come up with a glob for EVERY possible directory hierarchy for MCR, leaving us with this.
   # Using continuous release as of 3/5/18, please change to version 5 or 6 if you are having issues with this.
-  ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.8.0-beta/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
+  ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.8.0/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
   # But now we aren't even done. Normally, you could run linuxdeployqt with the -appimage flag which gives us our amazing AppImage file that can be ran anywhere.
   # However, we have started to see a lot of issues revolving around the $LD_LIBRARY_PATH since we want to arbitrarily run applications from the main CaPTk binary.
   # The solution is to wrap the entry of the AppImage according to this guide made by the guy who made AppImages: https://github.com/probonopd/linuxdeployqt/wiki/Custom-wrapper-script-instead-of-AppRun
@@ -312,8 +315,8 @@ mkdir pkg
 mv CaPTk.bin ./pkg/
 # Move cwl in
 cp ./bin/install/appdir/usr/bin/*.cwl ./pkg/
-# Move liscense in
-cp ./licenses/Linux-Combined.txt ./pkg/
+# Move license in
+cp ./LICENSE ./pkg/
 # Move installer in
 cp ./scripts/linux-makeself ./pkg/
 chmod +x ./pkg/linux-makeself

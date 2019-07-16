@@ -47,8 +47,7 @@ bool DicomIOManager<T>::LoadDicom()
     itk::ImageIOBase::IOPixelType       pixelType;
     itk::ImageIOBase::IOComponentType   componentType;
     unsigned int dimensions;
-    imageIO = itk::ImageIOFactory::CreateImageIO(fname.c_str(), itk::ImageIOFactory::ReadMode);
-    bool canRead = imageIO->CanReadFile(fname.c_str());
+	bool canRead = this->CanReadFile(fname.c_str(),imageIO);
     if (canRead && isDicom)
     {
       imageIO->SetFileName(fname);
@@ -284,9 +283,14 @@ bool DicomIOManager<T>::LoadDicom()
 template<class T>
 inline bool DicomIOManager<T>::IsDicom(std::string path)
 {
-  gdcm::Reader reader;
-  reader.SetFileName(path.c_str());
-  return reader.CanRead();
+  return cbica::IsDicom(path);
+}
+
+template<class T>
+inline bool DicomIOManager<T>::CanReadFile(std::string path, itk::ImageIOBase::Pointer &imageIO)
+{
+	imageIO = itk::ImageIOFactory::CreateImageIO(path.c_str(), itk::ImageIOFactory::ReadMode);
+	return imageIO->CanReadFile(path.c_str());
 }
 
 template <class T>

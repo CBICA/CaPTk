@@ -53,11 +53,10 @@ typename TImageType::Pointer HoleFillForSingleAxis(typename TImageType::Pointer 
   permuter->SetOrder(order);
   permuter->Update();
   cbica::WriteImage< TImageType >(permuter->GetOutput(), 
-    "C:/Projects/CaPTk_myFork/data/deepMedic/testing/pred_AAAC_2008.03.30_Segm_permuter" + std::to_string(axisToIterate) + ".nii.gz");
-
+    outputDirectory + "/segm_permuter" + std::to_string(axisToIterate) + ".nii.gz");
 
   using TImageType2D = itk::Image< typename TImageType::PixelType, 2 >;
-  auto extractor = itk::ExtractImageFilter< typename TImageType, TImageType2D >::New();
+  auto extractor = itk::ExtractImageFilter< TImageType, TImageType2D >::New();
   extractor->SetInput(input);
   extractor->SetDirectionCollapseToIdentity(); // This is required.
 
@@ -126,6 +125,14 @@ void algorithmRunner()
   {
     std::cerr << "'model.ckpt' was not found in the directory, please check.\n";
     return;
+  }
+  if (cbica::isFile(modelDirName + "/VERSION.yaml"))
+  {
+    if (!cbica::IsCompatible(modelDirName + "/VERSION.yaml"))
+    {
+      std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+      return;
+    }
   }
   auto filesInDir = cbica::filesInDirectory(modelDirName);
   for (size_t i = 0; i < filesInDir.size(); i++)

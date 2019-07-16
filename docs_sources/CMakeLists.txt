@@ -81,8 +81,11 @@ FOREACH(imgFiles ${ALL_IMAGE_FILES})
   
 ENDFOREACH()
 
-ADD_CUSTOM_TARGET(Documentation ALL ${DOXYGEN_EXECUTABLE} ${DOXY_CONFIG} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/html ${PROJECT_SOURCE_DIR}/docs)
-
+IF( ${CAPTK_UPDATE_DOCS} )
+  ADD_CUSTOM_TARGET(Documentation ALL ${DOXYGEN_EXECUTABLE} ${DOXY_CONFIG} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/html ${PROJECT_SOURCE_DIR}/docs)
+ELSE()
+  ADD_CUSTOM_TARGET(Documentation ALL ${DOXYGEN_EXECUTABLE} ${DOXY_CONFIG} )
+ENDIF()
 # create a windows help .chm file using hhc.exe
 # HTMLHelp DLL must be in path!
 # fallback: use hhw.exe interactively

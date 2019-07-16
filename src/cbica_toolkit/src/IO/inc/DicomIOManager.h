@@ -5,6 +5,21 @@
 #include "itkGDCMSeriesFileNames.h"
 #include <string>
 
+namespace cbica
+{
+  /**
+  \brief Check if the given file is a valid DICOM image or not
+
+  \param fileNameToCheck The input file
+  */
+  inline bool IsDicom(const std::string fileNameToCheck)
+  {
+    gdcm::Reader reader;
+    reader.SetFileName(fileNameToCheck.c_str());
+    return reader.CanRead();
+  }
+}
+
 template <class T>
 class DicomIOManager
 {
@@ -26,7 +41,11 @@ public:
   //! load dicom data
   bool LoadDicom();
 
-  bool IsDicom(std::string path);
+  //! check if file is dicom
+  static bool IsDicom(std::string path);
+
+  //! check if file can be read or not and return the base imageIO if readable
+  static bool CanReadFile(std::string path, itk::ImageIOBase::Pointer &imageIO);
 
   //! helper to write itk image
   //template <class TInputImage>

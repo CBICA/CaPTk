@@ -242,7 +242,15 @@ inline std::string getApplicationPath(std::string appName)
 #ifndef __APPLE__
     return captk_currentApplicationPath + appName_wrap + winExt;
 #else
-  return cbica::normPath(captk_currentApplicationPath + "../Resources/bin/" + appName_wrap);
+  if (appName.compare("itksnap") == 0) {
+    return cbica::replaceString(
+    cbica::normPath(captk_currentApplicationPath + "../Resources/bin/ITK-SNAP.app/Contents/MacOS/ITK-SNAP"), 
+    "/Resources/Resources/", "/Resources/");
+  }
+
+  return cbica::replaceString(
+    cbica::normPath(captk_currentApplicationPath + "../Resources/bin/" + appName_wrap), 
+    "/Resources/Resources/", "/Resources/");
 #endif  
 #else
   if (cbica::isFile(captk_currentApplicationPath + appName_wrap + winExt))
@@ -255,6 +263,10 @@ inline std::string getApplicationPath(std::string appName)
     return individualAppDir + "/" + appName_wrap + winExt;
   }
   individualAppDir = cbica::normPath(std::string(PROJECT_SOURCE_DIR) + "/src/applications/individualApps/" + appName + "/");
+  if (appName.find("deepMedic") != std::string::npos)
+  {
+    individualAppDir = cbica::normPath(std::string(PROJECT_SOURCE_DIR) + "/src/applications/individualApps/deepmedic/");
+  }
   if (cbica::isFile(individualAppDir + "/" + appName_wrap + winExt))
   {
     return individualAppDir + "/" + appName_wrap + winExt;

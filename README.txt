@@ -21,13 +21,17 @@ CaPTk is developed and maintained by the Center for Biomedical Image Computing a
  
 We coordinate our bugs and feature requests via out GitHub page: https://github.com/CBICA/CaPTk/issues
 
+## Frequently Asked Questions (FAQ)
+
+Please see our [FAQ Section](gs_FAQ.html).
+
 ## Supporting Grant
 This work is supported by the NIH/NCI/ITCR* grant U24-CA189523.
 <br>* National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research
 
 ## Disclaimer
 - The software has been designed for research purposes only and has neither been reviewed nor approved for clinical use by the Food and Drug Administration (FDA) or by any other federal/state agency.
-- This code (excluding dependent libraries) is governed by the license provided in http://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
+- This code (excluding dependent libraries) is governed by the license provided in https://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
 - The minimum recommended resolution is 1024x768. We have seen some issues with high DPI screens and bug reports related to it will be appreciated.
 
 ## Contact

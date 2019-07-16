@@ -3,7 +3,7 @@
 
 \brief Implementation of the FeatureReductionClass
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -1037,6 +1037,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   }
   catch (const std::exception& e1)
   {
+    std::cerr << e1.what() << "\n";
   }
   return projectedDatasetTable;
 }
@@ -1421,6 +1422,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   }
   catch (const std::exception& e1)
   {
+    std::cerr << e1.what() << "\n";
   }
 
   return projectedDatasetTable;
@@ -1771,6 +1773,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   }
   catch (const std::exception& e1)
   {
+    std::cerr << e1.what() << "\n";
   }
 
   return projectedDatasetTable;

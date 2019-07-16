@@ -222,29 +222,51 @@ SET( FILENAME_TO_EXTRACT "" )
 SET( DOWNLOAD_URL "" )
 SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/externalApps )
 SET( SOURCE_APPLICATIONS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/individualApps )
+SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
+SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps" )
+SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps" )
 
 IF(WIN32)
   SET( FILENAME_TO_EXTRACT "binaries_windows")
-  SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_windows.zip")
+  SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/windows.zip" )
+  SET( LFS_FILE_TO_CHECK "${LFS_FILE_TO_CHECK}/windows.zip" )
+  #SET( DOWNLOAD_URL "https://1drv.ms/u/s!AgvRZZtXCbbOm_dlcWxY1pELtqFR0A?e=QnQlXw")
+  #MESSAGE( STATUS "Copying ${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_windows.zip to ${FILE_TO_EXTRACT}" )
+  #CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_windows.zip ${FILE_TO_EXTRACT})
 ELSEIF(APPLE)
   SET( FILENAME_TO_EXTRACT "binaries_mac")
-  SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_mac.zip")
+  SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/macos.zip" )
+  SET( LFS_FILE_TO_CHECK "${LFS_FILE_TO_CHECK}/macos.zip" )
+  #SET( DOWNLOAD_URL "https://1drv.ms/u/s!AgvRZZtXCbbOm_dkspbXgX1e0T0e2A?e=B0Hqa9")
+  #CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_macos.zip ${FILE_TO_EXTRACT})
+  #MESSAGE( STATUS "Copying ${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_macos.zip to ${FILE_TO_EXTRACT}" )
 ELSE()
   SET( FILENAME_TO_EXTRACT "binaries_linux")
-  SET( DOWNLOAD_URL "ftp://www.nitrc.org/var/home/groups/captk/downloads/sourceBuild_extra_linux.zip")
+  SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/linux.zip" )
+  SET( LFS_FILE_TO_CHECK "${LFS_FILE_TO_CHECK}/linux.zip" )
+  #SET( DOWNLOAD_URL "https://1drv.ms/u/s!AgvRZZtXCbbOm_djLgf110iob6RgOg?e=2aHBDe")
+  #CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_linux.zip ${FILE_TO_EXTRACT})
+  #MESSAGE( STATUS "Copying ${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_linux.zip to ${FILE_TO_EXTRACT}" )
 ENDIF()
 
 # putting this condition so that the extraction doesn't happen every single time
 IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
 
-  SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
-
   IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
-    # download exe from url
-    MESSAGE( STATUS "Downloading pre-compiled external applications" )
-    FILE(DOWNLOAD "${DOWNLOAD_URL}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
-    IF(NOT STATUS_CODE EQUAL 0)
-      MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
+  
+    # copy from LFS folder
+    IF( EXISTS ${LFS_FILE_TO_CHECK} )
+      CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
+    ENDIF()
+
+    # do not re-download if the LFS fetch worked
+    IF(NOT EXISTS ${FILE_TO_EXTRACT})
+      # download exe from url
+      MESSAGE( STATUS "Downloading pre-compiled external applications" )
+      FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+      IF(NOT STATUS_CODE EQUAL 0)
+        MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
+      ENDIF()
     ENDIF()
   ENDIF()
 
@@ -353,8 +375,23 @@ FOREACH(subdir ${SUBDIRECTORIES})
             #  WORKING_DIRECTORY ${SUBDIRPATH}
             #  RESULT_VARIABLE RESULT_CODE
             #)
+            
           ENDIF()
+        ELSE()
+          FILE(DOWNLOAD "ftp://www.nitrc.org/var/home/groups/captk/downloads/MCR.zip" "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
           
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E unzip ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            WORKING_DIRECTORY ${SUBDIRPATH}
+            RESULT_VARIABLE RESULT_CODE
+          )
+          
+          IF( RESULT_CODE EQUAL 0 )
+            #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            #  WORKING_DIRECTORY ${SUBDIRPATH}
+            #  RESULT_VARIABLE RESULT_CODE
+            #)
+            
+          ENDIF()
         ENDIF()
       ENDIF()
       
@@ -439,9 +476,9 @@ FOREACH(subdir ${SUBDIRECTORIES})
         DESTINATION bin
       )
     ELSEIF (APPLE)
-      SET(ITKSNAP_EXE "${SUBDIRPATH}/ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
+      # SET(ITKSNAP_EXE "${SUBDIRPATH}/ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
         
-      SET(CAPTK_MACOSX_BUNDLE_FILES ${CAPTK_MACOSX_BUNDLE_FILES} ${ITKSNAP_EXE})
+      # SET(CAPTK_MACOSX_BUNDLE_FILES ${CAPTK_MACOSX_BUNDLE_FILES} ${ITKSNAP_EXE})
 
     ELSE()
       INSTALL( FILES ${SUBDIRPATH}/bin/itksnap
@@ -479,27 +516,27 @@ FOREACH(subdir ${SUBDIRECTORIES})
     ENDIF()
   ENDIF()
 
-  IF (${subdir} STREQUAL "theia_source")
-    IF(APPLE)
-      INSTALL(FILES ${SUBDIRPATH}/Theia.py
-        DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      )
-      INSTALL(DIRECTORY ${SUBDIRPATH}/visualizer
-        DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-        #PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      )
-    ELSEIF (NOT WIN32)
-      INSTALL(FILES ${SUBDIRPATH}/Theia.py
-        DESTINATION bin
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      )
-      INSTALL(DIRECTORY ${SUBDIRPATH}/visualizer
-        DESTINATION bin
-        #PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      )
-    ENDIF()
-  ENDIF()
+  #IF (${subdir} STREQUAL "theia_source")
+  #  IF(APPLE)
+  #    INSTALL(FILES ${SUBDIRPATH}/Theia.py
+  #      DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+  #      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #    )
+  #    INSTALL(DIRECTORY ${SUBDIRPATH}/visualizer
+  #      DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+  #      #PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #    )
+  #  ELSEIF (NOT WIN32)
+  #    INSTALL(FILES ${SUBDIRPATH}/Theia.py
+  #      DESTINATION bin
+  #      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #    )
+  #    INSTALL(DIRECTORY ${SUBDIRPATH}/visualizer
+  #      DESTINATION bin
+  #      #PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #    )
+  #  ENDIF()
+  #ENDIF()
 
   IF (BUILD_CONFETTI AND (${subdir} STREQUAL "confetti")) # this will only be present for WIN32
 

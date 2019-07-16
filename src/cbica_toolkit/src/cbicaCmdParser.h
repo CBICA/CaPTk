@@ -3,7 +3,7 @@
 
 \brief Declaration of the CmdParser class
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -212,12 +212,14 @@ namespace cbica
   cbica::CmdParser parser = cbica::CmdParser(argc, argv); // OR,
   //cbica::CmdParser parser = cbica::CmdParser(argc, argv, "exe_name"); // if a different exe_name is desired
 
-  /// The parameters "u", "usage", "h", "help", "v" and "version" are automatically added ///
+  /// The parameters "u"/"usage", "h"/"help" and "v"/"version" are automatically added ///
 
   // add parameters to the variable
   parser.addOptionalParameter("m","marvel", cbica::Parameter::INTEGER, "1 to 10", "I like The Avengers");
   parser.addOptionalParameter("d", "dc", cbica::Parameter::FLOAT, "1.00 to 10.00", "I prefer the Justice League");
   parser.addRequiredParameter("p", "people", cbica::Parameter::STRING, "max length = 1024", "People are always required");
+
+  // note that there should be no spaces for either of the parameter types; they will be removed.
 
   /// checks for required parameters are done internally.
 

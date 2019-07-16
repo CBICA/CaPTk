@@ -54,6 +54,9 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "cbicaITKImageInfo.h"
 
 #include "gdcmMD5.h"
+#include "gdcmReader.h"
+
+#include "DicomIOManager.h"
 
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 //unsigned int RmsCounter = 0;
@@ -356,19 +359,27 @@ namespace cbica
 
   Checks are done based on cbica::ImageInfo class
   */
-  inline bool ImageSanityCheck(const std::string &image1, const std::string &image2)
+  inline bool ImageSanityCheck(const std::string &image1, const std::string &image2, bool FourDImageCheck = false)
   {
     auto imageInfo1 = cbica::ImageInfo(image1);
     auto imageInfo2 = cbica::ImageInfo(image2);
 
-    if (imageInfo1.GetImageDimensions() != imageInfo2.GetImageDimensions())
+    auto dims = imageInfo1.GetImageDimensions();
+    
+    if (FourDImageCheck)
     {
-      std::cout << "The dimensions of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
-      return false;
+      dims = 3; // this is for 4D images only
+    }
+    else // do the check when FourDImageCheck is disabled
+    {
+      if (imageInfo1.GetImageDimensions() != imageInfo2.GetImageDimensions())
+      {
+        std::cout << "The dimensions of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
     }
 
     // check size, spacing and origin information as well
-    auto dims = imageInfo1.GetImageDimensions();
 
     auto imageSize1 = imageInfo1.GetImageSize();
     auto imageSize2 = imageInfo2.GetImageSize();

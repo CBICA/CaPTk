@@ -64,6 +64,9 @@ public:
   QLabel *inputBeforePointsLabel;
   QLineEdit *inputBeforePointsName;
 
+  QLabel *inputEchoTimeLabel;
+  QLineEdit *inputEchoTimeName;
+
 
   QGroupBox *outputGroupBox;
   QGridLayout *outputGridLayout;
@@ -163,6 +166,10 @@ public:
     sizePolicy.setHeightForWidth(inputAfterPointsLabel->sizePolicy().hasHeightForWidth());
     inputAfterPointsLabel->setSizePolicy(sizePolicy);
 
+    inputEchoTimeLabel = new QLabel(inputGroupBox);
+    sizePolicy.setHeightForWidth(inputEchoTimeLabel->sizePolicy().hasHeightForWidth());
+    inputEchoTimeLabel->setSizePolicy(sizePolicy);
+
 
 
     inputBeforePointsName = new QLineEdit("");
@@ -177,6 +184,12 @@ public:
     inputAfterPointsName->setSizePolicy(sizePolicy);
     inputAfterPointsName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
+
+    inputEchoTimeName = new QLineEdit("");
+    inputEchoTimeName->setObjectName(QString::fromUtf8("inputEchoTimeName"));
+    sizePolicy.setHeightForWidth(inputEchoTimeName->sizePolicy().hasHeightForWidth());
+    inputEchoTimeName->setSizePolicy(sizePolicy);
+    inputEchoTimeName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
 
 
@@ -199,6 +212,9 @@ public:
 
     inputGridLayout->addWidget(inputAfterPointsLabel, 4, 0, 1, 1);
     inputGridLayout->addWidget(inputAfterPointsName, 4, 1, 1, 1);
+
+    inputGridLayout->addWidget(inputEchoTimeLabel, 5, 0, 1, 1);
+    inputGridLayout->addWidget(inputEchoTimeName, 5, 1, 1, 1);
 
     // output
     outputGroupBox = new QGroupBox(fPerfusionAlignmentDialog);
@@ -269,6 +285,7 @@ public:
     fPerfusionAlignmentDialog->setWindowTitle(QApplication::translate("fPerfusionAlignmentDialog", "Perfusion Derivatives", 0));
     inputBeforePointsLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "# of Points before drop", 0));
     inputAfterPointsLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "# of Points after drop", 0));
+    inputEchoTimeLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "Echo time (seconds)", 0));
     inputImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "DSC-MRI Image", 0));
     inputT1ceImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "T1 PostContrast Image", 0));
     inputDicomImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "Dicom Image", 0));
