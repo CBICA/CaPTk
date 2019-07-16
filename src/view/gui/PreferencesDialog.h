@@ -16,29 +16,26 @@ class PreferencesDialog : public QDialog
     Q_OBJECT
 
 public:
+	//! constructor/destructor
     explicit PreferencesDialog(QWidget *parent = nullptr);
     ~PreferencesDialog();
 
+	//! getter for font dialog
     QFontDialog* GetFontDialog();
-
-    void SetApplicationFont();
-
-    QString GetColorStyleSheet();
 
 public slots:
 
+	//! list widget item selection change handler
     void OnItemSelectionChanged();
 
 private:
 
+	//! set up UI
 	void SetupUi();
 	void retranslateUi(QDialog *PreferencesDialog);
 
-    //Ui::PreferencesDialog *ui;
+	//! ivars
     QFontDialog *m_FontDialog;
-    QColorDialog *m_ColorDialog;
-    QString m_colorStyleSheetString;
-
 	QVBoxLayout *verticalLayout;
 	QWidget *widget;
 	QHBoxLayout *horizontalLayout;
