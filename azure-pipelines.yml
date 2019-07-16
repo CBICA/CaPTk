@@ -237,7 +237,7 @@ jobs:
       inputs:
         key: |
           macos.zip
-        path: $(Build.SourcesDirectory)/binaries
+        path: $(Build.SourcesDirectory)/binaries/precompiledApps 
         cacheHitVar: CACHE_RESTORED
         # rolling : true
       displayName: 'Caching'
