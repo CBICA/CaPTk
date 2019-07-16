@@ -20,15 +20,6 @@ jobs:
         git lfs install
       displayName: 'Install dependencies'
   
-    - task: CacheBeta@0
-      inputs:
-        key: |
-          $(Build.SourcesDirectory)/precompiledApps/windows.zip |
-          $(Build.SourcesDirectory)/qt_5.12.1/windows.zip
-        path: $(Build.SourcesDirectory)/binaries
-        cacheHitVar: CACHE_RESTORED
-      displayName: Caching LFS
-
     # Pull LFS
     - bash: |
         export GIT_LFS_SKIP_SMUDGE=1
@@ -138,15 +129,6 @@ jobs:
         sudo apt-get install git-lfs
         git lfs install
       displayName: 'Install dependencies from Aptitude'
-
-    - task: CacheBeta@0
-      inputs:
-        key: |
-          $(Build.SourcesDirectory)/precompiledApps/linux.zip |
-          $(Build.SourcesDirectory)/qt_5.12.1/linux.zip
-        path: $(Build.SourcesDirectory)/binaries
-        cacheHitVar: CACHE_RESTORED
-      displayName: Caching LFS
 
     # Pull LFS
     - bash: |
@@ -261,15 +243,6 @@ jobs:
         git lfs install
       displayName: 'Brew dependency install LFS'
     
-    - task: CacheBeta@0
-      inputs:
-        key: |
-          $(Build.SourcesDirectory)/precompiledApps/macos.zip |
-          $(Build.SourcesDirectory)/qt_5.12.1/macos.zip
-        path: $(Build.SourcesDirectory)/binaries
-        cacheHitVar: CACHE_RESTORED
-      displayName: Caching LFS
-
     # Pull LFS
     - bash: |
         export GIT_LFS_SKIP_SMUDGE=1
