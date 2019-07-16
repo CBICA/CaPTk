@@ -237,9 +237,9 @@ jobs:
       inputs:
         key: |
           macos.zip
-        path: $(Build.SourcesDirectory)/binaries/precompiledApps 
+        path: $(Build.SourcesDirectory)/binaries 
         cacheHitVar: CACHE_RESTORED
-        # rolling : true
+        rolling : true
       displayName: 'Caching'
 
     - bash: |
@@ -251,7 +251,7 @@ jobs:
         brew install git-lfs
         git lfs install
       displayName: 'Brew dependency install LFS'
-      condition: ne(variables.CACHE_RESTORED, 'true')
+      # condition: ne(variables.CACHE_RESTORED, 'true')
     
     # Pull LFS
     - bash: |
@@ -260,12 +260,14 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/macos.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED, 'true')
+      # condition: ne(variables.CACHE_RESTORED, 'true')
 
     # Testing LFS
     - bash: |
-        ls -lt binaries/qt_5.12.1/
-        ls -lt binaries/precompiledApps/
+        # ls -lt binaries/qt_5.12.1/
+        # ls -lt binaries/precompiledApps/
+        ls binaries
+        ls binaries/precompiledApps
       displayName: 'Testing binaries'
 
     # Moving LFS Files
