@@ -233,12 +233,16 @@ jobs:
     vmImage: 'MacOS-10.13'
 
   steps:
+    - bash: |
+        mkdir -p cache
+      displayName: 'Make Cache directory'
+
     - task: CacheBeta@0
       inputs:
-        key: |
-          binaries_macos.zip
+        key: 
+          binaries_mac.zip
           qt.zip
-        path: $(Build.SourcesDirectory)/bin 
+        path: $(Build.SourcesDirectory)/cache 
         cacheHitVar: CACHE_RESTORED
         rolling : true
       displayName: 'Caching'
@@ -274,9 +278,9 @@ jobs:
 
     # Moving LFS Files
     - bash: |
-        mkdir bin
+        mkdir -p bin
         cd bin
-        mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+        mv ../binaries/precompiledApps/macos.zip ./binaries_mac.zip
         mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
@@ -389,6 +393,10 @@ jobs:
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
+        zip -rf qt.zip qt
+
+        mv *.zip $(Build.SourcesDirectory)/cache
+
         sudo rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
     
