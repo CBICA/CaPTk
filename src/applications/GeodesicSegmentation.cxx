@@ -298,9 +298,9 @@ int main(int argc, char **argv)
 
     if (parser.isPresent("n"))
     {
-      std::string temp;
+      bool temp;
       parser.getParameterValue("n", temp);
-      if ((temp == "false") || (temp == "0"))
+      if (!temp)
       {
         normalize = false;
       }

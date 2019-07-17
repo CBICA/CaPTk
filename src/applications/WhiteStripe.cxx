@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
   if (parser.isPresent("t1"))
   {
-    int temp;
+    bool temp;
     parser.getParameterValue("t1", temp);
     if (temp != 1)
     {
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
   if (parser.isPresent("sk"))
   {
-    int temp;
+    bool temp;
     parser.getParameterValue("sk", temp);
     if (temp != 1)
     {
