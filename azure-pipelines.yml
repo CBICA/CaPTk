@@ -268,14 +268,14 @@ jobs:
       displayName: 'Pull LFS'
       condition: ne(variables.CACHE_RESTORED, 'true')
 
-    # Testing LFS
-    - bash: |
-        # ls -lt binaries/qt_5.12.1/
-        # ls -lt binaries/precompiledApps/
-        ls binaries
-        ls binaries/precompiledApps
-        ls -lt binaries/qt_5.12.1/
-      displayName: 'Testing binaries'
+    # # Testing LFS
+    # - bash: |
+    #     # ls -lt binaries/qt_5.12.1/
+    #     # ls -lt binaries/precompiledApps/
+    #     ls binaries
+    #     ls binaries/precompiledApps
+    #     ls -lt binaries/qt_5.12.1/
+    #   displayName: 'Testing binaries'
 
     # Moving LFS Files
     - bash: |
@@ -286,6 +286,15 @@ jobs:
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
       condition: ne(variables.CACHE_RESTORED, 'true')
+      
+    - bash: |
+        mkdir -p bin
+        cd bin
+        mv ../cache/binaries_mac.zip ./binaries_mac.zip
+        mv ../cache/qt.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin'
+      condition: (variables.CACHE_RESTORED, 'true')
 
     #- bash: |
     #    rm -rf binaries/*linux*.zip
