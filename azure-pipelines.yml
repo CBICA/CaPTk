@@ -235,6 +235,7 @@ jobs:
   steps:
     - bash: |
         mkdir -p cache
+        mkdir -p bin
       displayName: 'Make Cache directory'
 
     - task: CacheBeta@0
