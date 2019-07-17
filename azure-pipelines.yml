@@ -284,6 +284,7 @@ jobs:
         mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
+      condition: ne(variables.CACHE_RESTORED, 'true')
 
     #- bash: |
     #    rm -rf binaries/*linux*.zip
