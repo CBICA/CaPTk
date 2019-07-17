@@ -236,8 +236,9 @@ jobs:
     - task: CacheBeta@0
       inputs:
         key: |
-          macos.zip
-        path: $(Build.SourcesDirectory)/binaries 
+          binaries_macos.zip
+          qt.zip
+        path: $(Build.SourcesDirectory)/bin 
         cacheHitVar: CACHE_RESTORED
         rolling : true
       displayName: 'Caching'
@@ -251,7 +252,7 @@ jobs:
         brew install git-lfs
         git lfs install
       displayName: 'Brew dependency install LFS'
-      # condition: ne(variables.CACHE_RESTORED, 'true')
+      condition: ne(variables.CACHE_RESTORED, 'true')
     
     # Pull LFS
     - bash: |
