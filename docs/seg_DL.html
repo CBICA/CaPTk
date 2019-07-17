@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.2</span>
    </div>
   </td>
  </tr>
@@ -73,17 +73,15 @@ $(document).ready(function(){initNavTree('seg_DL.html','');});
 <li>[OPTIONAL] Select the appropriate pre-trained model folder (either brain tumor segmentation or skull stripping is available): for custom models, select appropriate option and browse to the model directory.</li>
 <li>Select the output folder.</li>
 <li>Click on 'Applications' -&gt; 'Brain Tumor Segmentation' or 'Skull Stripping'</li>
+<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -o C:/data/output/ -m C:/data/optionalMask.nii.gz -md C:/data/pretrainedModelFolder/
+</pre> <br />
+</li>
 </ol>
-<p>This can also be used from the command line: </p><pre class="fragment">DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -o C:/data/output/ -m C:/data/optionalMask.nii.gz -md C:/data/pretrainedModelFolder/
-</pre><p> <br />
-</p>
 <hr/>
 <p>References:</p>
-<ol>
-<li>
-K.Kamnitsas, C.Ledig, V.F.J.Newcombe, J.P.Simpson, A.D.Kane, D.K.Menon, D.Rueckert, B.Glocker, "Efficient Multi-Scale 3D CNN with Fully Connected CRF for Accurate Brain Lesion Segmentation", Medical Image Analysis, 2016. </li>
-<li>
-K.Kamnitsas, L.Chen, C.Ledig, D.Rueckert, B.Glocker, "Multi-Scale 3D CNNs for segmentation of brain Lesions in multi-modal MRI", in proceeding of ISLES challenge, MICCAI 2015. </li>
+<ol type="1">
+<li>K.Kamnitsas, C.Ledig, V.F.J.Newcombe, J.P.Simpson, A.D.Kane, D.K.Menon, D.Rueckert, B.Glocker, "Efficient Multi-Scale 3D CNN with Fully Connected CRF for Accurate Brain Lesion Segmentation", Medical Image Analysis, 2016.</li>
+<li>K.Kamnitsas, L.Chen, C.Ledig, D.Rueckert, B.Glocker, "Multi-Scale 3D CNNs for segmentation of brain Lesions in multi-modal MRI", in proceeding of ISLES challenge, MICCAI 2015. </li>
 </ol>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->

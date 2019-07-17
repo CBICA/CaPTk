@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.2</span>
    </div>
   </td>
  </tr>
@@ -76,29 +76,29 @@ $(document).ready(function(){initNavTree('Glioblastoma_PHI.html','');});
 <li>A pop-up window appears displaying the results (within &lt;1 minute).</li>
 </ol>
 <ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">EGFRvIIISurrogateIndex.exe -i C:/inputImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -i C:/inputImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
 </pre></li>
 </ul>
-<p><b>Rules for ROI Annotation</b> These two ROIs are used to sample tissue located on the two boundaries of the peritumoaral edema/invasion area: near to and far from the tumor, respectively, and hence to evaluate the heterogeneity or spatial gradient of perfusion signals [1-3].</p>
-<p>The "near" ROI is initially defined in the T1-Gd volume, adjacent to the enhancing part of the tumor, described by hyperintense signal on T1-Gd. The T2-FLAIR volume is then used to revise this ROI in terms of all its voxels being within the peritumoral edematous tissue, described by hyperintense signal on the T2-FLAIR volume.</p>
-<p>The T2-FLAIR volume is also used to define the ROI at the farthest from the tumor but still within the edematous tissue, i.e., the enhancing FLAIR abnormality signal.</p>
-<p>These ROIs are described by lines drawn in multiple slices of each image (T1-Gd and T2-FLAIR) for each subject.</p>
-<p>Please note that during annotation:</p><ul>
+<p><b>RULES FOR ROI ANNOTATION</b>:</p><ul>
+<li>These two ROIs are used to sample tissue located on the two boundaries of the peritumoaral edema/invasion area: near to and far from the tumor, respectively, and hence to evaluate the heterogeneity or spatial gradient of perfusion signals [1-3].</li>
+<li>The "near" ROI is initially defined in the T1-Gd volume, adjacent to the enhancing part of the tumor, described by hyperintense signal on T1-Gd. The T2-FLAIR volume is then used to revise this ROI in terms of all its voxels being within the peritumoral edematous tissue, described by hyperintense signal on the T2-FLAIR volume.</li>
+<li>The T2-FLAIR volume is also used to define the ROI at the farthest from the tumor but still within the edematous tissue, i.e., the enhancing FLAIR abnormality signal.</li>
+<li>These ROIs are described by lines drawn in multiple slices of each image (T1-Gd and T2-FLAIR) for each subject.</li>
+<li>Please note that during annotation:<ul>
 <li>Both ROIs are always within the peritumoral edema/invasion area,</li>
 <li>None of the ROIs are in proximity to the ventricles,</li>
 <li>Both ROIs are representative of infiltration into white matter and not into gray matter,</li>
 <li>The distant ROI is at the farthest possible distance from the enhancing part of the tumor while still within edema, and</li>
 <li>No vessels are involved within any of the defined ROIs, as denoted in the T1-Gd volume.</li>
 </ul>
+</li>
+</ul>
 <hr/>
 <p>References:</p>
-<ol>
-<li>
-S.Bakas, H.Akbari, J.Pisapia, M.Rozycki, D.M.O'Rourke, C.Davatzikos. "Identification of Imaging Signatures of the Epidermal Growth Factor Receptor Variant III (EGFRvIII) in Glioblastoma", Neuro Oncol. 17(Suppl 5):v154, 2015. DOI:10.1093/neuonc/nov225.05 </li>
-<li>
-S.Bakas, Z.A.Binder, H.Akbari, M.Martinez-Lage, M.Rozycki, J.J.D.Morrissette, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "Highly-expressed wild-type EGFR and EGFRvIII mutant glioblastomas have similar MRI signature, consistent with deep peritumoral infiltration", Neuro Oncol. 18(Suppl 6):vi125-vi126, 2016. DOI:10.1093/neuonc/now212.523 </li>
-<li>
-S.Bakas, H.Akbari, J.Pisapia, M.Martinez-Lage, M.Rozycki, S.Rathore, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "In vivo detection of EGFRvIII in glioblastoma via perfusion magnetic resonance imaging signature consistent with deep peritumoral infiltration: the phi-index", Clin Cancer Res. 23(16):4724-4734, 2017. DOI:10.1158/1078-0432.CCR-16-1871 </li>
+<ol type="1">
+<li>S.Bakas, H.Akbari, J.Pisapia, M.Rozycki, D.M.O'Rourke, C.Davatzikos. "Identification of Imaging Signatures of the Epidermal Growth Factor Receptor Variant III (EGFRvIII) in Glioblastoma", Neuro Oncol. 17(Suppl 5):v154, 2015. DOI:10.1093/neuonc/nov225.05</li>
+<li>S.Bakas, Z.A.Binder, H.Akbari, M.Martinez-Lage, M.Rozycki, J.J.D.Morrissette, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "Highly-expressed wild-type EGFR and EGFRvIII mutant glioblastomas have similar MRI signature, consistent with deep peritumoral infiltration", Neuro Oncol. 18(Suppl 6):vi125-vi126, 2016. DOI:10.1093/neuonc/now212.523</li>
+<li>S.Bakas, H.Akbari, J.Pisapia, M.Martinez-Lage, M.Rozycki, S.Rathore, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "In vivo detection of EGFRvIII in glioblastoma via perfusion magnetic resonance imaging signature consistent with deep peritumoral infiltration: the phi-index", Clin Cancer Res. 23(16):4724-4734, 2017. DOI:10.1158/1078-0432.CCR-16-1871 </li>
 </ol>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->

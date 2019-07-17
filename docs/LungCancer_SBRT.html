@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.2</span>
    </div>
   </td>
  </tr>
@@ -78,7 +78,7 @@ $(document).ready(function(){initNavTree('LungCancer_SBRT.html','');});
 <li>The lung field is automatically generated and displayed.</li>
 </ol>
 <ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands: <pre class="fragment">SBRT_LungField.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -o C:/outputBasename -m C:/foregroundMask.nii.gz # optional mask
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands: <pre class="fragment">${CaPTk_InstallDir}/bin/SBRT_LungField.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -o C:/outputBasename -m C:/foregroundMask.nii.gz # optional mask
 </pre></li>
 </ul>
 <p>It will generate the lung field mask image with name C:/outputBasename_lf.nii.gz. The mask image will contain 2 labels, label 3 for foreground and label 2 for lung field.</p>
@@ -91,32 +91,34 @@ $(document).ready(function(){initNavTree('LungCancer_SBRT.html','');});
 <li>The nodule is automatically generated and displayed.</li>
 </ol>
 <ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands: <pre class="fragment">SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:<ul>
+<li>The following command will generate two output images (seed image for nodule segmentation and nodule mask image) with names <code>C:/outputBasename_seeds.nii.gz</code> and <code>C:/outputBasename_segmentation.nii.gz</code>: <pre class="fragment">${CaPTk_InstallDir}/bin/SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename
+</pre></li>
+<li>The following command will generate the nodule mask image with name <code>C:/outputBasename_segmentation.nii.gz</code>: <pre class="fragment">${CaPTk_InstallDir}/bin/SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename -s C:/seedImage.nii.gz
 </pre></li>
 </ul>
-<p>It will generate two output images (seed image for nodule segmentation and nodule mask image) with names C:/outputBasename_seeds.nii.gz and C:/outputBasename_segmentation.nii.gz</p>
-<pre class="fragment">SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename -s C:/seedImage.nii.gz
-</pre><p>It will generate the nodule mask image with name C:/outputBasename_segmentation.nii.gz.</p>
-<pre class="fragment">SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/mask.nii.gz -o C:/outputBasename -s C:/seedImage.nii.gz -l 2 
-</pre><p>"Label_value" indicates the label of lung field in the input mask image, default value is 2.</p>
+</li>
+</ul>
+<p>"Label_value" indicates the label of lung field in the input mask image, default value is 2.</p>
 <p><b>Step 3: Prognostic Modeling</b></p><ol type="1">
 <li>Load the required PET image.</li>
 <li>Load the required nodule mask generated from step 2.</li>
 <li>Launch the modeling step using 'Applications -&gt; <b>Prognostic Modeling</b>' menu.</li>
 <li>The predicted risks for survival and nodal failure are automatically calculated and displayed.[Note: The prediction models were obtained based on PET images with spatial resolution 4mm x 4mm x 4mm.]</li>
 </ol>
-<p>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:</p>
-<pre class="fragment">SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1
-</pre><p>It will calculate and print the predicted risks regarding survival and nodal failure.</p>
-<pre class="fragment">SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1 -o C:/outputFile
-</pre><p>It will calculate and print the predicted risks regarding survival and nodal failure, it will also save the radiomic features used for the prediction into the assigned file.</p>
-<p><br />
-</p>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:<ul>
+<li>The following command will calculate and print the predicted risks regarding survival and nodal failure: <pre class="fragment">${CaPTk_InstallDir}/bin/SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1
+</pre></li>
+<li>The following command will calculate and print the predicted risks regarding survival and nodal failure, it will also save the radiomic features used for the prediction into the assigned file: <pre class="fragment">${CaPTk_InstallDir}/bin/SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1 -o C:/outputFile
+</pre></li>
+</ul>
+</li>
+</ul>
 <hr/>
 <p>Reference:</p>
-<ol>
-<li>
-H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017. </li>
+<ol type="1">
+<li>H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017. </li>
 </ol>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->

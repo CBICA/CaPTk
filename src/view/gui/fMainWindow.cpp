@@ -7317,28 +7317,28 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1CE:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/t1ce.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_t1ce = temp;
       break;
     }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/t1.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_t1 = temp;
       break;
     }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/t2.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_t2 = temp;
       break;
     }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/flair.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_flair = temp;
       break;
     }

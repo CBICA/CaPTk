@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.2</span>
    </div>
   </td>
  </tr>
@@ -119,24 +119,28 @@ $(document).ready(function(){initNavTree('Glioblastoma_Recurrence.html','');});
 </ol>
 </li>
 <li>Infiltration prediction on a batch of subjects.<ul>
-<li>"Train a new model":<ol type="1">
+<li>Train a new model:<ol type="1">
 <li>Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
 <li>Select the "Output Directory" where the trained model should be saved.</li>
 <li>Click on 'Confirm'.</li>
 <li>A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).</li>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around. <pre class="fragment">RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o C:/RecurrenceModel
-</pre></li>
 </ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around. <pre class="fragment">${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o C:/RecurrenceModel
+</pre></li>
+</ul>
 </li>
-<li>"Use existing model":<ol type="1">
+<li>Use existing model:<ol type="1">
 <li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip</a></li>
 <li>Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
 <li>Select the "Output Directory", where the user wants to save the infiltration maps.</li>
 <li>Click on 'Confirm'.</li>
 <li>A pop-up window will confirm the completion of infiltration map calculations (~1.5*NoOfSubjects minutes).</li>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">RecurrenceEstimator.exe -t 1 -i C:/RecurrenceSubjects -o C:/RecurrenceOutput -m C:/RecurrenceModel
-</pre></li>
 </ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 1 -i C:/RecurrenceSubjects -o C:/RecurrenceOutput -m C:/RecurrenceModel
+</pre></li>
+</ul>
 </li>
 </ul>
 </li>
@@ -145,13 +149,10 @@ $(document).ready(function(){initNavTree('Glioblastoma_Recurrence.html','');});
 </p>
 <hr/>
 <p>References:</p>
-<ol>
-<li>
-H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458 </li>
-<li>
-H.Akbari, L.Macyszyn, J.Pisapia, X.Da, M.Attiah, Y.Bi, S.Pal, R.Davuluri, L.Roccograndi, N.Dahmane, R.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos, "Survival Prediction in Glioblastoma Patients Using Multi-parametric MRI Biomarkers and Machine Learning Methods", American Society of Neuroradiology, O-525:2042-2044, 2015. (<a href="http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf">http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf</a>) </li>
-<li>
-H.Akbari, L.Macyszyn, X.Da, M.Bilello, R.L.Wolf, M.Martinez-Lage, G.Biros, M.Alonso-Basanta, D.M.O'Rourke, C.Davatzikos. "Imaging Surrogates of Infiltration Obtained Via Multiparametric Imaging Pattern Analysis Predict Subsequent Location of Recurrence of Glioblastoma", Neurosurgery. 78(4):572-80, 2016. DOI:10.1227/NEU.0000000000001202 </li>
+<ol type="1">
+<li>H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458</li>
+<li>H.Akbari, L.Macyszyn, J.Pisapia, X.Da, M.Attiah, Y.Bi, S.Pal, R.Davuluri, L.Roccograndi, N.Dahmane, R.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos, "Survival Prediction in Glioblastoma Patients Using Multi-parametric MRI Biomarkers and Machine Learning Methods", American Society of Neuroradiology, O-525:2042-2044, 2015. (<a href="http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf">http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf</a>)</li>
+<li>H.Akbari, L.Macyszyn, X.Da, M.Bilello, R.L.Wolf, M.Martinez-Lage, G.Biros, M.Alonso-Basanta, D.M.O'Rourke, C.Davatzikos. "Imaging Surrogates of Infiltration Obtained Via Multiparametric Imaging Pattern Analysis Predict Subsequent Location of Recurrence of Glioblastoma", Neurosurgery. 78(4):572-80, 2016. DOI:10.1227/NEU.0000000000001202 </li>
 </ol>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
