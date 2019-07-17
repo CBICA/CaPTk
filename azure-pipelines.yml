@@ -294,7 +294,7 @@ jobs:
         mv ../cache/qt.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
-      condition: (variables.CACHE_RESTORED, 'true')
+      condition: eq(variables.CACHE_RESTORED, 'true')
 
     #- bash: |
     #    rm -rf binaries/*linux*.zip
