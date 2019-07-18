@@ -28,6 +28,7 @@
 #include "SBRT_LungField.h"
 #include "SBRT_Nodule.h"
 #include "SBRT_Analysis.h"
+#include "PreferencesDialog.h"
 
 #include "cbicaITKSafeImageIO.h"
 #include "itkFlipImageFilter.h"
@@ -230,6 +231,7 @@ fMainWindow::fMainWindow()
   sizePolicy5.setHorizontalStretch(0);
   sizePolicy5.setVerticalStretch(0);
 
+  preferenceDialog = new PreferencesDialog(nullptr);
   infoPanel = new fBottomImageInfoTip(centralwidget);
   imagesPanel = new fImagesPanel(); // New Images Panel
   m_tabWidget->addTab(imagesPanel, QString());
@@ -9562,14 +9564,10 @@ std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(c
 
 void fMainWindow::OnPreferencesMenuClicked()
 {
-	bool ok;
-	QFont font = QFontDialog::getFont(
-		&ok,
-		qApp->font(),
-		this,
-		tr("Pick a font"));
-	if (ok)
+	int result = this->preferenceDialog->exec();
+	if (result == PreferencesDialog::Accepted)
 	{
+		QFont font = this->preferenceDialog->GetFontDialog()->currentFont();
 		qApp->setFont(font);
 	}
 }

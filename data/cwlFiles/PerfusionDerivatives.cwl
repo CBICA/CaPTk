@@ -1,6 +1,6 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
+version: 1.7.2
 baseCommand: PerfusionDerivatives
 inputs:
   input:
