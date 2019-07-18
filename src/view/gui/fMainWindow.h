@@ -80,6 +80,7 @@ class SlicerManager;
 class Slicer;
 class SimpleImageManager;
 class fHelpDialog;
+class PreferencesDialog;
 
 #define USE_PROCESSDIALOG
 
@@ -257,6 +258,7 @@ private:
   fDeepMedicNormalizer deepMedicNormPanel;
   fWhiteStripeObj whiteStripeNormalizer;
   fDirectionalityDialog directionalityEstimator;
+  PreferencesDialog *preferenceDialog;
 
   fDrawingPanel *drawingPanel;
   fFeaturePanel *featurePanel;
