@@ -661,7 +661,16 @@ namespace cbica
   template <class TImageType = ImageTypeFloat3D >
   typename TImageType::Pointer ReadImage(const std::string &fName, const std::string &supportedExtensions = ".nii.gz,.nii,.dcm", const std::string &delimitor = ",")
   {
-    if (cbica::IsDicom(fName))
+    bool dicomDetected = false;
+    if (cbica::isDir(fName))
+    {
+      dicomDetected = true;
+    }
+    else if (cbica::IsDicom(fName))
+    {
+      dicomDetected = true;
+    }
+    if (dicomDetected)
     {
       DicomIOManager< TImageType > dcmSeriesReader;
       dcmSeriesReader.SetDirectoryPath(fName);

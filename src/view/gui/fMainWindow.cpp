@@ -5502,8 +5502,10 @@ void fMainWindow::openDicomImages(QString dir)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
+
   imageManager->SetImage(currentImage);
   imageManager->SetOriginalDirection(currentImage->GetDirection());
+  imageManager->SetOriginalOrigin(currentImage->GetOrigin());
   //imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
   //delete dicomSeriesReader; 
