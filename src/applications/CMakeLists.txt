@@ -392,6 +392,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       )
       INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
         DESTINATION libexec
+        PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
       )
       INSTALL(FILES ${SUBDIRPATH}/MCR/v84/bin/glnxa64/matlab_helper
         DESTINATION libexec/MCR/v84/bin/glnxa64/
