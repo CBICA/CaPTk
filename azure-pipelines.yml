@@ -293,7 +293,7 @@ jobs:
         mv ../cache/binaries_mac.zip ./binaries_mac.zip
         mv ../cache/qt.zip ./qt.zip
         ls -lt
-      displayName: 'Moving LFS files to the appropriate location under bin'
+      displayName: 'Moving Cached files to the appropriate location under bin'
       condition: eq(variables.CACHE_RESTORED, 'true')
 
     #- bash: |
