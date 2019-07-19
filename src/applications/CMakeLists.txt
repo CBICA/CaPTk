@@ -222,7 +222,6 @@ SET( FILENAME_TO_EXTRACT "" )
 SET( DOWNLOAD_URL "" )
 SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/externalApps )
 SET( SOURCE_APPLICATIONS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/individualApps )
-SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
 SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps" )
 SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps" )
 
@@ -248,6 +247,8 @@ ELSE()
   #CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_linux.zip ${FILE_TO_EXTRACT})
   #MESSAGE( STATUS "Copying ${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_linux.zip to ${FILE_TO_EXTRACT}" )
 ENDIF()
+
+SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
 
 # putting this condition so that the extraction doesn't happen every single time
 IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
