@@ -394,7 +394,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
         DESTINATION libexec
       )
       INSTALL(FILES ${SUBDIRPATH}/MCR/v84/bin/glnxa64/matlab_helper
-        DESTINATION libexec/MCR/v84/bin/glnxa64/matlab_helper
+        DESTINATION libexec/MCR/v84/bin/glnxa64/
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
       )
     ENDIF()
