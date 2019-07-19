@@ -239,7 +239,7 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: 
+        key: |
           binaries_mac.zip
           qt.zip
         path: $(Build.SourcesDirectory)/cache 
