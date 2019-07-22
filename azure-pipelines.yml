@@ -281,7 +281,7 @@ jobs:
     - bash: |
         mkdir -p bin
         cd bin
-        mv ../binaries/precompiledApps/macos.zip ./binaries_mac.zip
+        mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
         mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
@@ -290,7 +290,7 @@ jobs:
     - bash: |
         mkdir -p bin
         cd bin
-        mv ../cache/binaries_mac.zip ./binaries_mac.zip
+        mv ../cache/binaries_mac.zip ./binaries_macos.zip
         mv ../cache/qt.zip ./qt.zip
         ls -lt
       displayName: 'Moving Cached files to the appropriate location under bin'
