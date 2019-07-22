@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.2</span>
    </div>
   </td>
  </tr>
@@ -74,14 +74,13 @@ $(document).ready(function(){initNavTree('preprocessing_biasN4.html','');});
 <li>Specify the output filename.</li>
 <li>Click on 'Save'.</li>
 <li>The output image is saved in the specified folder and automatically loaded in CaPTk.</li>
+<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4
+</pre></li>
 </ol>
-<p>This can also be used from the command line: </p><pre class="fragment">[WINDOWS] Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4 
-[LINUX] captk Preprocessing -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4
-</pre><hr/>
+<hr/>
 <p>Reference:</p>
-<ol>
-<li>
-J.G.Sled, A.P.Zijdenbos, A.C.Evans. "A nonparametric method for automatic correction of intensity nonuniformity in MRI data" IEEE Trans Med Imaging. 17(1):87-97, 1998. </li>
+<ol type="1">
+<li>J.G.Sled, A.P.Zijdenbos, A.C.Evans. "A nonparametric method for automatic correction of intensity nonuniformity in MRI data" IEEE Trans Med Imaging. 17(1):87-97, 1998. </li>
 </ol>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->

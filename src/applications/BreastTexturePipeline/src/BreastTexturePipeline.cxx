@@ -83,6 +83,11 @@ int algorithmsRunner()
   {
     std::cout << "Starting pre-processing.\n";
   }
+  if (!cbica::IsDicom(inputImageFile))
+  {
+    std::cerr << "The input image is not a DICOM image; please provide a DICOM image to continue.\n";
+    return EXIT_FAILURE;
+  }
   LibraPreprocess< LibraImageType > preprocessingObj;
   preprocessingObj.SetInputFileName(inputImageFile);
   preprocessingObj.SetResizingFactor(resizingFactor);

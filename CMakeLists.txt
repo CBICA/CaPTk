@@ -11,7 +11,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 1 )
+SET( PROJECT_VERSION_PATCH 2 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -980,7 +980,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     # CPack settings
     IF(WIN32)
-      SET(CPACK_GENERATOR NSIS)
+      SET(CPACK_GENERATOR NSIS64)
       SET(CPACK_SOURCE_GENERATOR "ZIP")
       SET(CPACK_NSIS_DISPLAY_NAME "${PROJECT_NAME}")
       SET(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}")

@@ -218,36 +218,23 @@ SET( CAPTK_APP_LIST_PY_GUI "" )
     #  message(FATAL_ERROR "Failed to unpack LIBRA from ${SUBDIRPATH}/libra.zip to ${SUBDIRPATH}/LIBRA with error ${RESULT_CODE}")
     #ENDIF()
 
-SET( FILENAME_TO_EXTRACT "" )
-SET( DOWNLOAD_URL "" )
 SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/externalApps )
 SET( SOURCE_APPLICATIONS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/individualApps )
-SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
-SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps" )
-SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps" )
+SET( PLATFORM_STRING "" )
 
 IF(WIN32)
-  SET( FILENAME_TO_EXTRACT "binaries_windows")
-  SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/windows.zip" )
-  SET( LFS_FILE_TO_CHECK "${LFS_FILE_TO_CHECK}/windows.zip" )
-  #SET( DOWNLOAD_URL "https://1drv.ms/u/s!AgvRZZtXCbbOm_dlcWxY1pELtqFR0A?e=QnQlXw")
-  #MESSAGE( STATUS "Copying ${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_windows.zip to ${FILE_TO_EXTRACT}" )
-  #CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_windows.zip ${FILE_TO_EXTRACT})
+  SET( PLATFORM_STRING "windows" )
 ELSEIF(APPLE)
-  SET( FILENAME_TO_EXTRACT "binaries_mac.zip")
-  SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/macos.zip" )
-  SET( LFS_FILE_TO_CHECK "${LFS_FILE_TO_CHECK}/macos.zip" )
-  #SET( DOWNLOAD_URL "https://1drv.ms/u/s!AgvRZZtXCbbOm_dkspbXgX1e0T0e2A?e=B0Hqa9")
-  #CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_macos.zip ${FILE_TO_EXTRACT})
-  #MESSAGE( STATUS "Copying ${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_macos.zip to ${FILE_TO_EXTRACT}" )
+  SET( PLATFORM_STRING "macos" )
 ELSE()
-  SET( FILENAME_TO_EXTRACT "binaries_linux")
-  SET( DOWNLOAD_LINK "${DOWNLOAD_LINK}/linux.zip" )
-  SET( LFS_FILE_TO_CHECK "${LFS_FILE_TO_CHECK}/linux.zip" )
-  #SET( DOWNLOAD_URL "https://1drv.ms/u/s!AgvRZZtXCbbOm_djLgf110iob6RgOg?e=2aHBDe")
-  #CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_linux.zip ${FILE_TO_EXTRACT})
-  #MESSAGE( STATUS "Copying ${PROJECT_SOURCE_DIR}/binaries/sourceBuild_extra_linux.zip to ${FILE_TO_EXTRACT}" )
+  SET( PLATFORM_STRING "linux" )
 ENDIF()
+
+SET( FILENAME_TO_EXTRACT "binaries_${PLATFORM_STRING}")
+SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps/${PLATFORM_STRING}.zip" )
+SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
+
+SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
 
 # putting this condition so that the extraction doesn't happen every single time
 IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
@@ -395,6 +382,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
         ENDIF()
       ENDIF()
       
+      INSTALL(CODE "execute_process(COMMAND dos2unix ${SUBDIRPATH}/bin/libra)")
       INSTALL(FILES ${SUBDIRPATH}/bin/libra
         DESTINATION bin
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
@@ -405,7 +393,13 @@ FOREACH(subdir ${SUBDIRECTORIES})
       )
       INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
         DESTINATION libexec
+        #PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
+        USE_SOURCE_PERMISSIONS
       )
+      #INSTALL(FILES ${SUBDIRPATH}/MCR/v84/bin/glnxa64/matlab_helper
+      #  DESTINATION libexec/MCR/v84/bin/glnxa64/
+      #  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      #)
     ENDIF()
 
   ENDIF()

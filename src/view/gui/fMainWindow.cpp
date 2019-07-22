@@ -28,6 +28,7 @@
 #include "SBRT_LungField.h"
 #include "SBRT_Nodule.h"
 #include "SBRT_Analysis.h"
+#include "PreferencesDialog.h"
 
 #include "cbicaITKSafeImageIO.h"
 #include "itkFlipImageFilter.h"
@@ -230,6 +231,7 @@ fMainWindow::fMainWindow()
   sizePolicy5.setHorizontalStretch(0);
   sizePolicy5.setVerticalStretch(0);
 
+  preferenceDialog = new PreferencesDialog(nullptr);
   infoPanel = new fBottomImageInfoTip(centralwidget);
   imagesPanel = new fImagesPanel(); // New Images Panel
   m_tabWidget->addTab(imagesPanel, QString());
@@ -5500,8 +5502,10 @@ void fMainWindow::openDicomImages(QString dir)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
+
   imageManager->SetImage(currentImage);
   imageManager->SetOriginalDirection(currentImage->GetDirection());
+  imageManager->SetOriginalOrigin(currentImage->GetOrigin());
   //imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
   //delete dicomSeriesReader; 
@@ -7315,28 +7319,28 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1CE:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/t1ce.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_t1ce = temp;
       break;
     }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/t1.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_t1 = temp;
       break;
     }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/t2.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_t2 = temp;
       break;
     }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/flair.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_flair = temp;
       break;
     }
@@ -8591,22 +8595,132 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames,
   std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
 {
-  // This happens because the qconcurrent doesn't allow more than 5 function parameters, without std::bind + not sure what else
-  std::vector<std::string> compVector = {
-    fixedFileName,
-    ((registrationMode) ? "true" : "false"),
-    metrics,
-    ((affineMode) ? "true" : "false"),
-    radii,
-    iterations
-  };
+  std::string configPathName;
+  std::string configFileName;
+  std::string extn = ".txt";
 
-  QtConcurrent::run(this, &fMainWindow::RegistrationWorker,
-    compVector,
-    inputFileNames,
-    outputFileNames,
-    matrixFileNames
-  );
+  std::vector<std::string> affineMatrix;
+  std::vector<std::string> outputImage;
+
+  updateProgress(5, "Starting Registration");
+
+  //auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
+
+  if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
+  {
+    ShowErrorMessage("Number of input, matrix and output file names do not match");
+    return;
+  }
+
+  configPathName = itksys::SystemTools::GetFilenamePath(matrixFileNames[0]).c_str();
+  configFileName = configPathName + "/" + itksys::SystemTools::GetFilenameWithoutExtension(matrixFileNames[0]).c_str() + extn;
+
+  for (unsigned int i = 0; i < inputFileNames.size(); i++)
+  {
+    if (!cbica::isFile(inputFileNames[i]))
+    {
+      ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
+      return;
+    }
+    updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
+
+    std::string fixedFileCommand = "-f " + fixedFileName;
+    std::string movingFileCommand = " -i " + inputFileNames[i];
+    std::string affineMatrixCommand = " -t " + matrixFileNames[i];
+    std::string outputCommand = " -o " + outputFileNames[i];
+    std::string metricsCommand = " -m " + metrics;
+    std::string iterationsCommand = " -n " + iterations;
+    QStringList args;
+    args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
+      << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
+      << "-m" << metrics.c_str() << "-n" << iterations.c_str();
+
+    if (metrics == "NCC")
+      args << "-ri" << radii.c_str();
+    if (affineMode)
+    {
+      args << "-a";
+    }
+    else
+    {
+      args << "-r";
+    }
+    std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
+
+    if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
+    {
+      ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
+      return;
+    }
+    else
+    {
+      affineMatrix.push_back(matrixFileNames[i] + ".mat");
+    }
+
+    if (matrixFileNames[i].find("remove") != std::string::npos)
+    {
+      if (cbica::isFile(matrixFileNames[i]))
+      {
+        if (std::remove(matrixFileNames[i].c_str()) == 0)
+        {
+          updateProgress(80, "Cleaning temporary files");
+        }
+      }
+
+      updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
+    }
+
+    updateProgress(100, "Registration Complete.");
+
+    time_t t = std::time(0);
+    long int now = static_cast<long int> (t);
+
+    std::ofstream file;
+    file.open(configFileName.c_str());
+
+    std::string mode;
+
+    if (affineMode == true)
+      mode = "Affine";
+    else
+      mode = "Rigid";
+
+    if (file.is_open())
+    {
+      if (metrics != "NCC") {
+        file << fixedFileName << ","
+          << metrics << ","
+          << mode << ","
+          << iterations << ","
+          << now << "\n";
+      }
+      else {
+        file << fixedFileName << ","
+          << metrics << ","
+          << radii << ","
+          << mode << ","
+          << iterations << ","
+          << now << "\n";
+      }
+    }
+    file.close();
+  }
+  //// This happens because the qconcurrent doesn't allow more than 5 function parameters, without std::bind + not sure what else
+  //std::vector<std::string> compVector = {
+  //  fixedFileName,
+  //  ((registrationMode) ? "true" : "false"),
+  //  metrics,
+  //  ((affineMode) ? "true" : "false"),
+  //  radii,
+  //  iterations
+  //};
+
+  //QtConcurrent::run(this, &fMainWindow::RegistrationWorker,
+  //  compVector,
+  //  inputFileNames,
+  //  outputFileNames,
+  //  matrixFileNames
+  //);
   /*QFuture<void> r = QtConcurrent::run(std::bind(
     this, &fMainWindow::RegistrationWorker,
     fixedFileName, inputFileNames, outputFileNames,
@@ -9562,14 +9676,10 @@ std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(c
 
 void fMainWindow::OnPreferencesMenuClicked()
 {
-	bool ok;
-	QFont font = QFontDialog::getFont(
-		&ok,
-		qApp->font(),
-		this,
-		tr("Pick a font"));
-	if (ok)
+	int result = this->preferenceDialog->exec();
+	if (result == PreferencesDialog::Accepted)
 	{
+		QFont font = this->preferenceDialog->GetFontDialog()->currentFont();
 		qApp->setFont(font);
 	}
 }
