@@ -1050,7 +1050,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ELSEIF(APPLE)
       INCLUDE(ChmodFile)
 
-      # chmodFile(${EXE_NAME} dcm2nii)
+      chmodFile(${EXE_NAME} dcm2nii)
       
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
