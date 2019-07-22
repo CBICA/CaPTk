@@ -42,9 +42,10 @@ jobs:
       displayName: 'Pull LFS'
       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    - bash: |
-        tar xfz bin.zip
-        rm -rf bin.zip
+    - powershell: |
+        Expand-Archive -Path '.\bin.zip' -DestinationPath '.\bin'
+        Remove-Item '.\bin.zip' -Recurse
+
         cd bin
 
         ls -lt
@@ -90,8 +91,8 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile CaPTk'
     
-    - bash: |
-        zip -rf bin.zip bin
+    - powershell: |
+        Compress-Archive -Path '.\bin' -DestinationPath '.\bin.zip'
        
       displayName: 'Zip bin directory'
     #- script: |
@@ -250,7 +251,7 @@ jobs:
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
-        sudo zip -rf bin.zip bin
+        zip -rf bin.zip bin
         rm -rf src
         rm -rf docs*
 
@@ -464,8 +465,8 @@ jobs:
 
         # mv *.zip $(Build.SourcesDirectory)/cache
 
-        cd ../
-        sudo zip -rf bin.zip bin
+        cd $(Build.SourcesDirectory)
+        zip -rf bin.zip bin
 
         # sudo rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
