@@ -19,7 +19,7 @@ jobs:
         mkdir -p bin
       displayName: 'Make bin directory first for caching'
 
-    - task: CacheBeta@2
+    - task: CacheBeta@0
       inputs:
         key: |
           bin.zip
@@ -155,7 +155,7 @@ jobs:
         mkdir -p bin
       displayName: 'Make bin directory first for caching'
 
-    - task: CacheBeta@1
+    - task: CacheBeta@0
       inputs:
         key: |
           bin.zip
