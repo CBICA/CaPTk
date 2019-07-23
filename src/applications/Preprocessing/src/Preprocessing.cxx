@@ -293,6 +293,19 @@ int main(int argc, char** argv)
       parser.getParameterValue("ssT", ssIntensityThreshold);
     }
   }
+  if (parser.isPresent("hi"))
+  {
+    parser.getParameterValue("hi", targetImageFile);
+    requestedAlgorithm = HistogramMatching;
+    if (parser.isPresent("hb"))
+    {
+      parser.getParameterValue("hb", histoMatchBins);
+    }
+    if (parser.isPresent("hq"))
+    {
+      parser.getParameterValue("hq", histoMatchQuantiles);
+    }
+  }
 
   auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
