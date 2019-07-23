@@ -452,7 +452,7 @@ namespace cbica
     //}
 
     // ensure that a new folder is created, if it isn't specified
-    auto fileName_path = cbica::getFilenamePath(fileName);
+    auto fileName_path = cbica::getFilenamePath(fileName, false);
     if (!cbica::isDir(fileName_path))
     {
       cbica::createDir(fileName_path);
