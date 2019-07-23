@@ -1049,7 +1049,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
       # INCLUDE(ChmodFile)
-
       # chmodFile(${EXE_NAME} dcm2nii)
       
       INCLUDE(Macdeployqt)
