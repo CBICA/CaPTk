@@ -22,6 +22,10 @@ chmod +x CaPTk_${Version}.bin
 
 ## macOS
 
+- Install <b>LLVM</b> using [Brew](https://brew.sh/) by running the following command on the terminal:
+\verbatim
+brew install llvm
+\endverbatim
 - Users will download the ".pkg" file from NITRC; double-click the file. 
 - If there is a window saying that this is an "unidentified developer", hit "OK" and then go to "System Preferences > Security and Privacy" and you need to click on "Open Anyway" beside the "CaPTk_$version.pkg" (this will prompt for your password).
 - Double click on the pkg file and click on "Open". This will guide you through the installation screen with licensing information.
