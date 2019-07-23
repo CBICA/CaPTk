@@ -290,6 +290,8 @@ jobs:
 
   steps:
     - bash: |
+        cd src/applications/individualApps/
+        find .
         # mkdir -p cache
         mkdir -p bin
       displayName: 'Make bin directory first for caching'
