@@ -1050,15 +1050,14 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ELSEIF(APPLE)
       INCLUDE(ChmodFile)
 
-      # chmodFile(${EXE_NAME} dcm2nii)
+      #chmodFile(${EXE_NAME} dcm2nii)
       
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
 
-      INCLUDE(MvFile)
-      mvFile(${EXE_NAME} itksnap ITK-SNAP)
-      
-      chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
+      #INCLUDE(MvFile)
+      #mvFile(${EXE_NAME} itksnap ITK-SNAP)
+      #chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
     ENDIF()
 
     INCLUDE(CPack)
