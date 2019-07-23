@@ -91,10 +91,10 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile CaPTk'
     
-    - powershell: |
-        Compress-Archive -Path '.\bin' -DestinationPath '.\bin.zip'
+    # - powershell: |
+    #     Compress-Archive -Path '.\bin' -DestinationPath '.\bin.zip'
        
-      displayName: 'Zip bin directory'
+      # displayName: 'Zip bin directory'
     #- script: |
     #    cd bin
     #    export GIT_LFS_SKIP_SMUDGE=1
@@ -462,6 +462,8 @@ jobs:
         
         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
         zip -rf qt.zip qt
+
+        sudo rm -rf _CPack*
 
         # mv *.zip $(Build.SourcesDirectory)/cache
 
