@@ -1052,8 +1052,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
       # chmodFile(${EXE_NAME} dcm2nii)
       
-      # INCLUDE(Macdeployqt)
-      # macdeployqt(${EXE_NAME})
+      INCLUDE(Macdeployqt)
+      macdeployqt(${EXE_NAME})
 
       # INCLUDE(MvFile)
       # mvFile(${EXE_NAME} itksnap ITK-SNAP)
