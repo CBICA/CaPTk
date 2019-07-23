@@ -67,17 +67,23 @@ $(document).ready(function(){initNavTree('Installation.html','');});
 <div class="textblock"><h2>Windows</h2>
 <p>The Windows executable package contains all required dependencies and does not need administrative privileges for installation. This is a standard MSI installer. If a security prompt comes up, click on "Run Anyway".</p>
 <h2>Linux</h2>
-<p>Linux users have a CaPTk AppImage available called <code>CaPTk_${Version}.bin</code>. To run the AppImage, first open a terminal in the same directory as the .bin file.</p>
-<p>After this, you will want to make sure it is runnable with the following command:</p>
-<pre class="fragment">chmod +x CaPTk_${Version}.bin
-</pre><p>After this, in the same terminal, run the following command to start CaPTk:</p>
-<pre class="fragment">./CaPTk_${Version}.bin
-</pre><h2>macOS</h2>
-<p>Users will download the ".pkg" file from NITRC; double-click the file.</p>
-<p>If there is a window saying that this is an "unidentified developer", hit "OK" and then go to "System Preferences &gt; Security and Privacy" and you need to click on "Open Anyway" beside the "CaPTk_$version.pkg" (this will prompt for your password).</p>
-<p>Double click on the pkg file and click on "Open". This will guide you through the installation screen with licensing information.</p>
-<p>Before installation begins, you may be prompted for your password again.</p>
-<p>You will find CaPTk under your "Applications" folder and you can delete the disk image.</p>
+<ul>
+<li>Linux users have a CaPTk AppImage available called <code>CaPTk_${Version}.bin</code>.</li>
+<li>To run the AppImage, first open a terminal in the same directory as the .bin file.</li>
+<li>You will want to make sure it is runnable as an executable with the following command: <pre class="fragment">chmod +x CaPTk_${Version}.bin
+</pre></li>
+<li>Run the following command to start CaPTk: <pre class="fragment">./CaPTk_${Version}.bin
+</pre></li>
+<li>Follow prompts to install.</li>
+</ul>
+<h2>macOS</h2>
+<ul>
+<li>Users will download the ".pkg" file from NITRC; double-click the file.</li>
+<li>If there is a window saying that this is an "unidentified developer", hit "OK" and then go to "System Preferences &gt; Security and Privacy" and you need to click on "Open Anyway" beside the "CaPTk_$version.pkg" (this will prompt for your password).</li>
+<li>Double click on the pkg file and click on "Open". This will guide you through the installation screen with licensing information.</li>
+<li>Before installation begins, you may be prompted for your password again.</li>
+<li>You will find CaPTk under your "Applications" folder and you can delete the disk image.</li>
+</ul>
 <hr/>
 <hr/>
 <p>  
