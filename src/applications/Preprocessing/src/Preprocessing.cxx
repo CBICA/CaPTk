@@ -35,16 +35,28 @@ float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95,
 ssSigma = 0.5, ssIntensityThreshold = 80;
 int n3Bias_iterations = 50, n3Bias_fittingLevels = 4, n3Bias_otsuBins = 200, ssRadius = 1;
 
-bool uniqueValsSort = true, boundingBoxIsotropic = true;
+bool uniqueValsSort = true, boundingBoxIsotropic = true, debugMode = false;
 
 template< class TImageType >
 int algorithmsRunner()
 {
   if (requestedAlgorithm == HistogramMatching)
   {
+    if (debugMode)
+    {
+      std::cout << "Starting Histogram Matching.\n";
+    }
+
+    auto input = cbica::ReadImage< TImageType >(inputImageFile);
+    auto target = cbica::ReadImage< TImageType >(targetImageFile);
+    if (debugMode)
+    {
+      std::cout << "Finished reading input and target images.\n";
+    }
+
     cbica::WriteImage< TImageType >(
       cbica::GetHistogramMatchedImage< TImageType >(
-        cbica::ReadImage< TImageType >(inputImageFile), cbica::ReadImage< TImageType >(targetImageFile), histoMatchQuantiles, histoMatchBins), outputImageFile);
+        input, target, histoMatchQuantiles, histoMatchBins), outputImageFile);
     std::cout << "Histogram matching completed.\n";
     return EXIT_SUCCESS;
   }
@@ -179,7 +191,12 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
+  parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
   
+  if (parser.isPresent("d"))
+  {
+    parser.getParameterValue("d", debugMode);
+  }
 
   if (parser.isPresent("i"))
   {
