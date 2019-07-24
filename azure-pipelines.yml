@@ -208,6 +208,8 @@ jobs:
         ls
         cd bin
 
+        rm CMakeCache.txt 
+
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
@@ -361,6 +363,8 @@ jobs:
         ls
         cd bin
 
+        rm CMakeCache.txt 
+
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_MAC, 'true')
@@ -388,14 +392,14 @@ jobs:
 
         make -j2
 
+        # rm for llvm
+        rm CMakeCache.txt 
+
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         cd bin
-
-        # rm for llvm
-        rm CMakeCache.txt 
 
         sudo rm -rf CaPTk_*
 
