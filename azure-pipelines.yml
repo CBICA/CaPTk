@@ -83,7 +83,7 @@ jobs:
         ls
         cd bin
 
-        rm CMakeCache.txt 
+        # rm CMakeCache.txt 
 
         ls -lt
       displayName: 'Unzip bin if cached'
@@ -228,7 +228,7 @@ jobs:
         ls
         cd bin
 
-        rm CMakeCache.txt 
+        # rm CMakeCache.txt 
 
         ls -lt
       displayName: 'Unzip bin if cached'
@@ -383,7 +383,7 @@ jobs:
         ls
         cd bin
 
-        rm CMakeCache.txt 
+        # rm CMakeCache.txt 
 
         ls -lt
       displayName: 'Unzip bin if cached'
