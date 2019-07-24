@@ -152,8 +152,8 @@ jobs:
 
   steps:
     - bash: |
-        # mkdir -p cache
-        mkdir -p bin
+        rm -rf bin
+        mkdir bin
       displayName: 'Make bin directory first for caching'
 
     - task: CacheBeta@0
@@ -208,7 +208,7 @@ jobs:
 
         ls -lt
       displayName: 'Unzip bin if cached'
-      condition: eq(variables.CACHE_RESTORED, 'true')
+      condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
@@ -294,7 +294,7 @@ jobs:
     - bash: |
         # cd src/applications/individualApps/
         # find .
-        # mkdir -p cache
+        rm -rf bin
         mkdir bin
       displayName: 'Make bin directory first for caching'
 
@@ -378,14 +378,14 @@ jobs:
 
         make -j2
 
-        # rm for llvm
-        rm CMakeCache.txt 
-
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED, 'true')
 
     - bash: |
         cd bin
+
+        # rm for llvm
+        rm CMakeCache.txt 
 
         sudo rm -rf CaPTk_*
 
