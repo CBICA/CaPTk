@@ -57,6 +57,7 @@ jobs:
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD
         rm -rf installLibs
+        rm -rf qt.zip
       displayName: 'Configure and compile Superbuild'
     
     - script: |
@@ -65,6 +66,7 @@ jobs:
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD
+        rm -rf binaries_windows.zip
       displayName: 'Configure and compile CaPTk'
     
     #- script: |
