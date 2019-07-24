@@ -15,6 +15,9 @@ jobs:
 
   steps:
   
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+
     - script: |
         choco install doxygen.install git-lfs.install
         git lfs install
