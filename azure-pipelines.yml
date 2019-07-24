@@ -253,7 +253,7 @@ jobs:
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
-        zip -rf bin.zip bin
+        zip -r bin.zip bin
         rm -rf src
         rm -rf docs*
 
@@ -466,7 +466,7 @@ jobs:
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
-        zip -rf qt.zip qt
+        zip -r qt.zip qt
 
         sudo rm -rf _CPack*
 
@@ -476,8 +476,10 @@ jobs:
       displayName: 'Package CaPTk (.dmg and .pkg)'
     
     - bash: |
+        ls
         mv bin bin_mac
-        zip -rf bin_mac.zip bin_mac
+        ls
+        zip -r bin_mac.zip bin_mac
       displayName: 'Zipping bin'
     #- script: |
     #    cd bin
