@@ -451,6 +451,13 @@ namespace cbica
     //  return;
     //}
 
+    // ensure that a new folder is created, if it isn't specified
+    auto fileName_path = cbica::getFilenamePath(fileName, false);
+    if (!cbica::isDir(fileName_path))
+    {
+      cbica::createDir(fileName_path);
+    }
+
     auto filter = /*typename*/ itk::CastImageFilter<ComputedImageType, ExpectedImageType>::New();
     filter->SetInput(imageToWrite);
     filter->Update();
@@ -661,7 +668,16 @@ namespace cbica
   template <class TImageType = ImageTypeFloat3D >
   typename TImageType::Pointer ReadImage(const std::string &fName, const std::string &supportedExtensions = ".nii.gz,.nii,.dcm", const std::string &delimitor = ",")
   {
-    if (cbica::IsDicom(fName))
+    bool dicomDetected = false;
+    if (cbica::isDir(fName))
+    {
+      dicomDetected = true;
+    }
+    else if (cbica::IsDicom(fName))
+    {
+      dicomDetected = true;
+    }
+    if (dicomDetected)
     {
       DicomIOManager< TImageType > dcmSeriesReader;
       dcmSeriesReader.SetDirectoryPath(fName);

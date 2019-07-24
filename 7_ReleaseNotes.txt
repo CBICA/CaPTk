@@ -2,8 +2,9 @@
 
 \page ReleaseNotes Changelog: Release Notes
 
-- Better high DPI support for all supported platforms
-- Updated documentation for whole package
+- Preferences dialog added
+- DICOM reading updates
+- DeepMedic runtime fixes
 - Generic bug fixes and improvements 
 
 ## Known Issues
@@ -11,6 +12,12 @@
 https://github.com/CBICA/CaPTk/issues
 
 ## Older Versions
+
+### 1.7.1 
+
+- Better high DPI support for all supported platforms
+- Updated documentation for whole package
+- Generic bug fixes and improvements 
 
 ### 1.7.0
 - New Applications and Tools
