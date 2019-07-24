@@ -53,7 +53,7 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./installLibs" -DCMAKE_CONFIGURATION_TYPES="Release" ..
+        cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_INSTALL_PREFIX="./installLibs" -DCMAKE_CONFIGURATION_TYPES="Release" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD
         rm -rf installLibs
@@ -63,7 +63,7 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON ..
+        cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD
         rm -rf binaries_windows.zip
@@ -82,7 +82,7 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+        cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_INSTALL_PREFIX="./install" ..
         cmake --build . --target PACKAGE --config Release
     
         mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
@@ -147,14 +147,14 @@ jobs:
     # Configure and build superbuild
     - bash: |
         cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+        cmake -A x64 -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
       displayName: 'Configure and compile Superbuild'
 
     # Configure and build CaPTk
     - bash: |
         cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+        cmake -A x64 -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
         #make install/strip
       displayName: 'Configure and compile CaPTk'
@@ -307,8 +307,8 @@ jobs:
     - bash: |
         cd bin
 
-        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+        cmake -A x64 ../ -DCMAKE_INSTALL_PREFIX="./install"
+        cmake -A x64 ../ -DCMAKE_INSTALL_PREFIX="./install"
 
         make -j2
       displayName: 'Configure and compile Superbuild'
@@ -325,8 +325,8 @@ jobs:
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-        cmake ../
-        cmake ../
+        cmake -A x64 ../
+        cmake -A x64 ../
 
         make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
@@ -348,8 +348,8 @@ jobs:
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-        cmake ../
-        cmake ../
+        cmake -A x64 ../
+        cmake -A x64 ../
 
         make -j 2
         sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
