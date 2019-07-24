@@ -1878,8 +1878,8 @@ void FeatureExtraction< TImage >::Update()
           m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator_Image);
           if (m_debug)
           {
-            cbica::WriteImage< TImage >(m_inputImages[i], m_outputPath + "/" + m_modality[i] +
-              "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image + ".nii.gz");
+            cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/" + m_modality[i] +
+              "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image + ".nii.gz"));
           }
         }
         m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator_Mask);
@@ -1892,8 +1892,8 @@ void FeatureExtraction< TImage >::Update()
         }
         if (m_debug)
         {
-          cbica::WriteImage< TImage >(m_Mask, m_outputPath +
-            "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + ".nii.gz");
+          cbica::WriteImage< TImage >(m_Mask, cbica::normPath(m_outputPath +
+            "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + ".nii.gz"));
         }
       }
 
@@ -2832,7 +2832,7 @@ void FeatureExtraction< TImage >::Update()
         for (auto const& entry : m_downscaledFeatureMaps)
         {
           auto currentDownscaledFileName = entry.first;
-          cbica::WriteImage< TImage >(entry.second, m_outputPath + "/" + currentDownscaledFileName + ".nii.gz");
+          cbica::WriteImage< TImage >(entry.second, cbica::normPath(m_outputPath + "/" + currentDownscaledFileName + ".nii.gz"));
         }
       }
 

@@ -204,6 +204,8 @@ jobs:
         rm -rf bin.zip
         cd bin
 
+        rm CMakeCache.txt
+
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED, 'true')
@@ -290,10 +292,10 @@ jobs:
 
   steps:
     - bash: |
-        cd src/applications/individualApps/
-        find .
+        # cd src/applications/individualApps/
+        # find .
         # mkdir -p cache
-        mkdir -p bin
+        mkdir bin
       displayName: 'Make bin directory first for caching'
 
     - task: CacheBeta@0
