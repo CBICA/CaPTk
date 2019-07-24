@@ -28,18 +28,9 @@ jobs:
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
-    # Testing LFS
-    - bash: |
-        ls -lt binaries/qt_5.12.1/
-        ls -lt binaries/precompiledApps/
-      displayName: 'Testing LFS pull'
-
-    #- bash: |
-    #    rm -rf binaries/*mac*.zip
-    #    rm -rf binaries/*linux*.zip
-    #    rm -rf history
-    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-    #  displayName: 'Take the nuclear option'
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+      displayName: 'Disk space check'
 
     # Moving LFS Files
     - bash: |
@@ -56,10 +47,14 @@ jobs:
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./installLibs" -DCMAKE_CONFIGURATION_TYPES="Release" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD
-        rm -rf installLibs
+        #rm -rf installLibs
         rm -rf qt.zip
       displayName: 'Configure and compile Superbuild'
     
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+      displayName: 'Disk space check'
+
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
@@ -69,6 +64,10 @@ jobs:
         rm -rf binaries_windows.zip
       displayName: 'Configure and compile CaPTk'
     
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+      displayName: 'Disk space check'
+
     #- script: |
     #    cd bin
     #    export GIT_LFS_SKIP_SMUDGE=1
@@ -94,6 +93,10 @@ jobs:
         
       displayName: 'Package CaPTk'
     
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+      displayName: 'Disk space check'
+
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
