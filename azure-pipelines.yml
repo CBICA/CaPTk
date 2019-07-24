@@ -5,142 +5,162 @@ trigger:
     - master
 
 jobs:
-# - job: 'WindowsBuild'
-#   displayName: "End-to-end Windows build & package"
-#   timeoutInMinutes: 0
-#   cancelTimeoutInMinutes: 300
+- job: 'WindowsBuild'
+  displayName: "End-to-end Windows build & package"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
 
-#   pool:
-#     vmImage: 'vs2017-win2016'
+  pool:
+    vmImage: 'vs2017-win2016'
 
-#   steps:
-#     - bash: |
-#         # mkdir -p cache
-#         mkdir -p bin
-#       displayName: 'Make bin directory first for caching'
+  steps:
+    - task: CacheBeta@0
+      inputs:
+        key: |
+          bin_windows.tar.gz
+        path: $(Build.SourcesDirectory) 
+        cacheHitVar: CACHE_RESTORED_WINDOWS
+        rolling : true
+      displayName: 'Caching'
 
-#     # - task: CacheBeta@0
-#     #   inputs:
-#     #     key: |
-#     #       bin.zip
-#     #     path: $(Build.SourcesDirectory) 
-#     #     cacheHitVar: CACHE_RESTORED_WINDOWS
-#     #     rolling : true
-#     #   displayName: 'Caching'
+    - bash: |
+        rm -rf bin*
+        mkdir bin
+      displayName: 'Make bin directory'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-#     - script: |
-#         choco install doxygen.install git-lfs.install
-#         git lfs install
-#       displayName: 'Install dependencies'
+    - script: |
+        choco install doxygen.install git-lfs.install
+        git lfs install
+      displayName: 'Install dependencies'
   
-#     # Pull LFS
-#     - bash: |
-#         export GIT_LFS_SKIP_SMUDGE=1
-#         git lfs pull --include "binaries/precompiledApps/windows.zip"
-#         git lfs pull --include "binaries/qt_5.12.1/windows.zip"
-#         #echo "Not doing this until quota is improved on GitHub"
-#       displayName: 'Pull LFS'
-#       # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+    # Pull LFS
+    - bash: |
+        export GIT_LFS_SKIP_SMUDGE=1
+        git lfs pull --include "binaries/precompiledApps/windows.zip"
+        git lfs pull --include "binaries/qt_5.12.1/windows.zip"
+        #echo "Not doing this until quota is improved on GitHub"
+      displayName: 'Pull LFS'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-#     # - powershell: |
-#     #     Expand-Archive -Path '.\bin.zip' -DestinationPath '.\bin'
-#     #     Remove-Item '.\bin.zip' -Recurse
+    # - powershell: |
+    #     Expand-Archive -Path '.\bin.zip' -DestinationPath '.\bin'
+    #     Remove-Item '.\bin.zip' -Recurse
 
-#     #     cd bin
+    #     cd bin
 
-#     #     ls -lt
-#     #   displayName: 'Unzip bin if cached'
-#     #   condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
+    #     ls -lt
+    #   displayName: 'Unzip bin if cached'
+    #   condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-#     # # Testing LFS
-#     # - bash: |
-#     #     ls -lt binaries/qt_5.12.1/
-#     #     ls -lt binaries/precompiledApps/
-#     #   displayName: 'Testing LFS pull'
+    # # Testing LFS
+    # - bash: |
+    #     ls -lt binaries/qt_5.12.1/
+    #     ls -lt binaries/precompiledApps/
+    #   displayName: 'Testing LFS pull'
 
-#     #- bash: |
-#     #    rm -rf binaries/*mac*.zip
-#     #    rm -rf binaries/*linux*.zip
-#     #    rm -rf history
-#     #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-#     #  displayName: 'Take the nuclear option'
+    #- bash: |
+    #    rm -rf binaries/*mac*.zip
+    #    rm -rf binaries/*linux*.zip
+    #    rm -rf history
+    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    #  displayName: 'Take the nuclear option'
 
-#     # Moving LFS Files
-#     - bash: |
-#         cd bin
-#         mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
-#         mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
-#         ls -lt
-#       displayName: 'Moving LFS files to the appropriate location under bin'
-#       # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+    # Moving LFS Files
+    - bash: |
+        cd bin
+        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
+        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-#     - script: |
-#         cd bin
-#         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./installLibs" ..
-#         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-#         cmake --build . --target ALL_BUILD --config Release
-#       displayName: 'Configure and compile Superbuild'
-#       # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+    - bash: |
+        tar xvfz bin_windows.tar.gz
+        rm -rf bin_windows.tar.gz
+        ls
+        mv bin_windows bin
+        ls
+        cd bin
+
+        rm CMakeCache.txt 
+
+        ls -lt
+      displayName: 'Unzip bin if cached'
+      condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
+
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./installLibs" ..
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        cmake --build . --target ALL_BUILD --config Release
+      displayName: 'Configure and compile Superbuild'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
     
-#     - script: |
-#         cd bin
-#         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
-#         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-#         cmake --build . --target ALL_BUILD --config Release
-#       displayName: 'Configure and compile CaPTk'
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        cmake --build . --target ALL_BUILD --config Release
+      displayName: 'Configure and compile CaPTk'
     
-#     # - powershell: |
-#     #     Compress-Archive -Path '.\bin' -DestinationPath '.\bin.zip'
+    - bash: |
+        ls
+        mv bin bin_windows
+        ls
+        # zip -r bin_windows.zip bin_windows
+        tar cvfz bin_windows.tar.gz bin_windows
+      displayName: 'Zipping bin'
        
-#       # displayName: 'Zip bin directory'
-#     #- script: |
-#     #    cd bin
-#     #    export GIT_LFS_SKIP_SMUDGE=1
-#     #    git lfs pull --include "data/TestData.zip"
-#     #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#     #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
-#     #    setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-#     #    cmake --build . --target RUN_TESTS --config Release
-#     #  displayName: 'Performing the Tests'
+      # displayName: 'Zip bin directory'
+    #- script: |
+    #    cd bin
+    #    export GIT_LFS_SKIP_SMUDGE=1
+    #    git lfs pull --include "data/TestData.zip"
+    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
+    #    setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+    #    cmake --build . --target RUN_TESTS --config Release
+    #  displayName: 'Performing the Tests'
     
-#     #- script: |
-#     #    cd bin
-#     #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#     #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-#     #    cmake --build . --target PACKAGE --config Release
-#     #
-#     #    mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
-#     #    
-#     #    cd ../
-#     #    rm -rf *
-#     #    
-#     #  displayName: 'Package CaPTk'
-#     #
-#     #- script: | 
-#     #    cd bin
-#     #    #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#     #    echo "Deleting folders to make space"
-#     #    rm -rf qt
-#     #    rm -rf externalApps
-#     #    rm -rf binaries_windows.zip
-#     #    rm -rf ../src
-#     #    mv CaPTk_*_Installer.exe ../
-#     #    
-#     #  displayName: 'Moving Installer one level up'
-#     #
-#     #- task: PublishBuildArtifacts@1
-#     #  inputs:
-#     #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#     #    artifactName: '$(Build.DefinitionName)_installer_windows'
-#     #
-#     #- task: DownloadBuildArtifacts@0
-#     #  inputs:
-#     #    buildType: 'current'
-#     #    downloadType: 'single'
-#     #    artifactName: '$(Build.DefinitionName)_installer_windows'
-#     #    downloadPath: '$(System.ArtifactsDirectory)'
+    #- script: |
+    #    cd bin
+    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+    #    cmake --build . --target PACKAGE --config Release
+    #
+    #    mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
+    #    
+    #    cd ../
+    #    rm -rf *
+    #    
+    #  displayName: 'Package CaPTk'
+    #
+    #- script: | 
+    #    cd bin
+    #    #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #    echo "Deleting folders to make space"
+    #    rm -rf qt
+    #    rm -rf externalApps
+    #    rm -rf binaries_windows.zip
+    #    rm -rf ../src
+    #    mv CaPTk_*_Installer.exe ../
+    #    
+    #  displayName: 'Moving Installer one level up'
+    #
+    #- task: PublishBuildArtifacts@1
+    #  inputs:
+    #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #    artifactName: '$(Build.DefinitionName)_installer_windows'
+    #
+    #- task: DownloadBuildArtifacts@0
+    #  inputs:
+    #    buildType: 'current'
+    #    downloadType: 'single'
+    #    artifactName: '$(Build.DefinitionName)_installer_windows'
+    #    downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
