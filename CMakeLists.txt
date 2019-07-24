@@ -1048,10 +1048,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-<<<<<<< HEAD
-=======
-
->>>>>>> c430193a578ff7f50f4d86cfcaa7c91135b04380
       INCLUDE(ChmodFile)
       chmodFile(${EXE_NAME} dcm2nii)
       
