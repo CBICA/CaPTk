@@ -84,8 +84,10 @@ jobs:
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" ..
         cmake --build . --target PACKAGE --config Release
+
+        ls -lt *_Installer.*
     
-        mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
         
         cd ../
         rm -rf *
@@ -95,13 +97,13 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_windows'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
     
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_windows'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
         downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'XenialBuild'
@@ -192,7 +194,7 @@ jobs:
 
         rm -rf scripts
 
-        mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
         
       displayName: 'Set up environment variables for packager and build a package'
     
@@ -394,7 +396,7 @@ jobs:
 
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
-        mv *Installer.pkg $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
         zip -rf qt.zip qt
 
         mv *.zip $(Build.SourcesDirectory)/cache
