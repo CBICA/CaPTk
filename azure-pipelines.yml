@@ -151,19 +151,20 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-    - bash: |
-        rm -rf bin
-        mkdir bin
-      displayName: 'Make bin directory first for caching'
-
     - task: CacheBeta@0
       inputs:
         key: |
-          bin.zip
+          bin_linux.tar.gz
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_LINUX
         rolling : true
       displayName: 'Caching'
+
+    - bash: |
+        rm -rf bin*
+        mkdir bin
+      displayName: 'Make bin directory'
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Dependency manager
     - bash: |
@@ -200,11 +201,12 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xfz bin.zip
-        rm -rf bin.zip
+        tar xvfz bin_linux.tar.gz
+        rm -rf bin_linux.tar.gz
+        ls
+        mv bin_linux bin
+        ls
         cd bin
-
-        rm CMakeCache.txt
 
         ls -lt
       displayName: 'Unzip bin if cached'
@@ -253,7 +255,6 @@ jobs:
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
-        zip -r bin.zip bin
         rm -rf src
         rm -rf docs*
 
@@ -262,6 +263,14 @@ jobs:
         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
         
       displayName: 'Set up environment variables for packager and build a package'
+
+    - bash: |
+        ls
+        mv bin bin_linux
+        ls
+        # zip -r bin_linux.zip bin_linux
+        tar cvfz bin_linux.tar.gz bin_linux
+      displayName: 'Zipping bin'
     
     #- script: |
     #    cd bin
@@ -291,21 +300,20 @@ jobs:
     vmImage: 'MacOS-10.13'
 
   steps:
-    - bash: |
-        # cd src/applications/individualApps/
-        # find .
-        rm -rf bin
-        mkdir bin
-      displayName: 'Make bin directory first for caching'
-
     - task: CacheBeta@0
       inputs:
         key: |
-          bin_mac.zip
+          bin_mac.tar.gz
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_MAC
         rolling : true
       displayName: 'Caching'
+
+    - bash: |
+        rm -rf bin*
+        mkdir bin
+      displayName: 'Make bin directory'
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         brew install make doxygen llvm
@@ -346,9 +354,11 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
       
     - bash: |
-        tar xfz bin_mac.zip
-        rm -rf bin_mac.zip
+        tar xvfz bin_mac.tar.gz
+        rm -rf bin_mac.tar.gz
+        ls
         mv bin_mac bin
+        ls
         cd bin
 
         ls -lt
@@ -379,7 +389,7 @@ jobs:
         make -j2
 
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED, 'true')
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         cd bin
@@ -479,7 +489,8 @@ jobs:
         ls
         mv bin bin_mac
         ls
-        zip -r bin_mac.zip bin_mac
+        # zip -r bin_mac.zip bin_mac
+        tar cvfz bin_mac.tar.gz bin_mac
       displayName: 'Zipping bin'
     #- script: |
     #    cd bin
