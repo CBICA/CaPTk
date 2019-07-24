@@ -56,6 +56,7 @@ jobs:
         cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./installLibs" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
+        rm -rf installLibs
       displayName: 'Configure and compile Superbuild'
     
     - script: |
@@ -76,43 +77,31 @@ jobs:
     #    cmake --build . --target RUN_TESTS --config Release
     #  displayName: 'Performing the Tests'
     
-    #- script: |
-    #    cd bin
-    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-    #    cmake --build . --target PACKAGE --config Release
-    #
-    #    mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
-    #    
-    #    cd ../
-    #    rm -rf *
-    #    
-    #  displayName: 'Package CaPTk'
-    #
-    #- script: | 
-    #    cd bin
-    #    #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #    echo "Deleting folders to make space"
-    #    rm -rf qt
-    #    rm -rf externalApps
-    #    rm -rf binaries_windows.zip
-    #    rm -rf ../src
-    #    mv CaPTk_*_Installer.exe ../
-    #    
-    #  displayName: 'Moving Installer one level up'
-    #
-    #- task: PublishBuildArtifacts@1
-    #  inputs:
-    #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #    artifactName: '$(Build.DefinitionName)_installer_windows'
-    #
-    #- task: DownloadBuildArtifacts@0
-    #  inputs:
-    #    buildType: 'current'
-    #    downloadType: 'single'
-    #    artifactName: '$(Build.DefinitionName)_installer_windows'
-    #    downloadPath: '$(System.ArtifactsDirectory)'
-
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
+        cmake --build . --target PACKAGE --config Release
+    
+        mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
+        
+        cd ../
+        rm -rf *
+        
+      displayName: 'Package CaPTk'
+    
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_windows'
+    
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_windows'
+        downloadPath: '$(System.ArtifactsDirectory)'
+        
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
   timeoutInMinutes: 0
