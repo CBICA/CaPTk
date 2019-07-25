@@ -112,6 +112,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
+        rm -rf *proj
 
         cd bin
         zip -r qt.zip qt
@@ -119,6 +120,8 @@ jobs:
 
         rm -rf qt
         rm -rf externalApps
+
+        cd ../
 
         ls
         mv bin bin_windows
