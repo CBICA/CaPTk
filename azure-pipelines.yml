@@ -107,6 +107,10 @@ jobs:
       displayName: 'Configure and compile CaPTk'
     
     - bash: |
+        rm -rf src
+        rm -rf docs*
+
+        rm -rf scripts
         ls
         mv bin bin_windows
         ls
