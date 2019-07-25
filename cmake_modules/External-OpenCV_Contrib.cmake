@@ -9,7 +9,7 @@ ExternalProject_Add(
   PATCH_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
-  INSTALL_COMMAND ""
+  INSTALL_COMMAND cmake -E echo "Skipping install step."
 )
 
 SET( OPENCV_CONTRIB_PATH ${CMAKE_BINARY_DIR}/OpenCV_Contrib CACHE STRING "OpenCV Contrib Dir" )

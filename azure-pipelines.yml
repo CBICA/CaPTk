@@ -50,7 +50,7 @@ jobs:
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./installLibs" -DCMAKE_CONFIGURATION_TYPES="Release" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD
-        #rm -rf installLibs
+        rm -rf installLibs
         rm -rf qt.zip
       displayName: 'Configure and compile Superbuild'
     

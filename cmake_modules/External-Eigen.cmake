@@ -12,7 +12,7 @@ ExternalProject_Add(
   PATCH_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
-  INSTALL_COMMAND ""
+  INSTALL_COMMAND cmake -E echo "Skipping install step."
 )
 
 SET( EIGEN_INCLUDE_DIR ${CMAKE_BINARY_DIR}/Eigen-source CACHE STRING "Eigen Include Dir" )
