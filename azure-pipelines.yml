@@ -19,7 +19,7 @@ jobs:
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
     - script: |
-        choco install doxygen.install git-lfs.install
+        choco install doxygen.install git-lfs.install nsis.install
         git lfs install
       displayName: 'Install dependencies'
   
