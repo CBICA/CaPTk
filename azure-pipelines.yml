@@ -109,8 +109,17 @@ jobs:
     - bash: |
         rm -rf src
         rm -rf docs*
-
+        rm -rf data
+        rm -rf binaries
         rm -rf scripts
+
+        cd bin
+        zip -r qt.zip qt
+        zip -r binaries_windows.zip externalApps
+
+        rm -rf qt
+        rm -rf externalApps
+
         ls
         mv bin bin_windows
         ls
