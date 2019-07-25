@@ -82,7 +82,9 @@ jobs:
         mv bin_windows bin
         ls
         cd bin
-
+        tar xfz qt.zip
+        tar xfz binaries_windows.zip
+        mv binaries_windows externalApps
         # rm CMakeCache.txt 
 
         ls -lt
