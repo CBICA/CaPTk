@@ -986,7 +986,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       SET(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}")
       SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}_${${PROJECT_NAME}_Variant}\\\\${PROJECT_VERSION}")
       SET(CPACK_NSIS_INSTALL_ROOT "C:")
-      SET(CPACK_NSIS_DEFINES "RequestExecutionLevel user ManifestDPIAware true")
+      SET(CPACK_NSIS_DEFINES
+        "RequestExecutionLevel user
+        ManifestDPIAware true"
+      )
+      #SET(CPACK_NSIS_DEFINES "RequestExecutionLevel user ManifestDPIAware true")
       SET(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
       SET(CPACK_NSIS_MUI_ICON "${DATA_DIR}/icons/application/windows/captk.ico")
       SET(CPACK_NSIS_MUI_FINISHPAGE_RUN "${EXE_NAME}.exe")
