@@ -82,8 +82,8 @@ jobs:
         mv bin_windows bin
         ls
         cd bin
-        tar xfz qt.zip
-        tar xfz binaries_windows.zip
+        tar xvfz qt.tar.gz
+        tar xvfz binaries_windows.tar.gz
         mv binaries_windows externalApps
         # rm CMakeCache.txt 
 
@@ -117,8 +117,8 @@ jobs:
         rm -rf *proj
 
         cd bin
-        zip -r qt.zip qt
-        zip -r binaries_windows.zip externalApps
+        tar cvfz qt.tar.gz qt
+        tar cvfz binaries_windows.tar.gz externalApps
 
         rm -rf qt
         rm -rf externalApps
