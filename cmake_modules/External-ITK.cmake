@@ -28,7 +28,7 @@ ExternalProject_Add(
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
   #BUILD_COMMAND ""
-  #INSTALL_COMMAND ""
+  INSTALL_COMMAND cmake -E echo "Skipping install step."
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
     ${ep_common_args}   
