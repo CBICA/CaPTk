@@ -29,7 +29,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 // stuff used in the program
 std::string loggerFile, multipatient_file, patient_id, image_path_string, modalities_string, maskfilename, 
-selected_roi_string, roi_labels_string, param_file, outputdir, offset_String;
+selected_roi_string, roi_labels_string, param_file, outputdir, offset_String, outputFilename;
 
 bool debug = false, debugWrite = false, verticalConc = false, featureMaps = false;
 
@@ -162,6 +162,7 @@ void algorithmRunner()
   features.SetWriteFeatureMaps(featureMaps);
   features.SetNumberOfThreads(threads);
   features.Update();
+  outputFilename = features.GetOutputFile();
 }
 
 //! Calls cbica::stringSplit() by checking for both "," and "|" as deliminators
@@ -203,10 +204,12 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("th", "threads", cbica::Parameter::INTEGER, "1-64", "Number of (OpenMP) threads to run FE on", "Defaults to '1'", "This gets disabled when lattice is disabled");
   parser.addOptionalParameter("of", "offsets", cbica::Parameter::STRING, "none", "Exact offset values to pass on for GLCM & GLRLM", "Should be same as ImageDimension and in the format '<offset1>,<offset2>,<offset3>'", "This is scaled on the basis of the radius", "Example: '-of 0x0x1,0x1x0'");
 
-  parser.addOptionalParameter("d", "debug", cbica::Parameter::BOOLEAN, "true or false", "Whether to print out additional debugging info", "Defaults to '0'");
-  parser.addOptionalParameter("dw", "debugWrite", cbica::Parameter::BOOLEAN, "true or false", "Whether to write intermediate files or not", "Defaults to '0'");
+  parser.addOptionalParameter("d", "debug", cbica::Parameter::BOOLEAN, "True or False", "Whether to print out additional debugging info", "Defaults to '0'");
+  parser.addOptionalParameter("dw", "debugWrite", cbica::Parameter::BOOLEAN, "True or False", "Whether to write intermediate files or not", "Defaults to '0'");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::FILE, "Text file with write access", "Full path to log file to store logging information", "By default, only console output is generated");
   //parser.exampleUsage("FeatureExtraction -n AAAC -i AAAC0_flair_pp_shrunk.nii.gz -p 1_params_default.csv -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -o featExParam1.csv -t FL -r 1 -l ED,NC");
+  parser.addOptionalParameter("ut", "unitTest", cbica::Parameter::FILE, "Path to reference output", "Whether to run unit test or not", "Disabled for batch processing");
+
 
   parser.addApplicationDescription("This does feature calculation based on the input image(s) and mask");
   parser.addExampleUsage("-n AAAC -i AAAC0_flair_pp_shrunk.nii.gz,AAAC0_t1_pp_shrunk.nii.gz  -t FL,T1 -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -r 1,2 -l ED,NC -p 1_params_default.csv -o featExParam1.csv -vc 1", 
@@ -363,6 +366,14 @@ int main(int argc, char** argv)
     parser.getParameterValue("of", offset_String);
   }
 
+  bool unitTestRequested = false;
+  std::string unitTestReferenceFile;
+  if (parser.isPresent("ut"))
+  {
+    unitTestRequested = true;
+    parser.getParameterValue("ut", unitTestReferenceFile);
+  }
+
   if (!patient_id.empty())
   {
     std::cout << "Single subject computation selected.\n";
@@ -449,6 +460,7 @@ int main(int argc, char** argv)
   }
   else // where multi-subject file is passed 
   {
+    unitTestRequested = false; // we are not comparing for batch files
     // cbica::Logging(loggerFile, "Multiple subject computation selected.\n");
     // TBD: use the size of allRows to enable parallel processing, if needed
     std::vector< std::vector < std::string > > allRows; // store the entire data of the CSV file as a vector of columns and rows (vector< rows <cols> >)
@@ -586,6 +598,17 @@ int main(int argc, char** argv)
       }
     } // end of j-loop
 
+  }
+
+  if (unitTestRequested)
+  {
+    if (debug)
+    {
+      std::cout << "Started comparison.\n";
+    }
+    // unitTestReferenceFile
+    // outputFilename
+    
   }
 
   std::cout << "Finished.\n";

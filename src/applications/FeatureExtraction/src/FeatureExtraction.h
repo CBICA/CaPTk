@@ -282,7 +282,7 @@ public:
   */
   void SetOutputFilename(std::string filename)
   {
-    if (cbica::getFilenameExtension(filename, false).empty() || (filename[filename.length() - 1] == '/'))
+    if (cbica::isDir(filename))
     {
       m_outputPath = filename;
       m_outputFile = m_outputPath + "/results.csv";
@@ -322,6 +322,11 @@ public:
       cbica::createDir(m_outputIntermediatePath);
     }
   }
+
+  /**
+  \brief Get the complete output filename
+  */
+  std::string GetOutputFile() { return m_outputFile; };
 
   /**
   \brief Enable vertically-concatenated output in CSV
