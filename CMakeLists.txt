@@ -980,7 +980,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     # CPack settings
     IF(WIN32)
-      SET(CPACK_GENERATOR NSIS)
+      SET(CPACK_GENERATOR NSIS64)
       SET(CPACK_SOURCE_GENERATOR "ZIP")
       SET(CPACK_NSIS_DISPLAY_NAME "${PROJECT_NAME}")
       SET(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}")
@@ -1048,17 +1048,17 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-      INCLUDE(ChmodFile)
 
+      INCLUDE(ChmodFile)
       chmodFile(${EXE_NAME} dcm2nii)
       
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
-
+      
       INCLUDE(MvFile)
       mvFile(${EXE_NAME} itksnap ITK-SNAP)
-      
       chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
+
     ENDIF()
 
     INCLUDE(CPack)
@@ -1099,6 +1099,14 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   # Execute a post install step. Make sure this is the last install command ran!
   IF( CMAKE_HOST_UNIX )
     INSTALL(CODE "EXECUTE_PROCESS(COMMAND ln -sf CaPTk captk WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)")
+  ENDIF()
+
+  IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
+    INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+    INSTALL(FILES src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
+      DESTINATION libexec/MCR/v84/bin/glnxa64/
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    )
   ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )

@@ -234,6 +234,21 @@ jobs:
 
   steps:
     - bash: |
+        mkdir -p cache
+        mkdir -p bin
+      displayName: 'Make Cache directory'
+
+    #- task: CacheBeta@0
+    #  inputs:
+    #    key: |
+    #      binaries_mac.zip
+    #      qt.zip
+    #    path: $(Build.SourcesDirectory)/cache 
+    #    cacheHitVar: CACHE_RESTORED
+    #    rolling : true
+    #  displayName: 'Caching'
+
+    - bash: |
         brew install make doxygen llvm
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
       displayName: 'Brew dependencies'
@@ -242,6 +257,7 @@ jobs:
         brew install git-lfs
         git lfs install
       displayName: 'Brew dependency install LFS'
+      #condition: ne(variables.CACHE_RESTORED, 'true')
     
     # Pull LFS
     - bash: |
@@ -250,21 +266,35 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/macos.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
+      #condition: ne(variables.CACHE_RESTORED, 'true')
 
-    # Testing LFS
-    - bash: |
-        ls -lt binaries/qt_5.12.1/
-        ls -lt binaries/precompiledApps/
-      displayName: 'Testing LFS pull'
+    # # Testing LFS
+    # - bash: |
+    #     # ls -lt binaries/qt_5.12.1/
+    #     # ls -lt binaries/precompiledApps/
+    #     ls binaries
+    #     ls binaries/precompiledApps
+    #     ls -lt binaries/qt_5.12.1/
+    #   displayName: 'Testing binaries'
 
     # Moving LFS Files
     - bash: |
-        mkdir bin
+        mkdir -p bin
         cd bin
         mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
         mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
+      #condition: ne(variables.CACHE_RESTORED, 'true')
+      
+    - bash: |
+        mkdir -p bin
+        cd bin
+        mv ../cache/binaries_mac.zip ./binaries_macos.zip
+        mv ../cache/qt.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving Cached files to the appropriate location under bin'
+      #condition: eq(variables.CACHE_RESTORED, 'true')
 
     #- bash: |
     #    rm -rf binaries/*linux*.zip
@@ -297,6 +327,8 @@ jobs:
 
         rm CMakeCache.txt
 
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CC=/usr/local/opt/llvm/bin/clang
         export CXX=/usr/local/opt/llvm/bin/clang++
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
@@ -372,6 +404,10 @@ jobs:
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
+        zip -rf qt.zip qt
+
+        mv *.zip $(Build.SourcesDirectory)/cache
+
         sudo rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
     

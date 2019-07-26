@@ -28,6 +28,7 @@
 #include "SBRT_LungField.h"
 #include "SBRT_Nodule.h"
 #include "SBRT_Analysis.h"
+#include "PreferencesDialog.h"
 
 #include "cbicaITKSafeImageIO.h"
 #include "itkFlipImageFilter.h"
@@ -230,6 +231,7 @@ fMainWindow::fMainWindow()
   sizePolicy5.setHorizontalStretch(0);
   sizePolicy5.setVerticalStretch(0);
 
+  preferenceDialog = new PreferencesDialog(nullptr);
   infoPanel = new fBottomImageInfoTip(centralwidget);
   imagesPanel = new fImagesPanel(); // New Images Panel
   m_tabWidget->addTab(imagesPanel, QString());
@@ -5500,8 +5502,10 @@ void fMainWindow::openDicomImages(QString dir)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
+
   imageManager->SetImage(currentImage);
   imageManager->SetOriginalDirection(currentImage->GetDirection());
+  imageManager->SetOriginalOrigin(currentImage->GetOrigin());
   //imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
   //delete dicomSeriesReader; 
@@ -7121,9 +7125,10 @@ void fMainWindow::ApplicationTheia()
 
 void fMainWindow::EnableComparisonMode(bool enable)
 {
-  if (mSlicerManagers.size() < 3)
+  int nLoadedData = mSlicerManagers.size();
+  if (nLoadedData < 2 || nLoadedData > 3)
   {
-    ShowMessage("Please load 3 datasets to enable comparison mode", this);
+    ShowMessage("Comparison mode only works with 2 or 3 datasets. Please load 2 or 3 datasets to enable comparison mode", this);
     return;
   }
   if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1)) //! e.g. Mammography images
@@ -7134,7 +7139,7 @@ void fMainWindow::EnableComparisonMode(bool enable)
 
   this->SetComparisonMode(enable);
 
-  if (enable)
+  if (enable) //! enabling comparison
   {
     if (m_ComparisonViewerLeft.GetPointer() == nullptr &&
       m_ComparisonViewerCenter.GetPointer() == nullptr &&
@@ -7144,26 +7149,33 @@ void fMainWindow::EnableComparisonMode(bool enable)
       m_ComparisonViewerCenter = vtkSmartPointer<Slicer>::New();
       m_ComparisonViewerRight = vtkSmartPointer<Slicer>::New();
 
-      m_ComparisonViewerLeft->SetComparisonMode(true);
-      m_ComparisonViewerCenter->SetComparisonMode(true);
-      m_ComparisonViewerRight->SetComparisonMode(true);
+	  for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+	  {
+		  this->GetComparisonViewers()[i]->SetComparisonMode(true);
+	  }
     }
 
-      m_ComparisonViewerLeft->SetImage(mSlicerManagers[0]->GetSlicer(0)->GetImage(), mSlicerManagers[0]->GetSlicer(0)->GetTransform());
-      m_ComparisonViewerCenter->SetImage(mSlicerManagers[1]->GetSlicer(0)->GetImage(), mSlicerManagers[1]->GetSlicer(0)->GetTransform());
-      m_ComparisonViewerRight->SetImage(mSlicerManagers[2]->GetSlicer(0)->GetImage(), mSlicerManagers[2]->GetSlicer(0)->GetTransform());
+	for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+	{
+		this->GetComparisonViewers()[i]->SetImage(mSlicerManagers[i]->GetSlicer(0)->GetImage(), mSlicerManagers[i]->GetSlicer(0)->GetTransform());
+		this->GetComparisonViewers()[i]->SetMask(mSlicerManagers[0]->GetMask());
+		this->GetComparisonViewers()[i]->SetRenderWindow(0, nullptr);
+	}
 
-      m_ComparisonViewerLeft->SetMask(mSlicerManagers[0]->GetMask());
-      m_ComparisonViewerCenter->SetMask(mSlicerManagers[0]->GetMask());
-      m_ComparisonViewerRight->SetMask(mSlicerManagers[0]->GetMask());
+	if (nLoadedData == 2) //! 2 datasets are loaded
+	{
+		m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
 
-      m_ComparisonViewerLeft->SetRenderWindow(0, nullptr);
-      m_ComparisonViewerCenter->SetRenderWindow(0, nullptr);
-      m_ComparisonViewerRight->SetRenderWindow(0, nullptr);
-
-      m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
-      m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
-      m_ComparisonViewerRight->SetRenderWindow(0, SaggitalViewWidget->GetRenderWindow());
+		SaggitalViewWidget->hide();
+		SaggitalViewSlider->hide();
+	}
+	else if (nLoadedData == 3) //! 3 datasets are loaded
+	{
+		m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
+		m_ComparisonViewerRight->SetRenderWindow(0, SaggitalViewWidget->GetRenderWindow());
+	}
 
       for (int i = 0; i < this->GetComparisonViewers().size(); i++)
       {
@@ -7198,9 +7210,10 @@ void fMainWindow::EnableComparisonMode(bool enable)
         comparisonViewers[i]->SetColorLevel(levelSpinBox->value());
       }
 
-      m_ComparisonViewerLeft->SetDisplayMode(true);
-      m_ComparisonViewerCenter->SetDisplayMode(true);
-      m_ComparisonViewerRight->SetDisplayMode(true);
+	  for (int i = 0; i < comparisonViewers.size(); i++)
+	  {
+		  comparisonViewers[i]->SetDisplayMode(true);
+	  }
 
       //!comparison mode connections
       disconnect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
@@ -7211,23 +7224,43 @@ void fMainWindow::EnableComparisonMode(bool enable)
       connect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
       connect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
 
-      m_ComparisonViewerLeft->Render();
-      m_ComparisonViewerCenter->Render();
-      m_ComparisonViewerRight->Render();
+	  for (int i = 0; i < comparisonViewers.size(); i++)
+	  {
+		  comparisonViewers[i]->Render();
+	  }
   }
   else
   {
-    mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
-    mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
-    mSlicerManagers[2]->SetImage(mSlicerManagers[2]->GetITKImage());
+	  //! disabling comparison and coming back to regular mode
 
-    mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
-    mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
-    mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+	  if (nLoadedData == 2) //! 2 datasets loaded
+	  {
+		  mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
+		  mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
 
-    mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
-    mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
-    mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+
+		  SaggitalViewWidget->show();
+		  SaggitalViewSlider->show();
+	  }
+	  else if (nLoadedData == 3) //! 3 datasets loaded
+	  {
+		  mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
+		  mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
+		  mSlicerManagers[2]->SetImage(mSlicerManagers[2]->GetITKImage());
+
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+		  mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+	  }
 
     //!regular mode connections
     connect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
@@ -7238,9 +7271,10 @@ void fMainWindow::EnableComparisonMode(bool enable)
     disconnect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
     disconnect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
 
-    m_ComparisonViewerLeft->SetDisplayMode(false);
-    m_ComparisonViewerCenter->SetDisplayMode(false);
-    m_ComparisonViewerRight->SetDisplayMode(false);
+	for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+	{
+		this->GetComparisonViewers()[i]->SetDisplayMode(false);
+	}
 
     this->InitDisplay();
 
@@ -7431,14 +7465,37 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, bool loadA
 
 void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, const std::string outputDir)
 {
-  std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
+  // first pass on our own stuff
+  auto filesInDir = cbica::filesInDirectory(inputDir);
+  auto readDicomImage = cbica::ReadImage< ImageTypeFloat3D >(inputDir);
 
-  if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
+  bool writeSuccess = false;
+
+  if (!readDicomImage)
   {
-    ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
-    return;
+    std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
+
+    if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
+    {
+      ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
+      return;
+    }
+    else
+    {
+      writeSuccess = true;
+    }
   }
   else
+  {
+    // adding a timestamp to the file to make it unique
+    auto timeStamp = cbica::getCurrentLocalDateAndTime();
+    timeStamp = cbica::replaceString(timeStamp, ":", "");
+    timeStamp = cbica::replaceString(timeStamp, ",", "");
+    cbica::WriteImage< ImageTypeFloat3D >(readDicomImage, outputDir + "/dicom2nifti_" + timeStamp + ".nii.gz");
+    writeSuccess = true;
+  }
+
+  if (writeSuccess)
   {
     ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
   }
@@ -8561,9 +8618,18 @@ std::vector<int> read_int_vector(std::string &nccRadii)
 std::vector<vtkSmartPointer<Slicer>> fMainWindow::GetComparisonViewers()
 {
   std::vector<vtkSmartPointer<Slicer>>comparisonViewers;
-  comparisonViewers.push_back(m_ComparisonViewerLeft);
-  comparisonViewers.push_back(m_ComparisonViewerCenter);
-  comparisonViewers.push_back(m_ComparisonViewerRight);
+  if (mSlicerManagers.size() == 2)
+  {
+	  comparisonViewers.push_back(m_ComparisonViewerLeft);
+	  comparisonViewers.push_back(m_ComparisonViewerCenter);
+  }
+  else if (mSlicerManagers.size() == 3)
+  {
+	  comparisonViewers.push_back(m_ComparisonViewerLeft);
+	  comparisonViewers.push_back(m_ComparisonViewerCenter);
+	  comparisonViewers.push_back(m_ComparisonViewerRight);
+  }
+  
   return comparisonViewers;
 }
 
@@ -8591,22 +8657,132 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames,
   std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
 {
-  // This happens because the qconcurrent doesn't allow more than 5 function parameters, without std::bind + not sure what else
-  std::vector<std::string> compVector = {
-    fixedFileName,
-    ((registrationMode) ? "true" : "false"),
-    metrics,
-    ((affineMode) ? "true" : "false"),
-    radii,
-    iterations
-  };
+  std::string configPathName;
+  std::string configFileName;
+  std::string extn = ".txt";
 
-  QtConcurrent::run(this, &fMainWindow::RegistrationWorker,
-    compVector,
-    inputFileNames,
-    outputFileNames,
-    matrixFileNames
-  );
+  std::vector<std::string> affineMatrix;
+  std::vector<std::string> outputImage;
+
+  updateProgress(5, "Starting Registration");
+
+  //auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
+
+  if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
+  {
+    ShowErrorMessage("Number of input, matrix and output file names do not match");
+    return;
+  }
+
+  configPathName = itksys::SystemTools::GetFilenamePath(matrixFileNames[0]).c_str();
+  configFileName = configPathName + "/" + itksys::SystemTools::GetFilenameWithoutExtension(matrixFileNames[0]).c_str() + extn;
+
+  for (unsigned int i = 0; i < inputFileNames.size(); i++)
+  {
+    if (!cbica::isFile(inputFileNames[i]))
+    {
+      ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
+      return;
+    }
+    updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
+
+    std::string fixedFileCommand = "-f " + fixedFileName;
+    std::string movingFileCommand = " -i " + inputFileNames[i];
+    std::string affineMatrixCommand = " -t " + matrixFileNames[i];
+    std::string outputCommand = " -o " + outputFileNames[i];
+    std::string metricsCommand = " -m " + metrics;
+    std::string iterationsCommand = " -n " + iterations;
+    QStringList args;
+    args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
+      << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
+      << "-m" << metrics.c_str() << "-n" << iterations.c_str();
+
+    if (metrics == "NCC")
+      args << "-ri" << radii.c_str();
+    if (affineMode)
+    {
+      args << "-a";
+    }
+    else
+    {
+      args << "-r";
+    }
+    std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
+
+    if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
+    {
+      ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
+      return;
+    }
+    else
+    {
+      affineMatrix.push_back(matrixFileNames[i] + ".mat");
+    }
+
+    if (matrixFileNames[i].find("remove") != std::string::npos)
+    {
+      if (cbica::isFile(matrixFileNames[i]))
+      {
+        if (std::remove(matrixFileNames[i].c_str()) == 0)
+        {
+          updateProgress(80, "Cleaning temporary files");
+        }
+      }
+
+      updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
+    }
+
+    updateProgress(100, "Registration Complete.");
+
+    time_t t = std::time(0);
+    long int now = static_cast<long int> (t);
+
+    std::ofstream file;
+    file.open(configFileName.c_str());
+
+    std::string mode;
+
+    if (affineMode == true)
+      mode = "Affine";
+    else
+      mode = "Rigid";
+
+    if (file.is_open())
+    {
+      if (metrics != "NCC") {
+        file << fixedFileName << ","
+          << metrics << ","
+          << mode << ","
+          << iterations << ","
+          << now << "\n";
+      }
+      else {
+        file << fixedFileName << ","
+          << metrics << ","
+          << radii << ","
+          << mode << ","
+          << iterations << ","
+          << now << "\n";
+      }
+    }
+    file.close();
+  }
+  //// This happens because the qconcurrent doesn't allow more than 5 function parameters, without std::bind + not sure what else
+  //std::vector<std::string> compVector = {
+  //  fixedFileName,
+  //  ((registrationMode) ? "true" : "false"),
+  //  metrics,
+  //  ((affineMode) ? "true" : "false"),
+  //  radii,
+  //  iterations
+  //};
+
+  //QtConcurrent::run(this, &fMainWindow::RegistrationWorker,
+  //  compVector,
+  //  inputFileNames,
+  //  outputFileNames,
+  //  matrixFileNames
+  //);
   /*QFuture<void> r = QtConcurrent::run(std::bind(
     this, &fMainWindow::RegistrationWorker,
     fixedFileName, inputFileNames, outputFileNames,
@@ -9562,14 +9738,10 @@ std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(c
 
 void fMainWindow::OnPreferencesMenuClicked()
 {
-	bool ok;
-	QFont font = QFontDialog::getFont(
-		&ok,
-		qApp->font(),
-		this,
-		tr("Pick a font"));
-	if (ok)
+	int result = this->preferenceDialog->exec();
+	if (result == PreferencesDialog::Accepted)
 	{
+		QFont font = this->preferenceDialog->GetFontDialog()->currentFont();
 		qApp->setFont(font);
 	}
 }
