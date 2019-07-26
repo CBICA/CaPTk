@@ -22,12 +22,6 @@ jobs:
         cacheHitVar: CACHE_RESTORED_WINDOWS
         rolling : true
       displayName: 'Caching'
-
-    - bash: |
-        rm -rf bin*
-        mkdir bin
-      displayName: 'Make bin directory'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
   
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
@@ -52,6 +46,7 @@ jobs:
 
     # Moving LFS Files
     - bash: |
+        mkdir bin
         cd bin
         mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
         mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
@@ -189,12 +184,6 @@ jobs:
 #         rolling : true
 #       displayName: 'Caching'
 
-#     - bash: |
-#         rm -rf bin*
-#         mkdir bin
-#       displayName: 'Make bin directory'
-#       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
-
 #     # Dependency manager
 #     - bash: |
 #         sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
@@ -222,6 +211,7 @@ jobs:
 
 #     # Moving LFS Files
 #     - bash: |
+#         mkdir bin
 #         cd bin
 #         mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
 #         mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
@@ -341,12 +331,6 @@ jobs:
 #       displayName: 'Caching'
 
 #     - bash: |
-#         rm -rf bin*
-#         mkdir bin
-#       displayName: 'Make bin directory'
-#       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
-
-#     - bash: |
 #         brew install make doxygen llvm
 #         #brew install caskroom/cask/mactex # latex is not used for documentation right now
 #       displayName: 'Brew dependencies'
@@ -377,6 +361,7 @@ jobs:
 
 #     # Moving LFS Files
 #     - bash: |
+#         mkdir bin
 #         cd bin
 #         mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
 #         mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
