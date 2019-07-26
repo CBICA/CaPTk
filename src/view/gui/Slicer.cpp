@@ -870,6 +870,9 @@ double Slicer::GetScalarComponentAsDouble(vtkSmartPointer< vtkImageData > image,
 
 void Slicer::Render()
 {
+	if (this->GetInput() == nullptr)
+		return;
+
   if (pdmA->GetVisibility()) {
     double bX0 = this->GetImageActor()->GetDisplayExtent()[0];
     double bX1 = this->GetImageActor()->GetDisplayExtent()[1];

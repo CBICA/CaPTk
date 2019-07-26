@@ -17,7 +17,7 @@ ExternalProject_Add(
   BINARY_DIR OpenCV-build
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
-  #INSTALL_COMMAND ""
+  INSTALL_COMMAND cmake -E echo "Skipping install step."
   #BUILD_COMMAND ""
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
