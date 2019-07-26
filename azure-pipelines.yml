@@ -120,10 +120,9 @@ jobs:
         tar cvfz bin_windows_Beta_0.tar.gz bin_windows_Beta_0
       displayName: 'Zipping bin'
        
-      # displayName: 'Zip bin directory'
-    - powershell: |
-        wmic logicaldisk get size,freespace,caption
-      displayName: 'Disk space check'
+    # - powershell: |
+    #     wmic logicaldisk get size,freespace,caption
+    #   displayName: 'Disk space check'
 
     #- script: |
     #    cd bin
