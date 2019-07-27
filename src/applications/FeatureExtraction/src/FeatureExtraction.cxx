@@ -647,8 +647,8 @@ int main(int argc, char** argv)
       line_output.erase(std::remove(line_output.begin(), line_output.end(), '"'), line_output.end());
       auto currentRow_output = cbica::stringSplit(line_output, ",");
 
-      float reference_value = std::atof(currentRow_reference.back().c_str());
-      float output_value = std::atof(currentRow_output.back().c_str());
+      float reference_value = std::atof(currentRow_reference[currentRow_reference.size() - 2].c_str());
+      float output_value = std::atof(currentRow_output[currentRow_output.size() - 2].c_str());
 
       if ((reference_value - output_value) > 1e-6)
       {
