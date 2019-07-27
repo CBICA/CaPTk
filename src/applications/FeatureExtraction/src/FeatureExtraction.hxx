@@ -1877,7 +1877,7 @@ void FeatureExtraction< TImage >::Update()
       {
         if (m_debug)
         {
-          std::cout << "[DEBUG] Writing resampled images to the output directory.\n";
+          std::cout << "[DEBUG] Writing resampled image(s) to the output directory.\n";
         }
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
