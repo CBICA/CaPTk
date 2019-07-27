@@ -445,6 +445,7 @@ int main(int argc, char** argv)
         maskfilename = m_tempFolderLocation + currentFileBase + "_2D.nii.gz";
         cbica::WriteImage< ActualImageType >(filter->GetOutput(), maskfilename);
         algorithmRunner< ActualImageType >();
+        cbica::deleteDir(m_tempFolderLocation);
       }
 
       // otherwise, it actually is a 3D image
@@ -608,7 +609,46 @@ int main(int argc, char** argv)
     }
     // unitTestReferenceFile
     // outputFilename
-    
+
+    // if results don't exist, exit with meaningful message
+    if (!cbica::fileExists(unitTestReferenceFile))
+    {
+      std::cerr << "Could not find the reference file '" << unitTestReferenceFile << "'\n";
+      return EXIT_FAILURE;
+    }
+    if (!cbica::fileExists(outputFilename))
+    {
+      std::cerr << "Could not find the final output file '" << outputFilename << "'\n";
+      return EXIT_FAILURE;
+    }
+
+    //std::string dirName_Wrap = dirName;
+
+    // store number of rows in the file
+    const size_t numberOfRows = cbica::numberOfRowsInFile(unitTestReferenceFile);
+    if (numberOfRows != cbica::numberOfRowsInFile(outputFilename))
+    {
+      std::cerr << "The number of rows in the output files is inconsistent; canont compare.\n";
+      return EXIT_FAILURE;
+    }
+
+    std::ifstream file_reference(unitTestReferenceFile.c_str()), file_output(outputFilename.c_str());
+
+    // contruct 2 structs to store the entire CSV results
+    std::vector< std::vector < std::string > > allRows_reference, allRows_output; 
+    for (size_t i = 0; i < numberOfRows; i++)
+    {
+      std::string line;
+      std::getline(file_reference, line, '\n');
+      line.erase(std::remove(line.begin(), line.end(), '"'), line.end());
+      allRows_reference.push_back(cbica::stringSplit(line, ","));
+
+      std::string line_output;
+      std::getline(file_output, line_output, '\n');
+      line_output.erase(std::remove(line_output.begin(), line_output.end(), '"'), line_output.end());
+      allRows_output.push_back(cbica::stringSplit(line_output, ","));
+    }
+
   }
 
   std::cout << "Finished.\n";
