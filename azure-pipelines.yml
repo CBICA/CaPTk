@@ -149,9 +149,9 @@ jobs:
         
       displayName: 'Package CaPTk'
     
-    - powershell: |
-        wmic logicaldisk get size,freespace,caption
-      displayName: 'Disk space check'
+    # - powershell: |
+    #     wmic logicaldisk get size,freespace,caption
+    #   displayName: 'Disk space check'
 
     - task: PublishBuildArtifacts@1
       inputs:
