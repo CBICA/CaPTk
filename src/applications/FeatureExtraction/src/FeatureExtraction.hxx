@@ -1767,6 +1767,8 @@ void FeatureExtraction< TImage >::Update()
   if (!m_algorithmDone)
   {
     auto t1 = std::chrono::high_resolution_clock::now();
+    
+    m_initializedTimestamp = cbica::getCurrentLocalTimestamp();
 
     if (m_debug)
     {
@@ -1879,7 +1881,7 @@ void FeatureExtraction< TImage >::Update()
           if (m_debug)
           {
             cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/" + m_modality[i] +
-              "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image + ".nii.gz"));
+              "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image + m_initializedTimestamp + ".nii.gz"));
           }
         }
         m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator_Mask);
@@ -1893,7 +1895,7 @@ void FeatureExtraction< TImage >::Update()
         if (m_debug)
         {
           cbica::WriteImage< TImage >(m_Mask, cbica::normPath(m_outputPath +
-            "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + ".nii.gz"));
+            "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + m_initializedTimestamp + ".nii.gz"));
         }
       }
 
@@ -2084,7 +2086,10 @@ void FeatureExtraction< TImage >::Update()
             SetFeatureParam(FeatureFamilyString[f]);
             switch (f)
             {
-              std::cout << "[DEBUG] FeatureExtraction.hxx::SetFeatureParam::FeatureFamilyString[" << f << "]" << std::endl;
+              if (m_debug)
+              {
+                std::cout << "[DEBUG] FeatureExtraction.hxx::SetFeatureParam::FeatureFamilyString[" << f << "]" << std::endl;
+              }
               // case Intensity is not needed since it always calculated
             case Histogram:
             {
@@ -2829,10 +2834,12 @@ void FeatureExtraction< TImage >::Update()
       {
         m_logger.Write("Writing Feature Maps");
 
+        auto featureMapsPath = m_outputPath + "/featureMaps_" + m_initializedTimestamp;
+        cbica::createDir(featureMapsPath);
         for (auto const& entry : m_downscaledFeatureMaps)
         {
           auto currentDownscaledFileName = entry.first;
-          cbica::WriteImage< TImage >(entry.second, cbica::normPath(m_outputPath + "/" + currentDownscaledFileName + ".nii.gz"));
+          cbica::WriteImage< TImage >(entry.second, cbica::normPath(featureMapsPath + "/" + currentDownscaledFileName + ".nii.gz"));
         }
       }
 

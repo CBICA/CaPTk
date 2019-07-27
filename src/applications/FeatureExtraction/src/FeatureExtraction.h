@@ -724,6 +724,7 @@ private:
   float m_Radius_float = 0.0, m_Range = 0;
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
   std::string m_QuantizationType = "ROI"; //! type of quantization happening, either ROI-based or Image-based
+  std::string m_initializedTimestamp; //! timestamp to append to all results - keeps outputs in sync with current process
   float m_resamplingResolution = 0.0; //! resolution to resample the images and mask to before doing any kind of computation
   std::string m_resamplingInterpolator_Image = "Linear", //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
     m_resamplingInterpolator_Mask = "Nearest";
