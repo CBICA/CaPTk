@@ -969,7 +969,7 @@ fMainWindow::~fMainWindow()
     delete mTissuePoints;
   }
 
-  if (cbica::filesInDirectory(m_tempFolderLocation).empty())
+  //if (cbica::filesInDirectory(m_tempFolderLocation).empty())
   {
     cbica::deleteDir(m_tempFolderLocation);
   }
