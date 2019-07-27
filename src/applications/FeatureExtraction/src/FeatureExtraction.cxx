@@ -635,18 +635,26 @@ int main(int argc, char** argv)
     std::ifstream file_reference(unitTestReferenceFile.c_str()), file_output(outputFilename.c_str());
 
     // contruct 2 structs to store the entire CSV results
-    std::vector< std::vector < std::string > > allRows_reference, allRows_output; 
     for (size_t i = 0; i < numberOfRows; i++)
     {
-      std::string line;
-      std::getline(file_reference, line, '\n');
-      line.erase(std::remove(line.begin(), line.end(), '"'), line.end());
-      allRows_reference.push_back(cbica::stringSplit(line, ","));
+      std::string line_reference;
+      std::getline(file_reference, line_reference, '\n');
+      line_reference.erase(std::remove(line_reference.begin(), line_reference.end(), '"'), line_reference.end());
+      auto currentRow_reference = cbica::stringSplit(line_reference, ",");
 
       std::string line_output;
       std::getline(file_output, line_output, '\n');
       line_output.erase(std::remove(line_output.begin(), line_output.end(), '"'), line_output.end());
-      allRows_output.push_back(cbica::stringSplit(line_output, ","));
+      auto currentRow_output = cbica::stringSplit(line_output, ",");
+
+      float reference_value = std::atof(currentRow_reference.back().c_str());
+      float output_value = std::atof(currentRow_output.back().c_str());
+
+      if ((reference_value - output_value) > 1e-6)
+      {
+        // this is an unacceptable difference
+        return EXIT_FAILURE;
+      }
     }
 
   }
