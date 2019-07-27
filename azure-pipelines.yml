@@ -119,7 +119,6 @@ jobs:
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
         
         cd ../
-        rm -rf *
         
       displayName: 'Package CaPTk'
 
