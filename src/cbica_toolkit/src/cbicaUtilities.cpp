@@ -1801,7 +1801,7 @@ namespace cbica
 
   std::string getCurrentLocalTimestamp()
   {
-    auto localTimeStamp = getCurrentLocalTime();
+    auto localTimeStamp = getCurrentLocalDateAndTime();
 
     localTimeStamp = cbica::replaceString(localTimeStamp, ":", "");
     localTimeStamp = cbica::replaceString(localTimeStamp, ",", "");
