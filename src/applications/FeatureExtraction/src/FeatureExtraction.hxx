@@ -1875,13 +1875,18 @@ void FeatureExtraction< TImage >::Update()
 
       if (m_resamplingResolution > 0)
       {
+        if (m_debug)
+        {
+          std::cout << "[DEBUG] Writing resampled images to the output directory.\n";
+        }
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
           m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator_Image);
           if (m_debug)
           {
             cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/" + m_modality[i] +
-              "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image + m_initializedTimestamp + ".nii.gz"));
+              "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image +
+              "_" + m_initializedTimestamp + ".nii.gz"));
           }
         }
         m_Mask = cbica::ResampleImage< TImage >(m_Mask, m_resamplingResolution, m_resamplingInterpolator_Mask);
@@ -1894,8 +1899,10 @@ void FeatureExtraction< TImage >::Update()
         }
         if (m_debug)
         {
+          std::cout << "[DEBUG] Writing resampled mask to the output directory.\n";
           cbica::WriteImage< TImage >(m_Mask, cbica::normPath(m_outputPath +
-            "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + m_initializedTimestamp + ".nii.gz"));
+            "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + 
+            "_" + m_initializedTimestamp + ".nii.gz"));
         }
       }
 
