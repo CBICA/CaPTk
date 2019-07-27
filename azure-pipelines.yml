@@ -93,32 +93,6 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
         rm -rf binaries_windows.zip
       displayName: 'Configure and compile CaPTk'
-    
-    - bash: |
-        rm -rf src
-        rm -rf docs*
-        rm -rf data
-        rm -rf binaries
-        rm -rf scripts
-        rm -rf *proj
-
-        cd bin
-        ls externalApps
-        ls
-        tar cvfz qt.tar.gz qt
-        tar cvfz externalApps.tar.gz externalApps
-
-        rm -rf qt*
-        rm -rf externalApps
-        ls
-
-        cd ../
-
-        ls
-        mv bin bin_windows_Beta_0
-        ls
-        tar cvfz bin_windows_Beta_0.tar.gz bin_windows_Beta_0
-      displayName: 'Zipping bin'
        
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
@@ -148,6 +122,32 @@ jobs:
         rm -rf *
         
       displayName: 'Package CaPTk'
+
+    - bash: |
+        rm -rf src
+        rm -rf docs*
+        rm -rf data
+        rm -rf binaries
+        rm -rf scripts
+        rm -rf *proj
+
+        cd bin
+        ls externalApps
+        ls
+        tar cvfz qt.tar.gz qt
+        tar cvfz externalApps.tar.gz externalApps
+
+        rm -rf qt*
+        rm -rf externalApps
+        ls
+
+        cd ../
+
+        ls
+        mv bin bin_windows_Beta_0
+        ls
+        tar cvfz bin_windows_Beta_0.tar.gz bin_windows_Beta_0
+      displayName: 'Zipping bin'
     
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
