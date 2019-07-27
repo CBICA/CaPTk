@@ -168,15 +168,10 @@ ADD_TEST(NAME EGFRvIIISurrogateIndexHelpTest COMMAND EGFRvIIISurrogateIndex -h )
 ADD_TEST(NAME EGFRvIIISurrogateIndexVersionTest COMMAND EGFRvIIISurrogateIndex -v )
 
 # Feature Extraction Tests
-
-# Needs more modalities
-
-ADD_TEST(NAME FeatureExtractionParams1Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam1.csv -t FL -r 1 -l ED,NC )
-# ADD_TEST(NAME FeatureExtractionParams1R2Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam1.csv -t FL -r 1,2 -l ED,NC )
-ADD_TEST(NAME FeatureExtractionParams2Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam2.csv -t FL -r 1 -l ED,NC )
-ADD_TEST(NAME FeatureExtractionVerticalConcTest COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExVertConc.csv -t FL -r 1 -l ED,NC --verticalConc )
-ADD_TEST(NAME FeatureExtractionFeatureMapsWriteTest COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite1.csv -t FL -r 1 -l ED,NC --featureMapsWrite )
-ADD_TEST(NAME FeatureExtractionRegressionTest COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite1.csv -t FL -r 1 -l ED,NC --verticalConc 1 -ut ${TESTING_DATA_DIR}/features/baseline.csv )
+ADD_TEST(NAME FeatureExtractionRegressionTest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${TESTING_DATA_DIR}/FeatureExtraction/params.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_ref.csv -t Mod -r 1 -l ROI --verticalConc 1 -ut ${TESTING_DATA_DIR}/FeatureExtraction/baseline.csv )
+ADD_TEST(NAME FeatureExtractionMultipleROITest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_lattice.csv -t Mod -r 1,2 -l ED,NC )
+ADD_TEST(NAME FeatureExtractionMultipleModalityTest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz,${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_lattice.csv -t Mod1,Mod2 -r 1 -l ED )
+ADD_TEST(NAME FeatureExtractionMultipleModalityMultipleROITest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz,${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_lattice.csv -t Mod1,Mod2 -r 1,2 -l ED,NC )
 # ADD_TEST(NAME FeatureExtractionBatchTest COMMAND FeatureExtraction )
 
 ADD_TEST(NAME FeatureExtractionHelpTest COMMAND FeatureExtraction -h )
