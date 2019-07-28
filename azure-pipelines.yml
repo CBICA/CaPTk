@@ -138,6 +138,7 @@ jobs:
 
         rm -rf qt*
         rm -rf externalApps
+        rm -rf _CPack*
         ls
 
         cd ../
