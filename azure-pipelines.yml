@@ -14,6 +14,9 @@ jobs:
     vmImage: 'vs2017-win2016'
 
   steps:
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+      
     - task: CacheBeta@0
       inputs:
         key: |
@@ -22,9 +25,6 @@ jobs:
         cacheHitVar: CACHE_RESTORED_WINDOWS
         rolling : true
       displayName: 'Caching'
-  
-    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
     - script: |
         choco install doxygen.install git-lfs.install nsis.install
@@ -40,9 +40,9 @@ jobs:
       displayName: 'Pull LFS'
       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    - powershell: |
-        wmic logicaldisk get size,freespace,caption
-      displayName: 'Disk space check'
+    # - powershell: |
+    #     wmic logicaldisk get size,freespace,caption
+    #   displayName: 'Disk space check'
 
     # Moving LFS Files
     - bash: |
@@ -128,9 +128,10 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf *proj
 
         cd bin
+        rm -rf *proj
+
         ls externalApps
         ls
         tar cvfz qt.tar.gz qt
