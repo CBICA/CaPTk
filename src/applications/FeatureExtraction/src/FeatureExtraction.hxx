@@ -2101,16 +2101,17 @@ void FeatureExtraction< TImage >::Update()
                         "Axis=3D;Dimension=3D" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
                       CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[0], currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f] + "_X", std::get<4>(temp->second),
                         "Axis=X;Dimension=2D" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
                       CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[1], currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f] + "_Y", std::get<4>(temp->second),
                         "Axis=Y;Dimension=2D" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[3], currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[2], currentMask_patch, std::get<4>(temp->second));
+                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f] + "_Z", std::get<4>(temp->second),
                         "Axis=Z;Dimension=2D" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
                     }
                     else
                     {
@@ -2118,7 +2119,7 @@ void FeatureExtraction< TImage >::Update()
                       WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                         "Axis=2D;Dimension=2D" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
                     }
-
+                    
                     if (m_debug)
                     {
                       auto tempT2 = std::chrono::high_resolution_clock::now();
@@ -2147,25 +2148,26 @@ void FeatureExtraction< TImage >::Update()
                     /* this dimensionality reduction applies only to shape and Volumetric features */
                     if (TImage::ImageDimension == 3)
                     {
-                      CalculateVolumetric<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
+                      CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
                       WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                         "Axis=3D;Dimension=3D" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateVolumetric<TImage>(currentInputImage_patch, currentMask_patch_axisImages[0], currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      CalculateVolumetric<TImage>(currentMask_patch_axisImages[0], std::get<4>(temp->second));
+                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f] + "_X", std::get<4>(temp->second),
                         "Axis=X;Dimension=2D" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateVolumetric<TImage>(currentInputImage_patch, currentMask_patch_axisImages[1], currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      CalculateVolumetric<TImage>(currentMask_patch_axisImages[1], std::get<4>(temp->second));
+                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f] + "_Y", std::get<4>(temp->second),
                         "Axis=Y;Dimension=2D" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateVolumetric<TImage>(currentInputImage_patch, currentMask_patch_axisImages[3], currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      CalculateVolumetric<TImage>(currentMask_patch_axisImages[2], std::get<4>(temp->second));
+                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f] + "_Z", std::get<4>(temp->second),
                         "Axis=Z;Dimension=2D" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
                     }
                     else
                     {
-                      CalculateVolumetric<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
+                      CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
                       WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                         "Axis=2D;Dimension=2D" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
                     }
