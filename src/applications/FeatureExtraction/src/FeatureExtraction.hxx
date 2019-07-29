@@ -1501,6 +1501,11 @@ template< class TImage >
 void FeatureExtraction< TImage >::WriteFeatures(const std::string & modality, const std::string & label, const std::string & featureFamily,
   const std::map< std::string, double > & featureList, const std::string & parameters, typename TImage::IndexType centerIndex, bool featureMapWriteForLattice, float weight)
 {
+  // a precaution
+  if (featureList.empty())
+  {
+    return;
+  }
   if (m_outputFile.empty())
   {
     m_outputFile = cbica::createTmpDir() + "/" + m_patientID + "_FEOutput.csv";
@@ -1627,7 +1632,7 @@ void FeatureExtraction< TImage >::SetInputImages(std::vector< typename TImage::P
 
 
 template< class TImage >
-typename TImage::Pointer FeatureExtraction< TImage >::GetSelectedSlice(typename TImage::Pointer mask, std::string axis)
+std::vector< typename TImage::Pointer > FeatureExtraction< TImage >::GetSelectedSlice(typename TImage::Pointer mask)
 {
   std::vector< typename TImage::Pointer > maxImageSlices;
 
@@ -1679,13 +1684,6 @@ typename TImage::Pointer FeatureExtraction< TImage >::GetSelectedSlice(typename 
         {
           maxVoxels[dim] = currentNonZero;
           desiredIndexFinal[dim] = i;
-          //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - slice [" << i << "] -> maxVoxels[" << dim << "] = " << currentNonZero << std::endl;
-          //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - maxVoxels[" << dim << "] = " << maxVoxels[dim] << std::endl;
-          //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - desiredIndexFinal[" << dim << "] = " << desiredIndexFinal[dim] << std::endl;
-          // auto duplicator = itk::ImageDuplicator< ImageType2D >::New();
-          // duplicator->SetInputImage(extractor->GetOutput());
-          // duplicator->Update();
-          // maxImageSlices[dim] = duplicator->GetOutput(); // TBD: duplicator->GetOutput() changed to fix compilation issue using vcpkg-cbica
         }
       }
     }
@@ -1695,36 +1693,6 @@ typename TImage::Pointer FeatureExtraction< TImage >::GetSelectedSlice(typename 
   {
     for (int dim = 0; dim < TImage::ImageDimension; dim++) // dimension-loop
     {
-      //typename TImage::RegionType desiredRegion;
-      //typename TImage::SizeType desiredSize = originalSize;
-      ////desiredSize[dim] = 0;
-      //typename TImage::IndexType desiredIndex;
-      ////desiredIndex.Fill(0);
-      ////desiredIndex[dim] = desiredIndexFinal[dim];
-      ////desiredIndex = desiredIndexFinal;
-      //desiredIndex.Fill(0);
-      //desiredIndex[dim] = desiredIndexFinal[dim];
-
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - maxVoxels[" << dim << "] = " << maxVoxels[dim] << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - desiredIndex[" << dim << "] = " << desiredIndex[dim] << std::endl;
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - axis [" << dim << "] - searching for max region slice. - slice = " << desiredIndex[dim] << std::endl;
-      //desiredRegion.SetIndex(desiredIndex);
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetIndex(" << desiredIndex << ")" << std::endl;
-      //desiredRegion.SetSize(desiredSize);
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetSize(" << desiredSize << ")" << std::endl;
-      ////auto extractor = itk::ExtractImageFilter< TImage, ImageType2D >::New();
-      //auto extractor = itk::ExtractImageFilter< TImage, TImage >::New();
-      //extractor->SetInput(mask);
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetInput Finished." << std::endl;
-      //extractor->SetDirectionCollapseToIdentity();
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetDirectionCollapseToIdentity Finished." << std::endl;
-      //extractor->SetExtractionRegion(desiredRegion);
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - SetExtractionRegion Finished." << std::endl;
-      //extractor->Update();
-      //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - Update Finished." << std::endl;
-
-      //maxImageSlices[dim] = extractor->GetOutput();
-
       itk::ImageRegionIteratorWithIndex< TImage > iteratorExtractor(mask, mask->GetLargestPossibleRegion());
       itk::ImageRegionIteratorWithIndex< TImage > iteratormaxImageSlices(maxImageSlices[dim], maxImageSlices[dim]->GetLargestPossibleRegion());
       // itk::ImageRegionConstIterator< ImageType2D > iterator(extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion());
@@ -1736,28 +1704,11 @@ typename TImage::Pointer FeatureExtraction< TImage >::GetSelectedSlice(typename 
           //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - index[" << idx << "] = " << iteratorExtractor.Get() << std::endl;
           iteratormaxImageSlices.Set(iteratorExtractor.Get());
         }
-        //if (iteratorExtractor.Get() > 0) {
-        //  std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - index[" << idx << "] = " << iteratorExtractor.Get() << std::endl;
-        //  iteratormaxImageSlices.Set(iteratorExtractor.Get());
-        //}
-        //std::cout << " - iteratormaxImageSlices - index[" << idx << "] = " << iteratormaxImageSlices.Get() << std::endl;
       }
     }
   }
 
-  //return the correct element of the 3 element vector depending on axis defined by input
-  if (axis == "x")
-  {
-    return maxImageSlices[0];
-  }
-  else if (axis == "y")
-  {
-    return maxImageSlices[1];
-  }
-  else
-  {
-    return maxImageSlices[2];
-  }
+  return maxImageSlices;
 }
 
 
@@ -2074,10 +2025,7 @@ void FeatureExtraction< TImage >::Update()
             std::get<2>(temp->second) = m_modality[i];
             std::get<3>(temp->second) = allROIs[j].label;
             CalculateIntensity(m_currentNonZeroImageValues, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-            if (std::get<4>(temp->second).empty())
-            {
-              return;
-            }
+
             WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[Intensity], std::get<4>(temp->second), "N.A.", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
             if (m_debug)
@@ -2085,6 +2033,12 @@ void FeatureExtraction< TImage >::Update()
               auto tempT2 = std::chrono::high_resolution_clock::now();
               m_logger.Write("Intensity Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
             }
+          }
+
+          // get the maximum sliced mask for 3 axes - not needed for 2D
+          if (TImage::ImageDimension == 3)
+          {
+            auto currentMask_patch_axisImages = GetSelectedSlice(currentMask_patch);
           }
 
           // iterate over the entire feature family enum
@@ -2097,7 +2051,7 @@ void FeatureExtraction< TImage >::Update()
               {
                 std::cout << "[DEBUG] FeatureExtraction.hxx::SetFeatureParam::FeatureFamilyString[" << f << "]" << std::endl;
               }
-              // case Intensity is not needed since it always calculated
+            // case Intensity is not needed since it always calculated
             case Histogram:
             {
               auto temp = m_Features.find(FeatureFamilyString[f]);
@@ -2111,10 +2065,7 @@ void FeatureExtraction< TImage >::Update()
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
                   CalculateHistogram(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
+
                   WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                     "Bins=" + std::to_string(m_Bins), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
@@ -2161,10 +2112,7 @@ void FeatureExtraction< TImage >::Update()
                     {
                       CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
                     }
-                    if (std::get<4>(temp->second).empty())
-                    {
-                      return;
-                    }
+
                     WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                       "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
@@ -2212,10 +2160,7 @@ void FeatureExtraction< TImage >::Update()
                     {
                       CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
                     }
-                    if (std::get<4>(temp->second).empty())
-                    {
-                      return;
-                    }
+
                     WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                       "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
@@ -2267,10 +2212,6 @@ void FeatureExtraction< TImage >::Update()
                     CalculateGLCM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
                   }
 
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
                   WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                     "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
                     ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
@@ -2321,10 +2262,6 @@ void FeatureExtraction< TImage >::Update()
                     CalculateGLRLM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
                   }
 
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
                   WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                     "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
                     ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2376,10 +2313,6 @@ void FeatureExtraction< TImage >::Update()
                     CalculateGLSZM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
                   }
 
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
                   WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                     "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
                     ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2431,10 +2364,6 @@ void FeatureExtraction< TImage >::Update()
                     CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
                   }
 
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
                   WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                     "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
                     ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2472,10 +2401,6 @@ void FeatureExtraction< TImage >::Update()
                     std::cout << "[DEBUG] NGLDM - Not yet implemented for non-3D" << std::endl;
                   }
 
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
                   WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                     "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
                     ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2507,10 +2432,7 @@ void FeatureExtraction< TImage >::Update()
                       std::get<3>(temp->second) = allROIs[j].label;
 
                       CalculateFractalDimensions(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                      if (std::get<4>(temp->second).empty())
-                      {
-                        return;
-                      }
+
                       WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second), "",
                         m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
@@ -2543,10 +2465,7 @@ void FeatureExtraction< TImage >::Update()
                       std::get<3>(temp->second) = allROIs[j].label;
 
                       CalculateGaborWavelets(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                      if (std::get<4>(temp->second).empty())
-                      {
-                        return;
-                      }
+
                       WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                         "Radius=" + std::to_string(m_Radius) + ";FMax=" + std::to_string(m_gaborFMax) + ";Gamma=" + std::to_string(m_gaborGamma) +
                         ";Directions=" + std::to_string(m_Direction) + ";Level=" + std::to_string(m_gaborLevel), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2580,10 +2499,7 @@ void FeatureExtraction< TImage >::Update()
                       std::get<3>(temp->second) = allROIs[j].label;
 
                       CalculateLawsMeasures(currentInputImage_patch, std::get<4>(temp->second));
-                      if (std::get<4>(temp->second).empty())
-                      {
-                        return;
-                      }
+
                       WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second), "",
                         m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
@@ -2616,10 +2532,7 @@ void FeatureExtraction< TImage >::Update()
                       std::get<3>(temp->second) = allROIs[j].label;
 
                       CalculateEdgeEnhancement(currentInputImage_patch, std::get<4>(temp->second));
-                      if (std::get<4>(temp->second).empty())
-                      {
-                        return;
-                      }
+
                       WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                         "ETA=" + std::to_string(m_edgesETA) + ";Epsilon=" + std::to_string(m_edgesEpsilon) + ";Radius=" + std::to_string(m_Radius),
                         m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2653,10 +2566,7 @@ void FeatureExtraction< TImage >::Update()
                       std::get<3>(temp->second) = allROIs[j].label;
 
                       CalculatePowerSpectrum(currentInputImage_patch, std::get<4>(temp->second));
-                      if (std::get<4>(temp->second).empty())
-                      {
-                        return;
-                      }
+
                       WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second), "",
                         m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
@@ -2684,10 +2594,7 @@ void FeatureExtraction< TImage >::Update()
                   std::get<3>(temp->second) = allROIs[j].label;
 
                   CalculateLBP(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
-                  if (std::get<4>(temp->second).empty())
-                  {
-                    return;
-                  }
+
                   WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                     "Neighborhood=" + std::to_string(m_neighborhood) + ";Radius=" + std::to_string(m_Radius) + ";Style=" + std::to_string(m_LBPStyle), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 

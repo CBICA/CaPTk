@@ -498,7 +498,7 @@ private:
   \param mask is vector of mask images.
   \param axis represents the slice selection is in x, y or z direction.
   */
-  typename TImageType::Pointer GetSelectedSlice(typename TImageType::Pointer mask, std::string axis);
+  std::vector< typename TImageType::Pointer > GetSelectedSlice(typename TImageType::Pointer mask);
 
   /**
   \brief Calculate intensity features
