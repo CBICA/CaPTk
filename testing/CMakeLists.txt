@@ -58,28 +58,7 @@ ENDIF()
 SET( TESTING_OUTPUT_DIR ${TESTING_DATA_DIR}/outputs )
 FILE(MAKE_DIRECTORY ${TESTING_OUTPUT_DIR})
 
-# add c++11 flag if it is GCC v<5
-IF(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-  IF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0)
-    INCLUDE( CheckCXXCompilerFlag )
-    CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-    CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-    IF( COMPILER_SUPPORTS_CXX11 )
-	MESSAGE(STATUS "Compiler ${CMAKE_CXX_COMPILER} version ${CMAKE_CXX_COMPILER_VERSION} supports C++11")
-    	SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    elseif(COMPILER_SUPPORTS_CXX0X )
-	MESSAGE(STATUS "Compiler ${CMAKE_CXX_COMPILER} version ${CMAKE_CXX_COMPILER_VERSION} supports C++0x")
-    	SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-    else()
-    	MESSAGE(ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-    endif()
-  ELSE(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0)
-	MESSAGE(STATUS "Compiler ${CMAKE_CXX_COMPILER} version ${CMAKE_CXX_COMPILER_VERSION} is above 5.0, known support for C++11, C++0x")
-    	SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    	SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  ENDIF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0)
-ENDIF() 
-
+SET(CMAKE_CXX_STANDARD 11 CACHE STRING "C++ standard to be used" )
 
 #set(CMAKE_AUTOMOC ON)    
  
@@ -189,14 +168,10 @@ ADD_TEST(NAME EGFRvIIISurrogateIndexHelpTest COMMAND EGFRvIIISurrogateIndex -h )
 ADD_TEST(NAME EGFRvIIISurrogateIndexVersionTest COMMAND EGFRvIIISurrogateIndex -v )
 
 # Feature Extraction Tests
-
-# Needs more modalities
-
-ADD_TEST(NAME FeatureExtractionParams1Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam1.csv -t FL -r 1 -l ED,NC )
-# ADD_TEST(NAME FeatureExtractionParams1R2Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam1.csv -t FL -r 1,2 -l ED,NC )
-ADD_TEST(NAME FeatureExtractionParams2Test COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExParam2.csv -t FL -r 1 -l ED,NC )
-ADD_TEST(NAME FeatureExtractionVerticalConcTest COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExVertConc.csv -t FL -r 1 -l ED,NC --verticalConc )
-ADD_TEST(NAME FeatureExtractionFeatureMapsWriteTest COMMAND FeatureExtraction -n AAAC -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -p ${TESTING_DATA_DIR}/features/1_params_default.csv -m ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite1.csv -t FL -r 1 -l ED,NC --featureMapsWrite )
+ADD_TEST(NAME FeatureExtractionRegressionTest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${TESTING_DATA_DIR}/FeatureExtraction/params.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_ref.csv -t Mod -r 1 -l ROI --verticalConc 1 -ut ${TESTING_DATA_DIR}/FeatureExtraction/baseline.csv )
+ADD_TEST(NAME FeatureExtractionMultipleROITest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_lattice.csv -t Mod -r 1,2 -l ED,NC )
+ADD_TEST(NAME FeatureExtractionMultipleModalityTest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz,${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_multiMod.csv -t Mod1,Mod2 -r 1 -l ED )
+ADD_TEST(NAME FeatureExtractionMultipleModalityMultipleROITest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz,${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_multiModMultiROI.csv -t Mod1,Mod2 -r 1,2 -l ED,NC )
 # ADD_TEST(NAME FeatureExtractionBatchTest COMMAND FeatureExtraction )
 
 ADD_TEST(NAME FeatureExtractionHelpTest COMMAND FeatureExtraction -h )

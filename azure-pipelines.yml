@@ -61,7 +61,7 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
         rm -rf binaries_windows.zip
@@ -162,7 +162,7 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
         #make install/strip
       displayName: 'Configure and compile CaPTk'
@@ -333,8 +333,8 @@ jobs:
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-        cmake ../
-        cmake ../
+        cmake -DBUILD_TESTING=OFF ../
+        cmake -DBUILD_TESTING=OFF ../
 
         make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
@@ -356,8 +356,8 @@ jobs:
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-        cmake ../
-        cmake ../
+        cmake -DBUILD_TESTING=OFF ../
+        cmake -DBUILD_TESTING=OFF ../
 
         make -j 2
         sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
