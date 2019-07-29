@@ -969,7 +969,8 @@ fMainWindow::~fMainWindow()
     delete mTissuePoints;
   }
 
-  if (cbica::filesInDirectory(m_tempFolderLocation).empty())
+  // delete the temp directory every single time
+  //if (cbica::filesInDirectory(m_tempFolderLocation).empty())
   {
     cbica::deleteDir(m_tempFolderLocation);
   }

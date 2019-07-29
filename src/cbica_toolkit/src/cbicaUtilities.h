@@ -731,6 +731,11 @@ namespace cbica
   std::vector< std::vector< std::string > > readCSVDataFile(const std::string &csvFileName);
 
   /**
+  \brief Get current timestamp to appent to a filename to prevent overwriting as YYYMMDDHHmmSS_hex
+  */
+  std::string getCurrentLocalTimestamp();
+
+  /**
   \brief Get current local time as string delineated as YYYY:MM:DD
   */
   std::string getCurrentLocalDate();

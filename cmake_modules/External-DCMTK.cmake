@@ -22,7 +22,7 @@ ExternalProject_Add(
   BINARY_DIR DCMTK-build
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
-  INSTALL_COMMAND ""
+  INSTALL_COMMAND cmake -E echo "Skipping install step."
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
     ${ep_common_args}
