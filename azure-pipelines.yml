@@ -15,8 +15,11 @@ jobs:
 
   steps:
   
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+
     - script: |
-        choco install doxygen.install git-lfs.install
+        choco install doxygen.install git-lfs.install nsis.install
         git lfs install
       displayName: 'Install dependencies'
   
@@ -28,18 +31,9 @@ jobs:
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
-    # Testing LFS
-    - bash: |
-        ls -lt binaries/qt_5.12.1/
-        ls -lt binaries/precompiledApps/
-      displayName: 'Testing LFS pull'
-
-    #- bash: |
-    #    rm -rf binaries/*mac*.zip
-    #    rm -rf binaries/*linux*.zip
-    #    rm -rf history
-    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-    #  displayName: 'Take the nuclear option'
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+      displayName: 'Disk space check'
 
     # Moving LFS Files
     - bash: |
@@ -53,19 +47,30 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./installLibs" ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./installLibs" -DCMAKE_CONFIGURATION_TYPES="Release" ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
+        rm -rf installLibs
+        rm -rf qt.zip
       displayName: 'Configure and compile Superbuild'
     
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+      displayName: 'Disk space check'
+
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
+        rm -rf binaries_windows.zip
       displayName: 'Configure and compile CaPTk'
     
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+      displayName: 'Disk space check'
+
     #- script: |
     #    cd bin
     #    export GIT_LFS_SKIP_SMUDGE=1
@@ -76,42 +81,36 @@ jobs:
     #    cmake --build . --target RUN_TESTS --config Release
     #  displayName: 'Performing the Tests'
     
-    #- script: |
-    #    cd bin
-    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" ..
-    #    cmake --build . --target PACKAGE --config Release
-    #
-    #    mv CaPTk_*_Installer.exe $(Build.ArtifactStagingDirectory)
-    #    
-    #    cd ../
-    #    rm -rf *
-    #    
-    #  displayName: 'Package CaPTk'
-    #
-    #- script: | 
-    #    cd bin
-    #    #call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #    echo "Deleting folders to make space"
-    #    rm -rf qt
-    #    rm -rf externalApps
-    #    rm -rf binaries_windows.zip
-    #    rm -rf ../src
-    #    mv CaPTk_*_Installer.exe ../
-    #    
-    #  displayName: 'Moving Installer one level up'
-    #
-    #- task: PublishBuildArtifacts@1
-    #  inputs:
-    #    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #    artifactName: '$(Build.DefinitionName)_installer_windows'
-    #
-    #- task: DownloadBuildArtifacts@0
-    #  inputs:
-    #    buildType: 'current'
-    #    downloadType: 'single'
-    #    artifactName: '$(Build.DefinitionName)_installer_windows'
-    #    downloadPath: '$(System.ArtifactsDirectory)'
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" ..
+        cmake --build . --target PACKAGE --config Release
+
+        ls -lt *_Installer.*
+    
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        
+        cd ../
+        rm -rf *
+        
+      displayName: 'Package CaPTk'
+    
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+      displayName: 'Disk space check'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
+    
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
+        downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
@@ -201,7 +200,7 @@ jobs:
 
         rm -rf scripts
 
-        mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
         
       displayName: 'Set up environment variables for packager and build a package'
     
@@ -403,7 +402,7 @@ jobs:
 
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
         
-        mv *Installer.pkg $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
         zip -rf qt.zip qt
 
         mv *.zip $(Build.SourcesDirectory)/cache
