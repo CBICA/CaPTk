@@ -140,6 +140,7 @@ jobs:
     # Testing libgcrypt
     - bash: |
         ldconfig -p | grep libgcrypt
+        dpkg -l | grep 
       displayName: 'Testing libgcrypt version'
 
     # Testing LFS
