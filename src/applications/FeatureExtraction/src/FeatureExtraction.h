@@ -282,7 +282,7 @@ public:
   */
   void SetOutputFilename(std::string filename)
   {
-    if (cbica::getFilenameExtension(filename, false).empty() || (filename[filename.length() - 1] == '/'))
+    if (cbica::isDir(filename))
     {
       m_outputPath = filename;
       m_outputFile = m_outputPath + "/results.csv";
@@ -322,6 +322,11 @@ public:
       cbica::createDir(m_outputIntermediatePath);
     }
   }
+
+  /**
+  \brief Get the complete output filename
+  */
+  std::string GetOutputFile() { return m_outputFile; };
 
   /**
   \brief Enable vertically-concatenated output in CSV
@@ -487,6 +492,12 @@ private:
       return offsets;
     }  
   }
+
+  /**
+  \brief GetSelectedSlice enables selection of a particular slice and direction in which the features have to be generated.
+  \param mask is vector of mask images.
+  */
+  std::vector< typename TImageType::Pointer > GetSelectedSlice(typename TImageType::Pointer mask);
 
   /**
   \brief GetSelectedSlice enables selection of a particular slice and direction in which the features have to be generated.
@@ -719,6 +730,7 @@ private:
   float m_Radius_float = 0.0, m_Range = 0;
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
   std::string m_QuantizationType = "ROI"; //! type of quantization happening, either ROI-based or Image-based
+  std::string m_initializedTimestamp; //! timestamp to append to all results - keeps outputs in sync with current process
   float m_resamplingResolution = 0.0; //! resolution to resample the images and mask to before doing any kind of computation
   std::string m_resamplingInterpolator_Image = "Linear", //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
     m_resamplingInterpolator_Mask = "Nearest";

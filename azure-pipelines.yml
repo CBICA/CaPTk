@@ -88,7 +88,7 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
         rm -rf binaries_windows.zip
@@ -202,11 +202,17 @@ jobs:
       displayName: 'Pull LFS'
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
-    # # Testing LFS
-    # - bash: |
-    #     ls -lt binaries/qt_5.12.1/
-    #     ls -lt binaries/precompiledApps/
-    #   displayName: 'Testing LFS pull'
+    # Testing libgcrypt
+    - bash: |
+        ldconfig -p | grep libgcrypt
+        dpkg -l | grep libgcrypt
+      displayName: 'Testing libgcrypt version'
+
+    # Testing LFS
+    - bash: |
+        ls -lt binaries/qt_5.12.1/
+        ls -lt binaries/precompiledApps/
+      displayName: 'Testing LFS pull'
 
     # Moving LFS Files
     - bash: |
@@ -243,7 +249,7 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'

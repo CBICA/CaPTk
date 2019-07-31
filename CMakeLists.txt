@@ -11,7 +11,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 2 )
+SET( PROJECT_VERSION_PATCH 3.nonRelease )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -639,7 +639,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     SET( BUILD_TESTING TRUE CACHE BOOL "Build testing" )
     IF( BUILD_TESTING )
       ENABLE_TESTING()
-      #ADD_SUBDIRECTORY( testing )
+      ADD_SUBDIRECTORY( testing )
       #INCLUDE(CTest)
     ENDIF( BUILD_TESTING )
   #ENDIF()
