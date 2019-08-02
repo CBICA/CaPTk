@@ -17,14 +17,14 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    - task: CacheBeta@0
-      inputs:
-        key: |
-          bin_windows_$(Build.DefinitionName).tar.gz
-        path: $(Build.SourcesDirectory) 
-        cacheHitVar: CACHE_RESTORED_WINDOWS
-        continueOnError : true
-      displayName: 'Caching'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: |
+    #       bin_windows_C1_$(Build.DefinitionName).tar.gz
+    #     path: $(Build.SourcesDirectory) 
+    #     cacheHitVar: CACHE_RESTORED_WINDOWS
+    #     # rolling : true
+    #   displayName: 'Caching'
 
     - script: |
         choco install doxygen.install git-lfs.install nsis.install
@@ -38,7 +38,7 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/windows.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      #condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
@@ -52,23 +52,23 @@ jobs:
         mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      #condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    - bash: |
-        tar xvfz bin_windows_$(Build.DefinitionName).tar.gz
-        rm -rf bin_windows_$(Build.DefinitionName).tar.gz
-        ls
-        mv bin_windows_$(Build.DefinitionName) bin
-        ls
-        cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
-        # mv binaries_windows externalApps
-        # rm CMakeCache.txt 
+    # - bash: |
+    #     tar xvfz bin_windows_C1_$(Build.DefinitionName).tar.gz
+    #     rm -rf bin_windows_C1_$(Build.DefinitionName).tar.gz
+    #     ls
+    #     mv bin_windows_C1_$(Build.DefinitionName) bin
+    #     ls
+    #     cd bin
+    #     tar xvfz qt.tar.gz
+    #     tar xvfz externalApps.tar.gz
+    #     # mv binaries_windows externalApps
+    #     # rm CMakeCache.txt 
 
-        ls -lt
-      displayName: 'Unzip bin if cached'
-      condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
+    #     ls -lt
+    #   displayName: 'Unzip bin if cached'
+    #   #condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - script: |
         cd bin
@@ -79,7 +79,7 @@ jobs:
         rm -rf installLibs
         rm -rf qt.zip
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      #condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
     
     - powershell: |
         wmic logicaldisk get size,freespace,caption
@@ -144,9 +144,9 @@ jobs:
         cd ../
 
         # ls
-        mv bin bin_windows_$(Build.DefinitionName)
+        mv bin bin_windows_C1_$(Build.DefinitionName)
         # ls
-        tar cvfz bin_windows_$(Build.DefinitionName).tar.gz bin_windows_$(Build.DefinitionName)
+        tar cvfz bin_windows_C1_$(Build.DefinitionName).tar.gz bin_windows_C1_$(Build.DefinitionName)
       displayName: 'Zipping bin'
     
     # - powershell: |
@@ -174,14 +174,14 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-    - task: CacheBeta@0
-      inputs:
-        key: |
-          bin_linux_$(Build.DefinitionName).tar.gz
-        path: $(Build.SourcesDirectory) 
-        cacheHitVar: CACHE_RESTORED_LINUX
-        continueOnError : true
-      displayName: 'Caching'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: |
+    #       bin_linux_C1_$(Build.DefinitionName).tar.gz
+    #     path: $(Build.SourcesDirectory) 
+    #     cacheHitVar: CACHE_RESTORED_LINUX
+    #     # rolling : true
+    #   displayName: 'Caching'
 
     # Dependency manager
     - bash: |
@@ -200,7 +200,7 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/linux.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      #condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Testing libgcrypt
     - bash: |
@@ -222,21 +222,21 @@ jobs:
         mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      #condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
-    - bash: |
-        tar xvfz bin_linux_$(Build.DefinitionName).tar.gz
-        rm -rf bin_linux_$(Build.DefinitionName).tar.gz
-        ls
-        mv bin_linux_$(Build.DefinitionName) bin
-        ls
-        cd bin
+    # - bash: |
+    #     tar xvfz bin_linux_C1_$(Build.DefinitionName).tar.gz
+    #     rm -rf bin_linux_C1_$(Build.DefinitionName).tar.gz
+    #     ls
+    #     mv bin_linux_C1_$(Build.DefinitionName) bin
+    #     ls
+    #     cd bin
 
-        # rm CMakeCache.txt 
+    #     # rm CMakeCache.txt 
 
-        ls -lt
-      displayName: 'Unzip bin if cached'
-      condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
+    #     ls -lt
+    #   displayName: 'Unzip bin if cached'
+      #condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
@@ -244,7 +244,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      #condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build CaPTk
     - bash: |
@@ -312,9 +312,9 @@ jobs:
         cd ../
 
         # ls
-        mv bin bin_linux_$(Build.DefinitionName)
+        mv bin bin_linux_C1_$(Build.DefinitionName)
         # ls
-        tar cvfz bin_linux_$(Build.DefinitionName).tar.gz bin_linux_$(Build.DefinitionName)
+        tar cvfz bin_linux_C1_$(Build.DefinitionName).tar.gz bin_linux_C1_$(Build.DefinitionName)
       displayName: 'Zipping bin'
     
     #- script: |
@@ -336,113 +336,351 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_Linux'
         downloadPath: '$(System.ArtifactsDirectory)'
     
-# - job: 'MacOSBuild'
-#   displayName: "End-to-end MacOS build & package"
+- job: 'MacOSBuild'
+  displayName: "End-to-end MacOS build & package"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+
+  pool:
+    vmImage: 'MacOS-10.13'
+
+  steps:
+    - task: CacheBeta@0
+      inputs:
+        key: |
+          bin_mac_C1_$(Build.DefinitionName).tar.gz
+        path: $(Build.SourcesDirectory) 
+        cacheHitVar: CACHE_RESTORED_MAC
+        # rolling : true
+      displayName: 'Caching'
+
+    - bash: |
+        brew install make doxygen llvm
+        #brew install caskroom/cask/mactex # latex is not used for documentation right now
+      displayName: 'Brew dependencies'
+    
+    - bash: |
+        brew install git-lfs
+        git lfs install
+      displayName: 'Brew dependency install LFS'
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+    
+    # Pull LFS
+    - bash: |
+        export GIT_LFS_SKIP_SMUDGE=1
+        git lfs pull --include "binaries/precompiledApps/macos.zip"
+        git lfs pull --include "binaries/qt_5.12.1/macos.zip"
+        #echo "Not doing this until quota is improved on GitHub"
+      displayName: 'Pull LFS'
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+
+    # # Testing LFS
+    # - bash: |
+    #     # ls -lt binaries/qt_5.12.1/
+    #     # ls -lt binaries/precompiledApps/
+    #     ls binaries
+    #     ls binaries/precompiledApps
+    #     ls -lt binaries/qt_5.12.1/
+    #   displayName: 'Testing binaries'
+
+    # Moving LFS Files
+    - bash: |
+        mkdir bin
+        cd bin
+        mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+        mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin'
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      
+    - bash: |
+        tar xvfz bin_mac_C1_$(Build.DefinitionName).tar.gz
+        rm -rf bin_mac_C1_$(Build.DefinitionName).tar.gz
+        ls
+        mv bin_mac_C1_$(Build.DefinitionName) bin
+        ls
+        cd bin
+
+        # rm CMakeCache.txt 
+
+        ls -lt
+      displayName: 'Unzip bin if cached'
+      condition: eq(variables.CACHE_RESTORED_MAC, 'true')
+
+    #- bash: |
+    #    rm -rf binaries/*linux*.zip
+    #    rm -rf binaries/*windows*.zip
+    #    rm -rf history
+    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
+    #  displayName: 'Take the nuclear option'
+
+    - bash: |
+        cd bin
+
+        export CC=""
+        export CXX=""
+        export LDFLAGS=""
+        export CPPFLAGS=""
+
+        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+
+        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+
+        make -j2
+
+        # rm for llvm
+        rm CMakeCache.txt 
+
+      displayName: 'Configure and compile Superbuild'
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+
+    - bash: |
+        cd bin
+
+        sudo rm -rf CaPTk_*
+
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        export CC=/usr/local/opt/llvm/bin/clang
+        export CXX=/usr/local/opt/llvm/bin/clang++
+        export LDFLAGS="-L/usr/local/opt/llvm/lib"
+        export CPPFLAGS="-L/usr/local/opt/llvm/include"
+
+        cmake ../
+        cmake ../
+
+        make -j 2
+      displayName: 'Export variables for llvm then configure and compile CaPTk'
+    
+    - bash: |
+        cd bin
+
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+        pkgname="_Installer"
+        pkgname="$version$pkgname"
+
+        sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
+
+        # rm CMakeCache.txt
+        # rm -rf CaPTk*.app
+
+        export CC=/usr/local/opt/llvm/bin/clang
+        export CXX=/usr/local/opt/llvm/bin/clang++
+        export LDFLAGS="-L/usr/local/opt/llvm/lib"
+        export CPPFLAGS="-L/usr/local/opt/llvm/include"
+
+        # cmake ../
+        # cmake ../
+
+        make -j 2
+        # sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
+        # make -j 2
+      displayName: 'Ensure documentation is picked up properly'
+    
+    
+    - bash: |
+        cd bin 
+        
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+        pkgname="_Installer"
+        pkgname="$version$pkgname"
+
+        rm -rf *.pkg 
+        rm -rf _CPack*
+        make package
+
+        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
+
+        productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
+
+        xml='<?xml version="1.0" encoding="utf-8"?>
+        <installer-gui-script minSpecVersion="1">
+            <title>CaPTk_'"$version"'</title>
+            <license file="Combined.txt"></license>
+            <pkg-ref id="com.cbica.captk"/>
+            <options customize="never" require-scripts="false"/>
+            <choices-outline>
+                <line choice="default">
+                    <line choice="com.cbica.captk"/>
+                </line>
+            </choices-outline>
+            <choice id="default"/>
+            <choice id="com.cbica.captk" visible="false">
+                <pkg-ref id="com.cbica.captk"/>
+            </choice>
+            <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
+        </installer-gui-script>' 
+
+        echo $xml > "./distribution.xml"
+
+        productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
+        
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        # zip -rf qt.zip qt
+
+        sudo rm -rf _CPack*
+
+        # mv *.zip $(Build.SourcesDirectory)/cache
+
+        # sudo rm -rf *
+      displayName: 'Package CaPTk (.dmg and .pkg)'
+    
+    - bash: |
+        rm -rf src
+        rm -rf docs*
+        rm -rf data
+        rm -rf binaries
+        rm -rf scripts
+
+        cd bin
+        tar cvfz qt.tar.gz qt
+        tar cvfz externalApps.tar.gz externalApps
+
+        rm -rf qt
+        rm -rf externalApps
+        rm -rf _CPack*
+        ls
+        mv bin bin_mac_C1_$(Build.DefinitionName)
+        ls
+        tar cvfz bin_mac_C1_$(Build.DefinitionName).tar.gz bin_mac_C1_$(Build.DefinitionName)
+      displayName: 'Zipping bin'
+    #- script: |
+    #    cd bin
+    #    export GIT_LFS_SKIP_SMUDGE=1
+    #    git lfs pull --include "data/TestData.zip"
+    #    make tests
+    #  displayName: 'Performing the Tests'
+    
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_macOS'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_macOS'
+        downloadPath: '$(System.ArtifactsDirectory)'
+  
+#### SELF-HOSTED AGENTS
+
+# - job: 'XenialSelfHostedBuild'
+#   displayName: "End-to-end Linux (Xenial) build"
 #   timeoutInMinutes: 0
 #   cancelTimeoutInMinutes: 300
 
-#   pool:
-#     vmImage: 'MacOS-10.13'
+#   pool: Default
 
 #   steps:
-#     - task: CacheBeta@0
-#       inputs:
-#         key: |
-#           bin_mac_$(Build.DefinitionName).tar.gz
-#         path: $(Build.SourcesDirectory) 
-#         cacheHitVar: CACHE_RESTORED_MAC
-#         continueOnError : true
-#       displayName: 'Caching'
-
-#     - bash: |
-#         brew install make doxygen llvm
-#         #brew install caskroom/cask/mactex # latex is not used for documentation right now
-#       displayName: 'Brew dependencies'
-    
-#     - bash: |
-#         brew install git-lfs
-#         git lfs install
-#       displayName: 'Brew dependency install LFS'
-#       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
-    
 #     # Pull LFS
 #     - bash: |
-#         export GIT_LFS_SKIP_SMUDGE=1
-#         git lfs pull --include "binaries/precompiledApps/macos.zip"
-#         git lfs pull --include "binaries/qt_5.12.1/macos.zip"
-#         #echo "Not doing this until quota is improved on GitHub"
+#         git lfs pull
 #       displayName: 'Pull LFS'
-#       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
-#     # # Testing LFS
-#     # - bash: |
-#     #     # ls -lt binaries/qt_5.12.1/
-#     #     # ls -lt binaries/precompiledApps/
-#     #     ls binaries
-#     #     ls binaries/precompiledApps
-#     #     ls -lt binaries/qt_5.12.1/
-#     #   displayName: 'Testing binaries'
-
-#     # Moving LFS Files
+#     # Create build dir
 #     - bash: |
-#         mkdir bin
+#         mkdir -p bin
+#       displayName: 'Create build directory'
+
+#     # Configure and build superbuild
+#     - bash: |
 #         cd bin
-#         mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-#         mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
-#         ls -lt
-#       displayName: 'Moving LFS files to the appropriate location under bin'
-#       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+#         make -j2
+#       displayName: 'Configure and compile Superbuild'
+
+#     # Configure and build CaPTk
+#     - bash: |
+#         cd bin
+#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
+#         make -j2
+#         make install/strip
+#       displayName: 'Configure and compile CaPTk'
+
+#     # Check qt
+#     - bash: |
+#         cd bin
+#         ls -a
+#         ls ./qt/
+#       displayName: 'Check qt'
       
+#     # Check libra
 #     - bash: |
-#         tar xvfz bin_mac_$(Build.DefinitionName).tar.gz
-#         rm -rf bin_mac_$(Build.DefinitionName).tar.gz
-#         ls
-#         mv bin_mac_$(Build.DefinitionName) bin
-#         ls
-#         cd bin
+#         cd bin/install/appdir/usr/bin/
+#         ls -l
+#       displayName: 'Checking ${installDir}/bin'
+      
+#     # Build a package
+#     - bash: |
+#         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
+#         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+#         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
-#         # rm CMakeCache.txt 
+#         make install
 
-#         ls -lt
-#       displayName: 'Unzip bin if cached'
-#       condition: eq(variables.CACHE_RESTORED_MAC, 'true')
+#         ./scripts/captk-pkg
 
-#     #- bash: |
-#     #    rm -rf binaries/*linux*.zip
-#     #    rm -rf binaries/*windows*.zip
-#     #    rm -rf history
-#     #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-#     #  displayName: 'Take the nuclear option'
+#         rm -rf bin
+
+#         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
+        
+#       displayName: 'Set up environment variables for packager and build a package'
+
+#     - task: PublishBuildArtifacts@1
+#       inputs:
+#         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#         artifactName: '$(Build.DefinitionName)_installer_Linux_selfhosted'
+
+#     - task: DownloadBuildArtifacts@0
+#       inputs:
+#         buildType: 'current'
+#         downloadType: 'single'
+#         artifactName: '$(Build.DefinitionName)_installer_Linux_selfhosted'
+#         downloadPath: '$(System.ArtifactsDirectory)'
+
+
+# - job: 'MacOSSelfHostBuild'
+#   displayName: "Self-hosted MacOS agent"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 300
+
+#   pool: Default
+
+#   steps:
 
 #     - bash: |
-#         cd bin
-
 #         export CC=""
 #         export CXX=""
 #         export LDFLAGS=""
 #         export CPPFLAGS=""
 
+#         git lfs install && git lfs pull --all
+
 #         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 #         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+#       displayName: 'Export variables'
+
+#     - bash: |
+#         mkdir bin
+#       displayName: 'Create build directory'
+  
+#     - bash: |
+#         cd bin
 
 #         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 #         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
 #         make -j2
-
-#         # rm for llvm
-#         rm CMakeCache.txt 
-
 #       displayName: 'Configure and compile Superbuild'
-#       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
 #     - bash: |
 #         cd bin
 
-#         sudo rm -rf CaPTk_*
+#         rm CMakeCache.txt
 
-#         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-#         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 #         export CC=/usr/local/opt/llvm/bin/clang
 #         export CXX=/usr/local/opt/llvm/bin/clang++
 #         export LDFLAGS="-L/usr/local/opt/llvm/lib"
@@ -451,45 +689,35 @@ jobs:
 #         cmake ../
 #         cmake ../
 
-#         make -j 2
+#         make 
 #       displayName: 'Export variables for llvm then configure and compile CaPTk'
-    
+  
 #     - bash: |
 #         cd bin
 
-#         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-#         pkgname="_Installer"
-#         pkgname="$version$pkgname"
-
-#         sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
-
-#         # rm CMakeCache.txt
-#         # rm -rf CaPTk*.app
+#         rm CMakeCache.txt
+#         rm -rf CaPTk*.app
 
 #         export CC=/usr/local/opt/llvm/bin/clang
 #         export CXX=/usr/local/opt/llvm/bin/clang++
 #         export LDFLAGS="-L/usr/local/opt/llvm/lib"
 #         export CPPFLAGS="-L/usr/local/opt/llvm/include"
 
-#         # cmake ../
-#         # cmake ../
+#         cmake ../
+#         cmake ../
 
-#         make -j 2
-#         # sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
-#         # make -j 2
-#       displayName: 'Ensure documentation is picked up properly'
-    
-    
+#         make 
+#       displayName: 'Ensure documentations are picked up properly'
+  
+  
 #     - bash: |
 #         cd bin 
-        
+      
+#         make package
+
 #         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
 #         pkgname="_Installer"
 #         pkgname="$version$pkgname"
-
-#         rm -rf *.pkg 
-#         rm -rf _CPack*
-#         make package
 
 #         pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
@@ -506,7 +734,7 @@ jobs:
 #                     <line choice="com.cbica.captk"/>
 #                 </line>
 #             </choices-outline>
-#             <choice id="default"/>
+#           <choice id="default"/>
 #             <choice id="com.cbica.captk" visible="false">
 #                 <pkg-ref id="com.cbica.captk"/>
 #             </choice>
@@ -516,234 +744,19 @@ jobs:
 #         echo $xml > "./distribution.xml"
 
 #         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
-        
-#         mv *_Installer.* $(Build.ArtifactStagingDirectory)
-#         # zip -rf qt.zip qt
-
-#         sudo rm -rf _CPack*
-
-#         # mv *.zip $(Build.SourcesDirectory)/cache
-
-#         # sudo rm -rf *
+      
+#         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
+#         rm -rf *
 #       displayName: 'Package CaPTk (.dmg and .pkg)'
-    
-#     - bash: |
-#         ls
-#         mv bin bin_mac_$(Build.DefinitionName)
-#         ls
-#         tar cvfz bin_mac_$(Build.DefinitionName).tar.gz bin_mac_$(Build.DefinitionName)
-#       displayName: 'Zipping bin'
-#     #- script: |
-#     #    cd bin
-#     #    export GIT_LFS_SKIP_SMUDGE=1
-#     #    git lfs pull --include "data/TestData.zip"
-#     #    make tests
-#     #  displayName: 'Performing the Tests'
-    
+
 #     - task: PublishBuildArtifacts@1
 #       inputs:
 #         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#         artifactName: '$(Build.DefinitionName)_installer_macOS'
+#         artifactName: '$(Build.DefinitionName)_installer_macOS_selfhosted'
 
 #     - task: DownloadBuildArtifacts@0
 #       inputs:
 #         buildType: 'current'
 #         downloadType: 'single'
-#         artifactName: '$(Build.DefinitionName)_installer_macOS'
+#         artifactName: '$(Build.DefinitionName)_installer_macOS_selfhosted'
 #         downloadPath: '$(System.ArtifactsDirectory)'
-  
-# #### SELF-HOSTED AGENTS
-
-# # - job: 'XenialSelfHostedBuild'
-# #   displayName: "End-to-end Linux (Xenial) build"
-# #   timeoutInMinutes: 0
-# #   cancelTimeoutInMinutes: 300
-
-# #   pool: Default
-
-# #   steps:
-# #     # Pull LFS
-# #     - bash: |
-# #         git lfs pull
-# #       displayName: 'Pull LFS'
-
-# #     # Create build dir
-# #     - bash: |
-# #         mkdir -p bin
-# #       displayName: 'Create build directory'
-
-# #     # Configure and build superbuild
-# #     - bash: |
-# #         cd bin
-# #         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
-# #         make -j2
-# #       displayName: 'Configure and compile Superbuild'
-
-# #     # Configure and build CaPTk
-# #     - bash: |
-# #         cd bin
-# #         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQT_DOWNLOAD_FORCE=ON ..
-# #         make -j2
-# #         make install/strip
-# #       displayName: 'Configure and compile CaPTk'
-
-# #     # Check qt
-# #     - bash: |
-# #         cd bin
-# #         ls -a
-# #         ls ./qt/
-# #       displayName: 'Check qt'
-      
-# #     # Check libra
-# #     - bash: |
-# #         cd bin/install/appdir/usr/bin/
-# #         ls -l
-# #       displayName: 'Checking ${installDir}/bin'
-      
-# #     # Build a package
-# #     - bash: |
-# #         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
-# #         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
-# #         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-
-# #         make install
-
-# #         ./scripts/captk-pkg
-
-# #         rm -rf bin
-
-# #         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
-        
-# #       displayName: 'Set up environment variables for packager and build a package'
-
-# #     - task: PublishBuildArtifacts@1
-# #       inputs:
-# #         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-# #         artifactName: '$(Build.DefinitionName)_installer_Linux_selfhosted'
-
-# #     - task: DownloadBuildArtifacts@0
-# #       inputs:
-# #         buildType: 'current'
-# #         downloadType: 'single'
-# #         artifactName: '$(Build.DefinitionName)_installer_Linux_selfhosted'
-# #         downloadPath: '$(System.ArtifactsDirectory)'
-
-
-# # - job: 'MacOSSelfHostBuild'
-# #   displayName: "Self-hosted MacOS agent"
-# #   timeoutInMinutes: 0
-# #   cancelTimeoutInMinutes: 300
-
-# #   pool: Default
-
-# #   steps:
-
-# #     - bash: |
-# #         export CC=""
-# #         export CXX=""
-# #         export LDFLAGS=""
-# #         export CPPFLAGS=""
-
-# #         git lfs install && git lfs pull --all
-
-# #         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-# #         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-# #       displayName: 'Export variables'
-
-# #     - bash: |
-# #         mkdir bin
-# #       displayName: 'Create build directory'
-  
-# #     - bash: |
-# #         cd bin
-
-# #         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-# #         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-
-# #         make -j2
-# #       displayName: 'Configure and compile Superbuild'
-
-# #     - bash: |
-# #         cd bin
-
-# #         rm CMakeCache.txt
-
-# #         export CC=/usr/local/opt/llvm/bin/clang
-# #         export CXX=/usr/local/opt/llvm/bin/clang++
-# #         export LDFLAGS="-L/usr/local/opt/llvm/lib"
-# #         export CPPFLAGS="-L/usr/local/opt/llvm/include"
-
-# #         cmake ../
-# #         cmake ../
-
-# #         make 
-# #       displayName: 'Export variables for llvm then configure and compile CaPTk'
-  
-# #     - bash: |
-# #         cd bin
-
-# #         rm CMakeCache.txt
-# #         rm -rf CaPTk*.app
-
-# #         export CC=/usr/local/opt/llvm/bin/clang
-# #         export CXX=/usr/local/opt/llvm/bin/clang++
-# #         export LDFLAGS="-L/usr/local/opt/llvm/lib"
-# #         export CPPFLAGS="-L/usr/local/opt/llvm/include"
-
-# #         cmake ../
-# #         cmake ../
-
-# #         make 
-# #       displayName: 'Ensure documentations are picked up properly'
-  
-  
-# #     - bash: |
-# #         cd bin 
-      
-# #         make package
-
-# #         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-# #         pkgname="_Installer"
-# #         pkgname="$version$pkgname"
-
-# #         pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
-
-# #         productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
-
-# #         xml='<?xml version="1.0" encoding="utf-8"?>
-# #         <installer-gui-script minSpecVersion="1">
-# #             <title>CaPTk_'"$version"'</title>
-# #             <license file="Combined.txt"></license>
-# #             <pkg-ref id="com.cbica.captk"/>
-# #             <options customize="never" require-scripts="false"/>
-# #             <choices-outline>
-# #                 <line choice="default">
-# #                     <line choice="com.cbica.captk"/>
-# #                 </line>
-# #             </choices-outline>
-# #           <choice id="default"/>
-# #             <choice id="com.cbica.captk" visible="false">
-# #                 <pkg-ref id="com.cbica.captk"/>
-# #             </choice>
-# #             <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
-# #         </installer-gui-script>' 
-
-# #         echo $xml > "./distribution.xml"
-
-# #         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
-      
-# #         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
-# #         rm -rf *
-# #       displayName: 'Package CaPTk (.dmg and .pkg)'
-
-# #     - task: PublishBuildArtifacts@1
-# #       inputs:
-# #         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-# #         artifactName: '$(Build.DefinitionName)_installer_macOS_selfhosted'
-
-# #     - task: DownloadBuildArtifacts@0
-# #       inputs:
-# #         buildType: 'current'
-# #         downloadType: 'single'
-# #         artifactName: '$(Build.DefinitionName)_installer_macOS_selfhosted'
-# #         downloadPath: '$(System.ArtifactsDirectory)'
