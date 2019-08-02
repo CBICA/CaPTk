@@ -1331,7 +1331,8 @@ namespace cbica
           (m_requiredParameters[i].descriptionLine5 == "" ? "" : (m_requiredParameters[i].descriptionLine5 + "."));
       }
 
-      if (m_optionalParameters.size() > 0) {
+      if (m_optionalParameters.size() > 0) 
+      {
         for (size_t i = 0; i < m_optionalParameters.size(); i++)
         {
           if (m_optionalParameters[i].verbose == "help" ||
@@ -1340,7 +1341,8 @@ namespace cbica
             m_optionalParameters[i].verbose == "LogFile") {
             continue;
           }
-          else {
+          else 
+          {
             config["inputs"]["-" + m_optionalParameters[i].verbose];
             config["inputs"][m_optionalParameters[i].verbose]["type"] =
               (m_optionalParameters[i].dataType_string == "STRING") ? "string?" :
