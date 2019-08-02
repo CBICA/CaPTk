@@ -345,14 +345,14 @@ jobs:
     vmImage: 'MacOS-10.13'
 
   steps:
-    - task: CacheBeta@0
-      inputs:
-        key: |
-          bin_mac_C1_$(Build.DefinitionName).tar.gz
-        path: $(Build.SourcesDirectory) 
-        cacheHitVar: CACHE_RESTORED_MAC
-        # rolling : true
-      displayName: 'Caching'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: |
+    #       bin_mac_C1_$(Build.DefinitionName).tar.gz
+    #     path: $(Build.SourcesDirectory) 
+    #     cacheHitVar: CACHE_RESTORED_MAC
+    #     # rolling : true
+    #   displayName: 'Caching'
 
     - bash: |
         brew install make doxygen llvm
@@ -363,7 +363,7 @@ jobs:
         brew install git-lfs
         git lfs install
       displayName: 'Brew dependency install LFS'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
     
     # Pull LFS
     - bash: |
@@ -372,7 +372,7 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/macos.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     # # Testing LFS
     # - bash: |
@@ -391,21 +391,21 @@ jobs:
         mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
       
-    - bash: |
-        tar xvfz bin_mac_C1_$(Build.DefinitionName).tar.gz
-        rm -rf bin_mac_C1_$(Build.DefinitionName).tar.gz
-        ls
-        mv bin_mac_C1_$(Build.DefinitionName) bin
-        ls
-        cd bin
+    # - bash: |
+    #     tar xvfz bin_mac_C1_$(Build.DefinitionName).tar.gz
+    #     rm -rf bin_mac_C1_$(Build.DefinitionName).tar.gz
+    #     ls
+    #     mv bin_mac_C1_$(Build.DefinitionName) bin
+    #     ls
+    #     cd bin
 
-        # rm CMakeCache.txt 
+    #     # rm CMakeCache.txt 
 
-        ls -lt
-      displayName: 'Unzip bin if cached'
-      condition: eq(variables.CACHE_RESTORED_MAC, 'true')
+    #     ls -lt
+    #   displayName: 'Unzip bin if cached'
+    #   #condition: eq(variables.CACHE_RESTORED_MAC, 'true')
 
     #- bash: |
     #    rm -rf binaries/*linux*.zip
@@ -434,7 +434,7 @@ jobs:
         rm CMakeCache.txt 
 
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         cd bin
