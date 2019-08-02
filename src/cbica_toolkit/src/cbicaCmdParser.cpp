@@ -1307,7 +1307,7 @@ namespace cbica
       YAML::Node inputs = config["inputs"];
 
       YAML::Node hints = config["hints"];
-      config["hints"]["SoftwareRequirement"]["packages"][m_exeName]["version"] = m_version;
+      config["hints"]["SoftwareRequirement"]["packages"][m_exeName]["version"] = "[ " + m_version + " ]";
 
       for (size_t i = 0; i < m_requiredParameters.size(); i++)
       {
