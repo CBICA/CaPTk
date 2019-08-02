@@ -428,8 +428,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( CaPTk_CLIs_Folder "CaPTk_CLIApps")
   SET( CaPTk_Libs_Folder "CaPTk_Libs")
 
-  ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
-  SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
+  IF (NOT TARGET plugin)
+    ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
+    SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
+  ENDIF()
   
   # include dependencies
   # add source code include directories

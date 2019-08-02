@@ -23,7 +23,7 @@ jobs:
           bin_windows_$(Build.DefinitionName).tar.gz
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_WINDOWS
-        # rolling : true
+        continueOnError : true
       displayName: 'Caching'
 
     - script: |
@@ -180,7 +180,7 @@ jobs:
           bin_linux_$(Build.DefinitionName).tar.gz
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_LINUX
-        # rolling : true
+        continueOnError : true
       displayName: 'Caching'
 
     # Dependency manager
@@ -351,7 +351,7 @@ jobs:
 #           bin_mac_$(Build.DefinitionName).tar.gz
 #         path: $(Build.SourcesDirectory) 
 #         cacheHitVar: CACHE_RESTORED_MAC
-#         # rolling : true
+#         continueOnError : true
 #       displayName: 'Caching'
 
 #     - bash: |
