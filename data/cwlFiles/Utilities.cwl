@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.2
 baseCommand: Utilities
 inputs:
   runtest:
@@ -150,3 +149,9 @@ inputs:
       position: 1
       prefix: -d2n
     doc: If path to reference is present, then image comparison is done.Use '-i' to pass input DICOM image.Use '-o' to pass output image file.
+hints:
+  SoftwareRequirement:
+    packages:
+      Utilities:
+        version:
+          - 1.7.3.nonRelease
