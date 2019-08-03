@@ -36,7 +36,7 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
-| Windows        | https://www.nitrc.org/frs/downloadlink.php/11485 |
+| Windows        | https://www.nitrc.org/frs/downloadlink.php/11503 |
 | Linux          | https://www.nitrc.org/frs/downloadlink.php/11487 |
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11486 |
 
