@@ -14,15 +14,22 @@ CAPTK_CMD () {
 # #git lfs install && git lfs fetch --all
 
 # cd ../
-# export GIT_LFS_SKIP_SMUDGE=1
+# git lfs install
+# # export GIT_LFS_SKIP_SMUDGE=1
 # git lfs pull --include "binaries/precompiledApps/macos.zip"
 # git lfs pull --include "binaries/qt_5.12.1/macos.zip"
+
+# cd bin
 # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
 # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
-# cd bin
+# mkdir -p qt
+# tar xfz qt.zip --directory qt
+# mkdir -p externalApps
+# tar xfz binaries_macos.zip --directory externalApps
 
-echo "Run Dependency Manager"
-echo $CC
+rm -rf CMakeCache.txt
+# echo "Run Dependency Manager"
+# echo $CC
 ### COMMENT OUT THE LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
 export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 export CMAKE_PREFIX_PATH="/Library/TeX/texbin"

@@ -231,7 +231,9 @@ jobs:
     #     mv bin_linux_C1_$(Build.DefinitionName) bin
     #     ls
     #     cd bin
-
+    #     tar xvfz qt.tar.gz
+    #     tar xvfz externalApps.tar.gz
+    #     # mv binaries_windows externalApps
     #     # rm CMakeCache.txt 
 
     #     ls -lt
@@ -393,19 +395,26 @@ jobs:
       displayName: 'Moving LFS files to the appropriate location under bin'
       #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
       
-    # - bash: |
-    #     tar xvfz bin_mac_C1_$(Build.DefinitionName).tar.gz
-    #     rm -rf bin_mac_C1_$(Build.DefinitionName).tar.gz
-    #     ls
-    #     mv bin_mac_C1_$(Build.DefinitionName) bin
-    #     ls
-    #     cd bin
+    - bash: |
+        tar xvfz bin_mac_C1_$(Build.DefinitionName).tar.gz
+        rm -rf bin_mac_C1_$(Build.DefinitionName).tar.gz
+        ls
+        mv bin_mac_C1_$(Build.DefinitionName) bin
+        ls
+        cd bin
+        tar xvfz qt.tar.gz
+        tar xvfz externalApps.tar.gz
+        # mv binaries_windows externalApps
+        # rm CMakeCache.txt 
 
-    #     # rm CMakeCache.txt 
+        ls -lt
+        cd bin
 
-    #     ls -lt
-    #   displayName: 'Unzip bin if cached'
-    #   #condition: eq(variables.CACHE_RESTORED_MAC, 'true')
+        # rm CMakeCache.txt 
+
+        ls -lt
+      displayName: 'Unzip bin if cached'
+      #condition: eq(variables.CACHE_RESTORED_MAC, 'true')
 
     #- bash: |
     #    rm -rf binaries/*linux*.zip
@@ -525,9 +534,10 @@ jobs:
         rm -rf qt
         rm -rf externalApps
         rm -rf _CPack*
-        ls
+        cd ../
+        # ls
         mv bin bin_mac_C1_$(Build.DefinitionName)
-        ls
+        # ls
         tar cvfz bin_mac_C1_$(Build.DefinitionName).tar.gz bin_mac_C1_$(Build.DefinitionName)
       displayName: 'Zipping bin'
     #- script: |
