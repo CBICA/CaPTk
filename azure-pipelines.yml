@@ -424,8 +424,6 @@ jobs:
         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
         make -j 2
-
-        rm CMakeCache.txt
   
       displayName: 'Configure and compile Superbuild'
       #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
@@ -439,6 +437,7 @@ jobs:
         sudo rm -rf CaPTk_*
 
         cmake ../
+        rm CMakeCache.txt
         cmake ../
 
         make -j 2
