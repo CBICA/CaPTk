@@ -240,16 +240,12 @@ public:
             lrhgle += runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
             runs += runLengthFeaturesCalculator->GetTotalNumberOfRuns();
             rp += static_cast<double>(runLengthFeaturesCalculator->GetTotalNumberOfRuns()) / static_cast<double>(this->m_nonZeroIndeces.size());
-
-            // TBD: this features are not IBSI-compliant, hence in debugMode
-            if (this->m_debugMode)
-            {
-              glnn += runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
-              rlnn += runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
-              glv += runLengthFeaturesCalculator->GetGreyLevelVariance();
-              rlv += runLengthFeaturesCalculator->GetRunLengthVariance();
-              re += runLengthFeaturesCalculator->GetRunEntropy();
-            }
+            //// part of the "enhanced" set coming from MITK
+            //glnn += runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+            //rlnn += runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+            //glv += runLengthFeaturesCalculator->GetGreyLevelVariance();
+            //rlv += runLengthFeaturesCalculator->GetRunLengthVariance();
+            //re += runLengthFeaturesCalculator->GetRunEntropy();
           }
           else // individual
           {
@@ -269,11 +265,11 @@ public:
               this->m_features["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
               this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
               this->m_features["RunPercentage_Offset_" + std::to_string(offsetNum)] = this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(this->m_nonZeroIndeces.size());
-              this->m_features["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
-              this->m_features["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
-              this->m_features["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelVariance();
-              this->m_features["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthVariance();
-              this->m_features["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunEntropy();
+              //this->m_features["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+              //this->m_features["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+              //this->m_features["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelVariance();
+              //this->m_features["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthVariance();
+              //this->m_features["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunEntropy();
             }
           }
         }
@@ -318,11 +314,11 @@ public:
              this->m_features["LongRunLowGreyLevelEmphasis"] = lrlgle;
              this->m_features["LongRunHighGreyLevelEmphasis"] = lrhgle;
              this->m_features["TotalRuns"] = runs;
-             this->m_features["RunLengthNonuniformityNormalized"] = rlnn;
-             this->m_features["GreyLevelNonuniformityNormalized"] = glnn;
-             this->m_features["GreyLevelVariance_Offset"] = glv;
-             this->m_features["RunLengthVariance_Offset"] = rlv;
-             this->m_features["RunEntropy"] = re;
+             //this->m_features["RunLengthNonuniformityNormalized"] = rlnn;
+             //this->m_features["GreyLevelNonuniformityNormalized"] = glnn;
+             //this->m_features["GreyLevelVariance_Offset"] = glv;
+             //this->m_features["RunLengthVariance_Offset"] = rlv;
+             //this->m_features["RunEntropy"] = re;
           }
 
           //TBD
