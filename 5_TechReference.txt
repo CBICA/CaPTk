@@ -156,18 +156,18 @@ The visualization of images is based on the physical coordinate system of each i
       <td>N.A. <br><br>3:13 <br><br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>Individual/Average/Combined<br><br>1:5
       <td>10 <br><br>13 <br><br><br>2 <br><br>3D <br><br>z  <br><br>Average <br><br>1
       <td>
-        For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j. Please note that some features are only extracted in DebugMode.
+        For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j. Please note that some features are only extracted in DebugMode; these defines features that are mathematically formulated in previous published material but not completely aligned with The Image Biomarker Standardisation Initiative.
         <ul>
-          <li>[DEBUG MODE ONLY] Short Run Emphasis (SRE) = \f$ \frac{1}{n_r}\sum_{i,j}^{N}\frac{p(i,j)}{j^2} \f$
-          <li>[DEBUG MODE ONLY] Long Run Emphasis (LRE) =\f$ \frac{1}{n_r}\sum_{j}^{N}p(i,j) \cdot j^2\f$
-          <li>[DEBUG MODE ONLY] Grey Level Non-uniformity (GLN) =\f$ \frac{1}{n_r}\sum_{i}^{M}\Big(\sum_{j}^{N}p(i,j) \Big)^2 \f$
-          <li>[DEBUG MODE ONLY] Run Length Non-uniformity (RLN) =\f$ \frac{1}{n_r}\sum_{j}^{N}\Big(\sum_{i}^{M}p(i,j) \Big)^2 \f$       
+          <li>[COMPLETE MODE] Short Run Emphasis (SRE) = \f$ \frac{1}{n_r}\sum_{i,j}^{N}\frac{p(i,j)}{j^2} \f$
+          <li>[COMPLETE MODE] Long Run Emphasis (LRE) =\f$ \frac{1}{n_r}\sum_{j}^{N}p(i,j) \cdot j^2\f$
+          <li>[COMPLETE MODE] Grey Level Non-uniformity (GLN) =\f$ \frac{1}{n_r}\sum_{i}^{M}\Big(\sum_{j}^{N}p(i,j) \Big)^2 \f$
+          <li>[COMPLETE MODE] Run Length Non-uniformity (RLN) =\f$ \frac{1}{n_r}\sum_{j}^{N}\Big(\sum_{i}^{M}p(i,j) \Big)^2 \f$       
           <li>Low Grey-Level Run Emphasis (LGRE)=\f$ \frac{1}{n_r}\sum_{i}^{M}\frac{p_g(i)}{i^2} \f$
           <li>High Grey-Level Run Emphasis (HGRE)=\f$ \frac{1}{n_r}\sum_{i}^{M}p_g(i) \cdot i^2 \f$
           <li>Short Run Low Grey-Level Emphasis (SRLGE)= \f$\frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}\frac{p(i,j)}{i^2 \cdot j^2} \f$ 
           <li>Short Run High Grey-Level Emphasis (SRLGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}\frac{p(i,j) \cdot i^2 }{j^2}\f$ 
-          <li>[DEBUG MODE ONLY] Long Run Low Grey-Level Emphasis (LRLGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}\frac{p(i,j) \cdot j^2 }{i^2} \f$ 
-          <li>[DEBUG MODE ONLY] Long Run High Grey-Level Emphasis (LRHGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}p(i,j) \cdot i^2 \cdot j^2 \f$ 
+          <li>[COMPLETE MODE] Long Run Low Grey-Level Emphasis (LRLGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}\frac{p(i,j) \cdot j^2 }{i^2} \f$ 
+          <li>[COMPLETE MODE] Long Run High Grey-Level Emphasis (LRHGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}p(i,j) \cdot i^2 \cdot j^2 \f$ 
         </ul>
         All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume. 
         <b>Note</b> that the creation of the GLRLM and its corresponding aforementioned features for all offsets are calculated using an existing ITK filter. The <b>Individual</b> option gives features for each individual offset, <b>Average</b> estimates the average across all offsets and assigns a single value for each feature and <b>Combined</b> combines the GLRLM matrices generated across offsets and calculates a single set of features from this matrix.
