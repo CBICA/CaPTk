@@ -4,7 +4,7 @@
 # Cmake command to run from /trunk/bin
 # We need this directory structure for appimages to be generated
 CAPTK_CMD () {
-rm -rf *
+# # rm -rf *
 
 # export CC=""
 # export CXX=""
@@ -13,37 +13,41 @@ rm -rf *
 
 # #git lfs install && git lfs fetch --all
 
-cd ../
-git lfs install
-# export GIT_LFS_SKIP_SMUDGE=1
-git lfs pull --include "binaries/precompiledApps/macos.zip"
-git lfs pull --include "binaries/qt_5.12.1/macos.zip"
+# cd ../
+# git lfs install
+# # export GIT_LFS_SKIP_SMUDGE=1
+# git lfs pull --include "binaries/precompiledApps/macos.zip"
+# git lfs pull --include "binaries/qt_5.12.1/macos.zip"
 
-cd bin
-cp ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-cp ../binaries/qt_5.12.1/macos.zip ./qt.zip
-mkdir -p qt
-tar xfz qt.zip --directory qt
-mkdir -p externalApps
-tar xfz binaries_macos.zip --directory externalApps
+# cd bin
+# cp ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+# cp ../binaries/qt_5.12.1/macos.zip ./qt.zip
+# mkdir -p qt
+# tar xfz qt.zip --directory qt
+# mkdir -p externalApps
+# tar xfz binaries_macos.zip --directory externalApps
 
-rm -rf CMakeCache.txt
-# echo "Run Dependency Manager"
-# echo $CC
-### COMMENT OUT THE LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
-export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+# rm -rf CMakeCache.txt
+# # echo "Run Dependency Manager"
+# # echo $CC
+# ### COMMENT OUT THE LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
+# export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+# export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
-cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
+# cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
+# # cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
 
-make -j 2
+# make -j 2
 
 ### BUILD CAPTK
 sudo rm -rf CaPTk_*
 
 echo "Run CaPTk Build"
 
+cmake ../
+rm CMakeCache.txt
+export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 cmake ../
 make -j 2
 
