@@ -156,7 +156,7 @@ The visualization of images is based on the physical coordinate system of each i
       <td>N.A. <br><br>3:13 <br><br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>Individual/Average/Combined<br><br>1:5
       <td>10 <br><br>13 <br><br><br>2 <br><br>3D <br><br>z  <br><br>Average <br><br>1
       <td>
-        For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j. Please note that some features are only extracted in DebugMode; these defines features that are mathematically formulated in previous published material but not completely aligned with The Image Biomarker Standardisation Initiative.
+        For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j. Please note that some features are only extracted in DebugMode (by using the "-d" parameter from the command line); these defines features that are mathematically formulated in previous published material but not completely aligned with The Image Biomarker Standardisation Initiative.
         <ul>
           <li>[COMPLETE MODE] Short Run Emphasis (SRE) = \f$ \frac{1}{n_r}\sum_{i,j}^{N}\frac{p(i,j)}{j^2} \f$
           <li>[COMPLETE MODE] Long Run Emphasis (LRE) =\f$ \frac{1}{n_r}\sum_{j}^{N}p(i,j) \cdot j^2\f$
