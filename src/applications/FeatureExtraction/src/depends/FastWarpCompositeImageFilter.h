@@ -49,11 +49,11 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 
-    /** Run-time type information (and related methods) */
-    itkTypeMacro(FastWarpCompositeImageFilter, ImageToImageFilter)
+  /** Run-time type information (and related methods) */
+  itkTypeMacro(FastWarpCompositeImageFilter, ImageToImageFilter)
 
-    /** Determine the image dimension. */
-    itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
+  /** Determine the image dimension. */
+  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
 
   // Lots of typedefs
   typedef TInputImage                                 InputImageType;
@@ -78,42 +78,42 @@ public:
   itkNamedInputMacro(DeformationField, DeformationFieldType, "Primary")
 
     /** Set the moving image */
-    itkNamedInputMacro(MovingImage, InputImageType, "moving")
+  itkNamedInputMacro(MovingImage, InputImageType, "moving")
 
-    /**
-     * Set whether the filter should use physical space calculations, i.e., the
-     * displacement field is between physical coordinates of the voxels in the
-     * fixed image domain and the physical coordinates of the voxels in the
-     * moving image domain. By default, voxel units are used for greater speed.
-     */
-    itkSetMacro(UsePhysicalSpace, bool)
-    itkGetMacro(UsePhysicalSpace, bool)
+  /**
+   * Set whether the filter should use physical space calculations, i.e., the
+   * displacement field is between physical coordinates of the voxels in the
+   * fixed image domain and the physical coordinates of the voxels in the
+   * moving image domain. By default, voxel units are used for greater speed.
+   */
+  itkSetMacro(UsePhysicalSpace, bool)
+  itkGetMacro(UsePhysicalSpace, bool)
 
-    /**
-     * Set optional scaling for the deformation field
-     */
-    itkSetMacro(DeformationScaling, DeforamtionScalarType)
-    itkGetMacro(DeformationScaling, DeforamtionScalarType)
+  /**
+   * Set optional scaling for the deformation field
+   */
+  itkSetMacro(DeformationScaling, DeforamtionScalarType)
+  itkGetMacro(DeformationScaling, DeforamtionScalarType)
 
-    /**
-     * Should nearest neighbor interpolation be used?
-     */
-    itkSetMacro(UseNearestNeighbor, bool)
-    itkGetMacro(UseNearestNeighbor, bool)
+  /**
+   * Should nearest neighbor interpolation be used?
+   */
+  itkSetMacro(UseNearestNeighbor, bool)
+  itkGetMacro(UseNearestNeighbor, bool)
 
-    /**
-     * When the warp is slightly outside of the moving image, should we
-     * perform linear interpolation between border pixels and outside value (0)
-     * or just report the outside value
-     */
-    itkSetMacro(ExtrapolateBorders, bool)
-    itkGetMacro(ExtrapolateBorders, bool)
+  /**
+   * When the warp is slightly outside of the moving image, should we
+   * perform linear interpolation between border pixels and outside value (0)
+   * or just report the outside value
+   */
+  itkSetMacro(ExtrapolateBorders, bool)
+  itkGetMacro(ExtrapolateBorders, bool)
 
-    /**
-     * The outside value is used to fill in parts of the image that lie outside of
-     * the domain.
-     */
-    itkSetMacro(OutsideValue, OutputComponentType);
+  /**
+   * The outside value is used to fill in parts of the image that lie outside of
+   * the domain.
+   */
+  itkSetMacro(OutsideValue, OutputComponentType);
   itkGetMacro(OutsideValue, OutputComponentType);
 
 protected:
