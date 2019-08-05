@@ -58,6 +58,12 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "DicomIOManager.h"
 
+//#include "itkNaryFunctorImageFilter.h"
+//#include "itkSmoothingRecursiveGaussianImageFilter.h"
+//#include "itkBinaryThresholdImageFilter.h"
+//#include "FastWarpCompositeImageFilter.h"
+
+
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 //unsigned int RmsCounter = 0;
 //double MaxRmsE[4] = { 0.8, 0.75, 0.4, 0.2 };
@@ -70,6 +76,46 @@ enum DeformRegType
 enum InterpolatorType
 {
   Linear, NearestNeighbor, BSpline
+};
+
+//! Helper class for computation
+template <class TInputImage, class TOutputImage>
+class NaryLabelVotingFunctor
+{
+public:
+  typedef NaryLabelVotingFunctor<TInputImage, TOutputImage> Self;
+  typedef typename TInputImage::PixelType InputPixelType;
+  typedef typename TOutputImage::PixelType OutputPixelType;
+  typedef std::vector<OutputPixelType> LabelArray;
+
+  NaryLabelVotingFunctor(const LabelArray &labels)
+    : m_LabelArray(labels), m_Size(labels.size()) {}
+
+  NaryLabelVotingFunctor() : m_Size(0) {}
+
+
+  OutputPixelType operator() (const std::vector<InputPixelType> &pix)
+  {
+    InputPixelType best_val = pix[0];
+    int best_index = 0;
+    for (int i = 1; i < m_Size; i++)
+      if (pix[i] > best_val)
+      {
+        best_val = pix[i];
+        best_index = i;
+      }
+
+    return m_LabelArray[best_index];
+  }
+
+  bool operator != (const Self &other)
+  {
+    return other.m_LabelArray != m_LabelArray;
+  }
+
+protected:
+  LabelArray m_LabelArray;
+  int m_Size;
 };
 
 /*
@@ -1114,8 +1160,106 @@ namespace cbica
     }
     else if (interpolator_wrap.find("nearest") != std::string::npos)
     {
-      auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
-      resampler->SetInterpolator(interpolatorFunc);
+      // if nearest label is found, do something special
+      if (interpolator_wrap.find("nearestlabel") != std::string::npos)
+      {
+        /*
+        ///
+        // this situation can only happen in case of a mask image
+        // The label image assumed to be an image of shortsC
+        typedef itk::Image<short, TImageType::ImageDimension> LabelImageType;
+        /// histogram calculation from ITK -- for texture feature pipeline
+        auto caster = itk::CastImageFilter< TImageType, LabelImageType >::New();
+        caster->SetInput(inputImage); //original input binary mask, not the masked image
+        caster->Update();
+
+        auto moving = caster->GetOutput();
+
+        // Scan the unique labels in the image
+        std::set<short> label_set;
+        short *labels = inputImage->GetBufferPointer();
+        int n_pixels = moving->GetPixelContainer()->Size();
+
+        // Get the list of unique pixels
+        short last_pixel = 0;
+        for (int j = 0; j < n_pixels; j++)
+        {
+          short pixel = labels[j];
+          if (last_pixel != pixel || i == 0)
+          {
+            label_set.insert(pixel);
+            last_pixel = pixel;
+            if (label_set.size() > 1000)
+              throw GreedyException("Label wise interpolation not supported for image %s "
+                "which has over 1000 distinct labels", filename);
+          }
+        }
+
+        // Turn this set into an array
+        std::vector<short> label_array(label_set.begin(), label_set.end());
+
+        // Create a N-way voting filter
+        typedef NaryLabelVotingFunctor<TImageType, LabelImageType> VotingFunctor;
+        VotingFunctor vf(label_array);
+
+        typedef itk::NaryFunctorImageFilter<TImageType, LabelImageType, VotingFunctor> VotingFilter;
+        typename VotingFilter::Pointer fltVoting = VotingFilter::New();
+        fltVoting->SetFunctor(vf);
+
+        // Create a mini-pipeline of streaming filters
+        for (int j = 0; j < label_array.size(); j++)
+        {
+          // Set up a threshold filter for this label
+          typedef itk::BinaryThresholdImageFilter<LabelImageType, TImageType> ThresholdFilterType;
+          typename ThresholdFilterType::Pointer fltThreshold = ThresholdFilterType::New();
+          fltThreshold->SetInput(moving);
+          fltThreshold->SetLowerThreshold(label_array[j]);
+          fltThreshold->SetUpperThreshold(label_array[j]);
+          fltThreshold->SetInsideValue(1.0);
+          fltThreshold->SetOutsideValue(0.0);
+
+          // Set up a smoothing filter for this label
+          typedef itk::SmoothingRecursiveGaussianImageFilter<ImageType, ImageType> SmootherType;
+          typename SmootherType::Pointer fltSmooth = SmootherType::New();
+          fltSmooth->SetInput(fltThreshold->GetOutput());
+
+          // Work out the sigmas for the filter
+          if (r_param.images[i].interp.sigma.physical_units)
+          {
+            fltSmooth->SetSigma(r_param.images[i].interp.sigma.sigma);
+          }
+          else
+          {
+            typename SmootherType::SigmaArrayType sigma_array;
+            for (int d = 0; d < VDim; d++)
+              sigma_array[d] = r_param.images[i].interp.sigma.sigma * moving->GetSpacing()[d];
+            fltSmooth->SetSigmaArray(sigma_array);
+          }
+
+          // TODO: we should really be coercing the output into a vector image to speed up interpolation!
+          typedef FastWarpCompositeImageFilter<TImageType, TImageType, VectorImageType> InterpFilter;
+          typename InterpFilter::Pointer fltInterp = InterpFilter::New();
+          fltInterp->SetMovingImage(fltSmooth->GetOutput());
+          fltInterp->SetDeformationField(warp);
+          fltInterp->SetUsePhysicalSpace(true);
+
+          fltInterp->Update();
+
+          // Add to the voting filter
+          fltVoting->SetInput(j, fltInterp->GetOutput());
+        }
+
+        // TODO: test out streaming!
+        // Run this big pipeline
+        fltVoting->Update();
+        ///
+        */
+      }
+      else
+      {
+        auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
+        resampler->SetInterpolator(interpolatorFunc);
+      }
     }
     //else if (interpolator_wrap.find("window") != std::string::npos)
     //{
