@@ -395,25 +395,25 @@ jobs:
       displayName: 'Moving LFS files to the appropriate location under bin'
       #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
       
-    - bash: |
-        tar xvfz bin_mac_C1_$(Build.DefinitionName).tar.gz
-        rm -rf bin_mac_C1_$(Build.DefinitionName).tar.gz
-        ls
-        mv bin_mac_C1_$(Build.DefinitionName) bin
-        ls
-        cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
-        # mv binaries_windows externalApps
-        # rm CMakeCache.txt 
+    # - bash: |
+    #     tar xvfz bin_mac_C1_$(Build.DefinitionName).tar.gz
+    #     rm -rf bin_mac_C1_$(Build.DefinitionName).tar.gz
+    #     ls
+    #     mv bin_mac_C1_$(Build.DefinitionName) bin
+    #     ls
+    #     cd bin
+    #     tar xvfz qt.tar.gz
+    #     tar xvfz externalApps.tar.gz
+    #     # mv binaries_windows externalApps
+    #     # rm CMakeCache.txt 
 
-        ls -lt
-        cd bin
+    #     ls -lt
+    #     cd bin
 
-        # rm CMakeCache.txt 
+    #     # rm CMakeCache.txt 
 
-        ls -lt
-      displayName: 'Unzip bin if cached'
+    #     ls -lt
+    #   displayName: 'Unzip bin if cached'
       #condition: eq(variables.CACHE_RESTORED_MAC, 'true')
 
     #- bash: |
@@ -447,6 +447,8 @@ jobs:
 
         cmake ../
         rm CMakeCache.txt
+        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
         cmake ../
 
         make -j 2

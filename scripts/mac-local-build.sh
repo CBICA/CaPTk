@@ -45,6 +45,9 @@ sudo rm -rf CaPTk_*
 echo "Run CaPTk Build"
 
 cmake ../
+rm CMakeCache.txt
+export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 cmake ../
 make -j 2
 
