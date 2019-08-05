@@ -61,7 +61,6 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkNaryFunctorImageFilter.h"
 #include "itkSmoothingRecursiveGaussianImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
-//#include "FastWarpCompositeImageFilter.h"
 
 
 using ImageTypeFloat3D = itk::Image< float, 3 >;
