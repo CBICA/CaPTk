@@ -58,9 +58,9 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "DicomIOManager.h"
 
-//#include "itkNaryFunctorImageFilter.h"
-//#include "itkSmoothingRecursiveGaussianImageFilter.h"
-//#include "itkBinaryThresholdImageFilter.h"
+#include "itkNaryFunctorImageFilter.h"
+#include "itkSmoothingRecursiveGaussianImageFilter.h"
+#include "itkBinaryThresholdImageFilter.h"
 //#include "FastWarpCompositeImageFilter.h"
 
 
@@ -1163,7 +1163,6 @@ namespace cbica
       // if nearest label is found, do something special
       if (interpolator_wrap.find("nearestlabel") != std::string::npos)
       {
-        /*
         ///
         // this situation can only happen in case of a mask image
         // The label image assumed to be an image of shortsC
@@ -1177,7 +1176,7 @@ namespace cbica
 
         // Scan the unique labels in the image
         std::set<short> label_set;
-        short *labels = inputImage->GetBufferPointer();
+        short *labels = moving->GetBufferPointer();
         int n_pixels = moving->GetPixelContainer()->Size();
 
         // Get the list of unique pixels
@@ -1185,13 +1184,13 @@ namespace cbica
         for (int j = 0; j < n_pixels; j++)
         {
           short pixel = labels[j];
-          if (last_pixel != pixel || i == 0)
+          if (last_pixel != pixel)
           {
             label_set.insert(pixel);
             last_pixel = pixel;
-            if (label_set.size() > 1000)
-              throw GreedyException("Label wise interpolation not supported for image %s "
-                "which has over 1000 distinct labels", filename);
+            //if (label_set.size() > 1000)
+            //  throw GreedyException("Label wise interpolation not supported for image %s "
+            //    "which has over 1000 distinct labels", filename);
           }
         }
 
@@ -1219,41 +1218,41 @@ namespace cbica
           fltThreshold->SetOutsideValue(0.0);
 
           // Set up a smoothing filter for this label
-          typedef itk::SmoothingRecursiveGaussianImageFilter<ImageType, ImageType> SmootherType;
+          typedef itk::SmoothingRecursiveGaussianImageFilter<TImageType, TImageType> SmootherType;
           typename SmootherType::Pointer fltSmooth = SmootherType::New();
           fltSmooth->SetInput(fltThreshold->GetOutput());
 
           // Work out the sigmas for the filter
-          if (r_param.images[i].interp.sigma.physical_units)
-          {
-            fltSmooth->SetSigma(r_param.images[i].interp.sigma.sigma);
-          }
-          else
+          //if (r_param.images[i].interp.sigma.physical_units)
+          //{
+          //  fltSmooth->SetSigma(r_param.images[i].interp.sigma.sigma);
+          //}
+          //else
           {
             typename SmootherType::SigmaArrayType sigma_array;
-            for (int d = 0; d < VDim; d++)
-              sigma_array[d] = r_param.images[i].interp.sigma.sigma * moving->GetSpacing()[d];
+            auto default_sigma = std::sqrt(3);
+            for (int d = 0; d < TImageType::ImageDimension; d++)
+              sigma_array[d] = /*r_param.images[i].interp.sigma.sigma*/default_sigma * moving->GetSpacing()[d];
             fltSmooth->SetSigmaArray(sigma_array);
           }
 
-          // TODO: we should really be coercing the output into a vector image to speed up interpolation!
-          typedef FastWarpCompositeImageFilter<TImageType, TImageType, VectorImageType> InterpFilter;
-          typename InterpFilter::Pointer fltInterp = InterpFilter::New();
-          fltInterp->SetMovingImage(fltSmooth->GetOutput());
-          fltInterp->SetDeformationField(warp);
-          fltInterp->SetUsePhysicalSpace(true);
+          //// TODO: we should really be coercing the output into a vector image to speed up interpolation!
+          //typedef FastWarpCompositeImageFilter<TImageType, TImageType, VectorImageType> InterpFilter;
+          //typename InterpFilter::Pointer fltInterp = InterpFilter::New();
+          //fltInterp->SetMovingImage(fltSmooth->GetOutput());
+          //fltInterp->SetDeformationField(warp);
+          //fltInterp->SetUsePhysicalSpace(true);
 
-          fltInterp->Update();
+          //fltInterp->Update();
 
           // Add to the voting filter
-          fltVoting->SetInput(j, fltInterp->GetOutput());
+          fltVoting->SetInput(j, fltSmooth->GetOutput());
         }
 
         // TODO: test out streaming!
         // Run this big pipeline
         fltVoting->Update();
         ///
-        */
       }
       else
       {
