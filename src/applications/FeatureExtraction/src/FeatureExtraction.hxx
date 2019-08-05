@@ -1852,6 +1852,10 @@ void FeatureExtraction< TImage >::Update()
         {
           std::cout << "[DEBUG] Writing resampled image(s) to the output directory.\n";
         }
+        if (m_resamplingResolution >= 2)
+        {
+          std::cout << "FE is happening on a very coarse sampling, please revise to something lower for increased accuracy.\n";
+        }
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
           m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator_Image);
