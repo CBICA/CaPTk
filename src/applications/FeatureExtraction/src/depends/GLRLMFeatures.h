@@ -240,35 +240,41 @@ public:
             lrhgle += runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
             runs += runLengthFeaturesCalculator->GetTotalNumberOfRuns();
             rp += static_cast<double>(runLengthFeaturesCalculator->GetTotalNumberOfRuns()) / static_cast<double>(this->m_nonZeroIndeces.size());
-            //glnn += runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
-            //rlnn += runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
-            //glv += runLengthFeaturesCalculator->GetGreyLevelVariance();
-            //rlv += runLengthFeaturesCalculator->GetRunLengthVariance();
-            //re += runLengthFeaturesCalculator->GetRunEntropy();
+
+            // TBD: this features are not IBSI-compliant, hence in debugMode
+            if (this->m_debugMode)
+            {
+              glnn += runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+              rlnn += runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+              glv += runLengthFeaturesCalculator->GetGreyLevelVariance();
+              rlv += runLengthFeaturesCalculator->GetRunLengthVariance();
+              re += runLengthFeaturesCalculator->GetRunEntropy();
+            }
           }
           else // individual
           {
-
-            //2019-05-09 For Future Reference - Commenting out features that were not in agreement with IBIS
-
-            // this->m_features["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunEmphasis();
-            // this->m_features["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunEmphasis();
-            // this->m_features["GreyLevelNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
-            // this->m_features["RunLengthNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
             this->m_features["LowGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
             this->m_features["HighGreyLevelRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
             this->m_features["ShortRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
             this->m_features["ShortRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
-            // this->m_features["LongRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
-            // this->m_features["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
-            // this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
-            // this->m_features["RunPercentage_Offset_" + std::to_string(offsetNum)] = this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(this->m_nonZeroIndeces.size());
-            //this->m_features["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
-            //this->m_features["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
-            //this->m_features["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelVariance();
-            //this->m_features["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthVariance();
-            //this->m_features["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunEntropy();
 
+            // TBD: this features are not IBSI-compliant, hence in debugMode
+            if (this->m_debugMode)
+            {
+              this->m_features["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunEmphasis();
+              this->m_features["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunEmphasis();
+              this->m_features["GreyLevelNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+              this->m_features["RunLengthNonuniformity_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+              this->m_features["LongRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+              this->m_features["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+              this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
+              this->m_features["RunPercentage_Offset_" + std::to_string(offsetNum)] = this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(this->m_nonZeroIndeces.size());
+              this->m_features["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
+              this->m_features["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
+              this->m_features["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelVariance();
+              this->m_features["RunLengthVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthVariance();
+              this->m_features["RunEntropy_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunEntropy();
+            }
           }
         }
 
@@ -296,25 +302,28 @@ public:
           rlv /= this->m_offsets->size();
           re /= this->m_offsets->size();
 
-        //2019-05-09 For Future Reference - Commenting out features that were not in agreement with IBIS
-
-          // this->m_features["ShortRunEmphasis"] = sre;
-          // this->m_features["LongRunEmphasis"] = lre;
-          // this->m_features["GreyLevelNonuniformity"] = gln;
-          // this->m_features["RunLengthNonuniformity"] = rln;
-          // this->m_features["RunPercentage"] = rp;
           this->m_features["LowGreyLevelRunEmphasis"] = lglre;
           this->m_features["HighGreyLevelRunEmphasis"] = hglre;
           this->m_features["ShortRunLowGreyLevelEmphasis"] = srlgle;
           this->m_features["ShortRunHighGreyLevelEmphasis"] = srhgle;
-          // this->m_features["LongRunLowGreyLevelEmphasis"] = lrlgle;
-          // this->m_features["LongRunHighGreyLevelEmphasis"] = lrhgle;
-          // this->m_features["TotalRuns"] = runs;
-          // this->m_features["RunLengthNonuniformityNormalized"] = rlnn;
-          // this->m_features["GreyLevelNonuniformityNormalized"] = glnn;
-          // this->m_features["GreyLevelVariance_Offset"] = glv;
-          // this->m_features["RunLengthVariance_Offset"] = rlv;
-          // this->m_features["RunEntropy"] = re;
+
+          // TBD: this features are not IBSI-compliant, hence in debugMode
+          if (this->m_debugMode)
+          {
+             this->m_features["ShortRunEmphasis"] = sre;
+             this->m_features["LongRunEmphasis"] = lre;
+             this->m_features["GreyLevelNonuniformity"] = gln;
+             this->m_features["RunLengthNonuniformity"] = rln;
+             this->m_features["RunPercentage"] = rp;
+             this->m_features["LongRunLowGreyLevelEmphasis"] = lrlgle;
+             this->m_features["LongRunHighGreyLevelEmphasis"] = lrhgle;
+             this->m_features["TotalRuns"] = runs;
+             this->m_features["RunLengthNonuniformityNormalized"] = rlnn;
+             this->m_features["GreyLevelNonuniformityNormalized"] = glnn;
+             this->m_features["GreyLevelVariance_Offset"] = glv;
+             this->m_features["RunLengthVariance_Offset"] = rlv;
+             this->m_features["RunEntropy"] = re;
+          }
 
           //TBD
           //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLRLM - Average - LowGreyLevelRunEmphasis = " << lglre << std::endl;
@@ -406,18 +415,21 @@ public:
         runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
         runLengthFeaturesCalculator->Update();
         
-        //2019-05-09 For Future Reference - Commenting out features that were not in agreement with IBIS
-
-        // this->m_features["ShortRunEmphasis"] = runLengthFeaturesCalculator->GetShortRunEmphasis();
-        // this->m_features["LongRunEmphasis"] = runLengthFeaturesCalculator->GetLongRunEmphasis();
-        // this->m_features["GreyLevelNonuniformity"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
-        // this->m_features["RunLengthNonuniformity"] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
         this->m_features["LowGreyLevelRunEmphasis"] = runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
         this->m_features["HighGreyLevelRunEmphasis"] = runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
         this->m_features["ShortRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
         this->m_features["ShortRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
-        // this->m_features["LongRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
-        // this->m_features["LongRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+
+        // TBD: this features are not IBSI-compliant, hence in debugMode
+        if (this->m_debugMode)
+        {
+           this->m_features["ShortRunEmphasis"] = runLengthFeaturesCalculator->GetShortRunEmphasis();
+           this->m_features["LongRunEmphasis"] = runLengthFeaturesCalculator->GetLongRunEmphasis();
+           this->m_features["GreyLevelNonuniformity"] = runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
+           this->m_features["RunLengthNonuniformity"] = runLengthFeaturesCalculator->GetRunLengthNonuniformity();
+           this->m_features["LongRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
+           this->m_features["LongRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+        }
 
         //TBD
         //wrapper_generator->SetOffsets(offset);
