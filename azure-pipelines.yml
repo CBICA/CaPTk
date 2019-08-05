@@ -424,12 +424,17 @@ jobs:
         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
         make -j 2
+
+        rm CMakeCache.txt
   
       displayName: 'Configure and compile Superbuild'
       #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         cd bin
+
+        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
         sudo rm -rf CaPTk_*
 
