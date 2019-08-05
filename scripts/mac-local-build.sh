@@ -13,19 +13,18 @@ CAPTK_CMD () {
 
 # #git lfs install && git lfs fetch --all
 
-### COMMENT OUT THE 3 LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
 echo "Run Dependency Manager"
 echo $CC
+### COMMENT OUT THE LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
+# export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+# export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+# cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
+# cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
 
-cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
-cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
+# make -j 2
 
-make -j 2
-
-rm CMakeCache.txt
+### BUILD CAPTK
 sudo rm -rf CaPTk_*
 
 export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
@@ -33,16 +32,14 @@ export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 # export CXX=/usr/local/opt/llvm/bin/clang++
 # export LDFLAGS="-L/usr/local/opt/llvm/lib"
 # export CPPFLAGS="-L/usr/local/opt/llvm/include"
-export LDFLAGS="-L/usr/local/opt/libomp/lib"
-export CPPFLAGS="-L/usr/local/opt/libomp/include"
 
 echo "Run CaPTk Build"
 
-export GIT_LFS_SKIP_SMUDGE=1
-git lfs pull --include "binaries/precompiledApps/macos.zip"
-git lfs pull --include "binaries/qt_5.12.1/macos.zip"
-mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+# export GIT_LFS_SKIP_SMUDGE=1
+# git lfs pull --include "binaries/precompiledApps/macos.zip"
+# git lfs pull --include "binaries/qt_5.12.1/macos.zip"
+# mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+# mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
 
 cmake ../
 cmake ../

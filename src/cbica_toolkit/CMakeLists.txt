@@ -38,6 +38,7 @@ SET( CACHED_INCLUDE_DIRS
   ${PROJECT_SOURCE_DIR}/src/IO/inc/
   ${PROJECT_SOURCE_DIR}/../thirdparty/
   ${PROJECT_SOURCE_DIR}/../thirdparty/yaml-cpp/include/ 
+  ${OpenMP_INCLUDE_DIRS}
   CACHE STRING "All include directories" FORCE
 )
 
@@ -61,6 +62,7 @@ IF(NOT (TARGET ${LIBNAME_CBICATK}))
     ${LIBNAME_CBICATK}
     ${ITK_LIBRARIES}
     #CaPTk_IO
+    ${OpenMP_LIBRARIES}
   )
   
 ENDIF()
