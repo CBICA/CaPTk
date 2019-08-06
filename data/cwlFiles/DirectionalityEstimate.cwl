@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.2
 baseCommand: DirectionalityEstimate
 inputs:
   labelMap:
@@ -45,3 +44,9 @@ inputs:
       position: 1
       prefix: -i
     doc: The image indeces (in voxels) of file.Needs to be in same dimensionality as labelMap.Delineation is done using ','.
+hints:
+  SoftwareRequirement:
+    packages:
+      DirectionalityEstimate:
+        version:
+          - 1.7.3.nonRelease

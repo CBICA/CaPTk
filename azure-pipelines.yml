@@ -137,6 +137,12 @@ jobs:
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
 
+    # Testing libgcrypt
+    - bash: |
+        ldconfig -p | grep libgcrypt
+        dpkg -l | grep libgcrypt
+      displayName: 'Testing libgcrypt version'
+
     # Testing LFS
     - bash: |
         ls -lt binaries/qt_5.12.1/
