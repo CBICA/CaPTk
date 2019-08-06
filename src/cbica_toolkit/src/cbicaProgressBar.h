@@ -6,6 +6,22 @@
 
 namespace cbica
 {
+  /**
+  \brief A class to handle progress bar in CLI applications
+
+  Usage example:
+  \verbatim
+  float limit = 10000;
+  cbica::ProgressBar progressBar(limit); // width of bar defaults to 100
+  for(float i = 0; i < limit; i++)
+  {
+    ++progressBar; // increase counter
+    progressBar.display(); // show the bar
+    // do not have any other message coming here, otherwise the progress bar will get wiped
+  }
+  progressBar.done(); // wrap-up
+  \endverbatim
+  */
   class ProgressBar
   {
   private:
