@@ -1251,6 +1251,11 @@ namespace cbica
         // TODO: test out streaming!
         // Run this big pipeline
         fltVoting->Update();
+
+        auto caster_back = itk::CastImageFilter< LabelImageType, TImageType >::New();
+        caster_back->SetInput(fltVoting->GetOutput()); //original input binary mask, not the masked image
+        caster_back->Update();
+        return caster_back->GetOutput();
         ///
       }
       else
