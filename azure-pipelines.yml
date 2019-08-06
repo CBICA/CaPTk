@@ -23,7 +23,7 @@ jobs:
     #       bin_windows_C1_$(Build.DefinitionName).tar.gz
     #     path: $(Build.SourcesDirectory) 
     #     cacheHitVar: CACHE_RESTORED_WINDOWS
-    #     # rolling : true
+    #     continueOnError : true
     #   displayName: 'Caching'
 
     - script: |
@@ -38,7 +38,7 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/windows.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-      #condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
@@ -52,7 +52,7 @@ jobs:
         mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
-      #condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # - bash: |
     #     tar xvfz bin_windows_C1_$(Build.DefinitionName).tar.gz
@@ -63,12 +63,12 @@ jobs:
     #     cd bin
     #     tar xvfz qt.tar.gz
     #     tar xvfz externalApps.tar.gz
-    #     # mv binaries_windows externalApps
+    #     rm -rf *.tar.gz
     #     # rm CMakeCache.txt 
 
     #     ls -lt
     #   displayName: 'Unzip bin if cached'
-    #   #condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
+    #   condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - script: |
         cd bin
@@ -79,7 +79,7 @@ jobs:
         rm -rf installLibs
         rm -rf qt.zip
       displayName: 'Configure and compile Superbuild'
-      #condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
     
     - powershell: |
         wmic logicaldisk get size,freespace,caption
@@ -180,7 +180,7 @@ jobs:
     #       bin_linux_C1_$(Build.DefinitionName).tar.gz
     #     path: $(Build.SourcesDirectory) 
     #     cacheHitVar: CACHE_RESTORED_LINUX
-    #     # rolling : true
+    #     continueOnError : true
     #   displayName: 'Caching'
 
     # Dependency manager
@@ -200,7 +200,7 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/linux.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-      #condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Testing libgcrypt
     - bash: |
@@ -208,11 +208,11 @@ jobs:
         dpkg -l | grep libgcrypt
       displayName: 'Testing libgcrypt version'
 
-    # Testing LFS
-    - bash: |
-        ls -lt binaries/qt_5.12.1/
-        ls -lt binaries/precompiledApps/
-      displayName: 'Testing LFS pull'
+    # # Testing LFS
+    # - bash: |
+    #     ls -lt binaries/qt_5.12.1/
+    #     ls -lt binaries/precompiledApps/
+    #   displayName: 'Testing LFS pull'
 
     # Moving LFS Files
     - bash: |
@@ -222,7 +222,7 @@ jobs:
         mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
-      #condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # - bash: |
     #     tar xvfz bin_linux_C1_$(Build.DefinitionName).tar.gz
@@ -233,12 +233,13 @@ jobs:
     #     cd bin
     #     tar xvfz qt.tar.gz
     #     tar xvfz externalApps.tar.gz
+    #     rm -rf *.tar.gz
     #     # mv binaries_windows externalApps
     #     # rm CMakeCache.txt 
 
     #     ls -lt
     #   displayName: 'Unzip bin if cached'
-      #condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
+    #   condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
@@ -246,7 +247,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
       displayName: 'Configure and compile Superbuild'
-      #condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build CaPTk
     - bash: |
@@ -276,8 +277,6 @@ jobs:
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf regression
         rm -rf binaries
-
-        #make install
 
         # export PKG_FAST_MODE=1
         ./scripts/captk-pkg
@@ -353,7 +352,7 @@ jobs:
     #       bin_mac_C1_$(Build.DefinitionName).tar.gz
     #     path: $(Build.SourcesDirectory) 
     #     cacheHitVar: CACHE_RESTORED_MAC
-    #     # rolling : true
+    #     continueOnError : true
     #   displayName: 'Caching'
 
     - bash: |
@@ -365,7 +364,7 @@ jobs:
         brew install git-lfs
         git lfs install
       displayName: 'Brew dependency install LFS'
-      #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
     
     # Pull LFS
     - bash: |
@@ -374,7 +373,7 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/macos.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-      #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     # # Testing LFS
     # - bash: |
@@ -404,17 +403,11 @@ jobs:
     #     cd bin
     #     tar xvfz qt.tar.gz
     #     tar xvfz externalApps.tar.gz
-    #     # mv binaries_windows externalApps
-    #     # rm CMakeCache.txt 
-
-    #     ls -lt
-    #     cd bin
-
-    #     # rm CMakeCache.txt 
+    #     rm -rf *.tar.gz
 
     #     ls -lt
     #   displayName: 'Unzip bin if cached'
-      #condition: eq(variables.CACHE_RESTORED_MAC, 'true')
+    #   condition: eq(variables.CACHE_RESTORED_MAC, 'true')
 
     #- bash: |
     #    rm -rf binaries/*linux*.zip
@@ -435,7 +428,7 @@ jobs:
         make -j 2
   
       displayName: 'Configure and compile Superbuild'
-      #condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         cd bin
