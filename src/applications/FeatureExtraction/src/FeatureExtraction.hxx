@@ -1854,7 +1854,7 @@ void FeatureExtraction< TImage >::Update()
         }
         if (m_resamplingResolution >= 2)
         {
-          std::cout << "FE is happening on a very coarse sampling, please revise to something lower for increased accuracy.\n";
+          std::cout << "Feature Extraction is happening on very coarsely sampled inputs, please consider lowering the sampling rate for increased accuracy.\n";
         }
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
