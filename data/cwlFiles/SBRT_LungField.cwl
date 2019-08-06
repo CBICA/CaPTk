@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.2
 baseCommand: SBRT_LungField
 inputs:
   petImage:
@@ -52,3 +51,9 @@ inputs:
       position: 1
       prefix: -L
     doc: Absolute path of log file.For example log_file.txt.
+hints:
+  SoftwareRequirement:
+    packages:
+      SBRT_LungField:
+        version:
+          - 1.7.3.nonRelease

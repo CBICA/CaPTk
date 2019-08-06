@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.2
 baseCommand: Preprocessing
 inputs:
   runtest:
@@ -185,3 +184,16 @@ inputs:
       position: 1
       prefix: -p12
     doc: P1-P2 normalization required for skull stripping.
+  debugMode:
+    type: boolean?
+    label: 0 or 1
+    inputBinding:
+      position: 1
+      prefix: -d
+    doc: "Enabled debug mode.Default: 0."
+hints:
+  SoftwareRequirement:
+    packages:
+      Preprocessing:
+        version:
+          - 1.7.3.nonRelease
