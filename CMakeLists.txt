@@ -308,6 +308,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${ITK_LIBRARIES}
     ${VTK_LIBRARIES}
     ${OpenCV_LIBRARIES}
+    ${OpenMP_LIBRARIES}
   )
 
   IF(UNIX AND NOT APPLE)
@@ -427,8 +428,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( CaPTk_CLIs_Folder "CaPTk_CLIApps")
   SET( CaPTk_Libs_Folder "CaPTk_Libs")
 
-  ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
-  SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
+  IF (NOT TARGET plugin)
+    ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
+    SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
+  ENDIF()
   
   # include dependencies
   # add source code include directories
@@ -449,6 +452,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${GEODESIC_TRAINING_INCLUDE_DIRS}
     ${APPLICATION_INCLUDES}
     ${CACHED_INCLUDE_DIRS}
+    ${OpenMP_INCLUDE_DIRS}
   )
   
   IF( BUILD_CONFETTI )
@@ -1055,7 +1059,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-
       INCLUDE(ChmodFile)
       chmodFile(${EXE_NAME} dcm2nii)
       
