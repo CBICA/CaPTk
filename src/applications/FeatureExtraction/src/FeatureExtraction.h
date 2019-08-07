@@ -433,7 +433,10 @@ private:
         directionsToCompute = inputDirections;
       }
 
-      OffsetVectorPointer offsets_total = OffsetVector::New();
+      OffsetVectorPointer offsets_total = OffsetVector::New(),
+        offsets_x = OffsetVector::New(),
+        offsets_y = OffsetVector::New(),
+        offsets_z = OffsetVector::New();
       auto centerIndex = neighborhood.GetCenterNeighborhoodIndex();
 
       for (int d = directionsToCompute - 1; d >= 0; d--)
@@ -441,15 +444,15 @@ private:
         if (d != static_cast<int>(centerIndex))
         {
           offsets_total->push_back(neighborhood.GetOffset(d));
+          offsets_x->push_back(neighborhood.GetOffset(d));
+          offsets_y->push_back(neighborhood.GetOffset(d));
+          offsets_z->push_back(neighborhood.GetOffset(d));
         }
       }
       allOffsets.push_back(offsets_total);
 
       if (TImageType::ImageDimension == 3)
       {
-        OffsetVectorPointer offsets_x = offsets_total, 
-          offsets_y = offsets_total, 
-          offsets_z = offsets_total;
         for (size_t i = 0; i < offsets_total->size(); i++)
         {
           offsets_x->at(i)[0] = 0;
