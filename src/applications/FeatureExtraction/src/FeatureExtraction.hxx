@@ -1511,7 +1511,10 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string & modality, co
   if (m_outputFile.empty())
   {
     m_outputFile = cbica::createTmpDir() + "/" + m_patientID + "_FEOutput.csv";
-    m_logger.WriteError("Output file has not been initialized; saving in '" + m_outputFile + "'");
+    if (m_debug)
+    {
+      m_logger.WriteError("Output file has not been initialized; saving in '" + m_outputFile + "'");
+    }
     SetOutputFilename(m_outputFile);
   }
   //std::ofstream myfile;
@@ -1521,13 +1524,19 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string & modality, co
     auto roiLabelFeatureFamilyFeature = modality + "_" + label + "_" + featureFamily + "_" + f.first;
     if (std::isnan(f.second) || (f.second != f.second))
     {
-      m_logger.Write("NAN DETECTED: " + m_patientID + "_" + roiLabelFeatureFamilyFeature);
-      std::cerr << "NAN DETECTED: " << m_patientID + "_" + roiLabelFeatureFamilyFeature + "_" + "CenterIdx_" + m_centerIndexString << "\n";
+      if (m_debug)
+      {
+        m_logger.Write("NAN DETECTED: " + m_patientID + "_" + roiLabelFeatureFamilyFeature);
+      }
+      //std::cerr << "NAN DETECTED: " << m_patientID + "_" + roiLabelFeatureFamilyFeature + "_" + "CenterIdx_" + m_centerIndexString << "\n";
     }
     if ((std::isinf(f.second)))
     {
-      m_logger.Write("INF DETECTED: " + m_patientID + "_" + roiLabelFeatureFamilyFeature);
-      std::cerr << "INF DETECTED: " << m_patientID + "_" + roiLabelFeatureFamilyFeature + "_" + "CenterIdx_" + m_centerIndexString << "\n";
+      if (m_debug)
+      {
+        m_logger.Write("INF DETECTED: " + m_patientID + "_" + roiLabelFeatureFamilyFeature);
+      }
+      //std::cerr << "INF DETECTED: " << m_patientID + "_" + roiLabelFeatureFamilyFeature + "_" + "CenterIdx_" + m_centerIndexString << "\n";
     }
     if (featureMapWriteForLattice) // if lattice computation has been request AND current ROI has a defined grid node
     {
@@ -1974,15 +1983,17 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
-      //cbica::ProgressBar progressBar(allROIs.size() + m_inputImages.size());
+      cbica::ProgressBar progressBar(allROIs.size() + m_inputImages.size());
+      if (!m_debug)
+      {
+        progressBar.display();
+      }
       //#pragma omp parallel for num_threads(m_threads)
       for (/*j has been initialized earlier*/; j < allROIs.size(); j++)
       {
         bool volumetricFeaturesExtracted = false, morphologicFeaturesExtracted = false;
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
-          //++progressBar;
-          //progressBar.display();
           auto writeFeatureMapsAndLattice = m_LatticeComputation && allROIs[j].latticeGridPoint;
           // construct the mask and the non-zero image values for each iteration - saves a *lot* of memory
           auto currentMask = cbica::CreateImage< TImage >(m_Mask), currentMask_patch = cbica::CreateImage< TImage >(m_Mask);
@@ -2015,7 +2026,11 @@ void FeatureExtraction< TImage >::Update()
           if (allROIs[j].latticeGridPoint)
           {
             auto temp = static_cast<float>(j + i) / static_cast<float>(allROIs.size() + m_inputImages.size());
-            //m_logger.Write("Percentage done: " + std::to_string(temp * 100));
+            if (m_debug)
+            {
+              m_logger.Write("Percentage done: " + std::to_string(temp * 100));
+            }
+            //
             //auto totalMemory = static_cast< float >(cbica::getTotalMemory()) / 10e8;
             //auto usedMemory = static_cast< float >(cbica::getCurrentlyUsedMemory());
             //auto freeMem = totalMemory - usedMemory;
@@ -2023,7 +2038,11 @@ void FeatureExtraction< TImage >::Update()
           }
           else
           {
-            m_logger.Write("Calculating Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "'");
+            if (m_debug)
+            {
+              m_logger.Write("Calculating Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "'")
+            }
+            ;
           }
 
           m_currentNonZeroImageValues.clear();
@@ -2477,7 +2496,11 @@ void FeatureExtraction< TImage >::Update()
                   }
                   else
                   {
-                    std::cout << "[DEBUG] NGLDM - Not yet implemented for non-3D" << std::endl;
+                    if (m_debug)
+                    {
+                      std::cout << "[DEBUG] NGLDM - Not yet implemented for non-3D" << std::endl;
+                    }
+                    
                     // CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
                     // WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                     //   "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
@@ -2690,11 +2713,20 @@ void FeatureExtraction< TImage >::Update()
               break;
             }
           } // end of feature iteration   
+
+          if (!m_debug)
+          {
+            ++progressBar;
+            progressBar.display();
+          }
         } // End of image iteration loop
 
       } // end of allROIs iteration
 
-      //progressBar.done();
+      if (!m_debug)
+      {
+        progressBar.done();
+      }
 
       // calculate 1st order statistics of the different lattice features
       for (auto const& entry : m_LatticeFeatures)
