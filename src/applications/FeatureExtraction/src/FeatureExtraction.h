@@ -496,6 +496,12 @@ private:
   /**
   \brief GetSelectedSlice enables selection of a particular slice and direction in which the features have to be generated.
   \param mask is vector of mask images.
+  */
+  std::vector< typename TImageType::Pointer > GetSelectedSlice(typename TImageType::Pointer mask);
+
+  /**
+  \brief GetSelectedSlice enables selection of a particular slice and direction in which the features have to be generated.
+  \param mask is vector of mask images.
   \param axis represents the slice selection is in x, y or z direction.
   */
   typename TImageType::Pointer GetSelectedSlice(typename TImageType::Pointer mask, std::string axis);

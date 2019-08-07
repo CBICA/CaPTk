@@ -11,7 +11,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 2 )
+SET( PROJECT_VERSION_PATCH 3.nonRelease )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -308,6 +308,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${ITK_LIBRARIES}
     ${VTK_LIBRARIES}
     ${OpenCV_LIBRARIES}
+    ${OpenMP_LIBRARIES}
   )
 
   IF(UNIX AND NOT APPLE)
@@ -449,6 +450,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${GEODESIC_TRAINING_INCLUDE_DIRS}
     ${APPLICATION_INCLUDES}
     ${CACHED_INCLUDE_DIRS}
+    ${OpenMP_INCLUDE_DIRS}
   )
   
   IF( BUILD_CONFETTI )
@@ -1055,7 +1057,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-
       INCLUDE(ChmodFile)
       chmodFile(${EXE_NAME} dcm2nii)
       
