@@ -379,7 +379,7 @@ private:
   /**
   \brief Calculates the OffsetVectorPointer based on the provided radius in mm and directions
   */
-  OffsetVectorPointer GetOffsetVector(float inputRadius, int inputDirections)
+  std::vector< OffsetVectorPointer > GetOffsetVector(float inputRadius, int inputDirections)
   {
     auto spacing = m_Mask->GetSpacing();
     itk::Size< TImageType::ImageDimension > radius; // radius value along individual axes in image coordinates
@@ -410,8 +410,9 @@ private:
   /**
   \brief Calculates the OffsetVectorPointer based on the provided radius and directions
   */
-  OffsetVectorPointer GetOffsetVector(int inputRadius, int inputDirections)
+  std::vector< OffsetVectorPointer > GetOffsetVector(int inputRadius, int inputDirections)
   {
+    std::vector< OffsetVectorPointer > allOffsets;
     if (m_offsetString.empty())
     {
       if (inputRadius == -1) // this is in the contingency when someone has used mm in the param file
@@ -432,18 +433,35 @@ private:
         directionsToCompute = inputDirections;
       }
 
-      OffsetVectorPointer offsets = OffsetVector::New();
+      OffsetVectorPointer offsets_total = OffsetVector::New();
       auto centerIndex = neighborhood.GetCenterNeighborhoodIndex();
 
       for (int d = directionsToCompute - 1; d >= 0; d--)
       {
         if (d != static_cast<int>(centerIndex))
         {
-          offsets->push_back(neighborhood.GetOffset(d));
+          offsets_total->push_back(neighborhood.GetOffset(d));
         }
       }
+      allOffsets.push_back(offsets_total);
 
-      return offsets;
+      if (TImageType::ImageDimension == 3)
+      {
+        OffsetVectorPointer offsets_x = offsets_total, 
+          offsets_y = offsets_total, 
+          offsets_z = offsets_total;
+        for (size_t i = 0; i < offsets_total->size(); i++)
+        {
+          offsets_x->at(i)[0] = 0;
+          offsets_y->at(i)[1] = 0;
+          offsets_z->at(i)[2] = 0;
+        }
+        allOffsets.push_back(offsets_x);
+        allOffsets.push_back(offsets_y);
+        allOffsets.push_back(offsets_z);
+      }
+
+      return allOffsets;
     }
     else // customized offset values
     {
@@ -477,7 +495,8 @@ private:
           std::cerr << "Offset provided does not match input image/mask dimension; SubjectID: '" << m_patientID << "'\n";
           //exit(EXIT_FAILURE);
           WriteErrorFile("Offset provided does not match input image/mask dimension");
-          return offsets;
+          allOffsets.push_back(offsets);
+          return allOffsets;
         }
         else
         {
@@ -489,7 +508,8 @@ private:
           offsets->push_back(tempOffset);
         }
       }
-      return offsets;
+      allOffsets.push_back(offsets);
+      return allOffsets;
     }  
   }
 
