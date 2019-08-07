@@ -20,7 +20,7 @@ jobs:
     - task: CacheBeta@0
       inputs:
         key: |
-          bin_windows_C1_$(Build.DefinitionName).tar.gz
+          bin_windows.tar.gz
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_WINDOWS
         continueOnError : true
@@ -55,10 +55,10 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - bash: |
-        tar xvfz bin_windows_C1_$(Build.DefinitionName).tar.gz
-        rm -rf bin_windows_C1_$(Build.DefinitionName).tar.gz
+        tar xvfz bin_windows.tar.gz
+        rm -rf bin_windows.tar.gz
         ls
-        mv bin_windows_C1_$(Build.DefinitionName) bin
+        mv bin_windows bin
         ls
         cd bin
         tar xvfz qt.tar.gz
@@ -144,9 +144,9 @@ jobs:
         cd ../
 
         # ls
-        mv bin bin_windows_C1_$(Build.DefinitionName)
+        mv bin bin_windows
         # ls
-        tar cvfz bin_windows_C1_$(Build.DefinitionName).tar.gz bin_windows_C1_$(Build.DefinitionName)
+        tar cvfz bin_windows.tar.gz bin_windows
       displayName: 'Zipping bin'
     
     # - powershell: |
@@ -177,7 +177,7 @@ jobs:
     - task: CacheBeta@0
       inputs:
         key: |
-          bin_linux_C1_$(Build.DefinitionName).tar.gz
+          bin_linux.tar.gz
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
@@ -225,10 +225,10 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xvfz bin_linux_C1_$(Build.DefinitionName).tar.gz
-        rm -rf bin_linux_C1_$(Build.DefinitionName).tar.gz
+        tar xvfz bin_linux.tar.gz
+        rm -rf bin_linux.tar.gz
         ls
-        mv bin_linux_C1_$(Build.DefinitionName) bin
+        mv bin_linux bin
         ls
         cd bin
         tar xvfz qt.tar.gz
@@ -313,9 +313,9 @@ jobs:
         cd ../
 
         # ls
-        mv bin bin_linux_C1_$(Build.DefinitionName)
+        mv bin bin_linux
         # ls
-        tar cvfz bin_linux_C1_$(Build.DefinitionName).tar.gz bin_linux_C1_$(Build.DefinitionName)
+        tar cvfz bin_linux.tar.gz bin_linux
       displayName: 'Zipping bin'
     
     #- script: |
@@ -349,7 +349,7 @@ jobs:
     - task: CacheBeta@0
       inputs:
         key: |
-          bin_mac_C1_$(Build.DefinitionName).tar.gz
+          bin_mac.tar.gz
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_MAC
         continueOnError : true
@@ -395,10 +395,10 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
       
     - bash: |
-        tar xvfz bin_mac_C1_$(Build.DefinitionName).tar.gz
-        rm -rf bin_mac_C1_$(Build.DefinitionName).tar.gz
+        tar xvfz bin_mac.tar.gz
+        rm -rf bin_mac.tar.gz
         ls
-        mv bin_mac_C1_$(Build.DefinitionName) bin
+        mv bin_mac bin
         ls
         cd bin
         tar xvfz qt.tar.gz
@@ -535,9 +535,9 @@ jobs:
         rm -rf _CPack*
         cd ../
         # ls
-        mv bin bin_mac_C1_$(Build.DefinitionName)
+        mv bin bin_mac
         # ls
-        tar cvfz bin_mac_C1_$(Build.DefinitionName).tar.gz bin_mac_C1_$(Build.DefinitionName)
+        tar cvfz bin_mac.tar.gz bin_mac
       displayName: 'Zipping bin'
     #- script: |
     #    cd bin
