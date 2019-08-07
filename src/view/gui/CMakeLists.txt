@@ -51,6 +51,7 @@ SET( GUI
   fSBRTNoduleDialog
   fSBRTAnalysisDialog
   fTexturePipelineDialog
+  AppearancePage
   #fSegmentationPanel
   #fHelpAppDialog
 )
