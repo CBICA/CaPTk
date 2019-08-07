@@ -19,7 +19,9 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: bin_windows.tar.gz
+        key: |
+          bin_windows.tar.gz
+          $(Agent.OS)
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_WINDOWS
         continueOnError : true
@@ -175,7 +177,9 @@ jobs:
   steps:
     - task: CacheBeta@0
       inputs:
-        key: bin_linux.tar.gz
+        key: |
+          bin_linux.tar.gz
+          $(Agent.OS)
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
@@ -346,7 +350,9 @@ jobs:
   steps:
     - task: CacheBeta@0
       inputs:
-        key: bin_mac.tar.gz
+        key: |
+          bin_mac.tar.gz
+          $(Agent.OS)
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_MAC
         continueOnError : true
