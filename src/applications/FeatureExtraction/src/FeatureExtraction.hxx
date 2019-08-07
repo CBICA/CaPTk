@@ -41,7 +41,7 @@
 #include "GLRLMFeatures.h"
 //#include "FractalBoxCount_template.h"
 
-//#include "cbicaProgressBar.h"
+#include "cbicaProgressBar.h"
 
 //TBD
 #include <math.h> //for debugging
@@ -1986,6 +1986,7 @@ void FeatureExtraction< TImage >::Update()
       cbica::ProgressBar progressBar(allROIs.size() + m_inputImages.size());
       if (!m_debug)
       {
+        std::cout << "Starting computation of selected features.\n";
         progressBar.display();
       }
       //#pragma omp parallel for num_threads(m_threads)
@@ -2040,9 +2041,8 @@ void FeatureExtraction< TImage >::Update()
           {
             if (m_debug)
             {
-              m_logger.Write("Calculating Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "'")
+              m_logger.Write("Calculating Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "'");
             }
-            ;
           }
 
           m_currentNonZeroImageValues.clear();
@@ -2725,7 +2725,10 @@ void FeatureExtraction< TImage >::Update()
 
       if (!m_debug)
       {
+        ++progressBar;
+        progressBar.display();
         progressBar.done();
+        std::cout << "Finished calculating features, writing the output.\n";
       }
 
       // calculate 1st order statistics of the different lattice features
@@ -2873,7 +2876,7 @@ void FeatureExtraction< TImage >::Update()
       m_algorithmDone = true;
 
       auto t2 = std::chrono::high_resolution_clock::now();
-      std::cout << "FE took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << " milliseconds\n";
+      std::cout << "Total computation time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << " milliseconds\n";
     }
   }
 }
