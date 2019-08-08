@@ -41,7 +41,9 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11486 |
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
-## NIGHTLY (use at your own risk)
+## Development Builds
+
+These are UNTESTED development builds from the master. Use at your own risk.
 
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
