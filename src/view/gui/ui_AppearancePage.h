@@ -33,6 +33,7 @@ public:
     QComboBox *comboBox;
     QPushButton *pushButton;
     QLabel *label_3;
+	QSpacerItem *verticalSpacer;
 
     void setupUi(QWidget *AppearancePage)
     {
@@ -67,7 +68,9 @@ public:
         label_3->setObjectName(QStringLiteral("label_3"));
 
         gridLayout->addWidget(label_3, 0, 2, 1, 1);
-
+			   
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        gridLayout->addItem(verticalSpacer, 2, 1, 1, 1);
 
         retranslateUi(AppearancePage);
 
