@@ -1057,6 +1057,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
+    # @executable_path/../../Frameworks/libomp.dylib
+
       INCLUDE(ChmodFile)
       chmodFile(${EXE_NAME} dcm2nii)
       

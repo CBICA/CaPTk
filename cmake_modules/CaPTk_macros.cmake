@@ -30,7 +30,7 @@ MACRO( CAPTK_ADD_EXECUTABLE APPLICATION SOURCESFILES DEPENDENT_LIBS )
 
   IF( APPLE )
     SET_TARGET_PROPERTIES( ${APPLICATION} PROPERTIES INSTALL_RPATH 
-    "@loader_path/../Frameworks;@executable_path/../Frameworks;@loader_path/../lib;@executable_path/../lib;@loader_path/../../Frameworks;@executable_path/../../Frameworks;@loader_path/../../lib;@executable_path/../../lib;@executable_path/../../Frameworks/libomp.dylib" )
+    "@loader_path/../Frameworks;@executable_path/../Frameworks;@loader_path/../lib;@executable_path/../lib;@loader_path/../../Frameworks;@executable_path/../../Frameworks;@loader_path/../../lib;@executable_path/../../lib" )
   # ELSEIF(LINUX) 
     # SET_TARGET_PROPERTIES( ${APPLICATION} PROPERTIES INSTALL_RPATH 
     # "@loader_path/../lib;@executable_path/../lib;@loader_path/../../lib;@executable_path/../../lib" )
