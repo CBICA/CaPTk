@@ -43,7 +43,7 @@ By downloading CaPTk, you agree to our [License](./LICENSE).
 
 ## Development Builds
 
-These are UNTESTED development builds from the master. Use at your own risk.
+These are UNTESTED development builds from the latest master. Use at your own risk.
 
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
