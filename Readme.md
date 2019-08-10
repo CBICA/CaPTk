@@ -47,10 +47,9 @@ These are UNTESTED development builds from the latest master. Use at your own ri
 
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
-| Windows        | https://www.nitrc.org/frs/downloadlink.php/11503 |
-| Linux          | https://www.nitrc.org/frs/downloadlink.php/11487 |
-| macOS          | https://www.nitrc.org/frs/downloadlink.php/11486 |
-| Archive        | https://www.nitrc.org/frs/?group_id=1059         |
+| Windows        | https://www.nitrc.org/frs/downloadlink.php/11516 |
+| Linux          | https://www.nitrc.org/frs/downloadlink.php/11517 |
+| macOS          | https://www.nitrc.org/frs/downloadlink.php/11518 |
 
 ## [Frequently Asked Questions (FAQ)](https://cbica.github.io/CaPTk/gs_FAQ.html)
 
