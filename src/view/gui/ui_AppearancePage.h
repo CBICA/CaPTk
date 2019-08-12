@@ -28,12 +28,12 @@ class Ui_AppearancePage
 {
 public:
     QGridLayout *gridLayout;
+    QLabel *currentFontLabel;
     QLabel *label;
     QLabel *label_2;
     QComboBox *comboBox;
     QPushButton *pushButton;
-    QLabel *label_3;
-	QSpacerItem *verticalSpacer;
+    QSpacerItem *verticalSpacer;
 
     void setupUi(QWidget *AppearancePage)
     {
@@ -42,6 +42,11 @@ public:
         AppearancePage->resize(400, 300);
         gridLayout = new QGridLayout(AppearancePage);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        currentFontLabel = new QLabel(AppearancePage);
+        currentFontLabel->setObjectName(QStringLiteral("currentFontLabel"));
+
+        gridLayout->addWidget(currentFontLabel, 0, 2, 1, 1);
+
         label = new QLabel(AppearancePage);
         label->setObjectName(QStringLiteral("label"));
         label->setMaximumSize(QSize(100, 16777215));
@@ -60,15 +65,10 @@ public:
 
         pushButton = new QPushButton(AppearancePage);
         pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setMaximumSize(QSize(50, 16777215));
+        pushButton->setMaximumSize(QSize(75, 16777215));
 
         gridLayout->addWidget(pushButton, 0, 0, 1, 1);
 
-        label_3 = new QLabel(AppearancePage);
-        label_3->setObjectName(QStringLiteral("label_3"));
-
-        gridLayout->addWidget(label_3, 0, 2, 1, 1);
-			   
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
         gridLayout->addItem(verticalSpacer, 2, 1, 1, 1);
 
@@ -80,10 +80,10 @@ public:
     void retranslateUi(QWidget *AppearancePage)
     {
         AppearancePage->setWindowTitle(QApplication::translate("AppearancePage", "Form", nullptr));
+        currentFontLabel->setText(QApplication::translate("AppearancePage", "text", nullptr));
         label->setText(QApplication::translate("AppearancePage", "Current Font:", nullptr));
         label_2->setText(QApplication::translate("AppearancePage", "Theme", nullptr));
-        pushButton->setText(QApplication::translate("AppearancePage", "Font", nullptr));
-        label_3->setText(QApplication::translate("AppearancePage", "text", nullptr));
+        pushButton->setText(QApplication::translate("AppearancePage", "Select Font", nullptr));
     } // retranslateUi
 
 };
