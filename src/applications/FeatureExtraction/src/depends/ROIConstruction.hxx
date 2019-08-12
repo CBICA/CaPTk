@@ -279,14 +279,21 @@ void ROIConstruction< TImage >::Update()
       for (size_t d = 0; d < TImage::ImageDimension; d++)
       {
         auto temp = std::round(m_latticeStepImage[d] / 2);
-        auto tempDiv = m_latticeRadius[d]/ temp;
-        if (tempDiv > 1)
+        if (temp > 0)
         {
-          latticeHalfStepImage[d] = std::ceil(tempDiv) * temp;
+          auto tempDiv = m_latticeRadius[d] / temp;
+          if ((tempDiv > 1) || std::isnan(tempDiv) || std::isinf(tempDiv))
+          {
+            latticeHalfStepImage[d] = std::ceil(tempDiv) * temp;
+          }
+          else
+          {
+            latticeHalfStepImage[d] = temp;
+          }
         }
         else
         {
-          latticeHalfStepImage[d] = temp;
+          latticeHalfStepImage[d] = 1;
         }
       }
 
