@@ -30,19 +30,26 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 
 ## Downloads
 
-### Latest Release (1.7.2)
-
 By downloading CaPTk, you agree to our [License](./LICENSE).
+
+## Latest Stable (1.7.2)
 
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
 | Windows        | https://www.nitrc.org/frs/downloadlink.php/11503 |
 | Linux          | https://www.nitrc.org/frs/downloadlink.php/11487 |
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11486 |
+| Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
-## Older Releases
+## Development Builds
 
-The entire archive of CaPTk's binaries in our NITRC Download page: https://www.nitrc.org/frs/?group_id=1059
+These are UNTESTED development builds from the latest master. Use at your own risk.
+
+| Platform (x64) | Link                                             |
+|:--------------:|:------------------------------------------------:|
+| Windows        | https://www.nitrc.org/frs/downloadlink.php/11516 |
+| Linux          | https://www.nitrc.org/frs/downloadlink.php/11517 |
+| macOS          | https://www.nitrc.org/frs/downloadlink.php/11518 |
 
 ## [Frequently Asked Questions (FAQ)](https://cbica.github.io/CaPTk/gs_FAQ.html)
 
