@@ -301,8 +301,15 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   ngldmCalculator.SetInputMask(maskImage);
   ngldmCalculator.SetNumBins(m_Bins);
   //ngldmCalculator.SetRange(m_Radius); //chebyshev distance delta
-  ngldmCalculator.SetMinimum(m_minimumToConsider);
-  ngldmCalculator.SetMaximum(m_maximumToConsider);
+  //if (m_QuantizationType == "Uniform")
+  //{
+    ngldmCalculator.SetMinimum(m_minimumToConsider);
+    ngldmCalculator.SetMaximum(m_maximumToConsider);
+  //}
+  //else
+  //{
+  //  ngldmCalculator.SetHistogramTypeEqual();
+  //}
   if (m_debug)
   {
     ngldmCalculator.EnableDebugMode();
@@ -354,8 +361,15 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   ngtdmCalculator.SetInputMask(maskImage);
   ngtdmCalculator.SetNumBins(m_Bins);
   ngtdmCalculator.SetRange(m_Radius);
-  ngtdmCalculator.SetMinimum(m_minimumToConsider);
-  ngtdmCalculator.SetMaximum(m_maximumToConsider);
+  //if (m_QuantizationType == "Uniform")
+  //{
+    ngtdmCalculator.SetMinimum(m_minimumToConsider);
+    ngtdmCalculator.SetMaximum(m_maximumToConsider);
+  //}
+  //else
+  //{
+  //  ngtdmCalculator.SetHistogramTypeEqual();
+  //}
   ngtdmCalculator.SetStartingIndex(m_currentLatticeStart);
   ngtdmCalculator.SetRange(m_Range);
   ngtdmCalculator.Update();
@@ -615,8 +629,15 @@ void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer 
   glszmCalculator.SetInputMask(maskImage);
   glszmCalculator.SetNumBins(m_Bins);
   glszmCalculator.SetMaxSize(m_Range);
-  glszmCalculator.SetMinimum(m_minimumToConsider);
-  glszmCalculator.SetMaximum(m_maximumToConsider);
+  //if (m_QuantizationType == "Uniform")
+  //{
+    glszmCalculator.SetMinimum(m_minimumToConsider);
+    glszmCalculator.SetMaximum(m_maximumToConsider);
+  //}
+  //else
+  //{
+  //  glszmCalculator.SetHistogramTypeEqual();
+  //}
   glszmCalculator.SetStartingIndex(m_currentLatticeStart);
   glszmCalculator.SetOffsets(offset);
   if (m_debug)
@@ -797,12 +818,12 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
   /// histogram calculation from ITK -- for texture feature pipeline 
   typename TImage::PixelType min, max;
 
-  if (m_QuantizationType == "Image")
+  if (m_QuantizationExtent == "Image")
   {
     min = m_minimumToConsider;
     max = m_maximumToConsider;
   }
-  if (m_QuantizationType == "ROI")
+  if (m_QuantizationExtent == "ROI")
   {
     min = m_statistics_local.GetMinimum();
     max = m_statistics_local.GetMaximum();
@@ -823,8 +844,11 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
   histogramCalculator->SetInput(image);
   histogramCalculator->SetMaskImage(mask);
   histogramCalculator->SetMaskValue(1);
-  histogramCalculator->SetHistogramBinMinimum(lowerBound);
-  histogramCalculator->SetHistogramBinMaximum(upperBound);
+  if (m_QuantizationType == "Uniform")
+  {
+    histogramCalculator->SetHistogramBinMinimum(lowerBound);
+    histogramCalculator->SetHistogramBinMaximum(upperBound);
+  }
   histogramCalculator->SetHistogramSize(size);
 
   try
@@ -1031,8 +1055,15 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   GLRLMFeatures< TImage > glrlmCalculator;
   glrlmCalculator.SetInputImage(image);
   glrlmCalculator.SetInputMask(mask);
-  glrlmCalculator.SetMinimum(m_minimumToConsider);
-  glrlmCalculator.SetMaximum(m_maximumToConsider);
+  if (m_QuantizationType == "Uniform")
+  {
+    glrlmCalculator.SetMinimum(m_minimumToConsider);
+    glrlmCalculator.SetMaximum(m_maximumToConsider);
+  }
+  else
+  {
+    glrlmCalculator.SetHistogramTypeEqual();
+  }
   glrlmCalculator.SetOffsets(offset);
   glrlmCalculator.SetOffsetSelectorType(m_offsetSelect);
   if (m_debug)
@@ -1070,8 +1101,15 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
   GLCMFeatures< TImage > glcmCalculator;
   glcmCalculator.SetInputImage(image);
   glcmCalculator.SetInputMask(mask);
-  glcmCalculator.SetMinimum(m_minimumToConsider);
-  glcmCalculator.SetMaximum(m_maximumToConsider);
+  if (m_QuantizationType == "Uniform")
+  {
+    glcmCalculator.SetMinimum(m_minimumToConsider);
+    glcmCalculator.SetMaximum(m_maximumToConsider);
+  }
+  else
+  {
+    glcmCalculator.SetHistogramTypeEqual();
+  }
   glcmCalculator.SetOffsets(offset);
   glcmCalculator.SetOffsetSelectorType(m_offsetSelect);
   if (m_debug)
@@ -1091,11 +1129,11 @@ template< class TImage >
 void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImage::PixelType >& nonZeroVoxels, std::map< std::string, double >& featurevec, bool latticePatch)
 {
   cbica::Statistics< typename TImage::PixelType > statisticsCalculatorToUse;
-  if (m_QuantizationType == "Image")
+  if (m_QuantizationExtent == "Image")
   {
     statisticsCalculatorToUse = m_statistics_global[m_currentROIValue];
   }
-  if (m_QuantizationType == "ROI")
+  if (m_QuantizationExtent == "ROI")
   {
 
     statisticsCalculatorToUse = m_statistics_local;
@@ -1280,6 +1318,10 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         else if (outer_key == ParamsString[EdgesEpsilon])
         {
           m_edgesEpsilon = std::atof(currentValue.c_str());
+        }
+        else if (outer_key == ParamsString[QuantizationExtent])
+        {
+          m_QuantizationExtent = currentValue;
         }
         else if (outer_key == ParamsString[QuantizationType])
         {
@@ -2060,7 +2102,7 @@ void FeatureExtraction< TImage >::Update()
           {
             auto tempT1 = std::chrono::high_resolution_clock::now();
 
-            if (m_QuantizationType == "Image")
+            if (m_QuantizationExtent == "Image")
             {
               if (!allROIs[j].latticeGridPoint)
               {
