@@ -20,6 +20,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -31,8 +32,8 @@ public:
     QLabel *currentFontLabel;
     QLabel *label;
     QLabel *label_2;
-    QComboBox *comboBox;
-    QPushButton *pushButton;
+    QComboBox *themeComboBox;
+    QPushButton *selectFontBtn;
     QSpacerItem *verticalSpacer;
 
     void setupUi(QWidget *AppearancePage)
@@ -58,16 +59,16 @@ public:
 
         gridLayout->addWidget(label_2, 1, 0, 1, 1);
 
-        comboBox = new QComboBox(AppearancePage);
-        comboBox->setObjectName(QStringLiteral("comboBox"));
+        themeComboBox = new QComboBox(AppearancePage);
+        themeComboBox->setObjectName(QStringLiteral("themeComboBox"));
 
-        gridLayout->addWidget(comboBox, 1, 1, 1, 1);
+        gridLayout->addWidget(themeComboBox, 1, 1, 1, 1);
 
-        pushButton = new QPushButton(AppearancePage);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setMaximumSize(QSize(75, 16777215));
+        selectFontBtn = new QPushButton(AppearancePage);
+        selectFontBtn->setObjectName(QStringLiteral("selectFontBtn"));
+        selectFontBtn->setMaximumSize(QSize(75, 16777215));
 
-        gridLayout->addWidget(pushButton, 0, 0, 1, 1);
+        gridLayout->addWidget(selectFontBtn, 0, 0, 1, 1);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
         gridLayout->addItem(verticalSpacer, 2, 1, 1, 1);
@@ -83,7 +84,7 @@ public:
         currentFontLabel->setText(QApplication::translate("AppearancePage", "text", nullptr));
         label->setText(QApplication::translate("AppearancePage", "Current Font:", nullptr));
         label_2->setText(QApplication::translate("AppearancePage", "Theme", nullptr));
-        pushButton->setText(QApplication::translate("AppearancePage", "Select Font", nullptr));
+        selectFontBtn->setText(QApplication::translate("AppearancePage", "Select Font", nullptr));
     } // retranslateUi
 
 };
