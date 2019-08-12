@@ -3,10 +3,10 @@
 
 \brief Definition of AppearancePage class
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/
 software@cbica.upenn.edu
 
-Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
+Copyright (c) 2018 University of Pennsylvania. All rights reserved.
 See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 */
