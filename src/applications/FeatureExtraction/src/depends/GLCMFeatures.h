@@ -54,7 +54,10 @@ public:
         {
           typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
           glcmGenerator->SetNumberOfBinsPerAxis(this->m_Bins); //reasonable number of bins
-          glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
+          if (!this->m_histogramTypeEqual)
+          {
+            glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
+          }
           glcmGenerator->SetMaskImage(mask_wrap);
           glcmGenerator->SetInput(image_wrap);
           auto featureCalc = Hist2FeaturesType::New();
@@ -111,7 +114,10 @@ public:
       {
         typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
         glcmGenerator->SetNumberOfBinsPerAxis(this->m_Bins); //reasonable number of bins
-        glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
+        if (!this->m_histogramTypeEqual)
+        {
+          glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
+        }
         glcmGenerator->SetMaskImage(mask_wrap);
         glcmGenerator->SetInput(image_wrap);
         auto featureCalc = Hist2FeaturesType::New();
@@ -136,7 +142,10 @@ public:
       {
         typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
         glcmGenerator->SetNumberOfBinsPerAxis(this->m_Bins); //reasonable number of bins
-        glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
+        if (!this->m_histogramTypeEqual)
+        {
+          glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
+        }
         glcmGenerator->SetMaskImage(mask_wrap);
         glcmGenerator->SetInput(image_wrap);
         auto featureCalc = Hist2FeaturesType::New();
