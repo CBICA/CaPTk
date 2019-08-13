@@ -55,26 +55,29 @@ public:
       using RunLengthMatrixGenerator = typename RunLengthFilterType::RunLengthMatrixFilterType;
       using RunLengthFeatures = typename RunLengthFilterType::RunLengthFeaturesFilterType;
 
-      //TBD
-      typename RunLengthFilterType::Pointer wrapper_generator = RunLengthFilterType::New();
-      wrapper_generator->SetInput(this->m_inputImage);
-      wrapper_generator->SetMaskImage(this->m_Mask);
-      wrapper_generator->SetInsidePixelValue(1);
-      wrapper_generator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
-      //TBD
-
+      ////TBD
+      //typename RunLengthFilterType::Pointer wrapper_generator = RunLengthFilterType::New();
+      //wrapper_generator->SetInput(this->m_inputImage);
+      //wrapper_generator->SetMaskImage(this->m_Mask);
+      //wrapper_generator->SetInsidePixelValue(1);
+      //wrapper_generator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
+      ////TBD
+      
       typename  RunLengthMatrixGenerator::Pointer matrix_generator = RunLengthMatrixGenerator::New();
       matrix_generator->SetInput(this->m_inputImage);
       matrix_generator->SetMaskImage(this->m_Mask);
       matrix_generator->SetInsidePixelValue(1);
-      matrix_generator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
+      if (!this->m_histogramTypeEqual)
+      {
+        matrix_generator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
+      }
 
       if (m_maxDistance != -1) // this will happen for lattice
       {
         matrix_generator->SetDistanceValueMinMax(0, m_maxDistance);
       }
 
-      wrapper_generator->SetNumberOfBinsPerAxis(this->m_Bins);
+      //wrapper_generator->SetNumberOfBinsPerAxis(this->m_Bins);
       //std::cout << "\n[DEBUG] - FeatureExtraction.hxx - CalculateGLRLM - this->m_Bins = " << this->m_Bins << std::endl;
 
       //TBD
@@ -97,7 +100,7 @@ public:
       //requestedFeatures->push_back(TextureFilterType::GreyLevelVariance);
       //requestedFeatures->push_back(TextureFilterType::RunLengthVariance);
       //requestedFeatures->push_back(TextureFilterType::RunEntropy);
-      wrapper_generator->SetRequestedFeatures(requestedFeatures);
+      //wrapper_generator->SetRequestedFeatures(requestedFeatures);
       //TBD
 
       typename  RunLengthFeatures::Pointer runLengthMatrixCalculator = RunLengthFeatures::New();
