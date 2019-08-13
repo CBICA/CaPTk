@@ -27,8 +27,12 @@ public:
     explicit AppearancePage(QWidget *parent = nullptr);
     ~AppearancePage();
 
+public slots:
+	void OnSelectFontButtonClicked();
+
 private:
     Ui::AppearancePage *ui;
+    QFont m_selectFont;
 };
 
 #endif // APPEARANCEPAGE_H
