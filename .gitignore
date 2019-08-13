@@ -11,6 +11,9 @@ archive
 
 src/applications/*/bin
 
+# test data
+data/TestData/
+
 # Linux specific paths that get pulled in
 src/applications/individualApps/dcm2nii
 src/applications/individualApps/itksnap

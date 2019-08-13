@@ -11,7 +11,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 2 )
+SET( PROJECT_VERSION_PATCH 3.nonRelease.20190810 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -308,6 +308,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${ITK_LIBRARIES}
     ${VTK_LIBRARIES}
     ${OpenCV_LIBRARIES}
+    ${OpenMP_LIBRARIES}
   )
 
   IF(UNIX AND NOT APPLE)
@@ -449,6 +450,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${GEODESIC_TRAINING_INCLUDE_DIRS}
     ${APPLICATION_INCLUDES}
     ${CACHED_INCLUDE_DIRS}
+    ${OpenMP_INCLUDE_DIRS}
   )
   
   IF( BUILD_CONFETTI )
@@ -637,7 +639,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     SET( BUILD_TESTING TRUE CACHE BOOL "Build testing" )
     IF( BUILD_TESTING )
       ENABLE_TESTING()
-      #ADD_SUBDIRECTORY( testing )
+      ADD_SUBDIRECTORY( testing )
       #INCLUDE(CTest)
     ENDIF( BUILD_TESTING )
   #ENDIF()
@@ -986,7 +988,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       SET(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}")
       SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}_${${PROJECT_NAME}_Variant}\\\\${PROJECT_VERSION}")
       SET(CPACK_NSIS_INSTALL_ROOT "C:")
-      SET(CPACK_NSIS_DEFINES "RequestExecutionLevel user")
+      SET(CPACK_NSIS_DEFINES
+        "RequestExecutionLevel user
+        ManifestDPIAware true"
+      )
+      #SET(CPACK_NSIS_DEFINES "RequestExecutionLevel user ManifestDPIAware true")
       SET(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
       SET(CPACK_NSIS_MUI_ICON "${DATA_DIR}/icons/application/windows/captk.ico")
       SET(CPACK_NSIS_MUI_FINISHPAGE_RUN "${EXE_NAME}.exe")
@@ -1000,10 +1006,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       #SET(CPACK_NSIS_CREATE_ICONS_EXTRA "  CreateShortCut '$INSTDIR\\\\${EXE_NAME}.lnk' '$INSTDIR\\\\bin\\\\${EXE_NAME}.exe'")
       SET(CPACK_NSIS_CREATE_ICONS "CreateShortCut '\$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\README.lnk' '\$INSTDIR\\\\share\\\\doc\\\\index.html'")
       #SET(CPACK_NSIS_DELETE_ICONS_EXTRA "  Delete '$SMPROGRAMS\\\\$START_MENU\\\\${EXE_NAME}.lnk'")
-      SET(CPACK_NSIS_DELETE_ICONS "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\${EXE_NAME}.lnk'")
+      SET(CPACK_NSIS_DELETE_ICONS 
+        "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\${EXE_NAME}.lnk'
+        Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\README.lnk'"
+      )
       #SET(CPACK_NSIS_DELETE_ICONS "Delete '$DESKTOP\\\\${EXE_NAME}.lnk'")
       #SET(CPACK_NSIS_DELETE_ICONS_EXTRA "Delete '$INSTDIR\\\\${EXE_NAME}.lnk'")
-      SET(CPACK_NSIS_DELETE_ICONS "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\README.lnk'")
+      #SET(CPACK_NSIS_DELETE_ICONS "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\README.lnk'")
       SET(CPACK_NSIS_INSTALLED_ICON_NAME "${EXE_NAME}")
       SET(CPACK_SYSTEM_NAME "Win64")
     ELSEIF(APPLE)
@@ -1048,7 +1057,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-
       INCLUDE(ChmodFile)
       chmodFile(${EXE_NAME} dcm2nii)
       

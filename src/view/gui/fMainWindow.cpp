@@ -969,7 +969,8 @@ fMainWindow::~fMainWindow()
     delete mTissuePoints;
   }
 
-  if (cbica::filesInDirectory(m_tempFolderLocation).empty())
+  // delete the temp directory every single time
+  //if (cbica::filesInDirectory(m_tempFolderLocation).empty())
   {
     cbica::deleteDir(m_tempFolderLocation);
   }
@@ -7125,9 +7126,10 @@ void fMainWindow::ApplicationTheia()
 
 void fMainWindow::EnableComparisonMode(bool enable)
 {
-  if (mSlicerManagers.size() < 3)
+  int nLoadedData = mSlicerManagers.size();
+  if (nLoadedData < 2 || nLoadedData > 3)
   {
-    ShowMessage("Please load 3 datasets to enable comparison mode", this);
+    ShowMessage("Comparison mode only works with 2 or 3 datasets. Please load 2 or 3 datasets to enable comparison mode", this);
     return;
   }
   if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1)) //! e.g. Mammography images
@@ -7138,7 +7140,7 @@ void fMainWindow::EnableComparisonMode(bool enable)
 
   this->SetComparisonMode(enable);
 
-  if (enable)
+  if (enable) //! enabling comparison
   {
     if (m_ComparisonViewerLeft.GetPointer() == nullptr &&
       m_ComparisonViewerCenter.GetPointer() == nullptr &&
@@ -7148,26 +7150,33 @@ void fMainWindow::EnableComparisonMode(bool enable)
       m_ComparisonViewerCenter = vtkSmartPointer<Slicer>::New();
       m_ComparisonViewerRight = vtkSmartPointer<Slicer>::New();
 
-      m_ComparisonViewerLeft->SetComparisonMode(true);
-      m_ComparisonViewerCenter->SetComparisonMode(true);
-      m_ComparisonViewerRight->SetComparisonMode(true);
+	  for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+	  {
+		  this->GetComparisonViewers()[i]->SetComparisonMode(true);
+	  }
     }
 
-      m_ComparisonViewerLeft->SetImage(mSlicerManagers[0]->GetSlicer(0)->GetImage(), mSlicerManagers[0]->GetSlicer(0)->GetTransform());
-      m_ComparisonViewerCenter->SetImage(mSlicerManagers[1]->GetSlicer(0)->GetImage(), mSlicerManagers[1]->GetSlicer(0)->GetTransform());
-      m_ComparisonViewerRight->SetImage(mSlicerManagers[2]->GetSlicer(0)->GetImage(), mSlicerManagers[2]->GetSlicer(0)->GetTransform());
+	for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+	{
+		this->GetComparisonViewers()[i]->SetImage(mSlicerManagers[i]->GetSlicer(0)->GetImage(), mSlicerManagers[i]->GetSlicer(0)->GetTransform());
+		this->GetComparisonViewers()[i]->SetMask(mSlicerManagers[0]->GetMask());
+		this->GetComparisonViewers()[i]->SetRenderWindow(0, nullptr);
+	}
 
-      m_ComparisonViewerLeft->SetMask(mSlicerManagers[0]->GetMask());
-      m_ComparisonViewerCenter->SetMask(mSlicerManagers[0]->GetMask());
-      m_ComparisonViewerRight->SetMask(mSlicerManagers[0]->GetMask());
+	if (nLoadedData == 2) //! 2 datasets are loaded
+	{
+		m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
 
-      m_ComparisonViewerLeft->SetRenderWindow(0, nullptr);
-      m_ComparisonViewerCenter->SetRenderWindow(0, nullptr);
-      m_ComparisonViewerRight->SetRenderWindow(0, nullptr);
-
-      m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
-      m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
-      m_ComparisonViewerRight->SetRenderWindow(0, SaggitalViewWidget->GetRenderWindow());
+		SaggitalViewWidget->hide();
+		SaggitalViewSlider->hide();
+	}
+	else if (nLoadedData == 3) //! 3 datasets are loaded
+	{
+		m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
+		m_ComparisonViewerRight->SetRenderWindow(0, SaggitalViewWidget->GetRenderWindow());
+	}
 
       for (int i = 0; i < this->GetComparisonViewers().size(); i++)
       {
@@ -7202,9 +7211,10 @@ void fMainWindow::EnableComparisonMode(bool enable)
         comparisonViewers[i]->SetColorLevel(levelSpinBox->value());
       }
 
-      m_ComparisonViewerLeft->SetDisplayMode(true);
-      m_ComparisonViewerCenter->SetDisplayMode(true);
-      m_ComparisonViewerRight->SetDisplayMode(true);
+	  for (int i = 0; i < comparisonViewers.size(); i++)
+	  {
+		  comparisonViewers[i]->SetDisplayMode(true);
+	  }
 
       //!comparison mode connections
       disconnect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
@@ -7215,23 +7225,43 @@ void fMainWindow::EnableComparisonMode(bool enable)
       connect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
       connect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
 
-      m_ComparisonViewerLeft->Render();
-      m_ComparisonViewerCenter->Render();
-      m_ComparisonViewerRight->Render();
+	  for (int i = 0; i < comparisonViewers.size(); i++)
+	  {
+		  comparisonViewers[i]->Render();
+	  }
   }
   else
   {
-    mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
-    mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
-    mSlicerManagers[2]->SetImage(mSlicerManagers[2]->GetITKImage());
+	  //! disabling comparison and coming back to regular mode
 
-    mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
-    mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
-    mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+	  if (nLoadedData == 2) //! 2 datasets loaded
+	  {
+		  mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
+		  mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
 
-    mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
-    mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
-    mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+
+		  SaggitalViewWidget->show();
+		  SaggitalViewSlider->show();
+	  }
+	  else if (nLoadedData == 3) //! 3 datasets loaded
+	  {
+		  mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
+		  mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
+		  mSlicerManagers[2]->SetImage(mSlicerManagers[2]->GetITKImage());
+
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+		  mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+	  }
 
     //!regular mode connections
     connect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
@@ -7242,9 +7272,10 @@ void fMainWindow::EnableComparisonMode(bool enable)
     disconnect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
     disconnect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
 
-    m_ComparisonViewerLeft->SetDisplayMode(false);
-    m_ComparisonViewerCenter->SetDisplayMode(false);
-    m_ComparisonViewerRight->SetDisplayMode(false);
+	for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+	{
+		this->GetComparisonViewers()[i]->SetDisplayMode(false);
+	}
 
     this->InitDisplay();
 
@@ -8588,9 +8619,18 @@ std::vector<int> read_int_vector(std::string &nccRadii)
 std::vector<vtkSmartPointer<Slicer>> fMainWindow::GetComparisonViewers()
 {
   std::vector<vtkSmartPointer<Slicer>>comparisonViewers;
-  comparisonViewers.push_back(m_ComparisonViewerLeft);
-  comparisonViewers.push_back(m_ComparisonViewerCenter);
-  comparisonViewers.push_back(m_ComparisonViewerRight);
+  if (mSlicerManagers.size() == 2)
+  {
+	  comparisonViewers.push_back(m_ComparisonViewerLeft);
+	  comparisonViewers.push_back(m_ComparisonViewerCenter);
+  }
+  else if (mSlicerManagers.size() == 3)
+  {
+	  comparisonViewers.push_back(m_ComparisonViewerLeft);
+	  comparisonViewers.push_back(m_ComparisonViewerCenter);
+	  comparisonViewers.push_back(m_ComparisonViewerRight);
+  }
+  
   return comparisonViewers;
 }
 
