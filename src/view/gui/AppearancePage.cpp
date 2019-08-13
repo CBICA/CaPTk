@@ -34,7 +34,11 @@ AppearancePage::~AppearancePage()
 
 void AppearancePage::OnChangeTheme(int theme)
 {
-	qDebug() << theme << endl;
+	ThemeType t = ThemeType(theme);
+	if(t == ThemeType::Dark)
+		qDebug() << t << endl;
+	else if(t == ThemeType::Light)
+		qDebug() << t << endl;
 }
 
 void AppearancePage::OnSelectFontButtonClicked()

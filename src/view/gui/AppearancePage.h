@@ -24,8 +24,16 @@ class AppearancePage : public QWidget
     Q_OBJECT
 
 public:
+	enum ThemeType
+	{
+		Light = 0,
+		Dark
+	};
+
     explicit AppearancePage(QWidget *parent = nullptr);
     ~AppearancePage();
+
+	Q_ENUM(ThemeType)
 
 public slots:
 	void OnSelectFontButtonClicked();
