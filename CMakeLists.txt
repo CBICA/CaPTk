@@ -9,10 +9,14 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # WARNING: captk-pkg (the linux packager) directly tries to pattern match these lines (excluding the actual number/patch text)
 # to read the version number.
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
+STRING(TIMESTAMP TODAY "%Y%m%d")
+
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 3.nonRelease.20190812 )
+SET( PROJECT_VERSION_PATCH "3.nonRelease.${TODAY}" )
 SET( PROJECT_VERSION_TWEAK )
+
+MESSAGE (STATUS ${PROJECT_VERSION_PATCH})
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
