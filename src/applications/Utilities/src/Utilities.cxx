@@ -33,7 +33,7 @@ std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, res
 std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
-float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<double>::max();
+float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues;
 float resamplingResolution = 1.0;
 

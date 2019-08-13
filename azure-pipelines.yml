@@ -51,6 +51,13 @@ jobs:
         cd bin
         mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
         mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
+        rm -rf ../binaries/*
+        rm -rf ../data/georgetown
+        rm -rf ../data/georgetown
+        rm -rf ../docs
+        rm -rf ../src/applications/individualApps/libra_source/doc
+        rm -rf ../src/applications/individualApps/libra_source/LIBRA_Software_Manual.pdf
+        rm -rf ../.git
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
       # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
