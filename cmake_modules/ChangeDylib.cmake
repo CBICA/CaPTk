@@ -1,5 +1,6 @@
 function(changeLibOmpDylib target application)
   changeDylib(${target} ${application} libomp.dylib /usr/local/opt/libomp/lib)
+  
 endfunction()
 
 macro(changeDylib target application libname libpath)
