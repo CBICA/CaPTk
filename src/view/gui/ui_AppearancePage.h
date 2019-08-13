@@ -60,6 +60,8 @@ public:
         gridLayout->addWidget(label_2, 1, 0, 1, 1);
 
         themeComboBox = new QComboBox(AppearancePage);
+        themeComboBox->addItem(QString());
+        themeComboBox->addItem(QString());
         themeComboBox->setObjectName(QStringLiteral("themeComboBox"));
 
         gridLayout->addWidget(themeComboBox, 1, 1, 1, 1);
@@ -84,6 +86,9 @@ public:
         currentFontLabel->setText(QApplication::translate("AppearancePage", "text", nullptr));
         label->setText(QApplication::translate("AppearancePage", "Current Font:", nullptr));
         label_2->setText(QApplication::translate("AppearancePage", "Theme", nullptr));
+        themeComboBox->setItemText(0, QApplication::translate("AppearancePage", "Light", nullptr));
+        themeComboBox->setItemText(1, QApplication::translate("AppearancePage", "Dark", nullptr));
+
         selectFontBtn->setText(QApplication::translate("AppearancePage", "Select Font", nullptr));
     } // retranslateUi
 
