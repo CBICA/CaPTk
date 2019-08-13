@@ -98,13 +98,13 @@ enum Params
 {
   Dimension, Axis, Radius, Neighborhood, Bins, Directions, Offset, Range,
   LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, LatticeFullImage,
-  GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, QuantizationType, Resampling, ResamplingInterpolator_Image, ResamplingInterpolator_Mask, LBPStyle, ParamMax
+  GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, ResamplingInterpolator_Mask, LBPStyle, ParamMax
 };
 static const char ParamsString[ParamMax + 1][30] =
 {
   "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Directions", "Offset", "Range",
   "Window", "Step", "Boundary", "PatchBoundary", "Weight", "FullImage",
-  "FMax", "Gamma", "Level", "ETA", "Epsilon", "QuantizationType", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
+  "FMax", "Gamma", "Level", "ETA", "Epsilon", "QuantizationExtent", "QuantizationType", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
 };
 
 enum FeatureFamily
@@ -752,7 +752,8 @@ private:
   int m_Radius = 0, m_Bins = 0, m_Dimension = 0, m_Direction = 0, m_neighborhood = 0, m_LBPStyle = 0;
   float m_Radius_float = 0.0, m_Range = 0;
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
-  std::string m_QuantizationType = "ROI"; //! type of quantization happening, either ROI-based or Image-based
+  std::string m_QuantizationType = "ROI"; //! extent of quantization happening, either ROI-based or Image-based
+  std::string m_QuantizationExtent = "Uniform"; //! type of quantization happening, either uniform or equal
   std::string m_initializedTimestamp; //! timestamp to append to all results - keeps outputs in sync with current process
   float m_resamplingResolution = 0.0; //! resolution to resample the images and mask to before doing any kind of computation
   std::string m_resamplingInterpolator_Image = "Linear", //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0

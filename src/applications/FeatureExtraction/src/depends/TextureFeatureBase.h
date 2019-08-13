@@ -64,6 +64,12 @@ public:
     m_Bins = numBinValue;
   }
 
+  //! Enable equal histogram calculation
+  void SetHistogramTypeEqual()
+  {
+    m_histogramTypeEqual = true;
+  }
+
 protected:
 
   unsigned int m_Bins = 10; //! the binning information
@@ -73,6 +79,8 @@ protected:
     m_maximum = 0; //! the maximum to consider during binning
 
   itk::Statistics::Histogram< double >::Pointer m_histogram; //! the actual histogram 
+
+  bool m_histogramTypeEqual; //! flag to control the type of histogram
 
   OffsetVectorPointer m_offsets; //! the offsets to consider
 };
