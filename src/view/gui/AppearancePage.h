@@ -41,7 +41,7 @@ public slots:
 
 private:
     Ui::AppearancePage *ui;
-    QFont m_selectFont;
+    QFont m_selectedFont;
 };
 
 #endif // APPEARANCEPAGE_H
