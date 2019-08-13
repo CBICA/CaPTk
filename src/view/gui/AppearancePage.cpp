@@ -24,11 +24,17 @@ AppearancePage::AppearancePage(QWidget *parent) :
 
     //connect signals and slots
     connect(ui->selectFontBtn,SIGNAL(clicked()),this,SLOT(OnSelectFontButtonClicked()));
+	connect(ui->themeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnChangeTheme(int)));
 }
 
 AppearancePage::~AppearancePage()
 {
     delete ui;
+}
+
+void AppearancePage::OnChangeTheme(int theme)
+{
+	qDebug() << theme << endl;
 }
 
 void AppearancePage::OnSelectFontButtonClicked()

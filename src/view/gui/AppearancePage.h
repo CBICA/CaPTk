@@ -29,6 +29,7 @@ public:
 
 public slots:
 	void OnSelectFontButtonClicked();
+	void OnChangeTheme(int);
 
 private:
     Ui::AppearancePage *ui;
