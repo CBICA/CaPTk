@@ -282,7 +282,7 @@ int main(int argc, char** argv)
   cbica::createDir(captk_SampleDataFolder);
   cbica::createDir(captk_PretrainedFolder);
 
-  setStyleSheet();
+  //setStyleSheet();
 #ifndef _WIN32
   std::string old_locale = setlocale(LC_NUMERIC, NULL);
   setlocale(LC_NUMERIC, "POSIX");
