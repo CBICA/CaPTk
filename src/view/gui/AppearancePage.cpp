@@ -14,6 +14,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "ui_AppearancePage.h"
 #include <QFontDialog>
 #include <QDebug>
+#include "CaPTkGUIUtils.h"
+#include "cbicaLogging.h"
 
 AppearancePage::AppearancePage(QWidget *parent) :
     QWidget(parent),
@@ -35,10 +37,38 @@ AppearancePage::~AppearancePage()
 void AppearancePage::OnChangeTheme(int theme)
 {
 	ThemeType t = ThemeType(theme);
-	if(t == ThemeType::Dark)
+	if (t == ThemeType::Dark)
+	{
 		qDebug() << t << endl;
-	else if(t == ThemeType::Light)
+		std::string qssPath;
+#ifdef QT_DEBUG
+		qssPath = getCaPTkDataDir() + /*"../etc/"*/ + "/captk.qss";
+#else
+		qssPath = getCaPTkDataDir() + "../etc/" + CAPTK_STYLESHEET_FILE;
+#endif
+		QFile f(qssPath.c_str());
+		bool success = f.open(QFile::ReadOnly);
+		qDebug() << "success = " << success << endl;
+		if (success)
+		{
+			qDebug() << "reading succeeded, applying DARK theme" << endl;
+			cbica::Logging(loggerFile, "qss file read succeeded, applying DARK theme");
+			qApp->setStyleSheet(f.readAll());
+			f.close();
+		}
+		else
+		{
+			qDebug() << "reading failed" << endl;
+			cbica::Logging(loggerFile, "qss file read failed");
+		}
+
+	}
+	else if (t == ThemeType::Light)
+	{
 		qDebug() << t << endl;
+		cbica::Logging(loggerFile, "applying LIGHT theme");
+		qApp->setStyleSheet("");
+	}
 }
 
 void AppearancePage::OnSelectFontButtonClicked()
