@@ -147,7 +147,7 @@ public:
       else
       {
         auto size = this->m_Mask->GetBufferedRegion().GetSize();
-        size_t totalSizeThreshold = m_extractionType * 0.01; // N% threshold in case all connected components are chosen
+        size_t totalSizeThreshold = m_extractionType * 0.000001; // 10^-6 threshold in case all connected components are chosen
         for (size_t d = 1; d < TImageType::ImageDimension; d++)
         {
           totalSizeThreshold *= size[d];
