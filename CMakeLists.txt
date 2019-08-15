@@ -768,13 +768,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB_RECURSE CWL_FILES "${DATA_DIR}/cwlFiles/*")
     FOREACH(cwlFile ${CWL_FILES})
       IF (APPLE)
-        SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+        SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/etc/cwlDefinitions)
         SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${cwlFile})
 
-        INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
+        INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/etc/cwlDefinitions)
 
       ELSE()
-        INSTALL(FILES "${cwlFile}" DESTINATION bin)
+        INSTALL(FILES "${cwlFile}" DESTINATION etc/cwlDefinitions)
       ENDIF()
     ENDFOREACH()
   
