@@ -258,44 +258,34 @@ Before building CaPTk, the following software libraries are required to be insta
       <td width="100%"><strong>Description</strong></td>  
     </tr>
     <tr>
-      <td>Archiver</td>
+      <td>Archiver OR Git</td>
       <td>n/a</td>
       <td>gzip (http://www.gzip.org/) is recommended. <br><b>Windows Users</b>: 7-zip (http://www.7-zip.org/)</td>
     </tr>
     <tr>
       <td>C++ compiler</td>
+      <td>C++11 compliance needed</td>
+      <td>Visual Studio 2015/2017, GCC/4.9.2-7.4.0, LLVM 6.0.1 have been tested</td>
+    </tr>
+    <tr>
+      <td>OpenGL</td>
+      <td>3.2+ (hardware-dependent)/td>
+      <td>Install graphics drivers; CentOS Example: yum install mesa-libGL-devel <td>
+    </tr>
+    <tr>
+      <td>X11 (Linux-only)</td>
       <td>n/a</td>
-      <td>Visual Studio 2017, GCC/4.9.2, LLVM 6.0.1 are supported; C++11 compliant compiler is needed</td>
+      <td>Windowing system for GUI; CentOS Example: yum install libXt-devel <td>
     </tr>
     <tr>
       <td>CMake (http://www.cmake.org/)</td>
-      <td>3.10 or higher</td>
+      <td>3.10 - 3.12</td>
       <td>To configure the CaPTk compilation along with its dependencies.</td>
     </tr>
     <tr>
-      <td>Qt (http://qt-project.org/downloads)</td>
-      <td>5.10.x</td>
-      <td>The main GUI interface for CaPTk. Download and install the precompiled library.</td>
-    </tr>
-    <tr>
-      <td>VTK (http://www.vtk.org/)</td>
-      <td>8.1.0</td>
-      <td>Install Qt before setting VTK up. Instructions to compile VTK are given at http://www.vtk.org/Wiki/VTK/Configure_and_Build. During CMake configuration, enable the <b>VTK_USE_QT</b> and <b>VTK_USE_QVTK_QTOPENGL</b> flags. <br><b>GCC Users</b>: For compilation use the command <b>make CXXFLAGS=-std=c++11</b>.</td>
-    </tr>
-    <tr>
-      <td>OpenCV (http://opencv.org/downloads.html)</td>
-      <td>3.4 or higher</td>
-      <td>All machine learning algorithms. This generally comes pre-compiled; if not found for your system, steps similar to those done for VTK and ITK compilation can be followed. <br><b>GCC Users</b>: For compilation use the command <b>make CXXFLAGS=-std=c++11</b>.</td>
-    </tr>
-    <tr>
-      <td>ITK (http://www.itk.org/)</td>
-      <td>4.13 and above</td>
-      <td>Build VTK before proceeding to compile ITK. Instructions to compile ITK are given at http://www.itk.org/Wiki/ITK/Configuring_and_Building. During CMake configuration, enable the <b>Module_ITKVtkGlue</b>, <b>Module_ITKVideoBridgeOpenCV</b> and <b>VCL_INCLUDE_CXX_0X</b> flags. <br><b>GCC Users</b>: For compilation use the command <b>make CXXFLAGS=-std=c++11</b>.</td>
-    </tr>
-    <tr>
-        <td>Doxygen (http://www.stack.nl/~dimitri/doxygen/)</td>
-        <td>1.8+</td>
-        <td>[OPTIONAL] For documentation only.</td>
+      <td>Doxygen (http://www.stack.nl/~dimitri/doxygen/)</td>
+      <td>1.8+</td>
+      <td>[OPTIONAL] For documentation only.</td>
     </tr>
 </table>
 
@@ -305,10 +295,11 @@ Ensure all dependencies are met before proceeding.
 
 \subsection actualBuild Build
 
-Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org/software/bash/)). They will configure and build CaPTk using GNU Make (http://www.gnu.org/software/make/). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface.
+Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org/software/bash/)). They will configure and build CaPTk using GNU Make (http://www.gnu.org/software/make/). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface or from PowerShell.
 
 Extract source files and create the build directory:
 \verbatim
+git clone 
 tar xzf CaPTk-${version}-source.tar.gz
 mkdir CaPTk-${version}-build
 cd CaPTk-${version}-build
