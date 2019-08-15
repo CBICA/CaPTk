@@ -70,10 +70,6 @@ var NAVTREE =
       [ "Build CaPTk from Source", "Technical_Reference.html#tr_buildFromSource", [
         [ "Prerequisites", "Technical_Reference.html#prerequisites", null ],
         [ "Build", "Technical_Reference.html#actualBuild", null ],
-        [ "Documentation & Tests", "Technical_Reference.html#optionalBuilds", null ],
-        [ "Linux Build Guide", "Technical_Reference.html#linuxBuild", null ]
-      ] ],
-      [ "For Developers", "Technical_Reference.html#tr_forDeves", [
         [ "General Information", "Technical_Reference.html#generalInfo", null ],
         [ "Dependencies", "Technical_Reference.html#dependencies", null ],
         [ "Integrating your C++ application into CaPTk", "Technical_Reference.html#cppIntegration", null ],

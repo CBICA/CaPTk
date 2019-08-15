@@ -223,9 +223,6 @@
     <docanchor file="Technical_Reference" title="Build CaPTk from Source">tr_buildFromSource</docanchor>
     <docanchor file="Technical_Reference" title="Prerequisites">prerequisites</docanchor>
     <docanchor file="Technical_Reference" title="Build">actualBuild</docanchor>
-    <docanchor file="Technical_Reference" title="Documentation &amp; Tests">optionalBuilds</docanchor>
-    <docanchor file="Technical_Reference" title="Linux Build Guide">linuxBuild</docanchor>
-    <docanchor file="Technical_Reference" title="For Developers">tr_forDeves</docanchor>
     <docanchor file="Technical_Reference" title="General Information">generalInfo</docanchor>
     <docanchor file="Technical_Reference" title="Dependencies">dependencies</docanchor>
     <docanchor file="Technical_Reference" title="Integrating your C++ application into CaPTk">cppIntegration</docanchor>
