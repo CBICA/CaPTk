@@ -14,6 +14,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #define PREFERENCESDIALOG_H
 
 #include <QDialog>
+class AppearancePage;
 class QFontDialog;
 class QColorDialog;
 class QVBoxLayout;
@@ -47,6 +48,7 @@ private:
 	void retranslateUi(QDialog *PreferencesDialog);
 
 	//! ivars
+	AppearancePage *m_AppearancePage;
     QFontDialog *m_FontDialog;
 	QVBoxLayout *verticalLayout;
 	QWidget *widget;

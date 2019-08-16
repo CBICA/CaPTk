@@ -12,6 +12,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 */
 
 #include "PreferencesDialog.h"
+#include "AppearancePage.h"
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -33,6 +34,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 {
     this->SetupUi();
 
+	this->m_AppearancePage = new AppearancePage(this->stackedWidget);
     this->m_FontDialog = new QFontDialog(this->stackedWidget);
     this->m_FontDialog->setWindowFlags(Qt::SubWindow);
     this->m_FontDialog->setOptions(
@@ -45,7 +47,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
                 );
     this->m_FontDialog->setSizeGripEnabled(false);
 
-    this->stackedWidget->insertWidget(0,this->m_FontDialog);
+	this->stackedWidget->insertWidget(0, this->m_AppearancePage);
+    this->stackedWidget->insertWidget(1,this->m_FontDialog);
 
 	//! signals and slots
     connect(this->listWidget,SIGNAL(itemSelectionChanged()),this,SLOT(OnItemSelectionChanged()));
@@ -80,6 +83,7 @@ void PreferencesDialog::SetupUi()
 	horizontalLayout = new QHBoxLayout(widget);
 	horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
 	listWidget = new QListWidget(widget);
+	new QListWidgetItem(listWidget);
 	new QListWidgetItem(listWidget);
 
 	listWidget->setObjectName(QStringLiteral("listWidget"));
@@ -119,6 +123,8 @@ void PreferencesDialog::retranslateUi(QDialog *PreferencesDialog)
 	const bool __sortingEnabled = listWidget->isSortingEnabled();
 	listWidget->setSortingEnabled(false);
 	QListWidgetItem *___qlistwidgetitem = listWidget->item(0);
-	___qlistwidgetitem->setText(QApplication::translate("PreferencesDialog", "Fonts", nullptr));
+	___qlistwidgetitem->setText(QApplication::translate("PreferencesDialog", "Appearance", nullptr));
+	QListWidgetItem *___qlistwidgetitem1 = listWidget->item(1);
+	___qlistwidgetitem1->setText(QApplication::translate("PreferencesDialog", "Fonts", nullptr));
 	listWidget->setSortingEnabled(__sortingEnabled);
 }
