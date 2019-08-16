@@ -9742,7 +9742,7 @@ void fMainWindow::OnPreferencesMenuClicked()
 	int result = this->preferenceDialog->exec();
 	if (result == PreferencesDialog::Accepted)
 	{
-		QFont font = this->preferenceDialog->GetFontDialog()->currentFont();
-		qApp->setFont(font);
+		//QFont font = this->preferenceDialog->GetFontDialog()->currentFont();
+		//qApp->setFont(font);
 	}
 }
