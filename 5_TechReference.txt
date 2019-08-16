@@ -273,7 +273,7 @@ Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org
 
 Extract source files and create the build directory:
 
-```bash
+\verbatim
 git clone https://github.com/CBICA/CaPTk.git
 git lfs fetch --all # downloads all the precompiled binaries for different applications and Qt
 cd CaPTk
@@ -284,7 +284,7 @@ make -j # multi-threaded compilation: use 'make -j${N}' to specify number of thr
 cmake -DCMAKE_INSTALL_PREFIX=${path_to_where_you_want_to_install} .. # configure CaPTk
 make -j # multi-threaded compilation: use 'make -j${N}' to specify number of threads to use
 make install/strip # installs CaPTk and all its files to ${path_to_where_you_want_to_install}
-```
+\endverbatim
 
 --------
 
