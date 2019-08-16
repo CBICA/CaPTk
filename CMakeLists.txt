@@ -1069,9 +1069,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       mvFile(${EXE_NAME} itksnap ITK-SNAP)
       chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
 
-      # sudo install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib @executable_path/../../Frameworks/libomp.dylib ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/bin/DeepMedic
       INCLUDE(ChangeDylib)
-      # changeDylib(${EXE_NAME} DeepMedic libomp.dylib /usr/local/opt/libomp/lib)
 
       FILE( GLOB EXECS
         "${DATA_DIR}/cwlFiles/*"
