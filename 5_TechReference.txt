@@ -253,48 +253,15 @@ For end-to-end build examples for Windows/Linux (Ubuntu Xenial)/macOS (10.13), p
 
 Before building CaPTk, the following software libraries are required to be installed. <strong>Please note</strong> that to build in Windows, CMake needs to be used an appropriate compiler (Win64 version of Visual Studio is recommended). The selected solution platform is needed to match with dependent libraries. 
 
-<table border="0">
-    <tr>
-      <td width="7%"><strong>Package</strong></td>      
-      <td width="7%"><strong>Version</strong></td>      
-      <td width="100%"><strong>Description</strong></td>  
-    </tr>
-    <tr>
-      <td>Archiver OR Git</td>
-      <td>n/a</td>
-      <td>gzip (http://www.gzip.org/) is recommended. <br><b>Windows Users</b>: 7-zip (http://www.7-zip.org/)</td>
-    </tr>
-    <tr>
-      <td>C++ compiler</td>
-      <td>C++11 compliance needed</td>
-      <td>Visual Studio 2015/2017, GCC/4.9.2-7.4.0, LLVM 6.0.1 have been tested</td>
-    </tr>
-    <tr>
-      <td>OpenGL</td>
-      <td>3.2+ (hardware-dependent)/td>
-      <td>Install graphics drivers; CentOS Example: yum install mesa-libGL-devel <td>
-    </tr>
-    <tr>
-      <td>CMake (http://www.cmake.org/)</td>
-      <td>3.10 - 3.12</td>
-      <td>To configure the CaPTk compilation along with its dependencies.</td>
-    </tr>
-    <tr>
-      <td>X11 [Linux-only]</td>
-      <td>n/a</td>
-      <td>Windowing system for Linux GUI; CentOS Example: yum install libXt-devel <td>
-    </tr>
-    <tr>
-      <td>dos2unix [Linux-only]</td>
-      <td>n/a</td>
-      <td>Ensuring Windows line endings get fixed; CentOS Example: yum install dos2unix <td>
-    </tr>
-    <tr>
-      <td>Doxygen (http://www.stack.nl/~dimitri/doxygen/)</td>
-      <td>1.8+</td>
-      <td>[OPTIONAL] For documentation only.</td>
-    </tr>
-</table>
+| Package                           | Version                   | Description                                                                                                                                     |
+|-----------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| Archiver or Git                   | N.A.                      | - **Windows**: Built-in unzip tool<br>- **Linux**: [gzip](https://www.gzip.org/)                                                     |
+| C++ compiler                      | C++11 compliance needed   | - **Windows**: Visual Studio 2015/2017<br>- **Linux**: GCC/4.9.2-7.4.0<br>- **macOS**: LLVM 6.0.1                                     |
+| OpenGL                            | 3.2+ (hardware-dependent) | - **Windows/macOS**: Update graphics drivers<br>- **Ubuntu**: apt-get install libgl-dev<br>- **CentOS**: yum install mesa-libGL-devel |
+| [CMake](https://cmake.org/files/) | 3.10 - 3.12               | To configure the CaPTk compilation along with its dependencies (via Superbuild).                                                                |
+| X11 [Linux-only]                  | N.A.                      | - **Ubuntu**: apt-get install libxkbcommon-x11-0<br>- **CentOS**: yum install libXt-deve                                             |
+| dos2unix [Linux-only]             | N.A.                      | - **Ubuntu**: apt-get install dos2unix<br>- **CentOS**: yum install dos2unix                                                         |
+| [Doxygen](http://doxygen.nl/)     | 1.8+                      | OPTIONAL: For documentation only.                                                                                                               |
 
 Ensure all dependencies are met before proceeding.
 
