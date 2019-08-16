@@ -273,14 +273,19 @@ Before building CaPTk, the following software libraries are required to be insta
       <td>Install graphics drivers; CentOS Example: yum install mesa-libGL-devel <td>
     </tr>
     <tr>
-      <td>X11 (Linux-only)</td>
-      <td>n/a</td>
-      <td>Windowing system for GUI; CentOS Example: yum install libXt-devel <td>
-    </tr>
-    <tr>
       <td>CMake (http://www.cmake.org/)</td>
       <td>3.10 - 3.12</td>
       <td>To configure the CaPTk compilation along with its dependencies.</td>
+    </tr>
+    <tr>
+      <td>X11 [Linux-only]</td>
+      <td>n/a</td>
+      <td>Windowing system for Linux GUI; CentOS Example: yum install libXt-devel <td>
+    </tr>
+    <tr>
+      <td>dos2unix [Linux-only]</td>
+      <td>n/a</td>
+      <td>Ensuring Windows line endings get fixed; CentOS Example: yum install dos2unix <td>
     </tr>
     <tr>
       <td>Doxygen (http://www.stack.nl/~dimitri/doxygen/)</td>
