@@ -272,7 +272,8 @@ Ensure all dependencies are met before proceeding.
 Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org/software/bash/)). They will configure and build CaPTk using GNU Make (http://www.gnu.org/software/make/). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface or from PowerShell.
 
 Extract source files and create the build directory:
-\verbatim
+
+```bash
 git clone https://github.com/CBICA/CaPTk.git
 git lfs fetch --all # downloads all the precompiled binaries for different applications and Qt
 cd CaPTk
@@ -283,7 +284,7 @@ make -j # multi-threaded compilation: use 'make -j${N}' to specify number of thr
 cmake -DCMAKE_INSTALL_PREFIX=${path_to_where_you_want_to_install} .. # configure CaPTk
 make -j # multi-threaded compilation: use 'make -j${N}' to specify number of threads to use
 make install/strip # installs CaPTk and all its files to ${path_to_where_you_want_to_install}
-\endverbatim
+```
 
 --------
 
