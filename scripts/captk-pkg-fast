@@ -1,0 +1,2 @@
+export PKG_FAST_MODE=1
+./captk-pkg
