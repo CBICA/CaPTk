@@ -48,7 +48,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     this->m_FontDialog->setSizeGripEnabled(false);
 
 	this->stackedWidget->insertWidget(0, this->m_AppearancePage);
-    this->stackedWidget->insertWidget(1,this->m_FontDialog);
+    //this->stackedWidget->insertWidget(1,this->m_FontDialog);
 
 	//! signals and slots
     connect(this->listWidget,SIGNAL(itemSelectionChanged()),this,SLOT(OnItemSelectionChanged()));
