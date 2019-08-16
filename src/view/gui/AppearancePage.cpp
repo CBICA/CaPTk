@@ -52,6 +52,7 @@ void AppearancePage::OnChangeTheme(int theme)
 		if (success)
 		{
 			qDebug() << "reading succeeded, applying DARK theme" << endl;
+			cbica::Logging(loggerFile, "qss file path = " + std::string(qssPath.c_str()));
 			cbica::Logging(loggerFile, "qss file read succeeded, applying DARK theme");
 			qApp->setStyleSheet(f.readAll());
 			f.close();
@@ -59,6 +60,7 @@ void AppearancePage::OnChangeTheme(int theme)
 		else
 		{
 			qDebug() << "reading failed" << endl;
+			cbica::Logging(loggerFile, "qss file path = " + std::string(qssPath.c_str()));
 			cbica::Logging(loggerFile, "qss file read failed");
 		}
 
