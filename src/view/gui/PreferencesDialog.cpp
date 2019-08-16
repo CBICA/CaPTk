@@ -35,17 +35,17 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     this->SetupUi();
 
 	this->m_AppearancePage = new AppearancePage(this->stackedWidget);
-    this->m_FontDialog = new QFontDialog(this->stackedWidget);
-    this->m_FontDialog->setWindowFlags(Qt::SubWindow);
-    this->m_FontDialog->setOptions(
-                /* do not use native dialog */
-                QFontDialog::DontUseNativeDialog
-                /* you don't need to set it, but if you don't set this
-                                        the "OK" and "Cancel" buttons will show up, I don't
-                                        think you'd want that. */
-                | QFontDialog::NoButtons
-                );
-    this->m_FontDialog->setSizeGripEnabled(false);
+    //this->m_FontDialog = new QFontDialog(this->stackedWidget);
+    //this->m_FontDialog->setWindowFlags(Qt::SubWindow);
+    //this->m_FontDialog->setOptions(
+    //            /* do not use native dialog */
+    //            QFontDialog::DontUseNativeDialog
+    //            /* you don't need to set it, but if you don't set this
+    //                                    the "OK" and "Cancel" buttons will show up, I don't
+    //                                    think you'd want that. */
+    //            | QFontDialog::NoButtons
+    //            );
+    //this->m_FontDialog->setSizeGripEnabled(false);
 
 	this->stackedWidget->insertWidget(0, this->m_AppearancePage);
     //this->stackedWidget->insertWidget(1,this->m_FontDialog);
@@ -61,7 +61,8 @@ PreferencesDialog::~PreferencesDialog()
 
 QFontDialog *PreferencesDialog::GetFontDialog()
 {
-    return this->m_FontDialog;
+    //return this->m_FontDialog;
+	return nullptr;
 }
 
 void PreferencesDialog::OnItemSelectionChanged()
