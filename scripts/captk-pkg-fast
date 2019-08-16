@@ -1,2 +1,4 @@
+#!/bin/bash
+
 export PKG_FAST_MODE=1
-./captk-pkg
+`pwd`/captk-pkg
