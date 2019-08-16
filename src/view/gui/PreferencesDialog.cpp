@@ -84,7 +84,7 @@ void PreferencesDialog::SetupUi()
 	horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
 	listWidget = new QListWidget(widget);
 	new QListWidgetItem(listWidget);
-	new QListWidgetItem(listWidget);
+	//new QListWidgetItem(listWidget);
 
 	listWidget->setObjectName(QStringLiteral("listWidget"));
 	listWidget->setFixedWidth(175);
@@ -124,7 +124,7 @@ void PreferencesDialog::retranslateUi(QDialog *PreferencesDialog)
 	listWidget->setSortingEnabled(false);
 	QListWidgetItem *___qlistwidgetitem = listWidget->item(0);
 	___qlistwidgetitem->setText(QApplication::translate("PreferencesDialog", "Appearance", nullptr));
-	QListWidgetItem *___qlistwidgetitem1 = listWidget->item(1);
-	___qlistwidgetitem1->setText(QApplication::translate("PreferencesDialog", "Fonts", nullptr));
+	//QListWidgetItem *___qlistwidgetitem1 = listWidget->item(1);
+	//___qlistwidgetitem1->setText(QApplication::translate("PreferencesDialog", "Fonts", nullptr));
 	listWidget->setSortingEnabled(__sortingEnabled);
 }
