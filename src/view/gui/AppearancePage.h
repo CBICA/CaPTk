@@ -44,8 +44,11 @@ public slots:
 
 private:
     Ui::AppearancePage *ui;
-    QFont m_selectedFont;
-	QString m_currentStyleSheet;
+
+	//! ivars for handling cancel cases
+    QFont m_SelectedFont, m_PreviousFont;
+	QString m_CurrentStyleSheet, m_PreviousStyleSheet;
+	ThemeType m_CurrentTheme, m_PreviousTheme;
 };
 
 #endif // APPEARANCEPAGE_H

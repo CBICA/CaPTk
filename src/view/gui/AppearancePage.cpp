@@ -24,6 +24,11 @@ AppearancePage::AppearancePage(QWidget *parent) :
     ui->setupUi(this);
     ui->currentFontLabel->setText(qApp->font().family());
 
+	//! default
+	this->m_PreviousFont = qApp->font();
+	this->m_PreviousStyleSheet = qApp->styleSheet();
+	this->m_PreviousTheme = ThemeType::Light;
+
     //connect signals and slots
     connect(ui->selectFontBtn,SIGNAL(clicked()),this,SLOT(OnSelectFontButtonClicked()));
 	connect(ui->themeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnChangeTheme(int)));
@@ -36,8 +41,8 @@ AppearancePage::~AppearancePage()
 
 void AppearancePage::OnChangeTheme(int theme)
 {
-	ThemeType t = ThemeType(theme);
-	if (t == ThemeType::Dark)
+	this->m_CurrentTheme = ThemeType(theme);
+	if (this->m_CurrentTheme == ThemeType::Dark)
 	{
 		cbica::Logging(loggerFile, "applying DARK theme");
 		std::string qssPath;
@@ -51,7 +56,7 @@ void AppearancePage::OnChangeTheme(int theme)
 		if (success)
 		{
 			cbica::Logging(loggerFile, "file reading succeeded, qss file path = " + std::string(qssPath.c_str()));
-			this->m_currentStyleSheet = f.readAll();
+			this->m_CurrentStyleSheet = f.readAll();
 		}
 		else
 		{
@@ -59,10 +64,10 @@ void AppearancePage::OnChangeTheme(int theme)
 		}
 		f.close();
 	}
-	else if (t == ThemeType::Light)
+	else if (this->m_CurrentTheme == ThemeType::Light)
 	{
 		cbica::Logging(loggerFile, "applying LIGHT theme");
-		this->m_currentStyleSheet = "";
+		this->m_CurrentStyleSheet = "";
 	}
 }
 
@@ -77,16 +82,41 @@ void AppearancePage::OnSelectFontButtonClicked()
     if( ok )
     {
  		ui->currentFontLabel->setText(font.family());
-		this->m_selectedFont = font;
+		this->m_SelectedFont = font;
     }
+	else
+	{
+		qDebug() << " previous font = " << this->m_PreviousFont << endl;
+		ui->currentFontLabel->setText(this->m_PreviousFont.family());
+		this->m_SelectedFont = this->m_PreviousFont;
+	}
 }
 
 void AppearancePage::OnOkay()
 {
-	qApp->setFont(this->m_selectedFont);
-	qApp->setStyleSheet(this->m_currentStyleSheet);
+	//! update previous
+	this->m_PreviousFont = this->m_SelectedFont;
+	this->m_PreviousStyleSheet = this->m_CurrentStyleSheet;
+	this->m_PreviousTheme = this->m_CurrentTheme;
+
+	qDebug() << " previous font = " << this->m_PreviousFont << endl;
+	qDebug() << " previous style = " << this->m_PreviousStyleSheet << endl;
+
+	//! apply font and stylesheet
+	qApp->setFont(this->m_SelectedFont);
+	qApp->setStyleSheet(this->m_CurrentStyleSheet);
 }
 
 void AppearancePage::OnCancel()
 {
+	//! revert all changes
+	ui->currentFontLabel->setText(this->m_PreviousFont.family());
+	this->m_SelectedFont = this->m_PreviousFont;
+	ui->themeComboBox->setCurrentIndex(this->m_PreviousTheme);
+
+	qDebug() << " previous font = " << this->m_PreviousFont << endl;
+	qDebug() << " previous style = " << this->m_PreviousStyleSheet << endl;
+
+	qApp->setFont(this->m_PreviousFont);
+	qApp->setStyleSheet(this->m_PreviousStyleSheet);
 }
