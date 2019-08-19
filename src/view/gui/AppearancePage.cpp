@@ -86,7 +86,6 @@ void AppearancePage::OnSelectFontButtonClicked()
     }
 	else
 	{
-		qDebug() << " previous font = " << this->m_PreviousFont << endl;
 		ui->currentFontLabel->setText(this->m_PreviousFont.family());
 		this->m_SelectedFont = this->m_PreviousFont;
 	}
@@ -98,9 +97,6 @@ void AppearancePage::OnOkay()
 	this->m_PreviousFont = this->m_SelectedFont;
 	this->m_PreviousStyleSheet = this->m_CurrentStyleSheet;
 	this->m_PreviousTheme = this->m_CurrentTheme;
-
-	qDebug() << " previous font = " << this->m_PreviousFont << endl;
-	qDebug() << " previous style = " << this->m_PreviousStyleSheet << endl;
 
 	//! apply font and stylesheet
 	qApp->setFont(this->m_SelectedFont);
@@ -114,9 +110,7 @@ void AppearancePage::OnCancel()
 	this->m_SelectedFont = this->m_PreviousFont;
 	ui->themeComboBox->setCurrentIndex(this->m_PreviousTheme);
 
-	qDebug() << " previous font = " << this->m_PreviousFont << endl;
-	qDebug() << " previous style = " << this->m_PreviousStyleSheet << endl;
-
+	//! keep previous font, style
 	qApp->setFont(this->m_PreviousFont);
 	qApp->setStyleSheet(this->m_PreviousStyleSheet);
 }
