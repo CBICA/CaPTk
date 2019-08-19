@@ -9,7 +9,7 @@ This section gives further technical details for all previous documentation mate
 This section provides step-by-step guidance to apply the CaPTk functionalities:
 
 - \subpage tr_FeatureExtraction "Feature Extraction"
-- \subpage tr_something ht_Segmentation "Segmentation"
+- \subpage tr_sourceBuild "Build from Source"
 - \subpage tr_something ht_FeatureExtraction "Feature Extraction"
 - \subpage tr_something ht_SpecialApps "Specialized Applications Usage"
 
@@ -270,7 +270,30 @@ For end-to-end build examples for Windows/Linux (Ubuntu Xenial)/macOS (10.13), p
 
 --------
 
-\section prerequisites Prerequisites
+*/
+
+/**
+
+\page tr_integration Integrating your Application in CaPTk
+
+CaPTk is developed and maintained by the Center for Biomedical Image Computing and Analytics (CBICA) at the University of Pennsylvania, and draws upon research from several groups within the Center.
+
+New applications, written in any programming language, can be integrated into CaPTk at different levels. These applications can then run within CaPTk, while having direct access to the full breadth of CaPTk’s interactive capabilities.
+
+<ul>
+  <li><b>Source level integration</b>: At this level, the new application source code (C++) is compiled alongside CaPTk, ensuring the most optimized integration. Source-level integration is straight-forward (only requiring additions to relevant CMake files and minor additions to the interactive base) if the new application relies on a subset of CaPTk’s dependencies (i.e., ITK, VTK, OpenCV, Qt). </li>
+  <li><b>Executable level integration</b>: This level provides a graphical interface to an existing command-line application (not necessarily developed in C++), allowing users to leverage CaPTk’s functionality (e.g., interaction, feature extraction). Executable-level integration requires only minor additions to CaPTk to create a menu option for the new application. </li>
+</ul>
+
+Almost every application of CaPTk has an accompanying command-line executable (with more on the way). Those programs can be called directly, making the CaPTk applications available as components within a larger pipeline or for efficient batch processing of large numbers of images.
+
+You first need to compile CaPTk from source. The following sections give that information.
+
+--------
+
+\section tr_sourceBuid Building CaPTk from Sources 
+
+\subsection tr_sb_prerequisites Prerequisites
 
 Before building CaPTk, the following software libraries are required to be installed. <strong>Please note</strong> that to build in Windows, CMake needs to be used an appropriate compiler (Win64 version of Visual Studio is recommended). The selected solution platform is needed to match with dependent libraries. 
 
@@ -288,7 +311,7 @@ Ensure all dependencies are met before proceeding.
 
 --------
 
-\section actualBuild Build
+\subsection tr_sb_actualBuild Build
 
 Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org/software/bash/)). They will configure and build CaPTk using GNU Make (http://www.gnu.org/software/make/). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface or from PowerShell.
 
@@ -301,26 +324,11 @@ cd CaPTk
 mkdir build # this is where we will build all the binaries
 cd build
 cmake .. # configure the superbuild first - builds ITK, VTK and OpenCV based on specific Qt version which is downloaded
-make -j # multi-threaded compilation: use 'make -j${N}' to specify number of threads to use
+make -j # multi-threaded compilation: use 'make -j${N}' to specify number of threads to use; on Windows, compile the ALL_BUILD project
 cmake -DCMAKE_INSTALL_PREFIX=${path_to_where_you_want_to_install} .. # configure CaPTk
-make -j # multi-threaded compilation: use 'make -j${N}' to specify number of threads to use
-make install/strip # installs CaPTk and all its files to ${path_to_where_you_want_to_install}
+make -j # multi-threaded compilation: use 'make -j${N}' to specify number of threads to use; on Windows, compile the ALL_BUILD project
+make install/strip # installs CaPTk and all its files to ${path_to_where_you_want_to_install}; on Windows, compile the INSTALL project
 \endverbatim
-
---------
-
-\section generalInfo General Information
-
-CaPTk is developed and maintained by the Center for Biomedical Image Computing and Analytics (CBICA) at the University of Pennsylvania, and draws upon research from several groups within the Center.
-
-New applications, written in any programming language, can be integrated into CaPTk at different levels. These applications can then run within CaPTk, while having direct access to the full breadth of CaPTk’s interactive capabilities.
-
-<ul>
-  <li><b>Source level integration</b>: At this level, the new application source code (C++) is compiled alongside CaPTk, ensuring the most optimized integration. Source-level integration is straight-forward (only requiring additions to relevant CMake files and minor additions to the interactive base) if the new application relies on a subset of CaPTk’s dependencies (i.e., ITK, VTK, OpenCV, Qt). </li>
-  <li><b>Executable level integration</b>: This level provides a graphical interface to an existing command-line application (not necessarily developed in C++), allowing users to leverage CaPTk’s functionality (e.g., interaction, feature extraction). Executable-level integration requires only minor additions to CaPTk to create a menu option for the new application. </li>
-</ul>
-
-Almost every application of CaPTk has an accompanying command-line executable (with more on the way). Those programs can be called directly, making the CaPTk applications available as components within a larger pipeline or for efficient batch processing of large numbers of images.
 
 --------
 
@@ -336,20 +344,6 @@ Applications written in any language can be integrated with CaPTk via calls to s
 - SBRT Lung is an example of integration with a stand-alone CLI application. The Console calls the executable in accordance with CLI, passes the loaded images and ROIs, etc. and visualizes the result when the application is done. 
 - EGFRvIII Surrogate Index provides the tightest possible integration with the CaPTk Console. All data (loaded images, ROIs, etc.) is passed in-memory and the visualization of results happens instantaneously.
 - All functions available in native C++ libraries (ITK (https://itk.org/), OpenCV (http://opencv.org/), VTK (http://www.vtk.org/)) are available for native applications to use.
-
---------
-
-\section dependencies Dependencies
-
-<ol type="1">
-
-  <li>The <b>Graphical Layer</b> is currently written on a Qt4 (https://download.qt.io/archive/qt/4.8/) based framework on C++ for speed, stability and extensibility. Qt, thus, becomes the first dependency for compiling CaPTk. Qt was chosen because it is a well-known tool for developing GUI applications both in academia and also in industry. </li>  
-  <li>The basic file input/output operations are based on standard ITK (http://www.itk.org/) I/O (http://www.itk.org/Doxygen/html/group__IOFilters.html), thereby making it the second dependency. ITK was chosen on account of it being an industry and academic standard for developing medical image applications. It also has one of the most vibrant developer and user communities. Currently supported data formats are DICOM (http://dicom.nema.org/) and NIFTI (http://nifti.nimh.nih.gov/nifti-1). </li>  
-  <li>Rendering the data is done using VTK (http://www.vtk.org/), making it the third dependency. VTK has been specifically designed for medical image data and it utilizes various hardware rendering techniques which make applications developed on it very fluid. </li>  
-  <li>CMake (https://cmake.org/) is used to configure the project. This is the industry standard for cross-platform compilation.</li>  
-  <li>OpenCV (https://opencv.org)
-  <li>A C++ compiler (we develop on MSVC/2013 and GCC/4.9.2). 
-</ol>
 
 --------
 
