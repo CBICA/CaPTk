@@ -39,7 +39,7 @@ void AppearancePage::OnChangeTheme(int theme)
 	ThemeType t = ThemeType(theme);
 	if (t == ThemeType::Dark)
 	{
-		qDebug() << t << endl;
+		cbica::Logging(loggerFile, "applying DARK theme");
 		std::string qssPath;
 #ifdef QT_DEBUG
 		qssPath = getCaPTkDataDir() + /*"../etc/"*/ + "/captk.qss";
@@ -48,29 +48,21 @@ void AppearancePage::OnChangeTheme(int theme)
 #endif
 		QFile f(qssPath.c_str());
 		bool success = f.open(QFile::ReadOnly);
-		qDebug() << "success = " << success << endl;
 		if (success)
 		{
-			qDebug() << "reading succeeded, applying DARK theme" << endl;
-			cbica::Logging(loggerFile, "qss file path = " + std::string(qssPath.c_str()));
-			cbica::Logging(loggerFile, "qss file read succeeded, applying DARK theme");
+			cbica::Logging(loggerFile, "file reading succeeded, qss file path = " + std::string(qssPath.c_str()));
 			this->m_currentStyleSheet = f.readAll();
-			//qApp->setStyleSheet(f.readAll());
 		}
 		else
 		{
-			qDebug() << "reading failed" << endl;
-			cbica::Logging(loggerFile, "qss file path = " + std::string(qssPath.c_str()));
-			cbica::Logging(loggerFile, "qss file read failed");
+			cbica::Logging(loggerFile, "file reading failed, qss file path = " + std::string(qssPath.c_str()));
 		}
 		f.close();
 	}
 	else if (t == ThemeType::Light)
 	{
-		qDebug() << t << endl;
 		cbica::Logging(loggerFile, "applying LIGHT theme");
 		this->m_currentStyleSheet = "";
-		//qApp->setStyleSheet("");
 	}
 }
 
@@ -84,26 +76,17 @@ void AppearancePage::OnSelectFontButtonClicked()
                 tr("Pick a font") );
     if( ok )
     {
-        qDebug() << "font           : " << font;
-        qDebug() << "font weight    : " << font.weight();
-        qDebug() << "font family    : " << font.family();
-        qDebug() << "font style     : " << font.style();  //  StyleNormal = 0, StyleItalic = 1, StyleOblique = 2
-        qDebug() << "font pointSize : " << font.pointSize();
-		ui->currentFontLabel->setText(font.family());
+ 		ui->currentFontLabel->setText(font.family());
 		this->m_selectedFont = font;
     }
 }
 
-
 void AppearancePage::OnOkay()
 {
-	qDebug() << "AppearancePage::OnOkay()" << endl;
 	qApp->setFont(this->m_selectedFont);
-	qDebug() << "selected font = " << this->m_selectedFont << endl;
 	qApp->setStyleSheet(this->m_currentStyleSheet);
 }
 
 void AppearancePage::OnCancel()
 {
-	qDebug() << "AppearancePage::OnCancel()" << endl;
 }
