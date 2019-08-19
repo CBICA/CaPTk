@@ -14,12 +14,13 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #define APPEARANCEPAGE_H
 
 #include <QWidget>
+#include "IPreferencePage.h"
 
 namespace Ui {
 class AppearancePage;
 }
 
-class AppearancePage : public QWidget
+class AppearancePage : public QWidget, public IPreferencePage
 {
     Q_OBJECT
 
@@ -38,6 +39,8 @@ public:
 public slots:
 	void OnSelectFontButtonClicked();
 	void OnChangeTheme(int);
+	void OnOkay() override;
+	void OnCancel() override;
 
 private:
     Ui::AppearancePage *ui;
