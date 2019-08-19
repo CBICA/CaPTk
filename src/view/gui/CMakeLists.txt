@@ -77,6 +77,8 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/CheckOpenGLVersion.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/PreferencesDialog.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/PreferencesDialog.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/IPreferencePage.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/IPreferencePage.cpp"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
   #"${CMAKE_CURRENT_SOURCE_DIR}/ApplicationBase.h"
