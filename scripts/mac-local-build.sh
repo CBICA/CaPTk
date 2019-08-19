@@ -55,14 +55,12 @@ version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
 pkgname="_Installer"
 pkgname="$version$pkgname"
 
-# sudo rm -rf CaPTk_*.app/Contents/Resources/bin/*.app
-
-# make -j 2
-
 rm -rf *.pkg 
 rm -rf _CPack*
 make package
 
+# sudo install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib @executable_path/../../Frameworks/libomp.dylib ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/bin/DeepMedic
+``
 pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
 productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
