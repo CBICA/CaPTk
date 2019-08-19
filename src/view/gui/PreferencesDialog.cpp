@@ -42,6 +42,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     connect(this->listWidget,SIGNAL(itemSelectionChanged()),this,SLOT(OnItemSelectionChanged()));
 	connect(this, SIGNAL(accepted()), this, SLOT(OnAccepted()));
 	connect(this, SIGNAL(rejected()), this, SLOT(OnRejected()));
+
+	//! set the first item as selected
+	this->listWidget->item(0)->setSelected(true);
 }
 
 PreferencesDialog::~PreferencesDialog()
