@@ -62,6 +62,7 @@ var NAVTREE =
       [ "Probability Maps of Potential Recurrence of Glioblastoma Tumors", "Science.html#recurrencePredictor", null ],
       [ "Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer", "Science.html#libraPapers", null ]
     ] ],
+    [ "Feature Extraction", "FeatureExtraction.html", null ],
     [ "Technical Reference", "Technical_Reference.html", [
       [ "Further Application Details and Assumptions", "Technical_Reference.html#tr_Apps", [
         [ "Image Visualization", "Technical_Reference.html#appsVisualization", null ],

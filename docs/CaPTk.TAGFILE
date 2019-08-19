@@ -214,6 +214,11 @@
     <docanchor file="Science" title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer">libraPapers</docanchor>
   </compound>
   <compound kind="page">
+    <name>FeatureExtraction</name>
+    <title>Feature Extraction</title>
+    <filename>FeatureExtraction</filename>
+  </compound>
+  <compound kind="page">
     <name>Technical_Reference</name>
     <title>Technical Reference</title>
     <filename>Technical_Reference</filename>

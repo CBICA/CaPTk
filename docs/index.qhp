@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.3.nonRelease.20190812" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.3.nonRelease.20190817" ref="index.html">
         <section title="Overview" ref="index.html" />
         <section title="Getting Started" ref="Getting_Started.html">
           <section title="Frequently Asked Questions" ref="Getting_Started.html#gs_FAQ" />
@@ -81,6 +81,7 @@
           <section title="Probability Maps of Potential Recurrence of Glioblastoma Tumors" ref="Science.html#recurrencePredictor" />
           <section title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer" ref="Science.html#libraPapers" />
         </section>
+        <section title="Feature Extraction" ref="FeatureExtraction.html" />
         <section title="Technical Reference" ref="Technical_Reference.html">
           <section title="Further Application Details and Assumptions" ref="Technical_Reference.html#tr_Apps">
             <section title="Image Visualization" ref="Technical_Reference.html#appsVisualization" />
@@ -139,6 +140,7 @@
       <keyword name="Miscellaneous: PCA Volume Extraction" id="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
       <keyword name="Miscellaneous: Training Module" id="Miscellaneous: Training Module" ref="Training_Module.html" />
       <keyword name="Scientific Findings using CaPTk" id="Scientific Findings using CaPTk" ref="Science.html" />
+      <keyword name="Feature Extraction" id="Feature Extraction" ref="FeatureExtraction.html" />
       <keyword name="Technical Reference" id="Technical Reference" ref="Technical_Reference.html" />
       <keyword name="Download Instructions" id="Download Instructions" ref="Download.html" />
       <keyword name="Installation Instructions" id="Installation Instructions" ref="Installation.html" />
@@ -200,6 +202,7 @@
       <file>PCA_Extraction.html</file>
       <file>Training_Module.html</file>
       <file>Science.html</file>
+      <file>FeatureExtraction.html</file>
       <file>Technical_Reference.html</file>
       <file>Download.html</file>
       <file>Installation.html</file>
