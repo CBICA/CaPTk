@@ -153,7 +153,8 @@ ADD_TEST(NAME DirectionalityEstimateVersionTest COMMAND DirectionalityEstimate -
 
 # EGFRvIIIIndexPredictor Tests
 
-ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ./TrainingData/ -t 0 -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor )
+ADD_TEST(NAME EGFRvIIIIndexPredictorNewModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1 -t 0 -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor )
+ADD_TEST(NAME EGFRvIIIIndexPredictorModelTest COMMAND EGFRvIIIIndexPredictor -i ${TESTING_DATA_DIR}/EGFRvIIISVMIndex_1.6.1 -t 1 -o ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor -m ${TESTING_OUTPUT_DIR}/EGFRvIIIIndexPredictor)
 
 ADD_TEST(NAME EGFRvIIIIndexPredictorHelpTest COMMAND EGFRvIIIIndexPredictor -h )
 ADD_TEST(NAME EGFRvIIIIndexPredictorVersionTest COMMAND EGFRvIIIIndexPredictor -v )
@@ -200,7 +201,7 @@ ADD_TEST(NAME GreedyRegistrationVersionTest COMMAND GreedyRegistration -v )
 # Molecular Subtype Predictor Tests
 
 ADD_TEST(NAME MolecularSubtypePredictorT0Test COMMAND MolecularSubtypePredictor -t 0 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -o ${TESTING_OUTPUT_DIR}/molsub/ )
-ADD_TEST(NAME MolecularSubtypePredictorT1Test COMMAND MolecularSubtypePredictor -t 1 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -o ${TESTING_OUTPUT_DIR}/molsub/ )
+ADD_TEST(NAME MolecularSubtypePredictorT1Test COMMAND MolecularSubtypePredictor -t 1 -i ${TESTING_DATA_DIR}/molsub/test_samples/AAUA -o ${TESTING_OUTPUT_DIR}/molsub/ -m ${TESTING_OUTPUT_DIR}/molsub/)
 
 ADD_TEST(NAME MolecularSubtypePredictorHelpTest COMMAND MolecularSubtypePredictor -h )
 ADD_TEST(NAME MolecularSubtypePredictorVersionTest COMMAND MolecularSubtypePredictor -v )
@@ -210,12 +211,15 @@ ADD_TEST(NAME MolecularSubtypePredictorVersionTest COMMAND MolecularSubtypePredi
 # NOTE: I am very bothered by the fact that PerfusionDerivatives -r and -p flags be not only required arguments
 # but apparently they *also* have default values which completely defeats the purpose of them being required.
 
-ADD_TEST(NAME PerfusionDerivativesP1R1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 )
-ADD_TEST(NAME PerfusionDerivativesP0R0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 0 )
-ADD_TEST(NAME PerfusionDerivativesP1R0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 0 )
-ADD_TEST(NAME PerfusionDerivativesP0R1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 1 )
-ADD_TEST(NAME PerfusionDerivativesEcho5Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 5 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 )
-ADD_TEST(NAME PerfusionDerivativesEcho10Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 10 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 )
+ADD_TEST(NAME PerfusionDerivativesP1R1PH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesP1R1PH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 0)
+ADD_TEST(NAME PerfusionDerivativesP0R0PH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 0 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesP1R0PH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 0 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesP1R0PH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 0 -pH 0)
+ADD_TEST(NAME PerfusionDerivativesP0R1PH1Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 1 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesP0R1PH0Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 1 -o ${TESTING_OUTPUT_DIR}/perf -p 0 -r 1 -pH 0)
+ADD_TEST(NAME PerfusionDerivativesEcho5Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 5 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 1)
+ADD_TEST(NAME PerfusionDerivativesEcho10Test COMMAND PerfusionDerivatives -i ${TESTING_DATA_DIR}/perf/AAAC_PreOp_perf_pp.nii.gz -e 10 -o ${TESTING_OUTPUT_DIR}/perf -p 1 -r 1 -pH 1)
 
 ADD_TEST(NAME PerfusionDerivativesHelpTest COMMAND PerfusionDerivatives -h )
 ADD_TEST(NAME PerfusionDerivativesVersionTest COMMAND PerfusionDerivatives -v )
@@ -245,8 +249,8 @@ ADD_TEST(NAME PseudoProgressionEstimatorVersionTest COMMAND PseudoProgressionEst
 
 # Recurrence Estimator Tests
 
-ADD_TEST(NAME RecurrenceEstimatorType0Test COMMAND RecurrenceEstimator -t 0 -i ${TESTING_DATA_DIR}/recurrence -o ${TESTING_OUTPUT_DIR}/recurrence/ )
-ADD_TEST(NAME RecurrenceEstimatorType1Test COMMAND RecurrenceEstimator -t 1 -i ${TESTING_DATA_DIR}/recurrence -o ${TESTING_OUTPUT_DIR}/recurrence/ )
+ADD_TEST(NAME RecurrenceEstimatorType0Test COMMAND RecurrenceEstimator -t 0 -i ${TESTING_DATA_DIR}/recurrence/training_samples -o ${TESTING_OUTPUT_DIR}/recurrence/ )
+ADD_TEST(NAME RecurrenceEstimatorType1Test COMMAND RecurrenceEstimator -t 1 -i ${TESTING_DATA_DIR}/recurrence/test_samples -o ${TESTING_OUTPUT_DIR}/recurrence/ -m ${TESTING_OUTPUT_DIR}/recurrence/)
 
 ADD_TEST(NAME RecurrenceEstimatorHelpTest COMMAND RecurrenceEstimator -h )
 ADD_TEST(NAME RecurrenceEstimatorVersionTest COMMAND RecurrenceEstimator -v )
@@ -278,15 +282,15 @@ ADD_TEST(NAME SBRT_NoduleVersionTest COMMAND SBRT_Nodule -v )
 # Survival Predictor Tests
 
 ADD_TEST(NAME SurvivalPredictorT0Test COMMAND SurvivalPredictor -t 0 -i ${TESTING_DATA_DIR}/survival -o ${TESTING_OUTPUT_DIR}/survival/ )
-ADD_TEST(NAME SurvivalPredictorT1Test COMMAND SurvivalPredictor -t 1 -i ${TESTING_DATA_DIR}/survival -o ${TESTING_OUTPUT_DIR}/survival/ )
+ADD_TEST(NAME SurvivalPredictorT1Test COMMAND SurvivalPredictor -t 1 -i ${TESTING_DATA_DIR}/survival -o ${TESTING_OUTPUT_DIR}/survival/ -m ${TESTING_OUTPUT_DIR}/survival/ )
 
 ADD_TEST(NAME SurvivalPredictorHelpTest COMMAND SurvivalPredictor -h )
 ADD_TEST(NAME SurvivalPredictorVersionTest COMMAND SurvivalPredictor -v )
 
 # Training Module Tests
 
-ADD_TEST(NAME TrainingModuleTest5Folds COMMAND TrainingModule -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 5 )
-ADD_TEST(NAME TrainingModuleTest10Folds COMMAND TrainingModule -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 10 )
+ADD_TEST(NAME TrainingModuleTest5Folds COMMAND TrainingModule -n 1 -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 5 )
+ADD_TEST(NAME TrainingModuleTest10Folds COMMAND TrainingModule -n 1 -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 10 )
 
 ADD_TEST(NAME TrainingModuleHelpTest COMMAND TrainingModule -h )
 ADD_TEST(NAME TrainingModuleVersionTest COMMAND TrainingModule -v )
