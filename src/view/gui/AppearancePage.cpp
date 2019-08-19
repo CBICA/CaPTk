@@ -54,6 +54,7 @@ void AppearancePage::OnChangeTheme(int theme)
 			qDebug() << "reading succeeded, applying DARK theme" << endl;
 			cbica::Logging(loggerFile, "qss file path = " + std::string(qssPath.c_str()));
 			cbica::Logging(loggerFile, "qss file read succeeded, applying DARK theme");
+			this->m_currentStyleSheet = f.readAll();
 			//qApp->setStyleSheet(f.readAll());
 		}
 		else
@@ -68,6 +69,7 @@ void AppearancePage::OnChangeTheme(int theme)
 	{
 		qDebug() << t << endl;
 		cbica::Logging(loggerFile, "applying LIGHT theme");
+		this->m_currentStyleSheet = "";
 		//qApp->setStyleSheet("");
 	}
 }
@@ -98,6 +100,7 @@ void AppearancePage::OnOkay()
 	qDebug() << "AppearancePage::OnOkay()" << endl;
 	qApp->setFont(this->m_selectedFont);
 	qDebug() << "selected font = " << this->m_selectedFont << endl;
+	qApp->setStyleSheet(this->m_currentStyleSheet);
 }
 
 void AppearancePage::OnCancel()
