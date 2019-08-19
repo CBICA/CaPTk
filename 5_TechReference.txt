@@ -88,7 +88,7 @@ The visualization of images is based on the physical coordinate system of each i
       <td>3D <br>z
       <td>
         <ul>
-          <li>Elongation =\f$ \sqrt{\frac{i_{2}}{i_{1}}} \f$ where i_{n} are the second moments of particle around its principal axes.
+          <li>Elongation =\f$ \sqrt{\frac{i_{2}}{i_{1}}} \f$ where \f$i_{n}\f$ are the second moments of particle around its principal axes.
           <li>Perimeter = \f$ 2 \pi r \f$ where r is the radius of the circle enclosing the shape.
           <li>Roundness = \f$ As/Ac = (Area of a shape)/(Area of circle) \f$ where circle has the same perimeter.
           <li>Eccentricity =\f$ \sqrt{1 - \frac{a*b}{c^{2}}} \f$  where c is the longest semi-principal axis of an ellipsoid fitted on an ROI, and a and b are the 2nd and 3rd longest semi-principal axes of the ellipsoid.
