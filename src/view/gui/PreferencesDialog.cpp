@@ -35,20 +35,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     this->SetupUi();
 
 	this->m_AppearancePage = new AppearancePage(this->stackedWidget);
-    //this->m_FontDialog = new QFontDialog(this->stackedWidget);
-    //this->m_FontDialog->setWindowFlags(Qt::SubWindow);
-    //this->m_FontDialog->setOptions(
-    //            /* do not use native dialog */
-    //            QFontDialog::DontUseNativeDialog
-    //            /* you don't need to set it, but if you don't set this
-    //                                    the "OK" and "Cancel" buttons will show up, I don't
-    //                                    think you'd want that. */
-    //            | QFontDialog::NoButtons
-    //            );
-    //this->m_FontDialog->setSizeGripEnabled(false);
 
 	this->stackedWidget->insertWidget(0, this->m_AppearancePage);
-    //this->stackedWidget->insertWidget(1,this->m_FontDialog);
 
 	//! signals and slots
     connect(this->listWidget,SIGNAL(itemSelectionChanged()),this,SLOT(OnItemSelectionChanged()));
@@ -58,12 +46,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 PreferencesDialog::~PreferencesDialog()
 {
-}
-
-QFontDialog *PreferencesDialog::GetFontDialog()
-{
-    //return this->m_FontDialog;
-	return nullptr;
 }
 
 void PreferencesDialog::OnItemSelectionChanged()
@@ -132,15 +114,12 @@ void PreferencesDialog::retranslateUi(QDialog *PreferencesDialog)
 	listWidget->setSortingEnabled(__sortingEnabled);
 }
 
-
 void PreferencesDialog::OnAccepted()
 {
-	qDebug() << " OnAccepted " << endl;
 	this->m_PreferencePage->OnOkay();
 }
 
 void PreferencesDialog::OnRejected()
 {
-	qDebug() << " OnRejected " << endl;
 	this->m_PreferencePage->OnCancel();
 }

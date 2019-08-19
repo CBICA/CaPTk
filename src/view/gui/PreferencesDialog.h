@@ -34,14 +34,15 @@ public:
     explicit PreferencesDialog(QWidget *parent = nullptr);
     ~PreferencesDialog();
 
-	//! getter for font dialog
-    QFontDialog* GetFontDialog();
-
 public slots:
 
 	//! list widget item selection change handler
     void OnItemSelectionChanged();
+
+	//! Okay handler
 	void OnAccepted();
+
+	//! cancel handler
 	void OnRejected();
 
 private:
@@ -52,7 +53,6 @@ private:
 
 	//! ivars
 	AppearancePage *m_AppearancePage;
-    QFontDialog *m_FontDialog;
 	QVBoxLayout *verticalLayout;
 	QWidget *widget;
 	QHBoxLayout *horizontalLayout;
