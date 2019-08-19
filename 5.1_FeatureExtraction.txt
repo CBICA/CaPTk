@@ -1,5 +1,0 @@
-/**
-
-\page FeatureExtraction Feature Extraction 
-
-*/

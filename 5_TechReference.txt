@@ -4,15 +4,36 @@
 
 This section gives further technical details for all previous documentation material.
 
-\tableofcontents
+\page How_To_Guides How To Guides
 
-\section tr_Apps Further Application Details and Assumptions
+This section provides step-by-step guidance to apply the CaPTk functionalities:
 
-\subsection appsVisualization Image Visualization
+- \subpage tr_FeatureExtraction "Feature Extraction"
+- \subpage tr_something ht_Segmentation "Segmentation"
+- \subpage tr_something ht_FeatureExtraction "Feature Extraction"
+- \subpage tr_something ht_SpecialApps "Specialized Applications Usage"
 
-The visualization of images is based on the physical coordinate system of each image (i.e., the origin and direction information from within the image file is used for rendering). In practice, use of a consistent coordinate framework results in images with different origins to appear misaligned (shifted) when compared to other neuro-imaging software packages that do rendering based on the Cartesian coordinate information in the image.
+Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
 
-\subsection appsFeatures Extracted Features
+<b>NOTE:/<b> The visualization of images is based on the physical coordinate system of each image (i.e., the origin and direction information from within the image file is used for rendering). In practice, use of a consistent coordinate framework results in images with different origins to appear misaligned (shifted) when compared to other neuro-imaging software packages that do rendering based on the Cartesian coordinate information in the image.
+*/
+
+/**
+\page tr_FeatureExtraction Feature Extraction
+
+\section tr_fe_defaults Defaults
+
+Here we describe the various defaults.
+
+\section tr_fe_batch Batch Mode
+
+Here we describe the batch processing mode.
+
+\section tr_fe_somethingElse Something Else 
+
+And the list goes on.
+
+\section tr_fe_math Extracted Features
 
 <table border="1">
     <tr>
@@ -241,7 +262,7 @@ The parameterization of the <b>lattice-based strategy</b> for feature extraction
 - The grid spacing representing the distance between consecutive lattice points (Default: 6.3mm). 
 - The size of the local region centered at each lattice point (Default: 6.3mm).
 
-\section tr_buildFromSource Build CaPTk from Source
+\page tr_buildFromSource Build CaPTk from Source
 
 Source code for the CaPTk graphical interface and applications is distributed for sites that wish to examine the code, collaborate with CBICA in future development, and for compatibility.
 
@@ -249,7 +270,7 @@ For end-to-end build examples for Windows/Linux (Ubuntu Xenial)/macOS (10.13), p
 
 --------
 
-\subsection prerequisites Prerequisites
+\section prerequisites Prerequisites
 
 Before building CaPTk, the following software libraries are required to be installed. <strong>Please note</strong> that to build in Windows, CMake needs to be used an appropriate compiler (Win64 version of Visual Studio is recommended). The selected solution platform is needed to match with dependent libraries. 
 
@@ -267,7 +288,7 @@ Ensure all dependencies are met before proceeding.
 
 --------
 
-\subsection actualBuild Build
+\section actualBuild Build
 
 Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org/software/bash/)). They will configure and build CaPTk using GNU Make (http://www.gnu.org/software/make/). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface or from PowerShell.
 
@@ -288,7 +309,7 @@ make install/strip # installs CaPTk and all its files to ${path_to_where_you_wan
 
 --------
 
-\subsection generalInfo General Information
+\section generalInfo General Information
 
 CaPTk is developed and maintained by the Center for Biomedical Image Computing and Analytics (CBICA) at the University of Pennsylvania, and draws upon research from several groups within the Center.
 
@@ -318,7 +339,7 @@ Applications written in any language can be integrated with CaPTk via calls to s
 
 --------
 
-\subsection dependencies Dependencies
+\section dependencies Dependencies
 
 <ol type="1">
 
@@ -332,7 +353,7 @@ Applications written in any language can be integrated with CaPTk via calls to s
 
 --------
 
-\subsection cppIntegration Integrating your C++ application into CaPTk
+\section cppIntegration Integrating your C++ application into CaPTk
 
 Let’s say the name of your application is <b>yourSourceApp</b>. The following steps highlight the steps required for you to integrate your application into CaPTk:
 
@@ -349,7 +370,7 @@ Let’s say the name of your application is <b>yourSourceApp</b>. The following 
 
 --------
 
-\subsection pyIntegration Integrating your Python application into CaPTk
+\section pyIntegration Integrating your Python application into CaPTk
 
 Let’s say the name of your application is <b>yourPythonApp</b>. The following steps give a brief high-level overview regarding the steps required for integrating it with CaPTk:
 
