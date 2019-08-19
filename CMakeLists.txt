@@ -9,6 +9,8 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # WARNING: captk-pkg (the linux packager) directly tries to pattern match these lines (excluding the actual number/patch text)
 # to read the version number.
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
+# STRING(TIMESTAMP TODAY "%Y%m%d")
+
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
 SET( PROJECT_VERSION_PATCH 3.nonRelease.20190816 )
@@ -1066,6 +1068,24 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(MvFile)
       mvFile(${EXE_NAME} itksnap ITK-SNAP)
       chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
+
+      INCLUDE(ChangeDylib)
+
+      FILE( GLOB EXECS
+        "${DATA_DIR}/cwlFiles/*"
+      )
+
+      FOREACH(EXEC ${EXECS})
+
+        GET_FILENAME_COMPONENT( EXEC_IN_BIN ${EXEC} NAME_WE )
+
+        # GET_TARGET_PROPERTY(TARGET_TYPE ${EXEC_IN_BIN} TYPE)
+        IF (NOT EXEC_IN_BIN STREQUAL "BreastTexturePipeline")
+          # MESSAGE( STATUS "[debug]EXEC_IN_BIN == ${EXEC_IN_BIN}")
+          changeLibOmpDylib(${EXE_NAME} ${EXEC_IN_BIN})
+        ENDIF ()
+        
+      ENDFOREACH()
 
     ENDIF()
 
