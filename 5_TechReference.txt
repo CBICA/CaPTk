@@ -4,18 +4,15 @@
 
 This section gives further technical details for all previous documentation material.
 
-\page How_To_Guides How To Guides
-
 This section provides step-by-step guidance to apply the CaPTk functionalities:
 
 - \subpage tr_FeatureExtraction "Feature Extraction"
-- \subpage tr_sourceBuild "Build from Source"
-- \subpage tr_something ht_FeatureExtraction "Feature Extraction"
-- \subpage tr_something ht_SpecialApps "Specialized Applications Usage"
+- \subpage tr_integration "Integrating your Application in CaPTk"
 
 Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
 
-<b>NOTE:/<b> The visualization of images is based on the physical coordinate system of each image (i.e., the origin and direction information from within the image file is used for rendering). In practice, use of a consistent coordinate framework results in images with different origins to appear misaligned (shifted) when compared to other neuro-imaging software packages that do rendering based on the Cartesian coordinate information in the image.
+<b>NOTE:</b> The visualization of images is based on the physical coordinate system of each image (i.e., the origin and direction information from within the image file is used for rendering). In practice, use of a consistent coordinate framework results in images with different origins to appear misaligned (shifted) when compared to other neuro-imaging software packages that do rendering based on the Cartesian coordinate information in the image.
+
 */
 
 /**
@@ -262,14 +259,6 @@ The parameterization of the <b>lattice-based strategy</b> for feature extraction
 - The grid spacing representing the distance between consecutive lattice points (Default: 6.3mm). 
 - The size of the local region centered at each lattice point (Default: 6.3mm).
 
-\page tr_buildFromSource Build CaPTk from Source
-
-Source code for the CaPTk graphical interface and applications is distributed for sites that wish to examine the code, collaborate with CBICA in future development, and for compatibility.
-
-For end-to-end build examples for Windows/Linux (Ubuntu Xenial)/macOS (10.13), please see our [Azure Pipelines configuration file](https://github.com/CBICA/CaPTk/blob/master/azure-pipelines.yml).
-
---------
-
 */
 
 /**
@@ -287,13 +276,32 @@ New applications, written in any programming language, can be integrated into Ca
 
 Almost every application of CaPTk has an accompanying command-line executable (with more on the way). Those programs can be called directly, making the CaPTk applications available as components within a larger pipeline or for efficient batch processing of large numbers of images.
 
-You first need to compile CaPTk from source. The following sections give that information.
+--------
+
+We will provide the technical details of the Cancer Imaging Phenomics Toolkit (<b>CaPTk</b>) using which new applications can be integrated into the global framework and also optimize/improve the code. For any questions/details, please feel free to email <a href="mailto:software@cbica.upenn.edu">software@cbica.upenn.edu</a>.
+
+\image html 10_integration_resize.png "Different layers of application integration in CaPTk"
+\image latex 10_integration_resize.png "Different layers of application integration in CaPTk"
+
+Applications written in any language can be integrated with CaPTk via calls to stand-alone command line executables, but deeper integration (including data passing via objects in-memory and access to full breadth of interactive capabilities of the CaPTk Console) is only possible with applications written in C++ (https://isocpp.org/). 
+
+- LIBRA, in its current form (MATLAB executable) has the least possible integration with the CaPTk Console; the console can call the executable, which launches its own UI for the user.
+- ITK-SNAP is an example of integration where CaPTk Console communicates with the application using the provided API; in this case CaPTk ensures that the loaded images, ROIs, masks, etc. are all passed to ITK-SNAP and the result from the segmentation step there gets passed to the console for visualization after ITK-SNAP is closed.
+- SBRT Lung is an example of integration with a stand-alone CLI application. The Console calls the executable in accordance with CLI, passes the loaded images and ROIs, etc. and visualizes the result when the application is done. 
+- EGFRvIII Surrogate Index provides the tightest possible integration with the CaPTk Console. All data (loaded images, ROIs, etc.) is passed in-memory and the visualization of results happens instantaneously.
+- All functions available in native C++ libraries (ITK (https://itk.org/), OpenCV (http://opencv.org/), VTK (http://www.vtk.org/)) are available for native applications to use.
+
+You need to compile CaPTk from source to proceed. The following sections give that information.
 
 --------
 
 \section tr_sourceBuid Building CaPTk from Sources 
 
 \subsection tr_sb_prerequisites Prerequisites
+
+Source code for the CaPTk graphical interface and applications is distributed for sites that wish to examine the code, collaborate with CBICA in future development, and for compatibility.
+
+For end-to-end build examples for Windows/Linux (Ubuntu Xenial)/macOS (10.13), please see our [Azure Pipelines configuration file](https://github.com/CBICA/CaPTk/blob/master/azure-pipelines.yml).
 
 Before building CaPTk, the following software libraries are required to be installed. <strong>Please note</strong> that to build in Windows, CMake needs to be used an appropriate compiler (Win64 version of Visual Studio is recommended). The selected solution platform is needed to match with dependent libraries. 
 
@@ -332,22 +340,7 @@ make install/strip # installs CaPTk and all its files to ${path_to_where_you_wan
 
 --------
 
-We will provide the technical details of the Cancer Imaging Phenomics Toolkit (<b>CaPTk</b>) using which new applications can be integrated into the global framework and also optimize/improve the code. For any questions/details, please feel free to email <a href="mailto:software@cbica.upenn.edu">software@cbica.upenn.edu</a>.
-
-\image html 10_integration_resize.png "Different layers of application integration in CaPTk"
-\image latex 10_integration_resize.png "Different layers of application integration in CaPTk"
-
-Applications written in any language can be integrated with CaPTk via calls to stand-alone command line executables, but deeper integration (including data passing via objects in-memory and access to full breadth of interactive capabilities of the CaPTk Console) is only possible with applications written in C++ (https://isocpp.org/). 
-
-- LIBRA, in its current form (MATLAB executable) has the least possible integration with the CaPTk Console; the console can call the executable, which launches its own UI for the user.
-- ITK-SNAP is an example of integration where CaPTk Console communicates with the application using the provided API; in this case CaPTk ensures that the loaded images, ROIs, masks, etc. are all passed to ITK-SNAP and the result from the segmentation step there gets passed to the console for visualization after ITK-SNAP is closed.
-- SBRT Lung is an example of integration with a stand-alone CLI application. The Console calls the executable in accordance with CLI, passes the loaded images and ROIs, etc. and visualizes the result when the application is done. 
-- EGFRvIII Surrogate Index provides the tightest possible integration with the CaPTk Console. All data (loaded images, ROIs, etc.) is passed in-memory and the visualization of results happens instantaneously.
-- All functions available in native C++ libraries (ITK (https://itk.org/), OpenCV (http://opencv.org/), VTK (http://www.vtk.org/)) are available for native applications to use.
-
---------
-
-\section cppIntegration Integrating your C++ application into CaPTk
+\section tr_cppIntegration Integrating your C++ application into CaPTk
 
 Let’s say the name of your application is <b>yourSourceApp</b>. The following steps highlight the steps required for you to integrate your application into CaPTk:
 
@@ -364,7 +357,7 @@ Let’s say the name of your application is <b>yourSourceApp</b>. The following 
 
 --------
 
-\section pyIntegration Integrating your Python application into CaPTk
+\section tr_pyIntegration Integrating your Python application into CaPTk
 
 Let’s say the name of your application is <b>yourPythonApp</b>. The following steps give a brief high-level overview regarding the steps required for integrating it with CaPTk:
 
