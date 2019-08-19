@@ -4,7 +4,7 @@ MAINTAINER CBICA_UPenn software@cbica.upenn.edu
 
 #update
 RUN apt-get update && \
-    apt-get install -y sudo curl git
+    apt-get install -y sudo curl git && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
     sudo apt-get install git-lfs
 
@@ -16,7 +16,7 @@ RUN apt-get install -y \
     wget \
     git-core \
     unzip \
-    doxygen
+    doxygen 
     
 RUN git lfs install
 
@@ -30,7 +30,7 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.14.3/cmake-3.14.3
 RUN git clone https://github.com/CBICA/CaPTk.git
 
 # start superbuild and then build CaPTk
-RUN export PATH=/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
+RUN export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
     which cmake && \
     cd CaPTk && \
     echo "=== Starting CaPTk Superbuild ===" && \
