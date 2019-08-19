@@ -23,6 +23,7 @@ class QHBoxLayout;
 class QListWidget;
 class QStackedWidget;
 class QDialogButtonBox;
+class IPreferencePage;
 
 class PreferencesDialog : public QDialog
 {
@@ -40,6 +41,8 @@ public slots:
 
 	//! list widget item selection change handler
     void OnItemSelectionChanged();
+	void OnAccepted();
+	void OnRejected();
 
 private:
 
@@ -56,6 +59,7 @@ private:
 	QListWidget *listWidget;
 	QStackedWidget *stackedWidget;
 	QDialogButtonBox *buttonBox;
+	IPreferencePage *m_PreferencePage;
 };
 
 #endif // PREFERENCESDIALOG_H

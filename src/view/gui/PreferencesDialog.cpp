@@ -52,7 +52,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 	//! signals and slots
     connect(this->listWidget,SIGNAL(itemSelectionChanged()),this,SLOT(OnItemSelectionChanged()));
-
+	connect(this, SIGNAL(accepted()), this, SLOT(OnAccepted()));
+	connect(this, SIGNAL(rejected()), this, SLOT(OnRejected()));
 }
 
 PreferencesDialog::~PreferencesDialog()
@@ -69,6 +70,7 @@ void PreferencesDialog::OnItemSelectionChanged()
 {
     int currentItemIndex = this->listWidget->currentRow();
     this->stackedWidget->setCurrentIndex(currentItemIndex);
+	this->m_PreferencePage = qobject_cast<IPreferencePage*>(this->stackedWidget->currentWidget());
 }
 
 void PreferencesDialog::SetupUi()
@@ -128,4 +130,17 @@ void PreferencesDialog::retranslateUi(QDialog *PreferencesDialog)
 	//QListWidgetItem *___qlistwidgetitem1 = listWidget->item(1);
 	//___qlistwidgetitem1->setText(QApplication::translate("PreferencesDialog", "Fonts", nullptr));
 	listWidget->setSortingEnabled(__sortingEnabled);
+}
+
+
+void PreferencesDialog::OnAccepted()
+{
+	qDebug() << " OnAccepted " << endl;
+	this->m_PreferencePage->OnOkay();
+}
+
+void PreferencesDialog::OnRejected()
+{
+	qDebug() << " OnRejected " << endl;
+	this->m_PreferencePage->OnCancel();
 }
