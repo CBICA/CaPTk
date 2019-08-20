@@ -8046,10 +8046,16 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       for (auto it_q1 = octrantVolume_1.begin(), it_q2 = octrantVolume_2.begin(), it_qRatio = octrantVolume_ratio.begin(), it_qPercent = octrantVolume_percent.begin();
         it_q1 != octrantVolume_1.end(); ++it_q1, ++it_q2, ++it_qRatio, ++it_qPercent)
       {
-        it_qPercent->second = (it_q2->second - it_q1->second) / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
-        it_qRatio->second = it_q2->second / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
-
-        volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(it_qPercent->second * 100 + 100) + "%\n";
+        if (it_q1->second > 0)
+        {
+          it_qPercent->second = (it_q2->second - it_q1->second) / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
+          it_qRatio->second = it_q2->second / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
+          volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(it_qPercent->second * 100 + 100) + "%\n";
+        }
+        else
+        {
+          volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(0) + "%\n";
+        }
       }
 
       volumeString += "\n\nFurther details and detailed visualization results can be found in the output folder";
