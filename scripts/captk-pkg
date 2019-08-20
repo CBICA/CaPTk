@@ -212,7 +212,9 @@ RUN_DEPLOYQT () {
     qmake_path="$(which qmake)"
     qt_libs_path="$(dirname "${qmake_path}")/../lib"
     cp ${qt_libs_path}/*.so ./appdir/usr/lib/
-    cp ${qt_libs_path}/*.so.* ./appdir/usr/lib/
+    cp ${qt_libs_path}/*.so.5 ./appdir/usr/lib/
+    cp ${qt_libs_path}/*.so.5.11 ./appdir/usr/lib/
+    cp ${qt_libs_path}/*.so.5.11.1 ./appdir/usr/lib/
 
   fi
 
