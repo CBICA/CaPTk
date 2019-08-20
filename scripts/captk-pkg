@@ -202,6 +202,10 @@ RUN_DEPLOYQT () {
   cp ../../data/applications/AppRun ./appdir/
 
   if [ -z "$PKG_COPY_QT_LIBS" ]; then
+  
+    echo "[:] Will not try to hard-copy Qt libraries"
+
+  else
 
     # manually copy qt libs to ensure everything is picked up properly
     echo "[:] Testing Qt library copy"
