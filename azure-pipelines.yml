@@ -277,8 +277,7 @@ jobs:
       
     # Build a package
     - bash: |
-        export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
-        export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
+        export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf regression
         rm -rf binaries

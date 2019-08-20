@@ -217,19 +217,25 @@
     <name>Technical_Reference</name>
     <title>Technical Reference</title>
     <filename>Technical_Reference</filename>
-    <docanchor file="Technical_Reference" title="Further Application Details and Assumptions">tr_Apps</docanchor>
-    <docanchor file="Technical_Reference" title="Image Visualization">appsVisualization</docanchor>
-    <docanchor file="Technical_Reference" title="Extracted Features">appsFeatures</docanchor>
-    <docanchor file="Technical_Reference" title="Build CaPTk from Source">tr_buildFromSource</docanchor>
-    <docanchor file="Technical_Reference" title="Prerequisites">prerequisites</docanchor>
-    <docanchor file="Technical_Reference" title="Build">actualBuild</docanchor>
-    <docanchor file="Technical_Reference" title="Documentation &amp; Tests">optionalBuilds</docanchor>
-    <docanchor file="Technical_Reference" title="Linux Build Guide">linuxBuild</docanchor>
-    <docanchor file="Technical_Reference" title="For Developers">tr_forDeves</docanchor>
-    <docanchor file="Technical_Reference" title="General Information">generalInfo</docanchor>
-    <docanchor file="Technical_Reference" title="Dependencies">dependencies</docanchor>
-    <docanchor file="Technical_Reference" title="Integrating your C++ application into CaPTk">cppIntegration</docanchor>
-    <docanchor file="Technical_Reference" title="Integrating your Python application into CaPTk">pyIntegration</docanchor>
+  </compound>
+  <compound kind="page">
+    <name>tr_FeatureExtraction</name>
+    <title>Feature Extraction</title>
+    <filename>tr_FeatureExtraction</filename>
+    <docanchor file="tr_FeatureExtraction" title="Defaults">tr_fe_defaults</docanchor>
+    <docanchor file="tr_FeatureExtraction" title="Batch Mode">tr_fe_batch</docanchor>
+    <docanchor file="tr_FeatureExtraction" title="Something Else">tr_fe_somethingElse</docanchor>
+    <docanchor file="tr_FeatureExtraction" title="Extracted Features">tr_fe_math</docanchor>
+  </compound>
+  <compound kind="page">
+    <name>tr_integration</name>
+    <title>Integrating your Application in CaPTk</title>
+    <filename>tr_integration</filename>
+    <docanchor file="tr_integration" title="Building CaPTk from Sources">tr_sourceBuid</docanchor>
+    <docanchor file="tr_integration" title="Prerequisites">tr_sb_prerequisites</docanchor>
+    <docanchor file="tr_integration" title="Build">tr_sb_actualBuild</docanchor>
+    <docanchor file="tr_integration" title="Integrating your C++ application into CaPTk">tr_cppIntegration</docanchor>
+    <docanchor file="tr_integration" title="Integrating your Python application into CaPTk">tr_pyIntegration</docanchor>
   </compound>
   <compound kind="page">
     <name>Download</name>

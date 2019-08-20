@@ -62,24 +62,7 @@ var NAVTREE =
       [ "Probability Maps of Potential Recurrence of Glioblastoma Tumors", "Science.html#recurrencePredictor", null ],
       [ "Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer", "Science.html#libraPapers", null ]
     ] ],
-    [ "Technical Reference", "Technical_Reference.html", [
-      [ "Further Application Details and Assumptions", "Technical_Reference.html#tr_Apps", [
-        [ "Image Visualization", "Technical_Reference.html#appsVisualization", null ],
-        [ "Extracted Features", "Technical_Reference.html#appsFeatures", null ]
-      ] ],
-      [ "Build CaPTk from Source", "Technical_Reference.html#tr_buildFromSource", [
-        [ "Prerequisites", "Technical_Reference.html#prerequisites", null ],
-        [ "Build", "Technical_Reference.html#actualBuild", null ],
-        [ "Documentation & Tests", "Technical_Reference.html#optionalBuilds", null ],
-        [ "Linux Build Guide", "Technical_Reference.html#linuxBuild", null ]
-      ] ],
-      [ "For Developers", "Technical_Reference.html#tr_forDeves", [
-        [ "General Information", "Technical_Reference.html#generalInfo", null ],
-        [ "Dependencies", "Technical_Reference.html#dependencies", null ],
-        [ "Integrating your C++ application into CaPTk", "Technical_Reference.html#cppIntegration", null ],
-        [ "Integrating your Python application into CaPTk", "Technical_Reference.html#pyIntegration", null ]
-      ] ]
-    ] ],
+    [ "Technical Reference", "Technical_Reference.html", "Technical_Reference" ],
     [ "Download Instructions", "Download.html", null ],
     [ "Installation Instructions", "Installation.html", null ],
     [ "Changelog: Release Notes", "ReleaseNotes.html", null ],
