@@ -1,4 +1,4 @@
-#include "ipreferencepage.h"
+#include "IPreferencePage.h"
 
 IPreferencePage::IPreferencePage()
 {
