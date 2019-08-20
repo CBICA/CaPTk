@@ -103,7 +103,7 @@ RUN_FIXES () {
   rm -rf bin/captk
 
   echo "[:] Adding proper qmake to PATH..."
-  export PATH=$PATH:`pwd`/bin/qt/5.12.1/bin
+  export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
 
   echo "[:] Running Linux Fixes..."
 
@@ -314,7 +314,7 @@ mkdir pkg
 # We package the AppImage, the license, and a script to display the agreement and install the AppImage
 mv CaPTk.bin ./pkg/
 # Move cwl in
-cp ./bin/install/appdir/usr/bin/*.cwl ./pkg/
+cp ./data/cwlFiles/*.cwl ./pkg/
 # Move license in
 cp ./LICENSE ./pkg/
 # Move installer in

@@ -12,7 +12,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("o", "outputFile", cbica::Parameter::FILE, "text file", "Where output gets stored");
   parser.addOptionalParameter("r", "real", cbica::Parameter::FLOAT, "labelMap Dimensions", "The real world coordinates (in mm) of file",
     "Take example from tissue point file", "Needs to be in same dimensionality as labelMap", "Delineation is done using ','");
-  parser.addOptionalParameter("i", "index", cbica::Parameter::INTEGER, "labelMap Dimensions", "The image indeces (in voxels) of file",
+  parser.addOptionalParameter("i", "index", cbica::Parameter::STRING, "labelMap Dimensions", "The image indeces (in voxels) of file",
     "Needs to be in same dimensionality as labelMap", "Delineation is done using ','");
 
   std::string file_labelMap, file_output;

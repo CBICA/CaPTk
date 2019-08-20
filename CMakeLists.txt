@@ -13,7 +13,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 3.nonRelease.20190816 )
+SET( PROJECT_VERSION_PATCH 3.nonRelease.20190819 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -151,6 +151,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( CAPTK_BUILD_OPTION "PACKAGE_PROJECT" CACHE STRING "Toggle between packaging mode (optimized code) or developer mode (provides debugging info)" )
 
   SET_PROPERTY( CACHE CAPTK_BUILD_OPTION PROPERTY STRINGS PACKAGE_PROJECT DEVELOPER_MODE )
+  SET( CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" )
 
   IF( CAPTK_BUILD_OPTION STREQUAL PACKAGE_PROJECT)
 
@@ -770,13 +771,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB_RECURSE CWL_FILES "${DATA_DIR}/cwlFiles/*")
     FOREACH(cwlFile ${CWL_FILES})
       IF (APPLE)
-        SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+        SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/etc/cwlDefinitions)
         SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${cwlFile})
 
-        INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
+        INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/etc/cwlDefinitions)
 
       ELSE()
-        INSTALL(FILES "${cwlFile}" DESTINATION bin)
+        INSTALL(FILES "${cwlFile}" DESTINATION etc/cwlDefinitions)
       ENDIF()
     ENDFOREACH()
   
