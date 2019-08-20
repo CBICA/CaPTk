@@ -38,7 +38,7 @@ inputs:
       prefix: -r
     doc: The real world coordinates (in mm) of file.Take example from tissue point file.Needs to be in same dimensionality as labelMap.Delineation is done using ','.
   index:
-    type: int?
+    type: string?
     label: labelMap Dimensions
     inputBinding:
       position: 1
@@ -49,4 +49,4 @@ hints:
     packages:
       DirectionalityEstimate:
         version:
-          - 1.7.3.nonRelease
+          - 1.7.3.nonRelease.20190819

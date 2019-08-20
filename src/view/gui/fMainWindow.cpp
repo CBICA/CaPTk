@@ -7644,13 +7644,13 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
       for (size_t j = 0; j < numberOfSeeds; j++)
       {
-        if (mTissuePoints->mLandmarks[i].id == TU) // in the case a second point has been initialized for roi2
+        if (mTissuePoints->mLandmarks[j].id == TU) // in the case a second point has been initialized for roi2
         {
-          itk::Point< float, 3 > pointFromTumorPanel = mTissuePoints->mLandmarks[i].coordinates;
+          itk::Point< float, 3 > pointFromTumorPanel_2 = mTissuePoints->mLandmarks[j].coordinates;
 
-          x_index_pre = (pointFromTumorPanel[0] - imageOrigin[0]) / imageSpacing[0];
-          y_index_pre = (pointFromTumorPanel[1] - imageOrigin[1]) / imageSpacing[1];
-          z_index_pre = (pointFromTumorPanel[2] - imageOrigin[2]) / imageSpacing[2];
+          x_index_pre = (pointFromTumorPanel_2[0] - imageOrigin[0]) / imageSpacing[0];
+          y_index_pre = (pointFromTumorPanel_2[1] - imageOrigin[1]) / imageSpacing[1];
+          z_index_pre = (pointFromTumorPanel_2[2] - imageOrigin[2]) / imageSpacing[2];
         }
       }
 
