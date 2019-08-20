@@ -206,9 +206,10 @@ RUN_DEPLOYQT () {
     # manually copy qt libs to ensure everything is picked up properly
     echo "[:] Testing Qt library copy"
     qmake_path="$(which qmake)"
-    qt_libs_path = $(dirname "${qmake_path}")../lib
-    cp ${qt_libs_path}/* ./appdir/usr/lib/
-    
+    qt_libs_path="$(dirname "${qmake_path}")/../lib"
+    cp ${qt_libs_path}/*.so ./appdir/usr/lib/
+    cp ${qt_libs_path}/*.so.* ./appdir/usr/lib/
+
   fi
 
   # Download and mark executable appimagetool. Using release 11 as of 3/5/18
