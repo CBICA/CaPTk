@@ -47,8 +47,8 @@ private:
 
 	//! ivars for handling cancel cases
     QFont m_SelectedFont, m_PreviousFont;
-	QString m_CurrentStyleSheet, m_PreviousStyleSheet;
-	ThemeType m_CurrentTheme, m_PreviousTheme;
+	QString m_SelectedStyleSheet, m_PreviousStyleSheet;
+	ThemeType m_SelectedTheme, m_PreviousTheme;
 };
 
 #endif // APPEARANCEPAGE_H

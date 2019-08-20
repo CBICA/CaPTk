@@ -25,13 +25,18 @@ AppearancePage::AppearancePage(QWidget *parent) :
     ui->currentFontLabel->setText(qApp->font().family());
 
 	//! default
-	this->m_PreviousFont = qApp->font();
-	this->m_PreviousStyleSheet = qApp->styleSheet();
-	this->m_PreviousTheme = ThemeType::Light;
+	this->m_PreviousFont = this->m_SelectedFont = qApp->font();
+	this->m_PreviousStyleSheet = this->m_SelectedStyleSheet = qApp->styleSheet();
+	this->m_PreviousTheme = this->m_SelectedTheme = ThemeType::Light;
 
-    //connect signals and slots
+    //! connect signals and slots
     connect(ui->selectFontBtn,SIGNAL(clicked()),this,SLOT(OnSelectFontButtonClicked()));
 	connect(ui->themeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnChangeTheme(int)));
+
+	//! initialize with DARK theme
+	ui->themeComboBox->setCurrentIndex(ThemeType::Dark);
+	this->OnOkay();
+
 }
 
 AppearancePage::~AppearancePage()
@@ -41,8 +46,8 @@ AppearancePage::~AppearancePage()
 
 void AppearancePage::OnChangeTheme(int theme)
 {
-	this->m_CurrentTheme = ThemeType(theme);
-	if (this->m_CurrentTheme == ThemeType::Dark)
+	this->m_SelectedTheme = ThemeType(theme);
+	if (this->m_SelectedTheme == ThemeType::Dark)
 	{
 		cbica::Logging(loggerFile, "applying DARK theme");
 		std::string qssPath;
@@ -56,7 +61,7 @@ void AppearancePage::OnChangeTheme(int theme)
 		if (success)
 		{
 			cbica::Logging(loggerFile, "file reading succeeded, qss file path = " + std::string(qssPath.c_str()));
-			this->m_CurrentStyleSheet = f.readAll();
+			this->m_SelectedStyleSheet = f.readAll();
 		}
 		else
 		{
@@ -64,10 +69,10 @@ void AppearancePage::OnChangeTheme(int theme)
 		}
 		f.close();
 	}
-	else if (this->m_CurrentTheme == ThemeType::Light)
+	else if (this->m_SelectedTheme == ThemeType::Light)
 	{
 		cbica::Logging(loggerFile, "applying LIGHT theme");
-		this->m_CurrentStyleSheet = "";
+		this->m_SelectedStyleSheet = "";
 	}
 }
 
@@ -95,12 +100,13 @@ void AppearancePage::OnOkay()
 {
 	//! update previous
 	this->m_PreviousFont = this->m_SelectedFont;
-	this->m_PreviousStyleSheet = this->m_CurrentStyleSheet;
-	this->m_PreviousTheme = this->m_CurrentTheme;
+	this->m_PreviousStyleSheet = this->m_SelectedStyleSheet;
+	this->m_PreviousTheme = this->m_SelectedTheme;
 
-	//! apply font and stylesheet
+	//! apply selected font and stylesheet
 	qApp->setFont(this->m_SelectedFont);
-	qApp->setStyleSheet(this->m_CurrentStyleSheet);
+	qApp->setStyleSheet(this->m_SelectedStyleSheet);
+	
 }
 
 void AppearancePage::OnCancel()
