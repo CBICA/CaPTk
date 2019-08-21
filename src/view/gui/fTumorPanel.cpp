@@ -374,62 +374,65 @@ void fTumorPanel::tLoad(QString file)
     while (!in.atEnd())
     {
       std::string currentLine = in.readLine().toStdString();
-      for (size_t k = 0; k < NumberOfTissueTypes; k++)
+      if (!currentLine.empty())
       {
-        if (currentLine == labels_laconic[k])
+        for (size_t k = 0; k < NumberOfTissueTypes; k++)
         {
-          // tissue point matched!
-          k = NumberOfTissueTypes;
+          if (currentLine == labels_laconic[k])
+          {
+            // tissue point matched!
+            k = NumberOfTissueTypes;
+          }
+          if ((currentLine != labels_laconic[k]) && (k == NumberOfTissueTypes - 1))
+          {
+            ShowErrorMessage("Input tissue point file has an incorrect tissue type, cannot load.");
+            return;
+          }
         }
-        if ((currentLine != labels_laconic[k]) && (k == NumberOfTissueTypes - 1))
+        std::string id = currentLine;
+
+        std::vector< std::string > values = cbica::stringSplit(in.readLine().toStdString(), " ");
+
+        if (values.size() != 3)
         {
-          ShowErrorMessage("Input tissue point file has an incorrect tissue type, cannot load.");
+          ShowErrorMessage("Input tissue point file has an incorrect number of coordinates, cannot load.");
+          return;
+        }
+
+        double fx, fy, fz;
+        fx = static_cast<double>(std::atof(values[0].c_str()));
+        fy = static_cast<double>(std::atof(values[1].c_str()));
+        fz = static_cast<double>(std::atof(values[2].c_str()));
+
+        for (j = 0; j < NumberOfTissueTypes; j++)
+        {
+          if (id == labels_laconic[j])
+          {
+            if (j == 0)
+            {
+              // skip BG
+            }
+            else
+            {
+#ifdef USE_LANDMARKS_LPS_COORD
+              mCurrentTPoints->AddLandmark(fx, fy, fz, 0, 0, j);
+#endif
+#ifdef USE_LANDMARKS_RAS_COORD
+              mCurrentTPoints->AddLandmark(-fx, -fy, fz, 0, 0, j);
+#endif
+            }
+            break;
+          }
+        }
+        if (j == NumberOfTissueTypes)
+        {
+          printf("class id is wrong\n");
+          mCurrentTPoints->Clear();
           return;
         }
       }
-      std::string id = currentLine;
-
-      std::vector< std::string > values = cbica::stringSplit(in.readLine().toStdString(), " ");
-
-      if (values.size() != 3)
-      {
-        ShowErrorMessage("Input tissue point file has an incorrect number of coordinates, cannot load.");
-        return;
-      }
-
-      double fx, fy, fz;
-      fx = static_cast<double>(std::atof(values[0].c_str()));
-      fy = static_cast<double>(std::atof(values[1].c_str()));
-      fz = static_cast<double>(std::atof(values[2].c_str()));
-
-      for (j = 0; j < NumberOfTissueTypes; j++)
-      {
-        if (id == labels_laconic[j])
-        {
-          if (j == 0)
-          {
-            // skip BG
-          }
-          else
-          {
-#ifdef USE_LANDMARKS_LPS_COORD
-            mCurrentTPoints->AddLandmark(fx, fy, fz, 0, 0, j);
-#endif
-#ifdef USE_LANDMARKS_RAS_COORD
-            mCurrentTPoints->AddLandmark(-fx, -fy, fz, 0, 0, j);
-#endif
-          }
-          break;
-        }
-      }
-      if (j == NumberOfTissueTypes)
-      {
-        printf("class id is wrong\n");
-        mCurrentTPoints->Clear();
-        return;
-      }
+      inputFile.close();
     }
-    inputFile.close();
   }
   for (i = 0; i < mCurrentTPoints->GetNumberOfPoints(); i++)
   {

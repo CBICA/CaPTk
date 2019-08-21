@@ -201,6 +201,23 @@ RUN_DEPLOYQT () {
   rm ./appdir/AppRun
   cp ../../data/applications/AppRun ./appdir/
 
+  if [ -z "$PKG_COPY_QT_LIBS" ]; then
+  
+    echo "[:] Will not try to hard-copy Qt libraries"
+
+  else
+
+    # manually copy qt libs to ensure everything is picked up properly
+    echo "[:] Testing Qt library copy"
+    qmake_path="$(which qmake)"
+    qt_libs_path="$(dirname "${qmake_path}")/../lib"
+    cp ${qt_libs_path}/*.so ./appdir/usr/lib/
+    cp ${qt_libs_path}/*.so.5 ./appdir/usr/lib/
+    cp ${qt_libs_path}/*.so.5.11 ./appdir/usr/lib/
+    cp ${qt_libs_path}/*.so.5.11.1 ./appdir/usr/lib/
+
+  fi
+
   # Download and mark executable appimagetool. Using release 11 as of 3/5/18
   wget -nc https://github.com/AppImage/AppImageKit/releases/download/11/appimagetool-x86_64.AppImage
   chmod +x appimagetool-x86_64.AppImage
