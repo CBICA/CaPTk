@@ -51,6 +51,7 @@ SET( GUI
   fSBRTNoduleDialog
   fSBRTAnalysisDialog
   fTexturePipelineDialog
+  AppearancePage
   #fSegmentationPanel
   #fHelpAppDialog
 )
@@ -76,6 +77,8 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/CheckOpenGLVersion.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/PreferencesDialog.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/PreferencesDialog.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/IPreferencePage.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/IPreferencePage.cpp"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
   #"${CMAKE_CURRENT_SOURCE_DIR}/ApplicationBase.h"
@@ -94,10 +97,11 @@ SET( UI_ELEMENTS ${GUI}
 MARK_AS_ADVANCED(${GUI_SOURCES})
 MARK_AS_ADVANCED(${UI_ELEMENTS})
 
-
+SET( CAPTK_STYLESHEET_FILE "captk.qss" )
 ADD_DEFINITIONS(-DCAPTK_APP_LIST_PY_GUI="${CAPTK_APP_LIST_PY_GUI}")
 ADD_DEFINITIONS(-DCAPTK_APP_LIST_PY_CLI="${CAPTK_APP_LIST_PY_CLI}")
 ADD_DEFINITIONS(-DFeatureDefinitions="${FeatureDefinitions}")
+ADD_DEFINITIONS( -DCAPTK_STYLESHEET_FILE="${CAPTK_STYLESHEET_FILE}" )
 
 #SET(GUI_SOURCES_DIR "${PROJECT_SOURCE_DIR}/src/gui")
 SET(GUI_SOURCES_DIR "${PROJECT_SOURCE_DIR}")
