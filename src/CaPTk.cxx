@@ -26,32 +26,6 @@
 //#define new DBG_NEW   
 ///// debug
 
-void setStyleSheet(const std::string &styleFileName = CAPTK_STYLESHEET_FILE)
-{
-  std::string styleFileFullPath = getCaPTkDataDir() + "../etc/" + CAPTK_STYLESHEET_FILE;
-
-  QFile f(styleFileFullPath.c_str());
-  if (!f.exists())
-  {
-#if WIN32
-    styleFileFullPath = captk_currentApplicationPath + "../../data/" + CAPTK_STYLESHEET_FILE;
-#else
-    styleFileFullPath = captk_currentApplicationPath + "../data/" + CAPTK_STYLESHEET_FILE;
-#endif
-    if (!f.exists())
-    {
-      cbica::Logging(loggerFile, "Unable to set stylesheet, file not found");
-    }
-  }
-  else
-  {
-    f.open(QFile::ReadOnly | QFile::Text);
-    QTextStream ts(&f);
-    qApp->setStyleSheet(ts.readAll());
-    f.close();
-  }
-}
-
 void echoCWLFiles(std::vector< std::string > inputCWLFiles)
 {
   std::cout << "Availble CWL applications (refer to individual CLI usage): \n\n";
@@ -282,7 +256,6 @@ int main(int argc, char** argv)
   cbica::createDir(captk_SampleDataFolder);
   cbica::createDir(captk_PretrainedFolder);
 
-  setStyleSheet();
 #ifndef _WIN32
   std::string old_locale = setlocale(LC_NUMERIC, NULL);
   setlocale(LC_NUMERIC, "POSIX");

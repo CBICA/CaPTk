@@ -14,6 +14,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #define PREFERENCESDIALOG_H
 
 #include <QDialog>
+class AppearancePage;
 class QFontDialog;
 class QColorDialog;
 class QVBoxLayout;
@@ -22,6 +23,7 @@ class QHBoxLayout;
 class QListWidget;
 class QStackedWidget;
 class QDialogButtonBox;
+class IPreferencePage;
 
 class PreferencesDialog : public QDialog
 {
@@ -32,13 +34,16 @@ public:
     explicit PreferencesDialog(QWidget *parent = nullptr);
     ~PreferencesDialog();
 
-	//! getter for font dialog
-    QFontDialog* GetFontDialog();
-
 public slots:
 
 	//! list widget item selection change handler
     void OnItemSelectionChanged();
+
+	//! Okay handler
+	void OnAccepted();
+
+	//! cancel handler
+	void OnRejected();
 
 private:
 
@@ -47,13 +52,14 @@ private:
 	void retranslateUi(QDialog *PreferencesDialog);
 
 	//! ivars
-    QFontDialog *m_FontDialog;
+	AppearancePage *m_AppearancePage;
 	QVBoxLayout *verticalLayout;
 	QWidget *widget;
 	QHBoxLayout *horizontalLayout;
 	QListWidget *listWidget;
 	QStackedWidget *stackedWidget;
 	QDialogButtonBox *buttonBox;
+	IPreferencePage *m_PreferencePage;
 };
 
 #endif // PREFERENCESDIALOG_H

@@ -12,6 +12,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 */
 
 #include "PreferencesDialog.h"
+#include "AppearancePage.h"
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -33,38 +34,28 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 {
     this->SetupUi();
 
-    this->m_FontDialog = new QFontDialog(this->stackedWidget);
-    this->m_FontDialog->setWindowFlags(Qt::SubWindow);
-    this->m_FontDialog->setOptions(
-                /* do not use native dialog */
-                QFontDialog::DontUseNativeDialog
-                /* you don't need to set it, but if you don't set this
-                                        the "OK" and "Cancel" buttons will show up, I don't
-                                        think you'd want that. */
-                | QFontDialog::NoButtons
-                );
-    this->m_FontDialog->setSizeGripEnabled(false);
+	this->m_AppearancePage = new AppearancePage(this->stackedWidget);
 
-    this->stackedWidget->insertWidget(0,this->m_FontDialog);
+	this->stackedWidget->insertWidget(0, this->m_AppearancePage);
 
 	//! signals and slots
     connect(this->listWidget,SIGNAL(itemSelectionChanged()),this,SLOT(OnItemSelectionChanged()));
+	connect(this, SIGNAL(accepted()), this, SLOT(OnAccepted()));
+	connect(this, SIGNAL(rejected()), this, SLOT(OnRejected()));
 
+	//! set the first item as selected
+	this->listWidget->item(0)->setSelected(true);
 }
 
 PreferencesDialog::~PreferencesDialog()
 {
 }
 
-QFontDialog *PreferencesDialog::GetFontDialog()
-{
-    return this->m_FontDialog;
-}
-
 void PreferencesDialog::OnItemSelectionChanged()
 {
     int currentItemIndex = this->listWidget->currentRow();
     this->stackedWidget->setCurrentIndex(currentItemIndex);
+	this->m_PreferencePage = qobject_cast<IPreferencePage*>(this->stackedWidget->currentWidget());
 }
 
 void PreferencesDialog::SetupUi()
@@ -81,6 +72,7 @@ void PreferencesDialog::SetupUi()
 	horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
 	listWidget = new QListWidget(widget);
 	new QListWidgetItem(listWidget);
+	//new QListWidgetItem(listWidget);
 
 	listWidget->setObjectName(QStringLiteral("listWidget"));
 	listWidget->setFixedWidth(175);
@@ -119,6 +111,18 @@ void PreferencesDialog::retranslateUi(QDialog *PreferencesDialog)
 	const bool __sortingEnabled = listWidget->isSortingEnabled();
 	listWidget->setSortingEnabled(false);
 	QListWidgetItem *___qlistwidgetitem = listWidget->item(0);
-	___qlistwidgetitem->setText(QApplication::translate("PreferencesDialog", "Fonts", nullptr));
+	___qlistwidgetitem->setText(QApplication::translate("PreferencesDialog", "Appearance", nullptr));
+	//QListWidgetItem *___qlistwidgetitem1 = listWidget->item(1);
+	//___qlistwidgetitem1->setText(QApplication::translate("PreferencesDialog", "Fonts", nullptr));
 	listWidget->setSortingEnabled(__sortingEnabled);
+}
+
+void PreferencesDialog::OnAccepted()
+{
+	this->m_PreferencePage->OnOkay();
+}
+
+void PreferencesDialog::OnRejected()
+{
+	this->m_PreferencePage->OnCancel();
 }
