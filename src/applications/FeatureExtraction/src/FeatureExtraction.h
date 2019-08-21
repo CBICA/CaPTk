@@ -104,7 +104,7 @@ static const char ParamsString[ParamMax + 1][30] =
 {
   "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Directions", "Offset", "Range",
   "Window", "Step", "Boundary", "PatchBoundary", "Weight", "FullImage",
-  "FMax", "Gamma", "Level", "ETA", "Epsilon", "QuantizationExtent", "QuantizationType", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
+  "FMax", "Gamma", "Level", "ETA", "Epsilon", "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
 };
 
 enum FeatureFamily
