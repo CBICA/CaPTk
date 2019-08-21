@@ -365,7 +365,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
             
           ENDIF()
         ELSE()
-          FILE(DOWNLOAD "ftp://www.nitrc.org/var/home/groups/captk/downloads/MCR.zip" "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+          FILE(DOWNLOAD "ftp://www.nitrc.org/home/groups/captk/downloads/MCR.zip" "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
           
           EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E unzip ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
             WORKING_DIRECTORY ${SUBDIRPATH}
