@@ -98,13 +98,13 @@ enum Params
 {
   Dimension, Axis, Radius, Neighborhood, Bins, Directions, Offset, Range,
   LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, LatticeFullImage,
-  GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, QuantizationType, Resampling, ResamplingInterpolator_Image, ResamplingInterpolator_Mask, LBPStyle, ParamMax
+  GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, ResamplingInterpolator_Mask, LBPStyle, ParamMax
 };
 static const char ParamsString[ParamMax + 1][30] =
 {
   "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Directions", "Offset", "Range",
   "Window", "Step", "Boundary", "PatchBoundary", "Weight", "FullImage",
-  "FMax", "Gamma", "Level", "ETA", "Epsilon", "QuantizationType", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
+  "FMax", "Gamma", "Level", "ETA", "Epsilon", "QuantizationExtent", "QuantizationType", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
 };
 
 enum FeatureFamily
@@ -282,7 +282,7 @@ public:
   */
   void SetOutputFilename(std::string filename)
   {
-    if (cbica::getFilenameExtension(filename, false).empty() || (filename[filename.length() - 1] == '/'))
+    if (cbica::isDir(filename))
     {
       m_outputPath = filename;
       m_outputFile = m_outputPath + "/results.csv";
@@ -322,6 +322,11 @@ public:
       cbica::createDir(m_outputIntermediatePath);
     }
   }
+
+  /**
+  \brief Get the complete output filename
+  */
+  std::string GetOutputFile() { return m_outputFile; };
 
   /**
   \brief Enable vertically-concatenated output in CSV
@@ -374,7 +379,7 @@ private:
   /**
   \brief Calculates the OffsetVectorPointer based on the provided radius in mm and directions
   */
-  OffsetVectorPointer GetOffsetVector(float inputRadius, int inputDirections)
+  std::vector< OffsetVectorPointer > GetOffsetVector(float inputRadius, int inputDirections)
   {
     auto spacing = m_Mask->GetSpacing();
     itk::Size< TImageType::ImageDimension > radius; // radius value along individual axes in image coordinates
@@ -405,8 +410,9 @@ private:
   /**
   \brief Calculates the OffsetVectorPointer based on the provided radius and directions
   */
-  OffsetVectorPointer GetOffsetVector(int inputRadius, int inputDirections)
+  std::vector< OffsetVectorPointer > GetOffsetVector(int inputRadius, int inputDirections)
   {
+    std::vector< OffsetVectorPointer > allOffsets;
     if (m_offsetString.empty())
     {
       if (inputRadius == -1) // this is in the contingency when someone has used mm in the param file
@@ -427,18 +433,38 @@ private:
         directionsToCompute = inputDirections;
       }
 
-      OffsetVectorPointer offsets = OffsetVector::New();
+      OffsetVectorPointer offsets_total = OffsetVector::New(),
+        offsets_x = OffsetVector::New(),
+        offsets_y = OffsetVector::New(),
+        offsets_z = OffsetVector::New();
       auto centerIndex = neighborhood.GetCenterNeighborhoodIndex();
 
       for (int d = directionsToCompute - 1; d >= 0; d--)
       {
         if (d != static_cast<int>(centerIndex))
         {
-          offsets->push_back(neighborhood.GetOffset(d));
+          offsets_total->push_back(neighborhood.GetOffset(d));
+          offsets_x->push_back(neighborhood.GetOffset(d));
+          offsets_y->push_back(neighborhood.GetOffset(d));
+          offsets_z->push_back(neighborhood.GetOffset(d));
         }
       }
+      allOffsets.push_back(offsets_total);
 
-      return offsets;
+      if (TImageType::ImageDimension == 3)
+      {
+        for (size_t i = 0; i < offsets_total->size(); i++)
+        {
+          offsets_x->at(i)[0] = 0;
+          offsets_y->at(i)[1] = 0;
+          offsets_z->at(i)[2] = 0;
+        }
+        allOffsets.push_back(offsets_x);
+        allOffsets.push_back(offsets_y);
+        allOffsets.push_back(offsets_z);
+      }
+
+      return allOffsets;
     }
     else // customized offset values
     {
@@ -472,7 +498,8 @@ private:
           std::cerr << "Offset provided does not match input image/mask dimension; SubjectID: '" << m_patientID << "'\n";
           //exit(EXIT_FAILURE);
           WriteErrorFile("Offset provided does not match input image/mask dimension");
-          return offsets;
+          allOffsets.push_back(offsets);
+          return allOffsets;
         }
         else
         {
@@ -484,9 +511,16 @@ private:
           offsets->push_back(tempOffset);
         }
       }
-      return offsets;
+      allOffsets.push_back(offsets);
+      return allOffsets;
     }  
   }
+
+  /**
+  \brief GetSelectedSlice enables selection of a particular slice and direction in which the features have to be generated.
+  \param mask is vector of mask images.
+  */
+  std::vector< typename TImageType::Pointer > GetSelectedSlice(typename TImageType::Pointer mask);
 
   /**
   \brief GetSelectedSlice enables selection of a particular slice and direction in which the features have to be generated.
@@ -718,7 +752,9 @@ private:
   int m_Radius = 0, m_Bins = 0, m_Dimension = 0, m_Direction = 0, m_neighborhood = 0, m_LBPStyle = 0;
   float m_Radius_float = 0.0, m_Range = 0;
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
-  std::string m_QuantizationType = "ROI"; //! type of quantization happening, either ROI-based or Image-based
+  std::string m_QuantizationType = "ROI"; //! extent of quantization happening, either ROI-based or Image-based
+  std::string m_QuantizationExtent = "Uniform"; //! type of quantization happening, either uniform or equal
+  std::string m_initializedTimestamp; //! timestamp to append to all results - keeps outputs in sync with current process
   float m_resamplingResolution = 0.0; //! resolution to resample the images and mask to before doing any kind of computation
   std::string m_resamplingInterpolator_Image = "Linear", //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
     m_resamplingInterpolator_Mask = "Nearest";

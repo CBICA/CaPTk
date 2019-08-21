@@ -14,7 +14,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 // ITK
 #include "itkImage.h"
-#include "itkHistogram.h"
+//#include "itkHistogram.h"
 #include "itkNumericTraits.h"
 #include "itkVectorContainer.h"
 #include "itkNeighborhoodIterator.h"

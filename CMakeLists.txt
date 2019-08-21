@@ -9,9 +9,11 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # WARNING: captk-pkg (the linux packager) directly tries to pattern match these lines (excluding the actual number/patch text)
 # to read the version number.
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
+# STRING(TIMESTAMP TODAY "%Y%m%d")
+
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 2 )
+SET( PROJECT_VERSION_PATCH 3.nonRelease.20190819 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -149,6 +151,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( CAPTK_BUILD_OPTION "PACKAGE_PROJECT" CACHE STRING "Toggle between packaging mode (optimized code) or developer mode (provides debugging info)" )
 
   SET_PROPERTY( CACHE CAPTK_BUILD_OPTION PROPERTY STRINGS PACKAGE_PROJECT DEVELOPER_MODE )
+  SET( CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" )
 
   IF( CAPTK_BUILD_OPTION STREQUAL PACKAGE_PROJECT)
 
@@ -308,6 +311,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${ITK_LIBRARIES}
     ${VTK_LIBRARIES}
     ${OpenCV_LIBRARIES}
+    ${OpenMP_LIBRARIES}
   )
 
   IF(UNIX AND NOT APPLE)
@@ -449,6 +453,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${GEODESIC_TRAINING_INCLUDE_DIRS}
     ${APPLICATION_INCLUDES}
     ${CACHED_INCLUDE_DIRS}
+    ${OpenMP_INCLUDE_DIRS}
   )
   
   IF( BUILD_CONFETTI )
@@ -637,7 +642,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     SET( BUILD_TESTING TRUE CACHE BOOL "Build testing" )
     IF( BUILD_TESTING )
       ENABLE_TESTING()
-      #ADD_SUBDIRECTORY( testing )
+      ADD_SUBDIRECTORY( testing )
       #INCLUDE(CTest)
     ENDIF( BUILD_TESTING )
   #ENDIF()
@@ -766,13 +771,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB_RECURSE CWL_FILES "${DATA_DIR}/cwlFiles/*")
     FOREACH(cwlFile ${CWL_FILES})
       IF (APPLE)
-        SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+        SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/etc/cwlDefinitions)
         SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${cwlFile})
 
-        INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
+        INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/etc/cwlDefinitions)
 
       ELSE()
-        INSTALL(FILES "${cwlFile}" DESTINATION bin)
+        INSTALL(FILES "${cwlFile}" DESTINATION etc/cwlDefinitions)
       ENDIF()
     ENDFOREACH()
   
@@ -1055,7 +1060,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(Windeployqt)
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
-
       INCLUDE(ChmodFile)
       chmodFile(${EXE_NAME} dcm2nii)
       
@@ -1065,6 +1069,24 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       INCLUDE(MvFile)
       mvFile(${EXE_NAME} itksnap ITK-SNAP)
       chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
+
+      INCLUDE(ChangeDylib)
+
+      FILE( GLOB EXECS
+        "${DATA_DIR}/cwlFiles/*"
+      )
+
+      FOREACH(EXEC ${EXECS})
+
+        GET_FILENAME_COMPONENT( EXEC_IN_BIN ${EXEC} NAME_WE )
+
+        # GET_TARGET_PROPERTY(TARGET_TYPE ${EXEC_IN_BIN} TYPE)
+        IF (NOT EXEC_IN_BIN STREQUAL "BreastTexturePipeline")
+          # MESSAGE( STATUS "[debug]EXEC_IN_BIN == ${EXEC_IN_BIN}")
+          changeLibOmpDylib(${EXE_NAME} ${EXEC_IN_BIN})
+        ENDIF ()
+        
+      ENDFOREACH()
 
     ENDIF()
 
