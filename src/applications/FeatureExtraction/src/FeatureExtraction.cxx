@@ -85,6 +85,11 @@ void algorithmRunner()
     std::cout << "No ROI labels have been provided for patient_id '" << patient_id << "', the ROI values will be used as labels instead.\n";
     //roi_labels = "all";
   }
+  cbica::dos2unix(param_file);
+  if (debug)
+  {
+    std::cout << "Using param file: " << param_file << "\n";
+  }
 
   std::vector< std::string > imageNames = image_paths;
 
@@ -294,6 +299,20 @@ int main(int argc, char** argv)
     parser.getParameterValue("o", outputdir);
   }
 
+  if (debug)
+  {
+    std::cout << "[DEBUG] Performing dos2unix using CBICA TK function; doesn't do anything in Windows machines.\n";
+  }
+  if (parser.isPresent("b"))
+  {
+    parser.getParameterValue("b", multipatient_file);
+  }
+
+  if (parser.isPresent("n"))
+  {
+    parser.getParameterValue("n", patient_id);
+  }
+
   if (parser.isPresent("p"))
   {
     parser.getParameterValue("p", param_file);
@@ -313,40 +332,30 @@ int main(int argc, char** argv)
     }
     else
     {
-      std::string dataDir = "";
+      if (!patient_id.empty())
+      {      
+        std::string dataDir = "";
 #ifndef APPLE
-      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../../data/");
+        dataDir = cbica::normPath(cbica::getExecutablePath() + "/../../data/");
 #else
-      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../Resources/data/features/";
+        dataDir = cbica::normPath(cbica::getExecutablePath() + "/../Resources/data/features/";
 #endif
-      temp = dataDir + baseParamFile;
-      if (cbica::isFile(temp))
-      {
-        param_file = temp;
+        temp = dataDir + baseParamFile;
+        if (cbica::isFile(temp))
+        {
+          param_file = temp;
+        }
+        else
+        {
+          std::cerr << "No default param file was found. Please set it manually using '-p'.\n";
+          return EXIT_FAILURE;
+        }
       }
-      else
+      else if (!multipatient_file.empty())
       {
-        std::cerr << "No default param file was found. Please set it manually using '-p'.\n";
-        return EXIT_FAILURE;
-      }
+        std::cout << "Will look for parameter file definition in the batch file under 'PARAM_FILE' header.\n";
+      }      
     }
-  }
-
-  if (debug)
-  {
-    std::cout << "[DEBUG] Performing dos2unix using CBICA TK function; doesn't do anything in Windows machines.\n";
-  }
-  cbica::dos2unix(param_file);
-  std::cout << "Using param file: " << param_file << "\n";
-
-  if (parser.isPresent("b"))
-  {
-    parser.getParameterValue("b", multipatient_file);
-  }
-
-  if (parser.isPresent("n"))
-  {
-    parser.getParameterValue("n", patient_id);
   }
 
   if (multipatient_file.empty() && patient_id.empty())
