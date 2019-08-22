@@ -4,6 +4,11 @@ trigger:
     include:
     - master
 
+resources:
+  containers:
+  - container: centos
+    image: cbica/glistr:latest
+
 jobs:
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
@@ -555,7 +560,147 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
+
+- job: 'CentOSBuild'
+  displayName: "End-to-end Linux (CentOS) build on Docker"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+
+  pool:
+    vmImage: 'Ubuntu-16.04'
   
+  container: centos
+
+  steps:
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: |
+    #       bin_linux.tar.gz
+    #       $(Agent.OS)
+    #     path: $(Build.SourcesDirectory) 
+    #     cacheHitVar: CACHE_RESTORED_LINUX
+    #     continueOnError : true
+    #   displayName: 'Caching'
+
+    # Moving LFS Files
+    - bash: |
+        cd $(Build.SourcesDirectory)
+        mkdir bin
+        cd bin
+        mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+        mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin'
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+
+    # - bash: |
+    #     tar xvfz bin_linux.tar.gz
+    #     rm -rf bin_linux.tar.gz
+    #     ls
+    #     mv bin_linux bin
+    #     ls
+    #     cd bin
+    #     tar xvfz qt.tar.gz
+    #     tar xvfz externalApps.tar.gz
+    #     rm -rf *.tar.gz
+    #     # mv binaries_windows externalApps
+    #     # rm CMakeCache.txt 
+
+    #     ls -lt
+    #   displayName: 'Unzip bin if cached'
+      # condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
+
+    # Configure and build superbuild
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        make -j2
+      displayName: 'Configure and compile Superbuild'
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+
+    # Configure and build CaPTk
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
+        make -j2
+        make install/strip
+      displayName: 'Configure and compile CaPTk'
+
+    # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
+      
+    # Check libra
+    - bash: |
+        cd bin/install/appdir/usr/bin/
+        ls -l
+      displayName: 'Checking ${installDir}/bin'
+      
+    # Build a package
+    - bash: |
+        export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        rm -rf regression
+        rm -rf binaries
+
+        # export PKG_FAST_MODE=1
+        ./scripts/captk-pkg
+        ./scripts/captk-pkg
+
+        rm -rf src
+        rm -rf docs*
+
+        rm -rf scripts
+
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        
+      displayName: 'Set up environment variables for packager and build a package'
+
+    - bash: |
+        rm -rf src
+        rm -rf docs*
+        rm -rf data
+        rm -rf binaries
+        rm -rf scripts
+
+        cd bin
+
+        tar cvfz qt.tar.gz qt
+        tar cvfz externalApps.tar.gz externalApps
+
+        rm -rf qt
+        rm -rf externalApps
+        rm -rf _CPack*
+
+        cd ../
+
+        mv bin bin_linux
+        tar cvfz bin_linux.tar.gz bin_linux
+      displayName: 'Zipping bin'
+    
+    #- script: |
+    #    cd bin
+    #    export GIT_LFS_SKIP_SMUDGE=1
+    #    git lfs pull --include "data/TestData.zip"
+    #    make tests
+    #  displayName: 'Performing the Tests'
+    
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    
+
 #### SELF-HOSTED AGENTS
 
 # - job: 'XenialSelfHostedBuild'
