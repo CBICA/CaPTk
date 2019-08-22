@@ -612,7 +612,7 @@ jobs:
 
     # Configure and build superbuild
     - bash: |
-        cd bin
+        cd $(Build.SourcesDirectory)/bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
       displayName: 'Configure and compile Superbuild'
@@ -620,7 +620,7 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
-        cd bin
+        cd $(Build.SourcesDirectory)/bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
         make install/strip
@@ -628,19 +628,20 @@ jobs:
 
     # Check qt
     - bash: |
-        cd bin
+        cd $(Build.SourcesDirectory)/bin
         ls -a
         ls ./qt/
       displayName: 'Check qt'
       
     # Check libra
     - bash: |
-        cd bin/install/appdir/usr/bin/
+        cd $(Build.SourcesDirectory)/bin/install/appdir/usr/bin/
         ls -l
       displayName: 'Checking ${installDir}/bin'
       
     # Build a package
     - bash: |
+        cd $(Build.SourcesDirectory)
         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf regression
@@ -652,7 +653,6 @@ jobs:
 
         rm -rf src
         rm -rf docs*
-
         rm -rf scripts
 
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
@@ -660,6 +660,7 @@ jobs:
       displayName: 'Set up environment variables for packager and build a package'
 
     - bash: |
+        cd $(Build.SourcesDirectory)
         rm -rf src
         rm -rf docs*
         rm -rf data
