@@ -86,11 +86,6 @@ void algorithmRunner()
     //roi_labels = "all";
   }
   cbica::dos2unix(param_file);
-  if (debug)
-  {
-    std::cout << "Using param file: " << param_file << "\n";
-  }
-
   std::vector< std::string > imageNames = image_paths;
 
   //check if all the input images and mask match dimension spacing and size
@@ -159,6 +154,19 @@ void algorithmRunner()
       }
     }
   }
+
+  if (debug)
+  {
+    std::cout << "[DEBUG] All configuration tests have passed, setting up the FE class based on the following parameters:\n"; 
+    std::cout << "[DEBUG] Patient ID: " << patient_id << "\n";
+    std::cout << "[DEBUG] Images    : " << image_path_string << "\n";
+    std::cout << "[DEBUG] Modalities: " << modalities_string << "\n";
+    std::cout << "[DEBUG] Mask File : " << maskfilename << "\n";
+    std::cout << "[DEBUG] ROI Values: " << selected_roi_string << "\n";
+    std::cout << "[DEBUG] ROI Labels: " << roi_labels_string << "\n";
+    std::cout << "[DEBUG] Param File: " << param_file << "\n";
+  }
+
   features.SetValidMask();
   features.SetMaskImage(mask);
   features.SetRequestedFeatures(param_file);
