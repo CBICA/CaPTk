@@ -692,13 +692,13 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
 
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
         downloadPath: '$(System.ArtifactsDirectory)'
     
 
