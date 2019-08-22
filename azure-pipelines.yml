@@ -183,6 +183,8 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
     # - task: CacheBeta@0
     #   inputs:
     #     key: |
@@ -350,6 +352,8 @@ jobs:
     vmImage: 'MacOS-10.13'
 
   steps:
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
     # - task: CacheBeta@0
     #   inputs:
     #     key: |
@@ -572,6 +576,8 @@ jobs:
   container: centos
 
   steps:
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
     # - task: CacheBeta@0
     #   inputs:
     #     key: |
