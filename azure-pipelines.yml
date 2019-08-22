@@ -584,11 +584,17 @@ jobs:
 
     # Moving LFS Files
     - bash: |
+        echo "LS in default dir"
+        ls
         cd $(Build.SourcesDirectory)
+        echo "LS in source dir"
+        ls
         mkdir bin
         cd bin
-        mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
-        mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+        #mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+        #mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+        mv ../../binaries_linux.zip .
+        mv ../../qt.zip .
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
       # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
