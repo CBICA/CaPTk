@@ -541,6 +541,10 @@ int main(int argc, char** argv)
           roi_labels_string = allRows[j][k];
           roi_labels = cbica::stringSplit(roi_labels_string, "|");
         }
+        if ((check_wrap == "paramfile") || (check_wrap == "parameterfile") || (check_wrap == "parameters")|| (check_wrap == "param_file")|| (check_wrap == "parameter_file"))
+        {
+          param_file = allRows[j][k];
+        }
         if ((check_wrap == "outputfile") || (check_wrap == "output") || (check_wrap == "outputdir"))
         {
           outputdir = allRows[j][k];
