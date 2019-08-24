@@ -568,7 +568,7 @@ jobs:
 - job: 'CentOSBuild'
   displayName: "End-to-end Linux (CentOS) build on Docker"
   timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 400
+  cancelTimeoutInMinutes: 300
 
   pool:
     vmImage: 'Ubuntu-16.04'
