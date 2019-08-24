@@ -588,12 +588,6 @@ jobs:
     #     continueOnError : true
     #   displayName: 'Caching'
 
-    - bash: |
-        wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz
-        tar -xf cmake-3.12.4-Linux-x86_64.tar.gz
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-      displayName: 'Putting CMake 3.12 in PATH'
-
     # Moving LFS Files
     - bash: |
         echo "LS in default dir"
