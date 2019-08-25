@@ -7563,6 +7563,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   auto roi1Image = cbica::ReadImage< ImageTypeFloat3D >(roi1File);
   auto roi2Image = cbica::ReadImage< ImageTypeFloat3D >(roi2File);
   auto newROIImage = roi1Image;
+  auto newMaskImage_computed = cbica::CreateImage< ImageTypeFloat3D >(roi1Image);
   newROIImage->DisconnectPipeline();
 
   ImageTypeFloat3D::Pointer octantImage = ImageTypeFloat3D::New();
@@ -7608,7 +7609,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   int index = GetSlicerIndexFromItem(items[0]);
 
   auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageTypeFloat3D >::New();
-  minMaxCalc->SetImage(newROIImage);
+  minMaxCalc->SetImage(roi1Image);
   minMaxCalc->Compute();
   auto maxVal = minMaxCalc->GetMaximum();
 
@@ -7644,13 +7645,13 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
       for (size_t j = 0; j < numberOfSeeds; j++)
       {
-        if (mTissuePoints->mLandmarks[i].id == TU) // in the case a second point has been initialized for roi2
+        if (mTissuePoints->mLandmarks[j].id == TU) // in the case a second point has been initialized for roi2
         {
-          itk::Point< float, 3 > pointFromTumorPanel = mTissuePoints->mLandmarks[i].coordinates;
+          itk::Point< float, 3 > pointFromTumorPanel_2 = mTissuePoints->mLandmarks[j].coordinates;
 
-          x_index_pre = (pointFromTumorPanel[0] - imageOrigin[0]) / imageSpacing[0];
-          y_index_pre = (pointFromTumorPanel[1] - imageOrigin[1]) / imageSpacing[1];
-          z_index_pre = (pointFromTumorPanel[2] - imageOrigin[2]) / imageSpacing[2];
+          x_index_pre = (pointFromTumorPanel_2[0] - imageOrigin[0]) / imageSpacing[0];
+          y_index_pre = (pointFromTumorPanel_2[1] - imageOrigin[1]) / imageSpacing[1];
+          z_index_pre = (pointFromTumorPanel_2[2] - imageOrigin[2]) / imageSpacing[2];
         }
       }
 
@@ -7666,6 +7667,9 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       resampler->SetTransform(transform.GetPointer());
       resampler->SetInput(roi1Image);
       resampler->SetSize(roi1Image->GetLargestPossibleRegion().GetSize());
+      resampler->SetOutputOrigin(roi1Image->GetOrigin());
+      resampler->SetOutputDirection(roi1Image->GetDirection());
+      resampler->SetOutputSpacing(roi1Image->GetSpacing());
       resampler->Update();
 
       roi1Image = resampler->GetOutput();
@@ -7673,7 +7677,9 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   }
 
   // visualizing ROI_post with 2 colors to highlight the post-injection region
-  ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion());
+  ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), 
+    roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion()),
+    roiComputed(newMaskImage_computed, newMaskImage_computed->GetLargestPossibleRegion());
 
   for (octantIt.GoToBegin(); !octantIt.IsAtEnd(); ++octantIt)
     octantIt.Set(0);
@@ -7684,17 +7690,22 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     if (roi2It.Get() > 0)
     {
       auto currentIndex = roi2It.GetIndex();
-      float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
 
       roi1It.SetIndex(currentIndex);
+      roiNew.SetIndex(currentIndex);
 
+      //float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
+
+      // do not do anything with raw mask since orientation fixes have happened to it
       if (roi1It.Get() > 0) // if pre-injection ROI is defined, then the mask to be displayed is under label 1
       {
-        *pData = 1.0;
+        //*pData = 1.0;
+        roiComputed.Set(1);
       }
       else // this is for the section of the ROI which is post-injection
       {
-        *pData = 2.0;
+        //*pData = 2.0;
+        roiComputed.Set(2);
       }
     }
   }
@@ -7878,8 +7889,10 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
             && !((output_full_index[1] > currentIndex[1]) ^ (currentItrIndex[1] > currentIndex[1]))
             && !((output_full_index[2] > currentIndex[2]) ^ (currentItrIndex[2] > currentIndex[2])))
           {
-            float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentItrIndex[0], (int)currentItrIndex[1], (int)currentItrIndex[2]);
-            *pData = 3.0;
+            // do not do anything with raw mask since orientation fixes have happened to it
+            //float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentItrIndex[0], (int)currentItrIndex[1], (int)currentItrIndex[2]);
+            //*pData = 3.0;
+            roiComputed.Set(3);
           }
 
         }
@@ -8033,10 +8046,16 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       for (auto it_q1 = octrantVolume_1.begin(), it_q2 = octrantVolume_2.begin(), it_qRatio = octrantVolume_ratio.begin(), it_qPercent = octrantVolume_percent.begin();
         it_q1 != octrantVolume_1.end(); ++it_q1, ++it_q2, ++it_qRatio, ++it_qPercent)
       {
-        it_qPercent->second = (it_q2->second - it_q1->second) / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
-        it_qRatio->second = it_q2->second / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
-
-        volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(it_qPercent->second * 100 + 100) + "%\n";
+        if (it_q1->second > 0)
+        {
+          it_qPercent->second = (it_q2->second - it_q1->second) / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
+          it_qRatio->second = it_q2->second / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
+          volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(it_qPercent->second * 100 + 100) + "%\n";
+        }
+        else
+        {
+          volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(0) + "%\n";
+        }
       }
 
       volumeString += "\n\nFurther details and detailed visualization results can be found in the output folder";
@@ -8161,7 +8180,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     auto currentROI = convertVtkToItk<ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mMask);
     cbica::WriteImage< ImageTypeFloat3D >(currentROI, outputDir + "/roi_DE_visualizationIncrease.nii.gz");
     cbica::WriteImage< ImageTypeFloat3D >(octantImage, outputDir + "/roi_DE_octantImage.nii.gz");
-    cbica::WriteImage< ImageTypeFloat3D >(newROIImage, outputDir + "/roi_DE_visualizationRatio.nii.gz");
+    cbica::WriteImage< ImageTypeFloat3D >(newMaskImage_computed, outputDir + "/roi_DE_visualizationRatio.nii.gz");
 
     minMaxCalc->SetImage(newROIImage);
     minMaxCalc->Compute();
@@ -8181,6 +8200,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     cbica::WriteImage< ImageTypeFloat3D >(newROIImage, outputDir + "/roiDE_visualizationProbability.nii.gz");
 
     LoadSlicerImages(outputDir + "/roiDE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
+    readMaskFile(outputDir + "/roi_DE_visualizationRatio.nii.gz");
   }
 }
 
@@ -9740,9 +9760,4 @@ std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(c
 void fMainWindow::OnPreferencesMenuClicked()
 {
 	int result = this->preferenceDialog->exec();
-	if (result == PreferencesDialog::Accepted)
-	{
-		QFont font = this->preferenceDialog->GetFontDialog()->currentFont();
-		qApp->setFont(font);
-	}
 }

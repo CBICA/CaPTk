@@ -976,12 +976,12 @@ This application extracts the Texture Features as described in the paper [1]. It
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
-	- FFDM vendors currently supported: GE Healthcare and Hologic.
+	- [AIMILIA] FFDM vendors currently supported: GE Healthcare and Hologic.
 	- Each image stored in a separate folder.
 	
 <b>USAGE:</b>
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
-	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
+	-# Launch <b>Breast Texture Feature Extraction</b> using the 'Applications -> [Breast Cancer] Texture Pipeline' menu option.
 	-# Specify the output directory. 
   - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim

@@ -22,6 +22,7 @@ src/applications/individualApps/itksnap/lib
 src/applications/individualApps/libra/bin
 src/applications/individualApps/libra/libexec
 src/applications/individualApps/libra/MCRInstaller.zip
+src/applications/individualApps/itksnap/ITK-SNAP.app
 
 # Misc
 .vs

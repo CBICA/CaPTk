@@ -36,6 +36,7 @@
 - [Mark Bergman](https://www.med.upenn.edu/sbia/mbergman.html)
 - [Hamed Akbari](https://www.med.upenn.edu/sbia/hakbari.html)
 - [Aristeidis Sotiras](http://www.asotiras.com/)
+- [Rhea Chitalia](https://www.pennmedicine.org/departments-and-centers/department-of-radiology/radiology-research/labs-and-centers/biomedical-imaging-informatics/cbig-computational-breast-imaging-group/cbig-meet-our-team/rhea-chitalia-bse)
 
 Contact [software [at] cbica.upenn.edu](mailto:software@cbica.upenn.edu) for questions.
 */
