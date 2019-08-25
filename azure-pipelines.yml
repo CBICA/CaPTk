@@ -347,7 +347,7 @@ jobs:
   steps:
     - task: CacheBeta@0
       inputs:
-        key: '"bin_mac.tar.gz" | "$(Agent.OS)"'
+        key: '"bin_mac.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_MAC
         continueOnError : true
