@@ -589,21 +589,30 @@ jobs:
     #     continueOnError : true
     #   displayName: 'Caching'
 
-    # Moving LFS Files
+    # Pull LFS
     - bash: |
-        echo "LS in default dir"
-        ls
-        echo "LS one level up"
-        ls ..
-        mkdir bin
-        cd bin
-        #mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
-        #mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
-        mv ../binaries_linux.zip .
-        mv ../qt.zip .
-        ls -lt
-      displayName: 'Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+        export GIT_LFS_SKIP_SMUDGE=1
+        git lfs pull --include "binaries/precompiledApps/macos.zip"
+        git lfs pull --include "binaries/qt_5.12.1/macos.zip"
+        #echo "Not doing this until quota is improved on GitHub"
+      displayName: 'Pull LFS'
+      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+
+    # # Moving LFS Files
+    # - bash: |
+    #     echo "LS in default dir"
+    #     ls
+    #     echo "LS one level up"
+    #     ls ..
+    #     mkdir bin
+    #     cd bin
+    #     #mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+    #     #mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+    #     #mv ../binaries_linux.zip .
+    #     #mv ../qt.zip .
+    #     ls -lt
+    #   displayName: 'Moving LFS files to the appropriate location under bin'
+    #   # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
         wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz
@@ -612,6 +621,7 @@ jobs:
       displayName: 'CMake installation'
 
     - bash: |
+        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
         cmake --version
       displayName: 'CMake version test'
 
@@ -634,6 +644,7 @@ jobs:
 
     # Configure and build superbuild
     - bash: |
+        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
         cd $(Build.SourcesDirectory)/bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
@@ -642,6 +653,7 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
+        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
         cd $(Build.SourcesDirectory)/bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
@@ -663,6 +675,7 @@ jobs:
       
     # Build a package
     - bash: |
+        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
         cd $(Build.SourcesDirectory)
         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
@@ -682,6 +695,7 @@ jobs:
       displayName: 'Set up environment variables for packager and build a package'
 
     - bash: |
+        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
         cd $(Build.SourcesDirectory)
         rm -rf src
         rm -rf docs*
