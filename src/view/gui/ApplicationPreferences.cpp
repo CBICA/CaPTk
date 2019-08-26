@@ -1,21 +1,21 @@
 #include "ApplicationPreferences.h"
 
-void AppSettings::SetFont(QString font)
+void ApplicationPreferences::SetFont(QString font)
 {
     this->m_font = font;
 }
 
-QString AppSettings::GetFont()
+QString ApplicationPreferences::GetFont()
 {
     return m_font;
 }
 
-void AppSettings::SetTheme(QString theme)
+void ApplicationPreferences::SetTheme(QString theme)
 {
     this->m_Theme = theme;
 }
 
-QString AppSettings::GetTheme()
+QString ApplicationPreferences::GetTheme()
 {
     return m_Theme;
 }
