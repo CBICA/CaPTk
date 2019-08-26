@@ -486,7 +486,36 @@ namespace cbica
     return;
   }
 
-  /*
+  /**
+  \brief Write itk::ImageReader as DICOM to specified directory
+  
+  This uses the dictionary created by the reference DICOM image
+
+  \param dicomImageReferenceDir Reference DICOM image
+  \param imageToWrite Pointer to processed image data which is to be written
+  \param dirName File containing the image
+  \return itk::Image of specified pixel and dimension type
+  */
+  template <typename ComputedImageType = ImageTypeFloat3D>
+  void WriteDicomImage(const std::string dicomImageReferenceDir, typename ComputedImageType::Pointer imageToWrite, const std::string &outputDir)
+  {
+    if (cbica::isDir(dicomImageReferenceDir))
+    {
+      using DicomImageType = itk::Image< int, ComputedImageType::ImageDimension >;
+      auto reader = itk::ImageSeriesReader< DicomImageType >::New();
+      auto dicomIO = itk::GDCMImageIO::New();
+      auto nameGenerator = itk::GDCMSeriesFileNames::New();
+      nameGenerator->SetInputDirectory(dicomImageReferenceDir);
+      reader->SetImageIO(dicomIO);
+      WriteDicomImage< ComputedImageType >(reader, imageToWrite, outputDir);
+    }
+    else
+    {
+      WriteDicomImage< ComputedImageType >(imageToWrite, outputDir);
+    }
+  }
+
+  /**
   \brief Write itk::ImageReader as DICOM to specified directory
 
   This uses default dictionary created by GDCM::ImageIO
