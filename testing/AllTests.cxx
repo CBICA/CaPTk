@@ -19,9 +19,9 @@ int main(int argc, char** argv)
   parser.setExeName("CaPTk_Tests");
   parser.addOptionalParameter("b", "bufferTest", cbica::Parameter::NONE, "none", "Buffer Test");
   parser.addOptionalParameter("i", "inputFile", cbica::Parameter::FILE, ".nii.gz file", "Generic input file");
-  parser.addOptionalParameter("geo", "geodesic", cbica::Parameter::FILE, ".nii.gz drawing", "Geodesic test");
-  parser.addOptionalParameter("egfr", "egfrviii", cbica::Parameter::FILE, ".nii.gz drawing", "EGFRvIII test");
-  parser.addOptionalParameter("recur", "recurrene", cbica::Parameter::FILE, ".nii.gz drawing", "Recurrence test");
+  parser.addOptionalParameter("geo", "geodesic", cbica::Parameter::DIRECTORY, "Path to 'TestData/Geodesic'", "Geodesic test");
+  parser.addOptionalParameter("egfr", "egfrviii", cbica::Parameter::DIRECTORY, "Path to 'TestData/EGFRvIII'", "EGFRvIII test");
+  parser.addOptionalParameter("recur", "recurrence", cbica::Parameter::DIRECTORY, "Path to 'TestData/Recurrence'", "Recurrence test");
 
   std::string dataDir;
 
