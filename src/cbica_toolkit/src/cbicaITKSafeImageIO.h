@@ -511,7 +511,7 @@ namespace cbica
     }
     else
     {
-      auto reader = typename itk::ImageSeriesReader< ComputedImageType >::New();
+      auto reader = itk::ImageSeriesReader< ComputedImageType >::New();
       WriteDicomImage< ComputedImageType, ComputedImageType >(reader, imageToWrite, outputDir);
     }
   }
