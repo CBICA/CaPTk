@@ -24,7 +24,8 @@ enum AvailableAlgorithms
   CreateMask,
   ChangeValue,
   DicomLoadTesting,
-  Dicom2Nifti
+  Dicom2Nifti,
+  Nifti2Dicom
 };
 
 int requestedAlgorithm = 0;
@@ -203,6 +204,11 @@ int algorithmsRunner()
 
       return EXIT_SUCCESS;
     }
+  }
+
+  if (requestedAlgorithm == Nifti2Dicom)
+  {
+    // put saima's code here
   }
 
   if (requestedAlgorithm == ChangeValue)
@@ -484,11 +490,13 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
+  parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
   parser.addExampleUsage("-i C:/test.nii.gz -inf", "Prints out image information to console (for DICOMs, this does a full dump of the tags)");
   parser.addExampleUsage("-i C:/test/1.dcm -o C:/test.nii.gz -d2n C:/test_reference.nii.gz", "DICOM to NIfTI conversion and do sanity check of the converted image with the reference image");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/test_dicom/ -n2d C:/test_reference.nii.gz", "NIfTI to DICOM conversion and do sanity check of the converted image with the reference image");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
 
@@ -515,6 +523,12 @@ int main(int argc, char** argv)
   {
     requestedAlgorithm = Dicom2Nifti;
     parser.getParameterValue("d2n", targetImageFile);
+    parser.getParameterValue("o", outputImageFile);
+  }
+  if (parser.isPresent("n2d"))
+  {
+    requestedAlgorithm = Nifti2Dicom;
+    parser.getParameterValue("n2d", targetImageFile);
     parser.getParameterValue("o", outputImageFile);
   }
   if (parser.isPresent("r"))
