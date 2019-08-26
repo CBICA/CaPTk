@@ -15,6 +15,11 @@ ENDIF()
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
+SET( EXTRA_NON_WINDOWS_OPTIONS "")
+IF(NOT WIN32)
+SET( EXTRA_NON_WINDOWS_OPTIONS -DCMAKE_BUILD_TYPE:STRING="Release")
+ENDIF()
+
 ExternalProject_Add( 
   DCMTK
   URL ftp://dicom.offis.de/pub/dicom/offis/software/dcmtk/dcmtk363/dcmtk-3.6.3.tar.gz
@@ -26,6 +31,7 @@ ExternalProject_Add(
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
     ${ep_common_args}
+    ${EXTRA_NON_WINDOWS_OPTIONS}
     #${ep_cxx_standard_args}
     #-DCMAKE_CONFIGURATION_TYPES=${CMAKE_CONFIGURATION_TYPES}
     -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_BINARY_DIR}/install
