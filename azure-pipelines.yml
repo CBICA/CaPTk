@@ -594,8 +594,8 @@ jobs:
     # Pull LFS
     - bash: |
         export GIT_LFS_SKIP_SMUDGE=1
-        git lfs pull --include "binaries/precompiledApps/macos.zip"
-        git lfs pull --include "binaries/qt_5.12.1/macos.zip"
+        git lfs pull --include "binaries/precompiledApps/linux.zip"
+        git lfs pull --include "binaries/qt_5.12.1/linux.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
       # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
