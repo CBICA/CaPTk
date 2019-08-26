@@ -511,35 +511,9 @@ namespace cbica
     }
     else
     {
-      WriteDicomImage< ComputedImageType >(imageToWrite, outputDir);
+      auto reader = typename itk::ImageSeriesReader< ComputedImageType >::New();
+      WriteDicomImage< ComputedImageType, ComputedImageType >(reader, imageToWrite, outputDir);
     }
-  }
-
-  /**
-  \brief Write itk::ImageReader as DICOM to specified directory
-
-  This uses default dictionary created by GDCM::ImageIO
-
-  Usage:
-  \verbatim
-  typedef itk::Image< float, 3 > ComputedImageType;
-  typedef itk::Image< unsigned char, 3 > WrittenImageType;
-  itk::ImageSeriesReader< ComputedImageType >::Pointer inputImageReader = GetDicomImageReader< ComputedImageType >(inputDirName);
-  ComputedImageType::Pointer imageToWrite = GetImageAfterProcessing( inputImageReader->GetOutput() );
-  WriteImage< ComputedImageType, WrittenImageType >(imageToWrite, dirNameToWriteImage); // casts imageToWrite to WrittenImageType
-  WriteImage< ComputedImageType >(imageToWrite, dirNameToWriteImage); // writes imageToWrite as ComputedImageType
-  // at this point, the image has already been written
-  \endverbatim
-
-  \param imageToWrite Pointer to processed image data which is to be written
-  \param dirName File containing the image
-  \return itk::Image of specified pixel and dimension type
-  */
-  template <typename ComputedImageType = ImageTypeFloat3D>
-  void WriteDicomImage(const typename ComputedImageType::Pointer imageToWrite, const std::string &dirName)
-  {
-    auto reader = typename itk::ImageSeriesReader< ComputedImageType >::New();
-    WriteDicomImage< ComputedImageType >(reader, imageToWrite, dirName);
   }
 
   /**
