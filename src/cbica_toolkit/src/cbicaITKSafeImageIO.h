@@ -507,7 +507,7 @@ namespace cbica
       auto nameGenerator = itk::GDCMSeriesFileNames::New();
       nameGenerator->SetInputDirectory(dicomImageReferenceDir);
       reader->SetImageIO(dicomIO);
-      WriteDicomImage< ComputedImageType >(reader, imageToWrite, outputDir);
+      WriteDicomImage< ComputedImageType, DicomImageType >(reader, imageToWrite, outputDir);
     }
     else
     {
@@ -561,8 +561,8 @@ namespace cbica
   \param dirName File containing the image
   \return itk::Image of specified pixel and dimension type
   */
-  template <typename ComputedImageType = ImageTypeFloat3D>
-  void WriteDicomImage(const typename itk::ImageSeriesReader< ComputedImageType >::Pointer inputImageReader, const typename ComputedImageType::Pointer imageToWrite, const std::string &dirName)
+  template < typename ComputedImageType = ImageTypeFloat3D, typename DicomImageType = ComputedImageType >
+  void WriteDicomImage(const typename itk::ImageSeriesReader< DicomImageType >::Pointer inputImageReader, const typename ComputedImageType::Pointer imageToWrite, const std::string &dirName)
   {
     if (!cbica::isDir(dirName))
     {
