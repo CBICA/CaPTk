@@ -17,15 +17,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: |
-    #       bin_windows.tar.gz
-    #       $(Agent.OS)
-    #     path: $(Build.SourcesDirectory) 
-    #     cacheHitVar: CACHE_RESTORED_WINDOWS
-    #     continueOnError : true
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_windows.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory) 
+        cacheHitVar: CACHE_RESTORED_WINDOWS
+        restoreKeys: |
+          "bin_windows.tar.gz"
+        continueOnError : true
+      displayName: 'Caching'
 
     - script: |
         choco install doxygen.install git-lfs.install nsis.install
@@ -39,7 +39,7 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/windows.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
@@ -60,23 +60,23 @@ jobs:
         rm -rf ../.git
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    # - bash: |
-    #     tar xvfz bin_windows.tar.gz
-    #     rm -rf bin_windows.tar.gz
-    #     ls
-    #     mv bin_windows bin
-    #     ls
-    #     cd bin
-    #     tar xvfz qt.tar.gz
-    #     tar xvfz externalApps.tar.gz
-    #     rm -rf *.tar.gz
-    #     # rm CMakeCache.txt 
+    - bash: |
+        tar xvfz bin_windows.tar.gz
+        rm -rf bin_windows.tar.gz
+        ls
+        mv bin_windows bin
+        ls
+        cd bin
+        tar xvfz qt.tar.gz
+        tar xvfz externalApps.tar.gz
+        rm -rf *.tar.gz
+        # rm CMakeCache.txt 
 
-    #     ls -lt
-    #   displayName: 'Unzip bin if cached'
-      # condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
+        ls -lt
+      displayName: 'Unzip bin if cached'
+      condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - script: |
         cd bin
@@ -87,7 +87,7 @@ jobs:
         rm -rf installLibs
         rm -rf qt.zip
       displayName: 'Configure and compile Superbuild'
-      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
     
     - powershell: |
         wmic logicaldisk get size,freespace,caption
@@ -178,15 +178,15 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: |
-    #       bin_linux.tar.gz
-    #       $(Agent.OS)
-    #     path: $(Build.SourcesDirectory) 
-    #     cacheHitVar: CACHE_RESTORED_LINUX
-    #     continueOnError : true
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory) 
+        cacheHitVar: CACHE_RESTORED_LINUX
+        continueOnError : true
+        restoreKeys: |
+          "bin_linux.tar.gz"
+      displayName: 'Caching'
 
     # Dependency manager
     - bash: |
@@ -205,7 +205,7 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/linux.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Testing libgcrypt
     - bash: |
@@ -227,24 +227,24 @@ jobs:
         mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
-    # - bash: |
-    #     tar xvfz bin_linux.tar.gz
-    #     rm -rf bin_linux.tar.gz
-    #     ls
-    #     mv bin_linux bin
-    #     ls
-    #     cd bin
-    #     tar xvfz qt.tar.gz
-    #     tar xvfz externalApps.tar.gz
-    #     rm -rf *.tar.gz
-    #     # mv binaries_windows externalApps
-    #     # rm CMakeCache.txt 
+    - bash: |
+        tar xvfz bin_linux.tar.gz
+        rm -rf bin_linux.tar.gz
+        ls
+        mv bin_linux bin
+        ls
+        cd bin
+        tar xvfz qt.tar.gz
+        tar xvfz externalApps.tar.gz
+        rm -rf *.tar.gz
+        # mv binaries_windows externalApps
+        # rm CMakeCache.txt 
 
-    #     ls -lt
-    #   displayName: 'Unzip bin if cached'
-      # condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
+        ls -lt
+      displayName: 'Unzip bin if cached'
+      condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
@@ -252,7 +252,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
       displayName: 'Configure and compile Superbuild'
-      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build CaPTk
     - bash: |
@@ -345,15 +345,15 @@ jobs:
     vmImage: 'MacOS-10.13'
 
   steps:
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: |
-    #       bin_mac.tar.gz
-    #       $(Agent.OS)
-    #     path: $(Build.SourcesDirectory) 
-    #     cacheHitVar: CACHE_RESTORED_MAC
-    #     continueOnError : true
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_mac.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory) 
+        cacheHitVar: CACHE_RESTORED_MAC
+        continueOnError : true
+        restoreKeys: |
+          "bin_mac.tar.gz"
+      displayName: 'Caching'
 
     - bash: |
         brew install make doxygen libomp
@@ -373,7 +373,7 @@ jobs:
         git lfs pull --include "binaries/qt_5.12.1/macos.zip"
         #echo "Not doing this until quota is improved on GitHub"
       displayName: 'Pull LFS'
-      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     # # Testing LFS
     # - bash: |
@@ -392,22 +392,22 @@ jobs:
         mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
       
-    # - bash: |
-    #     tar xvfz bin_mac.tar.gz
-    #     rm -rf bin_mac.tar.gz
-    #     ls
-    #     mv bin_mac bin
-    #     ls
-    #     cd bin
-    #     tar xvfz qt.tar.gz
-    #     tar xvfz externalApps.tar.gz
-    #     rm -rf *.tar.gz
+    - bash: |
+        tar xvfz bin_mac.tar.gz
+        rm -rf bin_mac.tar.gz
+        ls
+        mv bin_mac bin
+        ls
+        cd bin
+        tar xvfz qt.tar.gz
+        tar xvfz externalApps.tar.gz
+        rm -rf *.tar.gz
 
-    #     ls -lt
-    #   displayName: 'Unzip bin if cached'
-    #   condition: eq(variables.CACHE_RESTORED_MAC, 'true')
+        ls -lt
+      displayName: 'Unzip bin if cached'
+      condition: eq(variables.CACHE_RESTORED_MAC, 'true')
 
     #- bash: |
     #    rm -rf binaries/*linux*.zip
@@ -428,7 +428,7 @@ jobs:
         make -j 2
   
       displayName: 'Configure and compile Superbuild'
-      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         cd bin
