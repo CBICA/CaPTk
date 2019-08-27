@@ -16,6 +16,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <QDebug>
 #include "CaPTkGUIUtils.h"
 #include "cbicaLogging.h"
+#include "ApplicationPreferences.h"
 
 AppearancePage::AppearancePage(QWidget *parent) :
     QWidget(parent),
@@ -106,6 +107,10 @@ void AppearancePage::OnOkay()
 	//! apply selected font and stylesheet
 	qApp->setFont(this->m_SelectedFont);
 	qApp->setStyleSheet(this->m_SelectedStyleSheet);
+
+	ApplicationPreferences::GetInstance()->SetFont(this->m_SelectedFont.toString());
+	ApplicationPreferences::GetInstance()->SetTheme(QVariant::fromValue(this->m_SelectedTheme).toString());
+	ApplicationPreferences::GetInstance()->DisplayPreferences();
 	
 }
 
