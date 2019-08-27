@@ -40,8 +40,8 @@ if(NOT DEFINED SlicerExecutionModel_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM
 
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
-    GIT_REPOSITORY "${${proj}_GIT_REPOSITORY}"
-    GIT_TAG "${${proj}_REVISION_TAG}"
+    GIT_REPOSITORY "https://github.com/Slicer/SlicerExecutionModel.git"
+    GIT_TAG "62d0121dbb0fb057ebbd7c9ab84520accacec8bc"
     SOURCE_DIR ${EP_SOURCE_DIR}
     BINARY_DIR ${EP_BINARY_DIR}
     CMAKE_CACHE_ARGS
