@@ -535,7 +535,7 @@ namespace cbica
   \param dirName File containing the image
   \return itk::Image of specified pixel and dimension type
   */
-  template < typename ComputedImageType = ImageTypeFloat3D, typename DicomImageType = ComputedImageType >
+  template < class ComputedImageType = ImageTypeFloat3D, class DicomImageType = ComputedImageType >
   void WriteDicomImage(const typename itk::ImageSeriesReader< DicomImageType >::Pointer inputImageReader, const typename ComputedImageType::Pointer imageToWrite, const std::string &dirName)
   {
     if (!cbica::isDir(dirName))
