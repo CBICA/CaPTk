@@ -649,7 +649,7 @@ namespace cbica
   \return itk::Image of specified pixel and dimension type
   */
   template < class ComputedImageType = ImageTypeFloat3D/*, class DicomImageType = ComputedImageType*/ >
-  void WriteDicomImage(const itk::ImageSeriesReader< itk::Image< int, ComputedImageType::ImageDimension > >::Pointer inputImageReader, const typename ComputedImageType::Pointer imageToWrite, const std::string &dirName)
+  void WriteDicomImage(const typename itk::ImageSeriesReader< itk::Image< int, ComputedImageType::ImageDimension > >::Pointer inputImageReader, const typename ComputedImageType::Pointer imageToWrite, const std::string &dirName)
   {
     if (!cbica::isDir(dirName))
     {
