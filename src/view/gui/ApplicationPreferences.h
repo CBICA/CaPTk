@@ -7,6 +7,7 @@ class ApplicationPreferences : public QObject
 {
 public:
 
+	//! setters/getters
     void SetFont(QString font);
     QString GetFont() const;
 
@@ -14,7 +15,11 @@ public:
     QString GetTheme() const;
 
 private:
+	//! constructor/desctrucor
+	ApplicationPreferences() = default;
+	~ApplicationPreferences() = default;
 
+	//! ivars
     QString m_Font;
     QString m_Theme;
 };
