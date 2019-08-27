@@ -94,6 +94,10 @@ jobs:
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
     
+    - bash: |
+        tar cvfz bin_windows.tar.gz bin
+      displayName: 'Zipping Superbuild'
+    
     - powershell: |
         wmic logicaldisk get size,freespace,caption
       displayName: 'Disk space check'
@@ -143,6 +147,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
+        rm -rf bin_windows.tar.gz
 
         cd bin
         rm -rf *proj*
@@ -264,6 +269,10 @@ jobs:
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
+    - bash: |
+        tar cvfz bin_linux.tar.gz bin
+      displayName: 'Zipping Superbuild'
+    
     # Configure and build CaPTk
     - bash: |
         cd bin
@@ -311,6 +320,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
+        rm -rf bin_linux.tar.gz
 
         cd bin
 
@@ -360,12 +370,12 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_mac.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory) 
         cacheHitVar: CACHE_RESTORED_MAC
         continueOnError : true
         restoreKeys: |
-          "bin_mac.tar.gz"
+          "bin_macos.tar.gz"
       displayName: 'Caching'
 
     - bash: |
@@ -408,10 +418,10 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
       
     - bash: |
-        tar xvfz bin_mac.tar.gz
-        rm -rf bin_mac.tar.gz
+        tar xvfz bin_macos.tar.gz
+        rm -rf bin_macos.tar.gz
         ls
-        mv bin_mac bin
+        mv bin_macos bin
         ls
         cd bin
         tar xvfz qt.tar.gz
@@ -443,6 +453,10 @@ jobs:
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
+    - bash: |
+        tar cvfz bin_macos.tar.gz bin
+      displayName: 'Zipping Superbuild'
+    
     - bash: |
         cd bin
 
@@ -536,6 +550,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
+        rm -rf bin_macos.tar.gz
 
         cd bin
         tar cvfz qt.tar.gz qt
@@ -546,9 +561,9 @@ jobs:
         rm -rf _CPack*
         cd ../
         # ls
-        mv bin bin_mac
+        mv bin bin_macos
         # ls
-        tar cvfz bin_mac.tar.gz bin_mac
+        tar cvfz bin_macos.tar.gz bin_macos
       displayName: 'Zipping bin'
     #- script: |
     #    cd bin
