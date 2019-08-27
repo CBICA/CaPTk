@@ -508,7 +508,15 @@ namespace cbica
       nameGenerator->SetInputDirectory(dicomImageReferenceDir);
       inputImageReader->SetImageIO(dicomIO);
       inputImageReader->SetFileNames(nameGenerator->GetInputFileNames());
-      inputImageReader->Update();
+      try
+      {
+        inputImageReader->Update();
+      }
+      catch (itk::ExceptionObject &excp)
+      {
+        std::cerr << "Couldn't read the reference DICOM image; got the following error: " << excp << "\n";
+        exit(EXIT_FAILURE);
+      }
       //WriteDicomImage< ComputedImageType/*, DicomImageType*/ >(reader, imageToWrite, outputDir);
 
       if (!cbica::isDir(outputDir))
@@ -552,7 +560,7 @@ namespace cbica
       seriesWriter->SetFileNames(namesGenerator->GetFileNames());
 
       typename itk::ImageSeriesReader< ComputedImageType >::DictionaryArrayType outputArray;
-      if (inputImageReader.IsNull() || (inputImageReader->GetImageIO() == NULL))
+      if (inputImageReader.IsNull() || (inputImageReader->GetImageIO() == NULL)) // in the off chance that the input image series reader doesn't get initialized properly
       {
         //dicomIO->SetOrigin(0, imageToWrite->GetOrigin()[0]);
         //dicomIO->SetOrigin(1, imageToWrite->GetOrigin()[1]);
