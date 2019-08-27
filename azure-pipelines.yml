@@ -135,7 +135,7 @@ jobs:
         
         cd ../
         
-      displayName: 'Package CaPTk'
+      displayName: 'Build & Package CaPTk'
 
     - bash: |
         rm -rf src
