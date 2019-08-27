@@ -600,11 +600,6 @@ jobs:
         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
       displayName: 'CMake installation'
 
-    - bash: |
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-        cmake --version
-      displayName: 'CMake version test'
-
     # - bash: |
     #     tar xvfz bin_linux.tar.gz
     #     rm -rf bin_linux.tar.gz
@@ -637,7 +632,7 @@ jobs:
     - bash: |
         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
         cd $(Build.SourcesDirectory)/bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
+        cmake -DITK_DIR=$(Build.SourcesDirectory)/bin/ITK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
