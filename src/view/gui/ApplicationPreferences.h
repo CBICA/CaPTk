@@ -16,6 +16,9 @@ public:
     void SetTheme(QString theme);
     QString GetTheme() const;
 
+	//! print preferences(for debugging purposes)
+	void DisplayPreferences();
+
 private:
 	//! constructor/desctrucor
 	ApplicationPreferences() = default;

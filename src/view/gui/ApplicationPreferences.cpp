@@ -1,4 +1,5 @@
 #include "ApplicationPreferences.h"
+#include <QDebug>
 
 ApplicationPreferences* ApplicationPreferences::m_Instance = nullptr;
 QMutex ApplicationPreferences::m_Mutex;
@@ -34,3 +35,8 @@ QString ApplicationPreferences::GetTheme() const
     return m_Theme;
 }
 
+void ApplicationPreferences::DisplayPreferences()
+{
+	qDebug() << " font = " << this->m_Font << endl;
+	qDebug() << " theme = " << this->m_Theme << endl;
+}
