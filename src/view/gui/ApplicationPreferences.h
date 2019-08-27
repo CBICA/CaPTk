@@ -3,19 +3,19 @@
 
 #include <QObject>
 
-class ApplicationPreferences
+class ApplicationPreferences : public QObject
 {
 public:
 
     void SetFont(QString font);
-    QString GetFont();
+    QString GetFont() const;
 
     void SetTheme(QString theme);
-    QString GetTheme();
+    QString GetTheme() const;
 
 private:
 
-    QString m_font;
+    QString m_Font;
     QString m_Theme;
 };
 

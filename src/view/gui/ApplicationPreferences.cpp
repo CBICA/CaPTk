@@ -2,12 +2,12 @@
 
 void ApplicationPreferences::SetFont(QString font)
 {
-    this->m_font = font;
+    this->m_Font = font;
 }
 
-QString ApplicationPreferences::GetFont()
+QString ApplicationPreferences::GetFont() const
 {
-    return m_font;
+    return m_Font;
 }
 
 void ApplicationPreferences::SetTheme(QString theme)
@@ -15,7 +15,7 @@ void ApplicationPreferences::SetTheme(QString theme)
     this->m_Theme = theme;
 }
 
-QString ApplicationPreferences::GetTheme()
+QString ApplicationPreferences::GetTheme() const
 {
     return m_Theme;
 }
