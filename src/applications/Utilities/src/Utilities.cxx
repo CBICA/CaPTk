@@ -208,7 +208,7 @@ int algorithmsRunner()
 
   if (requestedAlgorithm == Nifti2Dicom)
   {
-    cbica::WriteDicomImageFromReference< TImageType >(targetImageFile, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+    //cbica::WriteDicomImageFromReference< TImageType >(targetImageFile, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
   }
 
   if (requestedAlgorithm == ChangeValue)
