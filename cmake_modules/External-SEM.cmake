@@ -76,7 +76,7 @@ else()
   ExternalProject_Add_Empty(${proj} DEPENDS ${${proj}_DEPENDENCIES})
 endif()
 
-mark_as_superbuild(
-  VARS SlicerExecutionModel_DIR:PATH
-  LABELS "FIND_PACKAGE"
-  )
+# mark_as_superbuild(
+#   VARS SlicerExecutionModel_DIR:PATH
+#   LABELS "FIND_PACKAGE"
+#   )
