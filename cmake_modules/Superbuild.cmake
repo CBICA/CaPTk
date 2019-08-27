@@ -24,7 +24,7 @@ ENDIF()
 
 ## Compute -G arg for configuring external projects with the same CMake generator:
 #IF(CMAKE_EXTRA_GENERATOR)
-#	SET(gen "${CMAKE_EXTRA_GENERATOR} - ${CMAKE_GENERATOR}")
+#	SET(gen "${CMAKE_EXTRA_GENERATOR} - ${CMAKE_GENERATOR}") 
 #ELSE()
 #	SET(gen "${CMAKE_GENERATOR}" )
 #ENDIF()

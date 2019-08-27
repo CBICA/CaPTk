@@ -23,17 +23,17 @@ if(NOT DEFINED SlicerExecutionModel_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM
       )
   endif()
 
-  ExternalProject_SetIfNotDefined(
-    ${proj}_GIT_REPOSITORY
-    "${EP_GIT_PROTOCOL}://github.com/Slicer/SlicerExecutionModel.git"
-    QUIET
-    )
+  # ExternalProject_SetIfNotDefined(
+  #   ${proj}_GIT_REPOSITORY
+  #   "${EP_GIT_PROTOCOL}://github.com/Slicer/SlicerExecutionModel.git"
+  #   QUIET
+  #   )
 
-  ExternalProject_SetIfNotDefined(
-    ${proj}_REVISION_TAG
-    "62d0121dbb0fb057ebbd7c9ab84520accacec8bc"
-    QUIET
-    )
+  # ExternalProject_SetIfNotDefined(
+  #   ${proj}_REVISION_TAG
+  #   "62d0121dbb0fb057ebbd7c9ab84520accacec8bc"
+  #   QUIET
+  #   )
 
   set(EP_SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj})
   set(EP_BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
