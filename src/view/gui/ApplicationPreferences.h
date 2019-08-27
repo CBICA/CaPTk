@@ -19,6 +19,8 @@ private:
 	ApplicationPreferences() = default;
 	~ApplicationPreferences() = default;
 
+	Q_DISABLE_COPY(ApplicationPreferences)
+
 	//! ivars
     QString m_Font;
     QString m_Theme;
