@@ -37,14 +37,14 @@ jobs:
         git lfs install
       displayName: 'Install dependencies'
   
-    # Pull LFS
-    - bash: |
-        export GIT_LFS_SKIP_SMUDGE=1
-        git lfs pull --include "binaries/precompiledApps/windows.zip"
-        git lfs pull --include "binaries/qt_5.12.1/windows.zip"
-        #echo "Not doing this until quota is improved on GitHub"
-      displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+    # # Pull LFS
+    # - bash: |
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #     git lfs pull --include "binaries/precompiledApps/windows.zip"
+    #     git lfs pull --include "binaries/qt_5.12.1/windows.zip"
+    #     #echo "Not doing this until quota is improved on GitHub"
+    #   displayName: 'Pull LFS'
+    #   condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
@@ -54,6 +54,8 @@ jobs:
     - bash: |
         mkdir bin
         cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_linux.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
         mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
         mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
         rm -rf ../binaries/*
@@ -209,27 +211,29 @@ jobs:
         
       displayName: 'Install dependencies from Aptitude'
 
-    # Pull LFS
-    - bash: |
-        curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-        sudo apt-get install git-lfs
-        git lfs install
+    # # Pull LFS
+    # - bash: |
+    #     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+    #     sudo apt-get install git-lfs
+    #     git lfs install
 
-        export GIT_LFS_SKIP_SMUDGE=1
-        git lfs pull --include "binaries/precompiledApps/linux.zip"
-        git lfs pull --include "binaries/qt_5.12.1/linux.zip"
-        #echo "Not doing this until quota is improved on GitHub"
-      displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #     git lfs pull --include "binaries/precompiledApps/linux.zip"
+    #     git lfs pull --include "binaries/qt_5.12.1/linux.zip"
+    #     #echo "Not doing this until quota is improved on GitHub"
+    #   displayName: 'Pull LFS'
+    #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Moving LFS Files
     - bash: |
         mkdir bin
         cd bin
-        mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
-        mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        # mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+        # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
-      displayName: 'Moving LFS files to the appropriate location under bin'
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
@@ -370,23 +374,25 @@ jobs:
       displayName: 'Brew dependency install LFS'
       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
     
-    # Pull LFS
-    - bash: |
-        export GIT_LFS_SKIP_SMUDGE=1
-        git lfs pull --include "binaries/precompiledApps/macos.zip"
-        git lfs pull --include "binaries/qt_5.12.1/macos.zip"
-        #echo "Not doing this until quota is improved on GitHub"
-      displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+    # # Pull LFS
+    # - bash: |
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #     git lfs pull --include "binaries/precompiledApps/macos.zip"
+    #     git lfs pull --include "binaries/qt_5.12.1/macos.zip"
+    #     #echo "Not doing this until quota is improved on GitHub"
+    #   displayName: 'Pull LFS'
+    #   condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     # Moving LFS Files
     - bash: |
         mkdir bin
         cd bin
-        mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-        mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_linux.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+        # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+        # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
-      displayName: 'Moving LFS files to the appropriate location under bin'
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
       
     - bash: |
