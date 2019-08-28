@@ -1,4 +1,4 @@
-FIND_PACKAGE( Qt5Core ${QT_VERSION} )
+FIND_PACKAGE( Qt5Core )
 
 # buld Qt from source for trusty; otherwise use pre-built binaries
 IF( "${RELEASE_CODENAME}" STREQUAL "trusty" )
