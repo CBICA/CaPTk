@@ -20,6 +20,8 @@ IF(NOT WIN32)
 SET( EXTRA_NON_WINDOWS_OPTIONS -DCMAKE_BUILD_TYPE:STRING="Release")
 ENDIF()
 
+MESSAGE( STATUS "Adding DCMTK ...")
+
 ExternalProject_Add( 
   DCMTK
   # URL ftp://dicom.offis.de/pub/dicom/offis/software/dcmtk/dcmtk363/dcmtk-3.6.3.tar.gz
