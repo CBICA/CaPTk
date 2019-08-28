@@ -34,21 +34,20 @@ jobs:
 
     - script: |
         choco install doxygen.install nsis.install
-        export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Install dependencies'
   
-    # # Pull LFS
-    # - bash: |
-    #     export GIT_LFS_SKIP_SMUDGE=1
-    #     git lfs pull --include "binaries/precompiledApps/windows.zip"
-    #     git lfs pull --include "binaries/qt_5.12.1/windows.zip"
-    #     #echo "Not doing this until quota is improved on GitHub"
-    #   displayName: 'Pull LFS'
-    #   condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+    # Pull LFS
+    - bash: |
+        export GIT_LFS_SKIP_SMUDGE=1
+        # git lfs pull --include "binaries/precompiledApps/windows.zip"
+        # git lfs pull --include "binaries/qt_5.12.1/windows.zip"
+        #echo "Not doing this until quota is improved on GitHub"
+      displayName: 'Pull LFS'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    # - powershell: |
-    #     wmic logicaldisk get size,freespace,caption
-    #   displayName: 'Disk space check'
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+      displayName: 'Disk space check'
 
     # Moving LFS Files
     - bash: |
