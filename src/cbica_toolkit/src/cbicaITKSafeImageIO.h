@@ -499,6 +499,7 @@ namespace cbica
   template <typename ComputedImageType = ImageTypeFloat3D>
   void WriteDicomImageFromReference(const std::string dicomImageReferenceDir, typename ComputedImageType::Pointer imageToWrite, const std::string &outputDir)
   {
+    cbica::createDir(outputDir);
     if (cbica::isDir(dicomImageReferenceDir))
     {
       using DicomImageType = itk::Image< int, ComputedImageType::ImageDimension >;
