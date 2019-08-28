@@ -1205,7 +1205,7 @@ namespace cbica
         fltVoting->SetFunctor(vf);
 
         // Create a mini-pipeline of streaming filters
-        for (int j = 0; j < label_array.size(); j++)
+        for (size_t j = 0; j < label_array.size(); j++)
         {
           // Set up a threshold filter for this label
           typedef itk::BinaryThresholdImageFilter<LabelImageType, TImageType> ThresholdFilterType;
@@ -1230,7 +1230,7 @@ namespace cbica
           {
             typename SmootherType::SigmaArrayType sigma_array;
             auto default_sigma = std::sqrt(3);
-            for (int d = 0; d < TImageType::ImageDimension; d++)
+            for (unsigned int d = 0; d < TImageType::ImageDimension; d++)
               sigma_array[d] = /*r_param.images[i].interp.sigma.sigma*/default_sigma * moving->GetSpacing()[d];
             fltSmooth->SetSigmaArray(sigma_array);
           }
