@@ -22,7 +22,9 @@ ENDIF()
 
 ExternalProject_Add( 
   DCMTK
-  URL ftp://dicom.offis.de/pub/dicom/offis/software/dcmtk/dcmtk363/dcmtk-3.6.3.tar.gz
+  # URL ftp://dicom.offis.de/pub/dicom/offis/software/dcmtk/dcmtk363/dcmtk-3.6.3.tar.gz
+  GIT_REPOSITORY "https://git.dcmtk.org/dcmtk.git"
+  GIT_TAG "29f9de10c2e8576147f16475b156bba98d14ba7d"
   SOURCE_DIR DCMTK-source
   BINARY_DIR DCMTK-build
   UPDATE_COMMAND ""
