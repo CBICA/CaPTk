@@ -502,6 +502,14 @@ namespace cbica
     cbica::createDir(outputDir);
     if (cbica::isDir(dicomImageReferenceDir))
     {
+      std::cout << "[DEBUG] Starting NIfTI to DICOM conversion using the following parameters:\n";
+      std::cout << "[DEBUG] \tReferenceDICOM dir: " << dicomImageReferenceDir << "\n";
+      if (!imageToWrite.IsNull())
+      {
+        std::cout << "[DEBUG] \tNIfTI Image: Successfully read \n";
+      }
+      std::cout << "[DEBUG] \tOutput dir: " << outputDir << "\n";
+
       using DicomImageType = itk::Image< int, ComputedImageType::ImageDimension >;
       auto inputImageReader = itk::ImageSeriesReader< DicomImageType >::New();
       auto dicomIO = itk::GDCMImageIO::New();
@@ -518,13 +526,8 @@ namespace cbica
         std::cerr << "Couldn't read the reference DICOM image; got the following error: " << excp << "\n";
         exit(EXIT_FAILURE);
       }
+      std::cout << "[DEBUG] Successfully read the reference DICOM.\n";
       //WriteDicomImage< ComputedImageType/*, DicomImageType*/ >(reader, imageToWrite, outputDir);
-
-      if (!cbica::isDir(outputDir))
-      {
-        std::cout << "Specified directory wasn't found, creating...\n";
-        cbica::createDir(outputDir);
-      }
 
       // check write access
       //if (((_access(dirName.c_str(), 2)) == -1) || ((_access(dirName.c_str(), 6)) == -1))
@@ -538,12 +541,13 @@ namespace cbica
       typename CastFilterType::Pointer castFilter = CastFilterType::New();
       castFilter->SetInput(imageToWrite);
       castFilter->Update();
+      std::cout << "[DEBUG] Successfully casted the input image to int.\n";
 
       //  typedef typename ExpectedImageType::PixelType DicomPixelType;
 
       //auto dicomIO = itk::GDCMImageIO::New();
       //auto dicomIO = MyGDCMImageIO::New();
-      dicomIO->SetComponentType(itk::ImageIOBase::IOComponentType::SHORT);
+      dicomIO->SetComponentType(itk::ImageIOBase::IOComponentType::INT);
 
       auto seriesWriter = itk::ImageSeriesWriter< ExpectedImageType, itk::Image<typename ExpectedImageType::PixelType, 2> >::New();
 
@@ -555,6 +559,7 @@ namespace cbica
       namesGenerator->SetStartIndex(start[2]);
       namesGenerator->SetEndIndex(start[2] + size[2] - 1);
       namesGenerator->SetIncrementIndex(1);
+      std::cout << "[DEBUG] Successfully generated the output names.\n";
 
       seriesWriter->SetInput(castFilter->GetOutput());
       seriesWriter->SetImageIO(dicomIO);
@@ -630,6 +635,7 @@ namespace cbica
         std::cerr << "Error occurred while trying to write the image '" << outputDir << "': " << e.what() << "\n";
         exit(EXIT_FAILURE);
       }
+      std::cout << "[DEBUG] Successfully written the output.\n";
     }
     else if (cbica::IsDicom(dicomImageReferenceDir)) // someone accidentally passed a dicom file
     {
