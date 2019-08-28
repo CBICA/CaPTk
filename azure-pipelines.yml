@@ -33,8 +33,8 @@ jobs:
       displayName: 'Caching'
 
     - script: |
-        choco install doxygen.install git-lfs.install nsis.install
-        git lfs install
+        choco install doxygen.install nsis.install
+        export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Install dependencies'
   
     # # Pull LFS
@@ -104,14 +104,14 @@ jobs:
         wmic logicaldisk get size,freespace,caption
       displayName: 'Disk space check'
 
-    # - script: |
-    #     cd bin
-    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DBUILD_TESTING=ON ..
-    #     setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-    #     cmake --build . --target ALL_BUILD --config Release
-    #     rm -rf binaries_windows.zip
-    #   displayName: 'Configure and compile CaPTk'
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DBUILD_TESTING=OFF ..
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        cmake --build . --target ALL_BUILD --config Release
+        rm -rf binaries_windows.zip
+      displayName: 'Configure and compile CaPTk'
        
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
@@ -208,7 +208,7 @@ jobs:
     # Dependency manager
     - bash: |
         sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
-        
+        export GIT_LFS_SKIP_SMUDGE=1        
       displayName: 'Install dependencies from Aptitude'
 
     # # Pull LFS
@@ -366,13 +366,14 @@ jobs:
     - bash: |
         brew install make doxygen libomp
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
+        export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Brew dependencies'
     
-    - bash: |
-        brew install git-lfs
-        git lfs install
-      displayName: 'Brew dependency install LFS'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+    # - bash: |
+    #     brew install git-lfs
+    #     git lfs install
+    #   displayName: 'Brew dependency install LFS'
+    #   condition: ne(variables.CACHE_RESTORED_MAC, 'true')
     
     # # Pull LFS
     # - bash: |
@@ -597,6 +598,7 @@ jobs:
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
         ls -lt
+        export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Moving LFS files to the appropriate location under bin'
       # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
