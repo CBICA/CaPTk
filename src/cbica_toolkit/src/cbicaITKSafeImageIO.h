@@ -536,7 +536,7 @@ namespace cbica
       //  return;
       //}
 
-      using ExpectedImageType = itk::Image< int, ComputedImageType::ImageDimension >; // this is needed because DICOM currently only supports short/int
+      using ExpectedImageType = itk::Image< short, ComputedImageType::ImageDimension >; // this is needed because DICOM currently only supports short/int
       typedef itk::CastImageFilter<ComputedImageType, ExpectedImageType> CastFilterType;
       typename CastFilterType::Pointer castFilter = CastFilterType::New();
       castFilter->SetInput(imageToWrite);
@@ -547,7 +547,7 @@ namespace cbica
 
       //auto dicomIO = itk::GDCMImageIO::New();
       //auto dicomIO = MyGDCMImageIO::New();
-      dicomIO->SetComponentType(itk::ImageIOBase::IOComponentType::INT);
+      dicomIO->SetComponentType(itk::ImageIOBase::IOComponentType::SHORT);
 
       auto seriesWriter = itk::ImageSeriesWriter< ExpectedImageType, itk::Image<typename ExpectedImageType::PixelType, 2> >::New();
 
