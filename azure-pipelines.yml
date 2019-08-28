@@ -76,8 +76,8 @@ jobs:
         mv bin_windows bin
         ls
         cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
+        # tar xvfz qt.tar.gz
+        # tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
         # rm CMakeCache.txt 
 
@@ -154,8 +154,8 @@ jobs:
         cd bin
         rm -rf *proj*
 
-        tar cvfz qt.tar.gz qt
-        tar cvfz externalApps.tar.gz externalApps
+        # tar cvfz qt.tar.gz qt
+        # tar cvfz externalApps.tar.gz externalApps
 
         rm -rf qt
         rm -rf externalApps
@@ -243,8 +243,8 @@ jobs:
         mv bin_linux bin
         ls
         cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
+        # tar xvfz qt.tar.gz
+        # tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
         # mv binaries_windows externalApps
         # rm CMakeCache.txt 
@@ -316,8 +316,8 @@ jobs:
 
         cd bin
 
-        tar cvfz qt.tar.gz qt
-        tar cvfz externalApps.tar.gz externalApps
+        # tar cvfz qt.tar.gz qt
+        # tar cvfz externalApps.tar.gz externalApps
 
         rm -rf qt
         rm -rf externalApps
@@ -402,8 +402,8 @@ jobs:
         mv bin_macos bin
         ls
         cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
+        # tar xvfz qt.tar.gz
+        # tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
 
         ls -lt
@@ -522,8 +522,8 @@ jobs:
         rm -rf bin_macos.tar.gz
 
         cd bin
-        tar cvfz qt.tar.gz qt
-        tar cvfz externalApps.tar.gz externalApps
+        # tar cvfz qt.tar.gz qt
+        # tar cvfz externalApps.tar.gz externalApps
 
         rm -rf qt
         rm -rf externalApps
@@ -688,8 +688,8 @@ jobs:
 
         cd bin
 
-        tar cvfz qt.tar.gz qt
-        tar cvfz externalApps.tar.gz externalApps
+        # tar cvfz qt.tar.gz qt
+        # tar cvfz externalApps.tar.gz externalApps
 
         rm -rf qt
         rm -rf externalApps
