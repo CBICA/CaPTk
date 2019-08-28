@@ -1,0 +1,3 @@
+[submodule "src/applications/Utilities/dcmqi"]
+	path = src/applications/Utilities/dcmqi
+	url = https://github.com/CBICA/dcmqi.git
