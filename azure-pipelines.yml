@@ -577,6 +577,16 @@ jobs:
     #     continueOnError : true
     #   displayName: 'Caching'
 
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_linux_centos.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory) 
+        cacheHitVar: CACHE_RESTORED_WINDOWS
+        restoreKeys: |
+          "bin_linux_centos.tar.gz"
+        continueOnError : true
+      displayName: 'Caching'
+
     # # Pull LFS
     # - bash: |
     #     export GIT_LFS_SKIP_SMUDGE=1
@@ -699,7 +709,7 @@ jobs:
         cd ../
 
         mv bin bin_linux
-        tar cvfz bin_linux.tar.gz bin_linux
+        tar cvfz bin_linux_centos.tar.gz bin_linux
       displayName: 'Zipping bin'
     
     #- script: |
