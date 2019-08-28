@@ -24,7 +24,7 @@ ENDIF()
 
 ## Compute -G arg for configuring external projects with the same CMake generator:
 #IF(CMAKE_EXTRA_GENERATOR)
-#	SET(gen "${CMAKE_EXTRA_GENERATOR} - ${CMAKE_GENERATOR}")
+#	SET(gen "${CMAKE_EXTRA_GENERATOR} - ${CMAKE_GENERATOR}") 
 #ELSE()
 #	SET(gen "${CMAKE_GENERATOR}" )
 #ENDIF()
@@ -36,3 +36,4 @@ INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
 #INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV_Contrib.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
+INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-SEM.cmake )

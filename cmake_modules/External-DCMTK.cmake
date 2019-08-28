@@ -17,12 +17,16 @@ SET(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 SET( EXTRA_NON_WINDOWS_OPTIONS "")
 IF(NOT WIN32)
-SET( EXTRA_NON_WINDOWS_OPTIONS -DCMAKE_BUILD_TYPE:STRING="Release")
+SET( EXTRA_NON_WINDOWS_OPTIONS -DCMAKE_BUILD_TYPE=Release)
 ENDIF()
+
+MESSAGE( STATUS "Adding DCMTK ...")
 
 ExternalProject_Add( 
   DCMTK
-  URL ftp://dicom.offis.de/pub/dicom/offis/software/dcmtk/dcmtk363/dcmtk-3.6.3.tar.gz
+  # URL ftp://dicom.offis.de/pub/dicom/offis/software/dcmtk/dcmtk363/dcmtk-3.6.3.tar.gz
+  GIT_REPOSITORY "https://git.dcmtk.org/dcmtk.git"
+  GIT_TAG "29f9de10c2e8576147f16475b156bba98d14ba7d"
   SOURCE_DIR DCMTK-source
   BINARY_DIR DCMTK-build
   UPDATE_COMMAND ""
@@ -39,6 +43,7 @@ ExternalProject_Add(
     -DBUILD_APPS:BOOL=OFF
     -DBUILD_EXAMPLES:BOOL=OFF
     -DBUILD_TESTING:BOOL=OFF
+    -DDCMTK_ENABLE_STL:BOOL=ON 
     -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
     -DDCMTK_WITH_DOXYGEN:BOOL=OFF
     -DDCMTK_WITH_ZLIB:BOOL=OFF # see github issue #25
