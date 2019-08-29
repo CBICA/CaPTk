@@ -26,6 +26,11 @@ SET( CACHED_INCLUDE_DIRS
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dcmqi/include/dcmqi)
 
 set(HDRS
+  ${PROJECT_SOURCE_DIR}/dcmqi/jsoncpp/json/json.h
+  ${PROJECT_SOURCE_DIR}/dcmqi/jsoncpp/json/json-forwards.h
+  ${INCLUDE_DIR}/JSONMetaInformationHandlerBase.h
+  ${INCLUDE_DIR}/JSONParametricMapMetaInformationHandler.h
+  ${INCLUDE_DIR}/JSONSegmentationMetaInformationHandler.h
   ${INCLUDE_DIR}/preproc.h
   ${INCLUDE_DIR}/QIICRConstants.h
   ${INCLUDE_DIR}/QIICRUIDs.h
@@ -35,28 +40,26 @@ set(HDRS
   ${INCLUDE_DIR}/ImageSEGConverter.h
   ${INCLUDE_DIR}/ParaMapConverter
   ${INCLUDE_DIR}/Helper.h
-  ${INCLUDE_DIR}/JSONMetaInformationHandlerBase.h
-  ${INCLUDE_DIR}/JSONParametricMapMetaInformationHandler.h
-  ${INCLUDE_DIR}/JSONSegmentationMetaInformationHandler.h
   ${INCLUDE_DIR}/SegmentAttributes.h
   ${INCLUDE_DIR}/TID1500Reader.h
-  ${PROJECT_SOURCE_DIR}/dcmqi/jsoncpp/json/json.h
-  ${PROJECT_SOURCE_DIR}/dcmqi/jsoncpp/json/json-forwards.h
+  ${PROJECT_SOURCE_DIR}/dcmqi/include/cbicaDCMQIWrapper.h
   )
 
 set(SRCS
+  ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/JSONMetaInformationHandlerBase.cpp
+  ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/JSONParametricMapMetaInformationHandler.cpp
+  ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/JSONSegmentationMetaInformationHandler.cpp
+  ${PROJECT_SOURCE_DIR}/dcmqi/jsoncpp/jsoncpp.cpp
   ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/ConverterBase.cpp
   ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/ImageSEGConverter.cpp
   ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/ParaMapConverter.cpp
   ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/Helper.cpp
-  ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/JSONMetaInformationHandlerBase.cpp
-  ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/JSONParametricMapMetaInformationHandler.cpp
-  ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/JSONSegmentationMetaInformationHandler.cpp
   ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/SegmentAttributes.cpp
   ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/TID1500Reader.cpp
-  ${PROJECT_SOURCE_DIR}/dcmqi/jsoncpp/jsoncpp.cpp
+  ${PROJECT_SOURCE_DIR}/dcmqi/libsrc/cbicaDCMQIWrapper.cpp
   )
-
+  
+INCLUDE_DIRECTORIES( ${CACHED_INCLUDE_DIRS} )
 
 set(lib_name dcmqi)
 
@@ -71,8 +74,6 @@ target_link_libraries(${lib_name}
   ${ITK_LIBRARIES}
 )
 ## dcmqi stuff ends
-
-INCLUDE_DIRECTORIES( ${CACHED_INCLUDE_DIRS} )
 
 CAPTK_ADD_EXECUTABLE( ${PROJECT_NAME} "${APPLICATION_SOURCES};${APPLICATION_DEPENDS}" "${LIBNAME_CBICATK};${lib_name}" )
 

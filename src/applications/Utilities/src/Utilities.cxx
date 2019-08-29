@@ -9,10 +9,7 @@
 #include "itkPointSet.h"
 #include "itkBinaryThresholdImageFilter.h"
 
-#include "dcmqi/Helper.h"
-#include "dcmqi/Exceptions.h"
-#include "dcmqi/ImageSEGConverter.h"
-#include "json.h"
+#include "cbicaDCMQIWrapper.h"
 
 //! Detail the available algorithms to make it easier to initialize
 enum AvailableAlgorithms
@@ -225,12 +222,6 @@ int algorithmsRunner()
       std::cerr << "NIfTI to DICOM-Seg conversion can only be done for 3D images.\n";
       return EXIT_SUCCESS;
     }
-    using ShortImageType = itk::Image< short, 3 >; // dicom seg only takes short, apparently
-    auto niftiSeg = cbica::ReadImage< ShortImageType >(inputImageFile);
-    auto outputSEGFileName = outputImageFile;
-
-    using helper = dcmqi::Helper;
-
     auto actualDicomReferenceDir = targetImageFile;
 
     if (!cbica::isDir(targetImageFile)) // the reference dicom image series
@@ -245,115 +236,8 @@ int algorithmsRunner()
       }
       std::cerr << "The supplied reference DICOM directory, '" << targetImageFile << "' was not detected as a directory. Please try again.\n";
     }
-
-    auto referenceDicomFiles = helper::getFileListRecursively(actualDicomReferenceDir.c_str());
-
-    auto dcmDatasets = helper::loadDatasets(referenceDicomFiles);
-
-    if (dcmDatasets.empty()) 
-    {
-      cerr << "Error: no DICOM could be loaded from the specified list/directory.\n";
-      return EXIT_FAILURE;
-    }
-
-    std::cout << "[DEBUG] trying JSON parsing ...";
-    std::ifstream metainfoStream(dicomSegJSON.c_str(), std::ios_base::binary);
-    std::string metadata((std::istreambuf_iterator<char>(metainfoStream)),
-      (std::istreambuf_iterator<char>()));
-
-    Json::Value metaRoot;
-    istringstream metainfoisstream(metadata);
-    metainfoisstream >> metaRoot;
-    std::cout << "Done.";
-
-    std::vector< typename ShortImageType::Pointer > segmentations;
-
-    std::cout << "[DEBUG] Putting JSON struct to something nice ...";
-    if (metaRoot.isMember("segmentAttributesFileMapping")) 
-    {
-      if (metaRoot["segmentAttributesFileMapping"].size() != metaRoot["segmentAttributes"].size()) 
-      {
-        cerr << "Number of files in segmentAttributesFileMapping should match the number of entries in segmentAttributes!\n";
-        return EXIT_FAILURE;
-      }
-
-      // we only accept a single nifti segmentation object
-      auto segImageFiles = cbica::stringSplit(inputImageFile, ","); // this to have consistency with dcmqi api
-
-      // otherwise, re-order the entries in the segmentAtrributes list to match the order of files in segmentAttributesFileMapping
-      Json::Value reorderedSegmentAttributes;
-      std::vector<int> fileOrder(segImageFiles.size());
-      fill(fileOrder.begin(), fileOrder.end(), -1);
-      std::vector< typename ShortImageType::Pointer > segmentationsReordered(segImageFiles.size());
-      for (size_t filePosition = 0; filePosition < segImageFiles.size(); filePosition++) 
-      {
-        for (size_t mappingPosition = 0; mappingPosition < segImageFiles.size(); mappingPosition++) 
-        {
-          string mappingItem = metaRoot["segmentAttributesFileMapping"][static_cast<int>(mappingPosition)].asCString();
-          size_t foundPos = segImageFiles[filePosition].rfind(mappingItem);
-          if (foundPos != std::string::npos) 
-          {
-            fileOrder[filePosition] = mappingPosition;
-            break;
-          }
-        }
-        if (fileOrder[filePosition] == -1) 
-        {
-          cerr << "Failed to map " << segImageFiles[filePosition] << " from the segmentAttributesFileMapping attribute to an input file name!" << endl;
-          return EXIT_FAILURE;
-        }
-      }
-      cout << "Order of input ITK images updated as shown below based on the segmentAttributesFileMapping attribute:" << endl;
-      for (size_t i = 0; i < segImageFiles.size(); i++) 
-      {
-        cout << " image " << i << " moved to position " << fileOrder[i] << "\n";
-        segmentationsReordered[fileOrder[i]] = segmentations[i];
-      }
-      segmentations = segmentationsReordered;
-    }
-    std::cout << "Done.";
-
-    try 
-    {
-      std::cout << "[DEBUG] trying 'ImageSEGConverter::itkimage2dcmSegmentation'...";
-      bool skipEmptySlices = false;
-      DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
-      std::cout << "Done.\n";
-
-      if (result == NULL) 
-      {
-        std::cerr << "ERROR: Conversion failed." << std::endl;
-        return EXIT_FAILURE;
-      }
-      else 
-      {
-        std::cout << "[DEBUG] Trying to save file 'segdocFF.saveFile'...";
-        DcmFileFormat segdocFF(result);
-        bool compress = false;
-        if (compress) 
-        {
-          CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_DeflatedLittleEndianExplicit));
-        }
-        else 
-        {
-          CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_LittleEndianExplicit));
-        }
-
-        std::cout << "Saved segmentation as " << outputSEGFileName << endl;
-      }
-
-      for (size_t i = 0; i < dcmDatasets.size(); i++) 
-      {
-        delete dcmDatasets[i];
-      }
-      if (result != NULL)
-        delete result;
-      return EXIT_SUCCESS;
-    }
-    catch (std::exception e) 
-    {
-      std::cerr << "Fatal error encountered: " << e.what() << "\n";
-    }
+    cbica::ConvertNiftiToDicomSeg(inputImageFile, actualDicomReferenceDir, dicomSegJSON, outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == ChangeValue)
