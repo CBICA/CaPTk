@@ -614,6 +614,7 @@ namespace cbica
           //itk::EncapsulateMetaData<std::string>(*dict, "0008|0064", "DV"); // Conversion Type
           //itk::EncapsulateMetaData<std::string>(*dict, "0008|0060", "MR"); // Modality - can never gurantee MR
           //itk::EncapsulateMetaData<std::string>(*dict, "0018|0088", std::to_string(imageToWrite->GetSpacing()[2]));
+          itk::EncapsulateMetaData<std::string>(*dict, "0066|0036", "CaPTk by CBICA @ Upenn"); // algorithm name, used to distinguish between the original image and generated DICOM
 
           outputArray.push_back(dict);
         }
@@ -622,7 +623,9 @@ namespace cbica
       }
       else
       {
-        dicomIO->SetMetaDataDictionary(inputImageReader->GetMetaDataDictionary());
+        auto dict = inputImageReader->GetMetaDataDictionary();
+        itk::EncapsulateMetaData<std::string>(dict, "0066|0036", "CaPTk by CBICA @ Upenn"); // algorithm name, used to distinguish between the original image and generated DICOM
+        dicomIO->SetMetaDataDictionary(dict);
         seriesWriter->SetMetaDataDictionaryArray(inputImageReader->GetMetaDataDictionaryArray()); // no dictionary information present without seriesReader
       }
 
