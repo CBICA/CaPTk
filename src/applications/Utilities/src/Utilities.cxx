@@ -256,16 +256,19 @@ int algorithmsRunner()
       return EXIT_FAILURE;
     }
 
-    std::ifstream metainfoStream(dicomSegJSON.c_str(), ios_base::binary);
+    std::cout << "[DEBUG] trying JSON parsing ...";
+    std::ifstream metainfoStream(dicomSegJSON.c_str(), std::ios_base::binary);
     std::string metadata((std::istreambuf_iterator<char>(metainfoStream)),
       (std::istreambuf_iterator<char>()));
 
     Json::Value metaRoot;
     istringstream metainfoisstream(metadata);
     metainfoisstream >> metaRoot;
+    std::cout << "Done.";
 
     std::vector< typename ShortImageType::Pointer > segmentations;
 
+    std::cout << "[DEBUG] Putting JSON struct to something nice ...";
     if (metaRoot.isMember("segmentAttributesFileMapping")) 
     {
       if (metaRoot["segmentAttributesFileMapping"].size() != metaRoot["segmentAttributes"].size()) 
@@ -308,6 +311,7 @@ int algorithmsRunner()
       }
       segmentations = segmentationsReordered;
     }
+    std::cout << "Done.";
 
     try 
     {
