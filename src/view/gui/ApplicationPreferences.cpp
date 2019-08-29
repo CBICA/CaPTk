@@ -1,4 +1,5 @@
 #include "ApplicationPreferences.h"
+#include <QSettings>
 #include <QDebug>
 
 ApplicationPreferences* ApplicationPreferences::m_Instance = nullptr;
@@ -33,6 +34,17 @@ void ApplicationPreferences::SetTheme(QString theme)
 QString ApplicationPreferences::GetTheme() const
 {
     return m_Theme;
+}
+
+void ApplicationPreferences::SerializePreferences()
+{
+	QSettings appSettings(QSettings::IniFormat,QSettings::SystemScope,
+		"UPenn", "CaPTk");
+	appSettings.beginGroup("Appearance");
+	appSettings.setValue("Font", this->m_Font);
+	appSettings.setValue("Theme", this->m_Theme);
+	appSettings.endGroup();
+	qDebug() << " filename = " << appSettings.fileName() << endl;
 }
 
 void ApplicationPreferences::DisplayPreferences()

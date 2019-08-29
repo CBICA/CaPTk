@@ -16,6 +16,9 @@ public:
     void SetTheme(QString theme);
     QString GetTheme() const;
 
+	//! Serialize 
+	void SerializePreferences();
+
 	//! print preferences(for debugging purposes)
 	void DisplayPreferences();
 
