@@ -49,23 +49,6 @@ jobs:
         wmic logicaldisk get size,freespace,caption
       displayName: 'Disk space check'
 
-    # Moving LFS Files
-    - bash: |
-        mkdir bin
-        cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
-        # mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
-        # mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
-        rm -rf ../binaries/*
-        rm -rf ../data/georgetown
-        rm -rf ../data/georgetown
-        rm -rf ../docs
-        rm -rf ../.git
-        ls -lt
-      displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
-      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
-
     - bash: |
         tar xvfz bin_windows.tar.gz
         rm -rf bin_windows.tar.gz
@@ -80,7 +63,24 @@ jobs:
 
         ls -lt
       displayName: 'Unzip bin if cached'
-      # condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
+      condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
+
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
+        # mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
+        # mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
+        rm -rf ../binaries/*
+        rm -rf ../data/georgetown
+        rm -rf ../data/georgetown
+        rm -rf ../docs
+        rm -rf ../.git
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
+      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - script: |
         cd bin
@@ -158,8 +158,8 @@ jobs:
         # tar cvfz qt.tar.gz qt
         # tar cvfz externalApps.tar.gz externalApps
 
-        # rm -rf qt
-        # rm -rf externalApps
+        rm -rf qt
+        rm -rf externalApps
         rm -rf _CPack*
 
         cd ../
@@ -225,18 +225,6 @@ jobs:
     #   displayName: 'Pull LFS'
     #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
-    # Moving LFS Files
-    - bash: |
-        mkdir bin
-        cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
-        # mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
-        # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
-        ls -lt
-      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
-
     - bash: |
         tar xvfz bin_linux.tar.gz
         rm -rf bin_linux.tar.gz
@@ -253,6 +241,18 @@ jobs:
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
+
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        # mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+        # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
@@ -320,8 +320,8 @@ jobs:
         # tar cvfz qt.tar.gz qt
         # tar cvfz externalApps.tar.gz externalApps
 
-        # rm -rf qt
-        # rm -rf externalApps
+        rm -rf qt
+        rm -rf externalApps
         rm -rf _CPack*
 
         cd ../
@@ -385,18 +385,6 @@ jobs:
     #   displayName: 'Pull LFS'
     #   condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
-    # Moving LFS Files
-    - bash: |
-        mkdir bin
-        cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_linux.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
-        # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-        # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
-        ls -lt
-      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
-      
     - bash: |
         tar xvfz bin_macos.tar.gz
         rm -rf bin_macos.tar.gz
@@ -412,6 +400,18 @@ jobs:
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_MAC, 'true')
 
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_linux.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+        # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+        # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      
     - bash: |
         cd bin
 
@@ -527,8 +527,8 @@ jobs:
         # tar cvfz qt.tar.gz qt
         # tar cvfz externalApps.tar.gz externalApps
 
-        # rm -rf qt
-        # rm -rf externalApps
+        rm -rf qt
+        rm -rf externalApps
         rm -rf _CPack*
         cd ../
         # ls
@@ -604,7 +604,7 @@ jobs:
         ls
         echo "LS one level up"
         ls ..
-        mkdir bin
+        mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
@@ -704,8 +704,8 @@ jobs:
         # tar cvfz qt.tar.gz qt
         # tar cvfz externalApps.tar.gz externalApps
 
-        # rm -rf qt
-        # rm -rf externalApps
+        rm -rf qt
+        rm -rf externalApps
         rm -rf _CPack*
 
         cd ../
@@ -833,7 +833,7 @@ jobs:
 #       displayName: 'Export variables'
 
 #     - bash: |
-#         mkdir bin
+#         mkdir -p bin
 #       displayName: 'Create build directory'
   
 #     - bash: |
