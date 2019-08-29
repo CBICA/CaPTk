@@ -209,13 +209,16 @@ int algorithmsRunner()
 
   if (requestedAlgorithm == Nifti2Dicom)
   {
-    cbica::WriteDicomImageFromReference< TImageType >(targetImageFile, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+    auto referenceDicom = targetImageFile;
+    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
   }
 
   if (requestedAlgorithm == Nifti2DicomSeg)
   {
     // do the dicom-seg conversion here
-
+    auto referenceDicom = targetImageFile;
+    auto niftiSeg = cbica::ReadImage< TImageType >(inputImageFile);
+    auto outputDicomFile = outputImageFile;
   }
 
   if (requestedAlgorithm == ChangeValue)
