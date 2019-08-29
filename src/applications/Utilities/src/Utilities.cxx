@@ -25,7 +25,8 @@ enum AvailableAlgorithms
   ChangeValue,
   DicomLoadTesting,
   Dicom2Nifti,
-  Nifti2Dicom
+  Nifti2Dicom,
+  Nifti2DicomSeg
 };
 
 int requestedAlgorithm = 0;
@@ -209,6 +210,12 @@ int algorithmsRunner()
   if (requestedAlgorithm == Nifti2Dicom)
   {
     cbica::WriteDicomImageFromReference< TImageType >(targetImageFile, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+  }
+
+  if (requestedAlgorithm == Nifti2DicomSeg)
+  {
+    // do the dicom-seg conversion here
+
   }
 
   if (requestedAlgorithm == ChangeValue)
@@ -491,6 +498,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
   parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
+  parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
+  parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
