@@ -17,6 +17,7 @@ FIND_PACKAGE( DCMTK REQUIRED )
 
 SET( CACHED_INCLUDE_DIRS
   ${CACHED_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/dcmqi/include/
   ${PROJECT_SOURCE_DIR}/dcmqi/include/dcmqi
   ${PROJECT_SOURCE_DIR}/dcmqi/jsoncpp/
   ${PROJECT_SOURCE_DIR}/dcmqi/jsoncpp/json
