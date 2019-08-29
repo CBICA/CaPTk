@@ -66,7 +66,7 @@ add_library(${lib_name} STATIC
   ${ADDITIONAL_SRCS}
   )
   
-target_link_libraries(${lib_name} PUBLIC
+target_link_libraries(${lib_name}
   ${DCMTK_LIBRARIES}
   ${ITK_LIBRARIES}
 )
@@ -74,6 +74,6 @@ target_link_libraries(${lib_name} PUBLIC
 
 INCLUDE_DIRECTORIES( ${CACHED_INCLUDE_DIRS} )
 
-CAPTK_ADD_EXECUTABLE( ${PROJECT_NAME} "${APPLICATION_SOURCES};${APPLICATION_DEPENDS}" ${LIBNAME_CBICATK} )
+CAPTK_ADD_EXECUTABLE( ${PROJECT_NAME} "${APPLICATION_SOURCES};${APPLICATION_DEPENDS}" "${LIBNAME_CBICATK};${lib_name}" )
 
 ADD_DEPENDENCIES( ${PROJECT_NAME} ${LIBNAME_CBICATK} ${lib_name} ) 
