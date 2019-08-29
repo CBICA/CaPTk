@@ -21,6 +21,7 @@ SET( CACHED_INCLUDE_DIRS
   ${PROJECT_SOURCE_DIR}/dcmqi/include/dcmqi
   ${PROJECT_SOURCE_DIR}/dcmqi/jsoncpp/
   ${PROJECT_SOURCE_DIR}/dcmqi/jsoncpp/json
+  ${DCMTK_INCLUDE_DIRS}
 )
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dcmqi/include/dcmqi)
 
