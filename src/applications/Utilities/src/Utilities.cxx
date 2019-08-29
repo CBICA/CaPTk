@@ -215,10 +215,11 @@ int algorithmsRunner()
 
   if (requestedAlgorithm == Nifti2DicomSeg)
   {
-    // do the dicom-seg conversion here
-    auto referenceDicom = targetImageFile;
-    auto niftiSeg = cbica::ReadImage< TImageType >(inputImageFile);
+    using ShortImageType = itk::Image< short, TImageType::ImageDimension >; // dicom seg only takes short, apparently
+    auto referenceDicoms = cbica::filesInDirectory(targetImageFile); // the reference dicom image series
+    auto niftiSeg = cbica::ReadImage< ShortImageType >(inputImageFile);
     auto outputDicomFile = outputImageFile;
+    // dicomSegJSON
   }
 
   if (requestedAlgorithm == ChangeValue)
