@@ -108,7 +108,7 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DBUILD_TESTING=OFF ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DQT_DOWNLOAD_FORCE=ON -DITK_DIR=./ITK-build -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
         rm -rf binaries_windows.zip
@@ -257,7 +257,7 @@ jobs:
     # Configure and build superbuild
     - bash: |
         cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        cmake -DQT_DOWNLOAD_FORCE=ON -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
       displayName: 'Configure and compile Superbuild'
       # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
@@ -269,7 +269,7 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
@@ -418,7 +418,7 @@ jobs:
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+        cmake -DQT_DOWNLOAD_FORCE=ON ../ -DCMAKE_INSTALL_PREFIX="./install"
 
         make -j 2
   
