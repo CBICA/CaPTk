@@ -44,11 +44,23 @@ void ApplicationPreferences::SerializePreferences()
 	appSettings.setValue("Font", this->m_Font);
 	appSettings.setValue("Theme", this->m_Theme);
 	appSettings.endGroup();
-	qDebug() << " filename = " << appSettings.fileName() << endl;
+	qDebug() << " SerializePreferences Done. " << endl;
+}
+
+void ApplicationPreferences::DeSerializePreferences()
+{
+	QSettings appSettings(QSettings::IniFormat, QSettings::SystemScope,
+		"UPenn", "CaPTk");
+	appSettings.beginGroup("Appearance");
+	this->SetFont(appSettings.value("Font").toString());
+	this->SetTheme(appSettings.value("Theme").toString());
+	appSettings.endGroup();
+	qDebug() << " DeSerializePreferences Done. " << endl;
 }
 
 void ApplicationPreferences::DisplayPreferences()
 {
+	qDebug() << " ApplicationPreferences::DisplayPreferences() " << endl;
 	qDebug() << " font = " << this->m_Font << endl;
 	qDebug() << " theme = " << this->m_Theme << endl;
 }

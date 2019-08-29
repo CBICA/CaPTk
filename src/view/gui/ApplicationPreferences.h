@@ -19,6 +19,9 @@ public:
 	//! Serialize 
 	void SerializePreferences();
 
+	//! De-Serliaze
+	void DeSerializePreferences();
+
 	//! print preferences(for debugging purposes)
 	void DisplayPreferences();
 
