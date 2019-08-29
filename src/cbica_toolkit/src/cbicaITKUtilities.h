@@ -598,9 +598,14 @@ namespace cbica
   template< class TImageType = ImageTypeFloat3D >
   std::pair< std::string, typename TImageType::Pointer > GetImageOrientation(const typename TImageType::Pointer inputImage, const std::string &desiredOrientation = "RAI")
   {
-    using namespace itk::SpatialOrientation;
+    if (TImageType::ImageDimension != 3)
+    {
+      std::cerr << "This function is only defined for 3D images.\n";
+      exit(EXIT_FAILURE);
+    }
     auto orientFilter = itk::OrientImageFilter< TImageType, TImageType >::New();
     orientFilter->SetInput(inputImage);
+    orientFilter->UseImageDirectionOn();
 
     auto desiredOrientation_wrap = desiredOrientation;
     std::transform(desiredOrientation_wrap.begin(), desiredOrientation_wrap.end(), desiredOrientation_wrap.begin(), ::toupper);
@@ -661,6 +666,7 @@ namespace cbica
     // set the desired orientation and update
     orientFilter->SetDesiredCoordinateOrientation(orientationMap[desiredOrientation_wrap]);
     orientFilter->Update();
+    auto outputImage = orientFilter->GetOutput();
 
     std::string returnString;
 
@@ -676,7 +682,7 @@ namespace cbica
       returnString = "Unknown";
     }
 
-    return std::make_pair(returnString, orientFilter->GetOutput());
+    return std::make_pair(returnString, outputImage);
   }
 
   /**

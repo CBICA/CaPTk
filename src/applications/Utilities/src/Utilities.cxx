@@ -28,12 +28,13 @@ enum AvailableAlgorithms
   DicomLoadTesting,
   Dicom2Nifti,
   Nifti2Dicom,
-  Nifti2DicomSeg
+  Nifti2DicomSeg,
+  OrientImage
 };
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON;
+std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON, orientationDesired;
 std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
@@ -617,6 +618,11 @@ int main(int argc, char** argv)
     parser.getParameterValue("un", uniqueValsSort);
     requestedAlgorithm = UniqueValues;
   }
+  else if (parser.isPresent("or"))
+  {
+    parser.getParameterValue("or", orientationDesired);
+    requestedAlgorithm = OrientImage;
+  }
   else if (parser.isPresent("tb"))
   {
     parser.getParameterValue("tb", targetImageFile);
@@ -757,6 +763,15 @@ int main(int argc, char** argv)
   case 3:
   {
     using ImageType = itk::Image< float, 3 >;
+
+    if (requestedAlgorithm == OrientImage) // this does not work for 2 or 4-D images
+    {
+      auto output = cbica::GetImageOrientation< ImageType >(cbica::ReadImage< ImageType >(inputImageFile), orientationDesired);
+      std::cout << "Original Image Orientation: " << output.first << "\n";
+      cbica::WriteImage< ImageType >(output.second, outputImageFile);
+      return EXIT_SUCCESS;
+    }
+
     return algorithmsRunner< ImageType >();
 
     break;
