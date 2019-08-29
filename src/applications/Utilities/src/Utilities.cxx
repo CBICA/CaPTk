@@ -311,8 +311,10 @@ int algorithmsRunner()
 
     try 
     {
+      std::cout << "[DEBUG] trying 'ImageSEGConverter::itkimage2dcmSegmentation'...";
       bool skipEmptySlices = false;
       DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
+      std::cout << "Done.\n";
 
       if (result == NULL) 
       {
@@ -321,6 +323,7 @@ int algorithmsRunner()
       }
       else 
       {
+        std::cout << "[DEBUG] Trying to save file 'segdocFF.saveFile'...";
         DcmFileFormat segdocFF(result);
         bool compress = false;
         if (compress) 
