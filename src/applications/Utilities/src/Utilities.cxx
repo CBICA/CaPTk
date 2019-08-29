@@ -31,7 +31,7 @@ enum AvailableAlgorithms
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator;
+std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON;
 std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
@@ -531,19 +531,34 @@ int main(int argc, char** argv)
     parser.getParameterValue("i", inputImageFile);
     parser.getParameterValue("tt", testThresh);
   }
-  if (parser.isPresent("d2n"))
+  else if (parser.isPresent("d2n"))
   {
     requestedAlgorithm = Dicom2Nifti;
     parser.getParameterValue("d2n", targetImageFile);
     parser.getParameterValue("o", outputImageFile);
   }
-  if (parser.isPresent("n2d"))
+  else if (parser.isPresent("n2d"))
   {
     requestedAlgorithm = Nifti2Dicom;
     parser.getParameterValue("n2d", targetImageFile); // in this case, it is the DICOM reference file
     parser.getParameterValue("o", outputImageFile);
   }
-  if (parser.isPresent("r"))
+  else if (parser.isPresent("ds"))
+  {
+    requestedAlgorithm = Nifti2DicomSeg;
+    parser.getParameterValue("ds", targetImageFile); // in this case, it is the DICOM reference file
+    parser.getParameterValue("o", outputImageFile);
+    if (parser.isPresent("dsJ"))
+    {
+      parser.getParameterValue("dsJ", dicomSegJSON);
+    }
+    else
+    {
+      std::cerr << "DICOM-Seg conversion requested but the JSON file containing the metadata was not found. Please use the '-dsJ' parameter.\n";
+      return EXIT_FAILURE;
+    }
+  }
+  else if (parser.isPresent("r"))
   {
     parser.getParameterValue("r", resize);
     if (resize != 100)
@@ -563,26 +578,26 @@ int main(int argc, char** argv)
       parser.getParameterValue("ri", resamplingInterpolator);
     }
   }
-  if (parser.isPresent("s"))
+  else if (parser.isPresent("s"))
   {
     parser.getParameterValue("s", targetImageFile);
     requestedAlgorithm = SanityCheck;
   }
-  if (parser.isPresent("inf"))
+  else if (parser.isPresent("inf"))
   {
     requestedAlgorithm = Information;
   }
-  if (parser.isPresent("c"))
+  else if (parser.isPresent("c"))
   {
     parser.getParameterValue("c", targetImageFile);
     requestedAlgorithm = Casting;
   }
-  if (parser.isPresent("un"))
+  else if (parser.isPresent("un"))
   {
     parser.getParameterValue("un", uniqueValsSort);
     requestedAlgorithm = UniqueValues;
   }
-  if (parser.isPresent("tb"))
+  else if (parser.isPresent("tb"))
   {
     parser.getParameterValue("tb", targetImageFile);
     requestedAlgorithm = TestComparison;
@@ -595,7 +610,7 @@ int main(int argc, char** argv)
       parser.getParameterValue("tt", testThresh);
     }
   }
-  if (parser.isPresent("b"))
+  else if (parser.isPresent("b"))
   {
     parser.getParameterValue("b", targetImageFile);
     requestedAlgorithm = BoundingBox;
@@ -604,8 +619,7 @@ int main(int argc, char** argv)
       parser.getParameterValue("bi", boundingBoxIsotropic);
     }
   }
-
-  if (parser.isPresent("cm"))
+  else if (parser.isPresent("cm"))
   {
     std::string temp;
     parser.getParameterValue("cm", temp);
@@ -621,8 +635,7 @@ int main(int argc, char** argv)
 
     requestedAlgorithm = CreateMask;
   }
-
-  if (parser.isPresent("cv"))
+  else if (parser.isPresent("cv"))
   {
     std::string temp;
     parser.getParameterValue("cv", temp);
