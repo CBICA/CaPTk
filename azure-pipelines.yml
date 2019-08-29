@@ -95,7 +95,7 @@ jobs:
         rm -rf installLibs
         rm -rf qt.zip
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
     
     - bash: |
         tar cvfz bin_windows.tar.gz bin
@@ -260,7 +260,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
         tar cvfz bin_linux.tar.gz bin
@@ -423,7 +423,7 @@ jobs:
         make -j 2
   
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         tar cvfz bin_macos.tar.gz bin
