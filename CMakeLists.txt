@@ -44,7 +44,20 @@ INCLUDE( CaPTk_macros )
 #SET (SVN_REVISION "${SVN_REVISION}")
 
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
-SET( QT_VERSION "5.12.1" CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
+
+SET( QT_VERSION_ACTUAL "5.12.1" )
+if(UNIX)
+  if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    if(EXISTS "/etc/issue")
+      file(READ "/etc/issue" LINUX_ISSUE)
+      if(LINUX_ISSUE MATCHES "CentOS")
+        SET( QT_VERSION_ACTUAL "5.11.1" )
+      endif()
+    endif()
+  endif()
+endif()
+
+SET( QT_VERSION ${QT_VERSION_ACTUAL} CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
 SET( OPENCV_VERSION "3.4.5" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
 
 SET(CAPTK_BUILD_DIR "${PROJECT_BINARY_DIR}" CACHE STRING "CaPTk build directory" FORCE )
