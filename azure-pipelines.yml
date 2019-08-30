@@ -22,20 +22,20 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    - task: CacheBeta@0
-      inputs:
-        key: '"bin_windows.tar.gz" | "$(Build.DefinitionName)"'
-        path: $(Build.SourcesDirectory) 
-        cacheHitVar: CACHE_RESTORED_WINDOWS
-        restoreKeys: |
-          "bin_windows.tar.gz"
-        continueOnError : true
-      displayName: 'Caching'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: '"bin_windows.tar.gz" | "$(Build.DefinitionName)"'
+    #     path: $(Build.SourcesDirectory)
+    #     cacheHitVar: CACHE_RESTORED_WINDOWS
+    #     restoreKeys: |
+    #       "bin_windows.tar.gz"
+    #     continueOnError : true
+    #   displayName: 'Caching'
 
     - script: |
         choco install doxygen.install nsis.install
       displayName: 'Install dependencies'
-  
+
     # Pull LFS
     - bash: |
         export GIT_LFS_SKIP_SMUDGE=1
@@ -59,7 +59,7 @@ jobs:
         tar xvfz qt.tar.gz
         tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
-        # rm CMakeCache.txt 
+        # rm CMakeCache.txt
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
@@ -95,11 +95,11 @@ jobs:
         rm -rf qt.zip
       displayName: 'Configure and compile Superbuild'
       # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
-    
+
     - bash: |
         tar cvfz bin_windows.tar.gz bin
       displayName: 'Zipping Superbuild'
-    
+
     - powershell: |
         wmic logicaldisk get size,freespace,caption
       displayName: 'Disk space check'
@@ -112,7 +112,7 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
         rm -rf binaries_windows.zip
       displayName: 'Configure and compile CaPTk'
-       
+
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
     #   displayName: 'Disk space check'
@@ -126,7 +126,7 @@ jobs:
     #    setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
     #    cmake --build . --target RUN_TESTS --config Release
     #  displayName: 'Performing the Tests'
-    
+
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
@@ -136,11 +136,11 @@ jobs:
         cmake --build . --target PACKAGE --config Release
 
         ls -lt *_Installer.*
-    
+
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
-        
+
         cd ../
-        
+
       displayName: 'Build & Package CaPTk'
 
     - bash: |
@@ -166,7 +166,7 @@ jobs:
         mv bin bin_windows
         tar cvfz bin_windows.tar.gz bin_windows
       displayName: 'Zipping bin'
-    
+
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
     #   displayName: 'Disk space check'
@@ -175,7 +175,7 @@ jobs:
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: '$(Build.DefinitionName)_installer_Windows'
-    
+
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
@@ -195,20 +195,20 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    - task: CacheBeta@0
-      inputs:
-        key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
-        path: $(Build.SourcesDirectory) 
-        cacheHitVar: CACHE_RESTORED_LINUX
-        continueOnError : true
-        restoreKeys: |
-          "bin_linux.tar.gz"
-      displayName: 'Caching'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
+    #     path: $(Build.SourcesDirectory)
+    #     cacheHitVar: CACHE_RESTORED_LINUX
+    #     continueOnError : true
+    #     restoreKeys: |
+    #       "bin_linux.tar.gz"
+    #   displayName: 'Caching'
 
     # Dependency manager
     - bash: |
         sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
-        export GIT_LFS_SKIP_SMUDGE=1        
+        export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Install dependencies from Aptitude'
 
     # # Pull LFS
@@ -235,7 +235,7 @@ jobs:
         # tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
         # mv binaries_windows externalApps
-        # rm CMakeCache.txt 
+        # rm CMakeCache.txt
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
@@ -263,7 +263,7 @@ jobs:
     - bash: |
         tar cvfz bin_linux.tar.gz bin
       displayName: 'Zipping Superbuild'
-    
+
     # Configure and build CaPTk
     - bash: |
         cd bin
@@ -278,13 +278,13 @@ jobs:
         ls -a
         ls ./qt/
       displayName: 'Check qt'
-      
+
     # Check libra
     - bash: |
         cd bin/install/appdir/usr/bin/
         ls -l
       displayName: 'Checking ${installDir}/bin'
-      
+
     # Build a package
     - bash: |
         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
@@ -302,7 +302,7 @@ jobs:
         rm -rf scripts
 
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
-        
+
       displayName: 'Set up environment variables for packager and build a package'
 
     - bash: |
@@ -327,7 +327,7 @@ jobs:
         mv bin bin_linux
         tar cvfz bin_linux.tar.gz bin_linux
       displayName: 'Zipping bin'
-    
+
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -339,7 +339,7 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_Linux'
         downloadPath: '$(System.ArtifactsDirectory)'
-    
+
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
   timeoutInMinutes: 0
@@ -352,28 +352,28 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    - task: CacheBeta@0
-      inputs:
-        key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
-        path: $(Build.SourcesDirectory) 
-        cacheHitVar: CACHE_RESTORED_MAC
-        continueOnError : true
-        restoreKeys: |
-          "bin_macos.tar.gz"
-      displayName: 'Caching'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
+    #     path: $(Build.SourcesDirectory)
+    #     cacheHitVar: CACHE_RESTORED_MAC
+    #     continueOnError : true
+    #     restoreKeys: |
+    #       "bin_macos.tar.gz"
+    #   displayName: 'Caching'
 
     - bash: |
         brew install make doxygen libomp
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Brew dependencies'
-    
+
     # - bash: |
     #     brew install git-lfs
     #     git lfs install
     #   displayName: 'Brew dependency install LFS'
     #   condition: ne(variables.CACHE_RESTORED_MAC, 'true')
-    
+
     # # Pull LFS
     # - bash: |
     #     export GIT_LFS_SKIP_SMUDGE=1
@@ -408,7 +408,7 @@ jobs:
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
       # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
-      
+
     - bash: |
         cd bin
 
@@ -418,14 +418,14 @@ jobs:
         cmake -DQT_DOWNLOAD_FORCE=ON ../ -DCMAKE_INSTALL_PREFIX="./install"
 
         make -j 2
-  
+
       displayName: 'Configure and compile Superbuild'
       # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         tar cvfz bin_macos.tar.gz bin
       displayName: 'Zipping Superbuild'
-    
+
     - bash: |
         cd bin
 
@@ -442,7 +442,7 @@ jobs:
 
         make -j 2
       displayName: 'Export variables for llvm then configure and compile CaPTk'
-    
+
     - bash: |
         cd bin
 
@@ -463,19 +463,19 @@ jobs:
         make -j 2
 
       displayName: 'Ensure documentation is picked up properly'
-    
-    
+
+
     - bash: |
-        cd bin 
-        
+        cd bin
+
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
         pkgname="_Installer"
         pkgname="$version$pkgname"
 
-        rm -rf *.pkg 
+        rm -rf *.pkg
         rm -rf _CPack*
         make package
-        
+
         # echo "Change deepmedic libomp dylib path"
         # sudo install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib @executable_path/../../Frameworks/libomp.dylib ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/bin/DeepMedic
 
@@ -499,19 +499,19 @@ jobs:
                 <pkg-ref id="com.cbica.captk"/>
             </choice>
             <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
-        </installer-gui-script>' 
+        </installer-gui-script>'
 
         echo $xml > "./distribution.xml"
 
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
-        
+
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
         sudo rm -rf _CPack*
 
         # sudo rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
-    
+
     - bash: |
         rm -rf src
         rm -rf docs*
@@ -539,7 +539,7 @@ jobs:
     #    git lfs pull --include "data/TestData.zip"
     #    make tests
     #  displayName: 'Performing the Tests'
-    
+
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -559,27 +559,27 @@ jobs:
 
   pool:
     vmImage: 'Ubuntu-16.04'
-  
+
   container: centos
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
-     
-    - task: CacheBeta@0
-      inputs:
-        key: |
-          bin_linux.tar.gz
-          $(Agent.OS)
-        path: $(Build.SourcesDirectory) 
-        cacheHitVar: CACHE_RESTORED_LINUX
-        continueOnError : true
-      displayName: 'Caching'
+
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: |
+    #       bin_linux.tar.gz
+    #       $(Agent.OS)
+    #     path: $(Build.SourcesDirectory)
+    #     cacheHitVar: CACHE_RESTORED_LINUX
+    #     continueOnError : true
+    #   displayName: 'Caching'
 
     # - task: CacheBeta@0
     #   inputs:
     #     key: '"bin_linux_centos.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory) 
+    #     path: $(Build.SourcesDirectory)
     #     cacheHitVar: CACHE_RESTORED_LINUX_CENTOS
     #     restoreKeys: |
     #       "bin_linux_centos.tar.gz"
@@ -627,7 +627,7 @@ jobs:
         tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
         # mv binaries_windows externalApps
-        # rm CMakeCache.txt 
+        # rm CMakeCache.txt
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
@@ -658,13 +658,13 @@ jobs:
         ls -a
         ls ./qt/
       displayName: 'Check qt'
-      
+
     # Check libra
     - bash: |
         cd $(Build.SourcesDirectory)/bin/install/appdir/usr/bin/
         ls -l
       displayName: 'Checking ${installDir}/bin'
-      
+
     # Build a package
     - bash: |
         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
@@ -683,7 +683,7 @@ jobs:
         rm -rf scripts
 
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
-        
+
       displayName: 'Set up environment variables for packager and build a package'
 
     - bash: |
@@ -709,14 +709,14 @@ jobs:
         mv bin bin_linux
         tar cvfz bin_linux_centos.tar.gz bin_linux
       displayName: 'Zipping bin'
-    
+
     #- script: |
     #    cd bin
     #    export GIT_LFS_SKIP_SMUDGE=1
     #    git lfs pull --include "data/TestData.zip"
     #    make tests
     #  displayName: 'Performing the Tests'
-    
+
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -728,7 +728,7 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
         downloadPath: '$(System.ArtifactsDirectory)'
-    
+
 
 #### SELF-HOSTED AGENTS
 
@@ -771,13 +771,13 @@ jobs:
 #         ls -a
 #         ls ./qt/
 #       displayName: 'Check qt'
-      
+
 #     # Check libra
 #     - bash: |
 #         cd bin/install/appdir/usr/bin/
 #         ls -l
 #       displayName: 'Checking ${installDir}/bin'
-      
+
 #     # Build a package
 #     - bash: |
 #         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
@@ -791,7 +791,7 @@ jobs:
 #         rm -rf bin
 
 #         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
-        
+
 #       displayName: 'Set up environment variables for packager and build a package'
 
 #     - task: PublishBuildArtifacts@1
@@ -831,7 +831,7 @@ jobs:
 #     - bash: |
 #         mkdir -p bin
 #       displayName: 'Create build directory'
-  
+
 #     - bash: |
 #         cd bin
 
@@ -854,9 +854,9 @@ jobs:
 #         cmake ../
 #         cmake ../
 
-#         make 
+#         make
 #       displayName: 'Export variables for llvm then configure and compile CaPTk'
-  
+
 #     - bash: |
 #         cd bin
 
@@ -871,13 +871,13 @@ jobs:
 #         cmake ../
 #         cmake ../
 
-#         make 
+#         make
 #       displayName: 'Ensure documentations are picked up properly'
-  
-  
+
+
 #     - bash: |
-#         cd bin 
-      
+#         cd bin
+
 #         make package
 
 #         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
@@ -904,12 +904,12 @@ jobs:
 #                 <pkg-ref id="com.cbica.captk"/>
 #             </choice>
 #             <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
-#         </installer-gui-script>' 
+#         </installer-gui-script>'
 
 #         echo $xml > "./distribution.xml"
 
 #         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
-      
+
 #         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
 #         rm -rf *
 #       displayName: 'Package CaPTk (.dmg and .pkg)'
