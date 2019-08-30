@@ -56,9 +56,9 @@ jobs:
         mv bin_windows bin
         # ls
         cd bin
-        # tar xvfz qt.tar.gz
-        # tar xvfz externalApps.tar.gz
-        # rm -rf *.tar.gz
+        tar xvfz qt.tar.gz
+        tar xvfz externalApps.tar.gz
+        rm -rf *.tar.gz
         # rm CMakeCache.txt
         ls -lt
       displayName: 'Unzip bin if cached'
@@ -240,10 +240,10 @@ jobs:
         mv bin_linux bin
         # ls
         cd bin
-        # tar xvfz qt.tar.gz
-        # tar xvfz externalApps.tar.gz
+        tar xvfz qt.tar.gz
+        tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
-        # mv binaries_windows externalApps
+        mv binaries_linux externalApps
         # rm CMakeCache.txt
         ls -lt
       displayName: 'Unzip bin if cached'
@@ -400,9 +400,9 @@ jobs:
         mv bin_macos bin
         # ls
         cd bin
-        # tar xvfz qt.tar.gz
-        # tar xvfz externalApps.tar.gz
-        # rm -rf *.tar.gz
+        tar xvfz qt.tar.gz
+        tar xvfz externalApps.tar.gz
+        rm -rf *.tar.gz
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_MAC, 'true')
@@ -625,10 +625,10 @@ jobs:
         mv bin_linux bin
         # ls
         cd bin
-        # tar xvfz qt.tar.gz
-        # tar xvfz externalApps.tar.gz
-        # rm -rf *.tar.gz
-        # mv binaries_windows externalApps
+        tar xvfz qt.tar.gz
+        tar xvfz externalApps.tar.gz
+        rm -rf *.tar.gz
+        mv binaries_linux externalApps
         # rm CMakeCache.txt
         ls -lt
       displayName: 'Unzip bin if cached'
