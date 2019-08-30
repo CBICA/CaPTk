@@ -125,3 +125,8 @@ void AppearancePage::OnCancel()
 	qApp->setFont(this->m_PreviousFont);
 	qApp->setStyleSheet(this->m_PreviousStyleSheet);
 }
+
+void AppearancePage::Restore()
+{
+	qDebug() << "AppearancePage::Restore" << endl;
+}
