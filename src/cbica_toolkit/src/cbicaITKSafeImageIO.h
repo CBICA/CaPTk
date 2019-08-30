@@ -561,7 +561,7 @@ namespace cbica
         typename ExpectedImageType::PointType position;
         index[2] = i;
         imageToWrite->TransformIndexToPhysicalPoint(index, position);
-        itk::EncapsulateMetaData<std::string>(dict, "0020|0032", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2])); // patient position
+        itk::EncapsulateMetaData<std::string>(dict, "0020|0032", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2])); // Image Position (Patient)
         itk::EncapsulateMetaData<std::string>(dict, "0020|1041", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2])); // slice location
         //itk::EncapsulateMetaData<std::string>(*dict, "0020|0011", std::to_string(1)); 
         //itk::EncapsulateMetaData<std::string>(*dict, "0020|0013", std::to_string(i)); 
@@ -586,7 +586,7 @@ namespace cbica
         itk::EncapsulateMetaData<std::string>(dict, "0018|0050", std::to_string(imageToWrite->GetSpacing()[2])); // Slice Thickness
         itk::EncapsulateMetaData<std::string>(dict, "0018|0088", std::to_string(imageToWrite->GetSpacing()[2])); // Spacing Between Slices
         itk::EncapsulateMetaData<std::string>(dict, "0028|0030", std::to_string(imageToWrite->GetSpacing()[0]) + "\\" + std::to_string(imageToWrite->GetSpacing()[1]));
-        //itk::EncapsulateMetaData<std::string>(*dict, "0008|0008", "DERIVED\\SECONDARY"); // Image Type
+        itk::EncapsulateMetaData<std::string>(dict, "0008|0008", "DERIVED\\SECONDARY"); // Image Type
         //itk::EncapsulateMetaData<std::string>(*dict, "0008|0064", "DV"); // Conversion Type
         //itk::EncapsulateMetaData<std::string>(*dict, "0008|0060", "MR"); // Modality - can never gurantee MR
         //itk::EncapsulateMetaData<std::string>(*dict, "0018|0088", std::to_string(imageToWrite->GetSpacing()[2]));
