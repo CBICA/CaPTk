@@ -22,15 +22,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_windows.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_WINDOWS
-    #     restoreKeys: |
-    #       "bin_windows.tar.gz"
-    #     continueOnError : true
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_windows.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_WINDOWS
+        restoreKeys: |
+          "bin_windows.tar.gz"
+        continueOnError : true
+      displayName: 'Caching'
 
     - script: |
         choco install doxygen.install nsis.install
@@ -204,15 +204,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_LINUX
-    #     continueOnError : true
-    #     restoreKeys: |
-    #       "bin_linux.tar.gz"
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_LINUX
+        continueOnError : true
+        restoreKeys: |
+          "bin_linux.tar.gz"
+      displayName: 'Caching'
 
     # Dependency manager
     - bash: |
@@ -362,15 +362,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_MAC
-    #     continueOnError : true
-    #     restoreKeys: |
-    #       "bin_macos.tar.gz"
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_MAC
+        continueOnError : true
+        restoreKeys: |
+          "bin_macos.tar.gz"
+      displayName: 'Caching'
 
     - bash: |
         brew install make doxygen libomp
@@ -578,15 +578,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_linux_centos.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_LINUX_CENTOS
-    #     restoreKeys: |
-    #       "bin_linux_centos.tar.gz"
-    #     continueOnError : true
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_linux_centos.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_LINUX_CENTOS
+        restoreKeys: |
+          "bin_linux_centos.tar.gz"
+        continueOnError : true
+      displayName: 'Caching'
 
     # # Pull LFS
     # - bash: |
