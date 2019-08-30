@@ -606,6 +606,8 @@ namespace cbica
     auto orientFilter = itk::OrientImageFilter< TImageType, TImageType >::New();
     orientFilter->SetInput(inputImage);
     orientFilter->UseImageDirectionOn();
+    orientFilter->SetDirectionTolerance(0);
+    orientFilter->SetCoordinateTolerance(0);
 
     auto desiredOrientation_wrap = desiredOrientation;
     std::transform(desiredOrientation_wrap.begin(), desiredOrientation_wrap.end(), desiredOrientation_wrap.begin(), ::toupper);
