@@ -164,6 +164,10 @@ fMainWindow::fMainWindow()
 
   setupUi(this);
 
+  //! load preferences
+  ApplicationPreferences::GetInstance()->DeSerializePreferences();
+  ApplicationPreferences::GetInstance()->DisplayPreferences();
+
   //! comparison mode OFF at startup
   this->SetComparisonMode(false);
 
