@@ -1,5 +1,6 @@
 #include "ApplicationPreferences.h"
 #include <QSettings>
+#include <QFile>
 #include <QDebug>
 
 ApplicationPreferences* ApplicationPreferences::m_Instance = nullptr;
@@ -51,10 +52,18 @@ void ApplicationPreferences::DeSerializePreferences()
 {
 	QSettings appSettings(QSettings::IniFormat, QSettings::SystemScope,
 		"UPenn", "CaPTk");
-	appSettings.beginGroup("Appearance");
-	this->SetFont(appSettings.value("Font").toString());
-	this->SetTheme(appSettings.value("Theme").toString());
-	appSettings.endGroup();
+	QString filename = appSettings.fileName();
+	if (QFile(filename).exists())
+	{
+		this->SetFileAvailability(QVariant(true).toString());
+		qDebug() << " settings file name = " << filename << endl;
+		appSettings.beginGroup("Appearance");
+		this->SetFont(appSettings.value("Font").toString());
+		this->SetTheme(appSettings.value("Theme").toString());
+		appSettings.endGroup();
+	}
+	else
+		this->SetFileAvailability(QVariant(false).toString());
 	qDebug() << " DeSerializePreferences Done. " << endl;
 }
 
