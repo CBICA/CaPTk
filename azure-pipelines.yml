@@ -52,13 +52,13 @@ jobs:
     - bash: |
         tar xvfz bin_windows.tar.gz
         rm -rf bin_windows.tar.gz
-        ls
+        # ls
         mv bin_windows bin
-        ls
+        # ls
         cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
-        rm -rf *.tar.gz
+        # tar xvfz qt.tar.gz
+        # tar xvfz externalApps.tar.gz
+        # rm -rf *.tar.gz
         # rm CMakeCache.txt
         ls -lt
       displayName: 'Unzip bin if cached'
@@ -234,9 +234,9 @@ jobs:
     - bash: |
         tar xvfz bin_linux.tar.gz
         rm -rf bin_linux.tar.gz
-        ls
+        # ls
         mv bin_linux bin
-        ls
+        # ls
         cd bin
         # tar xvfz qt.tar.gz
         # tar xvfz externalApps.tar.gz
@@ -393,13 +393,13 @@ jobs:
     - bash: |
         tar xvfz bin_macos.tar.gz
         rm -rf bin_macos.tar.gz
-        ls
+        # ls
         mv bin_macos bin
-        ls
+        # ls
         cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
-        rm -rf *.tar.gz
+        # tar xvfz qt.tar.gz
+        # tar xvfz externalApps.tar.gz
+        # rm -rf *.tar.gz
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_MAC, 'true')
@@ -616,13 +616,13 @@ jobs:
     - bash: |
         tar xvfz bin_linux.tar.gz
         rm -rf bin_linux.tar.gz
-        ls
+        # ls
         mv bin_linux bin
-        ls
+        # ls
         cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
-        rm -rf *.tar.gz
+        # tar xvfz qt.tar.gz
+        # tar xvfz externalApps.tar.gz
+        # rm -rf *.tar.gz
         # mv binaries_windows externalApps
         # rm CMakeCache.txt
         ls -lt
