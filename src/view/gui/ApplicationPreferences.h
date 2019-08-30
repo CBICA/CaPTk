@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QVariant>
 
 class ApplicationPreferences : public QObject
 {
@@ -16,7 +17,10 @@ public:
     void SetTheme(QString theme);
     QString GetTheme() const;
 
-	//! Serialize 
+	void SetFileAvailability(QString available);
+	QString GetFileAvailability() const;
+
+		//! Serialize 
 	void SerializePreferences();
 
 	//! De-Serliaze
@@ -38,6 +42,7 @@ private:
 
     QString m_Font;
     QString m_Theme;
+	QString m_FileAvailability = QVariant("false").toString();
 };
 
 #endif // APPLICATIONPREFERENCES_H

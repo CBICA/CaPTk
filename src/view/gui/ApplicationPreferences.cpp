@@ -64,3 +64,13 @@ void ApplicationPreferences::DisplayPreferences()
 	qDebug() << " font = " << this->m_Font << endl;
 	qDebug() << " theme = " << this->m_Theme << endl;
 }
+
+void ApplicationPreferences::SetFileAvailability(QString available)
+{
+	this->m_FileAvailability = available;
+}
+
+QString ApplicationPreferences::GetFileAvailability() const
+{
+	return m_FileAvailability;
+}
