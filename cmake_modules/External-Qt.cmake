@@ -56,7 +56,7 @@ IF( (NOT Qt5Core_FOUND) OR QT_DOWNLOAD_FORCE )
     SET( PLATFORM_STRING "linux" )
   ENDIF()
   
-  SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/qt/${PLATFORM_STRING}.zip" )
+  SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/qt/${QT_VERSION}/${PLATFORM_STRING}.zip" )
   SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/qt_${QT_VERSION}/${PLATFORM_STRING}.zip" )
 
   IF( NOT EXISTS "${QT_EXTRACTED_DIR}" )
