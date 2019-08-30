@@ -10,6 +10,7 @@ protected:
 public slots:
     virtual void OnOkay() = 0;
     virtual void OnCancel() = 0;
+	virtual void Restore() = 0;
 
 };
 
