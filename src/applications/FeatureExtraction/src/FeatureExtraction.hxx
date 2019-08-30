@@ -823,7 +823,7 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
     min = m_minimumToConsider;
     max = m_maximumToConsider;
   }
-  if (m_QuantizationExtent == "ROI")
+  else if (m_QuantizationExtent == "ROI")
   {
     min = m_statistics_local.GetMinimum();
     max = m_statistics_local.GetMaximum();
@@ -1133,7 +1133,7 @@ void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImag
   {
     statisticsCalculatorToUse = m_statistics_global[m_currentROIValue];
   }
-  if (m_QuantizationExtent == "ROI")
+  else if (m_QuantizationExtent == "ROI")
   {
 
     statisticsCalculatorToUse = m_statistics_local;
