@@ -9,6 +9,8 @@
 #include "itkPointSet.h"
 #include "itkBinaryThresholdImageFilter.h"
 
+#include "cbicaDCMQIWrapper.h"
+
 //! Detail the available algorithms to make it easier to initialize
 enum AvailableAlgorithms
 {
@@ -24,12 +26,15 @@ enum AvailableAlgorithms
   CreateMask,
   ChangeValue,
   DicomLoadTesting,
-  Dicom2Nifti
+  Dicom2Nifti,
+  Nifti2Dicom,
+  Nifti2DicomSeg,
+  OrientImage
 };
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator;
+std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON, orientationDesired;
 std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
@@ -203,6 +208,37 @@ int algorithmsRunner()
 
       return EXIT_SUCCESS;
     }
+  }
+
+  if (requestedAlgorithm == Nifti2Dicom)
+  {
+    auto referenceDicom = targetImageFile;
+    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+  }
+
+  if (requestedAlgorithm == Nifti2DicomSeg)
+  {
+    if (TImageType::ImageDimension != 3)
+    {
+      std::cerr << "NIfTI to DICOM-Seg conversion can only be done for 3D images.\n";
+      return EXIT_SUCCESS;
+    }
+    auto actualDicomReferenceDir = targetImageFile;
+
+    if (!cbica::isDir(targetImageFile)) // the reference dicom image series
+    {
+      if (!cbica::IsDicom(targetImageFile))
+      {
+        std::cerr << "The supplied reference DICOM file, '" << targetImageFile << "' was not detected as a DICOM file. Please try again.\n";
+      }
+      else
+      {
+        actualDicomReferenceDir = cbica::getFilenamePath(targetImageFile);
+      }
+      std::cerr << "The supplied reference DICOM directory, '" << targetImageFile << "' was not detected as a directory. Please try again.\n";
+    }
+    cbica::ConvertNiftiToDicomSeg(inputImageFile, actualDicomReferenceDir, dicomSegJSON, outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == ChangeValue)
@@ -484,11 +520,16 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
+  parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
+  parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
+  parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
+  parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
   parser.addExampleUsage("-i C:/test.nii.gz -inf", "Prints out image information to console (for DICOMs, this does a full dump of the tags)");
   parser.addExampleUsage("-i C:/test/1.dcm -o C:/test.nii.gz -d2n C:/test_reference.nii.gz", "DICOM to NIfTI conversion and do sanity check of the converted image with the reference image");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/test_dicom/ -n2d C:/referenceDICOM/", "NIfTI to DICOM conversion and do sanity check of the converted image with the reference image");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
 
@@ -511,13 +552,34 @@ int main(int argc, char** argv)
     parser.getParameterValue("i", inputImageFile);
     parser.getParameterValue("tt", testThresh);
   }
-  if (parser.isPresent("d2n"))
+  else if (parser.isPresent("d2n"))
   {
     requestedAlgorithm = Dicom2Nifti;
     parser.getParameterValue("d2n", targetImageFile);
     parser.getParameterValue("o", outputImageFile);
   }
-  if (parser.isPresent("r"))
+  else if (parser.isPresent("n2d"))
+  {
+    requestedAlgorithm = Nifti2Dicom;
+    parser.getParameterValue("n2d", targetImageFile); // in this case, it is the DICOM reference file
+    parser.getParameterValue("o", outputImageFile);
+  }
+  else if (parser.isPresent("ds"))
+  {
+    requestedAlgorithm = Nifti2DicomSeg;
+    parser.getParameterValue("ds", targetImageFile); // in this case, it is the DICOM reference file
+    parser.getParameterValue("o", outputImageFile);
+    if (parser.isPresent("dsJ"))
+    {
+      parser.getParameterValue("dsJ", dicomSegJSON);
+    }
+    else
+    {
+      std::cerr << "DICOM-Seg conversion requested but the JSON file containing the metadata was not found. Please use the '-dsJ' parameter.\n";
+      return EXIT_FAILURE;
+    }
+  }
+  else if (parser.isPresent("r"))
   {
     parser.getParameterValue("r", resize);
     if (resize != 100)
@@ -537,26 +599,31 @@ int main(int argc, char** argv)
       parser.getParameterValue("ri", resamplingInterpolator);
     }
   }
-  if (parser.isPresent("s"))
+  else if (parser.isPresent("s"))
   {
     parser.getParameterValue("s", targetImageFile);
     requestedAlgorithm = SanityCheck;
   }
-  if (parser.isPresent("inf"))
+  else if (parser.isPresent("inf"))
   {
     requestedAlgorithm = Information;
   }
-  if (parser.isPresent("c"))
+  else if (parser.isPresent("c"))
   {
     parser.getParameterValue("c", targetImageFile);
     requestedAlgorithm = Casting;
   }
-  if (parser.isPresent("un"))
+  else if (parser.isPresent("un"))
   {
     parser.getParameterValue("un", uniqueValsSort);
     requestedAlgorithm = UniqueValues;
   }
-  if (parser.isPresent("tb"))
+  else if (parser.isPresent("or"))
+  {
+    parser.getParameterValue("or", orientationDesired);
+    requestedAlgorithm = OrientImage;
+  }
+  else if (parser.isPresent("tb"))
   {
     parser.getParameterValue("tb", targetImageFile);
     requestedAlgorithm = TestComparison;
@@ -569,7 +636,7 @@ int main(int argc, char** argv)
       parser.getParameterValue("tt", testThresh);
     }
   }
-  if (parser.isPresent("b"))
+  else if (parser.isPresent("b"))
   {
     parser.getParameterValue("b", targetImageFile);
     requestedAlgorithm = BoundingBox;
@@ -578,8 +645,7 @@ int main(int argc, char** argv)
       parser.getParameterValue("bi", boundingBoxIsotropic);
     }
   }
-
-  if (parser.isPresent("cm"))
+  else if (parser.isPresent("cm"))
   {
     std::string temp;
     parser.getParameterValue("cm", temp);
@@ -595,8 +661,7 @@ int main(int argc, char** argv)
 
     requestedAlgorithm = CreateMask;
   }
-
-  if (parser.isPresent("cv"))
+  else if (parser.isPresent("cv"))
   {
     std::string temp;
     parser.getParameterValue("cv", temp);
@@ -698,6 +763,15 @@ int main(int argc, char** argv)
   case 3:
   {
     using ImageType = itk::Image< float, 3 >;
+
+    if (requestedAlgorithm == OrientImage) // this does not work for 2 or 4-D images
+    {
+      auto output = cbica::GetImageOrientation< ImageType >(cbica::ReadImage< ImageType >(inputImageFile), orientationDesired);
+      std::cout << "Original Image Orientation: " << output.first << "\n";
+      cbica::WriteImage< ImageType >(output.second, outputImageFile);
+      return EXIT_SUCCESS;
+    }
+
     return algorithmsRunner< ImageType >();
 
     break;

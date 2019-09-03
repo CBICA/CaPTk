@@ -8,6 +8,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
 - \subpage ht_Segmentation "Segmentation"
 - \subpage ht_FeatureExtraction "Feature Extraction"
 - \subpage ht_SpecialApps "Specialized Applications Usage"
+- \subpage ht_utilities "Utilities (CLI only)"
 
 Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
 
@@ -1230,5 +1231,20 @@ ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.c
 <div align="right"><a href="Science.html"><b>Next (Scientific Findings using CaPTk)<b></a></div>
 \endhtmlonly
 --------
+
+*/
+
+/**
+\page ht_utilities Utilities (CLI only)
+
+This is a command line executable containing the following functionalities:
+- Resizing
+- Image information
+- Unique values in image
+- Get smallest bounding box in mask (optional isotropic bounding box)
+- Test 2 images
+- Create mask from threshold
+- DICOM to NIfTI conversion
+- NIfTI to DICOM & DICOM-Seg conversion
 
 */
