@@ -314,7 +314,7 @@ jobs:
         rm -rf regression
         rm -rf binaries
 
-        # export PKG_FAST_MODE=1
+        export PKG_FAST_MODE=1
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
