@@ -582,179 +582,179 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-- job: 'CentOSBuild'
-  displayName: "End-to-end Linux (CentOS) build on Docker"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
+# - job: 'CentOSBuild'
+#   displayName: "End-to-end Linux (CentOS) build on Docker"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 300
 
-  pool:
-    vmImage: 'Ubuntu-16.04'
+#   pool:
+#     vmImage: 'Ubuntu-16.04'
 
-  container: centos
+#   container: centos
 
-  steps:
-    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+#   steps:
+#     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+#       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    - task: CacheBeta@0
-      inputs:
-        key: '"bin_linux_centos.tar.gz" | "$(Build.DefinitionName)"'
-        path: $(Build.SourcesDirectory)
-        cacheHitVar: CACHE_RESTORED_LINUX_CENTOS
-        restoreKeys: |
-          "bin_linux_centos.tar.gz"
-        continueOnError : true
-      displayName: 'Caching'
+#     - task: CacheBeta@0
+#       inputs:
+#         key: '"bin_linux_centos.tar.gz" | "$(Build.DefinitionName)"'
+#         path: $(Build.SourcesDirectory)
+#         cacheHitVar: CACHE_RESTORED_LINUX_CENTOS
+#         restoreKeys: |
+#           "bin_linux_centos.tar.gz"
+#         continueOnError : true
+#       displayName: 'Caching'
 
-    # submodule 
-    - bash: |
-        git submodule init
-        git submodule update
-      displayName: 'Git Submodule Init and Update'
+#     # submodule 
+#     - bash: |
+#         git submodule init
+#         git submodule update
+#       displayName: 'Git Submodule Init and Update'
 
-    # # Pull LFS
-    # - bash: |
-    #     export GIT_LFS_SKIP_SMUDGE=1
-    #     git lfs pull --include "binaries/precompiledApps/linux.zip"
-    #     git lfs pull --include "binaries/qt_5.12.1/linux.zip"
-    #     #echo "Not doing this until quota is improved on GitHub"
-    #   displayName: 'Pull LFS'
-    #   # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
+#     # # Pull LFS
+#     # - bash: |
+#     #     export GIT_LFS_SKIP_SMUDGE=1
+#     #     git lfs pull --include "binaries/precompiledApps/linux.zip"
+#     #     git lfs pull --include "binaries/qt_5.12.1/linux.zip"
+#     #     #echo "Not doing this until quota is improved on GitHub"
+#     #   displayName: 'Pull LFS'
+#     #   # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
 
-    # Moving LFS Files
-    - bash: |
-        echo "LS in default dir"
-        ls
-        echo "LS one level up"
-        ls ..
-        mkdir -p bin
-        cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
-        ls -lt
-        export GIT_LFS_SKIP_SMUDGE=1
-      displayName: 'Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
+#     # Moving LFS Files
+#     - bash: |
+#         echo "LS in default dir"
+#         ls
+#         echo "LS one level up"
+#         ls ..
+#         mkdir -p bin
+#         cd bin
+#         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+#         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+#         ls -lt
+#         export GIT_LFS_SKIP_SMUDGE=1
+#       displayName: 'Moving LFS files to the appropriate location under bin'
+#       # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
 
-    - bash: |
-        wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz
-        tar -xvf cmake-3.12.4-Linux-x86_64.tar.gz
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-      displayName: 'CMake installation'
+#     - bash: |
+#         wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz
+#         tar -xvf cmake-3.12.4-Linux-x86_64.tar.gz
+#         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
+#       displayName: 'CMake installation'
 
-    - bash: |
-        tar xvfz bin_linux.tar.gz
-        rm -rf bin_linux.tar.gz
-        # ls
-        mv bin_linux bin
-        # ls
-        cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
-        rm -rf *.tar.gz
-        mv binaries_linux externalApps
-        # rm CMakeCache.txt
-        ls -lt
-      displayName: 'Unzip bin if cached'
-      condition: eq(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
+#     - bash: |
+#         tar xvfz bin_linux.tar.gz
+#         rm -rf bin_linux.tar.gz
+#         # ls
+#         mv bin_linux bin
+#         # ls
+#         cd bin
+#         tar xvfz qt.tar.gz
+#         tar xvfz externalApps.tar.gz
+#         rm -rf *.tar.gz
+#         mv binaries_linux externalApps
+#         # rm CMakeCache.txt
+#         ls -lt
+#       displayName: 'Unzip bin if cached'
+#       condition: eq(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
 
-    # Configure and build superbuild
-    - bash: |
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-        cd bin
-        cmake -DQT_DOWNLOAD_FORCE=ON -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-        make -j2
-        export CMAKE_PREFIX_PATH=`pwd`/ITK-build:`pwd`/VTK-build:`pwd`/OpenCV-build
-      displayName: 'Configure and compile Superbuild'
-      workingDirectory: $(Build.SourcesDirectory)
-      # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
+#     # Configure and build superbuild
+#     - bash: |
+#         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
+#         cd bin
+#         cmake -DQT_DOWNLOAD_FORCE=ON -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+#         make -j2
+#         export CMAKE_PREFIX_PATH=`pwd`/ITK-build:`pwd`/VTK-build:`pwd`/OpenCV-build
+#       displayName: 'Configure and compile Superbuild'
+#       workingDirectory: $(Build.SourcesDirectory)
+#       # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
 
-    # Configure and build CaPTk
-    - bash: |
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-        cd $(Build.SourcesDirectory)/bin
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        cmake -DITK_DIR=$(Build.SourcesDirectory)/bin/ITK-build -DDCMTK_DIR=$(Build.SourcesDirectory)/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
-        make -j2
-        make install/strip
-      displayName: 'Configure and compile CaPTk'
+#     # Configure and build CaPTk
+#     - bash: |
+#         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
+#         cd $(Build.SourcesDirectory)/bin
+#         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+#         cmake -DITK_DIR=$(Build.SourcesDirectory)/bin/ITK-build -DDCMTK_DIR=$(Build.SourcesDirectory)/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
+#         make -j2
+#         make install/strip
+#       displayName: 'Configure and compile CaPTk'
 
-    # Check qt
-    - bash: |
-        cd $(Build.SourcesDirectory)/bin
-        ls -a
-        ls ./qt/
-      displayName: 'Check qt'
+#     # Check qt
+#     - bash: |
+#         cd $(Build.SourcesDirectory)/bin
+#         ls -a
+#         ls ./qt/
+#       displayName: 'Check qt'
 
-    # Check libra
-    - bash: |
-        cd $(Build.SourcesDirectory)/bin/install/appdir/usr/bin/
-        ls -l
-      displayName: 'Checking ${installDir}/bin'
+#     # Check libra
+#     - bash: |
+#         cd $(Build.SourcesDirectory)/bin/install/appdir/usr/bin/
+#         ls -l
+#       displayName: 'Checking ${installDir}/bin'
 
-    # Build a package
-    - bash: |
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-        cd $(Build.SourcesDirectory)
-        export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        rm -rf regression
-        rm -rf binaries
+#     # Build a package
+#     - bash: |
+#         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
+#         cd $(Build.SourcesDirectory)
+#         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
+#         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+#         rm -rf regression
+#         rm -rf binaries
 
-        # export PKG_FAST_MODE=1
-        ./scripts/captk-pkg
-        ./scripts/captk-pkg
+#         # export PKG_FAST_MODE=1
+#         ./scripts/captk-pkg
+#         ./scripts/captk-pkg
 
-        rm -rf src
-        rm -rf docs*
-        rm -rf scripts
+#         rm -rf src
+#         rm -rf docs*
+#         rm -rf scripts
 
-        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+#         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
-      displayName: 'Set up environment variables for packager and build a package'
+#       displayName: 'Set up environment variables for packager and build a package'
 
-    - bash: |
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-        cd $(Build.SourcesDirectory)
-        rm -rf src
-        rm -rf docs*
-        rm -rf data
-        rm -rf binaries
-        rm -rf scripts
+#     - bash: |
+#         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
+#         cd $(Build.SourcesDirectory)
+#         rm -rf src
+#         rm -rf docs*
+#         rm -rf data
+#         rm -rf binaries
+#         rm -rf scripts
 
-        cd bin
+#         cd bin
 
-        tar cvfz qt.tar.gz qt
-        tar cvfz externalApps.tar.gz externalApps
+#         tar cvfz qt.tar.gz qt
+#         tar cvfz externalApps.tar.gz externalApps
 
-        rm -rf qt
-        rm -rf externalApps
-        rm -rf _CPack*
+#         rm -rf qt
+#         rm -rf externalApps
+#         rm -rf _CPack*
 
-        cd ../
+#         cd ../
 
-        mv bin bin_linux
-        tar cvfz bin_linux_centos.tar.gz bin_linux
-      displayName: 'Zipping bin'
+#         mv bin bin_linux
+#         tar cvfz bin_linux_centos.tar.gz bin_linux
+#       displayName: 'Zipping bin'
 
-    #- script: |
-    #    cd bin
-    #    export GIT_LFS_SKIP_SMUDGE=1
-    #    git lfs pull --include "data/TestData.zip"
-    #    make tests
-    #  displayName: 'Performing the Tests'
+#     #- script: |
+#     #    cd bin
+#     #    export GIT_LFS_SKIP_SMUDGE=1
+#     #    git lfs pull --include "data/TestData.zip"
+#     #    make tests
+#     #  displayName: 'Performing the Tests'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
+#     - task: PublishBuildArtifacts@1
+#       inputs:
+#         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#         artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
-        downloadPath: '$(System.ArtifactsDirectory)'
+#     - task: DownloadBuildArtifacts@0
+#       inputs:
+#         buildType: 'current'
+#         downloadType: 'single'
+#         artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
+#         downloadPath: '$(System.ArtifactsDirectory)'
 
 
 #### SELF-HOSTED AGENTS
