@@ -33,7 +33,7 @@ jobs:
       displayName: 'Caching'
 
     - script: |
-        choco install doxygen.install nsis.install
+        choco install doxygen.install nsis.install wget
       displayName: 'Install dependencies'
 
     # submodule 
@@ -70,21 +70,19 @@ jobs:
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    # - powershell: |
-    #     mkdir -p bin
-    #     cd bin
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
-    #   displayName: 'Downloading via wget'
+    - powershell: |
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
+      displayName: 'Downloading via wget'
 
     # Moving LFS Files
     - bash: |
         mkdir -p bin
         cd bin
+        mv ../binaries_windows.zip .
+        mv ../qt.zip .
         # wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
         # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
-        # mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
-        # mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
         rm -rf ../binaries/*
         rm -rf ../data/georgetown
         rm -rf ../data/georgetown
