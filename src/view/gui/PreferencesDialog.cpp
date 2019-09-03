@@ -45,6 +45,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 	//! set the first item as selected
 	this->listWidget->item(0)->setSelected(true);
+
+	//! restore preferences
+	this->RestorePreferences();
 }
 
 PreferencesDialog::~PreferencesDialog()
@@ -125,4 +128,10 @@ void PreferencesDialog::OnAccepted()
 void PreferencesDialog::OnRejected()
 {
 	this->m_PreferencePage->OnCancel();
+}
+
+void PreferencesDialog::RestorePreferences()
+{
+	this->m_PreferencePage = qobject_cast<IPreferencePage*>(this->stackedWidget->widget(0));
+	this->m_PreferencePage->Restore();
 }
