@@ -45,7 +45,7 @@ size_t resize = 100;
 int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues;
-float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0;
+float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
 
