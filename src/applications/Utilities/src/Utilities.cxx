@@ -503,7 +503,6 @@ int algorithmsRunner()
   }
 
   /*
-  ThresholdAboveAndBelow,
   ThresholdOtsu,
   ThresholdBinary
   */
@@ -534,6 +533,21 @@ int algorithmsRunner()
     thresholder->SetOutsideValue(thresholdOutsideValue);
     thresholder->ThresholdOutside(thresholdBelow, thresholdAbove);
     thresholder->Update();
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+  }
+
+  if (requestedAlgorithm == ThresholdOtsu)
+  {
+    auto thresholder = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+    if (!inputMaskFile.empty())
+    {
+      thresholder->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+    }
+    thresholder->SetOutsideValue(thresholdOutsideValue);
+    thresholder->SetInsideValue(thresholdInsideValue);
+    thresholder->Update();
+    std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
   }
 
