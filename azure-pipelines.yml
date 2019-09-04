@@ -125,9 +125,11 @@ jobs:
         rm -rf binaries_windows.zip
       displayName: 'Configure and compile CaPTk'
 
-    # - powershell: |
-    #     wmic logicaldisk get size,freespace,caption
-    #   displayName: 'Disk space check'
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+        cd bin
+        Remove-Item install_manifest.txt
+      displayName: 'Disk space check'
 
     #- script: |
     #    cd bin
@@ -164,6 +166,7 @@ jobs:
         rm -rf binaries
         rm -rf scripts
         rm -rf bin_windows.tar.gz
+        rm -rf install_manifest.txt
 
         cd bin
         rm -rf *proj*
