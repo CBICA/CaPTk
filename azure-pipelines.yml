@@ -51,9 +51,9 @@ jobs:
       displayName: 'Pull LFS'
       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    - powershell: |
-        wmic logicaldisk get size,freespace,caption
-      displayName: 'Disk space check'
+    # - powershell: |
+    #     wmic logicaldisk get size,freespace,caption
+    #   displayName: 'Disk space check'
 
     - bash: |
         tar xvfz bin_windows.tar.gz
@@ -108,13 +108,13 @@ jobs:
       displayName: 'Configure and compile Superbuild'
       # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    - bash: |
-        tar cvfz bin_windows.tar.gz bin
-      displayName: 'Zipping Superbuild'
+    # - bash: |
+    #     tar cvfz bin_windows.tar.gz bin
+    #   displayName: 'Zipping Superbuild'
 
-    - powershell: |
-        wmic logicaldisk get size,freespace,caption
-      displayName: 'Disk space check'
+    # - powershell: |
+    #     wmic logicaldisk get size,freespace,caption
+    #   displayName: 'Disk space check'
 
     - script: |
         cd bin
