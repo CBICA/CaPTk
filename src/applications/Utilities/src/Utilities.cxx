@@ -496,7 +496,16 @@ int algorithmsRunner()
     }
 
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+    return EXIT_SUCCESS;
   }
+
+  /*
+  ThresholdAbove,
+  ThresholdBelow,
+  ThresholdAboveAndBelow,
+  ThresholdOtsu,
+  ThresholdBinary
+  */
   
   return EXIT_SUCCESS;
 }
