@@ -29,7 +29,12 @@ enum AvailableAlgorithms
   Dicom2Nifti,
   Nifti2Dicom,
   Nifti2DicomSeg,
-  OrientImage
+  OrientImage,
+  ThresholdAbove,
+  ThresholdBelow,
+  ThresholdAboveAndBelow,
+  ThresholdOtsu,
+  ThresholdBinary
 };
 
 int requestedAlgorithm = 0;
@@ -40,7 +45,7 @@ size_t resize = 100;
 int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues;
-float resamplingResolution = 1.0;
+float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
 
@@ -524,6 +529,12 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e");
+  parser.addOptionalParameter("thA", "threshAbove", cbica::Parameter::FLOAT, "Desired_Threshold", "The intensity ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
+  parser.addOptionalParameter("thB", "threshBelow", cbica::Parameter::FLOAT, "Desired_Threshold", "The intensity BELOW which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
+  parser.addOptionalParameter("tAB", "threshAnB", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensities outside Lower and Upper thresholds will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
+  parser.addOptionalParameter("thO", "threshOtsu", cbica::Parameter::BOOLEAN, "0-1", "Whether to do Otsu threshold", "Generates a binary image which has been thresholded using Otsu", "Use '-tOI' to set Outside and Inside Values");
+  parser.addOptionalParameter("tBn", "thrshBinary", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensity BELOW and ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Default for OUTSIDE_VALUE=0");
+  parser.addOptionalParameter("tOI", "threshOutIn", cbica::Parameter::STRING, "Outside_Value,Inside_Value", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -678,6 +689,45 @@ int main(int argc, char** argv)
     }
 
     requestedAlgorithm = ChangeValue;
+  }
+
+  else if (parser.isPresent("thA"))
+  {
+    requestedAlgorithm = thresholdAbove;
+    std::string thresholds;
+    parser.getParameterValue("thA", thresholds);
+    auto temp = cbica::stringSplit(thresholds, ",");
+    thresholdAbove = std::atof(temp[0].c_str());
+    if (temp.size() > 1)
+    {
+      thresholdOutsideValue = std::atof(temp[1].c_str());
+    }
+  }
+  
+  else if (parser.isPresent("thB"))
+  {
+    requestedAlgorithm = thresholdAbove;
+    std::string thresholds;
+    parser.getParameterValue("thB", thresholds);
+    auto temp = cbica::stringSplit(thresholds, ",");
+    thresholdBelow = std::atof(temp[0].c_str());
+    if (temp.size() > 1)
+    {
+      thresholdOutsideValue = std::atof(temp[1].c_str());
+    }
+  }
+  
+  else if (parser.isPresent("tAB"))
+  {
+    requestedAlgorithm = thresholdAbove;
+    std::string thresholds;
+    parser.getParameterValue("tAB", thresholds);
+    auto temp = cbica::stringSplit(thresholds, ",");
+    thresholdBelow = std::atof(temp[0].c_str());
+    if (temp.size() > 1)
+    {
+      thresholdOutsideValue = std::atof(temp[1].c_str());
+    }
   }
 
   // this doesn't need any template initialization
