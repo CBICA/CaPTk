@@ -8,6 +8,9 @@
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
 #include "itkBinaryThresholdImageFilter.h"
+#include "itkThresholdImageFilter.h"
+#include "itkBinaryThresholdImageFilter.h"
+#include "itkOtsuThresholdImageFilter.h"
 
 #include "cbicaDCMQIWrapper.h"
 
@@ -500,12 +503,20 @@ int algorithmsRunner()
   }
 
   /*
-  ThresholdAbove,
   ThresholdBelow,
   ThresholdAboveAndBelow,
   ThresholdOtsu,
   ThresholdBinary
   */
+  if (requestedAlgorithm == ThresholdAbove)
+  {
+    auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+    thresholder->SetOutsideValue(thresholdOutsideValue);
+    thresholder->ThresholdAbove(thresholdAbove);
+    thresholder->Update();
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+  }
   
   return EXIT_SUCCESS;
 }
