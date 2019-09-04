@@ -502,10 +502,6 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  /*
-  ThresholdOtsu,
-  ThresholdBinary
-  */
   if (requestedAlgorithm == ThresholdAbove)
   {
     auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
@@ -532,6 +528,18 @@ int algorithmsRunner()
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
     thresholder->SetOutsideValue(thresholdOutsideValue);
     thresholder->ThresholdOutside(thresholdBelow, thresholdAbove);
+    thresholder->Update();
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+  }
+
+  if (requestedAlgorithm == ThresholdBinary)
+  {
+    auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+    thresholder->SetOutsideValue(thresholdOutsideValue);
+    thresholder->SetInsideValue(thresholdInsideValue);
+    thresholder->SetLowerThreshold(thresholdBelow);
+    thresholder->SetUpperThreshold(thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
   }
