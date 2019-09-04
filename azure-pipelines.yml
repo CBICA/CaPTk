@@ -104,6 +104,7 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
         rm -rf installLibs
         rm -rf qt.zip
+        rm -rf binaries_windows.zip
       displayName: 'Configure and compile Superbuild'
       # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
@@ -122,7 +123,10 @@ jobs:
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
         cmake --build . --target ALL_BUILD --config Release
-        rm -rf binaries_windows.zip
+        tar cvfz externalApps.tar.gz externalApps
+        tar cvfz qt.tar.gz qt
+        rm -rf externalApps
+        rm -rf qt
       displayName: 'Configure and compile CaPTk'
 
     - powershell: |
@@ -171,8 +175,6 @@ jobs:
         cd bin
         rm -rf *proj*
 
-        tar cvfz qt.tar.gz qt
-        tar cvfz externalApps.tar.gz externalApps
 
         rm -rf qt
         rm -rf externalApps
