@@ -517,7 +517,17 @@ int algorithmsRunner()
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
   }
-  
+
+  if (requestedAlgorithm == ThresholdBelow)
+  {
+    auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+    thresholder->SetOutsideValue(thresholdOutsideValue);
+    thresholder->ThresholdBelow(thresholdBelow);
+    thresholder->Update();
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+  }
+
   return EXIT_SUCCESS;
 }
 
