@@ -691,43 +691,70 @@ int main(int argc, char** argv)
     requestedAlgorithm = ChangeValue;
   }
 
-  else if (parser.isPresent("thA"))
+  /// common for all thresholding
+  if (parser.isPresent("tOI"))
   {
-    requestedAlgorithm = thresholdAbove;
-    std::string thresholds;
-    parser.getParameterValue("thA", thresholds);
-    auto temp = cbica::stringSplit(thresholds, ",");
-    thresholdAbove = std::atof(temp[0].c_str());
+    std::string lowerAndUpperVals;
+    parser.getParameterValue("tOI", lowerAndUpperVals);
+    auto temp = cbica::stringSplit(lowerAndUpperVals, ",");
+    thresholdOutsideValue = std::atof(temp[0].c_str());
     if (temp.size() > 1)
     {
-      thresholdOutsideValue = std::atof(temp[1].c_str());
+      thresholdInsideValue = std::atof(temp[1].c_str());
     }
+  }
+  ///
+
+  else if (parser.isPresent("thA"))
+  {
+    requestedAlgorithm = ThresholdAbove;
+    std::string thresholds;
+    parser.getParameterValue("thA", thresholdAbove);
   }
   
   else if (parser.isPresent("thB"))
   {
-    requestedAlgorithm = thresholdAbove;
+    requestedAlgorithm = ThresholdBelow;
     std::string thresholds;
-    parser.getParameterValue("thB", thresholds);
-    auto temp = cbica::stringSplit(thresholds, ",");
-    thresholdBelow = std::atof(temp[0].c_str());
-    if (temp.size() > 1)
-    {
-      thresholdOutsideValue = std::atof(temp[1].c_str());
-    }
+    parser.getParameterValue("thB", thresholdBelow);
   }
   
   else if (parser.isPresent("tAB"))
   {
-    requestedAlgorithm = thresholdAbove;
+    requestedAlgorithm = ThresholdAboveAndBelow;
     std::string thresholds;
     parser.getParameterValue("tAB", thresholds);
     auto temp = cbica::stringSplit(thresholds, ",");
-    thresholdBelow = std::atof(temp[0].c_str());
-    if (temp.size() > 1)
+    if (temp.size() < 2)
     {
-      thresholdOutsideValue = std::atof(temp[1].c_str());
+      std::cerr << "Please provide 2 thresholds, for instance '-tAB 15,100'.\n";
     }
+    thresholdBelow = std::atof(temp[0].c_str());
+    thresholdOutsideValue = std::atof(temp[1].c_str());
+  }
+
+  else if (parser.isPresent("thO"))
+  {
+    bool temp;
+    parser.getParameterValue("thO", temp);
+    if (temp)
+    {
+      requestedAlgorithm = ThresholdOtsu;
+    }
+  }
+
+  else if (parser.isPresent("tBn"))
+  {
+    requestedAlgorithm = ThresholdBinary;
+    std::string thresholds;
+    parser.getParameterValue("tBn", thresholds);
+    auto temp = cbica::stringSplit(thresholds, ",");
+    if (temp.size() < 2)
+    {
+      std::cerr << "Please provide 2 thresholds, for instance '-tBn 15,100'.\n";
+    }
+    thresholdBelow = std::atof(temp[0].c_str());
+    thresholdOutsideValue = std::atof(temp[1].c_str());
   }
 
   // this doesn't need any template initialization
