@@ -538,8 +538,8 @@ int algorithmsRunner()
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
     thresholder->SetOutsideValue(thresholdOutsideValue);
     thresholder->SetInsideValue(thresholdInsideValue);
-    thresholder->SetLowerThreshold(thresholdBelow);
-    thresholder->SetUpperThreshold(thresholdAbove);
+    thresholder->SetLowerThreshold(thresholdAbove);
+    thresholder->SetUpperThreshold(thresholdBelow);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
   }
