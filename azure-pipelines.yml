@@ -132,7 +132,7 @@ jobs:
     - powershell: |
         wmic logicaldisk get size,freespace,caption
         cd bin
-        Remove-Item install_manifest.txt
+        # Remove-Item install_manifest.txt
       displayName: 'Disk space check'
 
     #- script: |
