@@ -90,7 +90,7 @@ jobs:
         rm -rf ../.git
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
-      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - script: |
         cd bin
@@ -274,7 +274,7 @@ jobs:
         # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
@@ -438,7 +438,7 @@ jobs:
         # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         cd bin
