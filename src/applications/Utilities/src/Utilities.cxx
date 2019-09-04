@@ -538,8 +538,8 @@ int algorithmsRunner()
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
     thresholder->SetOutsideValue(thresholdOutsideValue);
     thresholder->SetInsideValue(thresholdInsideValue);
-    thresholder->SetLowerThreshold(thresholdAbove);
-    thresholder->SetUpperThreshold(thresholdBelow);
+    thresholder->SetLowerThreshold(thresholdBelow);
+    thresholder->SetUpperThreshold(thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
   }
@@ -791,7 +791,7 @@ int main(int argc, char** argv)
       std::cerr << "Please provide 2 thresholds, for instance '-tAB 15,100'.\n";
     }
     thresholdBelow = std::atof(temp[0].c_str());
-    thresholdOutsideValue = std::atof(temp[1].c_str());
+    thresholdAbove = std::atof(temp[1].c_str());
   }
 
   else if (parser.isPresent("thO"))
@@ -815,7 +815,7 @@ int main(int argc, char** argv)
       std::cerr << "Please provide 2 thresholds, for instance '-tBn 15,100'.\n";
     }
     thresholdBelow = std::atof(temp[0].c_str());
-    thresholdOutsideValue = std::atof(temp[1].c_str());
+    thresholdAbove = std::atof(temp[1].c_str());
   }
 
   // this doesn't need any template initialization
