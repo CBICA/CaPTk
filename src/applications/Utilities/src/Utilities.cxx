@@ -37,7 +37,8 @@ enum AvailableAlgorithms
   ThresholdBelow,
   ThresholdAboveAndBelow,
   ThresholdOtsu,
-  ThresholdBinary
+  ThresholdBinary,
+  ConvertFormat
 };
 
 int requestedAlgorithm = 0;
@@ -510,6 +511,7 @@ int algorithmsRunner()
     thresholder->ThresholdAbove(thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == ThresholdBelow)
@@ -520,6 +522,7 @@ int algorithmsRunner()
     thresholder->ThresholdBelow(thresholdBelow);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == ThresholdAboveAndBelow)
@@ -530,6 +533,7 @@ int algorithmsRunner()
     thresholder->ThresholdOutside(thresholdBelow, thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == ThresholdBinary)
@@ -542,6 +546,7 @@ int algorithmsRunner()
     thresholder->SetUpperThreshold(thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   if (requestedAlgorithm == ThresholdOtsu)
@@ -557,6 +562,13 @@ int algorithmsRunner()
     thresholder->Update();
     std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == ConvertFormat)
+  {
+    cbica::WriteImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+    return EXIT_SUCCESS;
   }
 
   return EXIT_SUCCESS;
@@ -596,6 +608,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("thO", "threshOtsu", cbica::Parameter::BOOLEAN, "0-1", "Whether to do Otsu threshold", "Generates a binary image which has been thresholded using Otsu", "Use '-tOI' to set Outside and Inside Values", "Optional mask to localize Otsu search area");
   parser.addOptionalParameter("tBn", "thrshBinary", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensity BELOW and ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Default for OUTSIDE_VALUE=0");
   parser.addOptionalParameter("tOI", "threshOutIn", cbica::Parameter::STRING, "Outside_Value,Inside_Value", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
+  parser.addOptionalParameter("cov", "convert", cbica::Parameter::BOOLEAN, "0-1", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -816,6 +829,13 @@ int main(int argc, char** argv)
     }
     thresholdBelow = std::atof(temp[0].c_str());
     thresholdAbove = std::atof(temp[1].c_str());
+  }
+
+  else if (parser.isPresent("cov"))
+  {
+    // will not check if the flag is enabled or not; will simply go from 
+    // inputImageFile -> outputImageFile
+    requestedAlgorithm = ConvertFormat;
   }
 
   // this doesn't need any template initialization
