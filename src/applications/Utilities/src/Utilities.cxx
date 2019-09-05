@@ -926,7 +926,12 @@ int main(int argc, char** argv)
     {
       auto output = cbica::GetImageOrientation< ImageType >(cbica::ReadImage< ImageType >(inputImageFile), orientationDesired);
       std::cout << "Original Image Orientation: " << output.first << "\n";
-      cbica::WriteImage< ImageType >(output.second, outputImageFile);
+      std::string path, base, ext;
+      cbica::splitFileName(outputImageFile, path, base, ext);
+      auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
+      cbica::WriteImage< ImageType >(output.second, tempOutputFile);
+      cbica::WriteImage< ImageType >(cbica::ReadImage< TImageType >(tempOutputFile), outputImageFile);
+      std::remove(tempOutputFile.c_str());
       return EXIT_SUCCESS;
     }
 
