@@ -132,7 +132,6 @@ void AppearancePage::OnCancel()
 
 void AppearancePage::Restore()
 {
-	//qDebug() << "AppearancePage::Restore" << endl;
 	this->m_SelectedFont.fromString(ApplicationPreferences::GetInstance()->GetFont());
 	ui->currentFontLabel->setText(this->m_SelectedFont.family());
 

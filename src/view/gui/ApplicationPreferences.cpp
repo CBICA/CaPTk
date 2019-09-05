@@ -45,7 +45,6 @@ void ApplicationPreferences::SerializePreferences()
 	appSettings.setValue("Font", this->m_Font);
 	appSettings.setValue("Theme", this->m_Theme);
 	appSettings.endGroup();
-	qDebug() << " SerializePreferences Done. " << endl;
 }
 
 void ApplicationPreferences::DeSerializePreferences()
@@ -56,7 +55,6 @@ void ApplicationPreferences::DeSerializePreferences()
 	if (QFile(filename).exists())
 	{
 		this->SetFileAvailability(QVariant(true).toString());
-		qDebug() << " settings file name = " << filename << endl;
 		appSettings.beginGroup("Appearance");
 		this->SetFont(appSettings.value("Font").toString());
 		this->SetTheme(appSettings.value("Theme").toString());
@@ -64,7 +62,6 @@ void ApplicationPreferences::DeSerializePreferences()
 	}
 	else
 		this->SetFileAvailability(QVariant(false).toString());
-	qDebug() << " DeSerializePreferences Done. " << endl;
 }
 
 void ApplicationPreferences::DisplayPreferences()
