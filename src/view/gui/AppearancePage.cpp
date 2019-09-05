@@ -14,8 +14,10 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "ui_AppearancePage.h"
 #include <QFontDialog>
 #include <QDebug>
+#include <QMetaEnum>
 #include "CaPTkGUIUtils.h"
 #include "cbicaLogging.h"
+#include "ApplicationPreferences.h"
 
 AppearancePage::AppearancePage(QWidget *parent) :
     QWidget(parent),
@@ -34,8 +36,11 @@ AppearancePage::AppearancePage(QWidget *parent) :
 	connect(ui->themeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnChangeTheme(int)));
 
 	//! initialize with DARK theme
-	ui->themeComboBox->setCurrentIndex(ThemeType::Dark);
-	this->OnOkay();
+	if (!QVariant(ApplicationPreferences::GetInstance()->GetFileAvailability()).toBool())
+	{
+		ui->themeComboBox->setCurrentIndex(ThemeType::Dark);
+		this->OnOkay();
+	}
 
 }
 
@@ -106,6 +111,10 @@ void AppearancePage::OnOkay()
 	//! apply selected font and stylesheet
 	qApp->setFont(this->m_SelectedFont);
 	qApp->setStyleSheet(this->m_SelectedStyleSheet);
+
+	ApplicationPreferences::GetInstance()->SetFont(this->m_SelectedFont.toString());
+	ApplicationPreferences::GetInstance()->SetTheme(QVariant::fromValue(this->m_SelectedTheme).toString());
+	ApplicationPreferences::GetInstance()->DisplayPreferences();
 	
 }
 
@@ -119,4 +128,17 @@ void AppearancePage::OnCancel()
 	//! keep previous font, style
 	qApp->setFont(this->m_PreviousFont);
 	qApp->setStyleSheet(this->m_PreviousStyleSheet);
+}
+
+void AppearancePage::Restore()
+{
+	this->m_SelectedFont.fromString(ApplicationPreferences::GetInstance()->GetFont());
+	ui->currentFontLabel->setText(this->m_SelectedFont.family());
+
+	auto metaEnum = QMetaEnum::fromType<ThemeType>();
+	this->m_SelectedTheme = static_cast<ThemeType>(metaEnum.keyToValue(
+		ApplicationPreferences::GetInstance()->GetTheme().toStdString().c_str()));
+
+	ui->themeComboBox->setCurrentIndex(this->m_SelectedTheme);
+	this->OnOkay();
 }

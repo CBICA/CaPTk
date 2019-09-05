@@ -41,6 +41,7 @@ public slots:
 	void OnChangeTheme(int);
 	void OnOkay() override;
 	void OnCancel() override;
+	void Restore() override;
 
 private:
     Ui::AppearancePage *ui;
