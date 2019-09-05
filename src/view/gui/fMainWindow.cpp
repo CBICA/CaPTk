@@ -64,6 +64,7 @@
 #include "QtConcurrent/qtconcurrentrun.h"
 
 #include "itkTranslationTransform.h"
+#include "ApplicationPreferences.h"
 
 //#include "DicomSeriesReader.h"
 
@@ -162,6 +163,10 @@ fMainWindow::fMainWindow()
 {
 
   setupUi(this);
+
+  //! load preferences
+  ApplicationPreferences::GetInstance()->DeSerializePreferences();
+  ApplicationPreferences::GetInstance()->DisplayPreferences();
 
   //! comparison mode OFF at startup
   this->SetComparisonMode(false);
@@ -986,6 +991,7 @@ fMainWindow::~fMainWindow()
   if (mHelpDlg)
     delete mHelpDlg;
 
+  ApplicationPreferences::GetInstance()->SerializePreferences();
 }
 
   void fMainWindow::loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage, const float maskOpacity,
