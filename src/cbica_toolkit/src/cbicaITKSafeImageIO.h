@@ -75,42 +75,33 @@ namespace cbica
     //  exit(EXIT_FAILURE);
     //}
 
-    std::string fName_wrap = cbica::normPath(fName);
-
-    std::string fileExtension = cbica::getFilenameExtension(fName_wrap);
-    std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(), ::tolower);
-
     auto reader = /*typename*/ itk::ImageFileReader< TImageType >::New();
 
-    if (fileExtension == ".dcm")
+    if (cbica::IsDicom(fName_wrap) || cbica::isDir(fName))
     {
-      auto filesInDir = cbica::filesInDirectory(cbica::getFilenamePath(fName_wrap));
-      if (filesInDir.size() > 1)
-      {
-        std::cerr << "Trying to read DICOM file. Please use DICOMImageReader.\n";
-        return reader;
-      }
+      std::cerr << "Trying to read DICOM file. Please use ReadImage<>.\n";
+      return reader;
     }
 
-    if (supportedExtensions != "")
-    {
-      std::vector< std::string > extensions = cbica::stringSplit(supportedExtensions, delimitor);
+    //if (supportedExtensions != "")
+    //{
+    //  std::vector< std::string > extensions = cbica::stringSplit(supportedExtensions, delimitor);
 
-      bool supportedExtensionFound = false;
-      for (size_t i = 0; i < extensions.size(); i++)
-      {
-        if (extensions[i] == fileExtension)
-        {
-          supportedExtensionFound = true;
-        }
-      }
+    //  bool supportedExtensionFound = false;
+    //  for (size_t i = 0; i < extensions.size(); i++)
+    //  {
+    //    if (extensions[i] == fileExtension)
+    //    {
+    //      supportedExtensionFound = true;
+    //    }
+    //  }
 
-      if (!supportedExtensionFound)
-      {
-        std::cerr << "Supplied file name '" << fName_wrap << "' doesn't have a supported extension. \nSupported Extensions: " << supportedExtensions << "\n";
-        return reader;
-      }
-    }
+    //  if (!supportedExtensionFound)
+    //  {
+    //    std::cerr << "Supplied file name '" << fName_wrap << "' doesn't have a supported extension. \nSupported Extensions: " << supportedExtensions << "\n";
+    //    return reader;
+    //  }
+    //}
 
     // ensure that the requested image dimensions and read image dimensions match up
     auto imageInfo = cbica::ImageInfo(fName_wrap);
@@ -126,27 +117,27 @@ namespace cbica
 
     reader->SetFileName(fName_wrap);
 
-    auto supportedExtsVector = cbica::stringSplit(supportedExtensions, ",");
+    //auto supportedExtsVector = cbica::stringSplit(supportedExtensions, ",");
 
-    if (std::find(supportedExtsVector.begin(), supportedExtsVector.end(), fileExtension) == supportedExtsVector.end())
-    {
-      std::cerr << "Extension of file doesn't match the supported extensions; can't read.\n";
-      return reader;
-    }
+    //if (std::find(supportedExtsVector.begin(), supportedExtsVector.end(), fileExtension) == supportedExtsVector.end())
+    //{
+    //  std::cerr << "Extension of file doesn't match the supported extensions; can't read.\n";
+    //  return reader;
+    //}
 
-    // set image IO type
-    if ((fileExtension == ".dcm") || (fileExtension == ".dicom"))
-    {
-      //auto ioType = itk::GDCMKImageIO::New();
-      //ioType->SetFileName(fName_wrap);
-      //reader->SetImageIO(ioType);
-    }
-    else if ((fileExtension == ".nii") || (fileExtension == ".nii.gz"))
-    {
-      auto ioType = itk::NiftiImageIO::New();
-      ioType->SetFileName(fName_wrap);
-      reader->SetImageIO(ioType);
-    }
+    //// set image IO type - this is done internally in itk::ImageFileReader
+    //if ((fileExtension == ".dcm") || (fileExtension == ".dicom"))
+    //{
+    //  //auto ioType = itk::GDCMKImageIO::New();
+    //  //ioType->SetFileName(fName_wrap);
+    //  //reader->SetImageIO(ioType);
+    //}
+    //else if ((fileExtension == ".nii") || (fileExtension == ".nii.gz"))
+    //{
+    //  auto ioType = itk::NiftiImageIO::New();
+    //  ioType->SetFileName(fName_wrap);
+    //  reader->SetImageIO(ioType);
+    //}
 
     try
     {
@@ -463,13 +454,7 @@ namespace cbica
     filter->Update();
 
     auto writer = /*typename*/ itk::ImageFileWriter< ExpectedImageType >::New();
-
-    auto ext = cbica::getFilenameExtension(fileName, false);
-    if ((ext == ".nii") || (ext == ".nii.gz"))
-    {
-      writer->SetImageIO(itk::NiftiImageIO::New());
-    }
-
+    
     writer->SetInput(filter->GetOutput());
     writer->SetFileName(fileName);
 
