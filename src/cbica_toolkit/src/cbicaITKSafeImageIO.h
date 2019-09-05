@@ -77,7 +77,7 @@ namespace cbica
 
     auto reader = /*typename*/ itk::ImageFileReader< TImageType >::New();
 
-    if (cbica::IsDicom(fName_wrap) || cbica::isDir(fName))
+    if (cbica::IsDicom(fName) || cbica::isDir(fName))
     {
       std::cerr << "Trying to read DICOM file. Please use ReadImage<>.\n";
       return reader;
@@ -104,7 +104,7 @@ namespace cbica
     //}
 
     // ensure that the requested image dimensions and read image dimensions match up
-    auto imageInfo = cbica::ImageInfo(fName_wrap);
+    auto imageInfo = cbica::ImageInfo(fName);
 
     // perform basic sanity check
     if ((imageInfo.GetImageDimensions() != TImageType::ImageDimension) &&
@@ -115,7 +115,7 @@ namespace cbica
       return reader;
     }
 
-    reader->SetFileName(fName_wrap);
+    reader->SetFileName(fName);
 
     //auto supportedExtsVector = cbica::stringSplit(supportedExtensions, ",");
 
@@ -145,7 +145,7 @@ namespace cbica
     }
     catch (itk::ExceptionObject& e)
     {
-      std::cerr << "Exception caught while reading the image '" << fName_wrap << "': " << e.what() << "\n";
+      std::cerr << "Exception caught while reading the image '" << fName << "': " << e.what() << "\n";
       return reader;
     }
 
