@@ -31,7 +31,8 @@ ExternalProject_Add(
   SOURCE_DIR ITK-source
   BINARY_DIR ITK-build
   UPDATE_COMMAND ""
-  PATCH_COMMAND git apply ${PROJECT_SOURCE_DIR}/cmake_modules/itk.patch
+  PATCH_COMMAND ""
+#  PATCH_COMMAND git apply ${PROJECT_SOURCE_DIR}/cmake_modules/itk.patch
   #BUILD_COMMAND ""
   INSTALL_COMMAND cmake -E echo "Skipping install step."
   CMAKE_GENERATOR ${gen}
