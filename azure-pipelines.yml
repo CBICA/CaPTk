@@ -42,14 +42,14 @@ jobs:
         git submodule update
       displayName: 'Git Submodule Init and Update'
 
-    # Pull LFS
-    - bash: |
-        export GIT_LFS_SKIP_SMUDGE=1
-        # git lfs pull --include "binaries/precompiledApps/windows.zip"
-        # git lfs pull --include "binaries/qt_5.12.1/windows.zip"
-        #echo "Not doing this until quota is improved on GitHub"
-      displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+    # # Pull LFS
+    # - bash: |
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #     # git lfs pull --include "binaries/precompiledApps/windows.zip"
+    #     # git lfs pull --include "binaries/qt_5.12.1/windows.zip"
+    #     #echo "Not doing this until quota is improved on GitHub"
+    #   displayName: 'Pull LFS'
+    #   condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
@@ -213,15 +213,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_LINUX
-    #     continueOnError : true
-    #     restoreKeys: |
-    #       "bin_linux.tar.gz"
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_LINUX
+        continueOnError : true
+        restoreKeys: |
+          "bin_linux.tar.gz"
+      displayName: 'Caching'
 
     # Dependency manager
     - bash: |
@@ -377,15 +377,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_MAC
-    #     continueOnError : true
-    #     restoreKeys: |
-    #       "bin_macos.tar.gz"
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_MAC
+        continueOnError : true
+        restoreKeys: |
+          "bin_macos.tar.gz"
+      displayName: 'Caching'
 
     - bash: |
         brew install make doxygen libomp
