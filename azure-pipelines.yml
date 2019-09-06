@@ -22,15 +22,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_windows.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_WINDOWS
-    #     restoreKeys: |
-    #       "bin_windows.tar.gz"
-    #     continueOnError : true
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_windows.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_WINDOWS
+        restoreKeys: |
+          "bin_windows.tar.gz"
+        continueOnError : true
+      displayName: 'Caching'
 
     - script: |
         choco install doxygen.install nsis.install wget
@@ -51,9 +51,9 @@ jobs:
       displayName: 'Pull LFS'
       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    - powershell: |
-        wmic logicaldisk get size,freespace,caption
-      displayName: 'Disk space check'
+    # - powershell: |
+    #     wmic logicaldisk get size,freespace,caption
+    #   displayName: 'Disk space check'
 
     - bash: |
         tar xvfz bin_windows.tar.gz
@@ -90,7 +90,7 @@ jobs:
         rm -rf ../.git
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
-      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - script: |
         cd bin
@@ -104,16 +104,17 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
         rm -rf installLibs
         rm -rf qt.zip
+        rm -rf binaries_windows.zip
       displayName: 'Configure and compile Superbuild'
-      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    - bash: |
-        tar cvfz bin_windows.tar.gz bin
-      displayName: 'Zipping Superbuild'
+    # - bash: |
+    #     tar cvfz bin_windows.tar.gz bin
+    #   displayName: 'Zipping Superbuild'
 
-    - powershell: |
-        wmic logicaldisk get size,freespace,caption
-      displayName: 'Disk space check'
+    # - powershell: |
+    #     wmic logicaldisk get size,freespace,caption
+    #   displayName: 'Disk space check'
 
     - script: |
         cd bin
@@ -122,12 +123,14 @@ jobs:
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
         cmake --build . --target ALL_BUILD --config Release
-        rm -rf binaries_windows.zip
+        rm -rf externalApps
       displayName: 'Configure and compile CaPTk'
 
-    # - powershell: |
-    #     wmic logicaldisk get size,freespace,caption
-    #   displayName: 'Disk space check'
+    - powershell: |
+        wmic logicaldisk get size,freespace,caption
+        cd bin
+        # Remove-Item install_manifest.txt
+      displayName: 'Disk space check'
 
     #- script: |
     #    cd bin
@@ -139,22 +142,23 @@ jobs:
     #    cmake --build . --target RUN_TESTS --config Release
     #  displayName: 'Performing the Tests'
 
-    - script: |
-        cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
-        rm -rf binaries_windows.zip
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-        cmake --build . --target PACKAGE --config Release
+    # - script: |
+    #     cd bin
+    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+    #     rm -rf binaries_windows.zip
+    #     rm -rf install_manifest.txt
+    #     setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+    #     setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+    #     cmake --build . --target PACKAGE --config Release
 
-        ls -lt *_Installer.*
+    #     ls -lt *_Installer.*
 
-        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+    #     mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
-        cd ../
+    #     cd ../
 
-      displayName: 'Build & Package CaPTk'
+    #   displayName: 'Build & Package CaPTk'
 
     - bash: |
         rm -rf src
@@ -163,12 +167,13 @@ jobs:
         rm -rf binaries
         rm -rf scripts
         rm -rf bin_windows.tar.gz
+        rm -rf install_manifest.txt
 
         cd bin
         rm -rf *proj*
 
-        tar cvfz qt.tar.gz qt
         tar cvfz externalApps.tar.gz externalApps
+        tar cvfz qt.tar.gz qt
 
         rm -rf qt
         rm -rf externalApps
@@ -184,17 +189,17 @@ jobs:
     #     wmic logicaldisk get size,freespace,caption
     #   displayName: 'Disk space check'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Windows'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Windows'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
@@ -269,7 +274,7 @@ jobs:
         # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
@@ -277,7 +282,7 @@ jobs:
         cmake -DQT_DOWNLOAD_FORCE=ON -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
       displayName: 'Configure and compile Superbuild'
-      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
         tar cvfz bin_linux.tar.gz bin
@@ -433,7 +438,7 @@ jobs:
         # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         cd bin
@@ -446,7 +451,7 @@ jobs:
         make -j 2
 
       displayName: 'Configure and compile Superbuild'
-      # condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
     - bash: |
         tar cvfz bin_macos.tar.gz bin
@@ -502,6 +507,7 @@ jobs:
 
         rm -rf *.pkg
         rm -rf _CPack*
+        rm -rf install_manifest.txt
         make package
 
         # echo "Change deepmedic libomp dylib path"

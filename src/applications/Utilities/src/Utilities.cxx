@@ -8,6 +8,9 @@
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
 #include "itkBinaryThresholdImageFilter.h"
+#include "itkThresholdImageFilter.h"
+#include "itkBinaryThresholdImageFilter.h"
+#include "itkOtsuThresholdImageFilter.h"
 
 #include "cbicaDCMQIWrapper.h"
 
@@ -29,7 +32,13 @@ enum AvailableAlgorithms
   Dicom2Nifti,
   Nifti2Dicom,
   Nifti2DicomSeg,
-  OrientImage
+  OrientImage,
+  ThresholdAbove,
+  ThresholdBelow,
+  ThresholdAboveAndBelow,
+  ThresholdOtsu,
+  ThresholdBinary,
+  ConvertFormat
 };
 
 int requestedAlgorithm = 0;
@@ -40,7 +49,7 @@ size_t resize = 100;
 int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues;
-float resamplingResolution = 1.0;
+float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
 
@@ -491,8 +500,77 @@ int algorithmsRunner()
     }
 
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+    return EXIT_SUCCESS;
   }
-  
+
+  if (requestedAlgorithm == ThresholdAbove)
+  {
+    auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+    thresholder->SetOutsideValue(thresholdOutsideValue);
+    thresholder->ThresholdAbove(thresholdAbove);
+    thresholder->Update();
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == ThresholdBelow)
+  {
+    auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+    thresholder->SetOutsideValue(thresholdOutsideValue);
+    thresholder->ThresholdBelow(thresholdBelow);
+    thresholder->Update();
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == ThresholdAboveAndBelow)
+  {
+    auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+    thresholder->SetOutsideValue(thresholdOutsideValue);
+    thresholder->ThresholdOutside(thresholdBelow, thresholdAbove);
+    thresholder->Update();
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == ThresholdBinary)
+  {
+    auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+    thresholder->SetOutsideValue(thresholdOutsideValue);
+    thresholder->SetInsideValue(thresholdInsideValue);
+    thresholder->SetLowerThreshold(thresholdBelow);
+    thresholder->SetUpperThreshold(thresholdAbove);
+    thresholder->Update();
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == ThresholdOtsu)
+  {
+    auto thresholder = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
+    thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+    if (!inputMaskFile.empty())
+    {
+      thresholder->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+    }
+    thresholder->SetOutsideValue(thresholdOutsideValue);
+    thresholder->SetInsideValue(thresholdInsideValue);
+    thresholder->Update();
+    std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == ConvertFormat)
+  {
+    cbica::WriteImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+    return EXIT_SUCCESS;
+  }
+
   return EXIT_SUCCESS;
 }
 
@@ -524,6 +602,13 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e");
+  parser.addOptionalParameter("thA", "threshAbove", cbica::Parameter::FLOAT, "Desired_Threshold", "The intensity ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
+  parser.addOptionalParameter("thB", "threshBelow", cbica::Parameter::FLOAT, "Desired_Threshold", "The intensity BELOW which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
+  parser.addOptionalParameter("tAB", "threshAnB", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensities outside Lower and Upper thresholds will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
+  parser.addOptionalParameter("thO", "threshOtsu", cbica::Parameter::BOOLEAN, "0-1", "Whether to do Otsu threshold", "Generates a binary image which has been thresholded using Otsu", "Use '-tOI' to set Outside and Inside Values", "Optional mask to localize Otsu search area");
+  parser.addOptionalParameter("tBn", "thrshBinary", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensity BELOW and ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Default for OUTSIDE_VALUE=0");
+  parser.addOptionalParameter("tOI", "threshOutIn", cbica::Parameter::STRING, "Outside_Value,Inside_Value", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
+  parser.addOptionalParameter("cov", "convert", cbica::Parameter::BOOLEAN, "0-1", "The values that will go inside and outside the thresholded region", "Defaults to '1'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -680,6 +765,79 @@ int main(int argc, char** argv)
     requestedAlgorithm = ChangeValue;
   }
 
+  /// common for all thresholding
+  if (parser.isPresent("tOI"))
+  {
+    std::string lowerAndUpperVals;
+    parser.getParameterValue("tOI", lowerAndUpperVals);
+    auto temp = cbica::stringSplit(lowerAndUpperVals, ",");
+    thresholdOutsideValue = std::atof(temp[0].c_str());
+    if (temp.size() > 1)
+    {
+      thresholdInsideValue = std::atof(temp[1].c_str());
+    }
+  }
+  ///
+
+  else if (parser.isPresent("thA"))
+  {
+    requestedAlgorithm = ThresholdAbove;
+    std::string thresholds;
+    parser.getParameterValue("thA", thresholdAbove);
+  }
+  
+  else if (parser.isPresent("thB"))
+  {
+    requestedAlgorithm = ThresholdBelow;
+    std::string thresholds;
+    parser.getParameterValue("thB", thresholdBelow);
+  }
+  
+  else if (parser.isPresent("tAB"))
+  {
+    requestedAlgorithm = ThresholdAboveAndBelow;
+    std::string thresholds;
+    parser.getParameterValue("tAB", thresholds);
+    auto temp = cbica::stringSplit(thresholds, ",");
+    if (temp.size() < 2)
+    {
+      std::cerr << "Please provide 2 thresholds, for instance '-tAB 15,100'.\n";
+    }
+    thresholdBelow = std::atof(temp[0].c_str());
+    thresholdAbove = std::atof(temp[1].c_str());
+  }
+
+  else if (parser.isPresent("thO"))
+  {
+    bool temp;
+    parser.getParameterValue("thO", temp);
+    if (temp)
+    {
+      requestedAlgorithm = ThresholdOtsu;
+    }
+  }
+
+  else if (parser.isPresent("tBn"))
+  {
+    requestedAlgorithm = ThresholdBinary;
+    std::string thresholds;
+    parser.getParameterValue("tBn", thresholds);
+    auto temp = cbica::stringSplit(thresholds, ",");
+    if (temp.size() < 2)
+    {
+      std::cerr << "Please provide 2 thresholds, for instance '-tBn 15,100'.\n";
+    }
+    thresholdBelow = std::atof(temp[0].c_str());
+    thresholdAbove = std::atof(temp[1].c_str());
+  }
+
+  else if (parser.isPresent("cov"))
+  {
+    // will not check if the flag is enabled or not; will simply go from 
+    // inputImageFile -> outputImageFile
+    requestedAlgorithm = ConvertFormat;
+  }
+
   // this doesn't need any template initialization
   if (requestedAlgorithm == SanityCheck)
   {
@@ -768,7 +926,12 @@ int main(int argc, char** argv)
     {
       auto output = cbica::GetImageOrientation< ImageType >(cbica::ReadImage< ImageType >(inputImageFile), orientationDesired);
       std::cout << "Original Image Orientation: " << output.first << "\n";
-      cbica::WriteImage< ImageType >(output.second, outputImageFile);
+      std::string path, base, ext;
+      cbica::splitFileName(outputImageFile, path, base, ext);
+      auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
+      cbica::WriteImage< ImageType >(output.second, tempOutputFile);
+      cbica::WriteImage< ImageType >(cbica::ReadImage< TImageType >(tempOutputFile), outputImageFile);
+      std::remove(tempOutputFile.c_str());
       return EXIT_SUCCESS;
     }
 

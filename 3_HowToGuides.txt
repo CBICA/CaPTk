@@ -1246,5 +1246,13 @@ This is a command line executable containing the following functionalities:
 - Create mask from threshold
 - DICOM to NIfTI conversion
 - NIfTI to DICOM & DICOM-Seg conversion
+- Orientation fix
+- Thresholding:
+  - Below
+  - Above
+  - Above & Below
+  - Otsu 
+  - Binary
+- Convert file formats
 
 */
