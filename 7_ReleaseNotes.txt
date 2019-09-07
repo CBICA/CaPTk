@@ -2,10 +2,8 @@
 
 \page ReleaseNotes Changelog: Release Notes
 
-- Preferences dialog added (see File > Preferences)
-- DICOM reading updates on the GUI
-- DeepMedic runtime fixes
-- Comparison mode works on 2 images
+- Light/Dark mode and font switcher
+- Lots of new Utilities (NIfTI to DICOM & DICOM-Seg object conversion, Orientation change, Thresholding, File format conversion)
 - Generic bug fixes and improvements 
 
 ## Known Issues
@@ -13,6 +11,14 @@
 https://github.com/CBICA/CaPTk/issues
 
 ## Older Versions
+
+### 1.7.2
+
+- Preferences dialog added (see File > Preferences)
+- DICOM reading updates on the GUI
+- DeepMedic runtime fixes
+- Comparison mode works on 2 images
+- Generic bug fixes and improvements 
 
 ### 1.7.1 
 
