@@ -216,7 +216,7 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)_1"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
@@ -277,10 +277,17 @@ jobs:
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
+     # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
+
     # Configure and build superbuild
     - bash: |
         cd bin
-        cmake -DQT_DOWNLOAD_FORCE=ON -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
@@ -288,13 +295,6 @@ jobs:
     - bash: |
         tar cvfz bin_linux.tar.gz bin
       displayName: 'Zipping Superbuild'
-
-    # Check qt
-    - bash: |
-        cd bin
-        ls -a
-        ls ./qt/
-      displayName: 'Check qt'
 
     # Configure and build CaPTk
     - bash: |
@@ -447,14 +447,14 @@ jobs:
         ls -a
         ls ./qt/
       displayName: 'Check qt'
-      
+
     - bash: |
         cd bin
 
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-        cmake -DQT_DOWNLOAD_FORCE=ON ../ -DCMAKE_INSTALL_PREFIX="./install"
+        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
         make -j 2
 
