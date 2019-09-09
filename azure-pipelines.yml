@@ -290,7 +290,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
         tar cvfz bin_linux.tar.gz bin
