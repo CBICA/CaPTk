@@ -275,7 +275,7 @@ jobs:
         # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
@@ -295,7 +295,7 @@ jobs:
         ls -a
         ls ./qt/
       displayName: 'Check qt'
-      
+
     # Configure and build CaPTk
     - bash: |
         cd bin
