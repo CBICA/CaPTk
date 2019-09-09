@@ -216,7 +216,7 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)_1"'
+        key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
@@ -277,13 +277,6 @@ jobs:
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
-     # Check qt
-    - bash: |
-        cd bin
-        ls -a
-        ls ./qt/
-      displayName: 'Check qt'
-
     # Configure and build superbuild
     - bash: |
         cd bin
@@ -296,6 +289,13 @@ jobs:
         tar cvfz bin_linux.tar.gz bin
       displayName: 'Zipping Superbuild'
 
+     # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
+      
     # Configure and build CaPTk
     - bash: |
         cd bin
