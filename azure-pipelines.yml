@@ -74,6 +74,7 @@ jobs:
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
       displayName: 'Downloading via wget'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # Moving LFS Files
     - bash: |
@@ -119,7 +120,7 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DQT_DOWNLOAD_FORCE=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
         cmake --build . --target ALL_BUILD --config Release
@@ -288,21 +289,21 @@ jobs:
         tar cvfz bin_linux.tar.gz bin
       displayName: 'Zipping Superbuild'
 
-    # Configure and build CaPTk
-    - bash: |
-        cd bin
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..
-        make -j2
-        make install/strip
-      displayName: 'Configure and compile CaPTk'
-
     # Check qt
     - bash: |
         cd bin
         ls -a
         ls ./qt/
       displayName: 'Check qt'
+
+    # Configure and build CaPTk
+    - bash: |
+        cd bin
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        make -j2
+        make install/strip
+      displayName: 'Configure and compile CaPTk'
 
     # Check libra
     - bash: |
@@ -440,6 +441,13 @@ jobs:
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
+    # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
+      
     - bash: |
         cd bin
 
