@@ -9,20 +9,16 @@ RUN apt-get update
 RUN apt-get install -y \
     build-essential \
     mesa-utils \
-    freeglut3-dev 
-
-RUN apt-get install -y \
+    freeglut3-dev \
     wget \
     git \
     unzip \
     doxygen \
-    -qq 
-RUN apt-get install -y \
+    -qq \
     gcc-4.8 \
     g++-4.8 \
     make \
-    libgl-dev 
-RUN apt-get install -y \
+    libgl-dev \
     python3-pip \
     python-numpy \
     dos2unix \
