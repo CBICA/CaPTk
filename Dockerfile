@@ -5,8 +5,7 @@ LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 #general dependencies
 RUN apt-get install -y \
     build-essential \
-    mesa-common-dev \
-    freeglut3-dev \
+    mesa-utils \
     wget \
     git-core \
     unzip \
