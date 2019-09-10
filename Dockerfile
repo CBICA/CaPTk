@@ -11,7 +11,7 @@ RUN apt-get install -y \
     mesa-utils \
     freeglut3-dev \
     wget \
-    git \
+    git-core \
     unzip \
     doxygen \
     -qq \
