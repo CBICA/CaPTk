@@ -80,19 +80,14 @@ ENV HOME=/opt/app-root/src \
 RUN git clone https://github.com/CBICA/CaPTk.git
 
 # start superbuild and then build CaPTk
-RUN export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
-    which cmake && \
+RUN which cmake && \
     cd CaPTk && \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin && cd bin && \
-    cmake -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=./install_libs \
-    -Wno-dev .. && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev .. && \
     make -j4 && \
     echo "=== Building CaPTk ===" && \
-    cmake -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=./install \
-    -Wno-dev .. && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install -Wno-dev .. && \
     make install/strip -j4
 
 # define entry point
