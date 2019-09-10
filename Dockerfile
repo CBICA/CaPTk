@@ -26,6 +26,11 @@ RUN apt-get install -y \
     nodejs \
     npm 
 
+# testing git installation
+RUN add-apt-repository ppa:git-core/ppa; \
+    apt-get update; \
+    apt-get install -y git
+
 # git lfs
 RUN apt-get update && \
     apt-get install -y sudo curl git && \
