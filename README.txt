@@ -25,8 +25,6 @@ We coordinate our bugs and feature requests via out GitHub page: https://github.
 
 Please see our [FAQ Section](gs_FAQ.html). 
 
-Testing.
-
 ## Supporting Grant
 This work is supported by the NIH/NCI/ITCR* grant U24-CA189523.
 <br>* National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research
