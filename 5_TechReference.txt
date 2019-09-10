@@ -22,6 +22,7 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 
 Here we describe the various defaults.
 
+
 \section tr_fe_batch Batch Mode
 
 Here we describe the batch processing mode.
