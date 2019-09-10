@@ -1,11 +1,32 @@
-FROM centos:7
+FROM ubuntu:16.04
 
 LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 
-#update
-RUN yum -y update bash
+#general dependencies
+RUN apt-get install -y \
+    build-essential \
+    mesa-common-dev \
+    freeglut3-dev \
+    wget \
+    git-core \
+    unzip \
+    doxygen \
+    -qq \
+    gcc-4.8 \
+    g++-4.8 \
+    make \
+    libgl-dev \
+    python3-pip \
+    python-numpy \
+    dos2unix \
+    libxkbcommon-x11-0doxygen 
 
-RUN yum update -y
+# git lfs
+RUN apt-get update && \
+    apt-get install -y sudo curl git && \
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
+    sudo apt-get install git-lfs; \
+    git lfs install
 
 # taken from https://github.com/sclorg/devtoolset-container/blob/master/6-toolchain/Dockerfile
 RUN yum install -y centos-release-scl-rh wget && \
@@ -79,9 +100,10 @@ ENV HOME=/opt/app-root/src \
 # clone the current repo
 RUN git clone https://github.com/CBICA/CaPTk.git
 
+RUN which cmake
+
 # start superbuild and then build CaPTk
-RUN which cmake && \
-    cd CaPTk && \
+RUN cd CaPTk && \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin && cd bin && \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev .. && \
