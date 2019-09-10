@@ -7,7 +7,7 @@ RUN apt-get install -y \
     build-essential \
     mesa-utils \
     wget \
-    git-core \
+    git \
     unzip \
     doxygen \
     -qq \
