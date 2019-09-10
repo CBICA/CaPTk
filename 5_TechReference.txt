@@ -28,6 +28,8 @@ Here we will tell the world that Aimilia is awesome.!
 
 Here we describe the batch processing mode.
 
+Here is a more detailed description of the batch mode.
+
 \section tr_fe_somethingElse Something Else 
 
 And the list goes on.
