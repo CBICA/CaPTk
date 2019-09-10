@@ -6,15 +6,20 @@ LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 RUN apt-get install -y \
     build-essential \
     mesa-utils \
+    freeglut3-dev 
+
+RUN apt-get install -y \
     wget \
     git \
     unzip \
     doxygen \
-    -qq \
+    -qq 
+RUN apt-get install -y \
     gcc-4.8 \
     g++-4.8 \
     make \
-    libgl-dev \
+    libgl-dev 
+RUN apt-get install -y \
     python3-pip \
     python-numpy \
     dos2unix \
