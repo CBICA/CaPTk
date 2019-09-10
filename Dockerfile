@@ -3,7 +3,7 @@ FROM ubuntu:16.04
 LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 
 # update
-RUN apt-get update && 
+RUN apt-get update  
 
 #general dependencies
 RUN apt-get install -y \
