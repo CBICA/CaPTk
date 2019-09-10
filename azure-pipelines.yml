@@ -595,7 +595,6 @@ jobs:
     dockerId: cbica
     imageName: captk
     tagName: latest
-    dockerRegistryEndpoint_azure: cbicaDockerHub
 
   pool:
     vmImage: 'Ubuntu-16.04'
@@ -608,7 +607,7 @@ jobs:
       displayName: 'Build the Image'
       inputs:
         containerregistrytype: 'container Registry'
-        dockerRegistryEndpoint: $(dockerRegistryEndpoint_azure)
+        dockerRegistryEndpoint: cbicaDockerHub
         imageName: '$(dockerId)/$(imageName):$(tagName)'
         command: build an image
         dockerFile: '**/Dockerfile'
@@ -617,7 +616,7 @@ jobs:
       displayName: Login
       inputs:
         containerregistrytype: 'container Registry'
-        dockerRegistryEndpoint: $(dockerRegistryEndpoint_azure)
+        dockerRegistryEndpoint: cbicaDockerHub
         command: login
 
     - task: Docker@1
