@@ -2822,6 +2822,8 @@ void FeatureExtraction< TImage >::Update()
           std::ofstream myfile;
           myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
 
+          cbica::stringReplace(currentPatientModalityROIFeatureFamilyFeature, "_", ",");
+
           myfile << currentPatientModalityROIFeatureFamilyFeature + "Max" +
             "," + currentMax + "," + "\n";
           myfile << currentPatientModalityROIFeatureFamilyFeature + "Min" +
