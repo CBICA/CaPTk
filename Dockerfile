@@ -40,7 +40,7 @@ RUN apt-get install -y \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin && cd bin && \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev .. && \
-    make -j4 && \
+    make && \
     echo "=== Building CaPTk ===" && \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install -Wno-dev .. && \
     make install/strip -j4
