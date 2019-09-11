@@ -23,33 +23,20 @@ RUN apt-get install -y \
     dos2unix \
     libxkbcommon-x11-0 \
     nodejs \
-    npm 
-
-# git lfs
-RUN apt-get update && \
+    npm; \
+    wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz; \
+    tar -xf cmake-3.12.4-Linux-x86_64.tar.gz && \
+    export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH; \
+    export GIT_LFS_SKIP_SMUDGE=1; \
+    apt-get update && \
     apt-get install -y sudo curl git && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
     sudo apt-get install git-lfs; \
     git lfs install; \
     git clone https://github.com/CBICA/CaPTk.git; \
+    cd CaPTk; \
     git submodule init; \
-    git submodule update
-
-# cmake installation
-RUN wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz; \
-    tar -xf cmake-3.12.4-Linux-x86_64.tar.gz 
-
-# setup environment
-ENV PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin \
-    GIT_LFS_SKIP_SMUDGE=1 
-
-# clone the current repo
-# RUN git clone https://github.com/CBICA/CaPTk.git
-
-RUN which cmake
-
-# start superbuild and then build CaPTk
-RUN cd CaPTk && \
+    git submodule update; \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin && cd bin && \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev .. && \
