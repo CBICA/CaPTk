@@ -33,14 +33,15 @@ RUN apt-get install -y \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
     sudo apt-get install git-lfs; \
     git lfs install; \
-    git clone https://github.com/CBICA/CaPTk.git; \
+    if [ ! -d "$CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi \
     cd CaPTk; \
+    rm -rf *.bin; \
     git submodule init; \
     git submodule update; \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin && cd bin && \
-    wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; \
-    wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip; \
+    if [ ! -d "$externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi \
+    if [ ! -d "$qt" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O binaries_linux.zip; fi \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev .. && \
     make && \
     echo "=== Building CaPTk ===" && \
