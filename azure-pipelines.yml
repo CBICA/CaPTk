@@ -387,7 +387,7 @@ jobs:
     #     restoreKeys: |
     #       "bin_macos.tar.gz"
     #   displayName: 'Caching'
-    - task: RestoreAndSaveCache@1
+    - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.RestoreAndSaveCache@1
       inputs:
         keyfile: "bin_*.tar.gz"
         targetfolder: "$(Build.SourcesDirectory)"
