@@ -11,7 +11,6 @@ RUN apt-get install -y \
     mesa-utils \
     freeglut3-dev \
     wget \
-    git-core \
     unzip \
     doxygen \
     -qq \
@@ -25,11 +24,6 @@ RUN apt-get install -y \
     libxkbcommon-x11-0 \
     nodejs \
     npm 
-
-# testing git installation
-RUN add-apt-repository ppa:git-core/ppa; \
-    apt-get update; \
-    apt-get install -y git
 
 # git lfs
 RUN apt-get update && \
