@@ -387,7 +387,7 @@ jobs:
     #     restoreKeys: |
     #       "bin_macos.tar.gz"
     #   displayName: 'Caching'
-    - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    - task: RestoreAndSaveCache@1
       inputs:
         keyfile: "bin_*.tar.gz"
         targetfolder: "$(Build.SourcesDirectory)"
@@ -600,11 +600,11 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
     
-    - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-      inputs:
-        keyfile: "bin_*.tar.gz"
-        targetfolder: "$(Build.SourcesDirectory)"
-        vstsFeed: "$(ArtifactFeed)"
+    # - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+    #   inputs:
+    #     keyfile: "bin_*.tar.gz"
+    #     targetfolder: "$(Build.SourcesDirectory)"
+    #     vstsFeed: "$(ArtifactFeed)"
 
 # - job: 'CentOSBuild'
 #   displayName: "End-to-end Linux (CentOS) build on Docker"
