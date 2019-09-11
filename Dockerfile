@@ -30,7 +30,10 @@ RUN apt-get update && \
     apt-get install -y sudo curl git && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
     sudo apt-get install git-lfs; \
-    git lfs install
+    git lfs install; \
+    git clone https://github.com/CBICA/CaPTk.git; \
+    git submodule init; \
+    git submodule update
 
 # cmake installation
 RUN wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz; \
@@ -41,7 +44,7 @@ ENV PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin \
     GIT_LFS_SKIP_SMUDGE=1 
 
 # clone the current repo
-RUN git clone https://github.com/CBICA/CaPTk.git
+# RUN git clone https://github.com/CBICA/CaPTk.git
 
 RUN which cmake
 
