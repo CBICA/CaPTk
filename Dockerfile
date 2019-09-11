@@ -26,7 +26,7 @@ RUN apt-get install -y \
     npm; \
     wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz; \
     tar -xf cmake-3.12.4-Linux-x86_64.tar.gz && \
-    export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH; \
+    export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH; \
     export GIT_LFS_SKIP_SMUDGE=1; \
     apt-get update && \
     apt-get install -y sudo curl git && \
