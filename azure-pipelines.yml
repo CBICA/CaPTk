@@ -378,15 +378,21 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    - task: CacheBeta@0
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
+    #     path: $(Build.SourcesDirectory)
+    #     cacheHitVar: CACHE_RESTORED_MAC
+    #     continueOnError : true
+    #     restoreKeys: |
+    #       "bin_macos.tar.gz"
+    #   displayName: 'Caching'
+    - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
       inputs:
-        key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
-        path: $(Build.SourcesDirectory)
-        cacheHitVar: CACHE_RESTORED_MAC
-        continueOnError : true
-        restoreKeys: |
-          "bin_macos.tar.gz"
-      displayName: 'Caching'
+        keyfile: "bin_*.tar.gz"
+        targetfolder: "$(Build.SourcesDirectory)"
+        vstsFeed: "$(ArtifactFeed)"
+        alias: "MacOS"
 
     - bash: |
         brew install make doxygen libomp
@@ -404,7 +410,7 @@ jobs:
     #     brew install git-lfs
     #     git lfs install
     #   displayName: 'Brew dependency install LFS'
-    #   condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+    #   condition: ne(variables['CacheRestored-Packages'], 'true')
 
     # # Pull LFS
     # - bash: |
@@ -413,7 +419,7 @@ jobs:
     #     git lfs pull --include "binaries/qt_5.12.1/macos.zip"
     #     #echo "Not doing this until quota is improved on GitHub"
     #   displayName: 'Pull LFS'
-    #   condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+    #   condition: ne(variables['CacheRestored-Packages'], 'true')
 
     - bash: |
         tar xvfz bin_macos.tar.gz
@@ -427,7 +433,7 @@ jobs:
         rm -rf *.tar.gz
         ls -lt
       displayName: 'Unzip bin if cached'
-      condition: eq(variables.CACHE_RESTORED_MAC, 'true')
+      condition: eq(variables['CacheRestored-Packages'], 'true')
 
     # Moving LFS Files
     - bash: |
@@ -439,7 +445,7 @@ jobs:
         # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      condition: ne(variables['CacheRestored-Packages'], 'true')
 
     - bash: |
         cd bin
@@ -452,7 +458,7 @@ jobs:
         make -j 2
 
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      condition: ne(variables['CacheRestored-Packages'], 'true')
 
      # Check qt
     - bash: |
@@ -593,6 +599,12 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
+    
+    - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+      inputs:
+        keyfile: "bin_*.tar.gz"
+        targetfolder: "$(Build.SourcesDirectory)"
+        vstsFeed: "$(ArtifactFeed)"
 
 # - job: 'CentOSBuild'
 #   displayName: "End-to-end Linux (CentOS) build on Docker"
