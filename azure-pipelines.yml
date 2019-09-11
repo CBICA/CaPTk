@@ -378,21 +378,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_MAC
-    #     continueOnError : true
-    #     restoreKeys: |
-    #       "bin_macos.tar.gz"
-    #   displayName: 'Caching'
-    - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.RestoreAndSaveCache@1
+    - task: CacheBeta@0
       inputs:
-        keyfile: "bin_*.tar.gz"
-        targetfolder: "$(Build.SourcesDirectory)"
-        vstsFeed: "$(ArtifactFeed)"
-        alias: "MacOS"
+        key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_MAC
+        continueOnError : true
+        restoreKeys: |
+          "bin_macos.tar.gz"
+      displayName: 'Caching'
 
     - bash: |
         brew install make doxygen libomp
@@ -599,12 +593,6 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
-    
-    # - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-    #   inputs:
-    #     keyfile: "bin_*.tar.gz"
-    #     targetfolder: "$(Build.SourcesDirectory)"
-    #     vstsFeed: "$(ArtifactFeed)"
 
 # - job: 'CentOSBuild'
 #   displayName: "End-to-end Linux (CentOS) build on Docker"
