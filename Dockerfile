@@ -51,4 +51,4 @@ RUN apt-get install -y \
     ./scripts/captk-pkg
 
 # define entry point
-ENTRYPOINT ["/CaPTk/bin/install/bin/CaPTk"]
+ENTRYPOINT ["/CaPTk/bin/install/appdir/usr/bin/CaPTk"]
