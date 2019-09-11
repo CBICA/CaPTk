@@ -214,15 +214,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_LINUX
-    #     continueOnError : true
-    #     restoreKeys: |
-    #       "bin_linux.tar.gz"
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_linux.tar.gz_1" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_LINUX
+        continueOnError : true
+        restoreKeys: |
+          "bin_linux.tar.gz_1"
+      displayName: 'Caching'
 
     # Dependency manager
     - bash: |
@@ -250,8 +250,8 @@ jobs:
     #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xvfz bin_linux.tar.gz
-        rm -rf bin_linux.tar.gz
+        tar xvfz bin_linux.tar.gz_1
+        rm -rf bin_linux.tar.gz_1
         # ls
         mv bin_linux bin
         # ls
@@ -275,7 +275,7 @@ jobs:
         # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
@@ -286,10 +286,10 @@ jobs:
       # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar cvfz bin_linux.tar.gz bin
+        tar cvfz bin_linux.tar.gz_1 bin
       displayName: 'Zipping Superbuild'
 
-     # Check qt
+      # Check qt
     - bash: |
         cd bin
         ls -a
@@ -337,7 +337,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_linux.tar.gz
+        rm -rf bin_linux.tar.gz_1
 
         cd bin
 
@@ -351,7 +351,7 @@ jobs:
         cd ../
 
         mv bin bin_linux
-        tar cvfz bin_linux.tar.gz bin_linux
+        tar cvfz bin_linux.tar.gz_1 bin_linux
       displayName: 'Zipping bin'
 
     - task: PublishBuildArtifacts@1
@@ -441,13 +441,6 @@ jobs:
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
 
-    # Check qt
-    - bash: |
-        cd bin
-        ls -a
-        ls ./qt/
-      displayName: 'Check qt'
-
     - bash: |
         cd bin
 
@@ -460,6 +453,13 @@ jobs:
 
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+
+     # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
 
     - bash: |
         tar cvfz bin_macos.tar.gz bin
