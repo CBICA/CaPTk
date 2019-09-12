@@ -301,7 +301,7 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   ngldmCalculator.SetInputMask(maskImage);
   ngldmCalculator.SetNumBins(m_Bins);
   //ngldmCalculator.SetRange(m_Radius); //chebyshev distance delta
-  //if (m_QuantizationType == "Uniform")
+  //if (m_histogramBinningType == "Uniform")
   //{
     ngldmCalculator.SetMinimum(m_minimumToConsider);
     ngldmCalculator.SetMaximum(m_maximumToConsider);
@@ -361,7 +361,7 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   ngtdmCalculator.SetInputMask(maskImage);
   ngtdmCalculator.SetNumBins(m_Bins);
   ngtdmCalculator.SetRange(m_Radius);
-  //if (m_QuantizationType == "Uniform")
+  //if (m_histogramBinningType == "Uniform")
   //{
     ngtdmCalculator.SetMinimum(m_minimumToConsider);
     ngtdmCalculator.SetMaximum(m_maximumToConsider);
@@ -629,7 +629,7 @@ void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer 
   glszmCalculator.SetInputMask(maskImage);
   glszmCalculator.SetNumBins(m_Bins);
   glszmCalculator.SetMaxSize(m_Range);
-  //if (m_QuantizationType == "Uniform")
+  //if (m_histogramBinningType == "Uniform")
   //{
     glszmCalculator.SetMinimum(m_minimumToConsider);
     glszmCalculator.SetMaximum(m_maximumToConsider);
@@ -844,7 +844,12 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
   histogramCalculator->SetInput(image);
   histogramCalculator->SetMaskImage(mask);
   histogramCalculator->SetMaskValue(1);
-  if (m_QuantizationType == "Uniform")
+  switch (m_histogramBinningType)
+  {
+  default:
+    break;
+  }
+  if (m_histogramBinningType == "Uniform")
   {
     histogramCalculator->SetHistogramBinMinimum(lowerBound);
     histogramCalculator->SetHistogramBinMaximum(upperBound);
@@ -1055,7 +1060,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   GLRLMFeatures< TImage > glrlmCalculator;
   glrlmCalculator.SetInputImage(image);
   glrlmCalculator.SetInputMask(mask);
-  if (m_QuantizationType == "Uniform")
+  if (m_histogramBinningType == "Uniform")
   {
     glrlmCalculator.SetMinimum(m_minimumToConsider);
     glrlmCalculator.SetMaximum(m_maximumToConsider);
@@ -1101,7 +1106,7 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
   GLCMFeatures< TImage > glcmCalculator;
   glcmCalculator.SetInputImage(image);
   glcmCalculator.SetInputMask(mask);
-  if (m_QuantizationType == "Uniform")
+  if (m_histogramBinningType == "Uniform")
   {
     glcmCalculator.SetMinimum(m_minimumToConsider);
     glcmCalculator.SetMaximum(m_maximumToConsider);
@@ -1329,15 +1334,15 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
           std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
           if (temp == "fixedbinnumber")
           {
-            m_QuantizationType = HistogramBinningType::FixedBinNumber;
+            m_histogramBinningType = HistogramBinningType::FixedBinNumber;
           }
           else if (temp == "fixedbinsize")
           {
-            m_QuantizationType = HistogramBinningType::FixedBinSize;
+            m_histogramBinningType = HistogramBinningType::FixedBinSize;
           }
           else if (temp == "equal")
           {
-            m_QuantizationType = HistogramBinningType::Equal;
+            m_histogramBinningType = HistogramBinningType::Equal;
           }
           else
           {

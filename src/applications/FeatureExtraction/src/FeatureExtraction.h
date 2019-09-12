@@ -760,7 +760,7 @@ private:
   int m_Radius = 0, m_Bins = 0, m_Dimension = 0, m_Direction = 0, m_neighborhood = 0, m_LBPStyle = 0;
   float m_Radius_float = 0.0, m_Range = 0;
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
-  int m_QuantizationType = HistogramBinningType::FixedBinNumber; //! type of quantization happening, either FBN/FBS/Equal
+  int m_histogramBinningType = HistogramBinningType::FixedBinNumber; //! type of quantization happening, either FBN/FBS/Equal
   std::string m_QuantizationExtent = "ROI"; //! extent of quantization happening, either ROI-based or Image-based
   std::string m_initializedTimestamp; //! timestamp to append to all results - keeps outputs in sync with current process
   float m_resamplingResolution = 0.0; //! resolution to resample the images and mask to before doing any kind of computation
