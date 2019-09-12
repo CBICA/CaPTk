@@ -68,7 +68,7 @@ public:
       matrix_generator->SetMaskImage(this->m_Mask);
       matrix_generator->SetInsidePixelValue(1);
       
-      matrix_generator->SetNumberOfBinsPerAxis(m_Bins);
+      matrix_generator->SetNumberOfBinsPerAxis(this->m_Bins);
       matrix_generator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
       if (!this->m_histogramBinningType == HistogramBinningType::Equal)
       {
