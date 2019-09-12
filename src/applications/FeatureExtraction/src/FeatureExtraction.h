@@ -62,6 +62,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 //#include "CAPTk.h"
 #include "FeatureMap.h"
+#include "TextureFeatureBase.h"
 
 //! Common Definitions used in the class
 using ImageType2D = itk::Image< float, 2 >;
