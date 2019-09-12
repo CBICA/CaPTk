@@ -96,13 +96,13 @@ GaborWavelets,Directions,Int,03:13,8,The number of directions around the center 
 */
 enum Params
 {
-  Dimension, Axis, Radius, Neighborhood, Bins, Directions, Offset, Range,
+  Dimension, Axis, Radius, Neighborhood, Bins, Bins_Min, Directions, Offset, Range,
   LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, LatticeFullImage,
   GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, ResamplingInterpolator_Mask, LBPStyle, ParamMax
 };
 static const char ParamsString[ParamMax + 1][30] =
 {
-  "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Directions", "Offset", "Range",
+  "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Bins_Min", "Directions", "Offset", "Range",
   "Window", "Step", "Boundary", "PatchBoundary", "Weight", "FullImage",
   "FMax", "Gamma", "Level", "ETA", "Epsilon", "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
 };
