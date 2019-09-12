@@ -6,7 +6,7 @@ LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 RUN apt-get update  
 
 #general dependencies
-RUN add-apt-repository ppa:glasen/freetype2; \
+RUN add-apt-repository -y ppa:no1wantdthisname/ppa; \
     apt-get install -y \
     build-essential \
     mesa-utils \
@@ -33,7 +33,7 @@ RUN add-apt-repository ppa:glasen/freetype2; \
     libegl-mesa0 \
     libglib2.0-dev \
     libxext6 \
-    freetype2-demos \
+    libfreetype6 \
     aptitude \
     nodejs \
     npm; \
