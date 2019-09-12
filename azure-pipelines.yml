@@ -404,7 +404,7 @@ jobs:
     #     brew install git-lfs
     #     git lfs install
     #   displayName: 'Brew dependency install LFS'
-    #   condition: ne(variables['CacheRestored-Packages'], 'true')
+    #   condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
     # # Pull LFS
     # - bash: |
@@ -413,7 +413,7 @@ jobs:
     #     git lfs pull --include "binaries/qt_5.12.1/macos.zip"
     #     #echo "Not doing this until quota is improved on GitHub"
     #   displayName: 'Pull LFS'
-    #   condition: ne(variables['CacheRestored-Packages'], 'true')
+    #   condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
     - bash: |
         tar xvfz bin_macos.tar.gz
@@ -427,7 +427,7 @@ jobs:
         rm -rf *.tar.gz
         ls -lt
       displayName: 'Unzip bin if cached'
-      condition: eq(variables['CacheRestored-Packages'], 'true')
+      condition: eq(variables['CACHE_RESTORED_MAC'], 'true')
 
     # Moving LFS Files
     - bash: |
@@ -439,7 +439,7 @@ jobs:
         # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      condition: ne(variables['CacheRestored-Packages'], 'true')
+      condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
     - bash: |
         cd bin
@@ -452,7 +452,7 @@ jobs:
         make -j 2
 
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables['CacheRestored-Packages'], 'true')
+      condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
      # Check qt
     - bash: |
