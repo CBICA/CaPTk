@@ -212,7 +212,7 @@ jobs:
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+      #fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
     - task: CacheBeta@0
       inputs:
@@ -593,6 +593,45 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
+
+# - job: 'DockerBuild'
+#   displayName: "End-to-end Docker image build and push"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 360
+
+#   variables:
+#     dockerId: cbica
+#     imageName: captk
+#     tagName: latest
+
+#   pool:
+#     vmImage: 'Ubuntu-16.04'
+
+#   steps:
+#     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+#       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+
+#     - task: Docker@1 
+#       displayName: 'Build the Image'
+#       inputs:
+#         containerregistrytype: 'container Registry'
+#         dockerRegistryEndpoint: cbicaDockerHub
+#         imageName: '$(dockerId)/$(imageName):$(tagName)'
+#         command: build an image
+#         dockerFile: '**/Dockerfile'
+
+#     - task: Docker@1
+#       displayName: Login
+#       inputs:
+#         containerregistrytype: 'container Registry'
+#         dockerRegistryEndpoint: cbicaDockerHub
+#         command: login
+
+#     - task: Docker@1
+#       displayName: 'Push the Image'
+#       inputs:
+#         command: push an image
+#         imageName: '$(dockerId)/$(imageName):$(tagName)'  
 
 # - job: 'CentOSBuild'
 #   displayName: "End-to-end Linux (CentOS) build on Docker"

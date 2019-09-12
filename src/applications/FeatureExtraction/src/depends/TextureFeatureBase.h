@@ -21,6 +21,14 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 #include "cbicaLogging.h"
 
+//! the histogram binning type
+enum HistogramBinningType
+{
+  FixedBinNumber,
+  FixedBinSize,
+  Equal
+};
+
 /**
 \class TextureFeatureBase
 
@@ -64,15 +72,17 @@ public:
     m_Bins = numBinValue;
   }
 
-  //! Enable equal histogram calculation
-  void SetHistogramTypeEqual()
+  //! Set the histogram binning type
+  void SetHistogramBinningType(int type)
   {
-    m_histogramTypeEqual = true;
+    m_histogramBinningType = type;
   }
 
 protected:
 
   unsigned int m_Bins = 10; //! the binning information
+
+  OffsetVectorPointer m_offsets; //! the offsets to consider
 
   typename TImageType::PixelType 
     m_minimum = 0, //! the minimum to consider during binning
@@ -80,9 +90,7 @@ protected:
 
   itk::Statistics::Histogram< double >::Pointer m_histogram; //! the actual histogram 
 
-  bool m_histogramTypeEqual; //! flag to control the type of histogram
-
-  OffsetVectorPointer m_offsets; //! the offsets to consider
+  int m_histogramBinningType; //! the default binning type
 };
 
 #include "TextureFeatureBase.hxx"
