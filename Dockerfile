@@ -6,8 +6,7 @@ LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 RUN apt-get update  
 
 #general dependencies
-RUN add-apt-repository -y ppa:no1wantdthisname/ppa; \
-    apt-get install -y \
+RUN apt-get install -y \
     build-essential \
     mesa-utils \
     freeglut3-dev \
@@ -34,6 +33,7 @@ RUN add-apt-repository -y ppa:no1wantdthisname/ppa; \
     libglib2.0-dev \
     libxext6 \
     libfreetype6 \
+    libfreetype6-dev \
     aptitude \
     nodejs \
     npm; \
