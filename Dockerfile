@@ -36,10 +36,9 @@ RUN add-apt-repository ppa:glasen/freetype2; \
     freetype2-demos \
     aptitude \
     nodejs \
-    npm; && \
+    npm; \
     aptitude install libxft-dev; \
-    wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz; \
-    tar -xf cmake-3.12.4-Linux-x86_64.tar.gz && \
+    if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz && tar -xf cmake-3.12.4-Linux-x86_64.tar.gz && rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi \
     export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH; \
     export GIT_LFS_SKIP_SMUDGE=1; \
     apt-get update && \
@@ -55,9 +54,10 @@ RUN add-apt-repository ppa:glasen/freetype2; \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin && cd bin && \
     if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi \
-    if [ ! -d "`pwd`/qt" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O binaries_linux.zip; fi \
+    if [ ! -d "`pwd`/qt" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip; fi \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev .. && \
     make && \
+    rm -rf qt.zip && \
     echo "=== Building CaPTk ===" && \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install/appdir/usr/bin -Wno-dev .. && \
     make install/strip -j2; \
