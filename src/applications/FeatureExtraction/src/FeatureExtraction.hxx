@@ -834,25 +834,43 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
   using HistogramMeasurementType = typename HistogramFilterType::HistogramType::MeasurementVectorType;
 
   HistogramMeasurementType lowerBound(1), upperBound(1);
-  lowerBound.Fill(min);
   upperBound.Fill(max);
 
   typename HistogramFilterType::HistogramType::SizeType size(1); // this is always grayscale
-  size.Fill(m_Bins);
 
   auto histogramCalculator = HistogramFilterType::New();
   histogramCalculator->SetInput(image);
   histogramCalculator->SetMaskImage(mask);
   histogramCalculator->SetMaskValue(1);
+
+  float minToConsider;
+  if (m_Bins_min == std::numeric_limits<float>::max())
+  {
+    minToConsider = min;
+  }
+  else
+  {
+    minToConsider = m_Bins_min;
+  }
+  lowerBound.Fill(minToConsider);
   switch (m_histogramBinningType)
   {
-  default:
-    break;
-  }
-  if (m_histogramBinningType == "Uniform")
-  {
+  case HistogramBinningType::FixedBinNumber:
     histogramCalculator->SetHistogramBinMinimum(lowerBound);
     histogramCalculator->SetHistogramBinMaximum(upperBound);
+    size.Fill(m_Bins);
+    break;
+  case HistogramBinningType::FixedBinSize:
+    histogramCalculator->SetHistogramBinMinimum(lowerBound);
+    histogramCalculator->SetHistogramBinMaximum(upperBound);
+    float actualBins = static_cast<float>(upperBound[0] - lowerBound[0]) / static_cast<float>(m_Bins); // here, the 'm_Bins' holds the bin size, not the total number of bins
+    size.Fill(actualBins);
+    break;
+  case HistogramBinningType::Equal:
+    size.Fill(m_Bins); // no need to set the minim and maximum in this case
+    break;
+  default:
+    break;
   }
   histogramCalculator->SetHistogramSize(size);
 
@@ -1060,14 +1078,28 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   GLRLMFeatures< TImage > glrlmCalculator;
   glrlmCalculator.SetInputImage(image);
   glrlmCalculator.SetInputMask(mask);
-  if (m_histogramBinningType == "Uniform")
+  if (m_Bins_min != std::numeric_limits<float>::max())
   {
+    m_minimumToConsider = m_Bins_min;
+  }
+  switch (m_histogramBinningType)
+  {
+  case HistogramBinningType::FixedBinNumber:
     glrlmCalculator.SetMinimum(m_minimumToConsider);
     glrlmCalculator.SetMaximum(m_maximumToConsider);
-  }
-  else
-  {
-    glrlmCalculator.SetHistogramTypeEqual();
+    glrlmCalculator.SetNumBins(m_Bins);
+    break;
+  case HistogramBinningType::FixedBinSize:
+    glrlmCalculator.SetMinimum(m_minimumToConsider);
+    glrlmCalculator.SetMaximum(m_maximumToConsider);
+    float actualBins = static_cast<float>(m_maximumToConsider - m_minimumToConsider) / static_cast<float>(m_Bins); // here, the 'm_Bins' holds the bin size, not the total number of bins
+    glrlmCalculator.SetNumBins(actualBins);
+    break;
+  case HistogramBinningType::Equal:
+    glrlmCalculator.SetNumBins(actualBins);
+    break;
+  default:
+    break;
   }
   glrlmCalculator.SetOffsets(offset);
   glrlmCalculator.SetOffsetSelectorType(m_offsetSelect);
@@ -1106,14 +1138,28 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
   GLCMFeatures< TImage > glcmCalculator;
   glcmCalculator.SetInputImage(image);
   glcmCalculator.SetInputMask(mask);
-  if (m_histogramBinningType == "Uniform")
+  if (m_Bins_min != std::numeric_limits<float>::max())
   {
+    m_minimumToConsider = m_Bins_min;
+  }
+  switch (m_histogramBinningType)
+  {
+  case HistogramBinningType::FixedBinNumber:
     glcmCalculator.SetMinimum(m_minimumToConsider);
     glcmCalculator.SetMaximum(m_maximumToConsider);
-  }
-  else
-  {
-    glcmCalculator.SetHistogramTypeEqual();
+    glcmCalculator.SetNumBins(m_Bins);
+    break;
+  case HistogramBinningType::FixedBinSize:
+    glcmCalculator.SetMinimum(m_minimumToConsider);
+    glcmCalculator.SetMaximum(m_maximumToConsider);
+    float actualBins = static_cast<float>(m_maximumToConsider - m_minimumToConsider) / static_cast<float>(m_Bins); // here, the 'm_Bins' holds the bin size, not the total number of bins
+    glcmCalculator.SetNumBins(actualBins);
+    break;
+  case HistogramBinningType::Equal:
+    glcmCalculator.SetNumBins(actualBins);
+    break;
+  default:
+    break;
   }
   glcmCalculator.SetOffsets(offset);
   glcmCalculator.SetOffsetSelectorType(m_offsetSelect);
@@ -1245,6 +1291,14 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         else if (outer_key == ParamsString[Bins])
         {
           m_Bins = std::atoi(currentValue.c_str());
+        }
+        else if (outer_key == ParamsString[Bins_Min])
+        {
+          m_Bins_min = std::atof(currentValue.c_str());
+          if (m_Bins_min == -666) // the default value coming from the parameter file
+          {
+            m_Bins_min = std::numeric_limits<float>::max();
+          }
         }
         else if (outer_key == ParamsString[Directions])
         {
