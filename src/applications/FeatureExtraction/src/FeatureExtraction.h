@@ -107,6 +107,14 @@ static const char ParamsString[ParamMax + 1][30] =
   "FMax", "Gamma", "Level", "ETA", "Epsilon", "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
 };
 
+//! the histogram binning type
+enum HistogramBinningType
+{
+  FixedBinNumber,
+  FixedBinSize,
+  Equal
+};
+
 enum FeatureFamily
 {
   Generic,
