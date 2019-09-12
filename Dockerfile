@@ -38,7 +38,7 @@ RUN add-apt-repository ppa:glasen/freetype2; \
     nodejs \
     npm; \
     aptitude install libxft-dev; \
-    if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz && tar -xf cmake-3.12.4-Linux-x86_64.tar.gz && rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi \
+    if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz && tar -xf cmake-3.12.4-Linux-x86_64.tar.gz && rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi \
     export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH; \
     export GIT_LFS_SKIP_SMUDGE=1; \
     apt-get update && \
