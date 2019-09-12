@@ -47,7 +47,7 @@ RUN apt-get install -y \
     sudo apt-get install git-lfs; \
     git lfs install; \
     if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi \
-    cd CaPTk; \
+    cd CaPTk &&  git pull; \
     rm -rf *.bin; \
     git submodule init; \
     git submodule update; \
