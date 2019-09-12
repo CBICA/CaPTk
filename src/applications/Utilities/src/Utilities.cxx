@@ -994,10 +994,17 @@ int main(int argc, char** argv)
       std::cout << "Original Image Orientation: " << output.first << "\n";
       std::string path, base, ext;
       cbica::splitFileName(outputImageFile, path, base, ext);
-      auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
-      cbica::WriteImage< ImageType >(output.second, tempOutputFile);
-      cbica::WriteImage< ImageType >(cbica::ReadImage< TImageType >(tempOutputFile), outputImageFile);
-      std::remove(tempOutputFile.c_str());
+      if (ext != ".mha")
+      {
+        auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
+        cbica::WriteImage< ImageType >(output.second, tempOutputFile);
+        cbica::WriteImage< ImageType >(cbica::ReadImage< TImageType >(tempOutputFile), outputImageFile);
+        std::remove(tempOutputFile.c_str());
+      }
+      else
+      {
+        cbica::WriteImage< ImageType >(output.second, outputImageFile);
+      }
       return EXIT_SUCCESS;
     }
 
