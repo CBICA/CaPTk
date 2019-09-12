@@ -38,12 +38,14 @@ enum AvailableAlgorithms
   ThresholdAboveAndBelow,
   ThresholdOtsu,
   ThresholdBinary,
-  ConvertFormat
+  ConvertFormat,
+  Image2World,
+  World2Image
 };
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON, orientationDesired;
+std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON, orientationDesired, coordinateToTransform;
 std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
@@ -571,6 +573,46 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
+  if (requestedAlgorithm == Image2World)
+  {
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    auto coordinate_split = cbica::stringSplit(coordinateToTransform, ",");
+    if (coordinate_split.size() != TImageType::ImageDimension)
+    {
+      std::cerr << "Please provide the coordinate to transform in the same format as the input image (i.e., N coordinates for a ND image).\n";
+      return EXIT_FAILURE;
+    }
+    typename TImageType::IndexType indexToConvert;
+    for (size_t d = 0; d < TImageType::ImageDimension; d++)
+    {
+      indexToConvert[d] = std::atoi(coordinate_split[d].c_str());
+    }
+    typename TImageType::PointType output;
+    inputImage->TransformIndexToPhysicalPoint(indexToConvert, output);
+    std::cout << indexToConvert << " ==> " << output << "\n";
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == World2Image)
+  {
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    auto coordinate_split = cbica::stringSplit(coordinateToTransform, ",");
+    if (coordinate_split.size() != TImageType::ImageDimension)
+    {
+      std::cerr << "Please provide the coordinate to transform in the same format as the input image (i.e., N coordinates for a ND image).\n";
+      return EXIT_FAILURE;
+    }
+    typename TImageType::IndexType output;
+    typename TImageType::PointType indexToConvert;
+    for (size_t d = 0; d < TImageType::ImageDimension; d++)
+    {
+      indexToConvert[d] = std::atof(coordinate_split[d].c_str());
+    }
+    inputImage->TransformPhysicalPointToIndex(indexToConvert, output);
+    std::cout << indexToConvert << " ==> " << output << "\n";
+    return EXIT_SUCCESS;
+  }
+
   return EXIT_SUCCESS;
 }
 
@@ -609,6 +651,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("tBn", "thrshBinary", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensity BELOW and ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Default for OUTSIDE_VALUE=0");
   parser.addOptionalParameter("tOI", "threshOutIn", cbica::Parameter::STRING, "Outside_Value,Inside_Value", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
   parser.addOptionalParameter("cov", "convert", cbica::Parameter::BOOLEAN, "0-1", "The values that will go inside and outside the thresholded region", "Defaults to '1'");
+  parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-i2w 10,20,30'");
+  parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -838,6 +882,28 @@ int main(int argc, char** argv)
     requestedAlgorithm = ConvertFormat;
   }
 
+  else if (parser.isPresent("i2w"))
+  {
+    requestedAlgorithm = Image2World;
+    parser.getParameterValue("i2w", coordinateToTransform);
+    if (coordinateToTransform.empty())
+    {
+      std::cerr << "Please provide the coordinate to transform in a comma-separated format: '-i2w 10,20,30'\n";
+      return EXIT_FAILURE;
+    }
+  }
+
+  else if (parser.isPresent("w2i"))
+  {
+    requestedAlgorithm = World2Image;
+    parser.getParameterValue("w2i", coordinateToTransform);
+    if (coordinateToTransform.empty())
+    {
+      std::cerr << "Please provide the coordinate to transform in a comma-separated format: '-w2i 10.5,20.6,30.8'\n";
+      return EXIT_FAILURE;
+    }
+  }
+
   // this doesn't need any template initialization
   if (requestedAlgorithm == SanityCheck)
   {
@@ -928,10 +994,17 @@ int main(int argc, char** argv)
       std::cout << "Original Image Orientation: " << output.first << "\n";
       std::string path, base, ext;
       cbica::splitFileName(outputImageFile, path, base, ext);
-      auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
-      cbica::WriteImage< ImageType >(output.second, tempOutputFile);
-      cbica::WriteImage< ImageType >(cbica::ReadImage< TImageType >(tempOutputFile), outputImageFile);
-      std::remove(tempOutputFile.c_str());
+      if (ext != ".mha")
+      {
+        auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
+        cbica::WriteImage< ImageType >(output.second, tempOutputFile);
+        cbica::WriteImage< ImageType >(cbica::ReadImage< TImageType >(tempOutputFile), outputImageFile);
+        std::remove(tempOutputFile.c_str());
+      }
+      else
+      {
+        cbica::WriteImage< ImageType >(output.second, outputImageFile);
+      }
       return EXIT_SUCCESS;
     }
 

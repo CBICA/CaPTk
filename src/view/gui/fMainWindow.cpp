@@ -3178,8 +3178,9 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
       }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
-        SaveImage_withFile(0, temp_prev.c_str());
-        if (!cbica::ImageSanityCheck(maskFileName, temp_prev))
+        auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName);
+        //SaveImage_withFile(0, temp_prev.c_str());
+        if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
         {
           ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
           return;
@@ -8199,23 +8200,32 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     ImageTypeFloat3D::PointType originalOrigin;
     originalOrigin = mSlicerManagers[index]->mOrigin;
 
-    auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
-    infoChanger->ChangeDirectionOn();
-    infoChanger->ChangeOriginOn();
-    infoChanger->SetOutputDirection(originalDirection);
-    infoChanger->SetOutputOrigin(originalOrigin);
+    auto infoChanger1 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger1->ChangeDirectionOn();
+    infoChanger1->ChangeOriginOn();
+    infoChanger1->SetOutputDirection(originalDirection);
+    infoChanger1->SetOutputOrigin(originalOrigin);
+    infoChanger1->SetInput(currentROI);
+    infoChanger1->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger1->GetOutput(), outputDir + "/roi_DE_visualizationIncrease.nii.gz");
 
-    infoChanger->SetInput(currentROI);
-    infoChanger->Update();
-    cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), outputDir + "/roi_DE_visualizationIncrease.nii.gz");
+    auto infoChanger2 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger2->ChangeDirectionOn();
+    infoChanger2->ChangeOriginOn();
+    infoChanger2->SetOutputDirection(originalDirection);
+    infoChanger2->SetOutputOrigin(originalOrigin);
+    infoChanger2->SetInput(octantImage);
+    infoChanger2->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger2->GetOutput(), outputDir + "/roi_DE_octantImage.nii.gz");
 
-    infoChanger->SetInput(octantImage);
-    infoChanger->Update();
-    cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), outputDir + "/roi_DE_octantImage.nii.gz");
-
-    infoChanger->SetInput(newMaskImage_computed);
-    infoChanger->Update();
-    cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), outputDir + "/roi_DE_visualizationRatio.nii.gz");
+    auto infoChanger3 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger3->ChangeDirectionOn();
+    infoChanger3->ChangeOriginOn();
+    infoChanger3->SetOutputDirection(originalDirection);
+    infoChanger3->SetOutputOrigin(originalOrigin);
+    infoChanger3->SetInput(newMaskImage_computed);
+    infoChanger3->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger3->GetOutput(), outputDir + "/roi_DE_visualizationRatio.nii.gz");
 
     minMaxCalc->SetImage(newROIImage);
     minMaxCalc->Compute();
@@ -8232,11 +8242,16 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       }
     }
 
-    infoChanger->SetInput(newROIImage);
-    infoChanger->Update();
-    cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), outputDir + "/roiDE_visualizationProbability.nii.gz");
+    auto infoChanger4 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger4->ChangeDirectionOn();
+    infoChanger4->ChangeOriginOn();
+    infoChanger4->SetOutputDirection(originalDirection);
+    infoChanger4->SetOutputOrigin(originalOrigin);
+    infoChanger4->SetInput(newROIImage);
+    infoChanger4->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger4->GetOutput(), outputDir + "/roi_DE_visualizationProbability.nii.gz");
 
-    LoadSlicerImages(outputDir + "/roiDE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
+    LoadSlicerImages(outputDir + "/roi_DE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
     readMaskFile(outputDir + "/roi_DE_visualizationRatio.nii.gz");
   }
 }

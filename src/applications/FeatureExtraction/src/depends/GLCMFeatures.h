@@ -54,7 +54,7 @@ public:
         {
           typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
           glcmGenerator->SetNumberOfBinsPerAxis(this->m_Bins); //reasonable number of bins
-          if (!this->m_histogramTypeEqual)
+          if (!this->m_histogramBinningType == HistogramBinningType::Equal)
           {
             glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
           }
@@ -114,7 +114,7 @@ public:
       {
         typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
         glcmGenerator->SetNumberOfBinsPerAxis(this->m_Bins); //reasonable number of bins
-        if (!this->m_histogramTypeEqual)
+        if (!this->m_histogramBinningType == HistogramBinningType::Equal)
         {
           glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
         }
@@ -142,7 +142,7 @@ public:
       {
         typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
         glcmGenerator->SetNumberOfBinsPerAxis(this->m_Bins); //reasonable number of bins
-        if (!this->m_histogramTypeEqual)
+        if (!this->m_histogramBinningType == HistogramBinningType::Equal)
         {
           glcmGenerator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
         }
