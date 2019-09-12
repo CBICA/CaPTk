@@ -82,6 +82,8 @@ protected:
 
   unsigned int m_Bins = 10; //! the binning information
 
+  OffsetVectorPointer m_offsets; //! the offsets to consider
+
   typename TImageType::PixelType 
     m_minimum = 0, //! the minimum to consider during binning
     m_maximum = 0; //! the maximum to consider during binning
@@ -89,8 +91,6 @@ protected:
   itk::Statistics::Histogram< double >::Pointer m_histogram; //! the actual histogram 
 
   int m_histogramBinningType; //! the default binning type
-
-  OffsetVectorPointer m_offsets; //! the offsets to consider
 };
 
 #include "TextureFeatureBase.hxx"

@@ -856,19 +856,25 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
   switch (m_histogramBinningType)
   {
   case HistogramBinningType::FixedBinNumber:
+  {
     histogramCalculator->SetHistogramBinMinimum(lowerBound);
     histogramCalculator->SetHistogramBinMaximum(upperBound);
     size.Fill(m_Bins);
     break;
+  }
   case HistogramBinningType::FixedBinSize:
+  {
     histogramCalculator->SetHistogramBinMinimum(lowerBound);
     histogramCalculator->SetHistogramBinMaximum(upperBound);
     float actualBins = static_cast<float>(upperBound[0] - lowerBound[0]) / static_cast<float>(m_Bins); // here, the 'm_Bins' holds the bin size, not the total number of bins
     size.Fill(actualBins);
     break;
+  }
   case HistogramBinningType::Equal:
+  {
     size.Fill(m_Bins); // no need to set the minim and maximum in this case
     break;
+  }
   default:
     break;
   }
@@ -1086,19 +1092,25 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   switch (m_histogramBinningType)
   {
   case HistogramBinningType::FixedBinNumber:
+  {
     glrlmCalculator.SetMinimum(m_minimumToConsider);
     glrlmCalculator.SetMaximum(m_maximumToConsider);
     glrlmCalculator.SetNumBins(m_Bins);
     break;
+  }
   case HistogramBinningType::FixedBinSize:
+  {
     glrlmCalculator.SetMinimum(m_minimumToConsider);
     glrlmCalculator.SetMaximum(m_maximumToConsider);
     float actualBins = static_cast<float>(m_maximumToConsider - m_minimumToConsider) / static_cast<float>(m_Bins); // here, the 'm_Bins' holds the bin size, not the total number of bins
     glrlmCalculator.SetNumBins(actualBins);
     break;
+  }
   case HistogramBinningType::Equal:
-    glrlmCalculator.SetNumBins(actualBins);
+  {
+    glrlmCalculator.SetNumBins(m_Bins);
     break;
+  }
   default:
     break;
   }
@@ -1147,19 +1159,25 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
   switch (m_histogramBinningType)
   {
   case HistogramBinningType::FixedBinNumber:
+  {
     glcmCalculator.SetMinimum(m_minimumToConsider);
     glcmCalculator.SetMaximum(m_maximumToConsider);
     glcmCalculator.SetNumBins(m_Bins);
     break;
+  }
   case HistogramBinningType::FixedBinSize:
+  {
     glcmCalculator.SetMinimum(m_minimumToConsider);
     glcmCalculator.SetMaximum(m_maximumToConsider);
     float actualBins = static_cast<float>(m_maximumToConsider - m_minimumToConsider) / static_cast<float>(m_Bins); // here, the 'm_Bins' holds the bin size, not the total number of bins
     glcmCalculator.SetNumBins(actualBins);
     break;
+  }
   case HistogramBinningType::Equal:
-    glcmCalculator.SetNumBins(actualBins);
+  {
+    glcmCalculator.SetNumBins(m_Bins);
     break;
+  }
   default:
     break;
   }
