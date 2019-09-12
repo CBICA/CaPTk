@@ -21,6 +21,14 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 #include "cbicaLogging.h"
 
+//! the histogram binning type
+enum HistogramBinningType
+{
+  FixedBinNumber,
+  FixedBinSize,
+  Equal
+};
+
 /**
 \class TextureFeatureBase
 
