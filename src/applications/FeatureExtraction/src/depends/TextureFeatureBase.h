@@ -64,10 +64,10 @@ public:
     m_Bins = numBinValue;
   }
 
-  //! Enable equal histogram calculation
-  void SetHistogramTypeEqual()
+  //! Set the histogram binning type
+  void SetHistogramBinningType(int type)
   {
-    m_histogramTypeEqual = true;
+    m_histogramBinningType = type;
   }
 
 protected:
@@ -80,7 +80,7 @@ protected:
 
   itk::Statistics::Histogram< double >::Pointer m_histogram; //! the actual histogram 
 
-  bool m_histogramTypeEqual; //! flag to control the type of histogram
+  int m_histogramBinningType; //! the default binning type
 
   OffsetVectorPointer m_offsets; //! the offsets to consider
 };
