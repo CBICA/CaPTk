@@ -1325,7 +1325,24 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         }
         else if (outer_key == ParamsString[QuantizationType])
         {
-          m_QuantizationType = currentValue;
+          auto temp = currentValue;
+          std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+          if (temp == "fixedbinnumber")
+          {
+            m_QuantizationType = HistogramBinningType::FixedBinNumber;
+          }
+          else if (temp == "fixedbinsize")
+          {
+            m_QuantizationType = HistogramBinningType::FixedBinSize;
+          }
+          else if (temp == "equal")
+          {
+            m_QuantizationType = HistogramBinningType::Equal;
+          }
+          else
+          {
+            std::cerr << "Unsupported binning type selected; defaulting to FixedBinNumber.\n";
+          }
         }
         else if (outer_key == ParamsString[Resampling])
         {
