@@ -1082,6 +1082,7 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   {
     m_minimumToConsider = m_Bins_min;
   }
+  glrlmCalculator.SetHistogramBinningType(m_histogramBinningType);
   switch (m_histogramBinningType)
   {
   case HistogramBinningType::FixedBinNumber:
@@ -1142,6 +1143,7 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
   {
     m_minimumToConsider = m_Bins_min;
   }
+  glcmCalculator.SetHistogramBinningType(m_histogramBinningType);
   switch (m_histogramBinningType)
   {
   case HistogramBinningType::FixedBinNumber:
