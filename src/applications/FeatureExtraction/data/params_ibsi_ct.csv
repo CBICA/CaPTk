@@ -11,18 +11,18 @@ Histogram,Bins,Int,,10,The number of bins to calculate for the Histogram
 Histogram,Bins_Min,Float,,-200,The starting index of the bin; leave to '-666' for this not to be considered
 GLCM,Bins,Int,,10,
 GLCM,Radius,Int,(1:9),1,Radius around the center voxel which can be in mm as well (needs to be defined as float in same space as input image/mask)
-GLCM,Offset,String,[Individual:Average:Combined],Average,Either individual offset values or averagedcomputation for individual offsets might not work)
+GLCM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averagedcomputation for individual offsets might not work)
 GLRLM,Bins,Int,,10,
 GLRLM,Radius,Int,(1:9),1,Radius around the center voxel which can be in mm as well (needs to be defined as float in same space as input image/mask)
-GLRLM,Offset,String,[Individual:Average:Combined],Individual,Either individual offset values or averaged
+GLRLM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averaged
 GLSZM,Bins,Int,,10,
 GLSZM,Radius,Int,(1:9),1,Radius around the center voxel
 NGTDM,Bins,Int,,10,
 NGTDM,Radius,Int,(1:9),1,Radius around the center voxel
-NGTDM,Offset,String,[Individual:Average],Average,Either individual offset values or averaged
+NGTDM,Offset,String,[Individual:Average],Combined,Either individual offset values or averaged
 NGLDM,Bins,Int,,10,,
 NGLDM,Radius,Int,(1:9),1,Radius around the center voxel,
-NGLDM,Offset,String,[Individual:Average],Average,Either individual offset values or averaged,
+NGLDM,Offset,String,[Individual:Average],Combined,Either individual offset values or averaged,
 LBP,Radius,Int,(1:9),1,Radius around the center voxel/pixel (if defined as float it is assumed to be in world coordinates and if as Integer it is assumed to be in image coordinates)
 LBP,Neighborhood,Int,0:27,27,The total number of neighbors to consider for computation
 LBP,Type,Int,0:3,2,0: original LBP | 1: uniform LBP | 2: rotation invariant LBP | 3: uniform + rotation invariant LBPhaving same value as center pixel and None disregards the patch
