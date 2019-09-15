@@ -44,10 +44,12 @@ RUN apt-get install -y sudo curl git && \
     sudo apt-get install git-lfs; \
     git lfs install;    
 
-ENV PATH `pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH
+ENV PATH `pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
 ENV GIT_LFS_SKIP_SMUDGE=1
 ENV PKG_FAST_MODE=1
 ENV PKG_COPY_QT_LIBS=1
+
+RUN which cmake
 
 RUN if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi 
 RUN cd CaPTk &&  git pull;
