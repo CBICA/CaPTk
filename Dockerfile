@@ -31,7 +31,6 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libfreetype6 \
     libfreetype6-dev \
-    aptitude \
     nodejs \
     libxft-dev \
     npm; \
