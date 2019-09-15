@@ -49,9 +49,11 @@ ENV GIT_LFS_SKIP_SMUDGE=1
 ENV PKG_FAST_MODE=1
 ENV PKG_COPY_QT_LIBS=1
 
-RUN if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi && \
-    cd CaPTk &&  git pull; && \
-    rm -rf *.bin; && \
+RUN if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi 
+RUN cd CaPTk &&  git pull;
+RUN cd CaPTk && \
+    rm -rf *.bin; 
+RUN cd CaPTk && \
     git submodule init; && \
     git submodule update;
 
