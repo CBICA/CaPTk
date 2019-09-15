@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
     libxtst-dev \
     libasound2 \
     libdbus-1-dev \
-    libegl-mesa0 \
+    libegl1-mesa \
     libglib2.0-dev \
     libxext6 \
     libfreetype6 \
@@ -67,7 +67,7 @@ RUN apt-get update && apt-get install -y \
     libxtst-dev \
     libasound2 \
     libdbus-1-dev \
-    libegl-mesa0 \
+    libegl1-mesa \
     libglib2.0-dev \
     libxext6 \
     libfreetype6 \
