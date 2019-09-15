@@ -97,7 +97,7 @@ int main(int argc, char** argv)
           argv_complete += " " + std::string(argv[i]);
         }
         // Pass them in
-        return std::system((getApplicationPath(cwlFileBase) + argv_complete).c_str());
+        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
       }
     }
   }
