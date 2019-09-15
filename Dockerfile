@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
 RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then tar -xvf cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
-RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi 
+RUN if [ -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi 
 
 RUN apt-get install -y sudo curl git && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
