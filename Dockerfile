@@ -37,13 +37,15 @@ RUN apt-get update && apt-get install -y \
 
 RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
 RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then tar -xvf cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
-RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi \
-    export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH;
+RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi 
 
 RUN apt-get install -y sudo curl git && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
     sudo apt-get install git-lfs; \
     git lfs install;    
+
+ENV PATH `pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH
+ENV GIT_LFS_SKIP_SMUDGE=1
 
 #general dependencies
 RUN apt-get update && apt-get install -y \
@@ -78,8 +80,6 @@ RUN apt-get update && apt-get install -y \
     libxft-dev \
     npm; \
     if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz && tar -xf cmake-3.12.4-Linux-x86_64.tar.gz && rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi \
-    export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH; \
-    export GIT_LFS_SKIP_SMUDGE=1; \
     apt-get update && \
     apt-get install -y sudo curl git && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
