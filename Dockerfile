@@ -2,11 +2,8 @@ FROM ubuntu:16.04
 
 LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 
-# update
-RUN apt-get update  
-
 #general dependencies
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     build-essential \
     mesa-utils \
     freeglut3-dev \
@@ -36,8 +33,8 @@ RUN apt-get install -y \
     libfreetype6-dev \
     aptitude \
     nodejs \
+    libxft-dev \
     npm; \
-    aptitude install libxft-dev; \
     if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz && tar -xf cmake-3.12.4-Linux-x86_64.tar.gz && rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi \
     export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH; \
     export GIT_LFS_SKIP_SMUDGE=1; \
