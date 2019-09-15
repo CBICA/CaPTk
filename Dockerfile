@@ -33,6 +33,47 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     nodejs \
     libxft-dev \
+    npm; 
+
+RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz && tar -xf cmake-3.12.4-Linux-x86_64.tar.gz && rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi \
+    export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH;
+
+RUN apt-get install -y sudo curl git && \
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
+    sudo apt-get install git-lfs; \
+    git lfs install;    
+
+#general dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    mesa-utils \
+    freeglut3-dev \
+    wget \
+    unzip \
+    doxygen \
+    -qq \
+    gcc-5 \
+    g++-5 \
+    make \
+    libgl-dev \
+    python3-pip \
+    python-numpy \
+    dos2unix \
+    libxkbcommon-x11-0 \
+    libnss3 \
+    libxcomposite-dev \
+    libxcursor-dev \
+    libxrender-dev \
+    libxtst-dev \
+    libasound2 \
+    libdbus-1-dev \
+    libegl-mesa0 \
+    libglib2.0-dev \
+    libxext6 \
+    libfreetype6 \
+    libfreetype6-dev \
+    nodejs \
+    libxft-dev \
     npm; \
     if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz && tar -xf cmake-3.12.4-Linux-x86_64.tar.gz && rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi \
     export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH; \
