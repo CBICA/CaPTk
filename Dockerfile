@@ -51,7 +51,7 @@ ENV PKG_COPY_QT_LIBS=1
 
 RUN if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi \
     cd CaPTk &&  git pull; \
-    count=`ls -1 *.flac 2>/dev/null | wc -l`; \
+    count=`ls -1 *.bin 2>/dev/null | wc -l`; \
     if [ $count != 0 ] ; then rm -rf *.bin; fi \
     git submodule init; \
     git submodule update;
