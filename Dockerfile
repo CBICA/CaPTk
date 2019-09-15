@@ -2,9 +2,6 @@ FROM ubuntu:16.04
 
 LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 
-ENV PATH `pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH
-ENV GIT_LFS_SKIP_SMUDGE=1
-
 #general dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -36,11 +33,22 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     nodejs \
     libxft-dev \
-    npm; \
-    if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz ; fi ; \
-    if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then tar -xvf cmake-3.12.4-Linux-x86_64.tar.gz ; fi ; \
-    if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi ; \
-    apt-get update && \
+    npm; 
+
+RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
+RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then tar -xvf cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
+RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi 
+
+RUN apt-get install -y sudo curl git && \
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
+    sudo apt-get install git-lfs; \
+    git lfs install;    
+
+ENV PATH `pwd`/cmake-3.12.4-Linux-x86_64/bin:$PATH
+ENV GIT_LFS_SKIP_SMUDGE=1
+
+#general dependencies
+RUN apt-get update && \
     apt-get install -y sudo curl git && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
     sudo apt-get install git-lfs; \
