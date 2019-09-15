@@ -49,8 +49,6 @@ ENV GIT_LFS_SKIP_SMUDGE=1
 ENV PKG_FAST_MODE=1
 ENV PKG_COPY_QT_LIBS=1
 
-RUN which cmake
-
 RUN if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi 
 RUN cd CaPTk &&  git pull;
 RUN cd CaPTk && \
