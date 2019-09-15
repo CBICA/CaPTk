@@ -54,8 +54,7 @@ RUN cd CaPTk &&  git pull;
 RUN cd CaPTk && \
     rm -rf *.bin; 
 RUN cd CaPTk && \
-    git submodule init; && \
-    git submodule update;
+    git submodule update --init;
 
 RUN cd CaPTk && echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin && cd bin && \
@@ -86,8 +85,7 @@ RUN apt-get update && \
     cd CaPTk &&  git pull; \
     count=`ls -1 *.flac 2>/dev/null | wc -l`; \
     if [ $count != 0 ] ; then rm -rf *.bin; fi \
-    git submodule init; \
-    git submodule update; \
+    git submodule update --init; \
     echo "=== Starting CaPTk Superbuild ===" && \
     mkdir bin && cd bin && \
     if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi \
