@@ -49,11 +49,10 @@ ENV GIT_LFS_SKIP_SMUDGE=1
 ENV PKG_FAST_MODE=1
 ENV PKG_COPY_QT_LIBS=1
 
-RUN if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi \
-    cd CaPTk &&  git pull; \
-    count=`ls -1 *.bin 2>/dev/null | wc -l`; \
-    if [ $count != 0 ] ; then rm -rf *.bin; fi \
-    git submodule init; \
+RUN if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi && \
+    cd CaPTk &&  git pull; && \
+    rm -rf *.bin; && \
+    git submodule init; && \
     git submodule update;
 
 RUN cd CaPTk && echo "=== Starting CaPTk Superbuild ===" && \
