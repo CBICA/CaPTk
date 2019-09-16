@@ -33,11 +33,12 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     nodejs \
     libxft-dev \
+    cmake \
     npm; 
 
-RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
-RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then tar -xvf cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
-RUN if [ -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi 
+# RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
+# RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then tar -xvf cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
+# RUN if [ -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then rm -rf cmake-3.12.4-Linux-x86_64.tar.gz; fi 
 
 RUN apt-get install -y sudo curl git && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
@@ -62,7 +63,7 @@ RUN cd CaPTk/bin && if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.
 RUN cd CaPTk/bin && if [ ! -d "`pwd`/qt" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip; fi
 
 RUN cd CaPTk/bin && \
-    ../../cmake-3.12.4-Linux-x86_64/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev ..
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev ..
 
 RUN cd CaPTk/bin && make
 
@@ -70,7 +71,7 @@ RUN cd CaPTk/bin && if [ ! -f "qt.zip" ] ; then rm -rf qt.zip; fi
 
 RUN cd CaPTk/bin && \
     echo "=== Building CaPTk ===" && \
-    ../../cmake-3.12.4-Linux-x86_64/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install/appdir/usr/bin -Wno-dev .. && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install/appdir/usr/bin -Wno-dev .. && \
     make install/strip -j2;
 
 RUN cd CaPTk && ./scripts/captk-pkg
