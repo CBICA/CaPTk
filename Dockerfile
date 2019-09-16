@@ -33,7 +33,6 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     nodejs \
     libxft-dev \
-    cmake \
     npm; 
 
 # RUN if [ ! -d "`pwd`/cmake-3.12.4-Linux-x86_64" ] ; then wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz ; fi 
@@ -44,6 +43,9 @@ RUN apt-get install -y sudo curl git && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
     sudo apt-get install git-lfs; \
     git lfs install;    
+
+RUN wget http://download-ib01.fedoraproject.org/pub/fedora/linux/releases/29/Everything/x86_64/os/Packages/c/cmake-3.12.1-1.fc29.x86_64.rpm; \
+    rpm -i cmake-3.12.1-1.fc29.x86_64.rpm
 
 ENV PATH `pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
 ENV GIT_LFS_SKIP_SMUDGE=1
