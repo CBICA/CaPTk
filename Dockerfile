@@ -52,6 +52,9 @@ RUN wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh; \
 ARG GIT_LFS_SKIP_SMUDGE=1
 ARG PKG_FAST_MODE=1
 ARG PKG_COPY_QT_LIBS=1
+ENV GIT_LFS_SKIP_SMUDGE=$GIT_LFS_SKIP_SMUDGE
+ENV PKG_FAST_MODE=$PKG_FAST_MODE
+ENV PKG_COPY_QT_LIBS=$PKG_COPY_QT_LIBS
 
 RUN if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi 
 RUN cd CaPTk &&  git pull;
