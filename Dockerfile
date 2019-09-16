@@ -46,7 +46,7 @@ RUN apt-get install -y sudo curl git && \
 
 RUN wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh; \
     mkdir /opt/cmake; \
-    sh cmake-$version.$build-Linux-x86_64.sh --prefix=/opt/cmake; \
+    sh cmake-3.12.4-Linux-x86_64.sh --prefix=/opt/cmake; \
     ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
 
 ENV PATH `pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
