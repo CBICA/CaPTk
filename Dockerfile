@@ -44,8 +44,10 @@ RUN apt-get install -y sudo curl git && \
     sudo apt-get install git-lfs; \
     git lfs install;    
 
-RUN wget http://download-ib01.fedoraproject.org/pub/fedora/linux/releases/29/Everything/x86_64/os/Packages/c/cmake-3.12.1-1.fc29.x86_64.rpm; \
-    rpm -i cmake-3.12.1-1.fc29.x86_64.rpm
+RUN wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh; \
+    mkdir /opt/cmake; \
+    sh cmake-$version.$build-Linux-x86_64.sh --prefix=/opt/cmake; \
+    ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
 
 ENV PATH `pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
 ENV GIT_LFS_SKIP_SMUDGE=1
