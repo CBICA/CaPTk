@@ -70,7 +70,7 @@ public:
       
       matrix_generator->SetNumberOfBinsPerAxis(this->m_Bins);
       matrix_generator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
-      if (!this->m_histogramBinningType == HistogramBinningType::Equal)
+      if (this->m_histogramBinningType != HistogramBinningType::Equal)
       {
         matrix_generator->SetPixelValueMinMax(this->m_minimum, this->m_maximum);
       }
