@@ -49,10 +49,9 @@ RUN wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh; \
     sh cmake-3.12.4-Linux-x86_64.sh --prefix=/opt/cmake --skip-license; \
     ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
 
-ENV PATH `pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-ENV GIT_LFS_SKIP_SMUDGE=1
-ENV PKG_FAST_MODE=1
-ENV PKG_COPY_QT_LIBS=1
+ARG GIT_LFS_SKIP_SMUDGE=1
+ARG PKG_FAST_MODE=1
+ARG PKG_COPY_QT_LIBS=1
 
 RUN if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi 
 RUN cd CaPTk &&  git pull;
