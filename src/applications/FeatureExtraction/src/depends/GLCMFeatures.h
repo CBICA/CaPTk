@@ -112,8 +112,6 @@ public:
       }
       else if ((m_offsetSelector == "ITKDefault") || (m_offsetSelector == "Combined"))
       {
-        cbica::WriteImage< TImageType >(mask_wrap, "C:/Projects/CaPTk_myFork/src/applications/FeatureExtraction/bin/mask_glcm.nii.gz");
-        
         typename  Image2CoOccuranceType::Pointer glcmGenerator = Image2CoOccuranceType::New();
         glcmGenerator->SetNumberOfBinsPerAxis(this->m_Bins); //reasonable number of bins
         if (this->m_histogramBinningType != HistogramBinningType::Equal)
