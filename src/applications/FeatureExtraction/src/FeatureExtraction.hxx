@@ -1862,21 +1862,24 @@ std::vector< typename TImage::Pointer > FeatureExtraction< TImage >::GetSelected
 
   if (originalSize.Dimension == 3)
   {
-    for (int dim = 0; dim < TImage::ImageDimension; dim++) // dimension-loop
+    itk::ImageRegionIteratorWithIndex< TImage > iteratorExtractor(mask, mask->GetLargestPossibleRegion());
+
+    for (iteratorExtractor.GoToBegin(); !iteratorExtractor.IsAtEnd(); ++iteratorExtractor)
     {
-      itk::ImageRegionIteratorWithIndex< TImage > iteratorExtractor(mask, mask->GetLargestPossibleRegion());
-      itk::ImageRegionIteratorWithIndex< TImage > iteratormaxImageSlices(maxImageSlices[dim], maxImageSlices[dim]->GetLargestPossibleRegion());
-      // itk::ImageRegionConstIterator< ImageType2D > iterator(extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion());
-      for (iteratormaxImageSlices.GoToBegin(); !iteratormaxImageSlices.IsAtEnd(); ++iteratormaxImageSlices)
+      auto currentMaskValue = iteratorExtractor.Get();
+      if (currentMaskValue > 0) // only proceed if non-zero index
       {
-        auto idx = iteratormaxImageSlices.GetIndex();
-        if (idx[dim] == desiredIndexFinal[dim]) {
-          iteratorExtractor.SetIndex(idx);
-          //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - index[" << idx << "] = " << iteratorExtractor.Get() << std::endl;
-          iteratormaxImageSlices.Set(iteratorExtractor.Get());
+        auto idx = iteratorExtractor.GetIndex();
+        for (int dim = 0; dim < TImage::ImageDimension; dim++) // loop through all the axes
+        {
+          if (idx[dim] == desiredIndexFinal[dim]) // if there is a match with the final index along each axis
+          {
+            maxImageSlices[dim]->SetPixel(idx, currentMaskValue);
+          }
         }
       }
     }
+
   }
 
   return maxImageSlices;
@@ -2237,7 +2240,6 @@ void FeatureExtraction< TImage >::Update()
           {
             currentMask_patch_axisImages.push_back(currentMask_patch);
           }
-
 
           // iterate over the entire feature family enum
           for (size_t f = 1/*Intensity features already calculated*/; f < FeatureMax; ++f)
