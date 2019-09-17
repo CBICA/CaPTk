@@ -115,8 +115,9 @@ RUN_FIXES () {
   # to be marked as executable or else the whole thing WILL NOT work. We'll get to that in a second.
   echo "[:] Adding LIBRA..."
   cd ${SRC_DIR}
-  cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
-  cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
+  # # nothing do here since the installation has happened via CMake
+  # cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
+  # cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
   #cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
 
   # Move into install
