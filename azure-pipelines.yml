@@ -666,8 +666,7 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-        cd $(Build.SourcesDirectory)/bin
+        cd CaPTk/bin
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DITK_DIR=$(Build.SourcesDirectory)/bin/ITK-build -DDCMTK_DIR=$(Build.SourcesDirectory)/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
         make -j2
@@ -689,7 +688,6 @@ jobs:
 
     # Build a package
     - bash: |
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
         cd $(Build.SourcesDirectory)
         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
@@ -709,7 +707,6 @@ jobs:
       displayName: 'Set up environment variables for packager and build a package'
 
     - bash: |
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
         cd $(Build.SourcesDirectory)
         rm -rf src
         rm -rf docs*
