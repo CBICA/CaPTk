@@ -58,7 +58,7 @@ ENV PKG_COPY_QT_LIBS=$PKG_COPY_QT_LIBS
 # cloning CaPTk
 RUN if [ ! -d "`pwd`/CaPTk" ] ; then git clone "https://github.com/CBICA/CaPTk.git"; fi 
 RUN cd CaPTk &&  git pull; \
-    git submodule update --init; && mkdir bin
+    git submodule update --init && mkdir bin
 
 RUN cd CaPTk/bin && echo "=== Starting CaPTk Superbuild ===" && \
     if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi ; \
