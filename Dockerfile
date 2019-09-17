@@ -37,6 +37,8 @@ RUN apt-get update && apt-get install -y \
     libgstreamer-plugins-base1.0-dev \
     libpulse-mainloop-glib0 \
     libmysqlclient-dev \
+    default-libmysqlclient-dev \
+    libmysqlclient20 \
     npm; 
 
 # installing LFS
