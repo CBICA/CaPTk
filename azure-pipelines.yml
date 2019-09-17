@@ -660,6 +660,7 @@ jobs:
 
     # submodule 
     - bash: |
+        cd CaPTk
         git submodule init
         git submodule update
       displayName: 'Git Submodule Init and Update'
@@ -687,12 +688,6 @@ jobs:
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Moving LFS files to the appropriate location under bin'
       # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
-
-    - bash: |
-        wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz
-        tar -xvf cmake-3.12.4-Linux-x86_64.tar.gz
-        export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-      displayName: 'CMake installation'
 
     - bash: |
         tar xvfz bin_linux.tar.gz
