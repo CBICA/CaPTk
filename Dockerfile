@@ -66,7 +66,7 @@ RUN cd CaPTk &&  git pull; \
 RUN cd CaPTk/bin && echo "=== Starting CaPTk Superbuild ===" && \
     if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi ; \
     if [ ! -d "`pwd`/qt" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip; fi ; \
-    cmake -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev ..
+    cmake -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev .. && make -j2
 
 RUN cd CaPTk/bin && echo "=== Building CaPTk ===" && \
     cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=./install/appdir/usr/bin -Wno-dev .. && \
