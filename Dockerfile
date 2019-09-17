@@ -33,6 +33,9 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     nodejs \
     libxft-dev \
+    libgstreamer-plugins-base0.10-0 \
+    libgstreamer-plugins-base1.0-dev \
+    libpulse-mainloop-glib0 \
     npm; 
 
 # installing LFS
@@ -63,10 +66,10 @@ RUN cd CaPTk &&  git pull; \
 RUN cd CaPTk/bin && echo "=== Starting CaPTk Superbuild ===" && \
     if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi ; \
     if [ ! -d "`pwd`/qt" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip; fi ; \
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev ..
+    cmake -DCMAKE_INSTALL_PREFIX=./install_libs -Wno-dev ..
 
 RUN cd CaPTk/bin && echo "=== Building CaPTk ===" && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install/appdir/usr/bin -Wno-dev .. && \
+    cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=./install/appdir/usr/bin -Wno-dev .. && \
     make install/strip -j2;
 
 RUN cd CaPTk && ./scripts/captk-pkg
