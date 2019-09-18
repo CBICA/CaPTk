@@ -2,8 +2,6 @@ FROM cbica/captk_centos7:latest
 
 LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 
-# LFS install
-RUN yum install -y epel-release git; \
-    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | sudo bash; \
-    yum install -y git-lfs; \
-    git lfs install
+RUN cd CaPTk; \
+    git submodule init && git submodule update
+
