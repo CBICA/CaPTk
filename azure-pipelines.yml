@@ -128,9 +128,9 @@ jobs:
       displayName: 'Configure and compile CaPTk'
 
     - powershell: |
-        # get-psdrive | Where Free*
-        # cd bin
-        # # Remove-Item install_manifest.txt
+        get-psdrive | Where Free*
+        cd bin
+        # Remove-Item install_manifest.txt
         pwd
 
         switch((ls -r|measure -s Length).Sum) {
@@ -204,37 +204,36 @@ jobs:
       displayName: 'Zipping bin'
 
     - powershell: |
-        # get-psdrive | Where Free*
+        get-psdrive | Where Free*
 
-        switch((ls -r|measure -s Length).Sum) {
-          {$_ -gt 1GB} {
-            '{0:0.0} GiB' -f ($_/1GB)
-            break
-          }
-          {$_ -gt 1MB} {
-            '{0:0.0} MiB' -f ($_/1MB)
-            break
-          }
-          {$_ -gt 1KB} {
-            '{0:0.0} KiB' -f ($_/1KB)
-            break
-          }
-          default { "$_ bytes" }
-        }
+        # switch((ls -r|measure -s Length).Sum) {
+        #   {$_ -gt 1GB} {
+        #     '{0:0.0} GiB' -f ($_/1GB)
+        #     break
+        #   }
+        #   {$_ -gt 1MB} {
+        #     '{0:0.0} MiB' -f ($_/1MB)
+        #     break
+        #   }
+        #   {$_ -gt 1KB} {
+        #     '{0:0.0} KiB' -f ($_/1KB)
+        #     break
+        #   }
+        #   default { "$_ bytes" }
+        # }
 
       displayName: 'Disk space check'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
 
-    # - task: PublishBuildArtifacts@1
-    #   inputs:
-    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
-
-    # - task: DownloadBuildArtifacts@0
-    #   inputs:
-    #     buildType: 'current'
-    #     downloadType: 'single'
-    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
-    #     downloadPath: '$(System.ArtifactsDirectory)'
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
+        downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
