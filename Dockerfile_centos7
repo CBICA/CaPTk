@@ -5,3 +5,14 @@ LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 RUN cd CaPTk; \
     git submodule init && git submodule update
 
+RUN cd CaPTk/bin; \
+    export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH; \
+    cmake -DITK_DIR=$(Build.SourcesDirectory)/bin/ITK-build -DDCMTK_DIR=$(Build.SourcesDirectory)/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..; \
+    make -j2 && make install/strip; \
+    cd .. && ./scripts/captk-pkg
+
+# cleanup
+RUN rm -rf CaPTk/bin/binaries_linux.zip && rm -rf CaPTk/bin/qt.zip
+
+# define entry point
+ENTRYPOINT ["/CaPTk/bin/install/appdir/usr/bin/CaPTk"]
