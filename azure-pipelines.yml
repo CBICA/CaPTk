@@ -642,7 +642,7 @@ jobs:
         command: push an image
         imageName: '$(dockerId)/$(imageName):$(tagName)'  
 
-- job: 'DockerBuild'
+- job: 'DockerBuild2'
   displayName: "End-to-end Docker_CentOS image build and push"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 360
