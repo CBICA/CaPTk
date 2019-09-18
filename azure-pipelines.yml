@@ -128,9 +128,9 @@ jobs:
       displayName: 'Configure and compile CaPTk'
 
     - powershell: |
-        get-psdrive | Where Free*
-        cd bin
-        # Remove-Item install_manifest.txt
+        # get-psdrive | Where Free*
+        # cd bin
+        # # Remove-Item install_manifest.txt
 
         gci -force '/home/vsts/work/1/s/'-ErrorAction SilentlyContinue | ? { $_ -is [io.directoryinfo] } | % {
         $len = 0
@@ -193,7 +193,7 @@ jobs:
       displayName: 'Zipping bin'
 
     - powershell: |
-        get-psdrive | Where Free*
+        # get-psdrive | Where Free*
 
         gci -force '/home/vsts/work/1/s/'-ErrorAction SilentlyContinue | ? { $_ -is [io.directoryinfo] } | % {
         $len = 0
