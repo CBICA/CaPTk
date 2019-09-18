@@ -128,7 +128,7 @@ jobs:
       displayName: 'Configure and compile CaPTk'
 
     - powershell: |
-        wmic logicaldisk get size,freespace,caption
+        get-psdrive | Where Free*
         cd bin
         # Remove-Item install_manifest.txt
       displayName: 'Disk space check'
@@ -143,23 +143,23 @@ jobs:
     #    cmake --build . --target RUN_TESTS --config Release
     #  displayName: 'Performing the Tests'
 
-    # - script: |
-    #     cd bin
-    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
-    #     rm -rf binaries_windows.zip
-    #     rm -rf install_manifest.txt
-    #     setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-    #     setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-    #     cmake --build . --target PACKAGE --config Release
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        rm -rf binaries_windows.zip
+        rm -rf install_manifest.txt
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        cmake --build . --target PACKAGE --config Release
 
-    #     ls -lt *_Installer.*
+        ls -lt *_Installer.*
 
-    #     mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
-    #     cd ../
+        cd ../
 
-    #   displayName: 'Build & Package CaPTk'
+      displayName: 'Build & Package CaPTk'
 
     - bash: |
         rm -rf src
@@ -186,9 +186,9 @@ jobs:
         tar cvfz bin_windows.tar.gz bin_windows
       displayName: 'Zipping bin'
 
-    # - powershell: |
-    #     wmic logicaldisk get size,freespace,caption
-    #   displayName: 'Disk space check'
+    - powershell: |
+        get-psdrive | Where Free*
+      displayName: 'Disk space check'
 
     # - task: PublishBuildArtifacts@1
     #   inputs:
