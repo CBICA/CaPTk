@@ -7,7 +7,7 @@ trigger:
 resources:
   containers:
   - container: centos
-    image: cbica/captk_centos7:latest
+    image: cbica/captk_centos7:devtoolset-4_superbuild
 
 jobs:
 - job: 'WindowsBuild'
