@@ -8,8 +8,7 @@ RUN cd CaPTk; \
     git log -1
 
 RUN cd CaPTk/bin; \
-    export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build; \
-    cmake -DITK_DIR=$(Build.SourcesDirectory)/bin/ITK-build -DDCMTK_DIR=$(Build.SourcesDirectory)/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
+    cmake -DITK_DIR=./bin/ITK-build -DDCMTK_DIR=./bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
     make -j2 && make install/strip; \
     cd .. && ./scripts/captk-pkg
 
