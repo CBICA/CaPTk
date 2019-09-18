@@ -3,6 +3,7 @@ FROM cbica/captk_centos7:latest
 LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 
 RUN cd CaPTk; \
+    git pull; \
     git submodule init && git submodule update
 
 RUN cd CaPTk/bin; \
