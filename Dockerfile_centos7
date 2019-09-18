@@ -5,7 +5,7 @@ LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 RUN cd CaPTk; \
     git pull; \
     git submodule init && git submodule update; \
-    git rev-parse HEAD
+    git log -1
 
 RUN cd CaPTk/bin; \
     export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH; \
