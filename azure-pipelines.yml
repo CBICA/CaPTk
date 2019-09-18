@@ -24,11 +24,11 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_windows.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_windows.tar.gz_1" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_WINDOWS
         restoreKeys: |
-          "bin_windows.tar.gz"
+          "bin_windows.tar.gz_1"
         continueOnError : true
       displayName: 'Caching'
 
@@ -56,8 +56,8 @@ jobs:
     #   displayName: 'Disk space check'
 
     - bash: |
-        tar xvfz bin_windows.tar.gz
-        rm -rf bin_windows.tar.gz
+        tar xvfz bin_windows.tar.gz_1
+        rm -rf bin_windows.tar.gz_1
         # ls
         mv bin_windows bin
         # ls
@@ -110,7 +110,7 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # - bash: |
-    #     tar cvfz bin_windows.tar.gz bin
+    #     tar cvfz bin_windows.tar.gz_1 bin
     #   displayName: 'Zipping Superbuild'
 
     # - powershell: |
@@ -184,7 +184,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_windows.tar.gz
+        rm -rf bin_windows.tar.gz_1
         rm -rf install_manifest.txt
 
         cd bin
@@ -200,7 +200,7 @@ jobs:
         cd ../
 
         mv bin bin_windows
-        tar cvfz bin_windows.tar.gz bin_windows
+        tar cvfz bin_windows.tar.gz_1 bin_windows
       displayName: 'Zipping bin'
 
     - powershell: |
