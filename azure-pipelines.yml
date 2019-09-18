@@ -131,8 +131,23 @@ jobs:
         # get-psdrive | Where Free*
         # cd bin
         # # Remove-Item install_manifest.txt
+        pwd
 
-        "{0:N2} GB" -f ((gci –force /home/vsts/work/1/s/ –Recurse -ErrorAction SilentlyContinue| measure Length -s).sum / 1Gb)
+        switch((ls -r|measure -s Length).Sum) {
+          {$_ -gt 1GB} {
+            '{0:0.0} GiB' -f ($_/1GB)
+            break
+          }
+          {$_ -gt 1MB} {
+            '{0:0.0} MiB' -f ($_/1MB)
+            break
+          }
+          {$_ -gt 1KB} {
+            '{0:0.0} KiB' -f ($_/1KB)
+            break
+          }
+          default { "$_ bytes" }
+        }
       displayName: 'Disk space check'
 
     #- script: |
@@ -191,7 +206,21 @@ jobs:
     - powershell: |
         # get-psdrive | Where Free*
 
-        "{0:N2} GB" -f ((gci –force /home/vsts/work/1/s/ –Recurse -ErrorAction SilentlyContinue| measure Length -s).sum / 1Gb)
+        switch((ls -r|measure -s Length).Sum) {
+          {$_ -gt 1GB} {
+            '{0:0.0} GiB' -f ($_/1GB)
+            break
+          }
+          {$_ -gt 1MB} {
+            '{0:0.0} MiB' -f ($_/1MB)
+            break
+          }
+          {$_ -gt 1KB} {
+            '{0:0.0} KiB' -f ($_/1KB)
+            break
+          }
+          default { "$_ bytes" }
+        }
 
       displayName: 'Disk space check'
 
