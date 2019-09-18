@@ -313,8 +313,7 @@ jobs:
 
     - bash: |
         wget http://files.directadmin.com/services/debian_7.0_64/libmysqlclient.so.18
-        sudo ln -s libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/libmysqlclient.so.18
-        # cp -fv libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/
+        sudo cp -fv libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/
         cd /usr/lib/x86_64-linux-gnu
         chmod 755 libmysqlclient.so.18
         ldconfig
