@@ -131,6 +131,12 @@ jobs:
         get-psdrive | Where Free*
         cd bin
         # Remove-Item install_manifest.txt
+
+        gci -force '/home/vsts/work/1/s/'-ErrorAction SilentlyContinue | ? { $_ -is [io.directoryinfo] } | % {
+        $len = 0
+        gci -recurse -force $_.fullname -ErrorAction SilentlyContinue | % { $len += $_.length }
+        $_.fullname, '{0:N2} GB' -f ($len / 1Gb)
+        }
       displayName: 'Disk space check'
 
     #- script: |
@@ -188,6 +194,12 @@ jobs:
 
     - powershell: |
         get-psdrive | Where Free*
+
+        gci -force '/home/vsts/work/1/s/'-ErrorAction SilentlyContinue | ? { $_ -is [io.directoryinfo] } | % {
+        $len = 0
+        gci -recurse -force $_.fullname -ErrorAction SilentlyContinue | % { $len += $_.length }
+        $_.fullname, '{0:N2} GB' -f ($len / 1Gb)
+        }
       displayName: 'Disk space check'
 
     # - task: PublishBuildArtifacts@1
