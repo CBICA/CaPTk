@@ -206,21 +206,8 @@ jobs:
     - powershell: |
         get-psdrive | Where Free*
 
-        # switch((ls -r|measure -s Length).Sum) {
-        #   {$_ -gt 1GB} {
-        #     '{0:0.0} GiB' -f ($_/1GB)
-        #     break
-        #   }
-        #   {$_ -gt 1MB} {
-        #     '{0:0.0} MiB' -f ($_/1MB)
-        #     break
-        #   }
-        #   {$_ -gt 1KB} {
-        #     '{0:0.0} KiB' -f ($_/1KB)
-        #     break
-        #   }
-        #   default { "$_ bytes" }
-        # }
+        cd $(Build.ArtifactStagingDirectory)
+        pwd
 
       displayName: 'Disk space check'
     - task: PublishBuildArtifacts@1
