@@ -394,7 +394,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       )
       INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
         DESTINATION libexec
-        PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
+        # PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
         #USE_SOURCE_PERMISSIONS
       )
     ENDIF()
