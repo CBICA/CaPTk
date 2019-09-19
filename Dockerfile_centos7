@@ -2,7 +2,7 @@ FROM cbica/captk_centos7:latest
 
 LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 
-RUN yum update
+RUN yum update -y
 
 RUN yum install git
 
