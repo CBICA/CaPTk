@@ -1,4 +1,4 @@
-FROM cbica/captk_centos7:latest
+FROM cbica/captk_centos7:devtoolset-4_superbuild
 
 LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 
@@ -6,16 +6,15 @@ RUN yum update -y
 
 RUN yum install git
 
+RUN git clone "https://github.com/CBICA/CaPTk.git"
+
 RUN cd CaPTk; \
-    curl -O https://gist.githubusercontent.com/chuckbjones/9dc6634fe52e56ba45ac/raw/63a5c7f51af5d104e553c5f3d3144c21d39e38e8/fix_github_https_repo.sh; \
-    chmod 777 fix_github_https_repo.sh; \
-    ./fix_github_https_repo.sh; \
     git pull origin master; \
     git submodule init && git submodule update; \
     git log -1
 
 RUN cd CaPTk/bin; \
-    cmake -DITK_DIR=./bin/ITK-build -DDCMTK_DIR=./bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
+    cmake -DITK_DIR=../../CaPTk_Libs/bin/ITK-build -DDCMTK_DIR=../../CaPTk_Libs/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
     make -j2 && make install/strip; \
     cd .. && ./scripts/captk-pkg
 
