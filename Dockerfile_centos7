@@ -6,7 +6,7 @@ RUN yum update -y
 
 RUN yum install git
 
-RUN ls -l CaPTk_Libs
+RUN ls -l CaPTk_Libs/bin
 
 RUN rm -rf CaPTk && git clone "https://github.com/sarthakpati/CaPTk.git"
 
