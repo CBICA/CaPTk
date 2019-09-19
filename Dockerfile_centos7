@@ -6,6 +6,8 @@ RUN yum update -y
 
 RUN yum install git
 
+RUN ls -l 
+
 RUN rm -rf CaPTk && git clone "https://github.com/sarthakpati/CaPTk.git"
 
 RUN cd CaPTk && mkdir bin; \
@@ -14,7 +16,6 @@ RUN cd CaPTk && mkdir bin; \
     git log -1
 
 RUN cd CaPTk/bin; \
-    ls -l ..; \
     cmake -DITK_DIR=../../CaPTk_Libs/bin/ITK-build -DDCMTK_DIR=../../CaPTk_Libs/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
     make -j2 && make install/strip; \
     cd .. && ./scripts/captk-pkg
