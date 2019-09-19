@@ -1146,10 +1146,16 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
     INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
-    INSTALL(FILES src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
+    INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
       DESTINATION libexec/MCR/v84/bin/glnxa64/
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
+  ELSEIF(EXISTS ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper)
+  INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper
+    DESTINATION libexec/MCR/v84/bin/glnxa64/
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  )
   ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )

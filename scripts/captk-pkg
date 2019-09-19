@@ -118,7 +118,7 @@ RUN_FIXES () {
   # # nothing do here since the installation has happened via CMake
   # cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
   # cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
-  cp ./src/applications/individualApps/libra/libexec/MCR/bin/glnxa64/matlab_helper ./bin/install/appdir/usr/libexec/MCR/bin/glnxa64/matlab_helper
+  # cp ./src/applications/individualApps/libra/libexec/MCR/bin/glnxa64/matlab_helper ./bin/install/appdir/usr/libexec/MCR/bin/glnxa64/matlab_helper
   #cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
 
   # Move into install
