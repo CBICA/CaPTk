@@ -216,12 +216,12 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_linux.tar.gz_1" | "$(Build.DefinitionName)"'
+        key: '"bin_linux_2.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
         restoreKeys: |
-          "bin_linux.tar.gz_1"
+          "bin_linux_2.tar.gz"
       displayName: 'Caching'
 
     # Dependency manager
@@ -250,8 +250,8 @@ jobs:
     #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xvfz bin_linux.tar.gz_1
-        rm -rf bin_linux.tar.gz_1
+        tar xvfz bin_linux_2.tar.gz
+        rm -rf bin_linux_2.tar.gz
         # ls
         mv bin_linux bin
         # ls
@@ -286,7 +286,7 @@ jobs:
       # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar cvfz bin_linux.tar.gz_1 bin
+        tar cvfz bin_linux_2.tar.gz bin
       displayName: 'Zipping Superbuild'
 
       # Check qt
@@ -346,7 +346,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_linux.tar.gz_1
+        rm -rf bin_linux_2.tar.gz
 
         cd bin
 
@@ -360,7 +360,7 @@ jobs:
         cd ../
 
         mv bin bin_linux
-        tar cvfz bin_linux.tar.gz_1 bin_linux
+        tar cvfz bin_linux_2.tar.gz bin_linux
       displayName: 'Zipping bin'
 
     - task: PublishBuildArtifacts@1
