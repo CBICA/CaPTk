@@ -8,6 +8,9 @@ RUN yum install git
 
 RUN ls -l CaPTk_Libs/bin
 
+ARG CMAKE_PREFIX_PATH=`pwd`/CaPTk_Libs/bin/ITK-build:`pwd`/CaPTk_Libs/bin/DCMTK-build
+ENV CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
+
 RUN rm -rf CaPTk && git clone "https://github.com/sarthakpati/CaPTk.git"
 
 RUN cd CaPTk && mkdir bin; \
