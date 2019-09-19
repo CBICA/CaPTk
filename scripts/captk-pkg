@@ -215,8 +215,11 @@ RUN_DEPLOYQT () {
     qt_libs_path="$(dirname "${qmake_path}")/../lib"
     cp ${qt_libs_path}/*.so ./appdir/usr/lib/
     cp ${qt_libs_path}/*.so.5 ./appdir/usr/lib/
-    cp ${qt_libs_path}/*.so.5.11 ./appdir/usr/lib/
-    cp ${qt_libs_path}/*.so.5.11.1 ./appdir/usr/lib/
+    # we only support the copy of qt 5.11 and 5.12
+    count=`ls -1 ${qt_libs_path}/*.so.5.11 2>/dev/null | wc -l`
+    if [ $count != 0 ]; then cp ${qt_libs_path}/*.so.5.11 ./appdir/usr/lib/; cp ${qt_libs_path}/*.so.5.11.* ./appdir/usr/lib/ ; fi ;
+    count=`ls -1 ${qt_libs_path}/*.so.5.12 2>/dev/null | wc -l`
+    if [ $count != 0 ]; then cp ${qt_libs_path}/*.so.5.12 ./appdir/usr/lib/; cp ${qt_libs_path}/*.so.5.12.* ./appdir/usr/lib/ ; fi ;
 
   fi
 
