@@ -6,19 +6,14 @@ RUN yum update -y
 
 RUN yum install git
 
-ARG CMAKE_PREFIX_PATH=`pwd`/CaPTk_Libs/bin/ITK-build:`pwd`/CaPTk_Libs/bin/DCMTK-build
-ENV CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
-ARG DCMTK_DIR=`pwd`/CaPTk_Libs/bin/DCMTK-build
-ENV DCMTK_DIR=$DCMTK_DIR
-
-RUN cd CaPTk_Libs; \
+RUN cd CaPTk; \
     git remote add myFork https://github.com/sarthakpati/CaPTk.git; \
     git remote -v; \
     git fetch myFork; \
     git submodule init && git submodule update; \
     git log -1
 
-RUN cd CaPTk_Libs/bin; \
+RUN cd CaPTk/bin; \
     if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi ; \
     cmake -DITK_DIR=./bin/ITK-build -DDCMTK_DIR=./bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
     make -j2 && make install/strip; \
@@ -28,4 +23,4 @@ RUN cd CaPTk_Libs/bin; \
 RUN rm -rf CaPTk/bin/binaries_linux.zip
 
 # define entry point
-ENTRYPOINT ["/CaPTk_Libs/bin/install/appdir/usr/bin/CaPTk"]
+ENTRYPOINT ["/CaPTk/bin/install/appdir/usr/bin/CaPTk"]
