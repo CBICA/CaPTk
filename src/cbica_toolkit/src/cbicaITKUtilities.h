@@ -598,7 +598,7 @@ namespace cbica
   template< class TImageType = ImageTypeFloat3D >
   std::pair< std::string, typename TImageType::Pointer > GetImageOrientation(const typename TImageType::Pointer inputImage, const std::string &desiredOrientation = "RAI")
   {
-    if ((TImageType::ImageDimension != 3) || (TImageType::ImageDimension != 4))
+    if (TImageType::ImageDimension != 3)
     {
       std::cerr << "This function is only defined for 3D and 4D images.\n";
       exit(EXIT_FAILURE);
