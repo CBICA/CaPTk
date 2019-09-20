@@ -647,7 +647,7 @@ jobs:
 #         dockerRegistryEndpoint: cbicaDockerHub
 #         imageName: '$(dockerId)/$(imageName):$(tagName)'
 #         command: build an image
-#         dockerFile: '**/Dockerfile_centos7'
+#         dockerFile: '**/Dockerfile'
 
 #     - task: Docker@1
 #       displayName: Login
