@@ -14,7 +14,7 @@ ENV CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
 ARG DCMTK_DIR=`pwd`/CaPTk_Libs/bin/DCMTK-build
 ENV DCMTK_DIR=$DCMTK_DIR
 
-RUN rm -rf CaPTk && git clone "https://github.com/sarthakpati/CaPTk.git"
+RUN rm -rf CaPTk && git clone "https://github.com/sarthakpati/CaPTk.git" && ls -lt
 
 RUN cd CaPTk && mkdir bin; \
     git pull origin master; \
@@ -23,7 +23,7 @@ RUN cd CaPTk && mkdir bin; \
 
 RUN cd CaPTk/bin; \
     if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi ;
-    cmake -DITK_DIR=../../CaPTk_Libs/bin/ITK-build -DDCMTK_DIR=../../CaPTk_Libs/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
+    cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
     make -j2 && make install/strip; \
     cd .. && ./scripts/captk-pkg
 
