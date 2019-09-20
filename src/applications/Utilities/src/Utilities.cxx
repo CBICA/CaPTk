@@ -998,7 +998,7 @@ int main(int argc, char** argv)
       {
         auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
         cbica::WriteImage< ImageType >(output.second, tempOutputFile);
-        cbica::WriteImage< ImageType >(cbica::ReadImage< TImageType >(tempOutputFile), outputImageFile);
+        cbica::WriteImage< ImageType >(cbica::ReadImage< ImageType >(tempOutputFile), outputImageFile);
         std::remove(tempOutputFile.c_str());
       }
       else
@@ -1015,6 +1015,27 @@ int main(int argc, char** argv)
   case 4:
   {
     using ImageType = itk::Image< float, 4 >;
+
+    if (requestedAlgorithm == OrientImage) // this does not work for 2 or 4-D images
+    {
+      auto output = cbica::GetImageOrientation< ImageType >(cbica::ReadImage< ImageType >(inputImageFile), orientationDesired);
+      std::cout << "Original Image Orientation: " << output.first << "\n";
+      std::string path, base, ext;
+      cbica::splitFileName(outputImageFile, path, base, ext);
+      if (ext != ".mha")
+      {
+        auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
+        cbica::WriteImage< ImageType >(output.second, tempOutputFile);
+        cbica::WriteImage< ImageType >(cbica::ReadImage< ImageType >(tempOutputFile), outputImageFile);
+        std::remove(tempOutputFile.c_str());
+      }
+      else
+      {
+        cbica::WriteImage< ImageType >(output.second, outputImageFile);
+      }
+      return EXIT_SUCCESS;
+    }
+
     return algorithmsRunner< ImageType >();
 
     break;
