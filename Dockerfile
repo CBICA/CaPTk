@@ -6,16 +6,6 @@ RUN yum update -y
 
 RUN yum install git
 
-# RUN cd CaPTk; \
-#     git remote add myFork https://github.com/sarthakpati/CaPTk.git; \
-#     git remote -v; \
-#     git fetch myFork; \
-#     git checkout -b add-other-changes; \
-#     git pull myFork master; \
-#     git push origin HEAD; \
-#     git submodule init && git submodule update; \
-#     git log -1
-
 RUN cd CaPTk; \
     git pull origin master
 
