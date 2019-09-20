@@ -6,9 +6,6 @@ RUN yum update -y
 
 RUN yum install git
 
-RUN ls -l CaPTk_Libs/bin/ITK-build/*.cmake
-RUN ls -l CaPTk_Libs/bin/DCMTK-build/*.cmake
-
 ARG CMAKE_PREFIX_PATH=`pwd`/CaPTk_Libs/bin/ITK-build:`pwd`/CaPTk_Libs/bin/DCMTK-build
 ENV CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
 ARG DCMTK_DIR=`pwd`/CaPTk_Libs/bin/DCMTK-build
@@ -23,7 +20,7 @@ RUN cd CaPTk && mkdir bin; \
 
 RUN cd CaPTk/bin; \
     if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi ; \
-    cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
+    cmake -DITK_DIR=../../CaPTk_Libs/bin/ITK-build -DDCMTK_DIR=../../CaPTk_Libs/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
     make -j2 && make install/strip; \
     cd .. && ./scripts/captk-pkg
 
