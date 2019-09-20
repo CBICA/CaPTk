@@ -14,6 +14,14 @@ ENV CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
 ARG DCMTK_DIR=`pwd`/CaPTk_Libs/bin/DCMTK-build
 ENV DCMTK_DIR=$DCMTK_DIR
 
+# installing CMake
+RUN rm -rf /usr/bin/cmake; \
+    wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh; \
+    mkdir /opt/cmake; \
+    sh cmake-3.12.4-Linux-x86_64.sh --prefix=/opt/cmake --skip-license; \
+    ln -s /opt/cmake/bin/cmake /usr/bin/cmake; \
+    rm -rf https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh
+    
 RUN rm -rf CaPTk && git clone "https://github.com/sarthakpati/CaPTk.git" && ls -lt
 
 RUN cd CaPTk && mkdir bin; \
