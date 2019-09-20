@@ -1024,6 +1024,8 @@ int main(int argc, char** argv)
       auto imageSize = inputImageInfo.GetImageSize();
 
       auto inputImage = cbica::ReadImage< ImageType >(inputImageFile); 
+
+      // set the sub-image properties
       typename ImageType::IndexType regionIndex;
       typename ImageType::SizeType regionSize;
       regionSize[0] = imageSize[0];
