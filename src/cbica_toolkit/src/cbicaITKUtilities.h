@@ -600,7 +600,7 @@ namespace cbica
   {
     if (TImageType::ImageDimension != 3)
     {
-      std::cerr << "This function is only defined for 3D images.\n";
+      std::cerr << "This function is only defined for 3D and 4D images.\n";
       exit(EXIT_FAILURE);
     }
     auto orientFilter = itk::OrientImageFilter< TImageType, TImageType >::New();
