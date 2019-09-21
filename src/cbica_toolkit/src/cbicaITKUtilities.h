@@ -268,6 +268,12 @@ namespace cbica
   template< class TInputImageType, class TOutputImageType >
   std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage)
   {
+    // set the sub-image properties
+    auto regionIndex = inputImage->GetLargestPossibleRegion().GetSize();
+    typename TInputImageType::SizeType regionSize;
+
+    regionIndex.Fill(0);
+
     /* sample code    
       auto inputImage = cbica::ReadImage< ImageType >(inputImageFile); 
 
