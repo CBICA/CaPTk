@@ -63,6 +63,8 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkSmoothingRecursiveGaussianImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 
+#include "itkJoinSeriesImageFilter.h"
+#include "itkExtractImageFilter.h"
 
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 //unsigned int RmsCounter = 0;
