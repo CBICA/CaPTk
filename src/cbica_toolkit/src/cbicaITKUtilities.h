@@ -228,11 +228,37 @@ namespace cbica
   }
 
   /**
+  \brief This function returns a joined N-D image with an input of a vector of (N-1)-D images 
+
+  Uses the itk::JoinSeriesImageFilter to accomplish this
+  */
+  template< class TInputImageType, class TOutputImageType >
+  typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages)
+  {
+
+    auto joinFilter = typename itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
+
+    for (size_t N = 0; N < inputImages.size(); N++)
+    {
+      joinFilter->SetInput(N, inputImages[N]);
+    }
+    try
+    {
+      joinFilter->Update()
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << "Joining failed: " << e.what() << "\n";
+    }
+    return joinFilter->GetOutput();
+  }
+
+  /**
   \brief This function returns a vector of (N-1)-D images with an input of an N-D image
 
   Uses the itk::ExtractImageFilter to accomplish this
   */
-  template< class TOutputImageType, class TInputImageType >
+  template< class TInputImageType, class TOutputImageType >
   std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage)
   {
     /* sample code    
