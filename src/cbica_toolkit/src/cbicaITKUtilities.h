@@ -268,6 +268,8 @@ namespace cbica
   \brief This function returns a vector of (N-1)-D images with an input of an N-D image
 
   Uses the itk::ExtractImageFilter to accomplish this
+
+  \param inputImage The larger image series from which the sub-images in the 
   */
   template< class TInputImageType, class TOutputImageType >
   std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage, bool directionsCollapseIdentity = false)
@@ -289,7 +291,7 @@ namespace cbica
     // loop through time points
     for (size_t i = 0; i < imageSize[TInputImageType::ImageDimension - 1]; i++)
     {
-      regionIndex[3] = i;
+      regionIndex[TInputImageType::ImageDimension - 1] = i;
       typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
       auto extractor = /*typename*/ itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
       extractor->SetExtractionRegion(desiredRegion);
