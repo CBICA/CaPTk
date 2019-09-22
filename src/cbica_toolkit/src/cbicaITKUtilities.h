@@ -250,7 +250,7 @@ namespace cbica
     {
       if (!cbica::ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
       {
-        std::cerr << "Mismatched image size in index '" << N << "'\n";
+        std::cerr << "Image Sanity check failed in index '" << N << "'\n";
         return typename TOutputImageType::New();
       }
       joinFilter->SetInput(N, inputImages[N]);
