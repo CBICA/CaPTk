@@ -244,7 +244,7 @@ namespace cbica
       std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
       return typename TOutputImageType::New();
     }
-    auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
+    auto joinFilter = typename itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
     
     for (size_t N = 0; N < inputImages.size(); N++)
     {
@@ -298,7 +298,7 @@ namespace cbica
     {
       regionIndex[axisToExtract] = i;
       typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
-      auto extractor = /*typename*/ itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
+      auto extractor = typename itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
       extractor->SetExtractionRegion(desiredRegion);
       extractor->SetInput(inputImage);
       if (directionsCollapseIdentity)
