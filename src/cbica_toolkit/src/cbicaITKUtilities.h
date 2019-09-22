@@ -280,41 +280,34 @@ namespace cbica
       return returnImages;
     }
     // set the sub-image properties
-    auto regionIndex = inputImage->GetLargestPossibleRegion().GetSize();
-    typename TInputImageType::SizeType regionSize;
+    auto imageSize = inputImage->GetLargestPossibleRegion().GetSize();
+    auto regionSize = imageSize;
 
+    typename TInputImageType::IndexType regionIndex;
     regionIndex.Fill(0);
 
-    /* sample code    
-      auto inputImage = cbica::ReadImage< ImageType >(inputImageFile); 
-
-      // set the sub-image properties
-      typename ImageType::IndexType regionIndex;
-      typename ImageType::SizeType regionSize;
-      regionSize[0] = imageSize[0];
-      regionSize[1] = imageSize[1];
-      regionSize[2] = imageSize[2];
-      regionSize[3] = 0;
-      regionIndex[0] = 0;
-      regionIndex[1] = 0;
-      regionIndex[2] = 0;
-      regionIndex[3] = 0;
-
-      std::vector<ImageType::Pointer> returnImages;
-
-      bool originalOrientationOutput = false;
-      // loop through time points
-      for (size_t i = 0; i < imageSize[3]; i++)
+    // loop through time points
+    for (size_t i = 0; i < imageSize[TInputImageType::ImageDimension - 1]; i++)
+    {
+      regionIndex[3] = i;
+      typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
+      auto extractor = itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->SetInput(inputImage);
+      if (directionsCollapseIdentity)
       {
-        regionIndex[3] = i;
-        typename ImageType::RegionType desiredRegion(regionIndex, regionSize);
-        auto filter = itk::ExtractImageFilter< ImageType, OrientationImageType >::New();
-        filter->SetExtractionRegion(desiredRegion);
-        filter->SetInput(inputImage);
-        filter->SetDirectionCollapseToSubmatrix();
-        filter->Update();
-        auto CurrentTimePoint = filter->GetOutput();
-    */
+        extractor->SetDirectionCollapseToIdentity();
+      }
+      else
+      {
+        extractor->SetDirectionCollapseToSubmatrix();
+      }
+      extractor->Update();
+      auto temp = extractor->GetOutput();
+      temp->DisconnectPipeline(); // ensure a hard copy is done 
+      returnImages.push_back(temp);
+    }
+    return returnImages;
   }
 
   ///**
