@@ -269,10 +269,11 @@ namespace cbica
 
   Uses the itk::ExtractImageFilter to accomplish this
 
-  \param inputImage The larger image series from which the sub-images in the 
+  \param inputImage The larger image series from which the sub-images in the specified axis are extracted
   */
   template< class TInputImageType, class TOutputImageType >
-  std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage, bool directionsCollapseIdentity = false)
+  std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage, 
+    int axisToExtract = TInputImageType::ImageDimension, bool directionsCollapseIdentity = false)
   {
     std::vector<typename TOutputImageType::Pointer> returnImages;
 
@@ -289,9 +290,9 @@ namespace cbica
     regionIndex.Fill(0);
 
     // loop through time points
-    for (size_t i = 0; i < imageSize[TInputImageType::ImageDimension - 1]; i++)
+    for (size_t i = 0; i < imageSize[axisToExtract]; i++)
     {
-      regionIndex[TInputImageType::ImageDimension - 1] = i;
+      regionIndex[axisToExtract] = i;
       typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
       auto extractor = /*typename*/ itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
       extractor->SetExtractionRegion(desiredRegion);
