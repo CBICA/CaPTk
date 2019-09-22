@@ -255,7 +255,7 @@ namespace cbica
     }
     try
     {
-      joinFilter->Update()
+      joinFilter->Update();
     }
     catch (const std::exception& e)
     {
@@ -291,7 +291,7 @@ namespace cbica
     {
       regionIndex[3] = i;
       typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
-      auto extractor = itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
+      auto extractor = /*typename*/ itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
       extractor->SetExtractionRegion(desiredRegion);
       extractor->SetInput(inputImage);
       if (directionsCollapseIdentity)
@@ -302,7 +302,14 @@ namespace cbica
       {
         extractor->SetDirectionCollapseToSubmatrix();
       }
-      extractor->Update();
+      try
+      {
+        extractor->Update();
+      }
+      catch (const std::exception& e)
+      {
+        std::cerr << "Extracting failed: " << e.what() << "\n";
+      }
       auto temp = extractor->GetOutput();
       temp->DisconnectPipeline(); // ensure a hard copy is done 
       returnImages.push_back(temp);
