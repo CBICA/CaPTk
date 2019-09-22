@@ -270,6 +270,8 @@ namespace cbica
   Uses the itk::ExtractImageFilter to accomplish this
 
   \param inputImage The larger image series from which the sub-images in the specified axis are extracted
+  \param axisToExtract The axis along with the images are to be extracted from; defaults to TInputImageType::ImageDimension
+  \param directionsCollapseIdentity Whether direction cosines are to be normalized to identity or not; defaults to not
   */
   template< class TInputImageType, class TOutputImageType >
   std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage, 
