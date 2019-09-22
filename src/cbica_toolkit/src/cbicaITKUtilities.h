@@ -233,6 +233,8 @@ namespace cbica
   \brief This function returns a joined N-D image with an input of a vector of (N-1)-D images 
 
   Uses the itk::JoinSeriesImageFilter to accomplish this
+  
+  \param inputImage The vector of images from which the larger image is to be extracted
   */
   template< class TInputImageType, class TOutputImageType >
   typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages)
@@ -243,10 +245,10 @@ namespace cbica
       return typename TOutputImageType::New();
     }
     auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
-
+    
     for (size_t N = 0; N < inputImages.size(); N++)
     {
-      if (!cbica::ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N])
+      if (!cbica::ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
       {
         std::cerr << "Mismatched image size in index '" << N << "'\n";
         return typename TOutputImageType::New();
