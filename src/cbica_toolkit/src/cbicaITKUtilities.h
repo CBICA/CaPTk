@@ -237,8 +237,12 @@ namespace cbica
   template< class TInputImageType, class TOutputImageType >
   typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages)
   {
-
-    auto joinFilter = typename itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
+    if (TOutputImageType::ImageDimension + 1 != TInputImageType::ImageDimension)
+    {
+      std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
+      return typename TOutputImageType::New();
+    }
+    auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
 
     for (size_t N = 0; N < inputImages.size(); N++)
     {
@@ -266,8 +270,15 @@ namespace cbica
   Uses the itk::ExtractImageFilter to accomplish this
   */
   template< class TInputImageType, class TOutputImageType >
-  std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage)
+  std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage, bool directionsCollapseIdentity = false)
   {
+    std::vector<typename TOutputImageType::Pointer> returnImages;
+
+    if (TOutputImageType::ImageDimension != TInputImageType::ImageDimension + 1)
+    {
+      std::cerr << "Only works when input and output image dimensions are N and (N-1), respectively.\n";
+      return returnImages;
+    }
     // set the sub-image properties
     auto regionIndex = inputImage->GetLargestPossibleRegion().GetSize();
     typename TInputImageType::SizeType regionSize;
