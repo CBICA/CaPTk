@@ -11,6 +11,8 @@
 #include "itkThresholdImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkOtsuThresholdImageFilter.h"
+#include "itkJoinSeriesImageFilter.h"
+#include "itkExtractImageFilter.h"
 
 #include "cbicaDCMQIWrapper.h"
 
@@ -998,7 +1000,7 @@ int main(int argc, char** argv)
       {
         auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
         cbica::WriteImage< ImageType >(output.second, tempOutputFile);
-        cbica::WriteImage< ImageType >(cbica::ReadImage< TImageType >(tempOutputFile), outputImageFile);
+        cbica::WriteImage< ImageType >(cbica::ReadImage< ImageType >(tempOutputFile), outputImageFile);
         std::remove(tempOutputFile.c_str());
       }
       else
@@ -1015,6 +1017,71 @@ int main(int argc, char** argv)
   case 4:
   {
     using ImageType = itk::Image< float, 4 >;
+
+    if (requestedAlgorithm == OrientImage) // this does not work for 2 or 4-D images
+    {
+      using OrientationImageType = itk::Image< float, 3 >;
+      auto imageSize = inputImageInfo.GetImageSize();
+
+      auto inputImage = cbica::ReadImage< ImageType >(inputImageFile); 
+
+      // set the sub-image properties
+      typename ImageType::IndexType regionIndex;
+      typename ImageType::SizeType regionSize;
+      regionSize[0] = imageSize[0];
+      regionSize[1] = imageSize[1];
+      regionSize[2] = imageSize[2];
+      regionSize[3] = 0;
+      regionIndex[0] = 0;
+      regionIndex[1] = 0;
+      regionIndex[2] = 0;
+      regionIndex[3] = 0;
+
+      std::vector<ImageType::Pointer> OnePatientperfusionImages;
+
+      auto joinFilter = itk::JoinSeriesImageFilter< OrientationImageType, ImageType >::New();
+
+      bool originalOrientationOutput = false;
+      // loop through time points
+      for (size_t i = 0; i < imageSize[3]; i++)
+      {
+        regionIndex[3] = i;
+        typename ImageType::RegionType desiredRegion(regionIndex, regionSize);
+        auto filter = itk::ExtractImageFilter< ImageType, OrientationImageType >::New();
+        filter->SetExtractionRegion(desiredRegion);
+        filter->SetInput(inputImage);
+        filter->SetDirectionCollapseToSubmatrix();
+        filter->Update();
+        auto CurrentTimePoint = filter->GetOutput();
+
+        auto output = cbica::GetImageOrientation< OrientationImageType >(CurrentTimePoint, orientationDesired);
+        if (!originalOrientationOutput)
+        {
+          std::cout << "Original Image Orientation: " << output.first << "\n";
+          originalOrientationOutput = true;
+        }
+
+        joinFilter->SetInput(i, output.second);
+      }
+
+      joinFilter->Update();
+
+      std::string path, base, ext;
+      cbica::splitFileName(outputImageFile, path, base, ext);
+      if (ext != ".mha")
+      {
+        auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
+        cbica::WriteImage< ImageType >(joinFilter->GetOutput(), tempOutputFile);
+        cbica::WriteImage< ImageType >(cbica::ReadImage< ImageType >(tempOutputFile), outputImageFile);
+        std::remove(tempOutputFile.c_str());
+      }
+      else
+      {
+        cbica::WriteImage< ImageType >(joinFilter->GetOutput(), outputImageFile);
+      }
+      return EXIT_SUCCESS;
+    }
+
     return algorithmsRunner< ImageType >();
 
     break;

@@ -63,6 +63,8 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkSmoothingRecursiveGaussianImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 
+#include "itkJoinSeriesImageFilter.h"
+#include "itkExtractImageFilter.h"
 
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 //unsigned int RmsCounter = 0;
@@ -226,6 +228,101 @@ namespace cbica
   {
     return GetPixelValuesFromIndeces< TImageType >(inputImage, indeces);
   }
+
+  ///**
+  //\brief This function returns a joined N-D image with an input of a vector of (N-1)-D images 
+
+  //Uses the itk::JoinSeriesImageFilter to accomplish this
+  //
+  //\param inputImage The vector of images from which the larger image is to be extracted
+  //*/
+  //template< class TInputImageType, class TOutputImageType >
+  //typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages)
+  //{
+  //  if (TOutputImageType::ImageDimension + 1 != TInputImageType::ImageDimension)
+  //  {
+  //    std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
+  //    return typename TOutputImageType::New();
+  //  }
+  //  auto joinFilter = typename itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
+  //  
+  //  for (size_t N = 0; N < inputImages.size(); N++)
+  //  {
+  //    if (!cbica::ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
+  //    {
+  //      std::cerr << "Image Sanity check failed in index '" << N << "'\n";
+  //      return typename TOutputImageType::New();
+  //    }
+  //    joinFilter->SetInput(N, inputImages[N]);
+  //  }
+  //  try
+  //  {
+  //    joinFilter->Update();
+  //  }
+  //  catch (const std::exception& e)
+  //  {
+  //    std::cerr << "Joining failed: " << e.what() << "\n";
+  //  }
+  //  return joinFilter->GetOutput();
+  //}
+
+  ///**
+  //\brief This function returns a vector of (N-1)-D images with an input of an N-D image
+
+  //Uses the itk::ExtractImageFilter to accomplish this
+
+  //\param inputImage The larger image series from which the sub-images in the specified axis are extracted
+  //\param axisToExtract The axis along with the images are to be extracted from; defaults to TInputImageType::ImageDimension
+  //\param directionsCollapseIdentity Whether direction cosines are to be normalized to identity or not; defaults to not
+  //*/
+  //template< class TInputImageType, class TOutputImageType >
+  //std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage, 
+  //  int axisToExtract = TInputImageType::ImageDimension, bool directionsCollapseIdentity = false)
+  //{
+  //  std::vector<typename TOutputImageType::Pointer> returnImages;
+
+  //  if (TOutputImageType::ImageDimension != TInputImageType::ImageDimension + 1)
+  //  {
+  //    std::cerr << "Only works when input and output image dimensions are N and (N-1), respectively.\n";
+  //    return returnImages;
+  //  }
+  //  // set the sub-image properties
+  //  auto imageSize = inputImage->GetLargestPossibleRegion().GetSize();
+  //  auto regionSize = imageSize;
+
+  //  typename TInputImageType::IndexType regionIndex;
+  //  regionIndex.Fill(0);
+
+  //  // loop through time points
+  //  for (size_t i = 0; i < imageSize[axisToExtract]; i++)
+  //  {
+  //    regionIndex[axisToExtract] = i;
+  //    typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
+  //    auto extractor = typename itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
+  //    extractor->SetExtractionRegion(desiredRegion);
+  //    extractor->SetInput(inputImage);
+  //    if (directionsCollapseIdentity)
+  //    {
+  //      extractor->SetDirectionCollapseToIdentity();
+  //    }
+  //    else
+  //    {
+  //      extractor->SetDirectionCollapseToSubmatrix();
+  //    }
+  //    try
+  //    {
+  //      extractor->Update();
+  //    }
+  //    catch (const std::exception& e)
+  //    {
+  //      std::cerr << "Extracting failed: " << e.what() << "\n";
+  //    }
+  //    auto temp = extractor->GetOutput();
+  //    temp->DisconnectPipeline(); // ensure a hard copy is done 
+  //    returnImages.push_back(temp);
+  //  }
+  //  return returnImages;
+  //}
 
   ///**
   //\brief Get MD5 sum of a supplied file
@@ -600,7 +697,7 @@ namespace cbica
   {
     if (TImageType::ImageDimension != 3)
     {
-      std::cerr << "This function is only defined for 3D images.\n";
+      std::cerr << "This function is only defined for 3D and 4D images.\n";
       exit(EXIT_FAILURE);
     }
     auto orientFilter = itk::OrientImageFilter< TImageType, TImageType >::New();

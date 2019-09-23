@@ -332,9 +332,9 @@ FOREACH(subdir ${SUBDIRECTORIES})
 
   ENDIF()
 
-  IF ((BUILD_LIBRASINGLE AND (${subdir} STREQUAL "libra")) OR (BUILD_LIBRABATCH AND (${subdir} STREQUAL "libra")))
+  IF (BUILD_LIBRASINGLE AND (${subdir} STREQUAL "libra"))
   
-    SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} librasingle" CACHE STRING "Available stand-alone apps" FORCE)
+    SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} librasingle librabatch" CACHE STRING "Available stand-alone apps" FORCE)
     # ALSO add this to CAPTK_BRREAST_APPS
 
     IF(WIN32)
@@ -394,7 +394,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       )
       INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
         DESTINATION libexec
-        PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
+        # PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
         #USE_SOURCE_PERMISSIONS
       )
     ENDIF()
