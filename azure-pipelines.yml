@@ -630,7 +630,7 @@ jobs:
 
   variables:
     dockerId: cbica
-    imageName: captk
+    imageName: captk 
     tagName: latest
 
   pool:
