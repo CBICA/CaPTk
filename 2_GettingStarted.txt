@@ -106,6 +106,12 @@ The "Overlay" functionality enables the visualization between two loaded images:
 -# Check the tick box "Change Opacity".
 -# Moving the slider changes the opacity between the "Overlay" and the "Underlay" images.
 
+
+The "Comparison Mode" puts the loaded images (3 maximum) side-by-side for easy visualization along the same axis.
+
+\image html comparisonMode.png "Comparison Mode visualization"
+\image latex comparisonMode.png "Comparison Mode visualization"
+
 --------
 
 \section gs_tabDocking Tab Docking (Windows-only)
