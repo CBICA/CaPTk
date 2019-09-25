@@ -13,7 +13,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 3.nonRelease.20190913 )
+SET( PROJECT_VERSION_PATCH 3.nonRelease.20190920 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -1036,8 +1036,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       SET(CPACK_GENERATOR DragNDrop )
       SET(CPACK_DMG_FORMAT "UDBZ")
       SET(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
-       SET(CPACK_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
-
+      SET(CPACK_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET(CPACK_SYSTEM_NAME "OSX")
       # SET(CPACK_STRIP_FILES "${EXE_NAME}")
       # SET(CPACK_STRIP_FILES "${EXE_NAME}.app/Contents/MacOS/${EXE_NAME}")
@@ -1146,10 +1145,16 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
     INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
-    INSTALL(FILES src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
+    INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
       DESTINATION libexec/MCR/v84/bin/glnxa64/
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
+  ELSEIF(EXISTS ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper)
+  INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper
+    DESTINATION libexec/MCR/v84/bin/glnxa64/
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  )
   ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )

@@ -7,7 +7,7 @@ trigger:
 resources:
   containers:
   - container: centos
-    image: cbica/captk_centos7:devtoolset-6
+    image: cbica/captk_centos7:devtoolset-4_superbuild
 
 jobs:
 - job: 'WindowsBuild'
@@ -20,15 +20,15 @@ jobs:
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+      # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_windows.tar.gz_1" | "$(Build.DefinitionName)"'
+        key: '"bin_windows_1.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_WINDOWS
         restoreKeys: |
-          "bin_windows.tar.gz_1"
+          "bin_windows_1.tar.gz"
         continueOnError : true
       displayName: 'Caching'
 
@@ -56,8 +56,8 @@ jobs:
     #   displayName: 'Disk space check'
 
     - bash: |
-        tar xvfz bin_windows.tar.gz_1
-        rm -rf bin_windows.tar.gz_1
+        tar xvfz bin_windows_1.tar.gz
+        rm -rf bin_windows_1.tar.gz
         # ls
         mv bin_windows bin
         # ls
@@ -184,7 +184,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_windows.tar.gz_1
+        rm -rf bin_windows_1.tar.gz
         rm -rf install_manifest.txt
 
         cd bin
@@ -200,7 +200,7 @@ jobs:
         cd ../
 
         mv bin bin_windows
-        tar cvfz bin_windows.tar.gz_1 bin_windows
+        tar cvfz bin_windows_1.tar.gz bin_windows
       displayName: 'Zipping bin'
 
     - powershell: |
@@ -236,17 +236,17 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_linux.tar.gz_1" | "$(Build.DefinitionName)"'
+        key: '"bin_linux_2.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
         restoreKeys: |
-          "bin_linux.tar.gz_1"
+          "bin_linux_2.tar.gz"
       displayName: 'Caching'
 
     # Dependency manager
     - bash: |
-        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
+        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Install dependencies from Aptitude'
 
@@ -270,8 +270,8 @@ jobs:
     #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xvfz bin_linux.tar.gz_1
-        rm -rf bin_linux.tar.gz_1
+        tar xvfz bin_linux_2.tar.gz
+        rm -rf bin_linux_2.tar.gz
         # ls
         mv bin_linux bin
         # ls
@@ -306,7 +306,7 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar cvfz bin_linux.tar.gz_1 bin
+        tar cvfz bin_linux_2.tar.gz bin
       displayName: 'Zipping Superbuild'
 
       # Check qt
@@ -331,6 +331,14 @@ jobs:
         ls -l
       displayName: 'Checking ${installDir}/bin'
 
+    - bash: |
+        wget http://files.directadmin.com/services/debian_7.0_64/libmysqlclient.so.18
+        sudo cp -fv libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/
+        cd /usr/lib/x86_64-linux-gnu
+        sudo chmod 755 libmysqlclient.so.18
+        sudo ldconfig
+      displayName: 'SQL lib fix for PKG_COPY_QT_LIBS'
+
     # Build a package
     - bash: |
         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
@@ -339,6 +347,7 @@ jobs:
         rm -rf binaries
 
         export PKG_FAST_MODE=1
+        export PKG_COPY_QT_LIBS=1 # this causes sql lib issues with qt and ubuntu
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
@@ -357,7 +366,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_linux.tar.gz_1
+        rm -rf bin_linux_2.tar.gz
 
         cd bin
 
@@ -371,7 +380,7 @@ jobs:
         cd ../
 
         mv bin bin_linux
-        tar cvfz bin_linux.tar.gz_1 bin_linux
+        tar cvfz bin_linux_2.tar.gz bin_linux
       displayName: 'Zipping bin'
 
     - task: PublishBuildArtifacts@1
@@ -396,7 +405,7 @@ jobs:
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+      # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
     - task: CacheBeta@0
       inputs:
@@ -615,7 +624,7 @@ jobs:
         downloadPath: '$(System.ArtifactsDirectory)'
 
 # - job: 'DockerBuild'
-#   displayName: "End-to-end Docker image build and push"
+#   displayName: "End-to-end Docker_CentOS image build and push"
 #   timeoutInMinutes: 0
 #   cancelTimeoutInMinutes: 360
 
@@ -629,14 +638,14 @@ jobs:
 
 #   steps:
 #     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-#       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+#       # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
 #     - task: Docker@1 
 #       displayName: 'Build the Image'
 #       inputs:
 #         containerregistrytype: 'container Registry'
 #         dockerRegistryEndpoint: cbicaDockerHub
-#         imageName: '$(dockerId)/$(imageName):$(tagName)'
+#         imageName: 'cbica/captk:latest'
 #         command: build an image
 #         dockerFile: '**/Dockerfile'
 
@@ -651,7 +660,7 @@ jobs:
 #       displayName: 'Push the Image'
 #       inputs:
 #         command: push an image
-#         imageName: '$(dockerId)/$(imageName):$(tagName)'  
+#         imageName: 'cbica/captk:latest'
 
 # - job: 'CentOSBuild'
 #   displayName: "End-to-end Linux (CentOS) build on Docker"
@@ -665,20 +674,11 @@ jobs:
 
 #   steps:
 #     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-#       fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
-
-#     - task: CacheBeta@0
-#       inputs:
-#         key: '"bin_linux_centos.tar.gz" | "$(Build.DefinitionName)"'
-#         path: $(Build.SourcesDirectory)
-#         cacheHitVar: CACHE_RESTORED_LINUX_CENTOS
-#         restoreKeys: |
-#           "bin_linux_centos.tar.gz"
-#         continueOnError : true
-#       displayName: 'Caching'
+#       #fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
 #     # submodule 
 #     - bash: |
+#         cd CaPTk
 #         git submodule init
 #         git submodule update
 #       displayName: 'Git Submodule Init and Update'
@@ -692,58 +692,9 @@ jobs:
 #     #   displayName: 'Pull LFS'
 #     #   # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
 
-#     # Moving LFS Files
-#     - bash: |
-#         echo "LS in default dir"
-#         ls
-#         echo "LS one level up"
-#         ls ..
-#         mkdir -p bin
-#         cd bin
-#         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-#         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
-#         ls -lt
-#         export GIT_LFS_SKIP_SMUDGE=1
-#       displayName: 'Moving LFS files to the appropriate location under bin'
-#       # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
-
-#     - bash: |
-#         wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz
-#         tar -xvf cmake-3.12.4-Linux-x86_64.tar.gz
-#         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-#       displayName: 'CMake installation'
-
-#     - bash: |
-#         tar xvfz bin_linux.tar.gz
-#         rm -rf bin_linux.tar.gz
-#         # ls
-#         mv bin_linux bin
-#         # ls
-#         cd bin
-#         tar xvfz qt.tar.gz
-#         tar xvfz externalApps.tar.gz
-#         rm -rf *.tar.gz
-#         mv binaries_linux externalApps
-#         # rm CMakeCache.txt
-#         ls -lt
-#       displayName: 'Unzip bin if cached'
-#       condition: eq(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
-
-#     # Configure and build superbuild
-#     - bash: |
-#         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-#         cd bin
-#         cmake -DQT_DOWNLOAD_FORCE=ON -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-#         make -j2
-#         export CMAKE_PREFIX_PATH=`pwd`/ITK-build:`pwd`/VTK-build:`pwd`/OpenCV-build
-#       displayName: 'Configure and compile Superbuild'
-#       workingDirectory: $(Build.SourcesDirectory)
-#       # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
-
 #     # Configure and build CaPTk
 #     - bash: |
-#         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
-#         cd $(Build.SourcesDirectory)/bin
+#         cd CaPTk/bin
 #         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 #         cmake -DITK_DIR=$(Build.SourcesDirectory)/bin/ITK-build -DDCMTK_DIR=$(Build.SourcesDirectory)/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
 #         make -j2
@@ -765,7 +716,6 @@ jobs:
 
 #     # Build a package
 #     - bash: |
-#         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
 #         cd $(Build.SourcesDirectory)
 #         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
 #         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
@@ -773,7 +723,6 @@ jobs:
 #         rm -rf binaries
 
 #         # export PKG_FAST_MODE=1
-#         ./scripts/captk-pkg
 #         ./scripts/captk-pkg
 
 #         rm -rf src
@@ -785,7 +734,6 @@ jobs:
 #       displayName: 'Set up environment variables for packager and build a package'
 
 #     - bash: |
-#         export PATH=`pwd`/cmake-3.12.4-Linux-x86_64/bin/:$PATH
 #         cd $(Build.SourcesDirectory)
 #         rm -rf src
 #         rm -rf docs*
@@ -815,17 +763,17 @@ jobs:
 #     #    make tests
 #     #  displayName: 'Performing the Tests'
 
-#     - task: PublishBuildArtifacts@1
-#       inputs:
-#         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#         artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
+#     # - task: PublishBuildArtifacts@1
+#     #   inputs:
+#     #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#     #     artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
 
-#     - task: DownloadBuildArtifacts@0
-#       inputs:
-#         buildType: 'current'
-#         downloadType: 'single'
-#         artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
-#         downloadPath: '$(System.ArtifactsDirectory)'
+#     # - task: DownloadBuildArtifacts@0
+#     #   inputs:
+#     #     buildType: 'current'
+#     #     downloadType: 'single'
+#     #     artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
+#     #     downloadPath: '$(System.ArtifactsDirectory)'
 
 
 #### SELF-HOSTED AGENTS
@@ -881,6 +829,8 @@ jobs:
 #         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
 #         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
 #         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+#         export PKG_FAST_MODE=1
+#         export PKG_COPY_QT_LIBS=1
 
 #         make install
 

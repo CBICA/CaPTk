@@ -128,9 +128,13 @@ namespace cbica
   {
     auto appDir = getExecutablePath();
 
+    appDir +=
 #ifdef __APPLE__
-    appDir += "../Resources/bin";
+      "../Resources/etc/cwlDefinitions/"
+#else
+      "../etc/cwlDefinitions/"
 #endif
+      ;
 
     auto filesInDir = filesInDirectory(appDir);
     auto cwlFiles = filesInDir;
@@ -142,46 +146,6 @@ namespace cbica
         cwlFiles.push_back(filesInDir[i]);
       }
     }
-    //std::vector<std::string> files;
-
-    //#ifdef _WIN32
-    //  WIN32_FIND_DATA data;
-    //  HANDLE hFind = FindFirstFile("\\*", &data);
-
-    //  if ( hFind != INVALID_HANDLE_VALUE ) {
-    //    do {
-    //      files.push_back(data.cFileName);
-    //    } while (FindNextFile(hFind, &data));
-    //    FindClose(hFind);
-    //  }
-    //#else
-    //  DIR *dir;
-    //  struct dirent *ent;
-    //  if ((dir = opendir(".")) != NULL) {
-    //    /* print all the files and directories within directory */
-    //    while ((ent = readdir (dir)) != NULL) {
-    //      if (ent->d_type == DT_REG) {  
-    //        files.push_back(ent->d_name);
-    //      }
-    //    }
-    //    closedir (dir);
-    //  } else {
-    //    /* could not open directory */
-    //    perror ("");
-    //    return files;
-    //  }
-    //#endif
-
-    //// Prune non cwl files
-    //std::vector<std::string> cwlfiles;
-    //for(auto const& value: files) {
-
-    //  if (value.substr(value.size() - 4) == ".cwl") {
-    //    cwlfiles.push_back(value);
-    //  }
-
-    //}
-
     //// Sort cwl files
     //std::sort(cwlfiles.begin(), cwlfiles.end());
 
