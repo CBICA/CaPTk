@@ -304,6 +304,10 @@ jobs:
     #     tar cvfz bin_linux_2.tar.gz bin
     #   displayName: 'Zipping Superbuild'
 
+    - bash: |
+        df -k .
+      displayName: 'Disk space check'
+
       # Check qt
     - bash: |
         cd bin
