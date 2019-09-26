@@ -300,9 +300,9 @@ jobs:
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
-    - bash: |
-        tar cvfz bin_linux_2.tar.gz bin
-      displayName: 'Zipping Superbuild'
+    # - bash: |
+    #     tar cvfz bin_linux_2.tar.gz bin
+    #   displayName: 'Zipping Superbuild'
 
       # Check qt
     - bash: |
