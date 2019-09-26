@@ -4,6 +4,7 @@
 
 - Light/Dark mode and font switcher
 - Lots of new Utilities (NIfTI to DICOM & DICOM-Seg object conversion, Orientation change, Thresholding, File format conversion)
+- Automated Docker builds
 - Generic bug fixes and improvements 
 
 ## Known Issues
