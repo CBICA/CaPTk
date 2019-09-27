@@ -355,17 +355,17 @@ int main(int argc, char** argv)
       {
         if (fixedImageInfo.GetImageDimensions() != movingImageInfo.GetImageDimensions())
         {
-          std::cerr << "--> Image dimensions do not match." << std::endl;
+          std::cerr << "--> Image dimensions between the Moving and Fixed image do not match.\n";
           return EXIT_FAILURE;
         }
       }
       else
       {
-        if (true)
+        if (movingImageInfo_first.GetImageDimensions() != movingImageInfo.GetImageDimensions())
         {
-
+          std::cerr << "--> Image dimensions between the different Movin Images do not match.\n";
+          return EXIT_FAILURE;
         }
-
       }
 
       param.dim = fixedImageInfo.GetImageDimensions();
