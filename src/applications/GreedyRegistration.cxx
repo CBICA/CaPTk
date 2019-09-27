@@ -80,7 +80,11 @@ public:
         std::cerr << "The condition of moving image being 3D and fixed image being 4D is not defined.\n";
         exit(EXIT_FAILURE);
       }
-      using TImageType = itk::Image< TReal, VDim >;
+      // conditions to work on:
+      // movingImage = 4D && fixedImage == 4D
+      // movingImage = 3D && fixedImage == 4D
+      using TMovingImageType = itk::Image< TReal, VDim >;
+      using TFixedImageType = itk::Image< TReal, VDim >;
       std::vector< typename TImageType::Pointer > movingImagePointers;
       //cbica::ImageInfo movingI
       //auto imageSeries = cbica::GetExtractedImages< TImageType >()
