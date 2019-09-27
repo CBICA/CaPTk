@@ -73,8 +73,11 @@ public:
     }
     else
     {
+      // here the assumption is that the moving images shall also be 4D
       using TImageType = itk::Image< TReal, VDim >;
-      auto imageSeries = cbica::GetExtractedImages< TImageType >()
+      std::vector< typename TImageType::Pointer > movingImagePointers;
+      //cbica::ImageInfo movingI
+      //auto imageSeries = cbica::GetExtractedImages< TImageType >()
     }
   }
 };
