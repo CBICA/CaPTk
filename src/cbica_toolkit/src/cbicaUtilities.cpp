@@ -124,35 +124,6 @@ namespace cbica
       return true;
   }
 
-  std::vector<std::string> getCWLFilesInApplicationDir() 
-  {
-    auto appDir = getExecutablePath();
-
-    appDir +=
-#ifdef __APPLE__
-      "../Resources/etc/cwlDefinitions/"
-#else
-      "../etc/cwlDefinitions/"
-#endif
-      ;
-
-    auto filesInDir = filesInDirectory(appDir);
-    auto cwlFiles = filesInDir;
-    cwlFiles.clear();
-    for (size_t i = 0; i < filesInDir.size(); i++)
-    {
-      if (getFilenameExtension(filesInDir[i], false).find(".cwl") != std::string::npos)
-      {
-        cwlFiles.push_back(filesInDir[i]);
-      }
-    }
-    //// Sort cwl files
-    //std::sort(cwlfiles.begin(), cwlfiles.end());
-
-    return cwlFiles;
-
-  }
-
   std::string getEnvironmentVariableValue(const std::string &environmentVariable)
   {
     std::string returnString = "";
