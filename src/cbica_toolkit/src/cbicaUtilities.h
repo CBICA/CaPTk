@@ -186,8 +186,6 @@ namespace cbica
   */
   bool exists(const std::string &path);
 
-  std::vector<std::string> getCWLFilesInApplicationDir();
-
   /**
   \brief Create a temporary directory
 
