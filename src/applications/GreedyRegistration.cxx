@@ -232,9 +232,6 @@ public:
         cbica::WriteImage< TMovingImageType >(joinedImage, outputImageFiles[totalMovingImages]);
       }
 
-      //auto temp = cbica::GetExtractedImages< TMovingImageType >(cbica::ReadImage< TMovingImageType >(inputImageFiles[0]));
-      //cbica::ImageInfo movingI
-      //auto imageSeries = cbica::GetExtractedImages< TImageType >()
       cbica::deleteDir(temporaryDataDir); // ensure all temporary data gets deleted
     }
   }
