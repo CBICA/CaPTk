@@ -1612,6 +1612,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     if (imageInfo.GetImageDimensions() == 2)
     {
       ConversionFrom2Dto3D(fname, true);
+      return;
     }
     else if (!bFirstLoad)
     {
@@ -3131,6 +3132,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
       {
         dicomfilename = maskFileName;
         ConversionFrom2Dto3D(maskFileName, false);
+        return;
       }
     }
     else
@@ -3175,6 +3177,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
           }
         }
         ConversionFrom2Dto3D(maskFileName, false); // all sanity checks passed; load the mask 
+        return;
       }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
