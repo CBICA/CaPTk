@@ -131,11 +131,23 @@ public:
       movingImagePointers_extracted_registered.resize(inputImageFiles.size());
       for (size_t totalMovingImages = 0; totalMovingImages < inputImageFiles.size(); totalMovingImages++)
       {
+        // GreedyRegistration -reg -trf -i moving.nii.gz -f fixed.nii.gz 
+        // -o output.nii.gz -t matrix.mat -a -m MI -n 100x50x5",
+
+        // the assumption here is that in a single series, the 
+        auto transformationMatrix = cbica::normPath(temporaryDataDir + "/matrix.mat");
+
         // move all extracted images to structure
         movingImagePointers_extracted[totalMovingImages] = 
           cbica::GetExtractedImages< TMovingImageType, TMovingExtractedImageType >(
             cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages])
             );
+
+        GreedyApproach<3, TReal> greedy; // the registration is always run on 3D images at this point
+        return greedy.Run(param);
+
+        // at this point, the transformation matrix is already present and we just need to apply it
+        param.mode = GreedyParameters::RESLICE;
 
         // put all registered images in something separate
         movingImagePointers_extracted_registered[totalMovingImages].resize(
