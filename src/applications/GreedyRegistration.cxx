@@ -88,10 +88,13 @@ public:
       movingImagePointers_extracted_registered.resize(inputImageFiles.size());
       for (size_t totalMovingImages = 0; totalMovingImages < inputImageFiles.size(); totalMovingImages++)
       {
+        // move all extracted images to structur
         movingImagePointers_extracted[totalMovingImages] = 
           cbica::GetExtractedImages< TMovingImageType, TMovingExtractedImageType >(
             cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages])
             );
+
+        // put all registered images in something separate
         movingImagePointers_extracted_registered[totalMovingImages].resize(
           movingImagePointers_extracted[totalMovingImages].size()
         );
