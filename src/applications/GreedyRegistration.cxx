@@ -13,10 +13,6 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 */
 
-#include "cbicaCmdParser.h"
-#include "cbicaLogging.h"
-#include "cbicaITKSafeImageIO.h"
-#include "cbicaUtilities.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 //#include "GreedyRegistration.h"
@@ -32,6 +28,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include <string>
 #include <algorithm>
 #include <cerrno>
+#include <chrono>
 
 #include "lddmm_common.h"
 #include "lddmm_data.h"
@@ -52,6 +49,10 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "cbicaITKImageInfo.h"
 #include "cbicaITKUtilities.h"
+#include "cbicaCmdParser.h"
+#include "cbicaLogging.h"
+#include "cbicaITKSafeImageIO.h"
+#include "cbicaUtilities.h"
 
 
 std::string inputImageFile, outputImageFile, targetImageFile, matrix, fixedImage, inputFileString, outputFileString;
@@ -97,6 +98,10 @@ public:
       }
       else
       {
+        std::cout << ":::[DEBUG] Checking which one works quicker/better.\n";
+        std::cout << ":::======= Using the cbica::copyFile function took ";
+        auto start_time = std::chrono::steady_clock::now();
+        cbica::copyFile(fixedImage, fixedImageForRegistering_file);
         cbica::WriteImage< TMovingExtractedImageType >(
           cbica::ReadImage< TMovingExtractedImageType >(fixedImage), fixedImageForRegistering_file);
       }
