@@ -205,6 +205,11 @@
     <filename>Training_Module</filename>
   </compound>
   <compound kind="page">
+    <name>ht_utilities</name>
+    <title>Utilities (CLI only)</title>
+    <filename>ht_utilities</filename>
+  </compound>
+  <compound kind="page">
     <name>Science</name>
     <title>Scientific Findings using CaPTk</title>
     <filename>Science</filename>

@@ -62,6 +62,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 //#include "CAPTk.h"
 #include "FeatureMap.h"
+#include "TextureFeatureBase.h"
 
 //! Common Definitions used in the class
 using ImageType2D = itk::Image< float, 2 >;
@@ -96,13 +97,13 @@ GaborWavelets,Directions,Int,03:13,8,The number of directions around the center 
 */
 enum Params
 {
-  Dimension, Axis, Radius, Neighborhood, Bins, Directions, Offset, Range,
+  Dimension, Axis, Radius, Neighborhood, Bins, Bins_Min, Directions, Offset, Range,
   LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, LatticeFullImage,
   GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, ResamplingInterpolator_Mask, LBPStyle, ParamMax
 };
 static const char ParamsString[ParamMax + 1][30] =
 {
-  "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Directions", "Offset", "Range",
+  "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Bins_Min", "Directions", "Offset", "Range",
   "Window", "Step", "Boundary", "PatchBoundary", "Weight", "FullImage",
   "FMax", "Gamma", "Level", "ETA", "Epsilon", "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
 };
@@ -750,10 +751,11 @@ private:
 
   // the parameters that keep changing on a per-feature basis
   int m_Radius = 0, m_Bins = 0, m_Dimension = 0, m_Direction = 0, m_neighborhood = 0, m_LBPStyle = 0;
-  float m_Radius_float = 0.0, m_Range = 0;
+  float m_Radius_float = 0.0, m_Range = 0, 
+    m_Bins_min = std::numeric_limits<float>::max(); //! the starting index of the histogram binning
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
-  std::string m_QuantizationType = "ROI"; //! extent of quantization happening, either ROI-based or Image-based
-  std::string m_QuantizationExtent = "Uniform"; //! type of quantization happening, either uniform or equal
+  int m_histogramBinningType = HistogramBinningType::FixedBinNumber; //! type of quantization happening, either FBN/FBS/Equal
+  std::string m_QuantizationExtent = "ROI"; //! extent of quantization happening, either ROI-based or Image-based
   std::string m_initializedTimestamp; //! timestamp to append to all results - keeps outputs in sync with current process
   float m_resamplingResolution = 0.0; //! resolution to resample the images and mask to before doing any kind of computation
   std::string m_resamplingInterpolator_Image = "Linear", //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0

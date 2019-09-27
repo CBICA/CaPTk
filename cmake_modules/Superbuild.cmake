@@ -24,13 +24,12 @@ ENDIF()
 
 ## Compute -G arg for configuring external projects with the same CMake generator:
 #IF(CMAKE_EXTRA_GENERATOR)
-#	SET(gen "${CMAKE_EXTRA_GENERATOR} - ${CMAKE_GENERATOR}")
+#	SET(gen "${CMAKE_EXTRA_GENERATOR} - ${CMAKE_GENERATOR}") 
 #ELSE()
 #	SET(gen "${CMAKE_GENERATOR}" )
 #ENDIF()
 
-#INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-DCMTK.cmake )
-
+INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-DCMTK.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Qt.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
@@ -42,3 +41,4 @@ INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-fftw.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-accfft.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-zlib.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-nifti.cmake )
+# INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-SEM.cmake )

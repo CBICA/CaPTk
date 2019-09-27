@@ -231,7 +231,8 @@ ELSE()
 ENDIF()
 
 SET( FILENAME_TO_EXTRACT "binaries_${PLATFORM_STRING}")
-SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps/${PLATFORM_STRING}.zip" )
+# SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps/${PLATFORM_STRING}.zip" )
+SET( DOWNLOAD_LINK "https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
 SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
 
 SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
@@ -331,9 +332,9 @@ FOREACH(subdir ${SUBDIRECTORIES})
 
   ENDIF()
 
-  IF ((BUILD_LIBRASINGLE AND (${subdir} STREQUAL "libra")) OR (BUILD_LIBRABATCH AND (${subdir} STREQUAL "libra")))
+  IF (BUILD_LIBRASINGLE AND (${subdir} STREQUAL "libra"))
   
-    SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} librasingle" CACHE STRING "Available stand-alone apps" FORCE)
+    SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} librasingle librabatch" CACHE STRING "Available stand-alone apps" FORCE)
     # ALSO add this to CAPTK_BRREAST_APPS
 
     IF(WIN32)
@@ -393,7 +394,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       )
       INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
         DESTINATION libexec
-        PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
+        # PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
         #USE_SOURCE_PERMISSIONS
       )
     ENDIF()

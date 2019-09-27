@@ -4,6 +4,7 @@
     <img src="https://www.med.upenn.edu/cbica/assets/user-content/images/captk/baseScreenshot.png" />
     <br></br>
     <a href="https://dev.azure.com/CBICA/CaPTk/_build?definitionId=2" alt="Build Status"><img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
+    <a href="https://hub.docker.com/r/cbica/captk/builds" alt="Build Status"><img src="https://img.shields.io/docker/cloud/build/cbica/captk"></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues/CBICA/CaPTk.svg" /></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues-closed/CBICA/CaPTk.svg" /></a>
     <img src="https://img.shields.io/badge/language-c%2B%2B11-blue.svg" />
@@ -49,6 +50,7 @@ These are UNTESTED development builds from the latest master. Use at your own ri
 |:--------------:|:------------------------------------------------:|
 | Windows        | https://www.nitrc.org/frs/downloadlink.php/11516 |
 | Linux          | https://www.nitrc.org/frs/downloadlink.php/11517 |
+| Linux (CentOS7)| https://www.nitrc.org/frs/downloadlink.php/11522 |
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11518 |
 
 ## [Frequently Asked Questions (FAQ)](https://cbica.github.io/CaPTk/gs_FAQ.html)

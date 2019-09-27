@@ -348,7 +348,7 @@ void algorithmRunner()
     " -fl " + file_flNorm +
     " -model " + cbica::normPath(modelDirName + "/modelConfig.txt") +
     " -load " + cbica::normPath(modelDirName + "/model.ckpt") +
-    " -test " + cbica::normPath(getCaPTkDataDir() + "/deepmedic/configFiles/testApiConfig.txt") +
+    " -test " + cbica::normPath(getCaPTkDataDir() + "/deepMedic/configFiles/testApiConfig.txt") +
     " -o " + outputDirectory;
 
   if (std::system(fullCommand.c_str()) != 0)

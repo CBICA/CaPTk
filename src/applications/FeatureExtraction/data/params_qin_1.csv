@@ -1,0 +1,7 @@
+FeatureName,ParamName,Type,Range,Default,Comments
+Intensity,,,,,
+Morphologic,Range,Int,(0:25),0,0:largest connected component in ROI; N: all connected components larger than (N*10^-6) of total image size are taken into account
+Volumetric,Dimension,String,[2D:3D],3D,For calculating 2D slice (maximum area along specified axis) or full 3D volume features
+GLCM,Bins,Int,,20,The number of bins (FBN) or size of each bin (FBS) to calculate for the Histogram
+GLCM,Radius,Int,(1:9),1,Radius around the center voxel which can be in mm as well (needs to be defined as float in same space as input image/mask)
+GLCM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averagedcomputation for individual offsets might not work)

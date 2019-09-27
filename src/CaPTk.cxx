@@ -78,6 +78,7 @@ int main(int argc, char** argv)
     {
 
       auto cwlFileBase = cbica::getFilenameBase(file);
+      auto cwlFileBase_actual = cwlFileBase;
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
       auto argv_1 = std::string(argv[1]);
       argv_1 = cbica::getFilenameBase(argv_1, false);
@@ -97,7 +98,7 @@ int main(int argc, char** argv)
           argv_complete += " " + std::string(argv[i]);
         }
         // Pass them in
-        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
+        return std::system((getApplicationPath(cwlFileBase_actual) + argv_complete).c_str());
       }
     }
   }
