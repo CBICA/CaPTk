@@ -58,7 +58,7 @@ if(UNIX)
 endif()
 
 SET( QT_VERSION ${QT_VERSION_ACTUAL} CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
-SET( OPENCV_VERSION "3.4.5" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
+SET( OPENCV_VERSION "3.4.7" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
 
 SET(CAPTK_BUILD_DIR "${PROJECT_BINARY_DIR}" CACHE STRING "CaPTk build directory" FORCE )
 ADD_DEFINITIONS(-DCAPTK_BUILD_DIR="${PROJECT_BINARY_DIR}")
