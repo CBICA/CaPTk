@@ -100,8 +100,14 @@ public:
       {
         std::cout << ":::[DEBUG] Checking which one works quicker/better.\n";
         std::cout << ":::======= Using the cbica::copyFile function took ";
-        auto start_time = std::chrono::steady_clock::now();
+        auto copy_start = std::chrono::steady_clock::now();
         cbica::copyFile(fixedImage, fixedImageForRegistering_file);
+        auto copy_end = std::chrono::steady_clock::now();
+        auto time_elapsed = 
+          std::chrono::duration_cast<std::chrono::milliseconds>(
+            copy_end - copy_start).count();
+        std::cout << float(time_elapsed) / 1000.0 << " seconds.\n";
+
         cbica::WriteImage< TMovingExtractedImageType >(
           cbica::ReadImage< TMovingExtractedImageType >(fixedImage), fixedImageForRegistering_file);
       }
