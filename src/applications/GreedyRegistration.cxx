@@ -149,11 +149,28 @@ public:
             cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages])
             );
 
-        auto movingImageExtracted_file = cbica::normPath(temporaryDataDir + "/movingImageExtracted.nii.gz");
-        // write out the first in the current image series
-        cbica::WriteImage< TMovingExtractedImageType >(
-          movingImagePointers_extracted[totalMovingImages][0], movingImageExtracted_file);
-        
+        std::vector< std::string > movingImageExtracted_files, movingImageExtracted_output_files;
+        movingImageExtracted_files.resize(movingImagePointers_extracted[totalMovingImages].size());
+        movingImageExtracted_output_files.resize(movingImagePointers_extracted[totalMovingImages].size());
+
+        for (size_t extractedImages = 0;
+          extractedImages < movingImagePointers_extracted[totalMovingImages].size();
+          extractedImages++)
+        {
+          movingImageExtracted_files[extractedImages] =
+            cbica::normPath(temporaryDataDir + "/movingImageExtracted_" + 
+              std::to_string(extractedImages) + ".nii.gz");
+
+          movingImageExtracted_output_files[extractedImages] =
+            cbica::normPath(temporaryDataDir + "/movingImageExtractedOutput_" +
+              std::to_string(extractedImages) + ".nii.gz");
+
+          // write out the all the images in the series
+          cbica::WriteImage< TMovingExtractedImageType >(
+            movingImagePointers_extracted[totalMovingImages][extractedImages], 
+            movingImageExtracted_files[extractedImages]);
+        }
+
         // the assumption here is that in a single 4D series, the images inside will be co-registered
         param.output = matrixImageFiles[totalMovingImages];
 
@@ -161,7 +178,7 @@ public:
         ImagePairSpec ip;
         ip.weight = 1.0; // this is always hard-coded in any case
         ip.fixed = fixedImageForRegistering_file;
-        ip.moving = movingImageExtracted_file; // something to write 
+        ip.moving = movingImageExtracted_files[0]; // something to write 
         param.inputs.push_back(ip);
 
         GreedyApproach< 3, TReal > greedy; // the registration is always run on 3D images at this point
@@ -169,18 +186,39 @@ public:
 
         // at this point, the transformation matrix is already present and we just need to apply it
 
-        param.reslice_param.ref_image = fixedImage;
+        param.reslice_param.ref_image = fixedImageForRegistering_file;
+        param.mode = GreedyParameters::RESLICE;
+
         TransformSpec spec;
         ResliceSpec reslice;
-
         InterpSpec interp_current;
-        reslice.interp = interp_current;
-        reslice.moving = inputImageFiles[i];
-        reslice.output = outputImageFiles[i];
 
-        param.reslice_param.images.push_back(reslice);
+        param.reslice_param.transforms.clear();
+        param.reslice_param.images.clear();
 
-        param.mode = GreedyParameters::RESLICE;
+        for (size_t extractedImages = 0; 
+          extractedImages < movingImagePointers_extracted[totalMovingImages].size(); 
+          extractedImages++)
+        {
+          reslice.interp = interp_current;
+          reslice.moving = movingImageExtracted_files[extractedImages];
+          reslice.output = movingImageExtracted_output_files[extractedImages];
+
+          param.reslice_param.images.push_back(reslice);
+
+          if (!cbica::fileExists(matrixImageFiles[totalMovingImages]))
+          {
+            std::cerr << "Something went wrong while registering the first image; the registration will stop.\n";
+            exit(EXIT_FAILURE);
+          }
+          spec = clHelper.read_transform_spec(matrixImageFiles[totalMovingImages]);
+
+          param.reslice_param.transforms.push_back(spec);
+
+          GreedyApproach< 3, TReal > greedy_reslicer; // here, we do the reslicing
+          return greedy_reslicer.Run(param);
+
+        }
 
         std::cout << "--> Looking for transformation matrix: " + matrixImageFiles[i] << std::endl;
 
