@@ -64,7 +64,7 @@ template <unsigned int VDim, typename TReal>
 class GreedyRunner
 {
 public:
-  static int Run(GreedyParameters &param)
+  static int Run(GreedyParameters &param, CommandLineHelper &clHelper)
   {
     // we go with the normal registration for non 4D images
     auto movingImageInfo = cbica::ImageInfo(inputImageFiles[0]);
@@ -156,7 +156,31 @@ public:
         return greedy.Run(param);
 
         // at this point, the transformation matrix is already present and we just need to apply it
+
+        param.reslice_param.ref_image = fixedImage;
+        TransformSpec spec;
+        ResliceSpec reslice;
+
+        InterpSpec interp_current;
+        reslice.interp = interp_current;
+        reslice.moving = inputImageFiles[i];
+        reslice.output = outputImageFiles[i];
+
+        param.reslice_param.images.push_back(reslice);
+
         param.mode = GreedyParameters::RESLICE;
+
+        std::cout << "--> Looking for transformation matrix: " + matrixImageFiles[i] << std::endl;
+
+        if (!cbica::fileExists(matrixImageFiles[i])) {
+          std::cerr << "--> Transformation matrix not found at: " << matrixImageFiles[i] << "'\n";
+          return EXIT_FAILURE;
+        }
+        std::cout << "--> Transformation Matrix found: " + matrixImageFiles[i] << std::endl;
+        spec = clHelper.read_transform_spec(matrixImageFiles[i]);
+
+        param.reslice_param.transforms.push_back(spec);
+
 
         // put all registered images in something separate
         movingImagePointers_extracted_registered[totalMovingImages].resize(
@@ -417,9 +441,9 @@ int main(int argc, char** argv)
       {
         switch (fixedImageInfo.GetImageDimensions())
         {
-        case 2: GreedyRunner<2, float>::Run(param); break;
-        case 3: GreedyRunner<3, float>::Run(param); break;
-        case 4: GreedyRunner<4, float>::Run(param); break;
+        case 2: GreedyRunner<2, float>::Run(param, cl); break;
+        case 3: GreedyRunner<3, float>::Run(param, cl); break;
+        case 4: GreedyRunner<4, float>::Run(param, cl); break;
         default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
         }
       }
@@ -427,9 +451,9 @@ int main(int argc, char** argv)
       {
         switch (fixedImageInfo.GetImageDimensions())
         {
-        case 2: GreedyRunner<2, double>::Run(param); break;
-        case 3: GreedyRunner<3, double>::Run(param); break;
-        case 4: GreedyRunner<4, double>::Run(param); break;
+        case 2: GreedyRunner<2, double>::Run(param, cl); break;
+        case 3: GreedyRunner<3, double>::Run(param, cl); break;
+        case 4: GreedyRunner<4, double>::Run(param, cl); break;
         default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
         }
       }
@@ -517,9 +541,9 @@ int main(int argc, char** argv)
         {
           switch (fixedImageInfo.GetImageDimensions())
           {
-          case 2: GreedyRunner<2, float>::Run(param); continue;
-          case 3: GreedyRunner<3, float>::Run(param); continue;
-          case 4: GreedyRunner<4, float>::Run(param); continue;
+          case 2: GreedyRunner<2, float>::Run(param, cl); continue;
+          case 3: GreedyRunner<3, float>::Run(param, cl); continue;
+          case 4: GreedyRunner<4, float>::Run(param, cl); continue;
           default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
           }
         }
@@ -527,9 +551,9 @@ int main(int argc, char** argv)
         {
           switch (fixedImageInfo.GetImageDimensions())
           {
-          case 2: GreedyRunner<2, double>::Run(param); continue;
-          case 3: GreedyRunner<3, double>::Run(param); continue;
-          case 4: GreedyRunner<4, double>::Run(param); continue;
+          case 2: GreedyRunner<2, double>::Run(param, cl); continue;
+          case 3: GreedyRunner<3, double>::Run(param, cl); continue;
+          case 4: GreedyRunner<4, double>::Run(param, cl); continue;
           default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
           }
         }
