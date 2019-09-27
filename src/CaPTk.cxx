@@ -52,18 +52,19 @@ int main(int argc, char** argv)
   bool comparisonMode = false;
 
   // this is used to populate the available CWL files for the cli  
-  auto cwlFolderPath = cbica::getExecutablePath();
+  auto cwlFolderPath = 
 #ifdef CAPTK_PACKAGE_PROJECT
-  cwlFolderPath +=
+  cbica::normPath(cbica::getExecutablePath() + 
 #ifdef __APPLE__
     "../Resources/etc/cwlDefinitions/"
 #else
     "../etc/cwlDefinitions/"
 #endif
-    ;
+    )
 #else
-  cwlFolderPath = std::string(PROJECT_SOURCE_DIR) + "/data/cwlFiles";
+  std::string(PROJECT_SOURCE_DIR) + "/data/cwlFiles"
 #endif
+  ;
   auto cwlFiles = cbica::filesInDirectory(cwlFolderPath);
 
   // parse the command line
