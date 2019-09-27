@@ -74,12 +74,6 @@ public:
     }
     else
     {
-      // here the assumption is that the moving images shall also be 4D
-      if ((VDim == 4) && (movingImageInfo.GetImageDimensions() == 3))
-      {
-        std::cerr << "The condition of moving image being 3D and fixed image being 4D is not defined.\n";
-        exit(EXIT_FAILURE);
-      }
       // conditions to work on:
       // movingImage = 4D && fixedImage == 4D
       // movingImage = 4D && fixedImage == 3D
