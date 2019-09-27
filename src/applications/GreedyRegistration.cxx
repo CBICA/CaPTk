@@ -152,6 +152,13 @@ public:
         // the assumption here is that in a single 4D series, the images inside will be co-registered
         param.output = matrixImageFiles[totalMovingImages];
 
+        param.inputs.clear(); // remove whatever was done previously
+        ImagePairSpec ip;
+        ip.weight = 1.0; // this is always hard-coded in any case
+        ip.fixed = fixedImageForRegistering_file;
+        ip.moving = ""; // something to write 
+        param.inputs.push_back(ip);
+
         GreedyApproach< 3, TReal > greedy; // the registration is always run on 3D images at this point
         return greedy.Run(param);
 
