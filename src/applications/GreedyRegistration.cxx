@@ -82,8 +82,8 @@ public:
       }
       using TImageType = itk::Image< TReal, VDim >;
       std::vector< typename TImageType::Pointer > movingImagePointers;
-      cbica::ImageInfo movingI
-      auto imageSeries = cbica::GetExtractedImages< TImageType >()
+      //cbica::ImageInfo movingI
+      //auto imageSeries = cbica::GetExtractedImages< TImageType >()
     }
   }
 };
