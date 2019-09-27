@@ -66,7 +66,8 @@ public:
   static int Run(GreedyParameters &param)
   {
     // we go with the normal registration for non 4D images
-    if (VDim != 4)
+    auto movingImageInfo = cbica::ImageInfo(inputImageFiles[0]);
+    if ((VDim != 4) || (movingImageInfo.GetImageDimensions() != 4))
     {
       GreedyApproach<VDim, TReal> greedy;
       return greedy.Run(param);
@@ -76,8 +77,8 @@ public:
       // here the assumption is that the moving images shall also be 4D
       using TImageType = itk::Image< TReal, VDim >;
       std::vector< typename TImageType::Pointer > movingImagePointers;
-      //cbica::ImageInfo movingI
-      //auto imageSeries = cbica::GetExtractedImages< TImageType >()
+      cbica::ImageInfo movingI
+      auto imageSeries = cbica::GetExtractedImages< TImageType >()
     }
   }
 };
