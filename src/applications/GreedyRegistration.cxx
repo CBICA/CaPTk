@@ -81,16 +81,20 @@ public:
       using TMovingExtractedImageType = itk::Image< TReal, 3 >;
       using TFixedImageType = itk::Image< TReal, VDim >;
       std::vector< typename TMovingImageType::Pointer > movingImagePointers;
-      std::vector< std::vector< typename TMovingExtractedImageType::Pointer > > movingImagePointers_extracted;
+      std::vector< std::vector< typename TMovingExtractedImageType::Pointer > > movingImagePointers_extracted,
+        movingImagePointers_extracted_registered;
       movingImagePointers.resize(inputImageFiles.size());
       movingImagePointers_extracted.resize(inputImageFiles.size());
+      movingImagePointers_extracted_registered.resize(inputImageFiles.size());
       for (size_t totalMovingImages = 0; totalMovingImages < inputImageFiles.size(); totalMovingImages++)
       {
-        movingImagePointers[totalMovingImages] = cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages]);
         movingImagePointers_extracted[totalMovingImages] = 
           cbica::GetExtractedImages< TMovingImageType, TMovingExtractedImageType >(
             cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages])
             );
+        movingImagePointers_extracted_registered[totalMovingImages].resize(
+          movingImagePointers_extracted[totalMovingImages].size()
+        );
       }
 
       //auto temp = cbica::GetExtractedImages< TMovingImageType >(cbica::ReadImage< TMovingImageType >(inputImageFiles[0]));
