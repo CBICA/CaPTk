@@ -101,7 +101,11 @@ public:
         std::cout << ":::[DEBUG] Checking which one works quicker/better.\n";
         std::cout << ":::======= Using the cbica::copyFile function took ";
         auto copy_start = std::chrono::steady_clock::now();
-        cbica::copyFile(fixedImage, fixedImageForRegistering_file);
+        if (!cbica::copyFile(fixedImage, fixedImageForRegistering_file))
+        {
+          std::cerr << "Something went wrong with copying the fixedImage.\n";
+          exit(EXIT_FAILURE);
+        }
         auto copy_end = std::chrono::steady_clock::now();
         std::cout << 
           float(
