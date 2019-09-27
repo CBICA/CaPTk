@@ -145,6 +145,7 @@ public:
             );
 
         std::vector< typename TMovingExtractedImageType::Pointer > movingImagePointers_extracted_registered;
+        movingImagePointers_extracted_registered.resize(movingImagePointers_extracted.size());
 
         std::vector< std::string > movingImageExtracted_files, movingImageExtracted_output_files;
         movingImageExtracted_files.resize(movingImagePointers_extracted.size());
@@ -214,6 +215,14 @@ public:
 
           GreedyApproach< 3, TReal > greedy_reslicer; // here, we do the reslicing
           return greedy_reslicer.Run(param);
+          
+          if (cbica::fileExists(movingImageExtracted_output_files[extractedImages]))
+          {
+            // now, put the registered images in the vector to combine in the next step
+            movingImagePointers_extracted_registered[extractedImages] =
+              cbica::ReadImage< TMovingExtractedImageType >(
+                movingImageExtracted_output_files[extractedImages]);
+          }
         }
 
       }
