@@ -82,6 +82,17 @@ public:
 
       // this is the image we will use to register everything
       auto fixedImageForRegistering = typename TMovingExtractedImageType::New();
+
+      if (VDim == 4)
+      {
+        std::cout << "A 4D moving image was detected; the first in the series will be used as fixed image template.\n";
+        auto tempFixedExtracted = 
+          cbica::GetExtractedImages< TMovingImageType, TMovingExtractedImageType >(
+          cbica::ReadImage< TMovingImageType >(fixedImage)
+          );
+        fixedImageForRegistering = tempFixedExtracted[0];
+        
+      }
       using TFixedImageType = itk::Image< TReal, VDim >;
       std::vector< typename TMovingImageType::Pointer > movingImagePointers;
       std::vector< std::vector< typename TMovingExtractedImageType::Pointer > > movingImagePointers_extracted,
