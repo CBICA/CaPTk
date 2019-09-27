@@ -103,13 +103,20 @@ public:
         auto copy_start = std::chrono::steady_clock::now();
         cbica::copyFile(fixedImage, fixedImageForRegistering_file);
         auto copy_end = std::chrono::steady_clock::now();
-        auto time_elapsed = 
-          std::chrono::duration_cast<std::chrono::milliseconds>(
-            copy_end - copy_start).count();
-        std::cout << float(time_elapsed) / 1000.0 << " seconds.\n";
+        std::cout << 
+          float(
+            std::chrono::duration_cast<std::chrono::milliseconds>(copy_end - copy_start).count()
+            ) / 1000.0 << " seconds.\n";
 
+        std::cout << ":::======= Using ITK Read -> Write function took ";
+        auto io_start = std::chrono::steady_clock::now();
         cbica::WriteImage< TMovingExtractedImageType >(
           cbica::ReadImage< TMovingExtractedImageType >(fixedImage), fixedImageForRegistering_file);
+        auto io_end = std::chrono::steady_clock::now();
+        std::cout <<
+          float(
+            std::chrono::duration_cast<std::chrono::milliseconds>(io_end - io_start).count()
+            ) / 1000.0 << " seconds.\n";
       }
       using TFixedImageType = itk::Image< TReal, VDim >;
       std::vector< typename TMovingImageType::Pointer > movingImagePointers;
