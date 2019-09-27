@@ -75,6 +75,11 @@ public:
     else
     {
       // here the assumption is that the moving images shall also be 4D
+      if ((VDim == 4) && (movingImageInfo.GetImageDimensions() == 3))
+      {
+        std::cerr << "The condition of moving image being 3D and fixed image being 4D is not defined.\n";
+        exit(EXIT_FAILURE);
+      }
       using TImageType = itk::Image< TReal, VDim >;
       std::vector< typename TImageType::Pointer > movingImagePointers;
       cbica::ImageInfo movingI
