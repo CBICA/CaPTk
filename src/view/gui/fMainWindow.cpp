@@ -1605,13 +1605,14 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     imageManager->SetComparisonMode(false);
 
     bool bFirstLoad = false;
-    if (mSlicerManagers.size() == 0)
+    if (mSlicerManagers.empty())
     {
       bFirstLoad = true;
     }
     if (imageInfo.GetImageDimensions() == 2)
     {
       ConversionFrom2Dto3D(fname, true);
+      return;
     }
     else if (!bFirstLoad)
     {
@@ -3131,6 +3132,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
       {
         dicomfilename = maskFileName;
         ConversionFrom2Dto3D(maskFileName, false);
+        return;
       }
     }
     else
@@ -3175,6 +3177,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
           }
         }
         ConversionFrom2Dto3D(maskFileName, false); // all sanity checks passed; load the mask 
+        return;
       }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
@@ -5367,17 +5370,17 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
   }
 
   int i = 0, fileSizeCheck = files.size() + 1;
-  if (mSlicerManagers.size() == 0)
+  if (mSlicerManagers.empty())
   {
     {
       std::string fileName = files[i].toStdString();
       fileName = cbica::normPath(fileName);
       updateProgress(i + 1, "Opening " + fileName, files.size());
-      auto extension = cbica::getFilenameExtension(fileName);
-      if (!extension.empty())
-      {
-        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-      }
+      //auto extension = cbica::getFilenameExtension(fileName);
+      //if (!extension.empty())
+      //{
+      //  std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+      //}
       //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
       //  (extension == ".ima"))
       if (cbica::IsDicom(fileName))
@@ -5503,7 +5506,7 @@ void fMainWindow::openDicomImages(QString dir)
   imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
 
   bool bFirstLoad = false;
-  if (mSlicerManagers.size() == 0)
+  if (mSlicerManagers.empty())
   {
     bFirstLoad = true;
   }
