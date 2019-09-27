@@ -1605,7 +1605,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     imageManager->SetComparisonMode(false);
 
     bool bFirstLoad = false;
-    if (mSlicerManagers.size() == 0)
+    if (mSlicerManagers.empty())
     {
       bFirstLoad = true;
     }
@@ -5367,7 +5367,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
   }
 
   int i = 0, fileSizeCheck = files.size() + 1;
-  if (mSlicerManagers.size() == 0)
+  if (mSlicerManagers.empty())
   {
     {
       std::string fileName = files[i].toStdString();
@@ -5503,7 +5503,7 @@ void fMainWindow::openDicomImages(QString dir)
   imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
 
   bool bFirstLoad = false;
-  if (mSlicerManagers.size() == 0)
+  if (mSlicerManagers.empty())
   {
     bFirstLoad = true;
   }
