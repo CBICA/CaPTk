@@ -17,15 +17,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_windows_1.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_WINDOWS
-    #     restoreKeys: |
-    #       "bin_windows_1.tar.gz"
-    #     continueOnError : true
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_windows_1.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_WINDOWS
+        restoreKeys: |
+          "bin_windows_1.tar.gz"
+        continueOnError : true
+      displayName: 'Caching'
 
     - script: |
         choco install doxygen.install nsis.install wget
@@ -195,7 +195,7 @@ jobs:
         cd ../
 
         mv bin bin_windows
-        # tar cvfz bin_windows_1.tar.gz bin_windows
+        tar cvfz bin_windows_1.tar.gz bin_windows
       displayName: 'Zipping bin'
 
     - powershell: |
@@ -229,15 +229,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       #fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_linux_2.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_LINUX
-    #     continueOnError : true
-    #     restoreKeys: |
-    #       "bin_linux_2.tar.gz"
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_linux_2.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_LINUX
+        continueOnError : true
+        restoreKeys: |
+          "bin_linux_2.tar.gz"
+      displayName: 'Caching'
 
     # Dependency manager
     - bash: |
@@ -379,7 +379,7 @@ jobs:
         cd ../
 
         mv bin bin_linux
-        # tar cvfz bin_linux_2.tar.gz bin_linux
+        tar cvfz bin_linux_2.tar.gz bin_linux
       displayName: 'Zipping bin'
 
     - task: PublishBuildArtifacts@1
@@ -406,15 +406,15 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
-    #     path: $(Build.SourcesDirectory)
-    #     cacheHitVar: CACHE_RESTORED_MAC
-    #     continueOnError : true
-    #     restoreKeys: |
-    #       "bin_macos.tar.gz"
-    #   displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_MAC
+        continueOnError : true
+        restoreKeys: |
+          "bin_macos.tar.gz"
+      displayName: 'Caching'
 
     - bash: |
         brew install make doxygen libomp openmpi
@@ -601,7 +601,7 @@ jobs:
         # ls
         mv bin bin_macos
         # ls
-        # tar cvfz bin_macos.tar.gz bin_macos
+        tar cvfz bin_macos.tar.gz bin_macos
       displayName: 'Zipping bin'
     #- script: |
     #    cd bin
