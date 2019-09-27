@@ -82,7 +82,7 @@ public:
       }
       // conditions to work on:
       // movingImage = 4D && fixedImage == 4D
-      // movingImage = 3D && fixedImage == 4D
+      // movingImage = 4D && fixedImage == 3D
       using TMovingImageType = itk::Image< TReal, VDim >;
       using TFixedImageType = itk::Image< TReal, VDim >;
       std::vector< typename TImageType::Pointer > movingImagePointers;
