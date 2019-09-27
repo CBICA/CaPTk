@@ -14,7 +14,7 @@ ExternalProject_Add(
   SOURCE_DIR petsc-source
   CONFIGURE_COMMAND ./configure PETSC_DIR=${CMAKE_BINARY_DIR}/petsc-source PETSC_ARCH=cxx_opt_dbl --prefix=${CMAKE_BINARY_DIR}/petsc-build/cxx_opt_dbl --with-cc=mpicc COPTFLAGS='-O3' --with-cxx=mpicxx --download-f2cblaslapack CXXOPTFLAGS='-O3' --with-ssl=0 --with-debugging=0 --with-64-bit-indices --with-shared=0 --with-x=0 --with-fc=0
   BUILD_COMMAND make PETSC_DIR=${CMAKE_BINARY_DIR}/petsc-source PETSC_ARCH=cxx_opt_dbl
-  INSTALL_COMMAND make PETSC_DIR=${CMAKE_BINARY_DIR}/petsc-source PETSC_ARCH=cxx_opt_dbl install
+  # INSTALL_COMMAND make PETSC_DIR=${CMAKE_BINARY_DIR}/petsc-source PETSC_ARCH=cxx_opt_dbl install
 )
 
 SET( PETSC_DIR ${CMAKE_BINARY_DIR}/petsc-source)
