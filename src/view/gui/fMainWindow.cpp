@@ -5373,11 +5373,11 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       std::string fileName = files[i].toStdString();
       fileName = cbica::normPath(fileName);
       updateProgress(i + 1, "Opening " + fileName, files.size());
-      auto extension = cbica::getFilenameExtension(fileName);
-      if (!extension.empty())
-      {
-        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-      }
+      //auto extension = cbica::getFilenameExtension(fileName);
+      //if (!extension.empty())
+      //{
+      //  std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+      //}
       //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
       //  (extension == ".ima"))
       if (cbica::IsDicom(fileName))
