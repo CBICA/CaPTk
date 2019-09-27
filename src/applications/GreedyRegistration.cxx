@@ -67,7 +67,7 @@ public:
   {
     // we go with the normal registration for non 4D images
     auto movingImageInfo = cbica::ImageInfo(inputImageFiles[0]);
-    if ((VDim != 4) || (movingImageInfo.GetImageDimensions() != 4))
+    if ((VDim != 4) && (movingImageInfo.GetImageDimensions() != 4))
     {
       GreedyApproach<VDim, TReal> greedy;
       return greedy.Run(param);
