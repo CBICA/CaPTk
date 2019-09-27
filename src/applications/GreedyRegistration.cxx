@@ -79,6 +79,11 @@ public:
       /// instead, we should add Greedy as a submodule and then use
       /// the greedy executable to do all the things that are needed
 
+      if (param.mode == GreedyParameters::RESLICE)
+      {
+        std::cerr << "This condition should not come up at all.\n";
+        exit(EXIT_FAILURE);
+      }
       // conditions to work on:
       // movingImage = 4D && fixedImage == 4D
       // movingImage = 4D && fixedImage == 3D
