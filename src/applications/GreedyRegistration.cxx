@@ -77,9 +77,23 @@ public:
       // conditions to work on:
       // movingImage = 4D && fixedImage == 4D
       // movingImage = 4D && fixedImage == 3D
-      using TMovingImageType = itk::Image< TReal, VDim >;
+      using TMovingImageType = itk::Image< TReal, 4 >;
+      using TMovingExtractedImageType = itk::Image< TReal, 3 >;
       using TFixedImageType = itk::Image< TReal, VDim >;
-      std::vector< typename TImageType::Pointer > movingImagePointers;
+      std::vector< typename TMovingImageType::Pointer > movingImagePointers;
+      std::vector< std::vector< typename TMovingExtractedImageType::Pointer > > movingImagePointers_extracted;
+      movingImagePointers.resize(inputImageFiles.size());
+      movingImagePointers_extracted.resize(inputImageFiles.size());
+      for (size_t totalMovingImages = 0; totalMovingImages < inputImageFiles.size(); totalMovingImages++)
+      {
+        movingImagePointers[totalMovingImages] = cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages]);
+        movingImagePointers_extracted[totalMovingImages] = 
+          cbica::GetExtractedImages< TMovingImageType, TMovingExtractedImageType >(
+            cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages])
+            );
+      }
+
+      //auto temp = cbica::GetExtractedImages< TMovingImageType >(cbica::ReadImage< TMovingImageType >(inputImageFiles[0]));
       //cbica::ImageInfo movingI
       //auto imageSeries = cbica::GetExtractedImages< TImageType >()
     }
