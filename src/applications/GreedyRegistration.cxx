@@ -79,6 +79,9 @@ public:
       // movingImage = 4D && fixedImage == 3D
       using TMovingImageType = itk::Image< TReal, 4 >;
       using TMovingExtractedImageType = itk::Image< TReal, 3 >;
+
+      // this is the image we will use to register everything
+      auto fixedImageForRegistering = typename TMovingExtractedImageType::New();
       using TFixedImageType = itk::Image< TReal, VDim >;
       std::vector< typename TMovingImageType::Pointer > movingImagePointers;
       std::vector< std::vector< typename TMovingExtractedImageType::Pointer > > movingImagePointers_extracted,
