@@ -98,7 +98,7 @@ public:
       }
       else
       {
-        std::cout << ":::[DEBUG] Checking which one works quicker/better.\n";
+        std::cout << ":::[DEBUG] Checking which one works quicker/better: the best one should be chosen and this code pruned.\n";
         std::cout << ":::======= Using the cbica::copyFile function took ";
         auto copy_start = std::chrono::steady_clock::now();
         if (!cbica::copyFile(fixedImage, fixedImageForRegistering_file))
