@@ -51,6 +51,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include <vnl/vnl_trace.h>
 
 #include "cbicaITKImageInfo.h"
+#include "cbicaITKUtilities.h"
 
 
 std::string inputImageFile, outputImageFile, targetImageFile, matrix, fixedImage, inputFileString, outputFileString;
@@ -69,6 +70,11 @@ public:
     {
       GreedyApproach<VDim, TReal> greedy;
       return greedy.Run(param);
+    }
+    else
+    {
+      using TImageType = itk::Image< TReal, VDim >;
+      auto imageSeries = cbica::GetExtractedImages< TImageType >()
     }
   }
 };
@@ -292,10 +298,18 @@ int main(int argc, char** argv)
       auto fixedImageInfo = cbica::ImageInfo(fixedImage);
       auto movingImageInfo = cbica::ImageInfo(inputImageFiles[i]);
 
-      if (fixedImageInfo.GetImageDimensions() != movingImageInfo.GetImageDimensions())
+      // do not perform dimension sanity check for 4D moving image
+      if (movingImageInfo.GetImageDimensions() != 4)
       {
-        std::cerr << "--> Image dimensions do not match." << std::endl;
-        return EXIT_FAILURE;
+        if (fixedImageInfo.GetImageDimensions() != movingImageInfo.GetImageDimensions())
+        {
+          std::cerr << "--> Image dimensions do not match." << std::endl;
+          return EXIT_FAILURE;
+        }
+        else
+        {
+          param.dim = fixedImageInfo.GetImageDimensions();
+        }
       }
       else
       {
