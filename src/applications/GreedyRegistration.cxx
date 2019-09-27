@@ -149,6 +149,7 @@ public:
             cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages])
             );
 
+        auto movingImageExtracted_file = cbica::normPath(temporaryDataDir + "/movingImageExtracted.nii.gz");
         // the assumption here is that in a single 4D series, the images inside will be co-registered
         param.output = matrixImageFiles[totalMovingImages];
 
@@ -198,6 +199,7 @@ public:
       //auto temp = cbica::GetExtractedImages< TMovingImageType >(cbica::ReadImage< TMovingImageType >(inputImageFiles[0]));
       //cbica::ImageInfo movingI
       //auto imageSeries = cbica::GetExtractedImages< TImageType >()
+      cbica::deleteDir(temporaryDataDir); // ensure all temporary data gets deleted
     }
   }
 };
