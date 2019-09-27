@@ -51,8 +51,20 @@ int main(int argc, char** argv)
   float cmd_maskOpacity = 1;
   bool comparisonMode = false;
 
-  // this is used to populate the available CWL files for the cli
-  auto cwlFiles = cbica::getCWLFilesInApplicationDir();
+  // this is used to populate the available CWL files for the cli  
+  auto cwlFolderPath = cbica::getExecutablePath();
+#ifdef CAPTK_PACKAGE_PROJECT
+  cwlFolderPath +=
+#ifdef __APPLE__
+    "../Resources/etc/cwlDefinitions/"
+#else
+    "../etc/cwlDefinitions/"
+#endif
+    ;
+#else
+  cwlFolderPath = std::string(PROJECT_SOURCE_DIR) + "/data/cwlFiles";
+#endif
+  auto cwlFiles = cbica::filesInDirectory(cwlFolderPath);
 
   // parse the command line
   auto parser = cbica::CmdParser(argc, argv, "CaPTk");
