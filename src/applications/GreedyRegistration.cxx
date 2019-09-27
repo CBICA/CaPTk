@@ -150,6 +150,10 @@ public:
             );
 
         auto movingImageExtracted_file = cbica::normPath(temporaryDataDir + "/movingImageExtracted.nii.gz");
+        // write out the first in the current image series
+        cbica::WriteImage< TMovingExtractedImageType >(
+          movingImagePointers_extracted[totalMovingImages][0], movingImageExtracted_file);
+        
         // the assumption here is that in a single 4D series, the images inside will be co-registered
         param.output = matrixImageFiles[totalMovingImages];
 
@@ -157,7 +161,7 @@ public:
         ImagePairSpec ip;
         ip.weight = 1.0; // this is always hard-coded in any case
         ip.fixed = fixedImageForRegistering_file;
-        ip.moving = ""; // something to write 
+        ip.moving = movingImageExtracted_file; // something to write 
         param.inputs.push_back(ip);
 
         GreedyApproach< 3, TReal > greedy; // the registration is always run on 3D images at this point
