@@ -306,15 +306,9 @@ int main(int argc, char** argv)
           std::cerr << "--> Image dimensions do not match." << std::endl;
           return EXIT_FAILURE;
         }
-        else
-        {
-          param.dim = fixedImageInfo.GetImageDimensions();
-        }
       }
-      else
-      {
-        param.dim = fixedImageInfo.GetImageDimensions();
-      }
+
+      param.dim = fixedImageInfo.GetImageDimensions();
 
       if (param.flag_float_math)
       {
