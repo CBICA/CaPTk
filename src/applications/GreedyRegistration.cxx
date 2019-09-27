@@ -64,8 +64,12 @@ class GreedyRunner
 public:
   static int Run(GreedyParameters &param)
   {
-    GreedyApproach<VDim, TReal> greedy;
-    return greedy.Run(param);
+    // we go with the normal registration for non 4D images
+    if (VDim != 4)
+    {
+      GreedyApproach<VDim, TReal> greedy;
+      return greedy.Run(param);
+    }
   }
 };
 
