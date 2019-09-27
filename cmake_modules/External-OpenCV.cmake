@@ -16,6 +16,8 @@ ExternalProject_Add(
   OpenCV
   DEPENDS Eigen VTK
   URL https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip
+  GIT_REPOSITORY https://github.com/opencv/opencv.git #  url from where to download
+  GIT_TAG 3.4.7
   #GIT_REPOSITORY ${git_protocol}://github.com/opencv/opencv.git
   #GIT_TAG 3.4.1
   SOURCE_DIR OpenCV-source
