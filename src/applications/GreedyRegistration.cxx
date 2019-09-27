@@ -132,29 +132,26 @@ public:
             ) / 1000.0 << " seconds.\n";
       }
 
-      std::vector< typename TMovingImageType::Pointer > movingImagePointers;
-      std::vector< std::vector< typename TMovingExtractedImageType::Pointer > > movingImagePointers_extracted,
-        movingImagePointers_extracted_registered;
-      movingImagePointers.resize(inputImageFiles.size());
-      movingImagePointers_extracted.resize(inputImageFiles.size());
-      movingImagePointers_extracted_registered.resize(inputImageFiles.size());
+      // looping through all the moving images
       for (size_t totalMovingImages = 0; totalMovingImages < inputImageFiles.size(); totalMovingImages++)
       {
         // GreedyRegistration -reg -trf -i moving.nii.gz -f fixed.nii.gz 
         // -o output.nii.gz -t matrix.mat -a -m MI -n 100x50x5",
 
-        // move all extracted images to structure
-        movingImagePointers_extracted[totalMovingImages] = 
+        // move all extracted images to a single structure that keeps getting overwritten to conserve memory
+        auto movingImagePointers_extracted = 
           cbica::GetExtractedImages< TMovingImageType, TMovingExtractedImageType >(
             cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages])
             );
 
+        std::vector< typename TMovingExtractedImageType::Pointer > movingImagePointers_extracted_registered;
+
         std::vector< std::string > movingImageExtracted_files, movingImageExtracted_output_files;
-        movingImageExtracted_files.resize(movingImagePointers_extracted[totalMovingImages].size());
-        movingImageExtracted_output_files.resize(movingImagePointers_extracted[totalMovingImages].size());
+        movingImageExtracted_files.resize(movingImagePointers_extracted.size());
+        movingImageExtracted_output_files.resize(movingImagePointers_extracted.size());
 
         for (size_t extractedImages = 0;
-          extractedImages < movingImagePointers_extracted[totalMovingImages].size();
+          extractedImages < movingImagePointers_extracted.size();
           extractedImages++)
         {
           movingImageExtracted_files[extractedImages] =
@@ -167,7 +164,7 @@ public:
 
           // write out the all the images in the series
           cbica::WriteImage< TMovingExtractedImageType >(
-            movingImagePointers_extracted[totalMovingImages][extractedImages], 
+            movingImagePointers_extracted[extractedImages], 
             movingImageExtracted_files[extractedImages]);
         }
 
@@ -197,7 +194,7 @@ public:
         param.reslice_param.images.clear();
 
         for (size_t extractedImages = 0; 
-          extractedImages < movingImagePointers_extracted[totalMovingImages].size(); 
+          extractedImages < movingImagePointers_extracted.size(); 
           extractedImages++)
         {
           reslice.interp = interp_current;
@@ -217,25 +214,8 @@ public:
 
           GreedyApproach< 3, TReal > greedy_reslicer; // here, we do the reslicing
           return greedy_reslicer.Run(param);
-
         }
 
-        std::cout << "--> Looking for transformation matrix: " + matrixImageFiles[i] << std::endl;
-
-        if (!cbica::fileExists(matrixImageFiles[i])) {
-          std::cerr << "--> Transformation matrix not found at: " << matrixImageFiles[i] << "'\n";
-          return EXIT_FAILURE;
-        }
-        std::cout << "--> Transformation Matrix found: " + matrixImageFiles[i] << std::endl;
-        spec = clHelper.read_transform_spec(matrixImageFiles[i]);
-
-        param.reslice_param.transforms.push_back(spec);
-
-
-        // put all registered images in something separate
-        movingImagePointers_extracted_registered[totalMovingImages].resize(
-          movingImagePointers_extracted[totalMovingImages].size()
-        );
       }
 
       //auto temp = cbica::GetExtractedImages< TMovingImageType >(cbica::ReadImage< TMovingImageType >(inputImageFiles[0]));
