@@ -225,6 +225,11 @@ public:
           }
         }
 
+        // now, let's join these guys together and write the combined thing out
+        auto joinedImage = cbica::GetJoinedImage< TMovingExtractedImageType, TMovingImageType >(
+          movingImagePointers_extracted_registered
+          );
+        cbica::WriteImage< TMovingImageType >(joinedImage, outputImageFiles[totalMovingImages]);
       }
 
       //auto temp = cbica::GetExtractedImages< TMovingImageType >(cbica::ReadImage< TMovingImageType >(inputImageFiles[0]));
