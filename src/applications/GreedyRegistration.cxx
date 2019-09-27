@@ -212,6 +212,9 @@ int main(int argc, char** argv)
       );
     fixedImage = tempFolderLocation + "/tempDicomConverted_fixed.nii.gz";
   }
+
+  auto movingImageInfo_first = cbica::ImageInfo(inputImageFiles[0]);
+
   for (int i = 0; i < inputImageFiles.size(); i++)
   {
 
@@ -355,6 +358,14 @@ int main(int argc, char** argv)
           std::cerr << "--> Image dimensions do not match." << std::endl;
           return EXIT_FAILURE;
         }
+      }
+      else
+      {
+        if (true)
+        {
+
+        }
+
       }
 
       param.dim = fixedImageInfo.GetImageDimensions();
