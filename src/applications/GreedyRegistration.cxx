@@ -94,7 +94,11 @@ public:
           );
 
         cbica::WriteImage< TMovingExtractedImageType >(tempFixedExtracted[0], fixedImageForRegistering_file);
-        
+      }
+      else
+      {
+        cbica::WriteImage< TMovingExtractedImageType >(
+          cbica::ReadImage< TMovingExtractedImageType >(fixedImage), fixedImageForRegistering_file);
       }
       using TFixedImageType = itk::Image< TReal, VDim >;
       std::vector< typename TMovingImageType::Pointer > movingImagePointers;
