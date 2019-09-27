@@ -40,7 +40,7 @@ References:
 --------
 
 Reference:
-<ul>
+
 - L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127
 
 
@@ -70,7 +70,7 @@ References:
 --------
 
 References:
-<ul>
+
 - A.Gastounioti, A.Oustimov, B.M.Keller, L.Pantalone, M.K.Hsieh, E.F.Conant, D.Kontos. "Breast parenchymal patterns in processed versus raw digital mammograms: A large population study toward assessing differences in quantitative measures across image representations", Med Phys. 43(11):5862-77, 2016. DOI: 10.1118/1.4963810
 - A.M.McCarthy, B.M.Keller, L.M.Pantalone, M.K.Hsieh, M.Synnestvedt, E.F.Conant, K.Armstrong, D.Kontos. "Racial differences in quantitative measures of area and volumetric breast density", J Natl Cancer Inst. 108(10), 2016. DOI:10.1093/jnci/djw104
 - E.F.Conant, B.M.Keller, L.Pantalone, A.Gastounioti, E.S.McDonald, D.Kontos. "Agreement between Breast Percentage Density Estimations from Standard-Dose versus Synthetic Digital Mammograms: Results from a Large Screening Cohort Using Automated Measures", Radiology. 283(3):673-80, 2017. DOI:10.1148/radiol.2016161286

@@ -4,11 +4,6 @@ trigger:
     include:
     - master
 
-resources:
-  containers:
-  - container: centos
-    image: cbica/captk_centos7:devtoolset-4_superbuild
-
 jobs:
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
@@ -246,7 +241,7 @@ jobs:
 
     # Dependency manager
     - bash: |
-        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20
+        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 mpich libopenmpi-dev
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Install dependencies from Aptitude'
 
@@ -305,9 +300,13 @@ jobs:
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
+    # - bash: |
+    #     tar cvfz bin_linux_2.tar.gz bin
+    #   displayName: 'Zipping Superbuild'
+
     - bash: |
-        tar cvfz bin_linux_2.tar.gz bin
-      displayName: 'Zipping Superbuild'
+        df -k .
+      displayName: 'Disk space check'
 
       # Check qt
     - bash: |
@@ -418,7 +417,7 @@ jobs:
       displayName: 'Caching'
 
     - bash: |
-        brew install make doxygen libomp
+        brew install make doxygen libomp openmpi
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Brew dependencies'
