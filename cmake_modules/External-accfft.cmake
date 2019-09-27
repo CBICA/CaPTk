@@ -11,7 +11,7 @@ ExternalProject_Add(
     accfft
     SOURCE_DIR ${CMAKE_BINARY_DIR}/accfft-src
     BINARY_DIR ${CMAKE_BINARY_DIR}/accfft-build
-    GIT_REPOSITORY git@github.com:amirgholami/accfft.git
+    GIT_REPOSITORY https://github.com/amirgholami/accfft.git
     GIT_TAG origin/master
     CMAKE_ARGS 
         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/accfft-build 
