@@ -122,7 +122,7 @@ public:
             std::chrono::duration_cast<std::chrono::milliseconds>(io_end - io_start).count()
             ) / 1000.0 << " seconds.\n";
       }
-      using TFixedImageType = itk::Image< TReal, VDim >;
+
       std::vector< typename TMovingImageType::Pointer > movingImagePointers;
       std::vector< std::vector< typename TMovingExtractedImageType::Pointer > > movingImagePointers_extracted,
         movingImagePointers_extracted_registered;
@@ -131,7 +131,7 @@ public:
       movingImagePointers_extracted_registered.resize(inputImageFiles.size());
       for (size_t totalMovingImages = 0; totalMovingImages < inputImageFiles.size(); totalMovingImages++)
       {
-        // move all extracted images to structur
+        // move all extracted images to structure
         movingImagePointers_extracted[totalMovingImages] = 
           cbica::GetExtractedImages< TMovingImageType, TMovingExtractedImageType >(
             cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages])
