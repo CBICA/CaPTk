@@ -233,6 +233,8 @@ public:
       }
 
       cbica::deleteDir(temporaryDataDir); // ensure all temporary data gets deleted
+      std::cout << "Finished registration.\n";
+      exit(EXIT_SUCCESS);
     }
   }
 };
