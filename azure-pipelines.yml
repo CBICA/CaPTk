@@ -317,6 +317,7 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
+        git pull
         cd bin
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
@@ -494,6 +495,7 @@ jobs:
       displayName: 'Zipping Superbuild'
 
     - bash: |
+        git pull
         cd bin
 
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
