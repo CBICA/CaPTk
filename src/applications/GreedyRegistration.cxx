@@ -480,26 +480,14 @@ int main(int argc, char** argv)
       }
 
       param.dim = fixedImageInfo.GetImageDimensions();
+      param.flag_float_math = true; // we will not do double
 
-      if (param.flag_float_math)
+      switch (fixedImageInfo.GetImageDimensions())
       {
-        switch (fixedImageInfo.GetImageDimensions())
-        {
-        case 2: GreedyRunner<2, float>::Run(param, cl); break;
-        case 3: GreedyRunner<3, float>::Run(param, cl); break;
-        case 4: GreedyRunner<4, float>::Run(param, cl); break;
-        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-        }
-      }
-      else
-      {
-        switch (fixedImageInfo.GetImageDimensions())
-        {
-        case 2: GreedyRunner<2, double>::Run(param, cl); break;
-        case 3: GreedyRunner<3, double>::Run(param, cl); break;
-        case 4: GreedyRunner<4, double>::Run(param, cl); break;
-        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-        }
+      case 2: GreedyRunner<2, float>::Run(param, cl); break;
+      case 3: GreedyRunner<3, float>::Run(param, cl); break;
+      case 4: GreedyRunner<4, float>::Run(param, cl); break;
+      default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
       }
 
       std::cout << "--> Finished registration.\n";
@@ -581,25 +569,12 @@ int main(int argc, char** argv)
 
         std::cout << "--> Applied transformation to moving image: " << outputImageFiles[i] << std::endl;
 
-        if (param.flag_float_math)
+        switch (fixedImageInfo.GetImageDimensions())
         {
-          switch (fixedImageInfo.GetImageDimensions())
-          {
-          case 2: GreedyRunner<2, float>::Run(param, cl); continue;
-          case 3: GreedyRunner<3, float>::Run(param, cl); continue;
-          case 4: GreedyRunner<4, float>::Run(param, cl); continue;
-          default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-          }
-        }
-        else
-        {
-          switch (fixedImageInfo.GetImageDimensions())
-          {
-          case 2: GreedyRunner<2, double>::Run(param, cl); continue;
-          case 3: GreedyRunner<3, double>::Run(param, cl); continue;
-          case 4: GreedyRunner<4, double>::Run(param, cl); continue;
-          default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-          }
+        case 2: GreedyRunner<2, float>::Run(param, cl); continue;
+        case 3: GreedyRunner<3, float>::Run(param, cl); continue;
+        case 4: GreedyRunner<4, float>::Run(param, cl); continue;
+        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
         }
 
         std::cout << "--> Transformation complete " << std::endl;
