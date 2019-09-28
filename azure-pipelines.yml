@@ -19,11 +19,11 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_windows_1.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_windows_20190928.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_WINDOWS
         restoreKeys: |
-          "bin_windows_1.tar.gz"
+          "bin_windows_20190928.tar.gz"
         continueOnError : true
       displayName: 'Caching'
 
