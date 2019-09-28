@@ -337,8 +337,7 @@ namespace cbica
    if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
    {
      std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
-     //return typename TOutputImageType::New();
-     exit(EXIT_FAILURE);
+     return typename TOutputImageType::New();
    }
    auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
    
