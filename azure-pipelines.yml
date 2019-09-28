@@ -220,7 +220,7 @@ jobs:
     - task: CopyFilesOverSSH@0
       inputs:
         sshEndpoint: cbicaNITRC
-        sourceFolder: CaPTk/bin
+        sourceFolder: $(Build.ArtifactStagingDirectory)
         contents: '*_Installer.*'
         targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
@@ -408,7 +408,7 @@ jobs:
     - task: CopyFilesOverSSH@0
       inputs:
         sshEndpoint: cbicaNITRC
-        sourceFolder: CaPTk/bin
+        sourceFolder: $(Build.ArtifactStagingDirectory)
         contents: '*_Installer.*'
         targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
@@ -647,7 +647,7 @@ jobs:
     - task: CopyFilesOverSSH@0
       inputs:
         sshEndpoint: cbicaNITRC
-        sourceFolder: CaPTk/bin
+        sourceFolder: $(Build.ArtifactStagingDirectory)
         contents: '*_Installer.*'
         targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
