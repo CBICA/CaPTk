@@ -334,7 +334,7 @@ namespace cbica
   template< class TInputImageType, class TOutputImageType >
   typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages)
   {
-   if (TOutputImageType::ImageDimension + 1 != TInputImageType::ImageDimension)
+   if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
    {
      std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
      return typename TOutputImageType::New();
@@ -393,7 +393,7 @@ namespace cbica
    {
      regionIndex[axisToExtract] = i;
      typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
-     auto extractor = typename itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
+     auto extractor = /*typename*/ itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
      extractor->SetExtractionRegion(desiredRegion);
      extractor->SetInput(inputImage);
      if (directionsCollapseIdentity)
