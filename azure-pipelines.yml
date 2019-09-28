@@ -62,6 +62,7 @@ jobs:
         rm -rf *.tar.gz
         # rm CMakeCache.txt
         ls -lt
+        cmake -UPROJECT_VERSION # delete the project version definition
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
 
@@ -287,6 +288,7 @@ jobs:
         mv binaries_linux externalApps
         # rm CMakeCache.txt
         ls -lt
+        cmake -UPROJECT_VERSION # delete the project version definition
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
 
@@ -475,6 +477,7 @@ jobs:
         tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
         ls -lt
+        cmake -UPROJECT_VERSION # delete the project version definition
       displayName: 'Unzip bin if cached'
       condition: eq(variables['CACHE_RESTORED_MAC'], 'true')
 
