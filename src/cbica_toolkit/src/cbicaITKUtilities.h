@@ -337,7 +337,8 @@ namespace cbica
    if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
    {
      std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
-     return typename TOutputImageType::New();
+     //return typename TOutputImageType::New();
+     exit(EXIT_FAILURE);
    }
    auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
    
@@ -346,7 +347,8 @@ namespace cbica
      if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
      {
        std::cerr << "Image Sanity check failed in index '" << N << "'\n";
-       return typename TOutputImageType::New();
+       //return typename TOutputImageType::New();
+       exit(EXIT_FAILURE);
      }
      joinFilter->SetInput(N, inputImages[N]);
    }
