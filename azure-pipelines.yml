@@ -104,9 +104,10 @@ jobs:
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    # - bash: |
-    #     tar cvfz bin_windows.tar.gz_1 bin
-    #   displayName: 'Zipping Superbuild'
+    - bash: |
+        git pull origin master
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
 
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
@@ -327,9 +328,13 @@ jobs:
         ls ./qt/
       displayName: 'Check qt'
 
+    - bash: |
+        git pull origin master
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
+
     # Configure and build CaPTk
     - bash: |
-        git pull
         cd bin
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
@@ -519,7 +524,11 @@ jobs:
       displayName: 'Zipping Superbuild'
 
     - bash: |
-        git pull
+        git pull origin master
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
+
+    - bash: |
         cd bin
 
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
@@ -535,7 +544,7 @@ jobs:
         cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
 
         make -j 2
-      displayName: 'Export variables for llvm then configure and compile CaPTk'
+      displayName: 'Configure and compile CaPTk'
 
     - bash: |
         cd bin
