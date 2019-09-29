@@ -24,7 +24,8 @@ enum AvailableAlgorithms
   P1P2Preprocess,
   BiasCorrectionN3,
   BiasCorrectionN4,
-  SusanDenoisingAlgo
+  SusanDenoisingAlgo,
+  Registration
 };
 
 int requestedAlgorithm = 0;
@@ -158,6 +159,12 @@ int algorithmsRunner()
       );
 
     return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == Registration)
+  {
+    // call the greedy executable here with the proper API. 
+    // see TumorGrowthModelling regarding how it is done there
   }
 
   return EXIT_SUCCESS;
