@@ -175,22 +175,45 @@ int algorithmsRunner()
     std::string dimCommand = "-d " + std::to_string(TImageType::ImageDimension);
     // inputMaskFile;
 
+    if (outputImageFile.empty())
+    {
+      std::cerr << "WARNING: Output filename is not defined; will try to save in input directory.\n";
+      outputImageFile = cbica::getFilenamePath(inputImageFile) + "/registrationOutput.nii.gz";
+    }
     auto outputDir = cbica::getFilenamePath(outputImageFile);
     auto inputFile_base = cbica::getFilenameBase(inputImageFile);
+    auto fixedFile_base = cbica::getFilenameBase(registrationFixedImageFile);
     std::map< std::string, std::string > intermediateFiles;
-    intermediateFiles["Affine"] = outputDir + "/affine_" + registrationMetrics + ".mat";
-    intermediateFiles["Deform"] = outputDir + "/deform_" + registrationMetrics + ".nii.gz";
-    intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + registrationMetrics + ".nii.gz";
-    intermediateFiles["OutputAffine"] = outputDir + "/" + inputFile_base + "_output_affine_" + registrationMetrics + ".nii.gz";
-    intermediateFiles["OutputDeform"] = outputDir + "/" + inputFile_base + "_output_deform" + registrationMetrics + ".nii.gz";
-    intermediateFiles["OutputDeformInv"] = outputDir + "/" + inputFile_base + "_output_deformInv_" + registrationMetrics + ".nii.gz";
+    auto const _registrationMetrics = "_" + registrationMetrics;
+    auto const _registrationMetricsNII = _registrationMetrics + ".nii.gz";
+    auto const _fixedFileTOInputFileBase = fixedFile_base + "TO" + inputFile_base;
+    auto const _inputFileTOFixedFileBase = inputFile_base + "TO" + fixedFile_base;
+    intermediateFiles["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
+    intermediateFiles["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
+    intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+    intermediateFiles["OutputAffine"] = outputDir + "/outputAffine_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
+    intermediateFiles["OutputDeform"] = outputDir + "/outputDeform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
+    intermediateFiles["OutputDeformInv"] = outputDir + "/outputDeform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
 
 
-    if (true)
+    switch (registrationTypeInt)
     {
-
+    case RegistrationTypeEnum::Rigid:
+    {
+      // not going to be defined
+      break;
     }
-    cbica::copyFile()
+    case RegistrationTypeEnum::Affine:
+    {
+      cbica::copyFile(intermediateFiles["OutputAffine"], outputImageFile);
+      break;
+    }
+    default: // we shall always assume deformable
+    {
+      cbica::copyFile(intermediateFiles["OutputDeform"], outputImageFile);
+      break;
+    }
+    }
     // delete all intermediate files if the flag is not set
     if (registrationIntermediate != 1)
     {
@@ -239,7 +262,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
-  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Rigid, Affine or Deformable", "The kind of registration to perform", "Defaults to '" + registrationType, "Can use Mask File");
+  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable", "The kind of registration to perform", "Defaults to '" + registrationType, "Can use Mask File");
   parser.addOptionalParameter("rgF", "regFixed", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration", "Needed for registration");
   parser.addOptionalParameter("rgM", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metris to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
   parser.addOptionalParameter("rgN", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The umber of iterations per level of multi-res", "Defaults to " + registrationIterations);
