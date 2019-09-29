@@ -172,8 +172,30 @@ int algorithmsRunner()
   {
     // call the greedy executable here with the proper API. 
     // see TumorGrowthModelling regarding how it is done there
-    std::string dimCommand = "-d " + std::to_string(TImageType::ImageDimension);
-    // inputMaskFile;
+    std::string greedyCommand = "./greedy" + 
+#if WIN32
+      ".exe" +
+#endif
+      " -d " + std::to_string(TImageType::ImageDimension);
+
+    // add iterations to command
+    std::string iterations;
+    {
+      auto temp = cbica::stringSplit(registrationIterations, ",");
+      iterations += temp[0];
+      for (size_t i = 1; i < temp.size(); i++)
+      {
+        iterations += "x" + temp[i];
+      }
+    }
+
+    greedyCommand += " -n " + iterations;
+
+    // add mask file to command
+    if (cbica::fileExists(inputMaskFile))
+    {
+      greedyCommand += " -mm " + inputMaskFile;
+    }
 
     if (outputImageFile.empty())
     {
@@ -194,16 +216,6 @@ int algorithmsRunner()
     intermediateFiles["OutputAffine"] = outputDir + "/outputAffine_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
     intermediateFiles["OutputDeform"] = outputDir + "/outputDeform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
     intermediateFiles["OutputDeformInv"] = outputDir + "/outputDeform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
-
-    std::string iterations;
-    {
-      auto temp = cbica::stringSplit(registrationIterations, ",");
-      iterations += temp[0];
-      for (size_t i = 1; i < temp.size(); i++)
-      {
-        iterations += "x" + temp[i];
-      }
-    }
 
     switch (registrationTypeInt)
     {
