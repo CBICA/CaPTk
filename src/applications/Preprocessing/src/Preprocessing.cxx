@@ -195,6 +195,15 @@ int algorithmsRunner()
     intermediateFiles["OutputDeform"] = outputDir + "/outputDeform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
     intermediateFiles["OutputDeformInv"] = outputDir + "/outputDeform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
 
+    std::string iterations;
+    {
+      auto temp = cbica::stringSplit(registrationIterations, ",");
+      iterations += temp[0];
+      for (size_t i = 1; i < temp.size(); i++)
+      {
+        iterations += "x" + temp[i];
+      }
+    }
 
     switch (registrationTypeInt)
     {
@@ -214,6 +223,8 @@ int algorithmsRunner()
       break;
     }
     }
+
+
     // delete all intermediate files if the flag is not set
     if (registrationIntermediate != 1)
     {
