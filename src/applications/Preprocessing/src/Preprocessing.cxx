@@ -31,7 +31,7 @@ enum AvailableAlgorithms
 int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile;
-std::string registrationType = "Affine", registrationMetrics = "SSD", registrationIterations = "100,50,5";
+std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "SSD", registrationIterations = "100,50,5";
 int histoMatchQuantiles = 40, histoMatchBins = 100;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15,
 ssSigma = 0.5, ssIntensityThreshold = 80;
@@ -200,7 +200,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
   parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Rigid, Affine or Deformable", "The kind of registration to perform", "Defaults to '" + registrationType, "Can use Mask File");
-  parser.addOptionalParameter("rgF", "regFixed", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration");
+  parser.addOptionalParameter("rgF", "regFixed", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration", "Needed for registration");
   parser.addOptionalParameter("rgM", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metris to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
   parser.addOptionalParameter("rgN", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The umber of iterations per level of multi-res", "Defaults to " + registrationIterations);;
 
@@ -334,6 +334,35 @@ int main(int argc, char** argv)
     if (parser.isPresent("hq"))
     {
       parser.getParameterValue("hq", histoMatchQuantiles);
+    }
+  }
+
+  if (parser.isPresent("reg"))
+  {
+    requestedAlgorithm = Registration;
+    
+    // detect customizations
+    if (!parser.isPresent("rgF"))
+    {
+      std::cerr << "Registration cannot proceed without a fixed image.\n";
+      return EXIT_FAILURE;
+    }
+    else
+    {
+      parser.getParameterValue("rgF", registrationFixedImageFile);
+      if (!cbica::fileExists(registrationFixedImageFile))
+      {
+        std::cerr << "The Fixed Image was not detected, please check file name.\n";
+        return EXIT_FAILURE;
+      }
+    }
+    if (parser.isPresent("rgM"))
+    {
+
+    }
+    if (parser.isPresent("rgN"))
+    {
+
     }
   }
 
