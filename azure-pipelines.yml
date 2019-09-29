@@ -183,6 +183,7 @@ jobs:
         rm -rf scripts
         rm -rf bin_windows_20190928.tar.gz
         rm -rf install_manifest.txt
+        rm -rf CMakeLists.txt
 
         cd bin
         rm -rf *proj*
@@ -387,6 +388,7 @@ jobs:
         rm -rf binaries
         rm -rf scripts
         rm -rf bin_linux_20190928.tar.gz
+        rm -rf CMakeLists.txt
 
         cd bin
 
@@ -629,6 +631,7 @@ jobs:
         rm -rf binaries
         rm -rf scripts
         rm -rf bin_macos_20190928.tar.gz
+        rm -rf CMakeLists.txt
 
         cd bin
         tar cvfz qt.tar.gz qt
