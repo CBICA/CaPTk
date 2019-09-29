@@ -358,11 +358,12 @@ int main(int argc, char** argv)
     }
     if (parser.isPresent("rgM"))
     {
-
+      parser.getParameterValue("rgM", registrationMetrics);
+      std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
     }
     if (parser.isPresent("rgN"))
     {
-
+      parser.getParameterValue("rgN", registrationIterations);
     }
   }
 
