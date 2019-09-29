@@ -31,7 +31,7 @@ enum AvailableAlgorithms
 int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile;
-std::string registrationType = "Affine", registrationMetrics = "SSD";
+std::string registrationType = "Affine", registrationMetrics = "SSD", registrationIterations = "100,50,5";
 int histoMatchQuantiles = 40, histoMatchBins = 100;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15,
 ssSigma = 0.5, ssIntensityThreshold = 80;
@@ -201,8 +201,9 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
   parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Rigid, Affine or Deformable", "The kind of registration to perform", "Defaults to '" + registrationType, "Can use Mask File");
   parser.addOptionalParameter("rgF", "regFixed", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration");
-  parser.addOptionalParameter("rgM", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metris to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)");
-  
+  parser.addOptionalParameter("rgM", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metris to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
+  parser.addOptionalParameter("rgN", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The umber of iterations per level of multi-res", "Defaults to " + registrationIterations);;
+
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
   
   if (parser.isPresent("d"))
