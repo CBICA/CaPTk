@@ -416,10 +416,6 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("rgM", registrationMetrics);
       std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
-      if (registrationMetrics.find("NCC"))
-      {
-        registrationTypeInt = RegistrationTypeEnum::
-      }
     }
     if (parser.isPresent("rgN"))
     {
