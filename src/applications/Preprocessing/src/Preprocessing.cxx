@@ -170,6 +170,12 @@ int algorithmsRunner()
   return EXIT_SUCCESS;
 }
 
+//! specific implementations for the 4D images, here the images are essentially treated as series images
+template< >
+int algorithmsRunner< itk::Image< float, 4 > >()
+{
+  // 4D series image stuff goes here
+}
 
 int main(int argc, char** argv)
 {
