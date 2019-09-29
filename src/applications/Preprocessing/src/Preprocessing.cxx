@@ -199,7 +199,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
-  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Rigid, Affine or Deformable", "The kind of registration to perform", "Defaultst to '" + registrationType);
+  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Rigid, Affine or Deformable", "The kind of registration to perform", "Defaults to '" + registrationType);
+  parser.addOptionalParameter("rgF", "regFixed", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration");
   
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
   
