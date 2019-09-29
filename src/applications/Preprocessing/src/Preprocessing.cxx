@@ -165,6 +165,19 @@ int algorithmsRunner()
   {
     // call the greedy executable here with the proper API. 
     // see TumorGrowthModelling regarding how it is done there
+    std::string dimCommand = "-d " + std::to_string(TImageType::ImageDimension);
+    // inputMaskFile;
+
+    auto outputDir = cbica::getFilenamePath(outputImageFile);
+    auto inputFile_base = cbica::getFilenameBase(inputImageFile);
+    std::map< std::string, std::string > intermediateFiles;
+    intermediateFiles["Affine"] = outputDir + "/affine_" + registrationMetrics + ".mat";
+    intermediateFiles["Deform"] = outputDir + "/deform_" + registrationMetrics + ".nii.gz";
+    intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + registrationMetrics + ".nii.gz";
+    intermediateFiles["FinalAffine"] = outputDir + "/" + inputFile_base + "_output_affine_pat2atl_noMask_" + registrationMetrics + ".nii.gz";
+    std::string finalOutput = outputDir + "/" + inputFile_base + "_output_pat2atl_noMask_" + registrationMetrics + ".nii.gz";
+    std::string finalOutput_Inv = outputDir + "/" + inputFile_base + "_output_atl2pat_noMask_" + registrationMetrics + ".nii.gz";
+
   }
 
   return EXIT_SUCCESS;
