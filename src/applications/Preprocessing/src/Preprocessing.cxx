@@ -28,11 +28,18 @@ enum AvailableAlgorithms
   Registration
 };
 
+// helper enum to make things smoother
+enum RegistrationTypeEnum
+{
+  Rigid, Affine, Deformable
+};
+
 int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile;
 std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "SSD", registrationIterations = "100,50,5";
-int histoMatchQuantiles = 40, histoMatchBins = 100, registrationIntermediate = 0;
+
+int histoMatchQuantiles = 40, histoMatchBins = 100, registrationIntermediate = 0, registrationTypeInt;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15,
 ssSigma = 0.5, ssIntensityThreshold = 80;
 int n3Bias_iterations = 50, n3Bias_fittingLevels = 4, n3Bias_otsuBins = 200, ssRadius = 1;
@@ -179,6 +186,11 @@ int algorithmsRunner()
     intermediateFiles["OutputDeformInv"] = outputDir + "/" + inputFile_base + "_output_deformInv_" + registrationMetrics + ".nii.gz";
 
 
+    if (true)
+    {
+
+    }
+    cbica::copyFile()
     // delete all intermediate files if the flag is not set
     if (registrationIntermediate != 1)
     {
@@ -369,6 +381,21 @@ int main(int argc, char** argv)
   if (parser.isPresent("reg"))
   {
     requestedAlgorithm = Registration;
+
+    parser.getParameterValue("reg", registrationType);
+    std::transform(registrationType.begin(), registrationType.end(), registrationType.begin(), ::toupper);
+    if (registrationType.find("RIGID"))
+    {
+      registrationTypeInt = RegistrationTypeEnum::Rigid;
+    }
+    else if (registrationType.find("AFFINE"))
+    {
+      registrationTypeInt = RegistrationTypeEnum::Affine;
+    }
+    else // default case
+    {
+      registrationTypeInt = RegistrationTypeEnum::Deformable;
+    }
     
     // detect customizations
     if (!parser.isPresent("rgF"))
@@ -389,6 +416,10 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("rgM", registrationMetrics);
       std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
+      if (registrationMetrics.find("NCC"))
+      {
+        registrationTypeInt = RegistrationTypeEnum::
+      }
     }
     if (parser.isPresent("rgN"))
     {
