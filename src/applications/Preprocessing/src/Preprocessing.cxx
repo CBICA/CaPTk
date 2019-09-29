@@ -441,13 +441,13 @@ int main(int argc, char** argv)
 
     break;
   }
-  //case 4:
-  //{
-  //  using ImageType = itk::Image< float, 4 >;
-  //  return algorithmsRunner< ImageType >();
+  case 4:
+  {
+    using ImageType = itk::Image< float, 4 >;
+    return algorithmsRunner< ImageType >();
 
-  //  break;
-  //}
+    break;
+  }
   default:
     std::cerr << "Supplied image has an unsupported dimension of '" << inputImageInfo.GetImageDimensions() << "'; only 2 and 3 D images are supported.\n";
     return EXIT_FAILURE; // exiting here because no further processing should be done on the image
