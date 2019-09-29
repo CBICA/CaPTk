@@ -193,8 +193,9 @@ jobs:
         rm -rf qt
         rm -rf externalApps
         rm -rf _CPack*
+        rm -rf CMakeCache.txt
 
-        cmake -UPROJECT_VERSION # delete the project version definition
+        # cmake -UPROJECT_VERSION # delete the project version definition
         
         cd ../
 
@@ -395,8 +396,9 @@ jobs:
         rm -rf qt
         rm -rf externalApps
         rm -rf _CPack*
+        rm -rf CMakeCache.txt
 
-        cmake -UPROJECT_VERSION # delete the project version definition
+        # cmake -UPROJECT_VERSION # delete the project version definition
         
         cd ../
 
@@ -635,8 +637,9 @@ jobs:
         rm -rf qt
         rm -rf externalApps
         rm -rf _CPack*
+        rm -rf CMakeCache.txt
         
-        cmake -UPROJECT_VERSION # delete the project version definition
+        # cmake -UPROJECT_VERSION # delete the project version definition
         
         cd ../
         # ls
