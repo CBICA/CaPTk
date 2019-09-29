@@ -106,7 +106,7 @@ jobs:
 
     - bash: |
         git pull origin master
-        git log
+        git log -1
         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
       displayName: 'Testing git pull and version'
 
@@ -333,7 +333,7 @@ jobs:
 
     - bash: |
         git pull origin master
-        git log
+        git log -1
         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
       displayName: 'Testing git pull and version'
 
@@ -531,7 +531,7 @@ jobs:
 
     - bash: |
         git pull origin master
-        git log
+        git log -1
         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
       displayName: 'Testing git pull and version'
 
