@@ -178,6 +178,15 @@ int algorithmsRunner()
     intermediateFiles["OutputDeform"] = outputDir + "/" + inputFile_base + "_output_deform" + registrationMetrics + ".nii.gz";
     intermediateFiles["OutputDeformInv"] = outputDir + "/" + inputFile_base + "_output_deformInv_" + registrationMetrics + ".nii.gz";
 
+
+    // delete all intermediate files if the flag is not set
+    if (registrationIntermediate != 1)
+    {
+      for (auto it = intermediateFiles.begin(); it != intermediateFiles.end(); ++it)
+      {
+        std::remove(it->second.c_str());
+      }
+    }
   }
 
   return EXIT_SUCCESS;
