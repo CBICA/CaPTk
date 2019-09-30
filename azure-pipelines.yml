@@ -212,17 +212,18 @@ jobs:
         pwd
 
       displayName: 'Disk space check'
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Windows'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Windows'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
+
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
 
     - task: CopyFilesOverSSH@0
       inputs:
@@ -410,17 +411,17 @@ jobs:
         tar cvfz bin_linux_20190929.tar.gz bin_linux
       displayName: 'Zipping bin'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_Linux'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_Linux'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
 
     - task: CopyFilesOverSSH@0
       inputs:
@@ -653,6 +654,7 @@ jobs:
         # ls
         tar cvfz bin_macos_20190929.tar.gz bin_macos
       displayName: 'Zipping bin'
+      
     #- script: |
     #    cd bin
     #    export GIT_LFS_SKIP_SMUDGE=1
@@ -660,17 +662,17 @@ jobs:
     #    make tests
     #  displayName: 'Performing the Tests'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
 
     - task: CopyFilesOverSSH@0
       inputs:
