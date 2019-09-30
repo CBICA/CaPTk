@@ -172,7 +172,7 @@ int algorithmsRunner()
   {
     // call the greedy executable here with the proper API. 
     // see TumorGrowthModelling regarding how it is done there
-    std::string greedyCommand = "./greedy" + 
+    std::string greedyCommand = cbica::getExecutablePath() + "greedy" + 
 #if WIN32
       ".exe" +
 #endif
@@ -255,6 +255,7 @@ template< >
 int algorithmsRunner< itk::Image< float, 4 > >()
 {
   // 4D series image stuff goes here
+  return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)
