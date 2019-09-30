@@ -1,3 +1,6 @@
 [submodule "src/applications/Utilities/dcmqi"]
 	path = src/applications/Utilities/dcmqi
 	url = https://github.com/CBICA/dcmqi.git
+[submodule "src/applications/Preprocessing/greedy"]
+	path = src/applications/Preprocessing/greedy
+	url = https://github.com/CBICA/greedy.git
