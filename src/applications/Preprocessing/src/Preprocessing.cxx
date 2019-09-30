@@ -329,6 +329,37 @@ int algorithmsRunner()
         return EXIT_FAILURE;
       }
 
+      auto outputImageFileInv = outputImageFile;
+      {
+        std::string path, base, ext;
+        cbica::splitFileName(outputImageFileInv, path, base, ext);
+        outputImageFileInv = cbica::normPath(path + "/" + base + "_inv" + ext);
+      }
+      if (registrationSegmentationMoving)
+      {
+        commandToCall = greedyPathAndDim +
+          " -rf " + registrationFixedImageFile +
+          " -rm " + inputImageFile +
+          " " + outputImageFileInv +
+          " -ri NN -r " + intermediateFiles["DeformInv"] +
+          " " + intermediateFiles["Affine"] + ",-1";
+      }
+      else
+      {
+        commandToCall = greedyPathAndDim +
+          " -rf " + registrationFixedImageFile +
+          " -rm " + inputImageFile +
+          " " + outputImageFileInv +
+          " -ri LABEL 0.2vox -r " + intermediateFiles["DeformInv"] +
+          " " + intermediateFiles["Affine"] + ",-1";
+      }
+
+      if (std::system(commandToCall.c_str()) != 0)
+      {
+        std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
+        return EXIT_FAILURE;
+      }
+
       break;
     }
     }
