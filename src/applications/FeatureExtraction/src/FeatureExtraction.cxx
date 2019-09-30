@@ -157,13 +157,13 @@ void algorithmRunner()
 
   if (debug)
   {
-    std::cout << "[DEBUG] All configuration tests have passed, setting up the FE class based on the following parameters:\n"; 
-    std::cout << "[DEBUG] Patient ID: " << patient_id << "\n";
-    std::cout << "[DEBUG] Images    : " << image_path_string << "\n";
-    std::cout << "[DEBUG] Modalities: " << modalities_string << "\n";
-    std::cout << "[DEBUG] Mask File : " << maskfilename << "\n";
-    std::cout << "[DEBUG] ROI Values: " << selected_roi_string << "\n";
-    std::cout << "[DEBUG] ROI Labels: " << roi_labels_string << "\n";
+    //std::cout << "[DEBUG] All configuration tests have passed, setting up the FE class based on the following parameters:\n"; 
+    //std::cout << "[DEBUG] Patient ID: " << patient_id << "\n";
+    //std::cout << "[DEBUG] Images    : " << image_path_string << "\n";
+    //std::cout << "[DEBUG] Modalities: " << modalities_string << "\n";
+    //std::cout << "[DEBUG] Mask File : " << maskfilename << "\n";
+    //std::cout << "[DEBUG] ROI Values: " << selected_roi_string << "\n";
+    //std::cout << "[DEBUG] ROI Labels: " << roi_labels_string << "\n";
     std::cout << "[DEBUG] Param File: " << param_file << "\n";
   }
 

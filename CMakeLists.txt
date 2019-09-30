@@ -13,7 +13,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 3.nonRelease.20190920 )
+SET( PROJECT_VERSION_PATCH 3.nonRelease.20190930 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -44,6 +44,7 @@ INCLUDE( CaPTk_macros )
 #SET (SVN_REVISION "${SVN_REVISION}")
 
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
+SET( BUILD_CLAIRE OFF CACHE BOOL "Do you want to build CLAIRE (this changes the Superbuild)?" )
 
 SET( QT_VERSION_ACTUAL "5.12.1" )
 if(UNIX)
@@ -58,7 +59,7 @@ if(UNIX)
 endif()
 
 SET( QT_VERSION ${QT_VERSION_ACTUAL} CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
-SET( OPENCV_VERSION "3.4.5" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
+SET( OPENCV_VERSION "3.4.7" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
 
 SET(CAPTK_BUILD_DIR "${PROJECT_BINARY_DIR}" CACHE STRING "CaPTk build directory" FORCE )
 ADD_DEFINITIONS(-DCAPTK_BUILD_DIR="${PROJECT_BINARY_DIR}")
@@ -155,6 +156,7 @@ MARK_AS_ADVANCED(BUILD_DOCUMENTATION)
 MARK_AS_ADVANCED(BUILD_DOCUMENTATION_ONLY)
 IF( BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_DOCUMENTATION ON )
+  SET( CAPTK_UPDATE_DOCS ON ) #in this case, the HTML files are updated all the time 
 ENDIF()
 IF( BUILD_DOCUMENTATION )
   ADD_SUBDIRECTORY( docs_sources )
@@ -201,6 +203,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
   MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
+
+  MESSAGE( AUTHOR_WARNING "=== [DEBUG] Building CaPTk version=${PROJECT_VERSION}" )
   
   SET( CMAKE_COLOR_MAKEFILE ON )
   # option to compile only the viewer

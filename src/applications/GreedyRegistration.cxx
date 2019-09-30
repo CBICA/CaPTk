@@ -13,10 +13,6 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 */
 
-#include "cbicaCmdParser.h"
-#include "cbicaLogging.h"
-#include "cbicaITKSafeImageIO.h"
-#include "cbicaUtilities.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 //#include "GreedyRegistration.h"
@@ -32,6 +28,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include <string>
 #include <algorithm>
 #include <cerrno>
+#include <chrono>
 
 #include "lddmm_common.h"
 #include "lddmm_data.h"
@@ -51,6 +48,11 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include <vnl/vnl_trace.h>
 
 #include "cbicaITKImageInfo.h"
+#include "cbicaITKUtilities.h"
+#include "cbicaCmdParser.h"
+#include "cbicaLogging.h"
+#include "cbicaITKSafeImageIO.h"
+#include "cbicaUtilities.h"
 
 
 std::string inputImageFile, outputImageFile, targetImageFile, matrix, fixedImage, inputFileString, outputFileString;
@@ -62,10 +64,178 @@ template <unsigned int VDim, typename TReal>
 class GreedyRunner
 {
 public:
-  static int Run(GreedyParameters &param)
+  static int Run(GreedyParameters &param, CommandLineHelper &clHelper)
   {
-    GreedyApproach<VDim, TReal> greedy;
-    return greedy.Run(param);
+    // we go with the normal registration for non 4D images
+    auto movingImageInfo = cbica::ImageInfo(inputImageFiles[0]);
+    if (movingImageInfo.GetImageDimensions() != 4)
+    {
+      GreedyApproach<VDim, TReal> greedy;
+      return greedy.Run(param);
+    }
+    else
+    {
+      /// this approach will take a *very* round-about way to work
+      /// instead, we should add Greedy as a submodule and then use
+      /// the greedy executable to do all the things that are needed
+
+      if (param.mode == GreedyParameters::RESLICE)
+      {
+        std::cerr << "This condition should not come up at all.\n";
+        exit(EXIT_FAILURE);
+      }
+      // conditions to work on:
+      // movingImage = 4D && fixedImage == 4D
+      // movingImage = 4D && fixedImage == 3D
+      using TMovingImageType = itk::Image< TReal, 4 >;
+      using TMovingExtractedImageType = itk::Image< TReal, 3 >;
+
+      auto temporaryDataDir = cbica::createTemporaryDirectory();
+
+      // this is the image we will use to register everything
+      auto fixedImageForRegistering_file = cbica::normPath(temporaryDataDir + "/fixedImage.nii.gz");
+      
+      if (VDim == 4)
+      {
+        std::cout << "A 4D moving image was detected; the first in the series will be used as fixed image template.\n";
+        auto tempFixedExtracted = 
+          cbica::GetExtractedImages< TMovingImageType, TMovingExtractedImageType >(
+          cbica::ReadImage< TMovingImageType >(fixedImage)
+          );
+
+        cbica::WriteImage< TMovingExtractedImageType >(tempFixedExtracted[0], fixedImageForRegistering_file);
+      }
+      else
+      {
+        std::cout << ":::[DEBUG] Checking which one works quicker/better: the best one should be chosen and this code pruned.\n";
+        std::cout << ":::======= Using the cbica::copyFile function took ";
+        auto copy_start = std::chrono::steady_clock::now();
+        if (!cbica::copyFile(fixedImage, fixedImageForRegistering_file))
+        {
+          std::cerr << "Something went wrong with copying the fixedImage.\n";
+          exit(EXIT_FAILURE);
+        }
+        auto copy_end = std::chrono::steady_clock::now();
+        std::cout << 
+          float(
+            std::chrono::duration_cast<std::chrono::milliseconds>(copy_end - copy_start).count()
+            ) / 1000.0 << " seconds.\n";
+
+        std::cout << ":::======= Using ITK Read -> Write function took ";
+        auto io_start = std::chrono::steady_clock::now();
+        cbica::WriteImage< TMovingExtractedImageType >(
+          cbica::ReadImage< TMovingExtractedImageType >(fixedImage), fixedImageForRegistering_file);
+        auto io_end = std::chrono::steady_clock::now();
+        std::cout <<
+          float(
+            std::chrono::duration_cast<std::chrono::milliseconds>(io_end - io_start).count()
+            ) / 1000.0 << " seconds.\n";
+      }
+
+      // looping through all the moving images
+      for (size_t totalMovingImages = 0; totalMovingImages < inputImageFiles.size(); totalMovingImages++)
+      {
+        // GreedyRegistration -reg -trf -i moving.nii.gz -f fixed.nii.gz 
+        // -o output.nii.gz -t matrix.mat -a -m MI -n 100x50x5",
+
+        // move all extracted images to a single structure that keeps getting overwritten to conserve memory
+        auto movingImagePointers_extracted = 
+          cbica::GetExtractedImages< TMovingImageType, TMovingExtractedImageType >(
+            cbica::ReadImage< TMovingImageType >(inputImageFiles[totalMovingImages])
+            );
+
+        std::vector< typename TMovingExtractedImageType::Pointer > movingImagePointers_extracted_registered;
+        movingImagePointers_extracted_registered.resize(movingImagePointers_extracted.size());
+
+        std::vector< std::string > movingImageExtracted_files, movingImageExtracted_output_files;
+        movingImageExtracted_files.resize(movingImagePointers_extracted.size());
+        movingImageExtracted_output_files.resize(movingImagePointers_extracted.size());
+
+        for (size_t extractedImages = 0;
+          extractedImages < movingImagePointers_extracted.size();
+          extractedImages++)
+        {
+          movingImageExtracted_files[extractedImages] =
+            cbica::normPath(temporaryDataDir + "/movingImageExtracted_" + 
+              std::to_string(extractedImages) + ".nii.gz");
+
+          movingImageExtracted_output_files[extractedImages] =
+            cbica::normPath(temporaryDataDir + "/movingImageExtractedOutput_" +
+              std::to_string(extractedImages) + ".nii.gz");
+
+          // write out the all the images in the series
+          cbica::WriteImage< TMovingExtractedImageType >(
+            movingImagePointers_extracted[extractedImages], 
+            movingImageExtracted_files[extractedImages]);
+        }
+
+        // the assumption here is that in a single 4D series, the images inside will be co-registered
+        param.output = matrixImageFiles[totalMovingImages];
+
+        param.inputs.clear(); // remove whatever was done previously
+        ImagePairSpec ip;
+        ip.weight = 1.0; // this is always hard-coded in any case
+        ip.fixed = fixedImageForRegistering_file;
+        ip.moving = movingImageExtracted_files[0]; // something to write 
+        param.inputs.push_back(ip);
+
+        GreedyApproach< 3, TReal > greedy; // the registration is always run on 3D images at this point
+        return greedy.Run(param);
+
+        // at this point, the transformation matrix is already present and we just need to apply it
+
+        param.reslice_param.ref_image = fixedImageForRegistering_file;
+        param.mode = GreedyParameters::RESLICE;
+
+        TransformSpec spec;
+        ResliceSpec reslice;
+        InterpSpec interp_current;
+
+        param.reslice_param.transforms.clear();
+        param.reslice_param.images.clear();
+
+        for (size_t extractedImages = 0; 
+          extractedImages < movingImagePointers_extracted.size(); 
+          extractedImages++)
+        {
+          reslice.interp = interp_current;
+          reslice.moving = movingImageExtracted_files[extractedImages];
+          reslice.output = movingImageExtracted_output_files[extractedImages];
+
+          param.reslice_param.images.push_back(reslice);
+
+          if (!cbica::fileExists(matrixImageFiles[totalMovingImages]))
+          {
+            std::cerr << "Something went wrong while registering the first image; the registration will stop.\n";
+            exit(EXIT_FAILURE);
+          }
+          spec = clHelper.read_transform_spec(matrixImageFiles[totalMovingImages]);
+
+          param.reslice_param.transforms.push_back(spec);
+
+          GreedyApproach< 3, TReal > greedy_reslicer; // here, we do the reslicing
+          return greedy_reslicer.Run(param);
+          
+          if (cbica::fileExists(movingImageExtracted_output_files[extractedImages]))
+          {
+            // now, put the registered images in the vector to combine in the next step
+            movingImagePointers_extracted_registered[extractedImages] =
+              cbica::ReadImage< TMovingExtractedImageType >(
+                movingImageExtracted_output_files[extractedImages]);
+          }
+        }
+
+        // now, let's join these guys together and write the combined thing out
+        auto joinedImage = cbica::GetJoinedImage< TMovingExtractedImageType, TMovingImageType >(
+          movingImagePointers_extracted_registered
+          );
+        cbica::WriteImage< TMovingImageType >(joinedImage, outputImageFiles[totalMovingImages]);
+      }
+
+      cbica::deleteDir(temporaryDataDir); // ensure all temporary data gets deleted
+      std::cout << "Finished registration.\n";
+      exit(EXIT_SUCCESS);
+    }
   }
 };
 
@@ -153,6 +323,9 @@ int main(int argc, char** argv)
       );
     fixedImage = tempFolderLocation + "/tempDicomConverted_fixed.nii.gz";
   }
+
+  auto movingImageInfo_first = cbica::ImageInfo(inputImageFiles[0]);
+
   for (int i = 0; i < inputImageFiles.size(); i++)
   {
 
@@ -288,35 +461,33 @@ int main(int argc, char** argv)
       auto fixedImageInfo = cbica::ImageInfo(fixedImage);
       auto movingImageInfo = cbica::ImageInfo(inputImageFiles[i]);
 
-      if (fixedImageInfo.GetImageDimensions() != movingImageInfo.GetImageDimensions())
+      // do not perform dimension sanity check for 4D moving image
+      if (movingImageInfo.GetImageDimensions() != 4)
       {
-        std::cerr << "--> Image dimensions do not match." << std::endl;
-        return EXIT_FAILURE;
+        if (fixedImageInfo.GetImageDimensions() != movingImageInfo.GetImageDimensions())
+        {
+          std::cerr << "--> Image dimensions between the Moving and Fixed image do not match.\n";
+          return EXIT_FAILURE;
+        }
       }
       else
       {
-        param.dim = fixedImageInfo.GetImageDimensions();
+        if (movingImageInfo_first.GetImageDimensions() != movingImageInfo.GetImageDimensions())
+        {
+          std::cerr << "--> Image dimensions between the different Movin Images do not match.\n";
+          return EXIT_FAILURE;
+        }
       }
 
-      if (param.flag_float_math)
+      param.dim = fixedImageInfo.GetImageDimensions();
+      param.flag_float_math = true; // we will not do double
+
+      switch (fixedImageInfo.GetImageDimensions())
       {
-        switch (fixedImageInfo.GetImageDimensions())
-        {
-        case 2: GreedyRunner<2, float>::Run(param); break;
-        case 3: GreedyRunner<3, float>::Run(param); break;
-        case 4: GreedyRunner<4, float>::Run(param); break;
-        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-        }
-      }
-      else
-      {
-        switch (fixedImageInfo.GetImageDimensions())
-        {
-        case 2: GreedyRunner<2, double>::Run(param); break;
-        case 3: GreedyRunner<3, double>::Run(param); break;
-        case 4: GreedyRunner<4, double>::Run(param); break;
-        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-        }
+      case 2: GreedyRunner<2, float>::Run(param, cl); break;
+      case 3: GreedyRunner<3, float>::Run(param, cl); break;
+      case 4: GreedyRunner<4, float>::Run(param, cl); break;
+      default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
       }
 
       std::cout << "--> Finished registration.\n";
@@ -398,25 +569,12 @@ int main(int argc, char** argv)
 
         std::cout << "--> Applied transformation to moving image: " << outputImageFiles[i] << std::endl;
 
-        if (param.flag_float_math)
+        switch (fixedImageInfo.GetImageDimensions())
         {
-          switch (fixedImageInfo.GetImageDimensions())
-          {
-          case 2: GreedyRunner<2, float>::Run(param); continue;
-          case 3: GreedyRunner<3, float>::Run(param); continue;
-          case 4: GreedyRunner<4, float>::Run(param); continue;
-          default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-          }
-        }
-        else
-        {
-          switch (fixedImageInfo.GetImageDimensions())
-          {
-          case 2: GreedyRunner<2, double>::Run(param); continue;
-          case 3: GreedyRunner<3, double>::Run(param); continue;
-          case 4: GreedyRunner<4, double>::Run(param); continue;
-          default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-          }
+        case 2: GreedyRunner<2, float>::Run(param, cl); continue;
+        case 3: GreedyRunner<3, float>::Run(param, cl); continue;
+        case 4: GreedyRunner<4, float>::Run(param, cl); continue;
+        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
         }
 
         std::cout << "--> Transformation complete " << std::endl;
