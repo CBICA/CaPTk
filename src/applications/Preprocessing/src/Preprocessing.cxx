@@ -172,11 +172,13 @@ int algorithmsRunner()
   {
     // call the greedy executable here with the proper API. 
     // see TumorGrowthModelling regarding how it is done there
-    std::string greedyCommand = cbica::getExecutablePath() + "greedy" + 
+    std::string greedyPathAndDim = cbica::getExecutablePath() + "greedy" + 
 #if WIN32
       ".exe" +
 #endif
       " -d " + std::to_string(TImageType::ImageDimension);
+
+    std::string commonCommands; // put all the common things for the affine/deform/reslice in single place
 
     // add iterations to command
     std::string iterations;
@@ -189,16 +191,16 @@ int algorithmsRunner()
       }
     }
 
-    greedyCommand += " -n " + iterations;
+    commonCommands += " -n " + iterations;
 
     // add mask file to command
     if (cbica::fileExists(inputMaskFile))
     {
-      greedyCommand += " -mm " + inputMaskFile;
+      commonCommands += " -mm " + inputMaskFile;
     }
 
     // add the fixed and moving files
-    greedyCommand += " -i " + registrationFixedImageFile + " " + inputImageFile;
+    commonCommands += " -i " + registrationFixedImageFile + " " + inputImageFile;
 
     std::string metricsCommand = " -m ";
     if (registrationMetrics.find("NCC") != std::string::npos)
@@ -231,8 +233,21 @@ int algorithmsRunner()
     intermediateFiles["OutputDeform"] = outputDir + "/outputDeform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
     intermediateFiles["OutputDeformInv"] = outputDir + "/outputDeform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
 
-    // call greedy here
-
+    std::string commandToCall = greedyPathAndDim +
+      commonCommands +
+      metricsCommand +
+      " -ia-image-centers " + intermediateFiles["Affine"];
+      ;
+    if (debugMode)
+    {
+      std::cout << "Starting Affine registration.\n";
+    }
+    if (std::system(commandToCall.c_str()) != 0)
+    {
+      std::cerr << "Something went wrong when calling Greedy Affine.\n";
+      return EXIT_FAILURE;
+    }
+    
     switch (registrationTypeInt)
     {
     case RegistrationTypeEnum::Rigid:
@@ -247,6 +262,23 @@ int algorithmsRunner()
     }
     default: // we shall always assume deformable
     {
+      if (debugMode)
+      {
+        std::cout << "Starting Deformable registration.\n";
+      }
+      commandToCall = greedyPathAndDim +
+        commonCommands +
+        metricsCommand +
+        " -it " + intermediateFiles["Affine"] +
+        " -o " + intermediateFiles["Deform"] +
+        " -oinv " + intermediateFiles["DeformInv"];
+
+      if (std::system(commandToCall.c_str()) != 0)
+      {
+        std::cerr << "Something went wrong when calling Greedy Deformable.\n";
+        return EXIT_FAILURE;
+      }
+
       cbica::copyFile(intermediateFiles["OutputDeform"], outputImageFile);
       break;
     }
