@@ -260,7 +260,29 @@ int algorithmsRunner()
     }
     case RegistrationTypeEnum::Affine:
     {
-      cbica::copyFile(intermediateFiles["OutputAffine"], outputImageFile);
+      if (registrationSegmentationMoving)
+      {
+        commandToCall = greedyPathAndDim +
+          " -rf " + registrationFixedImageFile +
+          " -rm " + inputImageFile +
+          " " + outputImageFile +
+          " -ri NN -r " + intermediateFiles["Affine"];
+      }
+      else
+      {
+        commandToCall = greedyPathAndDim +
+          " -rf " + registrationFixedImageFile +
+          " -rm " + inputImageFile +
+          " " + outputImageFile +
+          " -ri LABEL 0.2vox -r " + intermediateFiles["Affine"];
+      }
+
+      if (std::system(commandToCall.c_str()) != 0)
+      {
+        std::cerr << "Something went wrong when calling Greedy Reslice Affine.\n";
+        return EXIT_FAILURE;
+      }
+
       break;
     }
     default: // we shall always assume deformable
@@ -282,7 +304,31 @@ int algorithmsRunner()
         return EXIT_FAILURE;
       }
 
-      cbica::copyFile(intermediateFiles["OutputDeform"], outputImageFile);
+      if (registrationSegmentationMoving)
+      {
+        commandToCall = greedyPathAndDim +
+          " -rf " + registrationFixedImageFile +
+          " -rm " + inputImageFile +
+          " " + outputImageFile +
+          " -ri NN -r " + intermediateFiles["Deform"] + 
+          " " + intermediateFiles["Affine"];
+      }
+      else
+      {
+        commandToCall = greedyPathAndDim +
+          " -rf " + registrationFixedImageFile +
+          " -rm " + inputImageFile +
+          " " + outputImageFile +
+          " -ri LABEL 0.2vox -r " + intermediateFiles["Deform"] +
+          " " + intermediateFiles["Affine"];
+      }
+
+      if (std::system(commandToCall.c_str()) != 0)
+      {
+        std::cerr << "Something went wrong when calling Greedy Reslice Deform.\n";
+        return EXIT_FAILURE;
+      }
+
       break;
     }
     }
