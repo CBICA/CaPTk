@@ -33,8 +33,8 @@ jobs:
 
     # submodule 
     - bash: |
-        git submodule init
-        git submodule update
+        git submodule update --recursive --remote
+        ls src/applications/Preprocessing/greedy
       displayName: 'Git Submodule Init and Update'
 
     # # Pull LFS
@@ -265,8 +265,8 @@ jobs:
 
     # submodule 
     - bash: |
-        git submodule init
-        git submodule update
+        git submodule update --recursive --remote
+        ls src/applications/Preprocessing/greedy
       displayName: 'Git Submodule Init and Update'
 
     # # Pull LFS
@@ -463,8 +463,8 @@ jobs:
 
     # submodule 
     - bash: |
-        git submodule init
-        git submodule update
+        git submodule update --recursive --remote
+        ls src/applications/Preprocessing/greedy
       displayName: 'Git Submodule Init and Update'
 
     # - bash: |
