@@ -39,7 +39,9 @@ int requestedAlgorithm = 0;
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile;
 std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "SSD", registrationIterations = "100,50,5";
 
-int histoMatchQuantiles = 40, histoMatchBins = 100, registrationIntermediate = 0, registrationTypeInt;
+int histoMatchQuantiles = 40, histoMatchBins = 100,
+registrationTypeInt;
+bool registrationIntermediate = false, registrationSegmentationMoving = false;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15,
 ssSigma = 0.5, ssIntensityThreshold = 80;
 int n3Bias_iterations = 50, n3Bias_fittingLevels = 4, n3Bias_otsuBins = 200, ssRadius = 1;
@@ -233,6 +235,7 @@ int algorithmsRunner()
     intermediateFiles["OutputDeform"] = outputDir + "/outputDeform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
     intermediateFiles["OutputDeformInv"] = outputDir + "/outputDeform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
 
+    // we always do affine
     std::string commandToCall = greedyPathAndDim +
       commonCommands +
       metricsCommand +
@@ -334,10 +337,11 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
   parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable", "The kind of registration to perform", "Defaults to '" + registrationType, "Can use Mask File");
-  parser.addOptionalParameter("rgF", "regFixed", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration", "Needed for registration");
-  parser.addOptionalParameter("rgM", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metris to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
-  parser.addOptionalParameter("rgN", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The umber of iterations per level of multi-res", "Defaults to " + registrationIterations);
-  parser.addOptionalParameter("rgS", "regSave", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the intermediate files are to be saved or not", "Defaults to " + std::to_string(registrationIntermediate));
+  parser.addOptionalParameter("rFI", "regFixedImg", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration", "Needed for registration");
+  parser.addOptionalParameter("rME", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metris to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
+  parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The umber of iterations per level of multi-res", "Defaults to " + registrationIterations);
+  parser.addOptionalParameter("rIS", "regInterSave", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the intermediate files are to be saved or not", "Defaults to " + std::to_string(registrationIntermediate));
+  parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
 
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
   
@@ -492,28 +496,36 @@ int main(int argc, char** argv)
     }
     
     // detect customizations
-    if (!parser.isPresent("rgF"))
+    if (!parser.isPresent("rFI"))
     {
       std::cerr << "Registration cannot proceed without a fixed image.\n";
       return EXIT_FAILURE;
     }
     else
     {
-      parser.getParameterValue("rgF", registrationFixedImageFile);
+      parser.getParameterValue("rFI", registrationFixedImageFile);
       if (!cbica::fileExists(registrationFixedImageFile))
       {
         std::cerr << "The Fixed Image was not detected, please check file name.\n";
         return EXIT_FAILURE;
       }
     }
-    if (parser.isPresent("rgM"))
+    if (parser.isPresent("rME"))
     {
-      parser.getParameterValue("rgM", registrationMetrics);
+      parser.getParameterValue("rME", registrationMetrics);
       std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
     }
-    if (parser.isPresent("rgN"))
+    if (parser.isPresent("rNI"))
     {
-      parser.getParameterValue("rgN", registrationIterations);
+      parser.getParameterValue("rNI", registrationIterations);
+    }
+    if (parser.isPresent("rIS"))
+    {
+      parser.getParameterValue("rIS", registrationIntermediate);
+    }
+    if (parser.isPresent("rSg"))
+    {
+      parser.getParameterValue("rSg", registrationSegmentationMoving);
     }
   }
 
