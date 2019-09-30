@@ -197,6 +197,20 @@ int algorithmsRunner()
       greedyCommand += " -mm " + inputMaskFile;
     }
 
+    // add the fixed and moving files
+    greedyCommand += " -i " + registrationFixedImageFile + " " + inputImageFile;
+
+    std::string metricsCommand = " -m ";
+    if (registrationMetrics.find("NCC") != std::string::npos)
+    {
+      // convert 'NCC-AxBxC' to 'NCC AxBxC' for Greedy's API
+      metricsCommand += cbica::stringReplace(registrationMetrics, "-", " ");
+    }
+    else
+    {
+      metricsCommand += registrationMetrics;
+    }
+
     if (outputImageFile.empty())
     {
       std::cerr << "WARNING: Output filename is not defined; will try to save in input directory.\n";
@@ -217,6 +231,8 @@ int algorithmsRunner()
     intermediateFiles["OutputDeform"] = outputDir + "/outputDeform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
     intermediateFiles["OutputDeformInv"] = outputDir + "/outputDeform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
 
+    // call greedy here
+
     switch (registrationTypeInt)
     {
     case RegistrationTypeEnum::Rigid:
@@ -235,7 +251,6 @@ int algorithmsRunner()
       break;
     }
     }
-
 
     // delete all intermediate files if the flag is not set
     if (registrationIntermediate != 1)
