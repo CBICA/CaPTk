@@ -50,7 +50,11 @@ int main(int argc, char** argv)
       argv_complete += " " + std::string(argv[i]);
     }
   }
-  auto commandToRun = cbica::getExecutablePath() + "/Preprocessing" + argv_complete;
+  auto commandToRun = cbica::getExecutablePath() + "/Preprocessing" + 
+#if WIN32
+    ".exe" +
+#endif
+    argv_complete;
 
   return std::system(commandToRun.c_str());
 }
