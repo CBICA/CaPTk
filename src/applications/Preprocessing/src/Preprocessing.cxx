@@ -395,7 +395,7 @@ int algorithmsRunner()
     if (!registrationIntermediate)
     {
       // only do the deletion if default names are used
-      if (!defaultNamedUsed)
+      if (defaultNamedUsed)
       {
         for (const auto& it : intermediateFiles)
         {
