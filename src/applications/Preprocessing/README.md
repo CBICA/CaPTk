@@ -8,6 +8,7 @@ Though some functionality does exist on the graphical interface, this executable
 2. Z-Score Normalization
 3. Bias Correction (N3 and N4)
 4. Smoothing (Susan)
+5. Registration (Affine + Deformable)
 
 ## To Do
 
