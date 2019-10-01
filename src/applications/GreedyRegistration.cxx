@@ -132,25 +132,24 @@ int main(int argc, char** argv)
       metrics = "NCC";
       if (parser.isPresent("r"))
       {
-        nccRadius = "2x2x2";
+        parser.getParameterValue("r", nccRadius);
       }
-      param.metric = GreedyParameters::NCC;
+      metrics += "-" + nccRadius;
     }
     else if (metrics == "MI" || metrics == "mi")
     {
       metrics = "MI";
-      param.metric = GreedyParameters::MI;
     }
     else if (metrics == "NMI" || metrics == "nmi")
     {
       metrics = "NMI";
-      param.metric = GreedyParameters::NMI;
     }
     else if (metrics == "ssd" || metrics == "SSD")
     {
       metrics = "SSD";
-      param.metric = GreedyParameters::SSD;
     }
+  }
+  argv_complete += metrics;
 
   argv_complete += " -reg Affine"; // TBD: switch for affine or deformable to be added later
   for (int i = 0; i < inputImageFiles.size(); i++)
