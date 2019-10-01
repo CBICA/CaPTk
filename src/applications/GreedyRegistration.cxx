@@ -130,9 +130,9 @@ int main(int argc, char** argv)
     if (metrics == "NCC" || metrics == "ncc")
     {
       metrics = "NCC";
-      if (parser.isPresent("r"))
+      if (parser.isPresent("ri"))
       {
-        parser.getParameterValue("r", nccRadius);
+        parser.getParameterValue("ri", nccRadius);
       }
       metrics += "-" + nccRadius;
     }
@@ -175,39 +175,6 @@ int main(int argc, char** argv)
     if (parser.isPresent("reg")) 
     {
 
-      if (parser.isPresent("m"))
-      {
-        parser.getParameterValue("m", metrics);
-
-        if (metrics == "NCC" || metrics == "ncc")
-        {
-          metrics = "NCC";
-        }
-        else if (metrics == "MI" || metrics == "mi")
-        {
-          metrics = "MI";
-          param.metric = GreedyParameters::MI;
-        }
-        else if (metrics == "NMI" || metrics == "nmi")
-        {
-          metrics = "NMI";
-          param.metric = GreedyParameters::NMI;
-        }
-        else if (metrics == "ssd" || metrics == "SSD")
-        {
-          metrics = "SSD";
-          param.metric = GreedyParameters::SSD;
-        }
-
-        std::cout << "--> Metric used: " << metrics << std::endl;
-
-        if (parser.isPresent("ri")) {
-          std::string val;
-          parser.getParameterValue("ri", val);
-          std::cout << "--> Patch radius used for metrics: " << val << std::endl;
-          param.metric_radius = cl.read_int_vector(val);
-        }
-      }
 
       std::cout << "--> Transformation matrix output file name: " << matrixImageFiles[i] << std::endl;
       param.output = matrixImageFiles[i];
