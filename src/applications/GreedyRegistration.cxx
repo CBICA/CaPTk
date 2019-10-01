@@ -28,7 +28,7 @@ int main(int argc, char** argv)
   std::string argv_complete; // this is where we will be putting stuff for Preprocessing -reg
 
   // helper variables
-  std::string fixedImage, noIterations, metrics;
+  std::string fixedImage, noIterations = "100,50,5", metrics = "NMI", nccRadius = "2x2x2";
   std::vector< std::string > inputImageFiles, outputImageFiles, matrixImageFiles;
 
   cbica::CmdParser parser(argc, argv, "GreedyRegistration");
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("a", "affine", cbica::Parameter::NONE, "N.A", "Affine Registration(Default)");
   parser.addOptionalParameter("r", "rigid", cbica::Parameter::NONE, "N.A", "Rigid Registration");
   parser.addOptionalParameter("m", "metrics", cbica::Parameter::STRING, "none", "MI: mutual information", "NMI(Default): normalized mutual information", "NCC -r 2x2x2: normalized cross-correlation");
-  parser.addOptionalParameter("ri", "radius", cbica::Parameter::STRING, "none", "Patch radius for metrics", "Eg: 2x2x2");
+  parser.addOptionalParameter("ri", "radius", cbica::Parameter::STRING, "none", "Patch radius for metrics", "Eg: 2x2x2 (Default)");
 
   parser.addOptionalParameter("n", "greedyIterations", cbica::Parameter::STRING, "none", "Number of iterations per level of multi-res (Default: 100x50x5)", "Corresponds to low level, Mid Level and High Level resolution", "Pattern: NxNxN");
   parser.addOptionalParameter("th", "threads", cbica::Parameter::INTEGER, "none", "Number of threads for algorithm", "IGNORED");
@@ -120,8 +120,8 @@ int main(int argc, char** argv)
     {
       noIterations += "," + tempIters[n];
     }
-    argv_complete += " -rNI " + noIterations;
   }
+  argv_complete += " -rNI " + noIterations; // if "n" is not present, we use default
 
   if (parser.isPresent("m"))
   {
@@ -130,6 +130,10 @@ int main(int argc, char** argv)
     if (metrics == "NCC" || metrics == "ncc")
     {
       metrics = "NCC";
+      if (parser.isPresent("r"))
+      {
+        nccRadius = "2x2x2";
+      }
       param.metric = GreedyParameters::NCC;
     }
     else if (metrics == "MI" || metrics == "mi")
@@ -179,7 +183,6 @@ int main(int argc, char** argv)
         if (metrics == "NCC" || metrics == "ncc")
         {
           metrics = "NCC";
-          param.metric = GreedyParameters::NCC;
         }
         else if (metrics == "MI" || metrics == "mi")
         {
