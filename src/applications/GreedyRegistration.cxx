@@ -172,6 +172,8 @@ int main(int argc, char** argv)
       currentParams += inputImageFiles[i];
     }
 
+    currentParams += " -rIA " + matrixImageFiles[i];
+
     if (parser.isPresent("reg")) 
     {
 
