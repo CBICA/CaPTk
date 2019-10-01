@@ -170,7 +170,8 @@ jobs:
 
         ls -lt *_Installer.*
 
-        cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.exe
+        mkdir $(Build.SourcesDirectory)/nitrcUpload
+        cp *_Installer.* $(Build.SourcesDirectory)/nitrcUpload/CaPTk_LATEST_Installer.exe
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
         cd ../
@@ -229,7 +230,7 @@ jobs:
     - task: CopyFilesOverSSH@0
       inputs:
         sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
+        sourceFolder: $(Build.SourcesDirectory)/nitrcUpload
         contents: '*_Installer.*'
         targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
@@ -383,7 +384,8 @@ jobs:
 
         rm -rf scripts
 
-        cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.bin
+        mkdir $(Build.SourcesDirectory)/nitrcUpload
+        cp *_Installer.* $(Build.SourcesDirectory)/nitrcUpload/CaPTk_LATEST_Installer.bin
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
       displayName: 'Set up environment variables for packager and build a package'
@@ -430,7 +432,7 @@ jobs:
     - task: CopyFilesOverSSH@0
       inputs:
         sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
+        sourceFolder: $(Build.SourcesDirectory)/nitrcUpload
         contents: '*_Installer.*'
         targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
@@ -627,7 +629,8 @@ jobs:
 
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
-        cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.pkg
+        mkdir $(Build.SourcesDirectory)/nitrcUpload
+        cp *_Installer.* $(Build.SourcesDirectory)/nitrcUpload/CaPTk_LATEST_Installer.pkg
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
         sudo rm -rf _CPack*
@@ -684,7 +687,7 @@ jobs:
     - task: CopyFilesOverSSH@0
       inputs:
         sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
+        sourceFolder: $(Build.SourcesDirectory)/nitrcUpload
         contents: '*_Installer.*'
         targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
