@@ -250,10 +250,11 @@ int algorithmsRunner()
     intermediateFiles["OutputDeform"] = outputDir + "/outputDeform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
     intermediateFiles["OutputDeformInv"] = outputDir + "/outputDeform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
 
+    std::string commandToCall;
     if (!cbica::fileExists(registrationAffineTransformInput))
     {
       // we always do affine
-      std::string commandToCall = greedyPathAndDim +
+      commandToCall = greedyPathAndDim +
         commonCommands +
         metricsCommand +
         " -ia-image-centers " + intermediateFiles["Affine"];
