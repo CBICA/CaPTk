@@ -123,6 +123,17 @@ int main(int argc, char** argv)
   }
   argv_complete += " -rNI " + noIterations; // if "n" is not present, we use default
 
+  // fixed image
+  parser.getParameterValue("f", fixedImage);
+  if (!cbica::fileExists(fixedImage))
+  {
+    std::cerr << "Couldn't find fixed image: " << fixedImage << ".\n";
+    return EXIT_FAILURE;
+  }
+  argv_complete += " -rFI " + fixedImage;
+  auto fixedImageInfo = cbica::ImageInfo(fixedImage);
+
+  // metrics
   if (parser.isPresent("m"))
   {
     parser.getParameterValue("m", metrics);
@@ -155,7 +166,7 @@ int main(int argc, char** argv)
   for (int i = 0; i < inputImageFiles.size(); i++)
   {
     std::string currentParams;
-    
+
     // moving image
     currentParams += " -i ";
     if (cbica::IsDicom(inputImageFiles[i]))
@@ -169,64 +180,28 @@ int main(int argc, char** argv)
     }
     else
     {
+      if (!cbica::fileExists(inputImageFiles[i]))
+      {
+        std::cerr << "Couldn't find moving image: " << inputImageFiles[i] << "\n";
+        return EXIT_FAILURE;
+      }
       currentParams += inputImageFiles[i];
     }
 
     currentParams += " -rIA " + matrixImageFiles[i];
 
+    auto movingImageInfo = cbica::ImageInfo(inputImageFiles[i]);
+
+    if (fixedImageInfo.GetImageDimensions() != movingImageInfo.GetImageDimensions())
+    {
+      std::cerr << "Image dimensions of fixed image '" << fixedImage << "' and moving image '" <<
+        inputImageFiles[i] << "'do not match.\n";
+      return EXIT_FAILURE;
+    }
+  }
+
     if (parser.isPresent("reg")) 
     {
-
-
-      std::cout << "--> Transformation matrix output file name: " << matrixImageFiles[i] << std::endl;
-      param.output = matrixImageFiles[i];
-
-      std::cout << "--> Looking for fixed image: " << std::endl;
-
-      if (!cbica::fileExists(fixedImage))
-      {
-        std::cerr << "--> Fixed image file not found :'" << fixedImage << "'\n";
-        return EXIT_FAILURE;
-      }
-      std::cout << "--> Fixed image found: " + fixedImage << std::endl;
-
-      std::cout << "--> Looking for moving image: " << std::endl;
-
-      if (!cbica::fileExists(inputImageFiles[i]))
-      {
-        std::cerr << "--> Moving image file not found :'" << inputImageFiles[i] << "'\n";
-        return EXIT_FAILURE;
-      }
-      std::cout << "--> Moving image found: " + inputImageFiles[i] << std::endl;
-
-      if (param.threads > 0)
-      {
-        std::cout << "--> Limiting the number of threads to " << param.threads << std::endl;
-        itk::MultiThreader::SetGlobalMaximumNumberOfThreads(param.threads);
-      }
-      else
-      {
-        std::cout << "--> Executing with the default number of threads: " << itk::MultiThreader::GetGlobalDefaultNumberOfThreads() << std::endl;
-
-      }
-
-      // Some parameters may be specified as either vector or scalar, and need to be verified
-      if (param.epsilon_per_level.size() != param.iter_per_level.size())
-      {
-        if (param.epsilon_per_level.size() == 1)
-        {
-          param.epsilon_per_level =
-            std::vector<double>(param.iter_per_level.size(), param.epsilon_per_level.back());
-        }
-        else
-        {
-          throw GreedyException("--> Mismatch in size of vectors supplied with -n and -e options");
-        }
-      }
-
-      auto fixedImageInfo = cbica::ImageInfo(fixedImage);
-      auto movingImageInfo = cbica::ImageInfo(inputImageFiles[i]);
-
       if (fixedImageInfo.GetImageDimensions() != movingImageInfo.GetImageDimensions())
       {
         std::cerr << "--> Image dimensions do not match." << std::endl;
