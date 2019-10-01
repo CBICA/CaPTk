@@ -20,6 +20,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "cbicaCmdParser.h"
 #include "cbicaUtilities.h"
+#include "cbicaITKSafeImageIO.h"
 
 /// original main function
 int main(int argc, char** argv)
@@ -60,6 +61,14 @@ int main(int argc, char** argv)
     parser.getParameterValue("i", inputFileString);
     //parser.getParameterValue("i", inputImageFile);
     inputImageFiles = cbica::stringSplit(inputFileString, ",");
+    for (size_t i = 0; i < inputImageFiles.size(); i++)
+    {
+      if (cbica::isDir(inputImageFiles[i]))
+      {
+        std::cerr << "Directory detected for '" << inputImageFiles[i] << "', please check to file.\n";
+        return EXIT_FAILURE;
+      }
+    }
   }
 
   if (parser.isPresent("f"))
@@ -94,7 +103,7 @@ int main(int argc, char** argv)
   cbica::createDir(tempFolderLocation);
   if (cbica::IsDicom(fixedImage))
   {
-    // dicom image detected
+    // dicom image detected and is assumed to be 3D
     cbica::WriteImage< ImageTypeFloat3D >(
       cbica::ReadImage< ImageTypeFloat3D >(fixedImage),
       tempFolderLocation + "/tempDicomConverted_fixed.nii.gz"
