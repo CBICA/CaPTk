@@ -28,7 +28,7 @@ int main(int argc, char** argv)
   std::string argv_complete; // this is where we will be putting stuff for Preprocessing -reg
 
   // helper variables
-  std::string fixedImage;
+  std::string fixedImage, noIterations, metrics;
   std::vector< std::string > inputImageFiles, outputImageFiles, matrixImageFiles;
 
   cbica::CmdParser parser(argc, argv, "GreedyRegistration");
@@ -110,56 +110,67 @@ int main(int argc, char** argv)
       );
     fixedImage = tempFolderLocation + "/tempDicomConverted_fixed.nii.gz";
   }
+
+  if (parser.isPresent("n"))
+  {
+    parser.getParameterValue("n", noIterations);
+    auto tempIters = cbica::stringSplit(noIterations, "x");
+    noIterations = tempIters[0];
+    for (size_t n = 1; n < tempIters.size(); n++)
+    {
+      noIterations += "," + tempIters[n];
+    }
+    argv_complete += " -rNI " + noIterations;
+  }
+
+  if (parser.isPresent("m"))
+  {
+    parser.getParameterValue("m", metrics);
+
+    if (metrics == "NCC" || metrics == "ncc")
+    {
+      metrics = "NCC";
+      param.metric = GreedyParameters::NCC;
+    }
+    else if (metrics == "MI" || metrics == "mi")
+    {
+      metrics = "MI";
+      param.metric = GreedyParameters::MI;
+    }
+    else if (metrics == "NMI" || metrics == "nmi")
+    {
+      metrics = "NMI";
+      param.metric = GreedyParameters::NMI;
+    }
+    else if (metrics == "ssd" || metrics == "SSD")
+    {
+      metrics = "SSD";
+      param.metric = GreedyParameters::SSD;
+    }
+
+  argv_complete += " -reg Affine"; // TBD: switch for affine or deformable to be added later
   for (int i = 0; i < inputImageFiles.size(); i++)
   {
+    std::string currentParams;
+    
+    // moving image
+    currentParams += " -i ";
+    if (cbica::IsDicom(inputImageFiles[i]))
+    {
+      // dicom image detected
+      cbica::WriteImage< ImageTypeFloat3D >(
+        cbica::ReadImage< ImageTypeFloat3D >(inputImageFiles[i]),
+        tempFolderLocation + "/tempDicomConverted_moving.nii.gz"
+        );
+      currentParams += tempFolderLocation + "/tempDicomConverted_moving.nii.gz";
+    }
+    else
+    {
+      currentParams += inputImageFiles[i];
+    }
 
-    if (parser.isPresent("reg")) {
-      std::cout << "--> Analyzing parameters:" << std::endl;
-
-      InterpSpec interp_current;
-      bool affineMode = false;
-      float current_weight = 1.0;
-
-      ImagePairSpec ip;
-      ip.weight = current_weight;
-      ip.fixed = fixedImage;
-      if (cbica::IsDicom(inputImageFiles[i]))
-      {
-        // dicom image detected
-        cbica::WriteImage< ImageTypeFloat3D >(
-          cbica::ReadImage< ImageTypeFloat3D >(inputImageFiles[i]),
-          tempFolderLocation + "/tempDicomConverted_moving.nii.gz"
-          );
-        ip.moving = tempFolderLocation + "/tempDicomConverted_moving.nii.gz";
-      }
-      else
-      {
-        ip.moving = inputImageFiles[i];
-      }
-      param.inputs.push_back(ip);
-
-      if (parser.isPresent("a")) {
-        std::cout << "--> Registration Mode: Affine " << std::endl;
-
-        param.mode = GreedyParameters::AFFINE;
-        param.affine_dof = GreedyParameters::DOF_AFFINE;
-      }
-
-      if (parser.isPresent("r")) {
-        std::cout << "--> Registration Mode: Rigid " << std::endl;
-
-        param.mode = GreedyParameters::AFFINE;
-        param.affine_dof = GreedyParameters::DOF_RIGID;
-      }
-
-      if (parser.isPresent("n")) {
-        parser.getParameterValue("n", g_iterations);
-        std::cout << "--> Number of iterations: " << g_iterations << std::endl;
-        param.iter_per_level = cl.read_int_vector(g_iterations);
-      }
-      else {
-        std::cout << "--> Using default iterations: 100x100" << std::endl;
-      }
+    if (parser.isPresent("reg")) 
+    {
 
       if (parser.isPresent("m"))
       {
