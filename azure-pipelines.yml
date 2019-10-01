@@ -439,6 +439,23 @@ jobs:
         condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
       displayName: Uploading to NITRC      
 
+    # - bash: |
+    #     cd $(Build.ArtifactStagingDirectory)
+    #     mv *_Installer.bin ./CaPTk_LATEST_Installer.bin
+    #   displayName: Renaming published artifact
+      
+    # - task: CopyFilesOverSSH@1
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #     condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+    #   displayName: Uploading to NITRC      
+
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
   timeoutInMinutes: 0
