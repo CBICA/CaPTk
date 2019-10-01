@@ -250,7 +250,6 @@ int algorithmsRunner()
       std::string path, base, ext;
       cbica::splitFileName(registrationDeformableTransformInput, path, base, ext);
       intermediateFiles["DeformInv"] = path + "/" + base + "-Inv.nii.gz";
-
     }
 
     std::string commandToCall;
