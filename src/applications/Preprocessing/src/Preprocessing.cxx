@@ -397,9 +397,9 @@ int algorithmsRunner()
       // only do the deletion if default names are used
       if (!defaultNamedUsed)
       {
-        for (auto it = intermediateFiles.begin(); it != intermediateFiles.end(); ++it)
+        for (const auto& it : intermediateFiles)
         {
-          std::remove(it->second.c_str());
+          std::remove(it.second.c_str());
         }
       }
     }
