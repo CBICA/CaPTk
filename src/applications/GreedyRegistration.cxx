@@ -13,45 +13,12 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 */
 
-#include "itkImageFileReader.h"
-#include "itkImageFileWriter.h"
-//#include "GreedyRegistration.h"
-#include "itkDOMNodeXMLReader.h"
-#include "itkDOMNodeXMLWriter.h"
-#include "itkDOMNode.h"
-#include "CommandLineHelper.h"
-
 #include <iostream>
-#include <sstream>
-#include <cstdio>
-#include <vector>
+#include <cstdlib>
 #include <string>
 #include <algorithm>
-#include <cerrno>
-#include <chrono>
 
-#include "lddmm_common.h"
-#include "lddmm_data.h"
-#include "GreedyAPI.h"
-
-#include <itkImageFileReader.h>
-#include <itkAffineTransform.h>
-#include <itkTransformFactory.h>
-#include <itkTimeProbe.h>
-
-#include "MultiImageRegistrationHelper.h"
-#include "FastWarpCompositeImageFilter.h"
-#include <vnl/vnl_cost_function.h>
-#include <vnl/vnl_random.h>
-#include <vnl/algo/vnl_powell.h>
-#include <vnl/algo/vnl_svd.h>
-#include <vnl/vnl_trace.h>
-
-#include "cbicaITKImageInfo.h"
-#include "cbicaITKUtilities.h"
 #include "cbicaCmdParser.h"
-#include "cbicaLogging.h"
-#include "cbicaITKSafeImageIO.h"
 #include "cbicaUtilities.h"
 
 int main(int argc, char** argv)
