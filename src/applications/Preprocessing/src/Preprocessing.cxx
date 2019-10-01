@@ -230,10 +230,12 @@ int algorithmsRunner()
     auto const _fixedFileTOInputFileBase = fixedFile_base + "TO" + inputFile_base;
     auto const _inputFileTOFixedFileBase = inputFile_base + "TO" + fixedFile_base;
 
+    bool defaultNamedUsed = false;
     // populate default names for intermediate files
     if (!registrationAffineTransformInput.empty())
     {
       intermediateFiles["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
+      defaultNamedUsed = true;
     }
     else
     {
@@ -243,6 +245,7 @@ int algorithmsRunner()
     {
       intermediateFiles["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
       intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+      defaultNamedUsed = true;
     }
     else
     {
@@ -389,11 +392,15 @@ int algorithmsRunner()
     }
 
     // delete all intermediate files if the flag is not set
-    if (registrationIntermediate != 1)
+    if (!registrationIntermediate)
     {
-      for (auto it = intermediateFiles.begin(); it != intermediateFiles.end(); ++it)
+      // only do the deletion if default names are used
+      if (!defaultNamedUsed)
       {
-        std::remove(it->second.c_str());
+        for (auto it = intermediateFiles.begin(); it != intermediateFiles.end(); ++it)
+        {
+          std::remove(it->second.c_str());
+        }
       }
     }
   }
