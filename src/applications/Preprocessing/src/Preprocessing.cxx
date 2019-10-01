@@ -250,11 +250,10 @@ int algorithmsRunner()
     intermediateFiles["OutputDeform"] = outputDir + "/outputDeform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
     intermediateFiles["OutputDeformInv"] = outputDir + "/outputDeform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
 
-    std::string commandToCall;
     if (!cbica::fileExists(registrationAffineTransformInput))
     {
       // we always do affine
-      commandToCall = greedyPathAndDim +
+      std::string commandToCall = greedyPathAndDim +
         commonCommands +
         metricsCommand +
         " -ia-image-centers " + intermediateFiles["Affine"];
@@ -269,7 +268,7 @@ int algorithmsRunner()
         return EXIT_FAILURE;
       }
     }
-
+    
     switch (registrationTypeInt)
     {
     case RegistrationTypeEnum::Rigid:
