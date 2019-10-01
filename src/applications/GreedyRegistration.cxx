@@ -25,7 +25,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 /// original main function
 int main(int argc, char** argv)
 {
-  std::string argv_complete; // this is where we will be putting stuff for Preprocessing -reg
+  std::string argv_common; // this is where we will be putting stuff for Preprocessing -reg
 
   // helper variables
   std::string fixedImage, noIterations = "100,50,5", metrics = "NMI", nccRadius = "2x2x2";
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
       noIterations += "," + tempIters[n];
     }
   }
-  argv_complete += " -rNI " + noIterations; // if "n" is not present, we use default
+  argv_common += " -rNI " + noIterations; // if "n" is not present, we use default
 
   // fixed image
   parser.getParameterValue("f", fixedImage);
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
     std::cerr << "Couldn't find fixed image: " << fixedImage << ".\n";
     return EXIT_FAILURE;
   }
-  argv_complete += " -rFI " + fixedImage;
+  argv_common += " -rFI " + fixedImage;
   auto fixedImageInfo = cbica::ImageInfo(fixedImage);
 
   // metrics
@@ -160,15 +160,15 @@ int main(int argc, char** argv)
       metrics = "SSD";
     }
   }
-  argv_complete += metrics;
+  argv_common += metrics;
 
-  argv_complete += " -reg Affine"; // TBD: switch for affine or deformable to be added later
+  argv_common += " -reg Affine"; // TBD: switch for affine or deformable to be added later
   for (int i = 0; i < inputImageFiles.size(); i++)
   {
-    std::string currentParams;
+    std::string argv_currentMovingImage;
 
     // moving image
-    currentParams += " -i ";
+    argv_currentMovingImage += " -i ";
     if (cbica::IsDicom(inputImageFiles[i]))
     {
       // dicom image detected
@@ -176,7 +176,7 @@ int main(int argc, char** argv)
         cbica::ReadImage< ImageTypeFloat3D >(inputImageFiles[i]),
         tempFolderLocation + "/tempDicomConverted_moving.nii.gz"
         );
-      currentParams += tempFolderLocation + "/tempDicomConverted_moving.nii.gz";
+      argv_currentMovingImage += tempFolderLocation + "/tempDicomConverted_moving.nii.gz";
     }
     else
     {
@@ -185,10 +185,10 @@ int main(int argc, char** argv)
         std::cerr << "Couldn't find moving image: " << inputImageFiles[i] << "\n";
         return EXIT_FAILURE;
       }
-      currentParams += inputImageFiles[i];
+      argv_currentMovingImage += inputImageFiles[i];
     }
 
-    currentParams += " -rIA " + matrixImageFiles[i];
+    argv_currentMovingImage += " -rIA " + matrixImageFiles[i];
 
     auto movingImageInfo = cbica::ImageInfo(inputImageFiles[i]);
 
@@ -198,158 +198,16 @@ int main(int argc, char** argv)
         inputImageFiles[i] << "'do not match.\n";
       return EXIT_FAILURE;
     }
-  }
 
-    if (parser.isPresent("reg")) 
-    {
-      if (fixedImageInfo.GetImageDimensions() != movingImageInfo.GetImageDimensions())
-      {
-        std::cerr << "--> Image dimensions do not match." << std::endl;
-        return EXIT_FAILURE;
-      }
-      else
-      {
-        param.dim = fixedImageInfo.GetImageDimensions();
-      }
+    // everything is okay, start registration
 
-      if (param.flag_float_math)
-      {
-        switch (fixedImageInfo.GetImageDimensions())
-        {
-        case 2: GreedyRunner<2, float>::Run(param); break;
-        case 3: GreedyRunner<3, float>::Run(param); break;
-        case 4: GreedyRunner<4, float>::Run(param); break;
-        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-        }
-      }
-      else
-      {
-        switch (fixedImageInfo.GetImageDimensions())
-        {
-        case 2: GreedyRunner<2, double>::Run(param); break;
-        case 3: GreedyRunner<3, double>::Run(param); break;
-        case 4: GreedyRunner<4, double>::Run(param); break;
-        default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-        }
-      }
-
-      std::cout << "--> Finished registration.\n";
-
-      //GreedyParameters param;
-      //GreedyParameters::SetToDefaults(param);
-
-      if (parser.isPresent("trf"))
-      {
-        std::cout << "--> Starting transformation.\n";
-
-
-        if (parser.isPresent("f"))
-        {
-          parser.getParameterValue("f", fixedImage);
-        }
-
-        param.reslice_param.ref_image = fixedImage;
-        TransformSpec spec;
-        ResliceSpec reslice;
-
-        InterpSpec interp_current;
-        reslice.interp = interp_current;
-        reslice.moving = inputImageFiles[i];
-        reslice.output = outputImageFiles[i];
-
-        param.reslice_param.images.push_back(reslice);
-
-        param.mode = GreedyParameters::RESLICE;
-
-        std::cout << "--> Looking for transformation matrix: " + matrixImageFiles[i] << std::endl;
-
-        if (!cbica::fileExists(matrixImageFiles[i])) {
-          std::cerr << "--> Transformation matrix not found at: " << matrixImageFiles[i] << "'\n";
-          return EXIT_FAILURE;
-        }
-        std::cout << "--> Transformation Matrix found: " + matrixImageFiles[i] << std::endl;
-        spec = cl.read_transform_spec(matrixImageFiles[i]);
-
-        param.reslice_param.transforms.push_back(spec);
-
-
-        /*if (param.threads > 0)
-        {
-            std::cout << "--> Limiting the number of threads to " << param.threads << std::endl;
-            itk::MultiThreader::SetGlobalMaximumNumberOfThreads(param.threads);
-        }
-        else
-        {
-            std::cout << "--> Executing with the default number of threads: " << itk::MultiThreader::GetGlobalDefaultNumberOfThreads() << std::endl;
-        }*/
-        // Some parameters may be specified as either vector or scalar, and need to be verified
-        if (param.epsilon_per_level.size() != param.iter_per_level.size())
-        {
-          if (param.epsilon_per_level.size() == 1)
-          {
-            param.epsilon_per_level =
-              std::vector<double>(param.iter_per_level.size(), param.epsilon_per_level.back());
-          }
-          else
-          {
-            throw GreedyException("--> Mismatch in size of vectors supplied with -n and -e options");
-          }
-        }
-
-        auto fixedImageInfo = cbica::ImageInfo(fixedImage);
-        auto movingImageInfo = cbica::ImageInfo(inputImageFiles[i]);
-
-        if (fixedImageInfo.GetImageDimensions() != movingImageInfo.GetImageDimensions())
-        {
-          std::cerr << "--> Image dimensions do not match." << std::endl;
-          return EXIT_FAILURE;
-        }
-        else
-        {
-          param.dim = fixedImageInfo.GetImageDimensions();
-        }
-
-        std::cout << "--> Applied transformation to moving image: " << outputImageFiles[i] << std::endl;
-
-        if (param.flag_float_math)
-        {
-          switch (fixedImageInfo.GetImageDimensions())
-          {
-          case 2: GreedyRunner<2, float>::Run(param); continue;
-          case 3: GreedyRunner<3, float>::Run(param); continue;
-          case 4: GreedyRunner<4, float>::Run(param); continue;
-          default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-          }
-        }
-        else
-        {
-          switch (fixedImageInfo.GetImageDimensions())
-          {
-          case 2: GreedyRunner<2, double>::Run(param); continue;
-          case 3: GreedyRunner<3, double>::Run(param); continue;
-          case 4: GreedyRunner<4, double>::Run(param); continue;
-          default: throw GreedyException("--> Wrong number of dimensions requested: %d", param.dim);
-          }
-        }
-
-        std::cout << "--> Transformation complete " << std::endl;
-      }
-
-      if (argc > 1)
-      {
-        for (size_t i = 1; i < argc; i++)
-        {
-          argv_complete += " " + std::string(argv[i]);
-        }
-      }
-      auto commandToRun = cbica::getExecutablePath() + "/Preprocessing" +
+    auto commandToRun = cbica::getExecutablePath() + "/Preprocessing" +
 #if WIN32
-        ".exe" +
+      ".exe" +
 #endif
-        argv_complete;
+      argv_common + argv_currentMovingImage;
 
-      return std::system(commandToRun.c_str());
-    }
+    return std::system(commandToRun.c_str());
   }
 
 }
@@ -377,19 +235,19 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-i moving.nii.gz -rFI fixed.nii.gz -o output.nii.gz -reg Affine -rME NCC-2x2x2 -rIS 1 -rNI 100,50,5",
     "This registers the moving image affinely 'moving.nii.gz' with fixed image 'fixed.nii.gz.' with output at 'output.nii.gz' using NCC metric with kernel size 2x2x2");
 
-  std::string argv_complete;
+  std::string argv_common;
   if (argc > 1)
   {
     for (size_t i = 1; i < argc; i++)
     {
-      argv_complete += " " + std::string(argv[i]);
+      argv_common += " " + std::string(argv[i]);
     }
   }
   auto commandToRun = cbica::getExecutablePath() + "/Preprocessing" + 
 #if WIN32
     ".exe" +
 #endif
-    argv_complete;
+    argv_common;
 
   return std::system(commandToRun.c_str());
 }
