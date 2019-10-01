@@ -229,6 +229,8 @@ int algorithmsRunner()
     auto const _registrationMetricsNII = _registrationMetrics + ".nii.gz";
     auto const _fixedFileTOInputFileBase = fixedFile_base + "TO" + inputFile_base;
     auto const _inputFileTOFixedFileBase = inputFile_base + "TO" + fixedFile_base;
+
+    // populate default names for intermediate files
     if (!registrationAffineTransformInput.empty())
     {
       intermediateFiles["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
@@ -240,15 +242,16 @@ int algorithmsRunner()
     if (!registrationDeformableTransformInput.empty())
     {
       intermediateFiles["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
+      intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
     }
     else
     {
       intermediateFiles["Deform"] = registrationDeformableTransformInput;
+      std::string path, base, ext;
+      cbica::splitFileName(registrationDeformableTransformInput, path, base, ext);
+      intermediateFiles["DeformInv"] = path + "/" + base + "-Inv.nii.gz";
+
     }
-    intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
-    intermediateFiles["OutputAffine"] = outputDir + "/outputAffine_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-    intermediateFiles["OutputDeform"] = outputDir + "/outputDeform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-    intermediateFiles["OutputDeformInv"] = outputDir + "/outputDeform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
 
     std::string commandToCall;
     if (!cbica::fileExists(registrationAffineTransformInput))
