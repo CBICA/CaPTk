@@ -257,6 +257,10 @@ jobs:
         # ls ./src/applications/Preprocessing/greedy
       displayName: 'Git Submodule Init and Update'
 
+    - bash: |
+        df -k .
+      displayName: 'Disk space check'
+
     - task: CacheBeta@0
       inputs:
         key: '"bin_linux_20190929.tar.gz" | "$(Build.DefinitionName)"'
