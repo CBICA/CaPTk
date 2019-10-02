@@ -1048,7 +1048,7 @@ std::string fMainWindow::ConversionFrom2Dto3D(const std::string &fileName)
   catch (itk::ExceptionObject& e)
   {
     ShowErrorMessage("Exception caught while reading the image '" + fileName + "':\n\n" + e.what());
-    return;
+    return "";
   }
 
   auto image_2D = reader->GetOutput();
