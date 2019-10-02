@@ -3160,13 +3160,14 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
             ShowErrorMessage("The origins of the previously loaded image and mask are inconsistent; cannot load");
             return;
           }
-          if (
-            static_cast<int>(spacings_image[i] * 1000000) != 
-            static_cast<int>(spacings_mask[i] * 1000000)
-            )
+          if (spacings_image[i] != spacings_mask[i])
           {
-            ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
-            return;
+            auto percentageDifference = std::abs(spacings_image[i] - spacings_mask[i] ) * 100;
+            if (percentageDifference > 0.000001)
+            {
+              ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
+              return;
+            }
           }
           if (size_image[i] != size_mask[i])
           {
