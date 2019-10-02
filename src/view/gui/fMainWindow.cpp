@@ -3132,6 +3132,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
       auto maskInfo = cbica::ImageInfo(maskFileName_toRead);
       auto imageSize = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
       auto maskSize = maskInfo.GetImageSize();
+      bool imageSanityCheckDone = false;
       if ((imageSize[2] == 1) || (maskSize[2] == 1) || (maskInfo.GetImageDimensions() == 2))
       {
         // this is actually a 2D image which has been loaded in CaPTk as a pseudo-3D image
@@ -3160,8 +3161,8 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
             return;
           }
           if (
-            static_cast<int>(spacings_image[i] * 1000) != 
-            static_cast<int>(spacings_mask[i] * 1000)
+            static_cast<int>(spacings_image[i] * 1000000) != 
+            static_cast<int>(spacings_mask[i] * 1000000)
             )
           {
             ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
@@ -3174,15 +3175,20 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
           }
         }
         maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead); // all sanity checks passed; load the mask 
+        imageSanityCheckDone = true;
       }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
         auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
         //SaveImage_withFile(0, temp_prev.c_str());
-        if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
+        if (!imageSanityCheckDone)
         {
-          ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
-          return;
+          if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
+          {
+            ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+          imageSanityCheckDone = true;
         }
       }
       using ImageType = itk::Image<unsigned int, 3>;
