@@ -441,7 +441,6 @@ jobs:
         targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
         overwrite: true
-        continueOnError: true
         condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
       displayName: Uploading to NITRC      
 
