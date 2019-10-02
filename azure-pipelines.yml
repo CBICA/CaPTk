@@ -417,6 +417,7 @@ jobs:
 
         mv bin bin_linux
         tar cvfz bin_linux_20190929.tar.gz bin_linux
+        rm -rf bin_linux
       displayName: 'Zipping bin'
 
     - task: PublishBuildArtifacts@1
