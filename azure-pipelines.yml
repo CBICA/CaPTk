@@ -374,7 +374,7 @@ jobs:
         rm -rf binaries
 
         export PKG_FAST_MODE=1
-        export PKG_COPY_QT_LIBS=1 # this causes sql lib issues with qt and ubuntu
+        export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
