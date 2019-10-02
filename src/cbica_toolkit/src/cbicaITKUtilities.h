@@ -258,9 +258,8 @@ namespace cbica
       }
       if (spacing_1[i] != spacing_2[i])
       {
-        if (
-          static_cast<int>(spacing_1[i] * 1000000) !=
-          static_cast<int>(spacing_2[i] * 1000000))
+        auto percentageDifference = std::abs(spacings_image[i] - spacings_mask[i]) * 100;
+        if (percentageDifference > 0.000001)
         {
           std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
           return false;
@@ -268,7 +267,7 @@ namespace cbica
         else
         {
           std::cout << "Ignoring spacing difference of '" <<
-            std::abs(spacing_1[i] - spacing_2[i]) << "' in dimension '" << 
+            percentageDifference << "%' in dimension '" <<
             i << "'\n";
         }
       }
