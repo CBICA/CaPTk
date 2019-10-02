@@ -256,12 +256,21 @@ namespace cbica
         std::cerr << "Origin mismatch at dimension '" << i << "'\n";
         return false;
       }
-      if (
-        static_cast<int>(spacing_1[i] * 1000000) != 
-        static_cast<int>(spacing_2[i] * 1000000))
+      if (spacing_1[i] != spacing_2[i])
       {
-        std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
-        return false;
+        if (
+          static_cast<int>(spacing_1[i] * 1000000) !=
+          static_cast<int>(spacing_2[i] * 1000000))
+        {
+          std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
+          return false;
+        }
+        else
+        {
+          std::cout << "Ignoring spacing difference of '" <<
+            std::abs(spacing_1[i] - spacing_2[i]) << "' in dimension '" << 
+            i << "'\n";
+        }
       }
     }
 
