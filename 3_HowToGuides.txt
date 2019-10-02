@@ -68,7 +68,7 @@ This tool registers multiple moving images to a single target image using the Gr
 	-# The output image is saved in the specified locations.
   -# This can also be used from the command line:
 \verbatim
-${CaPTk_InstallDir}/bin/GreedyRegistration.exe -i C:/test/moving.nii.gz -f C:/test/fixed.nii.gz -o C:/test/output.nii.gz -t C:/test/output.mat -reg -trf -a -m MI -n 100x50x5 -th 4
+${CaPTk_InstallDir}/bin/Preprocessing.exe -i moving.nii.gz -rFI fixed.nii.gz -o output.nii.gz -reg Affine -rME NCC-2x2x2 -rIS 1 -rNI 100,50,5
 \endverbatim
  
 --------

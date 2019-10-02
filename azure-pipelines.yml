@@ -17,25 +17,26 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
+    # submodule 
+    - bash: |
+        git submodule update --init --recursive
+        # ls -lt
+        # ls ./src/applications/Preprocessing/greedy
+      displayName: 'Git Submodule Init and Update'
+
     - task: CacheBeta@0
       inputs:
-        key: '"bin_windows_1.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_windows_20190929.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_WINDOWS
         restoreKeys: |
-          "bin_windows_1.tar.gz"
+          "bin_windows_20190929.tar.gz"
         continueOnError : true
       displayName: 'Caching'
 
     - script: |
         choco install doxygen.install nsis.install wget
       displayName: 'Install dependencies'
-
-    # submodule 
-    - bash: |
-        git submodule init
-        git submodule update
-      displayName: 'Git Submodule Init and Update'
 
     # # Pull LFS
     # - bash: |
@@ -51,8 +52,8 @@ jobs:
     #   displayName: 'Disk space check'
 
     - bash: |
-        tar xvfz bin_windows_1.tar.gz
-        rm -rf bin_windows_1.tar.gz
+        tar xvfz bin_windows_20190929.tar.gz
+        rm -rf bin_windows_20190929.tar.gz
         # ls
         mv bin_windows bin
         # ls
@@ -104,9 +105,11 @@ jobs:
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-    # - bash: |
-    #     tar cvfz bin_windows.tar.gz_1 bin
-    #   displayName: 'Zipping Superbuild'
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
 
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
@@ -167,6 +170,7 @@ jobs:
 
         ls -lt *_Installer.*
 
+        cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.exe
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
         cd ../
@@ -179,8 +183,9 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_windows_1.tar.gz
+        rm -rf bin_windows_20190929.tar.gz
         rm -rf install_manifest.txt
+        rm -rf CMakeLists.txt
 
         cd bin
         rm -rf *proj*
@@ -191,11 +196,14 @@ jobs:
         rm -rf qt
         rm -rf externalApps
         rm -rf _CPack*
+        rm -rf CMakeCache.txt
 
+        # cmake -UPROJECT_VERSION # delete the project version definition
+        
         cd ../
 
         mv bin bin_windows
-        tar cvfz bin_windows_1.tar.gz bin_windows
+        tar cvfz bin_windows_20190929.tar.gz bin_windows
       displayName: 'Zipping bin'
 
     - powershell: |
@@ -205,6 +213,7 @@ jobs:
         pwd
 
       displayName: 'Disk space check'
+
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -216,6 +225,18 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_Windows'
         downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+      displayName: Uploading to NITRC      
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
@@ -229,27 +250,28 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       #fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
+    # submodule 
+    - bash: |
+        git submodule update --init --recursive
+        # ls -lt
+        # ls ./src/applications/Preprocessing/greedy
+      displayName: 'Git Submodule Init and Update'
+
     - task: CacheBeta@0
       inputs:
-        key: '"bin_linux_2.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_linux_20190929.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
         restoreKeys: |
-          "bin_linux_2.tar.gz"
+          "bin_linux_20190929.tar.gz"
       displayName: 'Caching'
 
     # Dependency manager
     - bash: |
-        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 mpich libopenmpi-dev
+        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 mpich libopenmpi-dev mesa-common-dev libglu1-mesa-dev freeglut3-dev
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Install dependencies from Aptitude'
-
-    # submodule 
-    - bash: |
-        git submodule init
-        git submodule update
-      displayName: 'Git Submodule Init and Update'
 
     # # Pull LFS
     # - bash: |
@@ -265,8 +287,8 @@ jobs:
     #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xvfz bin_linux_2.tar.gz
-        rm -rf bin_linux_2.tar.gz
+        tar xvfz bin_linux_20190929.tar.gz
+        rm -rf bin_linux_20190929.tar.gz
         # ls
         mv bin_linux bin
         # ls
@@ -301,7 +323,7 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # - bash: |
-    #     tar cvfz bin_linux_2.tar.gz bin
+    #     tar cvfz bin_linux_20190929.tar.gz bin
     #   displayName: 'Zipping Superbuild'
 
     - bash: |
@@ -314,6 +336,12 @@ jobs:
         ls -a
         ls ./qt/
       displayName: 'Check qt'
+
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
 
     # Configure and build CaPTk
     - bash: |
@@ -346,7 +374,7 @@ jobs:
         rm -rf binaries
 
         export PKG_FAST_MODE=1
-        export PKG_COPY_QT_LIBS=1 # this causes sql lib issues with qt and ubuntu
+        # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
@@ -355,6 +383,7 @@ jobs:
 
         rm -rf scripts
 
+        # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.bin
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
       displayName: 'Set up environment variables for packager and build a package'
@@ -365,7 +394,8 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_linux_2.tar.gz
+        rm -rf bin_linux_20190929.tar.gz
+        rm -rf CMakeLists.txt
 
         cd bin
 
@@ -375,24 +405,56 @@ jobs:
         rm -rf qt
         rm -rf externalApps
         rm -rf _CPack*
+        rm -rf CMakeCache.txt
 
+        # cmake -UPROJECT_VERSION # delete the project version definition
+        
         cd ../
 
         mv bin bin_linux
-        tar cvfz bin_linux_2.tar.gz bin_linux
+        tar cvfz bin_linux_20190929.tar.gz bin_linux
       displayName: 'Zipping bin'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_Linux'
 
-    - task: DownloadBuildArtifacts@0
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_Linux'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: CopyFilesOverSSH@0
       inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
-        downloadPath: '$(System.ArtifactsDirectory)'
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+      displayName: Uploading to NITRC      
+
+    # - bash: |
+    #     cd $(Build.ArtifactStagingDirectory)
+    #     mv *_Installer.bin ./CaPTk_LATEST_Installer.bin
+    #   displayName: Renaming published artifact
+      
+    # - task: CopyFilesOverSSH@1
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #     condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+    #   displayName: Uploading to NITRC      
 
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
@@ -406,14 +468,21 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
       # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
+    # submodule 
+    - bash: |
+        git submodule update --init --recursive
+        # ls -lt
+        # ls ./src/applications/Preprocessing/greedy
+      displayName: 'Git Submodule Init and Update'
+
     - task: CacheBeta@0
       inputs:
-        key: '"bin_macos.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_macos_20190929.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_MAC
         continueOnError : true
         restoreKeys: |
-          "bin_macos.tar.gz"
+          "bin_macos_20190929.tar.gz"
       displayName: 'Caching'
 
     - bash: |
@@ -421,12 +490,6 @@ jobs:
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Brew dependencies'
-
-    # submodule 
-    - bash: |
-        git submodule init
-        git submodule update
-      displayName: 'Git Submodule Init and Update'
 
     # - bash: |
     #     brew install git-lfs
@@ -444,8 +507,8 @@ jobs:
     #   condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
     - bash: |
-        tar xvfz bin_macos.tar.gz
-        rm -rf bin_macos.tar.gz
+        tar xvfz bin_macos_20190929.tar.gz
+        rm -rf bin_macos_20190929.tar.gz
         # ls
         mv bin_macos bin
         # ls
@@ -490,8 +553,14 @@ jobs:
       displayName: 'Check qt'
 
     - bash: |
-        tar cvfz bin_macos.tar.gz bin
+        tar cvfz bin_macos_20190929.tar.gz bin
       displayName: 'Zipping Superbuild'
+
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
 
     - bash: |
         cd bin
@@ -509,7 +578,7 @@ jobs:
         cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
 
         make -j 2
-      displayName: 'Export variables for llvm then configure and compile CaPTk'
+      displayName: 'Configure and compile CaPTk'
 
     - bash: |
         cd bin
@@ -575,6 +644,7 @@ jobs:
 
         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
+        cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.pkg
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
         sudo rm -rf _CPack*
@@ -588,7 +658,8 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_macos.tar.gz
+        rm -rf bin_macos_20190929.tar.gz
+        rm -rf CMakeLists.txt
 
         cd bin
         tar cvfz qt.tar.gz qt
@@ -597,12 +668,17 @@ jobs:
         rm -rf qt
         rm -rf externalApps
         rm -rf _CPack*
+        rm -rf CMakeCache.txt
+        
+        # cmake -UPROJECT_VERSION # delete the project version definition
+        
         cd ../
         # ls
         mv bin bin_macos
         # ls
-        tar cvfz bin_macos.tar.gz bin_macos
+        tar cvfz bin_macos_20190929.tar.gz bin_macos
       displayName: 'Zipping bin'
+      
     #- script: |
     #    cd bin
     #    export GIT_LFS_SKIP_SMUDGE=1
@@ -621,6 +697,18 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+      displayName: Uploading to NITRC      
 
 # - job: 'DockerBuild'
 #   displayName: "End-to-end Docker_CentOS image build and push"
