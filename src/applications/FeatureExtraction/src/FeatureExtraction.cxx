@@ -178,7 +178,7 @@ void algorithmRunner()
   outputFilename = features.GetOutputFile();
 }
 
-//! Calls cbica::stringSplit() by checking for both "," and "|" as deliminators
+//! Calls cbica::stringSplit() by checking for ",", ";" and "|" as deliminators
 std::vector< std::string > splitTheString(const std::string &inputString)
 {
   std::vector< std::string > returnVector;
@@ -189,6 +189,10 @@ std::vector< std::string > splitTheString(const std::string &inputString)
   else if (inputString.find("|") != std::string::npos)
   {
     returnVector = cbica::stringSplit(inputString, "|");
+  }
+  else if (inputString.find(";") != std::string::npos)
+  {
+    returnVector = cbica::stringSplit(inputString, ";");
   }
   else if(!inputString.empty()) // only a single value is present
   {
