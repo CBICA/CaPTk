@@ -341,7 +341,17 @@ ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.
 \endverbatim
   
 An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureextraction.csv</b>. An explanation of the inputs is given below (the headers are case-insensitive):
-- PATIENT_ID: 
+
+|         Header        |                                       Description                                      |
+|:---------------------:|:--------------------------------------------------------------------------------------:|
+|       PATIENT_ID      |                     The subject ID of the images getting processed                     |
+|         IMAGES        | The co-registered input images for whom features are to be extracted; separated by '|' |
+|       MODALITIES      |          The corresponding modalities used in the output CSV; separated by '|'         |
+|        ROIFile        |        The mask file which defines the annotated regions for extracting features       |
+|      SELECTED_ROI     |        The selected annotations from which to extract features; separated by '|'       |
+|       ROI_LABEL       |      The corresponding annotation labels used in the output CSV; separated by '|'      |
+|   OUTPUT (OPTIONAL)   |                         The output file for the current subject                        |
+| PARAM_FILE (OPTIONAL) |                       The parameter file for the current subject                       |
 	
 NOTE: The output of Feature Extraction can be used to run the <a href="Training_Module.html">Training Module</a>.
 
