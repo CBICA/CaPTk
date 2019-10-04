@@ -3163,6 +3163,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
           if (spacings_image[i] != spacings_mask[i])
           {
             auto percentageDifference = std::abs(spacings_image[i] - spacings_mask[i] ) * 100;
+            percentageDifference /= spacings_image[i];
             if (percentageDifference > 0.000001)
             {
               ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");

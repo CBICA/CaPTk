@@ -323,6 +323,7 @@ namespace cbica
       if (imageSpacing1[d] != imageSpacing2[d])
       {
         auto percentageDifference = std::abs(imageSpacing1[d] - imageSpacing2[d]) * 100;
+        percentageDifference /= imageSpacing1[d];
         if (percentageDifference > 0.000001)
         {
           std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
