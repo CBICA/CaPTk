@@ -682,7 +682,7 @@ jobs:
         mv bin bin_macos
         # ls
         tar cvfz bin_macos_20191003.tar.gz bin_macos
-        rm -rf bin_macos
+        # rm -rf bin_macos
       displayName: 'Zipping bin'
       
     #- script: |
