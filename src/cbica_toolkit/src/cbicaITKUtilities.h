@@ -259,6 +259,7 @@ namespace cbica
       if (spacing_1[i] != spacing_2[i])
       {
         auto percentageDifference = std::abs(spacing_1[i] - spacing_2[i]) * 100;
+        percentageDifference /= spacing_1[i];
         if (percentageDifference > 0.000001)
         {
           std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
