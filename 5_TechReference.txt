@@ -252,6 +252,50 @@ And the list goes on.
         </ul> 
         All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.
     </tr>
+    <tr>
+      <td align="center">Lattice<br>-based
+      <td>
+        <ul>
+          <li>Selected features
+          <li>Feature Maps
+        </ul>
+      <td>
+        <ul>
+          <li>FullImage
+          <li>Window
+          <li>Step
+          <li>Boundary
+          <li>PatchBoundary
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li>0-1
+          <li>(mm)0:ImageSize
+          <li>(mm)0:ImageSize
+          <li>NoPadding:ZeroPadding
+          <li>Full:ROI:None
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li>0
+          <li>6.3
+          <li>6.3
+          <li>NoPadding
+          <li>Full
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li>Whether computations across the entire image need to happen in addition to lattice
+          <li>Window of single lattice node (number based on experiments by CBIG) - should be same as Step for non-overlapping tiles
+          <li>Step size to increase for consecutive lattice node (number based on experiments by CBIG) - should be same as Step for non-overlapping tiles
+          <li>The boundary condition to use for lattice construction
+          <li>Full considers all non-zero pixels and adds weight whereas ROI considers only the indeces having same value as center pixel and None disregards the patch
+        </ul>
+      </td>
+    </tr>
 </table>
 
 
