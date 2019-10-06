@@ -287,13 +287,7 @@ And the list goes on.
         </ul>
       </td>
       <td>
-        <ul>
-          <li>Whether computations across the entire image need to happen in addition to lattice
-          <li>Window of single lattice node (number based on experiments by CBIG) - should be same as Step for non-overlapping tiles
-          <li>Step size to increase for consecutive lattice node (number based on experiments by CBIG) - should be same as Step for non-overlapping tiles
-          <li>The boundary condition to use for lattice construction
-          <li>Full considers all non-zero pixels and adds weight whereas ROI considers only the indeces having same value as center pixel and None disregards the patch
-        </ul>
+        Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for details.
       </td>
     </tr>
 </table>
