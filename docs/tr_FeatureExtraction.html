@@ -457,6 +457,51 @@ Long Zone Low Grey-Level Emphasis (LZLGE) = \( \frac{1}{n_r}\sum_{i}^{M}\sum_{j}
 Long Zone High Grey-Level Emphasis (LZHGE) = \( \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}p(i,j) \cdot i^2 \cdot j^2 \) </li>
 </ul>
 All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.  </td></tr>
+<tr>
+<td align="center">Lattice<br />
+-based </td><td><ul>
+<li>
+Selected features </li>
+<li>
+Feature Maps </li>
+</ul>
+</td><td><ul>
+<li>
+FullImage </li>
+<li>
+Window </li>
+<li>
+Step </li>
+<li>
+Boundary </li>
+<li>
+PatchBoundary </li>
+</ul>
+</td><td><ul>
+<li>
+0-1 </li>
+<li>
+(mm)0:ImageSize </li>
+<li>
+(mm)0:ImageSize </li>
+<li>
+NoPadding:ZeroPadding </li>
+<li>
+Full:ROI:None </li>
+</ul>
+</td><td><ul>
+<li>
+0 </li>
+<li>
+6.3 </li>
+<li>
+6.3 </li>
+<li>
+NoPadding </li>
+<li>
+Full </li>
+</ul>
+</td><td>Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriotions.   </td></tr>
 </table>
 <p>The parameterization of the <b>lattice-based strategy</b> for feature extraction is defined by:</p><ul>
 <li>The grid spacing representing the distance between consecutive lattice points (Default: 6.3mm).</li>
