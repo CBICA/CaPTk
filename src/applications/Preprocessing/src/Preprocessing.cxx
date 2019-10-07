@@ -454,6 +454,11 @@ int algorithmsRunner< itk::Image< float, 4 > >()
       cbica::removeDir(outputDir); // ensure temporary folder is removed
     }
   }
+  else
+  {
+    std::cerr << "The requested algorithm is not defined for 4D images; please retry using stacked 3D images.\n";
+    return EXIT_FAILURE;
+  }
   return EXIT_SUCCESS;
 }
 
