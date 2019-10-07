@@ -424,23 +424,34 @@ int algorithmsRunner< itk::Image< float, 4 > >()
     std::vector< ImageTypeFloat3D::Pointer > movingImage_registered;
     movingImage_registered.resize(movingImages.size());
 
-    auto tempFolder = cbica::createTemporaryDirectory();
-    auto newFixedImageFile = registrationFixedImageFile;
+    auto outputDir = cbica::normPath(cbica::getFilenamePath(outputImageFile) + "/temp");
 
     auto fixedImageInfo = cbica::ImageInfo(registrationFixedImageFile);
     // if the fixed image file is also a 4D image, we shall assume the first image in the series to be the fixed image for the entire series
     if (fixedImageInfo.GetImageDimensions() == 4)
     {
       auto fixedImages = cbica::GetExtractedImages< ImageTypeFloat4D, ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat4D >(registrationFixedImageFile));
-      newFixedImageFile = cbica::normalizePath(tempFolder + "/fixed.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(fixedImages[0], newFixedImageFile);
+      registrationFixedImageFile = cbica::normalizePath(outputDir + "/fixed.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(fixedImages[0], registrationFixedImageFile);
     }
 
+    auto actualOutputImageFile = outputImageFile; // save the original output image file
+
+    // perform registration for each 3D image in the 4D stack using the parameters defined by the user 
     for (size_t i = 0; i < movingImages.size(); i++)
     {
-      auto currentMovingImageFile = tempFolder + "/moving.nii.gz";
-      cbica::WriteImage< ImageTypeFloat3D >(movingImages[i], currentMovingImageFile);
-
+      inputImageFile = cbica::normalizePath(outputDir + "/moving_" + std::to_string(i) + ".nii.gz");
+      outputImageFile = cbica::normalizePath(outputDir + "/output_" + std::to_string(i) + ".nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(movingImages[i], inputImageFile);
+      algorithmsRunner< ImageTypeFloat3D >();
+      movingImage_registered[i] = cbica::ReadImage< ImageTypeFloat3D >(outputImageFile); // store the registered image
+    }
+    auto finalOutput = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(movingImage_registered);
+    cbica::WriteImage< ImageTypeFloat4D >(finalOutput, actualOutputImageFile);
+    // delete all intermediate files if the flag is not set
+    if (!registrationIntermediate)
+    {
+      cbica::removeDir(outputDir); // ensure temporary folder is removed
     }
   }
   return EXIT_SUCCESS;
