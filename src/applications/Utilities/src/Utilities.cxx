@@ -57,6 +57,7 @@ float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = 
 std::string changeOldValues, changeNewValues;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
 float imageStack2JoinSpacing = 1.0;
+int joinedImage2stackedAxis;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
 
@@ -617,12 +618,13 @@ int algorithmsRunner()
     std::cout << indexToConvert << " ==> " << output << "\n";
     return EXIT_SUCCESS;
   }
-
+  
   return EXIT_SUCCESS;
 }
 
+//! helper function to image stack joining
 template< class TImageType, class TOutputImageType >
-int algorithmsRunner_imageStack(std::vector< std::string >& inputImageFiles)
+int algorithmsRunner_imageStack2join(std::vector< std::string >& inputImageFiles)
 {
   std::vector< typename TImageType::Pointer > inputImages;
   inputImages.resize(inputImageFiles.size());
@@ -632,6 +634,25 @@ int algorithmsRunner_imageStack(std::vector< std::string >& inputImageFiles)
   }
   auto output = cbica::GetJoinedImage< TImageType, TOutputImageType >(inputImages, imageStack2JoinSpacing);
   cbica::WriteImage< TOutputImageType >(output, outputImageFile);
+  return EXIT_SUCCESS;
+}
+
+//! helper function to image stack extraction
+template< class TImageType, class TOutputImageType >
+int algorithmsRunner_join2imageStack()
+{
+  auto outputImages = cbica::GetExtractedImages< TImageType, TOutputImageType >(cbica::ReadImage< TImageType >(inputImageFile), joinedImage2stackedAxis);
+  auto outputDir = cbica::getFilenamePath(outputImageFile, false);
+  cbica::createDir(outputDir);
+
+  for (size_t i = 0; i < outputImages.size(); i++)
+  {
+    cbica::WriteImage< TOutputImageType >(
+      outputImages[i],
+      cbica::normalizePath(outputDir + "/extractedImage_" + std::to_string(i) + ".nii.gz")
+      );
+  }
+  return EXIT_SUCCESS;
 }
 
 
@@ -927,6 +948,26 @@ int main(int argc, char** argv)
   else if (parser.isPresent("j2e"))
   {
     requestedAlgorithm = JoinedImage2Stack;
+    parser.getParameterValue("j2e", joinedImage2stackedAxis);
+    auto imageInfo_first = cbica::ImageInfo(inputImageFile);
+
+    switch (imageInfo_first.GetImageDimensions())
+    {
+    case 3:
+    {
+      using TImageType = itk::Image<float, 3>;
+      using TOImageType = itk::Image<float, 2>;
+      algorithmsRunner_join2imageStack< TImageType, TOImageType >();
+    }
+    case 4:
+    {
+      using TImageType = itk::Image<float, 4>;
+      using TOImageType = itk::Image<float, 3>;
+      algorithmsRunner_join2imageStack< TImageType, TOImageType >();
+    }
+    default:
+      break;
+    }
   }
   else if (parser.isPresent("e2j"))
   {
@@ -951,13 +992,13 @@ int main(int argc, char** argv)
     {
       using TImageType = itk::Image<float, 2>;
       using TOImageType = itk::Image<float, 3>;
-      algorithmsRunner_imageStack< TImageType, TOImageType >(imagesToJoin);
+      algorithmsRunner_imageStack2join< TImageType, TOImageType >(imagesToJoin);
     }
     case 3:
     {
       using TImageType = itk::Image<float, 3>;
       using TOImageType = itk::Image<float, 4>;
-      algorithmsRunner_imageStack< TImageType, TOImageType >(imagesToJoin);
+      algorithmsRunner_imageStack2join< TImageType, TOImageType >(imagesToJoin);
     }
     default:
       break;
