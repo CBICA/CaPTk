@@ -352,9 +352,10 @@ namespace cbica
   Uses the itk::JoinSeriesImageFilter to accomplish this
   
   \param inputImage The vector of images from which the larger image is to be extracted
+  \param newSpacing The spacing in the new dimension
   */
   template< class TInputImageType, class TOutputImageType >
-  typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages)
+  typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages, double newSpacing = 1.0)
   {
    if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
    {
@@ -363,6 +364,7 @@ namespace cbica
      exit(EXIT_FAILURE);
    }
    auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
+   joinFilter->SetSpacing(newSpacing);
    
    for (size_t N = 0; N < inputImages.size(); N++)
    {
