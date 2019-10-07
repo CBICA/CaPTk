@@ -42,7 +42,9 @@ enum AvailableAlgorithms
   ThresholdBinary,
   ConvertFormat,
   Image2World,
-  World2Image
+  World2Image,
+  ImageStack2Join,
+  JoinedImage2Stack
 };
 
 int requestedAlgorithm = 0;
@@ -655,6 +657,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("cov", "convert", cbica::Parameter::BOOLEAN, "0-1", "The values that will go inside and outside the thresholded region", "Defaults to '1'");
   parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-i2w 10,20,30'");
   parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
+  parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::STRING, "Axis to extract", "The axis along with the images are to be extracted from", "Defaults to InputImageType::ImageDimension: for extraction along Z, use '3'");
+  parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Defaults to 1.0", "Pass the folder containing all images in '-i'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
