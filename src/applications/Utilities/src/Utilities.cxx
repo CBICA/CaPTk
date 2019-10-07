@@ -56,6 +56,7 @@ int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
+float imageStack2JoinSpacing = 1.0;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
 
@@ -620,6 +621,19 @@ int algorithmsRunner()
   return EXIT_SUCCESS;
 }
 
+template< class TImageType, class TOutputImageType >
+int algorithmsRunner_imageStack(std::vector< std::string >& inputImageFiles)
+{
+  std::vector< typename TImageType::Pointer > inputImages;
+  inputImages.resize(inputImageFiles.size());
+  for (size_t i = 0; i < inputImageFiles.size(); i++)
+  {
+    inputImages[i] = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+  }
+  auto output = cbica::GetJoinedImage< TImageType, TOutputImageType >(inputImages, imageStack2JoinSpacing);
+  cbica::WriteImage< TOutputImageType >(output, outputImageFile);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -658,7 +672,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-i2w 10,20,30'");
   parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
   parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::STRING, "Axis to extract", "The axis along with the images are to be extracted from", "Defaults to InputImageType::ImageDimension: for extraction along Z, use '3'");
-  parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Defaults to 1.0", "Pass the folder containing all images in '-i'");
+  parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Defaults to " + std::to_string(imageStack2JoinSpacing), "Pass the folder containing all images in '-i'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -907,6 +921,46 @@ int main(int argc, char** argv)
     {
       std::cerr << "Please provide the coordinate to transform in a comma-separated format: '-w2i 10.5,20.6,30.8'\n";
       return EXIT_FAILURE;
+    }
+  }
+
+  else if (parser.isPresent("j2e"))
+  {
+    requestedAlgorithm = JoinedImage2Stack;
+  }
+  else if (parser.isPresent("e2j"))
+  {
+    requestedAlgorithm = ImageStack2Join;
+    parser.getParameterValue("e2j", imageStack2JoinSpacing);
+
+    auto imagesToJoin = cbica::filesInDirectory(inputImageFile);
+    auto imageInfo_first = cbica::ImageInfo(imagesToJoin[0]);
+    for (size_t i = 1; i < imagesToJoin.size(); i++)
+    {
+      auto currentImageInfo = cbica::ImageInfo(imagesToJoin[i]);
+      if (imageInfo_first.GetImageDimensions() != currentImageInfo.GetImageDimensions())
+      {
+        std::cerr << "The image '" << imagesToJoin[i] << "' has a different dimension with the first image in series; cannot proceed.\n";
+        return EXIT_FAILURE;
+      }      
+    }
+
+    switch (imageInfo_first.GetImageDimensions())
+    {
+    case 2:
+    {
+      using TImageType = itk::Image<float, 2>;
+      using TOImageType = itk::Image<float, 3>;
+      algorithmsRunner_imageStack< TImageType, TOImageType >(imagesToJoin);
+    }
+    case 3:
+    {
+      using TImageType = itk::Image<float, 3>;
+      using TOImageType = itk::Image<float, 4>;
+      algorithmsRunner_imageStack< TImageType, TOImageType >(imagesToJoin);
+    }
+    default:
+      break;
     }
   }
 
