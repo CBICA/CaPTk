@@ -49,6 +49,8 @@ int n3Bias_iterations = 50, n3Bias_fittingLevels = 4, n3Bias_otsuBins = 200, ssR
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true, debugMode = false;
 
+std::string argv_for4DProcessing;
+
 template< class TImageType >
 int algorithmsRunner()
 {
@@ -412,7 +414,35 @@ int algorithmsRunner()
 template< >
 int algorithmsRunner< itk::Image< float, 4 > >()
 {
-  // 4D series image stuff goes here
+  if (requestedAlgorithm == Registration)
+  {
+
+    using ImageTypeFloat4D = itk::Image< float, 4 >;
+    using ImageTypeFloat3D = itk::Image< float, 3 >;
+    // 4D series image stuff goes here
+    auto movingImages = cbica::GetExtractedImages< ImageTypeFloat4D, ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat4D >(inputImageFile));
+    std::vector< ImageTypeFloat3D::Pointer > movingImage_registered;
+    movingImage_registered.resize(movingImages.size());
+
+    auto tempFolder = cbica::createTemporaryDirectory();
+    auto newFixedImageFile = registrationFixedImageFile;
+
+    auto fixedImageInfo = cbica::ImageInfo(registrationFixedImageFile);
+    // if the fixed image file is also a 4D image, we shall assume the first image in the series to be the fixed image for the entire series
+    if (fixedImageInfo.GetImageDimensions() == 4)
+    {
+      auto fixedImages = cbica::GetExtractedImages< ImageTypeFloat4D, ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat4D >(registrationFixedImageFile));
+      newFixedImageFile = cbica::normalizePath(tempFolder + "/fixed.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(fixedImages[0], newFixedImageFile);
+    }
+
+    for (size_t i = 0; i < movingImages.size(); i++)
+    {
+      auto currentMovingImageFile = tempFolder + "/moving.nii.gz";
+      cbica::WriteImage< ImageTypeFloat3D >(movingImages[i], currentMovingImageFile);
+
+    }
+  }
   return EXIT_SUCCESS;
 }
 
@@ -458,6 +488,7 @@ int main(int argc, char** argv)
   if (parser.isPresent("d"))
   {
     parser.getParameterValue("d", debugMode);
+    argv_for4DProcessing += " -d";
   }
 
   if (parser.isPresent("i"))
@@ -588,9 +619,11 @@ int main(int argc, char** argv)
 
   if (parser.isPresent("reg"))
   {
+    argv_for4DProcessing += " -reg";
     requestedAlgorithm = Registration;
 
     parser.getParameterValue("reg", registrationType);
+    argv_for4DProcessing += " -reg " + registrationType;
     std::transform(registrationType.begin(), registrationType.end(), registrationType.begin(), ::toupper);
     if (registrationType.find("RIGID"))
     {
@@ -624,26 +657,32 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("rME", registrationMetrics);
       std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
+      argv_for4DProcessing += " -rME " + registrationMetrics;
     }
     if (parser.isPresent("rNI"))
     {
       parser.getParameterValue("rNI", registrationIterations);
+      argv_for4DProcessing += " -rNI " + registrationIterations;
     }
     if (parser.isPresent("rIS"))
     {
       parser.getParameterValue("rIS", registrationIntermediate);
+      argv_for4DProcessing += " -rIS " + registrationIntermediate;
     }
     if (parser.isPresent("rSg"))
     {
       parser.getParameterValue("rSg", registrationSegmentationMoving);
+      argv_for4DProcessing += " -rSg " + registrationSegmentationMoving;
     }
     if (parser.isPresent("rIA"))
     {
       parser.getParameterValue("rIA", registrationAffineTransformInput);
+      argv_for4DProcessing += " -rIA " + registrationAffineTransformInput;
     }
     if (parser.isPresent("rID"))
     {
       parser.getParameterValue("rID", registrationDeformableTransformInput);
+      argv_for4DProcessing += " -rID " + registrationDeformableTransformInput;
     }
   }
 
