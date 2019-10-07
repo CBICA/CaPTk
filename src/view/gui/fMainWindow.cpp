@@ -1026,7 +1026,7 @@ fMainWindow::~fMainWindow()
 #endif
   }
 
-void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage)
+std::string fMainWindow::ConversionFrom2Dto3D(const std::string &fileName)
 {
   using ImageTypeFloat2D = itk::Image< float, 2 >;
   auto reader = itk::ImageFileReader< ImageTypeFloat2D >::New();
@@ -1048,7 +1048,7 @@ void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsI
   catch (itk::ExceptionObject& e)
   {
     ShowErrorMessage("Exception caught while reading the image '" + fileName + "':\n\n" + e.what());
-    return;
+    return "";
   }
 
   auto image_2D = reader->GetOutput();
@@ -1100,14 +1100,7 @@ void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsI
   auto imageName = m_tempFolderLocation + "/" + cbica::getFilenameBase(fileName) + ".nii.gz";
   cbica::WriteImage< ImageTypeFloat3D >(image_3D, imageName);
 
-  if (loadAsImage)
-  {
-    LoadSlicerImages(imageName, CAPTK::NIfTI);
-  }
-  else
-  {
-    readMaskFile(imageName);
-  }
+  return imageName;
 }
 
 void fMainWindow::about()
@@ -1611,8 +1604,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     }
     if (imageInfo.GetImageDimensions() == 2)
     {
-      ConversionFrom2Dto3D(fname, true);
-      return;
+      fname = ConversionFrom2Dto3D(fname);
     }
     else if (!bFirstLoad)
     {
@@ -3121,29 +3113,32 @@ ImageTypeFloat3D::Pointer fMainWindow::getMaskImage()
 
 void fMainWindow::readMaskFile(const std::string &maskFileName)
 {
+  auto maskFileName_toRead = maskFileName;
   if (!mSlicerManagers.empty())
   {
-    if (cbica::IsDicom(maskFileName))
+    if (cbica::IsDicom(maskFileName_toRead))
     {
-      auto path = cbica::getFilenamePath(maskFileName);
+      auto path = cbica::getFilenamePath(maskFileName_toRead);
       auto filesInDir = cbica::filesInDirectory(path, false);
 
       if (filesInDir.size() == 1) // single DICOM slice
       {
-        dicomfilename = maskFileName;
-        ConversionFrom2Dto3D(maskFileName, false);
-        return;
+        dicomfilename = maskFileName_toRead;
+        maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead);
       }
     }
     else
     {
-      auto maskInfo = cbica::ImageInfo(maskFileName);
-      if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) && (maskInfo.GetImageDimensions() == 2))
+      auto maskInfo = cbica::ImageInfo(maskFileName_toRead);
+      auto imageSize = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
+      auto maskSize = maskInfo.GetImageSize();
+      bool imageSanityCheckDone = false;
+      if ((imageSize[2] == 1) || (maskSize[2] == 1) || (maskInfo.GetImageDimensions() == 2))
       {
         // this is actually a 2D image which has been loaded in CaPTk as a pseudo-3D image
         auto origin_image = mSlicerManagers[0]->mOrigin;
         auto spacings_image = mSlicerManagers[0]->mITKImage->GetSpacing();
-        auto size_image = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
+        auto size_image = imageSize;
 
         auto origin_mask = maskInfo.GetImageOrigins();
         auto spacings_mask = maskInfo.GetImageSpacings();
@@ -3167,8 +3162,13 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
           }
           if (spacings_image[i] != spacings_mask[i])
           {
-            ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
-            return;
+            auto percentageDifference = std::abs(spacings_image[i] - spacings_mask[i] ) * 100;
+            percentageDifference /= spacings_image[i];
+            if (percentageDifference > 0.000001)
+            {
+              ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
+              return;
+            }
           }
           if (size_image[i] != size_mask[i])
           {
@@ -3176,21 +3176,25 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
             return;
           }
         }
-        ConversionFrom2Dto3D(maskFileName, false); // all sanity checks passed; load the mask 
-        return;
+        maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead); // all sanity checks passed; load the mask 
+        imageSanityCheckDone = true;
       }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
-        auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName);
+        auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
         //SaveImage_withFile(0, temp_prev.c_str());
-        if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
+        if (!imageSanityCheckDone)
         {
-          ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
-          return;
+          if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
+          {
+            ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+          imageSanityCheckDone = true;
         }
       }
       using ImageType = itk::Image<unsigned int, 3>;
-      auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName);
+      auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName_toRead);
       inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
 
       auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();

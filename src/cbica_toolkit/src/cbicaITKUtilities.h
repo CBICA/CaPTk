@@ -258,8 +258,19 @@ namespace cbica
       }
       if (spacing_1[i] != spacing_2[i])
       {
-        std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
-        return false;
+        auto percentageDifference = std::abs(spacing_1[i] - spacing_2[i]) * 100;
+        percentageDifference /= spacing_1[i];
+        if (percentageDifference > 0.000001)
+        {
+          std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
+          return false;
+        }
+        else
+        {
+          std::cout << "Ignoring spacing difference of '" <<
+            percentageDifference << "%' in dimension '" <<
+            i << "'\n";
+        }
       }
     }
 
@@ -311,8 +322,19 @@ namespace cbica
       }
       if (imageSpacing1[d] != imageSpacing2[d])
       {
-        std::cout << "The spacing in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
-        return false;
+        auto percentageDifference = std::abs(imageSpacing1[d] - imageSpacing2[d]) * 100;
+        percentageDifference /= imageSpacing1[d];
+        if (percentageDifference > 0.000001)
+        {
+          std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
+          return false;
+        }
+        else
+        {
+          std::cout << "Ignoring spacing difference of '" <<
+            percentageDifference << "%' in dimension '" <<
+            d << "'\n";
+        }
       }
       if (imageOrigin1[d] != imageOrigin2[d])
       {
