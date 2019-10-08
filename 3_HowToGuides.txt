@@ -18,7 +18,7 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 
 /**
 \page ht_Preprocessing Pre-processing
-Contains the following applications: 
+The following applications can be called from the GUI: 
 
 - \subpage preprocessing_dcm2nii "DICOM to NIfTI conversion"
 - \subpage preprocessing_reg "Registration"
@@ -27,6 +27,10 @@ Contains the following applications:
 - \subpage preprocessing_histoMatch "Histogram Matching"
 - \subpage preprocessing_zScoreNorm "Z-Score Normalization"
 
+For a full list of available applications and examples, please use the command: 
+\verbatim
+${CaPTk_InstallDir}/bin/Preprocessing -h
+\endverbatim
 --------
 */
 
@@ -1269,4 +1273,8 @@ This is a command line executable containing the following functionalities:
 - Convert file formats
 - Extract Image Series from Joined stack and vice-versa (4D <-> 3D)
 
+For a full list of available applications and examples, please use the command: 
+\verbatim
+${CaPTk_InstallDir}/bin/Utilities -h
+\endverbatim
 */
