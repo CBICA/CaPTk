@@ -424,6 +424,7 @@ int algorithmsRunner< itk::Image< float, 4 > >()
     movingImage_registered.resize(movingImages.size());
 
     auto outputDir = cbica::normPath(cbica::getFilenamePath(outputImageFile) + "/temp");
+    cbica::createDir(outputDir);
 
     auto fixedImageInfo = cbica::ImageInfo(registrationFixedImageFile);
     // if the fixed image file is also a 4D image, we shall assume the first image in the series to be the fixed image for the entire series
