@@ -973,6 +973,13 @@ int main(int argc, char** argv)
   else if (parser.isPresent("e2j"))
   {
     requestedAlgorithm = ImageStack2Join;
+    int pos;
+    parser.compareParameter("e2j", pos);
+    if (argc <= pos + 1)
+    {
+      std::cerr << "Please provide the spacing along the joined axis: '-e2j 1.0'.\n";
+      return EXIT_FAILURE;
+    }
     parser.getParameterValue("e2j", imageStack2JoinSpacing);
 
     auto imagesToJoin = cbica::filesInDirectory(inputImageFile);
