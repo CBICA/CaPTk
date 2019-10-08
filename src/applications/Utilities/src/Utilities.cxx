@@ -701,6 +701,13 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-i C:/test.nii.gz -inf", "Prints out image information to console (for DICOMs, this does a full dump of the tags)");
   parser.addExampleUsage("-i C:/test/1.dcm -o C:/test.nii.gz -d2n C:/test_reference.nii.gz", "DICOM to NIfTI conversion and do sanity check of the converted image with the reference image");
   parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/test_dicom/ -n2d C:/referenceDICOM/", "NIfTI to DICOM conversion and do sanity check of the converted image with the reference image");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/test_dicom/ -ds C:/referenceDICOM/ -dsJ C:/dicomSeg.json", "NIfTI Segmentation to DICOM-Seg conversion using the supplied reference DICOM and JSON");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -or RAI", "Re-orient input image to RAI");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -thO 1", "Otsu Threshold");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -tBn 50,100", "Binary Threshold between 50 and 100 with default outside & inside values");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100 -tOI -100,10000", "Above & Below Threshold between 50 and 100 with outside value -100 and inside value 10000");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output -j2e 1", "Extract the joined image into its series");
+  parser.addExampleUsage("-i C:/test/ -o C:/output.nii.gz -e2j 1.5", "Join the extracted images into a single image with spacing in the new dimension as 1.5");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
 
