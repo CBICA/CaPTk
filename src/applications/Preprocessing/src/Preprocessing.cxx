@@ -642,11 +642,8 @@ int main(int argc, char** argv)
     parser.getParameterValue("reg", registrationType);
     argv_for4DProcessing += " -reg " + registrationType;
     std::transform(registrationType.begin(), registrationType.end(), registrationType.begin(), ::toupper);
-    if (registrationType.find("RIGID"))
-    {
-      registrationTypeInt = RegistrationTypeEnum::Rigid;
-    }
-    else if (registrationType.find("AFFINE"))
+    if ((registrationType.find("RIGID") != std::string::npos) || 
+      (registrationType.find("AFFINE") != std::string::npos))
     {
       registrationTypeInt = RegistrationTypeEnum::Affine;
     }
