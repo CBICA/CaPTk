@@ -75,7 +75,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm == ZScoreNormalize)
+  else if (requestedAlgorithm == ZScoreNormalize)
   {
     ZScoreNormalizer< TImageType > normalizer;
     normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
@@ -90,7 +90,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm == P1P2Preprocess)
+  else if (requestedAlgorithm == P1P2Preprocess)
   {
     P1P2Normalizer< TImageType > normalizer;
     normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
@@ -99,7 +99,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm == BiasCorrectionN3)
+  else if (requestedAlgorithm == BiasCorrectionN3)
   {
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
     auto corrector = itk::N3MRIBiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
@@ -127,7 +127,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm == BiasCorrectionN4)
+  else if (requestedAlgorithm == BiasCorrectionN4)
   {
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
     using TBiasCorrectorType = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >;
@@ -158,7 +158,7 @@ int algorithmsRunner()
 
   }
 
-  if (requestedAlgorithm == SusanDenoisingAlgo)
+  else if (requestedAlgorithm == SusanDenoisingAlgo)
   {
     SusanDenoising denoiser;
     denoiser.SetSigma(ssSigma);
@@ -173,7 +173,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm == Registration)
+  else if (requestedAlgorithm == Registration)
   {
     // call the greedy executable here with the proper API. 
     // see TumorGrowthModelling regarding how it is done there
@@ -223,7 +223,7 @@ int algorithmsRunner()
       std::cerr << "WARNING: Output filename is not defined; will try to save in input directory.\n";
       outputImageFile = cbica::getFilenamePath(inputImageFile) + "/registrationOutput.nii.gz";
     }
-    auto outputDir = cbica::getFilenamePath(outputImageFile);
+    auto outputDir = cbica::getFilenamePath(outputImageFile, false);
     auto inputFile_base = cbica::getFilenameBase(inputImageFile);
     auto fixedFile_base = cbica::getFilenameBase(registrationFixedImageFile);
     std::map< std::string, std::string > intermediateFiles;
