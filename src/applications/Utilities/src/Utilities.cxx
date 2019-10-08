@@ -969,6 +969,7 @@ int main(int argc, char** argv)
     default:
       break;
     }
+    return EXIT_SUCCESS;
   }
   else if (parser.isPresent("e2j"))
   {
@@ -983,6 +984,11 @@ int main(int argc, char** argv)
     parser.getParameterValue("e2j", imageStack2JoinSpacing);
 
     auto imagesToJoin = cbica::filesInDirectory(inputImageFile);
+    if (imagesToJoin.empty())
+    {
+      std::cerr << "Please pass a folder containing images the join using '-i'.\n";
+      return EXIT_FAILURE;
+    }
     auto imageInfo_first = cbica::ImageInfo(imagesToJoin[0]);
     for (size_t i = 1; i < imagesToJoin.size(); i++)
     {
@@ -1011,6 +1017,7 @@ int main(int argc, char** argv)
     default:
       break;
     }
+    return EXIT_SUCCESS;
   }
 
   // this doesn't need any template initialization
