@@ -416,7 +416,6 @@ int algorithmsRunner< itk::Image< float, 4 > >()
 {
   if (requestedAlgorithm == Registration)
   {
-
     using ImageTypeFloat4D = itk::Image< float, 4 >;
     using ImageTypeFloat3D = itk::Image< float, 3 >;
     // 4D series image stuff goes here
