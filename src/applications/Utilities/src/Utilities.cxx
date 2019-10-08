@@ -641,15 +641,16 @@ int algorithmsRunner_imageStack2join(std::vector< std::string >& inputImageFiles
 template< class TImageType, class TOutputImageType >
 int algorithmsRunner_join2imageStack()
 {
-  auto outputImages = cbica::GetExtractedImages< TImageType, TOutputImageType >(cbica::ReadImage< TImageType >(inputImageFile), joinedImage2stackedAxis);
-  auto outputDir = cbica::getFilenamePath(outputImageFile, false);
-  cbica::createDir(outputDir);
+  auto outputImages = cbica::GetExtractedImages< TImageType, TOutputImageType >(cbica::ReadImage< TImageType >(inputImageFile));
+  std::string path, base, ext;
+  cbica::splitFileName(outputImageFile, path, base, ext);
+  cbica::createDir(path);
 
   for (size_t i = 0; i < outputImages.size(); i++)
   {
     cbica::WriteImage< TOutputImageType >(
       outputImages[i],
-      cbica::normalizePath(outputDir + "/extractedImage_" + std::to_string(i) + ".nii.gz")
+      cbica::normalizePath(path + "/" + base + "_" + std::to_string(i) + ".nii.gz")
       );
   }
   return EXIT_SUCCESS;
@@ -692,7 +693,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("cov", "convert", cbica::Parameter::BOOLEAN, "0-1", "The values that will go inside and outside the thresholded region", "Defaults to '1'");
   parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-i2w 10,20,30'");
   parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
-  parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::STRING, "Axis to extract", "The axis along with the images are to be extracted from", "Defaults to InputImageType::ImageDimension: for extraction along Z, use '3'");
+  parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract along the final axis");
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Defaults to " + std::to_string(imageStack2JoinSpacing), "Pass the folder containing all images in '-i'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
@@ -948,7 +949,7 @@ int main(int argc, char** argv)
   else if (parser.isPresent("j2e"))
   {
     requestedAlgorithm = JoinedImage2Stack;
-    parser.getParameterValue("j2e", joinedImage2stackedAxis);
+
     auto imageInfo_first = cbica::ImageInfo(inputImageFile);
 
     switch (imageInfo_first.GetImageDimensions())
