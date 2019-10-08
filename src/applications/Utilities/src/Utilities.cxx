@@ -693,7 +693,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("cov", "convert", cbica::Parameter::BOOLEAN, "0-1", "The values that will go inside and outside the thresholded region", "Defaults to '1'");
   parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-i2w 10,20,30'");
   parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
-  parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract along the final axis");
+  parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Defaults to " + std::to_string(imageStack2JoinSpacing), "Pass the folder containing all images in '-i'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
