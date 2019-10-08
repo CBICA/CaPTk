@@ -508,7 +508,8 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -n3", "This commands performs N3 Bias correction of 'C:/input.nii.gz' using the default parameters");
   parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -ss", "This commands performs Susan Smoothing/Denoising of 'C:/input.nii.gz' using the default parameters");
   parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -reg Deformable -rFI C:/fixed.nii.gz", "This commands performs deformable registration of 'C:/input.nii.gz' to 'C:/fixed.nii.gz' using the default parameters");
-  parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -reg Deformable -rFI C:/fixed.nii.gz -rIA C:/input2fixed.mat", "This commands performs deformable registration of 'C:/input.nii.gz' to 'C:/fixed.nii.gz' using the default parameters and (if found) the affine transformation 'C:/input2fixed.mat'");
+  parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -reg Deformable -rFI C:/fixed.nii.gz -rIA C:/input2fixed.mat", "This commands performs deformable registration of 'C:/input.nii.gz' to 'C:/fixed.nii.gz' using the default parameters and the affine transformation (if found) 'C:/input2fixed.mat'");
+  parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -reg Deformable -rFI C:/fixed.nii.gz -rIA C:/input2fixed.mat -rID C:/input2fixed.nii.gz", "This commands applies the deformation field (if found) in 'C:/input2fixed.nii.gz' to 'C:/input.nii.gz' after applying the affine transformation (if found) 'C:/input2fixed.mat'");
   
   if (parser.isPresent("d"))
   {
