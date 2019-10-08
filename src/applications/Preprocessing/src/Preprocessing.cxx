@@ -261,16 +261,15 @@ int algorithmsRunner()
     if (!cbica::fileExists(registrationAffineTransformInput))
     {
       // we always do affine
-      commandToCall = greedyPathAndDim +
+      commandToCall = greedyPathAndDim + " -a" +
         commonCommands +
         metricsCommand +
-        " -ia-image-centers " + intermediateFiles["Affine"];
+        " -ia-image-centers -o " + intermediateFiles["Affine"];
       ;
       if (debugMode)
       {
         std::cout << "Starting Affine registration.\n";
         std::cout << "commandToCall: \n" << commandToCall << "\n";
-
       }
       if (std::system(commandToCall.c_str()) != 0)
       {
