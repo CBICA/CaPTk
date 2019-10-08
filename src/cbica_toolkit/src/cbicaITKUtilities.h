@@ -398,11 +398,11 @@ namespace cbica
   */
   template< class TInputImageType, class TOutputImageType >
   std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage, 
-   int axisToExtract = TInputImageType::ImageDimension, bool directionsCollapseIdentity = false)
+   int axisToExtract = TInputImageType::ImageDimension - 1, bool directionsCollapseIdentity = false)
   {
    std::vector<typename TOutputImageType::Pointer> returnImages;
 
-   if (TOutputImageType::ImageDimension != TInputImageType::ImageDimension + 1)
+   if (TOutputImageType::ImageDimension != TInputImageType::ImageDimension - 1)
    {
      std::cerr << "Only works when input and output image dimensions are N and (N-1), respectively.\n";
      return returnImages;
@@ -410,6 +410,8 @@ namespace cbica
    // set the sub-image properties
    auto imageSize = inputImage->GetLargestPossibleRegion().GetSize();
    auto regionSize = imageSize;
+   regionSize[axisToExtract] = 0;
+   returnImages.resize(imageSize[axisToExtract]);
 
    typename TInputImageType::IndexType regionIndex;
    regionIndex.Fill(0);
@@ -439,8 +441,8 @@ namespace cbica
        std::cerr << "Extracting failed: " << e.what() << "\n";
      }
      auto temp = extractor->GetOutput();
-     temp->DisconnectPipeline(); // ensure a hard copy is done 
-     returnImages.push_back(temp);
+     //temp->DisconnectPipeline(); // ensure a hard copy is done 
+     returnImages[i] = temp;
    }
    return returnImages;
   }
