@@ -205,7 +205,7 @@ int algorithmsRunner()
     }
 
     // add the fixed and moving files
-    commonCommands += " -i " + registrationFixedImageFile + " " + inputImageFile;
+    commonCommands += " -i " + cbica::normPath(registrationFixedImageFile) + " " + cbica::normPath(inputImageFile);
 
     std::string metricsCommand = " -m ";
     if (registrationMetrics.find("NCC") != std::string::npos)
@@ -234,7 +234,7 @@ int algorithmsRunner()
 
     bool defaultNamedUsed = false;
     // populate default names for intermediate files
-    if (!registrationAffineTransformInput.empty())
+    if (registrationAffineTransformInput.empty())
     {
       intermediateFiles["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
       defaultNamedUsed = true;
@@ -243,7 +243,7 @@ int algorithmsRunner()
     {
       intermediateFiles["Affine"] = registrationAffineTransformInput;
     }
-    if (!registrationDeformableTransformInput.empty())
+    if (registrationDeformableTransformInput.empty())
     {
       intermediateFiles["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
       intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
@@ -269,6 +269,8 @@ int algorithmsRunner()
       if (debugMode)
       {
         std::cout << "Starting Affine registration.\n";
+        std::cout << "commandToCall: \n" << commandToCall << "\n";
+
       }
       if (std::system(commandToCall.c_str()) != 0)
       {
