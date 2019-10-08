@@ -1267,5 +1267,6 @@ This is a command line executable containing the following functionalities:
   - Otsu 
   - Binary
 - Convert file formats
+- Extract Image Series from Joined stack and vice-versa (4D <-> 3D)
 
 */
