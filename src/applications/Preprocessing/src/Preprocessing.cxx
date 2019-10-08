@@ -423,7 +423,7 @@ int algorithmsRunner< itk::Image< float, 4 > >()
     std::vector< ImageTypeFloat3D::Pointer > movingImage_registered;
     movingImage_registered.resize(movingImages.size());
 
-    auto tempFolder = cbica::normPath(cbica::getFilenamePath(outputImageFile) + "/temp");
+    auto tempFolder = cbica::normPath(cbica::getFilenamePath(outputImageFile, false) + "/temp");
     cbica::createDir(tempFolder);
 
     auto fixedImageInfo = cbica::ImageInfo(registrationFixedImageFile);
