@@ -49,8 +49,6 @@ int n3Bias_iterations = 50, n3Bias_fittingLevels = 4, n3Bias_otsuBins = 200, ssR
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true, debugMode = false;
 
-std::string argv_for4DProcessing;
-
 template< class TImageType >
 int algorithmsRunner()
 {
@@ -645,11 +643,9 @@ int main(int argc, char** argv)
 
   if (parser.isPresent("reg"))
   {
-    argv_for4DProcessing += " -reg";
     requestedAlgorithm = Registration;
 
     parser.getParameterValue("reg", registrationType);
-    argv_for4DProcessing += " -reg " + registrationType;
     std::transform(registrationType.begin(), registrationType.end(), registrationType.begin(), ::toupper);
     if ((registrationType.find("RIGID") != std::string::npos) || 
       (registrationType.find("AFFINE") != std::string::npos))
@@ -680,32 +676,26 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("rME", registrationMetrics);
       std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
-      argv_for4DProcessing += " -rME " + registrationMetrics;
     }
     if (parser.isPresent("rNI"))
     {
       parser.getParameterValue("rNI", registrationIterations);
-      argv_for4DProcessing += " -rNI " + registrationIterations;
     }
     if (parser.isPresent("rIS"))
     {
       parser.getParameterValue("rIS", registrationIntermediate);
-      argv_for4DProcessing += " -rIS " + registrationIntermediate;
     }
     if (parser.isPresent("rSg"))
     {
       parser.getParameterValue("rSg", registrationSegmentationMoving);
-      argv_for4DProcessing += " -rSg " + registrationSegmentationMoving;
     }
     if (parser.isPresent("rIA"))
     {
       parser.getParameterValue("rIA", registrationAffineTransformInput);
-      argv_for4DProcessing += " -rIA " + registrationAffineTransformInput;
     }
     if (parser.isPresent("rID"))
     {
       parser.getParameterValue("rID", registrationDeformableTransformInput);
-      argv_for4DProcessing += " -rID " + registrationDeformableTransformInput;
     }
   }
 
