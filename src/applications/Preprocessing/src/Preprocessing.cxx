@@ -512,7 +512,6 @@ int main(int argc, char** argv)
   if (parser.isPresent("d"))
   {
     parser.getParameterValue("d", debugMode);
-    argv_for4DProcessing += " -d";
   }
 
   if (parser.isPresent("i"))
