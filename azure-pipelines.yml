@@ -170,8 +170,7 @@ jobs:
 
         ls -lt *_Installer.*
 
-        # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.exe
-        # mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
         cd ../
 
