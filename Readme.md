@@ -7,6 +7,7 @@
     <a href="https://hub.docker.com/r/cbica/captk/builds" alt="Build Status"><img src="https://img.shields.io/docker/cloud/build/cbica/captk"></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues/CBICA/CaPTk.svg" /></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues-closed/CBICA/CaPTk.svg" /></a>
+    <a href="https://doi.org/10.1117/1.JMI.5.1.011018" alt="Citation"><img src="https://img.shields.io/badge/cite-citation-blue" />
     <img src="https://img.shields.io/badge/language-c%2B%2B11-blue.svg" />
 </p>
 

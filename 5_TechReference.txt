@@ -75,7 +75,7 @@ And the list goes on.
         <ul>
           <li>Bin Frequency
         </ul>
-      <td>Num_Bins
+      <td>Bins
       <td>N.A.
       <td>10
       <td>
@@ -137,8 +137,8 @@ And the list goes on.
           <li>Variance
           <li>Auto<br>Correlation          
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Radius <br><br>Dimensions <br><br>Offset <br><br>Axis
-      <td>N.A. <br><br>3:13 <br><br>N.A. <br><br>2D:3D <br><br>Individual/Average/Combined<br><br>x,y,z
+      <td>Bins <br><br>Radius <br><br>Dimensions <br><br>Offset <br><br>Axis
+      <td>N.A. <br><br>N.A. <br><br>2D:3D <br><br>Individual/Average/Combined<br><br>x,y,z
       <td>10 <br><br>13 <br><br>2 <br><br>3D  <br><br>Average <br><br>z
       <td> 
         For a given image, a Grey Level Co-occurrence Matrix is created and \f$ g(i,j) \f$ represents an element in matrix
@@ -170,9 +170,9 @@ And the list goes on.
           <li>LRLGE
           <li>LRHGE    
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Radius <br><br>Dimensions <br><br>Axis <br><br>Offset <br><br>Distance_Range
-      <td>N.A. <br><br>3:13 <br><br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>Individual/Average/Combined<br><br>1:5
-      <td>10 <br><br>13 <br><br><br>2 <br><br>3D <br><br>z  <br><br>Average <br><br>1
+      <td>Bins <br><br>Radius <br><br>Dimensions <br><br>Axis <br><br>Offset
+      <td>N.A. <br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>Individual/Average/Combined
+      <td>10 <br><br>13 <br><br>2 <br><br>3D <br><br>z  <br><br>Average <br><br>1
       <td>
         For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j. Please note that some features are only extracted in DebugMode (by using the "-d" parameter from the command line); these defines features that are mathematically formulated in previous published material but not completely aligned with The Image Biomarker Standardisation Initiative.
         <ul>
@@ -200,9 +200,9 @@ And the list goes on.
           <li>Complexity
           <li>Strength
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Dimensions <br><br>Axis <br><br>Distance_Range
-      <td>N.A. <br><br>3:13 <br> <br><br>2D:3D <br><br>x,y,z <br><br>1:5
-      <td>10 <br><br>13 <br><br><br>3D <br><br>N.A. <br><br>1
+      <td>Bins <br><br>Dimensions <br><br>Axis
+      <td>N.A. <br><br>2D:3D <br><br>x,y,z 
+      <td>10 <br><br>13 <br><br>3D <br><br>N.A. <br><br>1
       <td> 
         <ul>
           <li>Coarseness =\f$ \Big[ \epsilon + \sum_{i=0}^{G_{k}} p_{i}s(i) \Big]\f$
@@ -232,9 +232,9 @@ And the list goes on.
           <li>GLV
           <li>ZLV      
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Radius <br><br>Dimensions <br><br>Axis <br><br>Distance_Range
-      <td>N.A. <br><br>3:13 <br><br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>1:5
-      <td>10 <br><br>13 <br><br><br>2 <br><br>3D <br><br>z <br><br>4
+      <td>Bins <br><br>Radius <br><br>Dimensions <br><br>Axis
+      <td>N.A. <br><br>N.A. <br><br>2D:3D <br><br>x,y,z 
+      <td>10 <br><br>13 <br><br>2 <br><br>3D <br><br>z <br><br>4
       <td>
         For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j.
         <ul>
@@ -251,6 +251,44 @@ And the list goes on.
           <li>Long Zone High Grey-Level Emphasis (LZHGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}p(i,j) \cdot i^2 \cdot j^2 \f$ 
         </ul> 
         All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.
+    </tr>
+    <tr>
+      <td align="center">Lattice<br>-based
+      <td>
+        <ul>
+          <li>Selected features
+          <li>Feature Maps
+        </ul>
+      <td>
+        <ul>
+          <li>FullImage
+          <li>Window
+          <li>Step
+          <li>Boundary
+          <li>PatchBoundary
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li>0-1
+          <li>(mm)0:ImageSize
+          <li>(mm)0:ImageSize
+          <li>NoPadding:ZeroPadding
+          <li>Full:ROI:None
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li>0
+          <li>6.3
+          <li>6.3
+          <li>NoPadding
+          <li>Full
+        </ul>
+      </td>
+      <td>
+        Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriotions.
+      </td>
     </tr>
 </table>
 

@@ -178,7 +178,7 @@ void algorithmRunner()
   outputFilename = features.GetOutputFile();
 }
 
-//! Calls cbica::stringSplit() by checking for both "," and "|" as deliminators
+//! Calls cbica::stringSplit() by checking for ",", ";" and "|" as deliminators
 std::vector< std::string > splitTheString(const std::string &inputString)
 {
   std::vector< std::string > returnVector;
@@ -189,6 +189,10 @@ std::vector< std::string > splitTheString(const std::string &inputString)
   else if (inputString.find("|") != std::string::npos)
   {
     returnVector = cbica::stringSplit(inputString, "|");
+  }
+  else if (inputString.find(";") != std::string::npos)
+  {
+    returnVector = cbica::stringSplit(inputString, ";");
   }
   else if(!inputString.empty()) // only a single value is present
   {
@@ -204,7 +208,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("p", "paramFile", cbica::Parameter::FILE, ".csv", "A csv file with all features and its parameters filled", "Default: '../data/1_params_default.csv'");
   parser.addRequiredParameter("o", "outputDir", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory to save results", "Result can be a CSV or Feature Maps (for lattice)");
 
-  parser.addOptionalParameter("b", "batchFile", cbica::Parameter::FILE, ".csv", "Input file with Multi-Patient Multi-Modality details", "Header format is as follows:", "'PATIENT_ID,IMAGES,MASK,ROI,SELECTED_ROI,ROI_LABEL,", "SELECTED_FEATURES,PARAM_FILE'", "Delineate individual fields by '|'");
+  parser.addOptionalParameter("b", "batchFile", cbica::Parameter::FILE, ".csv", "Input file with Multi-Patient Multi-Modality details", "Example: '${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureExtraction.csv'");
 
   parser.addOptionalParameter("n", "name_patient", cbica::Parameter::STRING, "none", "Patient id", "Required for single subject mode");
   parser.addOptionalParameter("i", "imagePaths", cbica::Parameter::STRING, "none", "Absolute path of each coregistered modality", "Delineate by ','", "Example: -i c:/test1.nii.gz,c:/test2.nii.gz", "Required for single subject mode");

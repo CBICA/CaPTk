@@ -68,7 +68,7 @@ This tool registers multiple moving images to a single target image using the Gr
 	-# The output image is saved in the specified locations.
   -# This can also be used from the command line:
 \verbatim
-${CaPTk_InstallDir}/bin/GreedyRegistration.exe -i C:/test/moving.nii.gz -f C:/test/fixed.nii.gz -o C:/test/output.nii.gz -t C:/test/output.mat -reg -trf -a -m MI -n 100x50x5 -th 4
+${CaPTk_InstallDir}/bin/Preprocessing.exe -i moving.nii.gz -rFI fixed.nii.gz -o output.nii.gz -reg Affine -rME NCC-2x2x2 -rIS 1 -rNI 100,50,5
 \endverbatim
  
 --------
@@ -339,8 +339,21 @@ ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -b /usr/path/batch.csv -p /usr/pat
 \verbatim
 ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv -f 1
 \endverbatim
+
+The above command extracts features defined in the parameter file defined in "-p" for the input images defined in "-i" in the regions defined in "-m" and "-r". The output is populated using the subject ID from "-n", modality information from "-t" and annotation label information from "-l" and saves the results in the path defined in "-o".
   
-An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureextraction.csv</b>.
+An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureextraction.csv</b>. An explanation of the inputs is given below (the headers are case-insensitive):
+
+|         Header        |                                       Description                                      |
+|:---------------------:|:--------------------------------------------------------------------------------------:|
+|       PATIENT_ID      |                     The subject ID of the images getting processed                     |
+|         IMAGES        | The co-registered input images for whom features are to be extracted; separated by '|' |
+|       MODALITIES      |          The corresponding modalities used in the output CSV; separated by '|'         |
+|        ROIFile        |        The mask file which defines the annotated regions for extracting features       |
+|      SELECTED_ROI     |        The selected annotations from which to extract features; separated by '|'       |
+|       ROI_LABEL       |      The corresponding annotation labels used in the output CSV; separated by '|'      |
+|   OUTPUT (OPTIONAL)   |                         The output file for the current subject                        |
+| PARAM_FILE (OPTIONAL) |                       The parameter file for the current subject                       |
 	
 NOTE: The output of Feature Extraction can be used to run the <a href="Training_Module.html">Training Module</a>.
 

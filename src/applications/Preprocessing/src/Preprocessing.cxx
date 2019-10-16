@@ -229,9 +229,13 @@ int algorithmsRunner()
     auto const _registrationMetricsNII = _registrationMetrics + ".nii.gz";
     auto const _fixedFileTOInputFileBase = fixedFile_base + "TO" + inputFile_base;
     auto const _inputFileTOFixedFileBase = inputFile_base + "TO" + fixedFile_base;
+
+    bool defaultNamedUsed = false;
+    // populate default names for intermediate files
     if (!registrationAffineTransformInput.empty())
     {
       intermediateFiles["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
+      defaultNamedUsed = true;
     }
     else
     {
@@ -240,20 +244,22 @@ int algorithmsRunner()
     if (!registrationDeformableTransformInput.empty())
     {
       intermediateFiles["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
+      intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+      defaultNamedUsed = true;
     }
     else
     {
       intermediateFiles["Deform"] = registrationDeformableTransformInput;
+      std::string path, base, ext;
+      cbica::splitFileName(registrationDeformableTransformInput, path, base, ext);
+      intermediateFiles["DeformInv"] = path + "/" + base + "-Inv.nii.gz";
     }
-    intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
-    intermediateFiles["OutputAffine"] = outputDir + "/outputAffine_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-    intermediateFiles["OutputDeform"] = outputDir + "/outputDeform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-    intermediateFiles["OutputDeformInv"] = outputDir + "/outputDeform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
 
+    std::string commandToCall;
     if (!cbica::fileExists(registrationAffineTransformInput))
     {
       // we always do affine
-      std::string commandToCall = greedyPathAndDim +
+      commandToCall = greedyPathAndDim +
         commonCommands +
         metricsCommand +
         " -ia-image-centers " + intermediateFiles["Affine"];
@@ -386,11 +392,15 @@ int algorithmsRunner()
     }
 
     // delete all intermediate files if the flag is not set
-    if (registrationIntermediate != 1)
+    if (!registrationIntermediate)
     {
-      for (auto it = intermediateFiles.begin(); it != intermediateFiles.end(); ++it)
+      // only do the deletion if default names are used
+      if (defaultNamedUsed)
       {
-        std::remove(it->second.c_str());
+        for (const auto& it : intermediateFiles)
+        {
+          std::remove(it.second.c_str());
+        }
       }
     }
   }
@@ -440,8 +450,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The umber of iterations per level of multi-res", "Defaults to " + registrationIterations);
   parser.addOptionalParameter("rIS", "regInterSave", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the intermediate files are to be saved or not", "Defaults to " + std::to_string(registrationIntermediate));
   parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
-  parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image");
-  parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image");
+  parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped");
+  parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
 
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
   

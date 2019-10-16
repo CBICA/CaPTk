@@ -204,6 +204,7 @@ jobs:
 
         mv bin bin_windows
         tar cvfz bin_windows_20190929.tar.gz bin_windows
+        rm -rf bin_windows
       displayName: 'Zipping bin'
 
     - powershell: |
@@ -257,19 +258,23 @@ jobs:
         # ls ./src/applications/Preprocessing/greedy
       displayName: 'Git Submodule Init and Update'
 
+    - bash: |
+        df -k .
+      displayName: 'Disk space check'
+
     - task: CacheBeta@0
       inputs:
-        key: '"bin_linux_20190929.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_linux_20191003.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
         restoreKeys: |
-          "bin_linux_20190929.tar.gz"
+          "bin_linux_20191003.tar.gz"
       displayName: 'Caching'
 
     # Dependency manager
     - bash: |
-        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 mpich libopenmpi-dev
+        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 mpich libopenmpi-dev mesa-common-dev libglu1-mesa-dev freeglut3-dev
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Install dependencies from Aptitude'
 
@@ -287,8 +292,8 @@ jobs:
     #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xvfz bin_linux_20190929.tar.gz
-        rm -rf bin_linux_20190929.tar.gz
+        tar xvfz bin_linux_20191003.tar.gz
+        rm -rf bin_linux_20191003.tar.gz
         # ls
         mv bin_linux bin
         # ls
@@ -323,7 +328,7 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # - bash: |
-    #     tar cvfz bin_linux_20190929.tar.gz bin
+    #     tar cvfz bin_linux_20191003.tar.gz bin
     #   displayName: 'Zipping Superbuild'
 
     - bash: |
@@ -374,7 +379,7 @@ jobs:
         rm -rf binaries
 
         export PKG_FAST_MODE=1
-        export PKG_COPY_QT_LIBS=1 # this causes sql lib issues with qt and ubuntu
+        # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
@@ -383,7 +388,7 @@ jobs:
 
         rm -rf scripts
 
-        cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.bin
+        # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.bin
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
       displayName: 'Set up environment variables for packager and build a package'
@@ -394,7 +399,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_linux_20190929.tar.gz
+        rm -rf bin_linux_20191003.tar.gz
         rm -rf CMakeLists.txt
 
         cd bin
@@ -412,13 +417,15 @@ jobs:
         cd ../
 
         mv bin bin_linux
-        tar cvfz bin_linux_20190929.tar.gz bin_linux
+        tar cvfz bin_linux_20191003.tar.gz bin_linux
+        rm -rf bin_linux
       displayName: 'Zipping bin'
 
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: '$(Build.DefinitionName)_installer_Linux'
+        continueOnError: true
 
     - task: DownloadBuildArtifacts@0
       inputs:
@@ -426,6 +433,7 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_Linux'
         downloadPath: '$(System.ArtifactsDirectory)'
+        continueOnError: true
 
     - task: CopyFilesOverSSH@0
       inputs:
@@ -435,9 +443,25 @@ jobs:
         targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
         overwrite: true
-        continueOnError: true
         condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
       displayName: Uploading to NITRC      
+
+    # - bash: |
+    #     cd $(Build.ArtifactStagingDirectory)
+    #     mv *_Installer.bin ./CaPTk_LATEST_Installer.bin
+    #   displayName: Renaming published artifact
+      
+    # - task: CopyFilesOverSSH@1
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #     condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+    #   displayName: Uploading to NITRC      
 
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
@@ -460,12 +484,12 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_macos_20190929.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_macos_20191003.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_MAC
         continueOnError : true
         restoreKeys: |
-          "bin_macos_20190929.tar.gz"
+          "bin_macos_20191003.tar.gz"
       displayName: 'Caching'
 
     - bash: |
@@ -490,8 +514,8 @@ jobs:
     #   condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
     - bash: |
-        tar xvfz bin_macos_20190929.tar.gz
-        rm -rf bin_macos_20190929.tar.gz
+        tar xvfz bin_macos_20191003.tar.gz
+        rm -rf bin_macos_20191003.tar.gz
         # ls
         mv bin_macos bin
         # ls
@@ -536,7 +560,7 @@ jobs:
       displayName: 'Check qt'
 
     - bash: |
-        tar cvfz bin_macos_20190929.tar.gz bin
+        tar cvfz bin_macos_20191003.tar.gz bin
       displayName: 'Zipping Superbuild'
 
     - bash: |
@@ -555,8 +579,6 @@ jobs:
 
         cmake ../
         rm CMakeCache.txt
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
 
@@ -641,7 +663,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_macos_20190929.tar.gz
+        rm -rf bin_macos_20191003.tar.gz
         rm -rf CMakeLists.txt
 
         cd bin
@@ -659,7 +681,8 @@ jobs:
         # ls
         mv bin bin_macos
         # ls
-        tar cvfz bin_macos_20190929.tar.gz bin_macos
+        tar cvfz bin_macos_20191003.tar.gz bin_macos
+        # rm -rf bin_macos
       displayName: 'Zipping bin'
       
     #- script: |
