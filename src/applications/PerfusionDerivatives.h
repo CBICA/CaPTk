@@ -208,7 +208,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
         //    std::cout << perfImagePointerNifti->GetPixel(index4D) << std::endl;
         //  }
         //}
-        A.GetPointer()->SetPixel(index3D, sum / baselinesize);
+        A.GetPointer()->SetPixel(index3D, sum / (baselinesize+1));
         //---------------------------------------minimum vector------------------------------------
         std::vector<double> local_measures;
         for (unsigned int k = 0; k < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3]; k++)
@@ -225,7 +225,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
         int startrecoverypoint = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * .66;
         int endrecoverypoint   = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * .88;
         sum = 0;
-        for (unsigned int k = 29; k <= 39; k++)
+        for (unsigned int k = startrecoverypoint; k <= endrecoverypoint; k++)
         {
           index4D[3] = k;
           sum = sum + perfImagePointerNifti->GetPixel(index4D);
@@ -344,7 +344,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePH(typename Perfusion
         double sum = 0;
         for (unsigned int i = 0; i < perfusionVolumesVector.size(); i++)
           sum = sum + perfusionVolumesVector[i]->GetPixel(index);
-        A.GetPointer()->SetPixel(index, sum / baselinesize);
+        A.GetPointer()->SetPixel(index, sum / (baselinesize+1));
       }
   //---------------------------------------minimum vector------------------------------------
   typename ImageType::Pointer B = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
