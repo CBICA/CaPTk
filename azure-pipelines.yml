@@ -609,7 +609,10 @@ jobs:
 
     - bash: |
         cd bin
-
+        ls 
+        pwd 
+        ls _CPack_Packages/OSX/DragNDrop
+        
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
         pkgname="_Installer"
         pkgname="$version$pkgname"
