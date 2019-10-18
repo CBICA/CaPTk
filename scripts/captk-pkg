@@ -268,6 +268,12 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 cd bin
 
+if [ -z "$CAPTK_BUILD_THREADS" ]; then
+
+  CAPTK_BUILD_THREADS=2
+
+fi
+
 # Optional flag one can set in the terminal to skip the double build process, used in Azure
 if [ -z "$PKG_FAST_MODE" ]; then
 
@@ -284,7 +290,7 @@ if [ -z "$PKG_FAST_MODE" ]; then
 
   # Make install/strip
   echo "[:] Building superbuild..."
-  make -j2
+  make -j$CAPTK_BUILD_THREADS
 
   # CaPTk
   # Configure cmake
@@ -293,7 +299,7 @@ if [ -z "$PKG_FAST_MODE" ]; then
 
   # Make install/strip
   echo "[:] Building CaPTk..."
-  make -j2 install/strip
+  make -j$CAPTK_BUILD_THREADS install/strip
 
 else
 
@@ -301,7 +307,7 @@ else
 
   # Make install/strip
   echo "[:] Installing CaPTk..."
-  make -j2 install/strip
+  make -j$CAPTK_BUILD_THREADS install/strip
 
 fi
 

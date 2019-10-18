@@ -206,7 +206,12 @@ int main(int argc, char** argv)
 #endif
       argv_common + argv_currentMovingImage;
 
-    return std::system(commandToRun.c_str());
+    if (std::system(commandToRun.c_str()) != 0)
+    {
+      std::cerr << "Something went wrong with the registration of '" << inputImageFiles[i] << "'.\n";
+    }
   }
 
+  std::cout << "Finished.\n";
+  return EXIT_SUCCESS;
 }

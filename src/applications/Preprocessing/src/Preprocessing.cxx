@@ -73,7 +73,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm == ZScoreNormalize)
+  else if (requestedAlgorithm == ZScoreNormalize)
   {
     ZScoreNormalizer< TImageType > normalizer;
     normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
@@ -88,7 +88,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm == P1P2Preprocess)
+  else if (requestedAlgorithm == P1P2Preprocess)
   {
     P1P2Normalizer< TImageType > normalizer;
     normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
@@ -97,7 +97,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm == BiasCorrectionN3)
+  else if (requestedAlgorithm == BiasCorrectionN3)
   {
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
     auto corrector = itk::N3MRIBiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
@@ -125,7 +125,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm == BiasCorrectionN4)
+  else if (requestedAlgorithm == BiasCorrectionN4)
   {
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
     using TBiasCorrectorType = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >;
@@ -156,7 +156,7 @@ int algorithmsRunner()
 
   }
 
-  if (requestedAlgorithm == SusanDenoisingAlgo)
+  else if (requestedAlgorithm == SusanDenoisingAlgo)
   {
     SusanDenoising denoiser;
     denoiser.SetSigma(ssSigma);
@@ -171,7 +171,7 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
-  if (requestedAlgorithm == Registration)
+  else if (requestedAlgorithm == Registration)
   {
     // call the greedy executable here with the proper API. 
     // see TumorGrowthModelling regarding how it is done there
@@ -203,7 +203,7 @@ int algorithmsRunner()
     }
 
     // add the fixed and moving files
-    commonCommands += " -i " + registrationFixedImageFile + " " + inputImageFile;
+    commonCommands += " -i " + cbica::normPath(registrationFixedImageFile) + " " + cbica::normPath(inputImageFile);
 
     std::string metricsCommand = " -m ";
     if (registrationMetrics.find("NCC") != std::string::npos)
@@ -221,7 +221,7 @@ int algorithmsRunner()
       std::cerr << "WARNING: Output filename is not defined; will try to save in input directory.\n";
       outputImageFile = cbica::getFilenamePath(inputImageFile) + "/registrationOutput.nii.gz";
     }
-    auto outputDir = cbica::getFilenamePath(outputImageFile);
+    auto outputDir = cbica::getFilenamePath(outputImageFile, false);
     auto inputFile_base = cbica::getFilenameBase(inputImageFile);
     auto fixedFile_base = cbica::getFilenameBase(registrationFixedImageFile);
     std::map< std::string, std::string > intermediateFiles;
@@ -232,7 +232,7 @@ int algorithmsRunner()
 
     bool defaultNamedUsed = false;
     // populate default names for intermediate files
-    if (!registrationAffineTransformInput.empty())
+    if (registrationAffineTransformInput.empty())
     {
       intermediateFiles["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
       defaultNamedUsed = true;
@@ -241,7 +241,7 @@ int algorithmsRunner()
     {
       intermediateFiles["Affine"] = registrationAffineTransformInput;
     }
-    if (!registrationDeformableTransformInput.empty())
+    if (registrationDeformableTransformInput.empty())
     {
       intermediateFiles["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
       intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
@@ -259,14 +259,15 @@ int algorithmsRunner()
     if (!cbica::fileExists(registrationAffineTransformInput))
     {
       // we always do affine
-      commandToCall = greedyPathAndDim +
+      commandToCall = greedyPathAndDim + " -a" +
         commonCommands +
         metricsCommand +
-        " -ia-image-centers " + intermediateFiles["Affine"];
+        " -ia-image-centers -o " + intermediateFiles["Affine"];
       ;
       if (debugMode)
       {
         std::cout << "Starting Affine registration.\n";
+        std::cout << "commandToCall: \n" << commandToCall << "\n";
       }
       if (std::system(commandToCall.c_str()) != 0)
       {
@@ -412,7 +413,51 @@ int algorithmsRunner()
 template< >
 int algorithmsRunner< itk::Image< float, 4 > >()
 {
-  // 4D series image stuff goes here
+  if (requestedAlgorithm == Registration)
+  {
+    using ImageTypeFloat4D = itk::Image< float, 4 >;
+    using ImageTypeFloat3D = itk::Image< float, 3 >;
+    // 4D series image stuff goes here
+    auto movingImages = cbica::GetExtractedImages< ImageTypeFloat4D, ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat4D >(inputImageFile));
+    std::vector< ImageTypeFloat3D::Pointer > movingImage_registered;
+    movingImage_registered.resize(movingImages.size());
+
+    auto tempFolder = cbica::normPath(cbica::getFilenamePath(outputImageFile, false) + "/temp");
+    cbica::createDir(tempFolder);
+
+    auto fixedImageInfo = cbica::ImageInfo(registrationFixedImageFile);
+    // if the fixed image file is also a 4D image, we shall assume the first image in the series to be the fixed image for the entire series
+    if (fixedImageInfo.GetImageDimensions() == 4)
+    {
+      auto fixedImages = cbica::GetExtractedImages< ImageTypeFloat4D, ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat4D >(registrationFixedImageFile));
+      registrationFixedImageFile = cbica::normalizePath(tempFolder + "/fixed.nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(fixedImages[0], registrationFixedImageFile);
+    }
+
+    auto actualOutputImageFile = outputImageFile; // save the original output image file
+
+    // perform registration for each 3D image in the 4D stack using the parameters defined by the user 
+    for (size_t i = 0; i < movingImages.size(); i++)
+    {
+      inputImageFile = cbica::normalizePath(tempFolder + "/moving_" + std::to_string(i) + ".nii.gz");
+      outputImageFile = cbica::normalizePath(tempFolder + "/output_" + std::to_string(i) + ".nii.gz");
+      cbica::WriteImage< ImageTypeFloat3D >(movingImages[i], inputImageFile);
+      algorithmsRunner< ImageTypeFloat3D >();
+      movingImage_registered[i] = cbica::ReadImage< ImageTypeFloat3D >(outputImageFile); // store the registered image
+    }
+    auto finalOutput = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(movingImage_registered);
+    cbica::WriteImage< ImageTypeFloat4D >(finalOutput, actualOutputImageFile);
+    // delete all intermediate files if the flag is not set
+    if (!registrationIntermediate)
+    {
+      cbica::removeDir(tempFolder); // ensure temporary folder is removed
+    }
+  }
+  else
+  {
+    std::cerr << "The requested algorithm is not defined for 4D images; please retry using stacked 3D images.\n";
+    return EXIT_FAILURE;
+  }
   return EXIT_SUCCESS;
 }
 
@@ -454,6 +499,15 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
 
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
+
+  parser.addApplicationDescription("This contains all of the Preprocessing tools available in CaPTk.");
+  parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -hi C:/target.nii.gz", "Histogram Matching of 'C:/input.nii.gz' to 'C:/target.nii.gz' using the default parameters");
+  parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -zn", "Z-Score normalization of 'C:/input.nii.gz' using the default parameters");
+  parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -n3", "N3 Bias correction of 'C:/input.nii.gz' using the default parameters");
+  parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -ss", "Susan Smoothing/Denoising of 'C:/input.nii.gz' using the default parameters");
+  parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -reg Deformable -rFI C:/fixed.nii.gz", "Deformable Registration of 'C:/input.nii.gz' to 'C:/fixed.nii.gz' using the default parameters");
+  parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -reg Deformable -rFI C:/fixed.nii.gz -rIA C:/input2fixed.mat", "Deformable Registration of 'C:/input.nii.gz' to 'C:/fixed.nii.gz' using the default parameters and the affine transformation (if found) 'C:/input2fixed.mat'");
+  parser.addExampleUsage("-i C:/input.nii.gz -o C:/output.nii.gz -reg Deformable -rFI C:/fixed.nii.gz -rIA C:/input2fixed.mat -rID C:/input2fixed.nii.gz", "Applies the Deformation Field (if found) in 'C:/input2fixed.nii.gz' to 'C:/input.nii.gz' after applying the affine transformation (if found) 'C:/input2fixed.mat'");
   
   if (parser.isPresent("d"))
   {
@@ -592,11 +646,8 @@ int main(int argc, char** argv)
 
     parser.getParameterValue("reg", registrationType);
     std::transform(registrationType.begin(), registrationType.end(), registrationType.begin(), ::toupper);
-    if (registrationType.find("RIGID"))
-    {
-      registrationTypeInt = RegistrationTypeEnum::Rigid;
-    }
-    else if (registrationType.find("AFFINE"))
+    if ((registrationType.find("RIGID") != std::string::npos) || 
+      (registrationType.find("AFFINE") != std::string::npos))
     {
       registrationTypeInt = RegistrationTypeEnum::Affine;
     }

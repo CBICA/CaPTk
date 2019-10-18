@@ -191,8 +191,11 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
         index3D[1] = y;
         index3D[2] = z;
         //---------------------------------------mean from 1-10------------------------------------
+        //taking first 20% of the signal
+        int baselinesize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * .20;
+
         double sum = 0;
-        for (unsigned int k = 0; k <= 9; k++)
+        for (unsigned int k = 0; k <= baselinesize; k++)
         {
           index4D[3] = k;
           sum = sum + perfImagePointerNifti->GetPixel(index4D);
@@ -205,7 +208,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
         //    std::cout << perfImagePointerNifti->GetPixel(index4D) << std::endl;
         //  }
         //}
-        A.GetPointer()->SetPixel(index3D, sum / 10);
+        A.GetPointer()->SetPixel(index3D, sum / (baselinesize+1));
         //---------------------------------------minimum vector------------------------------------
         std::vector<double> local_measures;
         for (unsigned int k = 0; k < perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3]; k++)
@@ -218,13 +221,16 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
         //if(min_value>0)
         //  std::cout << min_value << std::endl;
         //---------------------------------------mean from 30-40------------------------------------
+        //taking 66%- 88% of the signal
+        int startrecoverypoint = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * .66;
+        int endrecoverypoint   = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * .88;
         sum = 0;
-        for (unsigned int k = 29; k <= 39; k++)
+        for (unsigned int k = startrecoverypoint; k <= endrecoverypoint; k++)
         {
           index4D[3] = k;
           sum = sum + perfImagePointerNifti->GetPixel(index4D);
         }
-        C.GetPointer()->SetPixel(index3D, sum / 11);
+        C.GetPointer()->SetPixel(index3D, sum / (endrecoverypoint-startrecoverypoint+1));
       }
 
   typename ImageType::Pointer PSR = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 6);
@@ -320,7 +326,10 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePH(typename Perfusion
 {
   //---------------------------------------mean from 1-10------------------------------------
   std::vector<typename ImageType::Pointer> perfusionVolumesVector;
-  for (int x = 0; x <= 9; x++)
+  //taking first 20% of the signal
+  int baselinesize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * .20;
+
+  for (int x = 0; x <= baselinesize; x++)
     perfusionVolumesVector.push_back(GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, x));
 
   typename ImageType::Pointer A = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
@@ -335,7 +344,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePH(typename Perfusion
         double sum = 0;
         for (unsigned int i = 0; i < perfusionVolumesVector.size(); i++)
           sum = sum + perfusionVolumesVector[i]->GetPixel(index);
-        A.GetPointer()->SetPixel(index, sum / 10);
+        A.GetPointer()->SetPixel(index, sum / (baselinesize+1));
       }
   //---------------------------------------minimum vector------------------------------------
   typename ImageType::Pointer B = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
@@ -413,7 +422,10 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateRCBV(typename Perfusi
 	//writer1->SetInput(MASK);
 	//writer1->Update();
 
-	typename ImageType::Pointer A = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, 0, 9);
+  //taking first 20% of the signal
+  int baselinesize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * .20;
+
+	typename ImageType::Pointer A = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, 0, baselinesize);
 	double eps = 2.2204e-16;
 	//double eps = 0;
 	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
@@ -619,7 +631,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateRCBV(typename Perfusi
 	//writerdata->Write();
 	//////-----------------------------------------------------------------------------------------------------------------
 	VariableLengthVectorType meanPerfusionImage;
-	meanPerfusionImage.SetSize(45, 1);
+	meanPerfusionImage.SetSize(region.GetSize()[3], 1);
 	for (unsigned int x = 0; x < perfusionImage.Cols(); x++)
 	{
 		double local_sum = 0;
