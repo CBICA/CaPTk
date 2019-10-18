@@ -492,6 +492,7 @@ jobs:
       displayName: 'Caching'
 
     - bash: |
+        cmake --version
         brew install make doxygen libomp openmpi
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
         export GIT_LFS_SKIP_SMUDGE=1
