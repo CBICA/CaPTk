@@ -20,7 +20,7 @@
 - [Saima Rathore](https://www.med.upenn.edu/sbia/srathore.html): v.0.0.1 - present
 - Ashish Singh: v.1.6.0 - present
 - Phuc Ngo: v.1.6.0 - present
-- James Minock: v.1.7.0 
+- James Minock: v.1.7.0 - 1.7.2
 - Grayson Murphy: v.1.6.0 
 - [Sung Min Ha](https://www.med.upenn.edu/sbia/smha.html): v.1.6.0 - v.1.7.0
 - Amit Bhattarai: v.1.6.0 
