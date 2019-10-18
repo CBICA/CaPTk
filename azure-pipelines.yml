@@ -615,7 +615,7 @@ jobs:
         pkgname="$version$pkgname"
 
         rm -rf *.pkg
-        rm -rf _CPack*
+        # rm -rf _CPack*
         rm -rf install_manifest.txt
         make package
 
