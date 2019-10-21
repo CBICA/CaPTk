@@ -1,9 +1,11 @@
 var Technical_Reference =
 [
     [ "Feature Extraction", "tr_FeatureExtraction.html", [
-      [ "Defaults", "tr_FeatureExtraction.html#tr_fe_defaults", null ],
+      [ "Defaults", "tr_FeatureExtraction.html#tr_fe_defaults", [
+        [ "Main Default Feature Extraction Parameters", "tr_FeatureExtraction.html#tr_fe_def_main", null ],
+        [ "Lattice Feature Extraction Parameters", "tr_FeatureExtraction.html#tr_fe_def_lattice", null ]
+      ] ],
       [ "Batch Mode", "tr_FeatureExtraction.html#tr_fe_batch", null ],
-      [ "Something Else", "tr_FeatureExtraction.html#tr_fe_somethingElse", null ],
       [ "Extracted Features", "tr_FeatureExtraction.html#tr_fe_math", null ]
     ] ],
     [ "Integrating your Application in CaPTk", "tr_integration.html", [
