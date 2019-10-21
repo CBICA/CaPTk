@@ -44,7 +44,11 @@ INCLUDE( CaPTk_macros )
 #SET (SVN_REVISION "${SVN_REVISION}")
 
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
-SET( BUILD_CLAIRE OFF CACHE BOOL "Do you want to build CLAIRE (this changes the Superbuild)?" )
+
+# claire option is not present for Windows, unfortunately
+IF( UNIX )
+  SET( BUILD_CLAIRE OFF CACHE BOOL "Do you want to build CLAIRE (this changes the Superbuild)?" )
+ENDIF()
 
 SET( QT_VERSION_ACTUAL "5.12.1" )
 if(UNIX)
