@@ -226,17 +226,17 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_Windows'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
-      displayName: Uploading to NITRC      
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #     condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+    #   displayName: Uploading to NITRC      
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
@@ -434,16 +434,16 @@ jobs:
         downloadPath: '$(System.ArtifactsDirectory)'
         continueOnError: true
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
-      displayName: Uploading to NITRC      
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+    #   displayName: Uploading to NITRC      
 
     # - bash: |
     #     cd $(Build.ArtifactStagingDirectory)
@@ -492,6 +492,7 @@ jobs:
       displayName: 'Caching'
 
     - bash: |
+        cmake --version
         brew install make doxygen libomp openmpi
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
         export GIT_LFS_SKIP_SMUDGE=1
@@ -609,20 +610,22 @@ jobs:
 
     - bash: |
         cd bin
+        ls 
+        pwd 
 
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
         pkgname="_Installer"
         pkgname="$version$pkgname"
 
         rm -rf *.pkg
-        rm -rf _CPack*
+        # rm -rf _CPack*
         rm -rf install_manifest.txt
         make package
 
         # echo "Change deepmedic libomp dylib path"
         # sudo install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib @executable_path/../../Frameworks/libomp.dylib ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/bin/DeepMedic
 
-        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
+        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
         productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
 
@@ -646,7 +649,7 @@ jobs:
 
         echo $xml > "./distribution.xml"
 
-        productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
+        productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
         # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.pkg
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
@@ -713,7 +716,7 @@ jobs:
         overwrite: true
         continueOnError: true
         condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
-      displayName: Uploading to NITRC      
+      displayName: Uploading to NITRC
 
 # - job: 'DockerBuild'
 #   displayName: "End-to-end Docker_CentOS image build and push"
