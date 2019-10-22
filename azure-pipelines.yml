@@ -273,7 +273,7 @@ jobs:
 
     # Dependency manager
     - bash: |
-        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 mpich libopenmpi-dev mesa-common-dev libglu1-mesa-dev freeglut3-dev
+        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 mpich libopenmpi-dev mesa-common-dev libglu1-mesa-dev freeglut3-dev build-essential libgl1-mesa-dev
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Install dependencies from Aptitude'
 
@@ -493,7 +493,7 @@ jobs:
 
     - bash: |
         cmake --version
-        brew install make doxygen libomp openmpi
+        brew install make doxygen libomp openmpi glfw
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Brew dependencies'
