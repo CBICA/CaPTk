@@ -17,6 +17,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include <algorithm>
 #include <functional>
 #include <cmath>
+#include <unordered_map>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -62,6 +63,8 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkSmoothingRecursiveGaussianImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 
+#include "itkJoinSeriesImageFilter.h"
+#include "itkExtractImageFilter.h"
 
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 //unsigned int RmsCounter = 0;
@@ -226,6 +229,224 @@ namespace cbica
     return GetPixelValuesFromIndeces< TImageType >(inputImage, indeces);
   }
 
+  /**
+  \brief Check properties of 2 images to see if they are defined in the same space.
+  */
+  template< typename TImageType >
+  inline bool ImageSanityCheck(const typename TImageType::Pointer image1, const typename TImageType::Pointer image2)
+  {
+    auto size_1 = image1->GetLargestPossibleRegion().GetSize();
+    auto size_2 = image2->GetLargestPossibleRegion().GetSize();
+
+    auto origin_1 = image1->GetOrigin();
+    auto origin_2 = image2->GetOrigin();
+
+    auto spacing_1 = image1->GetSpacing();
+    auto spacing_2 = image2->GetSpacing();
+
+    for (size_t i = 0; i < TImageType::ImageDimension; i++)
+    {
+      if (size_1[i] != size_2[i])
+      {
+        std::cerr << "Size mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+      if (origin_1[i] != origin_2[i])
+      {
+        std::cerr << "Origin mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+      if (spacing_1[i] != spacing_2[i])
+      {
+        auto percentageDifference = std::abs(spacing_1[i] - spacing_2[i]) * 100;
+        percentageDifference /= spacing_1[i];
+        if (percentageDifference > 0.000001)
+        {
+          std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
+          return false;
+        }
+        else
+        {
+          std::cout << "Ignoring spacing difference of '" <<
+            percentageDifference << "%' in dimension '" <<
+            i << "'\n";
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+  \brief Check properties of 2 images to see if they are defined in the same space.
+
+  Checks are done based on cbica::ImageInfo class
+  */
+  inline bool ImageSanityCheck(const std::string &image1, const std::string &image2, bool FourDImageCheck = false)
+  {
+    auto imageInfo1 = cbica::ImageInfo(image1);
+    auto imageInfo2 = cbica::ImageInfo(image2);
+
+    auto dims = imageInfo1.GetImageDimensions();
+    
+    if (FourDImageCheck)
+    {
+      dims = 3; // this is for 4D images only
+    }
+    else // do the check when FourDImageCheck is disabled
+    {
+      if (imageInfo1.GetImageDimensions() != imageInfo2.GetImageDimensions())
+      {
+        std::cout << "The dimensions of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+    }
+
+    // check size, spacing and origin information as well
+
+    auto imageSize1 = imageInfo1.GetImageSize();
+    auto imageSize2 = imageInfo2.GetImageSize();
+
+    auto imageSpacing1 = imageInfo1.GetImageSpacings();
+    auto imageSpacing2 = imageInfo2.GetImageSpacings();
+
+    auto imageOrigin1 = imageInfo1.GetImageOrigins();
+    auto imageOrigin2 = imageInfo2.GetImageOrigins();
+
+    for (size_t d = 0; d < dims; d++)
+    {
+      if (imageSize1[d] != imageSize2[d])
+      {
+        std::cout << "The size in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+      if (imageSpacing1[d] != imageSpacing2[d])
+      {
+        auto percentageDifference = std::abs(imageSpacing1[d] - imageSpacing2[d]) * 100;
+        percentageDifference /= imageSpacing1[d];
+        if (percentageDifference > 0.000001)
+        {
+          std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
+          return false;
+        }
+        else
+        {
+          std::cout << "Ignoring spacing difference of '" <<
+            percentageDifference << "%' in dimension '" <<
+            d << "'\n";
+        }
+      }
+      if (imageOrigin1[d] != imageOrigin2[d])
+      {
+        std::cout << "The origin in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+  \brief This function returns a joined N-D image with an input of a vector of (N-1)-D images 
+
+  Uses the itk::JoinSeriesImageFilter to accomplish this
+  
+  \param inputImage The vector of images from which the larger image is to be extracted
+  \param newSpacing The spacing in the new dimension
+  */
+  template< class TInputImageType, class TOutputImageType >
+  typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages, double newSpacing = 1.0)
+  {
+   if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
+   {
+     std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
+     //return typename TOutputImageType::New();
+     exit(EXIT_FAILURE);
+   }
+   auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
+   joinFilter->SetSpacing(newSpacing);
+   
+   for (size_t N = 0; N < inputImages.size(); N++)
+   {
+     if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
+     {
+       std::cerr << "Image Sanity check failed in index '" << N << "'\n";
+       //return typename TOutputImageType::New();
+       exit(EXIT_FAILURE);
+     }
+     joinFilter->SetInput(N, inputImages[N]);
+   }
+   try
+   {
+     joinFilter->Update();
+   }
+   catch (const std::exception& e)
+   {
+     std::cerr << "Joining failed: " << e.what() << "\n";
+   }
+   return joinFilter->GetOutput();
+  }
+
+  /**
+  \brief This function returns a vector of (N-1)-D images with an input of an N-D image
+
+  Uses the itk::ExtractImageFilter to accomplish this
+
+  \param inputImage The larger image series from which the sub-images in the specified axis are extracted
+  \param axisToExtract The axis along with the images are to be extracted from; defaults to TInputImageType::ImageDimension - for extraction along Z, use '3'
+  \param directionsCollapseIdentity Whether direction cosines are to be normalized to identity or not; defaults to not
+  */
+  template< class TInputImageType, class TOutputImageType >
+  std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage, 
+   int axisToExtract = TInputImageType::ImageDimension - 1, bool directionsCollapseIdentity = false)
+  {
+   std::vector<typename TOutputImageType::Pointer> returnImages;
+
+   if (TOutputImageType::ImageDimension != TInputImageType::ImageDimension - 1)
+   {
+     std::cerr << "Only works when input and output image dimensions are N and (N-1), respectively.\n";
+     return returnImages;
+   }
+   // set the sub-image properties
+   auto imageSize = inputImage->GetLargestPossibleRegion().GetSize();
+   auto regionSize = imageSize;
+   regionSize[axisToExtract] = 0;
+   returnImages.resize(imageSize[axisToExtract]);
+
+   typename TInputImageType::IndexType regionIndex;
+   regionIndex.Fill(0);
+
+   // loop through time points
+   for (size_t i = 0; i < imageSize[axisToExtract]; i++)
+   {
+     regionIndex[axisToExtract] = i;
+     typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
+     auto extractor = /*typename*/ itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
+     extractor->SetExtractionRegion(desiredRegion);
+     extractor->SetInput(inputImage);
+     if (directionsCollapseIdentity)
+     {
+       extractor->SetDirectionCollapseToIdentity();
+     }
+     else
+     {
+       extractor->SetDirectionCollapseToSubmatrix();
+     }
+     try
+     {
+       extractor->Update();
+     }
+     catch (const std::exception& e)
+     {
+       std::cerr << "Extracting failed: " << e.what() << "\n";
+     }
+     auto temp = extractor->GetOutput();
+     //temp->DisconnectPipeline(); // ensure a hard copy is done 
+     returnImages[i] = temp;
+   }
+   return returnImages;
+  }
+
   ///**
   //\brief Get MD5 sum of a supplied file
 
@@ -355,101 +576,6 @@ namespace cbica
       // if there is an appreciable intensity difference between the images, check the number of difference pixels
       if (diff->GetNumberOfPixelsWithDifferences() > numberOfPixelsTolerance)
       {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
-  \brief Check properties of 2 images to see if they are defined in the same space.
-  */
-  template< typename TImageType >
-  inline bool ImageSanityCheck(const typename TImageType::Pointer image1, const typename TImageType::Pointer image2)
-  {
-    auto size_1 = image1->GetLargestPossibleRegion().GetSize();
-    auto size_2 = image2->GetLargestPossibleRegion().GetSize();
-
-    auto origin_1 = image1->GetOrigin();
-    auto origin_2 = image2->GetOrigin();
-
-    auto spacing_1 = image1->GetSpacing();
-    auto spacing_2 = image2->GetSpacing();
-
-    for (size_t i = 0; i < TImageType::ImageDimension; i++)
-    {
-      if (size_1[i] != size_2[i])
-      {
-        std::cerr << "Size mismatch at dimension '" << i << "'\n";
-        return false;
-      }
-      if (origin_1[i] != origin_2[i])
-      {
-        std::cerr << "Origin mismatch at dimension '" << i << "'\n";
-        return false;
-      }
-      if (spacing_1[i] != spacing_2[i])
-      {
-        std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
-  \brief Check properties of 2 images to see if they are defined in the same space.
-
-  Checks are done based on cbica::ImageInfo class
-  */
-  inline bool ImageSanityCheck(const std::string &image1, const std::string &image2, bool FourDImageCheck = false)
-  {
-    auto imageInfo1 = cbica::ImageInfo(image1);
-    auto imageInfo2 = cbica::ImageInfo(image2);
-
-    auto dims = imageInfo1.GetImageDimensions();
-    
-    if (FourDImageCheck)
-    {
-      dims = 3; // this is for 4D images only
-    }
-    else // do the check when FourDImageCheck is disabled
-    {
-      if (imageInfo1.GetImageDimensions() != imageInfo2.GetImageDimensions())
-      {
-        std::cout << "The dimensions of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
-        return false;
-      }
-    }
-
-    // check size, spacing and origin information as well
-
-    auto imageSize1 = imageInfo1.GetImageSize();
-    auto imageSize2 = imageInfo2.GetImageSize();
-
-    auto imageSpacing1 = imageInfo1.GetImageSpacings();
-    auto imageSpacing2 = imageInfo2.GetImageSpacings();
-
-    auto imageOrigin1 = imageInfo1.GetImageOrigins();
-    auto imageOrigin2 = imageInfo2.GetImageOrigins();
-
-    for (size_t d = 0; d < dims; d++)
-    {
-      if (imageSize1[d] != imageSize2[d])
-      {
-        std::cout << "The size in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
-        return false;
-      }
-      if (imageSpacing1[d] != imageSpacing2[d])
-      {
-        std::cout << "The spacing in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
-        return false;
-      }
-      if (imageOrigin1[d] != imageOrigin2[d])
-      {
-        std::cout << "The origin in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
         return false;
       }
     }
@@ -591,264 +717,99 @@ namespace cbica
   \brief Get the image orientation
 
   \param inputImage The input image
+  \param desiredOrientation The desired orientation to conver the image to
   \return A pair of string (which represents the orientation) and an itk::Image which represents the inputImage in RAI form
   */
   template< class TImageType = ImageTypeFloat3D >
-  std::pair< std::string, typename TImageType::Pointer > GetImageOrientation(const typename TImageType::Pointer inputImage)
+  std::pair< std::string, typename TImageType::Pointer > GetImageOrientation(const typename TImageType::Pointer inputImage, const std::string &desiredOrientation = "RAI")
   {
-    using namespace itk::SpatialOrientation;
+    if (TImageType::ImageDimension != 3)
+    {
+      std::cerr << "This function is only defined for 3D and 4D images.\n";
+      exit(EXIT_FAILURE);
+    }
     auto orientFilter = itk::OrientImageFilter< TImageType, TImageType >::New();
     orientFilter->SetInput(inputImage);
-    orientFilter->SetDesiredCoordinateOrientation(ITK_COORDINATE_ORIENTATION_RAI);
+    orientFilter->UseImageDirectionOn();
+    orientFilter->SetDirectionTolerance(0);
+    orientFilter->SetCoordinateTolerance(0);
+
+    auto desiredOrientation_wrap = desiredOrientation;
+    std::transform(desiredOrientation_wrap.begin(), desiredOrientation_wrap.end(), desiredOrientation_wrap.begin(), ::toupper);
+    
+    std::map< std::string, itk::SpatialOrientation::ValidCoordinateOrientationFlags > orientationMap;
+    orientationMap["Axial"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI;
+    orientationMap["Coronal"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSA;
+    orientationMap["Sagittal"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASL;
+    orientationMap["RIP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP;
+    orientationMap["LIP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LIP;
+    orientationMap["RSP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSP;
+    orientationMap["LSP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LSP;
+    orientationMap["RIA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIA;
+    orientationMap["LIA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LIA;
+    orientationMap["RSA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSA;
+    orientationMap["LSA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LSA;
+    orientationMap["IRP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IRP;
+    orientationMap["ILP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ILP;
+    orientationMap["SRP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SRP;
+    orientationMap["SLP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SLP;
+    orientationMap["IRA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IRA;
+    orientationMap["ILA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ILA;
+    orientationMap["SRA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SRA;
+    orientationMap["SLA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SLA;
+    orientationMap["RPI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RPI;
+    orientationMap["LPI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LPI;
+    orientationMap["RAI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI;
+    orientationMap["LAI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LAI;
+    orientationMap["RPS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RPS;
+    orientationMap["LPS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LPS;
+    orientationMap["RAS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAS;
+    orientationMap["LAS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LAS;
+    orientationMap["PRI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PRI;
+    orientationMap["PLI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PLI;
+    orientationMap["ARI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ARI;
+    orientationMap["ALI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ALI;
+    orientationMap["PRS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PRS;
+    orientationMap["PLS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PLS;
+    orientationMap["ARS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ARS;
+    orientationMap["ALS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ALS;
+    orientationMap["IPR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IPR;
+    orientationMap["SPR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SPR;
+    orientationMap["IAR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IAR;
+    orientationMap["SAR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SAR;
+    orientationMap["IPL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IPL;
+    orientationMap["SPL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SPL;
+    orientationMap["IAL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IAL;
+    orientationMap["SAL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SAL;
+    orientationMap["PIR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PIR;
+    orientationMap["PSR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PSR;
+    orientationMap["AIR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_AIR;
+    orientationMap["ASR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASR;
+    orientationMap["PIL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PIL;
+    orientationMap["PSL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PSL;
+    orientationMap["AIL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_AIL;
+    orientationMap["ASL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASL;
+
+    // set the desired orientation and update
+    orientFilter->SetDesiredCoordinateOrientation(orientationMap[desiredOrientation_wrap]);
     orientFilter->Update();
+    auto outputImage = orientFilter->GetOutput();
 
     std::string returnString;
 
-    switch (orientFilter->GetGivenCoordinateOrientation())
+    for (auto it = orientationMap.begin(); it != orientationMap.end(); ++it)
     {
-    case ITK_COORDINATE_ORIENTATION_RIP:
-    {
-      returnString = "RIP";
-      break;
+      if (it->second == orientFilter->GetGivenCoordinateOrientation())
+      {
+        returnString = it->first;
+      }
     }
-    case ITK_COORDINATE_ORIENTATION_LIP:
+    if (returnString.empty())
     {
-      returnString = "LIP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RSP:
-    {
-      returnString = "RSP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LSP:
-    {
-      returnString = "LSP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RIA:
-    {
-      returnString = "RIA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LIA:
-    {
-      returnString = "LIA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LSA:
-    {
-      returnString = "LSA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IRP:
-    {
-      returnString = "IRP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ILP:
-    {
-      returnString = "ILP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SRP:
-    {
-      returnString = "SRP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SLP:
-    {
-      returnString = "SLP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IRA:
-    {
-      returnString = "IRA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ILA:
-    {
-      returnString = "ILA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SRA:
-    {
-      returnString = "SRA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SLA:
-    {
-      returnString = "SLA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RPI:
-    {
-      returnString = "RPI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LPI:
-    {
-      returnString = "LPI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RAI:
-    {
-      returnString = "RAI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LAI:
-    {
-      returnString = "LAI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RPS:
-    {
-      returnString = "RPS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LPS:
-    {
-      returnString = "LPS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RAS:
-    {
-      returnString = "RAS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LAS:
-    {
-      returnString = "LAS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PRI:
-    {
-      returnString = "PRI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PLI:
-    {
-      returnString = "PLI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ARI:
-    {
-      returnString = "ARI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ALI:
-    {
-      returnString = "ALI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PRS:
-    {
-      returnString = "PRS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PLS:
-    {
-      returnString = "PLS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ARS:
-    {
-      returnString = "ARS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ALS:
-    {
-      returnString = "ALS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IPR:
-    {
-      returnString = "IPR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SPR:
-    {
-      returnString = "SPR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IAR:
-    {
-      returnString = "IAR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SAR:
-    {
-      returnString = "SAR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IPL:
-    {
-      returnString = "IPL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SPL:
-    {
-      returnString = "SPL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IAL:
-    {
-      returnString = "IAL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SAL:
-    {
-      returnString = "SAL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PIR:
-    {
-      returnString = "PIR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PSR:
-    {
-      returnString = "PSR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_AIR:
-    {
-      returnString = "AIR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ASR:
-    {
-      returnString = "ASR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PIL:
-    {
-      returnString = "PIL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PSL:
-    {
-      returnString = "PSL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_AIL:
-    {
-      returnString = "AIL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ASL:
-    {
-      returnString = "ASL";
-      break;
-    }
-    default:
-    {
-      returnString = "UNKNOWN";
-      break;
-    }
+      returnString = "Unknown";
     }
 
-    return std::make_pair(returnString, orientFilter->GetOutput());
+    return std::make_pair(returnString, outputImage);
   }
 
   /**
@@ -1205,7 +1166,7 @@ namespace cbica
         fltVoting->SetFunctor(vf);
 
         // Create a mini-pipeline of streaming filters
-        for (int j = 0; j < label_array.size(); j++)
+        for (size_t j = 0; j < label_array.size(); j++)
         {
           // Set up a threshold filter for this label
           typedef itk::BinaryThresholdImageFilter<LabelImageType, TImageType> ThresholdFilterType;
@@ -1230,7 +1191,7 @@ namespace cbica
           {
             typename SmootherType::SigmaArrayType sigma_array;
             auto default_sigma = std::sqrt(3);
-            for (int d = 0; d < TImageType::ImageDimension; d++)
+            for (unsigned int d = 0; d < TImageType::ImageDimension; d++)
               sigma_array[d] = /*r_param.images[i].interp.sigma.sigma*/default_sigma * moving->GetSpacing()[d];
             fltSmooth->SetSigmaArray(sigma_array);
           }

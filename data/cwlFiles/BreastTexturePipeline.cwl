@@ -49,4 +49,4 @@ hints:
     packages:
       BreastTexturePipeline:
         version:
-          - 1.7.3.nonRelease
+          - 1.7.3.nonRelease.20190819

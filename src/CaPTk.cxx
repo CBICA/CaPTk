@@ -26,32 +26,6 @@
 //#define new DBG_NEW   
 ///// debug
 
-void setStyleSheet(const std::string &styleFileName = CAPTK_STYLESHEET_FILE)
-{
-  std::string styleFileFullPath = getCaPTkDataDir() + "../etc/" + CAPTK_STYLESHEET_FILE;
-
-  QFile f(styleFileFullPath.c_str());
-  if (!f.exists())
-  {
-#if WIN32
-    styleFileFullPath = captk_currentApplicationPath + "../../data/" + CAPTK_STYLESHEET_FILE;
-#else
-    styleFileFullPath = captk_currentApplicationPath + "../data/" + CAPTK_STYLESHEET_FILE;
-#endif
-    if (!f.exists())
-    {
-      cbica::Logging(loggerFile, "Unable to set stylesheet, file not found");
-    }
-  }
-  else
-  {
-    f.open(QFile::ReadOnly | QFile::Text);
-    QTextStream ts(&f);
-    qApp->setStyleSheet(ts.readAll());
-    f.close();
-  }
-}
-
 void echoCWLFiles(std::vector< std::string > inputCWLFiles)
 {
   std::cout << "Availble CWL applications (refer to individual CLI usage): \n\n";
@@ -77,8 +51,21 @@ int main(int argc, char** argv)
   float cmd_maskOpacity = 1;
   bool comparisonMode = false;
 
-  // this is used to populate the available CWL files for the cli
-  auto cwlFiles = cbica::getCWLFilesInApplicationDir();
+  // this is used to populate the available CWL files for the cli  
+  auto cwlFolderPath = 
+#ifdef CAPTK_PACKAGE_PROJECT
+  cbica::normPath(cbica::getExecutablePath() + 
+#ifdef __APPLE__
+    "../Resources/etc/cwlDefinitions/"
+#else
+    "../etc/cwlDefinitions/"
+#endif
+    )
+#else
+  std::string(PROJECT_SOURCE_DIR) + "/data/cwlFiles"
+#endif
+  ;
+  auto cwlFiles = cbica::filesInDirectory(cwlFolderPath);
 
   // parse the command line
   auto parser = cbica::CmdParser(argc, argv, "CaPTk");
@@ -104,6 +91,7 @@ int main(int argc, char** argv)
     {
 
       auto cwlFileBase = cbica::getFilenameBase(file);
+      auto cwlFileBase_actual = cwlFileBase;
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
       auto argv_1 = std::string(argv[1]);
       argv_1 = cbica::getFilenameBase(argv_1, false);
@@ -123,7 +111,7 @@ int main(int argc, char** argv)
           argv_complete += " " + std::string(argv[i]);
         }
         // Pass them in
-        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
+        return std::system((getApplicationPath(cwlFileBase_actual) + argv_complete).c_str());
       }
     }
   }
@@ -282,7 +270,6 @@ int main(int argc, char** argv)
   cbica::createDir(captk_SampleDataFolder);
   cbica::createDir(captk_PretrainedFolder);
 
-  setStyleSheet();
 #ifndef _WIN32
   std::string old_locale = setlocale(LC_NUMERIC, NULL);
   setlocale(LC_NUMERIC, "POSIX");

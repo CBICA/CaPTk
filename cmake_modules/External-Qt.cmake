@@ -1,4 +1,4 @@
-FIND_PACKAGE( Qt5Core ${QT_VERSION} )
+FIND_PACKAGE( Qt5Core ) # not keeping version requirement here because of centos
 
 # buld Qt from source for trusty; otherwise use pre-built binaries
 IF( "${RELEASE_CODENAME}" STREQUAL "trusty" )
@@ -56,8 +56,20 @@ IF( (NOT Qt5Core_FOUND) OR QT_DOWNLOAD_FORCE )
     SET( PLATFORM_STRING "linux" )
   ENDIF()
   
-  SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/qt/${PLATFORM_STRING}.zip" )
+  SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/qt/${QT_VERSION}/${PLATFORM_STRING}.zip" )
+  # SET( DOWNLOAD_LINK "https://github.com/CBICA/CaPTk/raw/master/binaries/qt_${QT_VERSION}/${PLATFORM_STRING}.zip" ) # the centos qt is not here, yet
   SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/qt_${QT_VERSION}/${PLATFORM_STRING}.zip" )
+
+  # if(UNIX)
+  #   if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+  #     if(EXISTS "/etc/issue")
+  #       file(READ "/etc/issue" LINUX_ISSUE)
+  #       if(LINUX_ISSUE MATCHES "CentOS")
+  #         SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/qt/${QT_VERSION}/${PLATFORM_STRING}.zip" )
+  #       endif()
+  #     endif()
+  #   endif()
+  # endif()
 
   IF( NOT EXISTS "${QT_EXTRACTED_DIR}" )
     FILE(MAKE_DIRECTORY "${QT_EXTRACTED_DIR}" )
