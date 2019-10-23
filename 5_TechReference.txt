@@ -390,7 +390,7 @@ Before building CaPTk, the following software libraries are required to be insta
 |-----------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | Archiver or Git                   | N.A.                      | - **Windows**: Built-in unzip tool<br>- **Linux**: [gzip](https://www.gzip.org/)                                                     |
 | C++ compiler                      | C++11 compliance needed   | - **Windows**: Visual Studio 2015/2017<br>- **Linux**: GCC/4.9.2-7.4.0<br>- **macOS**: CLang 10.0.0, LLVM 6.0.1                                     |
-| OpenGL                            | 3.2+ (hardware-dependent) | - **Windows/macOS**: Update graphics drivers<br>- **Ubuntu**: apt-get install libgl-dev<br>- **CentOS**: yum install mesa-libGL-devel |
+| OpenGL                            | 3.2+ (hardware-dependent) | - **Windows/macOS**: Update graphics drivers<br>- **Ubuntu**: apt-get install libgl-dev<br>- **CentOS**: yum install mesa-libGL-devel<br>- [Details in FAQ](FAQ.html#gs_FAQ_3) |
 | [CMake](https://cmake.org/files/) | 3.10 - 3.12               | To configure the CaPTk compilation along with its dependencies (via Superbuild).                                                                |
 | X11 [Linux-only]                  | N.A.                      | - **Ubuntu**: apt-get install libxkbcommon-x11-0<br>- **CentOS**: yum install libXt-deve                                             |
 | dos2unix [Linux-only]             | N.A.                      | - **Ubuntu**: apt-get install dos2unix<br>- **CentOS**: yum install dos2unix                                                         |
