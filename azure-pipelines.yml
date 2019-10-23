@@ -5,238 +5,238 @@ trigger:
     - master
 
 jobs:
-# - job: 'WindowsBuild'
-#   displayName: "End-to-end Windows build & package"
-#   timeoutInMinutes: 0
-#   cancelTimeoutInMinutes: 300
+- job: 'WindowsBuild'
+  displayName: "End-to-end Windows build & package"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
 
-#   pool:
-#     vmImage: 'vs2017-win2016'
+  pool:
+    vmImage: 'vs2017-win2016'
 
-#   steps:
-#     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-#       # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+  steps:
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+      # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
-#     # submodule 
-#     - bash: |
-#         git submodule update --init --recursive
-#         # ls -lt
-#         # ls ./src/applications/Preprocessing/greedy
-#       displayName: 'Git Submodule Init and Update'
+    # submodule 
+    - bash: |
+        git submodule update --init --recursive
+        # ls -lt
+        # ls ./src/applications/Preprocessing/greedy
+      displayName: 'Git Submodule Init and Update'
 
-#     - task: CacheBeta@0
-#       inputs:
-#         key: '"bin_windows_20190929.tar.gz" | "$(Build.DefinitionName)"'
-#         path: $(Build.SourcesDirectory)
-#         cacheHitVar: CACHE_RESTORED_WINDOWS
-#         restoreKeys: |
-#           "bin_windows_20190929.tar.gz"
-#         continueOnError : true
-#       displayName: 'Caching'
+    - task: CacheBeta@0
+      inputs:
+        key: '"bin_windows_20190929.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
+        cacheHitVar: CACHE_RESTORED_WINDOWS
+        restoreKeys: |
+          "bin_windows_20190929.tar.gz"
+        continueOnError : true
+      displayName: 'Caching'
 
-#     - script: |
-#         choco install doxygen.install nsis.install wget
-#       displayName: 'Install dependencies'
+    - script: |
+        choco install doxygen.install nsis.install wget
+      displayName: 'Install dependencies'
 
-#     # # Pull LFS
-#     # - bash: |
-#     #     export GIT_LFS_SKIP_SMUDGE=1
-#     #     # git lfs pull --include "binaries/precompiledApps/windows.zip"
-#     #     # git lfs pull --include "binaries/qt_5.12.1/windows.zip"
-#     #     #echo "Not doing this until quota is improved on GitHub"
-#     #   displayName: 'Pull LFS'
-#     #   condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+    # # Pull LFS
+    # - bash: |
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #     # git lfs pull --include "binaries/precompiledApps/windows.zip"
+    #     # git lfs pull --include "binaries/qt_5.12.1/windows.zip"
+    #     #echo "Not doing this until quota is improved on GitHub"
+    #   displayName: 'Pull LFS'
+    #   condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-#     # - powershell: |
-#     #     wmic logicaldisk get size,freespace,caption
-#     #   displayName: 'Disk space check'
+    # - powershell: |
+    #     wmic logicaldisk get size,freespace,caption
+    #   displayName: 'Disk space check'
 
-#     - bash: |
-#         tar xvfz bin_windows_20190929.tar.gz
-#         rm -rf bin_windows_20190929.tar.gz
-#         # ls
-#         mv bin_windows bin
-#         # ls
-#         cd bin
-#         tar xvfz qt.tar.gz
-#         tar xvfz externalApps.tar.gz
-#         rm -rf *.tar.gz
-#         # rm CMakeCache.txt
-#         ls -lt
-#       displayName: 'Unzip bin if cached'
-#       condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
+    - bash: |
+        tar xvfz bin_windows_20190929.tar.gz
+        rm -rf bin_windows_20190929.tar.gz
+        # ls
+        mv bin_windows bin
+        # ls
+        cd bin
+        tar xvfz qt.tar.gz
+        tar xvfz externalApps.tar.gz
+        rm -rf *.tar.gz
+        # rm CMakeCache.txt
+        ls -lt
+      displayName: 'Unzip bin if cached'
+      condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-#     - powershell: |
-#         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
-#         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
-#       displayName: 'Downloading via wget'
-#       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+    - powershell: |
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
+      displayName: 'Downloading via wget'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-#     # Moving LFS Files
-#     - bash: |
-#         mkdir -p bin
-#         cd bin
-#         mv ../binaries_windows.zip .
-#         mv ../qt.zip .
-#         # wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
-#         # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
-#         rm -rf ../binaries/*
-#         rm -rf ../data/georgetown
-#         rm -rf ../data/georgetown
-#         rm -rf ../docs
-#         rm -rf ../.git
-#         ls -lt
-#       displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
-#       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        mv ../binaries_windows.zip .
+        mv ../qt.zip .
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
+        rm -rf ../binaries/*
+        rm -rf ../data/georgetown
+        rm -rf ../data/georgetown
+        rm -rf ../docs
+        rm -rf ../.git
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-#     - script: |
-#         cd bin
-#         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./installLibs" -DCMAKE_CONFIGURATION_TYPES="Release" ..
-#         # freeing up space
-#         rm -rf ../src/applications/individualApps/libra_source/doc
-#         rm -rf ../src/applications/individualApps/libra_source/LIBRA_Software_Manual.pdf
-#         # freeing up space
-#         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-#         cmake --build . --target ALL_BUILD --config Release
-#         rm -rf installLibs
-#         rm -rf qt.zip
-#         rm -rf binaries_windows.zip
-#       displayName: 'Configure and compile Superbuild'
-#       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./installLibs" -DCMAKE_CONFIGURATION_TYPES="Release" ..
+        # freeing up space
+        rm -rf ../src/applications/individualApps/libra_source/doc
+        rm -rf ../src/applications/individualApps/libra_source/LIBRA_Software_Manual.pdf
+        # freeing up space
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        cmake --build . --target ALL_BUILD --config Release
+        rm -rf installLibs
+        rm -rf qt.zip
+        rm -rf binaries_windows.zip
+      displayName: 'Configure and compile Superbuild'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
-#     - bash: |
-#         git pull origin master
-#         git log -1
-#         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
-#       displayName: 'Testing git pull and version'
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
 
-#     # - powershell: |
-#     #     wmic logicaldisk get size,freespace,caption
-#     #   displayName: 'Disk space check'
+    # - powershell: |
+    #     wmic logicaldisk get size,freespace,caption
+    #   displayName: 'Disk space check'
 
-#     - script: |
-#         cd bin
-#         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
-#         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-#         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-#         cmake --build . --target ALL_BUILD --config Release
-#         rm -rf externalApps
-#       displayName: 'Configure and compile CaPTk'
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        cmake --build . --target ALL_BUILD --config Release
+        rm -rf externalApps
+      displayName: 'Configure and compile CaPTk'
 
-#     - powershell: |
-#         get-psdrive | Where Free*
-#         cd bin
-#         # Remove-Item install_manifest.txt
-#         pwd
+    - powershell: |
+        get-psdrive | Where Free*
+        cd bin
+        # Remove-Item install_manifest.txt
+        pwd
 
-#         switch((ls -r|measure -s Length).Sum) {
-#           {$_ -gt 1GB} {
-#             '{0:0.0} GiB' -f ($_/1GB)
-#             break
-#           }
-#           {$_ -gt 1MB} {
-#             '{0:0.0} MiB' -f ($_/1MB)
-#             break
-#           }
-#           {$_ -gt 1KB} {
-#             '{0:0.0} KiB' -f ($_/1KB)
-#             break
-#           }
-#           default { "$_ bytes" }
-#         }
-#       displayName: 'Disk space check'
+        switch((ls -r|measure -s Length).Sum) {
+          {$_ -gt 1GB} {
+            '{0:0.0} GiB' -f ($_/1GB)
+            break
+          }
+          {$_ -gt 1MB} {
+            '{0:0.0} MiB' -f ($_/1MB)
+            break
+          }
+          {$_ -gt 1KB} {
+            '{0:0.0} KiB' -f ($_/1KB)
+            break
+          }
+          default { "$_ bytes" }
+        }
+      displayName: 'Disk space check'
 
-#     #- script: |
-#     #    cd bin
-#     #    export GIT_LFS_SKIP_SMUDGE=1
-#     #    git lfs pull --include "data/TestData.zip"
-#     #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#     #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
-#     #    setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-#     #    cmake --build . --target RUN_TESTS --config Release
-#     #  displayName: 'Performing the Tests'
+    #- script: |
+    #    cd bin
+    #    export GIT_LFS_SKIP_SMUDGE=1
+    #    git lfs pull --include "data/TestData.zip"
+    #    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #    cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_INSTALL_PREFIX="./install" -DCAPTK_DISABLE_CWL=ON ..
+    #    setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+    #    cmake --build . --target RUN_TESTS --config Release
+    #  displayName: 'Performing the Tests'
 
-#     - script: |
-#         cd bin
-#         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
-#         rm -rf binaries_windows.zip
-#         rm -rf install_manifest.txt
-#         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-#         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-#         cmake --build . --target PACKAGE --config Release
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        rm -rf binaries_windows.zip
+        rm -rf install_manifest.txt
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        cmake --build . --target PACKAGE --config Release
 
-#         ls -lt *_Installer.*
+        ls -lt *_Installer.*
 
-#         mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
-#         cd ../
+        cd ../
 
-#       displayName: 'Build & Package CaPTk'
+      displayName: 'Build & Package CaPTk'
 
-#     - bash: |
-#         rm -rf src
-#         rm -rf docs*
-#         rm -rf data
-#         rm -rf binaries
-#         rm -rf scripts
-#         rm -rf bin_windows_20190929.tar.gz
-#         rm -rf install_manifest.txt
-#         rm -rf CMakeLists.txt
+    - bash: |
+        rm -rf src
+        rm -rf docs*
+        rm -rf data
+        rm -rf binaries
+        rm -rf scripts
+        rm -rf bin_windows_20190929.tar.gz
+        rm -rf install_manifest.txt
+        rm -rf CMakeLists.txt
 
-#         cd bin
-#         rm -rf *proj*
+        cd bin
+        rm -rf *proj*
 
-#         tar cvfz externalApps.tar.gz externalApps
-#         tar cvfz qt.tar.gz qt
+        tar cvfz externalApps.tar.gz externalApps
+        tar cvfz qt.tar.gz qt
 
-#         rm -rf qt
-#         rm -rf externalApps
-#         rm -rf _CPack*
-#         rm -rf CMakeCache.txt
+        rm -rf qt
+        rm -rf externalApps
+        rm -rf _CPack*
+        rm -rf CMakeCache.txt
 
-#         # cmake -UPROJECT_VERSION # delete the project version definition
+        # cmake -UPROJECT_VERSION # delete the project version definition
         
-#         cd ../
+        cd ../
 
-#         mv bin bin_windows
-#         tar cvfz bin_windows_20190929.tar.gz bin_windows
-#         rm -rf bin_windows
-#       displayName: 'Zipping bin'
+        mv bin bin_windows
+        tar cvfz bin_windows_20190929.tar.gz bin_windows
+        rm -rf bin_windows
+      displayName: 'Zipping bin'
 
-#     - powershell: |
-#         get-psdrive | Where Free*
+    - powershell: |
+        get-psdrive | Where Free*
 
-#         cd $(Build.ArtifactStagingDirectory)
-#         pwd
+        cd $(Build.ArtifactStagingDirectory)
+        pwd
 
-#       displayName: 'Disk space check'
+      displayName: 'Disk space check'
 
-#     - task: PublishBuildArtifacts@1
-#       inputs:
-#         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#         artifactName: '$(Build.DefinitionName)_installer_Windows'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
 
-#     - task: DownloadBuildArtifacts@0
-#       inputs:
-#         buildType: 'current'
-#         downloadType: 'single'
-#         artifactName: '$(Build.DefinitionName)_installer_Windows'
-#         downloadPath: '$(System.ArtifactsDirectory)'
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
+        downloadPath: '$(System.ArtifactsDirectory)'
 
-#     - task: CopyFilesOverSSH@0
-#       inputs:
-#         sshEndpoint: cbicaNITRC
-#         sourceFolder: $(Build.ArtifactStagingDirectory)
-#         contents: '*_Installer.*'
-#         targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-#         cleanTargetFolder: false
-#         overwrite: true
-#         continueOnError: true
-#         condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
-#       displayName: Uploading to NITRC
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+      displayName: Uploading to NITRC
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
