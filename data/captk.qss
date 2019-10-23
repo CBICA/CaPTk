@@ -26,6 +26,10 @@ QLineEdit::disabled
 {
   color: rgb(100,100,100);
 }
+QLineEdit {
+  background: rgb (0, 0, 0);
+  color: rgb(30,30,30);
+}
 QSlider::groove:horizontal {
   border: 2px solid rgb(0,0,0);
   height: 5px; 
