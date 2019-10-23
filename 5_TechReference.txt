@@ -141,6 +141,8 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
           <li>Perimeter       
           <li>Roundness 
           <li>Eccentricity
+          <li>Ellipse Diameter
+          <li>Equivalent Spherical Radius
        </ul>
       <td>Dimensions <br>Axis
       <td>2D:3D <br>x,y,z
