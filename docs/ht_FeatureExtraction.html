@@ -94,13 +94,26 @@ $(document).ready(function(){initNavTree('ht_FeatureExtraction.html','');});
 </ol>
 <p>The above command extracts features defined in the parameter file defined in "-p" for the input images defined in "-i" in the regions defined in "-m" and "-r". The output is populated using the subject ID from "-n", modality information from "-t" and annotation label information from "-l" and saves the results in the path defined in "-o".</p>
 <p>An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureextraction.csv</b>. An explanation of the inputs is given below (the headers are case-insensitive):</p>
-<table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadCenter">Header  </th><th class="markdownTableHeadCenter">Description   </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyCenter">PATIENT_ID  </td><td class="markdownTableBodyCenter">The subject ID of the images getting processed   </td></tr>
+<table border="1">
+<tr>
+<td align="center"><b>Header</b> </td><td align="center"><b>Description</b>  </td></tr>
+<tr>
+<td>PATIENT_ID </td><td>The subject ID of the images getting processed  </td></tr>
+<tr>
+<td>IMAGES </td><td>The co-registered input images for whom features are to be extracted; separated by '|'  </td></tr>
+<tr>
+<td>MODALITIES </td><td>The corresponding modalities used in the output CSV; separated by '|'  </td></tr>
+<tr>
+<td>ROIFile </td><td>The mask file which defines the annotated regions for extracting features  </td></tr>
+<tr>
+<td>SELECTED_ROI </td><td>The selected annotations from which to extract features; separated by '|'  </td></tr>
+<tr>
+<td>ROI_LABEL </td><td>The corresponding annotation labels used in the output CSV; separated by '|'  </td></tr>
+<tr>
+<td>OUTPUT (OPTIONAL) </td><td>The output file for the current subject  </td></tr>
+<tr>
+<td>PARAM_FILE (OPTIONAL) </td><td>The parameter file for the current subject  </td></tr>
 </table>
-<p>| IMAGES | The co-registered input images for whom features are to be extracted; separated by '|' | | MODALITIES | The corresponding modalities used in the output CSV; separated by '|' | | ROIFile | The mask file which defines the annotated regions for extracting features | | SELECTED_ROI | The selected annotations from which to extract features; separated by '|' | | ROI_LABEL | The corresponding annotation labels used in the output CSV; separated by '|' | | OUTPUT (OPTIONAL) | The output file for the current subject | | PARAM_FILE (OPTIONAL) | The parameter file for the current subject |</p>
 <p>NOTE: The output of Feature Extraction can be used to run the <a href="Training_Module.html">Training Module</a>.</p>
 <hr/>
 <p>References:</p>

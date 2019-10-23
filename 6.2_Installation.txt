@@ -4,7 +4,10 @@
 
 ## Windows
 
-The Windows executable package contains all required dependencies and does not need administrative privileges for installation. This is a standard MSI installer. If a security prompt comes up, click on "Run Anyway".
+- Download the ".msi" installer file and double click to open.
+- On Windows 10, sometimes, Microsoft Edge does not let you download installers from unknown sources for security purposes (the warning comes up after the download finishes); you will need to select "Keep File" and follow prompts.
+- If a security prompt comes up after opening the installer, click on "Run Anyway".
+- Follow prompts for installation.
 
 ## Linux
 
