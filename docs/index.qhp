@@ -84,9 +84,11 @@
         </section>
         <section title="Technical Reference" ref="Technical_Reference.html">
           <section title="Feature Extraction" ref="tr_FeatureExtraction.html">
-            <section title="Defaults" ref="tr_FeatureExtraction.html#tr_fe_defaults" />
+            <section title="Defaults" ref="tr_FeatureExtraction.html#tr_fe_defaults">
+              <section title="Main Default Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_main" />
+              <section title="Lattice Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_lattice" />
+            </section>
             <section title="Batch Mode" ref="tr_FeatureExtraction.html#tr_fe_batch" />
-            <section title="Something Else" ref="tr_FeatureExtraction.html#tr_fe_somethingElse" />
             <section title="Extracted Features" ref="tr_FeatureExtraction.html#tr_fe_math" />
           </section>
           <section title="Integrating your Application in CaPTk" ref="tr_integration.html">
