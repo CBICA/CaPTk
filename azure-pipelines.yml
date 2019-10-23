@@ -226,17 +226,17 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_Windows'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
-      displayName: Uploading to NITRC
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #     condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+    #   displayName: Uploading to NITRC
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
@@ -436,17 +436,17 @@ jobs:
         downloadPath: '$(System.ArtifactsDirectory)'
         continueOnError: true
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
-      displayName: Uploading to NITRC      
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #     condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+    #   displayName: Uploading to NITRC      
 
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
