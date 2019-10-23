@@ -26,11 +26,11 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_windows_20190929.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_windows_20191023.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_WINDOWS
         restoreKeys: |
-          "bin_windows_20190929.tar.gz"
+          "bin_windows_20191023.tar.gz"
         continueOnError : true
       displayName: 'Caching'
 
@@ -52,8 +52,8 @@ jobs:
     #   displayName: 'Disk space check'
 
     - bash: |
-        tar xvfz bin_windows_20190929.tar.gz
-        rm -rf bin_windows_20190929.tar.gz
+        tar xvfz bin_windows_20191023.tar.gz
+        rm -rf bin_windows_20191023.tar.gz
         # ls
         mv bin_windows bin
         # ls
@@ -182,7 +182,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_windows_20190929.tar.gz
+        rm -rf bin_windows_20191023.tar.gz
         rm -rf install_manifest.txt
         rm -rf CMakeLists.txt
 
@@ -202,7 +202,7 @@ jobs:
         cd ../
 
         mv bin bin_windows
-        tar cvfz bin_windows_20190929.tar.gz bin_windows
+        tar cvfz bin_windows_20191023.tar.gz bin_windows
         rm -rf bin_windows
       displayName: 'Zipping bin'
 
@@ -263,23 +263,19 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_linux_20191022.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_linux_20191023.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
         restoreKeys: |
-          "bin_linux_20191022.tar.gz"
+          "bin_linux_20191023.tar.gz"
       displayName: 'Caching'
 
     # Dependency manager
     - bash: |
-        #sudo apt-get update && sudo apt-get dist-upgrade -y
-        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 
-        echo "Installing MPI stuff"
-        sudo apt-get install mpich libopenmpi-dev 
-        echo "Installing OpenGL stuff"
-        sudo apt-get install mesa-common-dev libglu1-mesa-dev libgl1-mesa-dev freeglut3-dev
-        sudo apt-get install doxygen
+        sudo dpkg –configure -a
+        sudo apt-get install -f
+        sudo apt-get clean && sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 mpich libopenmpi-dev mesa-common-dev libglu1-mesa-dev freeglut3-dev
         export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Install dependencies from Aptitude'
 
@@ -297,8 +293,8 @@ jobs:
     #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xvfz bin_linux_20191022.tar.gz
-        rm -rf bin_linux_20191022.tar.gz
+        tar xvfz bin_linux_20191023.tar.gz
+        rm -rf bin_linux_20191023.tar.gz
         # ls
         mv bin_linux bin
         # ls
@@ -333,7 +329,7 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # - bash: |
-    #     tar cvfz bin_linux_20191022.tar.gz bin
+    #     tar cvfz bin_linux_20191023.tar.gz bin
     #   displayName: 'Zipping Superbuild'
 
     - bash: |
@@ -404,7 +400,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_linux_20191022.tar.gz
+        rm -rf bin_linux_20191023.tar.gz
         rm -rf CMakeLists.txt
 
         cd bin
@@ -422,7 +418,7 @@ jobs:
         cd ../
 
         mv bin bin_linux
-        tar cvfz bin_linux_20191022.tar.gz bin_linux
+        tar cvfz bin_linux_20191023.tar.gz bin_linux
         rm -rf bin_linux
       displayName: 'Zipping bin'
 
@@ -473,12 +469,12 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_macos_20191022.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_macos_20191023.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_MAC
         continueOnError : true
         restoreKeys: |
-          "bin_macos_20191022.tar.gz"
+          "bin_macos_20191023.tar.gz"
       displayName: 'Caching'
 
     - bash: |
@@ -504,8 +500,8 @@ jobs:
     #   condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
     - bash: |
-        tar xvfz bin_macos_20191022.tar.gz
-        rm -rf bin_macos_20191022.tar.gz
+        tar xvfz bin_macos_20191023.tar.gz
+        rm -rf bin_macos_20191023.tar.gz
         # ls
         mv bin_macos bin
         # ls
@@ -550,7 +546,7 @@ jobs:
       displayName: 'Check qt'
 
     - bash: |
-        tar cvfz bin_macos_20191022.tar.gz bin
+        tar cvfz bin_macos_20191023.tar.gz bin
       displayName: 'Zipping Superbuild'
 
     - bash: |
@@ -655,7 +651,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_macos_20191022.tar.gz
+        rm -rf bin_macos_20191023.tar.gz
         rm -rf CMakeLists.txt
 
         cd bin
@@ -673,7 +669,7 @@ jobs:
         # ls
         mv bin bin_macos
         # ls
-        tar cvfz bin_macos_20191022.tar.gz bin_macos
+        tar cvfz bin_macos_20191023.tar.gz bin_macos
         # rm -rf bin_macos
       displayName: 'Zipping bin'
       
@@ -696,17 +692,17 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
-      displayName: Uploading to NITRC
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #     condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+    #   displayName: Uploading to NITRC
 
 # - job: 'DockerBuild'
 #   displayName: "End-to-end Docker_CentOS image build and push"
