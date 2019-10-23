@@ -434,11 +434,6 @@ jobs:
         downloadPath: '$(System.ArtifactsDirectory)'
         continueOnError: true
 
-    - bash: |
-        cd $(Build.ArtifactStagingDirectory)
-        mv *_Installer.bin ./CaPTk_LATEST_Installer.bin
-      displayName: Renaming published artifact
-      
     - task: CopyFilesOverSSH@1
       inputs:
         sshEndpoint: cbicaNITRC
