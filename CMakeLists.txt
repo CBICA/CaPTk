@@ -13,7 +13,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 3.nonRelease.20190906 )
+SET( PROJECT_VERSION_PATCH 3.nonRelease.20191015 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -45,6 +45,11 @@ INCLUDE( CaPTk_macros )
 
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
 
+# claire option is not present for Windows, unfortunately
+IF( UNIX )
+  SET( BUILD_CLAIRE OFF CACHE BOOL "Do you want to build CLAIRE (this changes the Superbuild)?" )
+ENDIF()
+
 SET( QT_VERSION_ACTUAL "5.12.1" )
 if(UNIX)
   if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -58,7 +63,7 @@ if(UNIX)
 endif()
 
 SET( QT_VERSION ${QT_VERSION_ACTUAL} CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
-SET( OPENCV_VERSION "3.4.5" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
+SET( OPENCV_VERSION "3.4.7" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
 
 SET(CAPTK_BUILD_DIR "${PROJECT_BINARY_DIR}" CACHE STRING "CaPTk build directory" FORCE )
 ADD_DEFINITIONS(-DCAPTK_BUILD_DIR="${PROJECT_BINARY_DIR}")
@@ -155,6 +160,7 @@ MARK_AS_ADVANCED(BUILD_DOCUMENTATION)
 MARK_AS_ADVANCED(BUILD_DOCUMENTATION_ONLY)
 IF( BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_DOCUMENTATION ON )
+  SET( CAPTK_UPDATE_DOCS ON ) #in this case, the HTML files are updated all the time 
 ENDIF()
 IF( BUILD_DOCUMENTATION )
   ADD_SUBDIRECTORY( docs_sources )
@@ -201,6 +207,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
   MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
+
+  # MESSAGE( AUTHOR_WARNING "=== [DEBUG] Building CaPTk version=${PROJECT_VERSION}" )
   
   SET( CMAKE_COLOR_MAKEFILE ON )
   # option to compile only the viewer
@@ -1036,8 +1044,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       SET(CPACK_GENERATOR DragNDrop )
       SET(CPACK_DMG_FORMAT "UDBZ")
       SET(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
-       SET(CPACK_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
-
+      SET(CPACK_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET(CPACK_SYSTEM_NAME "OSX")
       # SET(CPACK_STRIP_FILES "${EXE_NAME}")
       # SET(CPACK_STRIP_FILES "${EXE_NAME}.app/Contents/MacOS/${EXE_NAME}")
@@ -1146,10 +1153,16 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
     INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
-    INSTALL(FILES src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
+    INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
       DESTINATION libexec/MCR/v84/bin/glnxa64/
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
+  ELSEIF(EXISTS ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper)
+  INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper
+    DESTINATION libexec/MCR/v84/bin/glnxa64/
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  )
   ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )

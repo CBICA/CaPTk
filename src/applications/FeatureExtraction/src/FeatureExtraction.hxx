@@ -301,7 +301,7 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   ngldmCalculator.SetInputMask(maskImage);
   ngldmCalculator.SetNumBins(m_Bins);
   //ngldmCalculator.SetRange(m_Radius); //chebyshev distance delta
-  //if (m_QuantizationType == "Uniform")
+  //if (m_histogramBinningType == "Uniform")
   //{
     ngldmCalculator.SetMinimum(m_minimumToConsider);
     ngldmCalculator.SetMaximum(m_maximumToConsider);
@@ -361,7 +361,7 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   ngtdmCalculator.SetInputMask(maskImage);
   ngtdmCalculator.SetNumBins(m_Bins);
   ngtdmCalculator.SetRange(m_Radius);
-  //if (m_QuantizationType == "Uniform")
+  //if (m_histogramBinningType == "Uniform")
   //{
     ngtdmCalculator.SetMinimum(m_minimumToConsider);
     ngtdmCalculator.SetMaximum(m_maximumToConsider);
@@ -629,7 +629,7 @@ void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer 
   glszmCalculator.SetInputMask(maskImage);
   glszmCalculator.SetNumBins(m_Bins);
   glszmCalculator.SetMaxSize(m_Range);
-  //if (m_QuantizationType == "Uniform")
+  //if (m_histogramBinningType == "Uniform")
   //{
     glszmCalculator.SetMinimum(m_minimumToConsider);
     glszmCalculator.SetMaximum(m_maximumToConsider);
@@ -834,20 +834,49 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
   using HistogramMeasurementType = typename HistogramFilterType::HistogramType::MeasurementVectorType;
 
   HistogramMeasurementType lowerBound(1), upperBound(1);
-  lowerBound.Fill(min);
   upperBound.Fill(max);
 
   typename HistogramFilterType::HistogramType::SizeType size(1); // this is always grayscale
-  size.Fill(m_Bins);
 
   auto histogramCalculator = HistogramFilterType::New();
   histogramCalculator->SetInput(image);
   histogramCalculator->SetMaskImage(mask);
   histogramCalculator->SetMaskValue(1);
-  if (m_QuantizationType == "Uniform")
+
+  float minToConsider;
+  if (m_Bins_min == std::numeric_limits<float>::max())
+  {
+    minToConsider = min;
+  }
+  else
+  {
+    minToConsider = m_Bins_min;
+  }
+  lowerBound.Fill(minToConsider);
+  switch (m_histogramBinningType)
+  {
+  case HistogramBinningType::FixedBinNumber:
   {
     histogramCalculator->SetHistogramBinMinimum(lowerBound);
     histogramCalculator->SetHistogramBinMaximum(upperBound);
+    size.Fill(m_Bins);
+    break;
+  }
+  case HistogramBinningType::FixedBinSize:
+  {
+    histogramCalculator->SetHistogramBinMinimum(lowerBound);
+    histogramCalculator->SetHistogramBinMaximum(upperBound);
+    float actualBins = static_cast<float>(upperBound[0] - lowerBound[0]) / static_cast<float>(m_Bins); // here, the 'm_Bins' holds the bin size, not the total number of bins
+    size.Fill(actualBins);
+    break;
+  }
+  case HistogramBinningType::Equal:
+  {
+    size.Fill(m_Bins); // no need to set the minim and maximum in this case
+    break;
+  }
+  default:
+    break;
   }
   histogramCalculator->SetHistogramSize(size);
 
@@ -1055,14 +1084,35 @@ void FeatureExtraction< TImage >::CalculateGLRLM(const typename TImage::Pointer 
   GLRLMFeatures< TImage > glrlmCalculator;
   glrlmCalculator.SetInputImage(image);
   glrlmCalculator.SetInputMask(mask);
-  if (m_QuantizationType == "Uniform")
+  if (m_Bins_min != std::numeric_limits<float>::max())
+  {
+    m_minimumToConsider = m_Bins_min;
+  }
+  glrlmCalculator.SetHistogramBinningType(m_histogramBinningType);
+  switch (m_histogramBinningType)
+  {
+  case HistogramBinningType::FixedBinNumber:
   {
     glrlmCalculator.SetMinimum(m_minimumToConsider);
     glrlmCalculator.SetMaximum(m_maximumToConsider);
+    glrlmCalculator.SetNumBins(m_Bins);
+    break;
   }
-  else
+  case HistogramBinningType::FixedBinSize:
   {
-    glrlmCalculator.SetHistogramTypeEqual();
+    glrlmCalculator.SetMinimum(m_minimumToConsider);
+    glrlmCalculator.SetMaximum(m_maximumToConsider);
+    float actualBins = static_cast<float>(m_maximumToConsider - m_minimumToConsider) / static_cast<float>(m_Bins); // here, the 'm_Bins' holds the bin size, not the total number of bins
+    glrlmCalculator.SetNumBins(actualBins);
+    break;
+  }
+  case HistogramBinningType::Equal:
+  {
+    glrlmCalculator.SetNumBins(m_Bins);
+    break;
+  }
+  default:
+    break;
   }
   glrlmCalculator.SetOffsets(offset);
   glrlmCalculator.SetOffsetSelectorType(m_offsetSelect);
@@ -1101,14 +1151,35 @@ void FeatureExtraction< TImage >::CalculateGLCM(const typename TImage::Pointer i
   GLCMFeatures< TImage > glcmCalculator;
   glcmCalculator.SetInputImage(image);
   glcmCalculator.SetInputMask(mask);
-  if (m_QuantizationType == "Uniform")
+  if (m_Bins_min != std::numeric_limits<float>::max())
+  {
+    m_minimumToConsider = m_Bins_min;
+  }
+  glcmCalculator.SetHistogramBinningType(m_histogramBinningType);
+  switch (m_histogramBinningType)
+  {
+  case HistogramBinningType::FixedBinNumber:
   {
     glcmCalculator.SetMinimum(m_minimumToConsider);
     glcmCalculator.SetMaximum(m_maximumToConsider);
+    glcmCalculator.SetNumBins(m_Bins);
+    break;
   }
-  else
+  case HistogramBinningType::FixedBinSize:
   {
-    glcmCalculator.SetHistogramTypeEqual();
+    glcmCalculator.SetMinimum(m_minimumToConsider);
+    glcmCalculator.SetMaximum(m_maximumToConsider);
+    float actualBins = static_cast<float>(m_maximumToConsider - m_minimumToConsider) / static_cast<float>(m_Bins); // here, the 'm_Bins' holds the bin size, not the total number of bins
+    glcmCalculator.SetNumBins(actualBins);
+    break;
+  }
+  case HistogramBinningType::Equal:
+  {
+    glcmCalculator.SetNumBins(m_Bins);
+    break;
+  }
+  default:
+    break;
   }
   glcmCalculator.SetOffsets(offset);
   glcmCalculator.SetOffsetSelectorType(m_offsetSelect);
@@ -1241,6 +1312,14 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         {
           m_Bins = std::atoi(currentValue.c_str());
         }
+        else if (outer_key == ParamsString[Bins_Min])
+        {
+          m_Bins_min = std::atof(currentValue.c_str());
+          if (m_Bins_min == -666) // the default value coming from the parameter file
+          {
+            m_Bins_min = std::numeric_limits<float>::max();
+          }
+        }
         else if (outer_key == ParamsString[Directions])
         {
           if (currentValue.find("|") != std::string::npos)
@@ -1325,7 +1404,24 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         }
         else if (outer_key == ParamsString[QuantizationType])
         {
-          m_QuantizationType = currentValue;
+          auto temp = currentValue;
+          std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+          if (temp == "fixedbinnumber")
+          {
+            m_histogramBinningType = HistogramBinningType::FixedBinNumber;
+          }
+          else if (temp == "fixedbinsize")
+          {
+            m_histogramBinningType = HistogramBinningType::FixedBinSize;
+          }
+          else if (temp == "equal")
+          {
+            m_histogramBinningType = HistogramBinningType::Equal;
+          }
+          else
+          {
+            std::cerr << "Unsupported binning type selected; defaulting to FixedBinNumber.\n";
+          }
         }
         else if (outer_key == ParamsString[Resampling])
         {
@@ -1766,21 +1862,24 @@ std::vector< typename TImage::Pointer > FeatureExtraction< TImage >::GetSelected
 
   if (originalSize.Dimension == 3)
   {
-    for (int dim = 0; dim < TImage::ImageDimension; dim++) // dimension-loop
+    itk::ImageRegionIteratorWithIndex< TImage > iteratorExtractor(mask, mask->GetLargestPossibleRegion());
+
+    for (iteratorExtractor.GoToBegin(); !iteratorExtractor.IsAtEnd(); ++iteratorExtractor)
     {
-      itk::ImageRegionIteratorWithIndex< TImage > iteratorExtractor(mask, mask->GetLargestPossibleRegion());
-      itk::ImageRegionIteratorWithIndex< TImage > iteratormaxImageSlices(maxImageSlices[dim], maxImageSlices[dim]->GetLargestPossibleRegion());
-      // itk::ImageRegionConstIterator< ImageType2D > iterator(extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion());
-      for (iteratormaxImageSlices.GoToBegin(); !iteratormaxImageSlices.IsAtEnd(); ++iteratormaxImageSlices)
+      auto currentMaskValue = iteratorExtractor.Get();
+      if (currentMaskValue > 0) // only proceed if non-zero index
       {
-        auto idx = iteratormaxImageSlices.GetIndex();
-        if (idx[dim] == desiredIndexFinal[dim]) {
-          iteratorExtractor.SetIndex(idx);
-          //std::cout << "[DEBUG] FeatureExtraction.hxx::GetSelectedSlice - index[" << idx << "] = " << iteratorExtractor.Get() << std::endl;
-          iteratormaxImageSlices.Set(iteratorExtractor.Get());
+        auto idx = iteratorExtractor.GetIndex();
+        for (int dim = 0; dim < TImage::ImageDimension; dim++) // loop through all the axes
+        {
+          if (idx[dim] == desiredIndexFinal[dim]) // if there is a match with the final index along each axis
+          {
+            maxImageSlices[dim]->SetPixel(idx, currentMaskValue);
+          }
         }
       }
     }
+
   }
 
   return maxImageSlices;
@@ -2130,9 +2229,16 @@ void FeatureExtraction< TImage >::Update()
 
           // get the maximum sliced mask for 3 axes - not needed for 2D
           std::vector< typename TImage::Pointer > currentMask_patch_axisImages;
-          if (TImage::ImageDimension == 3)
+          if (!writeFeatureMapsAndLattice) // if not lattice image, we do the slice computation
           {
-            currentMask_patch_axisImages = GetSelectedSlice(currentMask_patch);
+            if (TImage::ImageDimension == 3)
+            {
+              currentMask_patch_axisImages = GetSelectedSlice(currentMask_patch);
+            }
+          }
+          else
+          {
+            currentMask_patch_axisImages.push_back(currentMask_patch);
           }
 
           // iterate over the entire feature family enum
@@ -2192,19 +2298,21 @@ void FeatureExtraction< TImage >::Update()
                       WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                         "Axis=3D;Dimension=3D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      std::string currentFeatureFamily = FeatureFamilyString[f];
-                      CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[0], currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                        "Axis=X;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      if (!writeFeatureMapsAndLattice)
+                      {
+                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[0], currentMask_patch, std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                          "Axis=X;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[1], currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                        "Axis=Y;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[1], currentMask_patch, std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                          "Axis=Y;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[2], currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                        "Axis=Z;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
+                        CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[2], currentMask_patch, std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                          "Axis=Z;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      }
                     }
                     else
                     {
@@ -2244,19 +2352,21 @@ void FeatureExtraction< TImage >::Update()
                       WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
                         "Axis=3D;Dimension=3D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      std::string currentFeatureFamily = FeatureFamilyString[f];
-                      CalculateVolumetric<TImage>(currentMask_patch_axisImages[0], std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                        "Axis=X;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      if (!writeFeatureMapsAndLattice)
+                      {
+                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        CalculateVolumetric<TImage>(currentMask_patch_axisImages[0], std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                          "Axis=X;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateVolumetric<TImage>(currentMask_patch_axisImages[1], std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                        "Axis=Y;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        CalculateVolumetric<TImage>(currentMask_patch_axisImages[1], std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                          "Axis=Y;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateVolumetric<TImage>(currentMask_patch_axisImages[2], std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                        "Axis=Z;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
+                        CalculateVolumetric<TImage>(currentMask_patch_axisImages[2], std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                          "Axis=Z;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      }
                     }
                     else
                     {
@@ -2299,20 +2409,23 @@ void FeatureExtraction< TImage >::Update()
                       "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
                       ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                      "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    if (!writeFeatureMapsAndLattice)
+                    {
+                      CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                        "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                      "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                        "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                      "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                        "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    }
                   }
                   else
                   {
@@ -2354,20 +2467,23 @@ void FeatureExtraction< TImage >::Update()
                       "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
                       ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                      "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    if (!writeFeatureMapsAndLattice)
+                    {
+                      CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                        "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                      "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                        "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                      "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                        "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    }
                   }
                   else
                   {
@@ -2409,20 +2525,23 @@ void FeatureExtraction< TImage >::Update()
                       "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
                       ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                      "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    if (!writeFeatureMapsAndLattice)
+                    {
+                      CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second));
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                        "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                      "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second));
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                        "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                      "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second));
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                        "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    }
                   }
                   else
                   {
@@ -2465,20 +2584,23 @@ void FeatureExtraction< TImage >::Update()
                       "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
                       ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                      "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    if (!writeFeatureMapsAndLattice)
+                    {
+                      CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second));
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                        "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                      "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second));
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                        "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                      "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second));
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                        "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    }
                   }
                   else
                   {
@@ -2521,20 +2643,23 @@ void FeatureExtraction< TImage >::Update()
                       "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
                       ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                    // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets_2D, std::get<4>(temp->second));
-                    // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                    //   "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                    //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-                    // 
-                    // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets_2D, std::get<4>(temp->second));
-                    // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                    //   "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                    //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-                    // 
-                    // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets_2D, std::get<4>(temp->second));
-                    // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                    //   "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                    //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    //if (!writeFeatureMapsAndLattice)
+                    //{
+                      // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets_2D, std::get<4>(temp->second));
+                      // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                      //   "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                      //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      // 
+                      // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets_2D, std::get<4>(temp->second));
+                      // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                      //   "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                      //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      // 
+                      // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets_2D, std::get<4>(temp->second));
+                      // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                      //   "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                      //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    //}
                   }
                   else
                   {
@@ -2794,6 +2919,8 @@ void FeatureExtraction< TImage >::Update()
         {
           std::ofstream myfile;
           myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
+
+          cbica::stringReplace(currentPatientModalityROIFeatureFamilyFeature, "_", ",");
 
           myfile << currentPatientModalityROIFeatureFamilyFeature + "Max" +
             "," + currentMax + "," + "\n";

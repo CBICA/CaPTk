@@ -4,6 +4,8 @@
 
 - Light/Dark mode and font switcher
 - Lots of new Utilities (NIfTI to DICOM & DICOM-Seg object conversion, Orientation change, Thresholding, File format conversion)
+- New functions to deal with image "series" (extraction and joining)
+- Automated Docker builds
 - Generic bug fixes and improvements 
 
 ## Known Issues

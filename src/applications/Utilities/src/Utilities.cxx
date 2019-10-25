@@ -11,6 +11,8 @@
 #include "itkThresholdImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkOtsuThresholdImageFilter.h"
+#include "itkJoinSeriesImageFilter.h"
+#include "itkExtractImageFilter.h"
 
 #include "cbicaDCMQIWrapper.h"
 
@@ -38,18 +40,24 @@ enum AvailableAlgorithms
   ThresholdAboveAndBelow,
   ThresholdOtsu,
   ThresholdBinary,
-  ConvertFormat
+  ConvertFormat,
+  Image2World,
+  World2Image,
+  ImageStack2Join,
+  JoinedImage2Stack
 };
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON, orientationDesired;
+std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON, orientationDesired, coordinateToTransform;
 std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
+float imageStack2JoinSpacing = 1.0;
+int joinedImage2stackedAxis;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
 
@@ -571,6 +579,80 @@ int algorithmsRunner()
     return EXIT_SUCCESS;
   }
 
+  if (requestedAlgorithm == Image2World)
+  {
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    auto coordinate_split = cbica::stringSplit(coordinateToTransform, ",");
+    if (coordinate_split.size() != TImageType::ImageDimension)
+    {
+      std::cerr << "Please provide the coordinate to transform in the same format as the input image (i.e., N coordinates for a ND image).\n";
+      return EXIT_FAILURE;
+    }
+    typename TImageType::IndexType indexToConvert;
+    for (size_t d = 0; d < TImageType::ImageDimension; d++)
+    {
+      indexToConvert[d] = std::atoi(coordinate_split[d].c_str());
+    }
+    typename TImageType::PointType output;
+    inputImage->TransformIndexToPhysicalPoint(indexToConvert, output);
+    std::cout << indexToConvert << " ==> " << output << "\n";
+    return EXIT_SUCCESS;
+  }
+
+  if (requestedAlgorithm == World2Image)
+  {
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    auto coordinate_split = cbica::stringSplit(coordinateToTransform, ",");
+    if (coordinate_split.size() != TImageType::ImageDimension)
+    {
+      std::cerr << "Please provide the coordinate to transform in the same format as the input image (i.e., N coordinates for a ND image).\n";
+      return EXIT_FAILURE;
+    }
+    typename TImageType::IndexType output;
+    typename TImageType::PointType indexToConvert;
+    for (size_t d = 0; d < TImageType::ImageDimension; d++)
+    {
+      indexToConvert[d] = std::atof(coordinate_split[d].c_str());
+    }
+    inputImage->TransformPhysicalPointToIndex(indexToConvert, output);
+    std::cout << indexToConvert << " ==> " << output << "\n";
+    return EXIT_SUCCESS;
+  }
+  
+  return EXIT_SUCCESS;
+}
+
+//! helper function to image stack joining
+template< class TImageType, class TOutputImageType >
+int algorithmsRunner_imageStack2join(std::vector< std::string >& inputImageFiles)
+{
+  std::vector< typename TImageType::Pointer > inputImages;
+  inputImages.resize(inputImageFiles.size());
+  for (size_t i = 0; i < inputImageFiles.size(); i++)
+  {
+    inputImages[i] = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+  }
+  auto output = cbica::GetJoinedImage< TImageType, TOutputImageType >(inputImages, imageStack2JoinSpacing);
+  cbica::WriteImage< TOutputImageType >(output, outputImageFile);
+  return EXIT_SUCCESS;
+}
+
+//! helper function to image stack extraction
+template< class TImageType, class TOutputImageType >
+int algorithmsRunner_join2imageStack()
+{
+  auto outputImages = cbica::GetExtractedImages< TImageType, TOutputImageType >(cbica::ReadImage< TImageType >(inputImageFile));
+  std::string path, base, ext;
+  cbica::splitFileName(outputImageFile, path, base, ext);
+  cbica::createDir(path);
+
+  for (size_t i = 0; i < outputImages.size(); i++)
+  {
+    cbica::WriteImage< TOutputImageType >(
+      outputImages[i],
+      cbica::normalizePath(path + "/" + base + "_" + std::to_string(i) + ".nii.gz")
+      );
+  }
   return EXIT_SUCCESS;
 }
 
@@ -609,12 +691,23 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("tBn", "thrshBinary", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensity BELOW and ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Default for OUTSIDE_VALUE=0");
   parser.addOptionalParameter("tOI", "threshOutIn", cbica::Parameter::STRING, "Outside_Value,Inside_Value", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
   parser.addOptionalParameter("cov", "convert", cbica::Parameter::BOOLEAN, "0-1", "The values that will go inside and outside the thresholded region", "Defaults to '1'");
+  parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-i2w 10,20,30'");
+  parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
+  parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
+  parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
   parser.addExampleUsage("-i C:/test.nii.gz -inf", "Prints out image information to console (for DICOMs, this does a full dump of the tags)");
   parser.addExampleUsage("-i C:/test/1.dcm -o C:/test.nii.gz -d2n C:/test_reference.nii.gz", "DICOM to NIfTI conversion and do sanity check of the converted image with the reference image");
   parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/test_dicom/ -n2d C:/referenceDICOM/", "NIfTI to DICOM conversion and do sanity check of the converted image with the reference image");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/test_dicom/ -ds C:/referenceDICOM/ -dsJ C:/dicomSeg.json", "NIfTI Segmentation to DICOM-Seg conversion using the supplied reference DICOM and JSON");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -or RAI", "Re-orient input image to RAI");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -thO 1", "Otsu Threshold");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -tBn 50,100", "Binary Threshold between 50 and 100 with default outside & inside values");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100 -tOI -100,10000", "Above & Below Threshold between 50 and 100 with outside value -100 and inside value 10000");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output -j2e 1", "Extract the joined image into its series");
+  parser.addExampleUsage("-i C:/test/ -o C:/output.nii.gz -e2j 1.5", "Join the extracted images into a single image with spacing in the new dimension as 1.5");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
 
@@ -838,6 +931,102 @@ int main(int argc, char** argv)
     requestedAlgorithm = ConvertFormat;
   }
 
+  else if (parser.isPresent("i2w"))
+  {
+    requestedAlgorithm = Image2World;
+    parser.getParameterValue("i2w", coordinateToTransform);
+    if (coordinateToTransform.empty())
+    {
+      std::cerr << "Please provide the coordinate to transform in a comma-separated format: '-i2w 10,20,30'\n";
+      return EXIT_FAILURE;
+    }
+  }
+
+  else if (parser.isPresent("w2i"))
+  {
+    requestedAlgorithm = World2Image;
+    parser.getParameterValue("w2i", coordinateToTransform);
+    if (coordinateToTransform.empty())
+    {
+      std::cerr << "Please provide the coordinate to transform in a comma-separated format: '-w2i 10.5,20.6,30.8'\n";
+      return EXIT_FAILURE;
+    }
+  }
+
+  else if (parser.isPresent("j2e"))
+  {
+    requestedAlgorithm = JoinedImage2Stack;
+
+    auto imageInfo_first = cbica::ImageInfo(inputImageFile);
+
+    switch (imageInfo_first.GetImageDimensions())
+    {
+    case 3:
+    {
+      using TImageType = itk::Image<float, 3>;
+      using TOImageType = itk::Image<float, 2>;
+      algorithmsRunner_join2imageStack< TImageType, TOImageType >();
+    }
+    case 4:
+    {
+      using TImageType = itk::Image<float, 4>;
+      using TOImageType = itk::Image<float, 3>;
+      algorithmsRunner_join2imageStack< TImageType, TOImageType >();
+    }
+    default:
+      break;
+    }
+    return EXIT_SUCCESS;
+  }
+  else if (parser.isPresent("e2j"))
+  {
+    requestedAlgorithm = ImageStack2Join;
+    int pos;
+    parser.compareParameter("e2j", pos);
+    if (argc <= pos + 1)
+    {
+      std::cerr << "Please provide the spacing along the joined axis: '-e2j 1.0'.\n";
+      return EXIT_FAILURE;
+    }
+    parser.getParameterValue("e2j", imageStack2JoinSpacing);
+
+    auto imagesToJoin = cbica::filesInDirectory(inputImageFile);
+    if (imagesToJoin.empty())
+    {
+      std::cerr << "Please pass a folder containing images the join using '-i'.\n";
+      return EXIT_FAILURE;
+    }
+    auto imageInfo_first = cbica::ImageInfo(imagesToJoin[0]);
+    for (size_t i = 1; i < imagesToJoin.size(); i++)
+    {
+      auto currentImageInfo = cbica::ImageInfo(imagesToJoin[i]);
+      if (imageInfo_first.GetImageDimensions() != currentImageInfo.GetImageDimensions())
+      {
+        std::cerr << "The image '" << imagesToJoin[i] << "' has a different dimension with the first image in series; cannot proceed.\n";
+        return EXIT_FAILURE;
+      }      
+    }
+
+    switch (imageInfo_first.GetImageDimensions())
+    {
+    case 2:
+    {
+      using TImageType = itk::Image<float, 2>;
+      using TOImageType = itk::Image<float, 3>;
+      algorithmsRunner_imageStack2join< TImageType, TOImageType >(imagesToJoin);
+    }
+    case 3:
+    {
+      using TImageType = itk::Image<float, 3>;
+      using TOImageType = itk::Image<float, 4>;
+      algorithmsRunner_imageStack2join< TImageType, TOImageType >(imagesToJoin);
+    }
+    default:
+      break;
+    }
+    return EXIT_SUCCESS;
+  }
+
   // this doesn't need any template initialization
   if (requestedAlgorithm == SanityCheck)
   {
@@ -928,10 +1117,17 @@ int main(int argc, char** argv)
       std::cout << "Original Image Orientation: " << output.first << "\n";
       std::string path, base, ext;
       cbica::splitFileName(outputImageFile, path, base, ext);
-      auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
-      cbica::WriteImage< ImageType >(output.second, tempOutputFile);
-      cbica::WriteImage< ImageType >(cbica::ReadImage< TImageType >(tempOutputFile), outputImageFile);
-      std::remove(tempOutputFile.c_str());
+      if (ext != ".mha")
+      {
+        auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
+        cbica::WriteImage< ImageType >(output.second, tempOutputFile);
+        cbica::WriteImage< ImageType >(cbica::ReadImage< ImageType >(tempOutputFile), outputImageFile);
+        std::remove(tempOutputFile.c_str());
+      }
+      else
+      {
+        cbica::WriteImage< ImageType >(output.second, outputImageFile);
+      }
       return EXIT_SUCCESS;
     }
 
@@ -942,6 +1138,71 @@ int main(int argc, char** argv)
   case 4:
   {
     using ImageType = itk::Image< float, 4 >;
+
+    if (requestedAlgorithm == OrientImage) // this does not work for 2 or 4-D images
+    {
+      using OrientationImageType = itk::Image< float, 3 >;
+      auto imageSize = inputImageInfo.GetImageSize();
+
+      auto inputImage = cbica::ReadImage< ImageType >(inputImageFile); 
+
+      // set the sub-image properties
+      typename ImageType::IndexType regionIndex;
+      typename ImageType::SizeType regionSize;
+      regionSize[0] = imageSize[0];
+      regionSize[1] = imageSize[1];
+      regionSize[2] = imageSize[2];
+      regionSize[3] = 0;
+      regionIndex[0] = 0;
+      regionIndex[1] = 0;
+      regionIndex[2] = 0;
+      regionIndex[3] = 0;
+
+      std::vector<ImageType::Pointer> OnePatientperfusionImages;
+
+      auto joinFilter = itk::JoinSeriesImageFilter< OrientationImageType, ImageType >::New();
+
+      bool originalOrientationOutput = false;
+      // loop through time points
+      for (size_t i = 0; i < imageSize[3]; i++)
+      {
+        regionIndex[3] = i;
+        typename ImageType::RegionType desiredRegion(regionIndex, regionSize);
+        auto filter = itk::ExtractImageFilter< ImageType, OrientationImageType >::New();
+        filter->SetExtractionRegion(desiredRegion);
+        filter->SetInput(inputImage);
+        filter->SetDirectionCollapseToSubmatrix();
+        filter->Update();
+        auto CurrentTimePoint = filter->GetOutput();
+
+        auto output = cbica::GetImageOrientation< OrientationImageType >(CurrentTimePoint, orientationDesired);
+        if (!originalOrientationOutput)
+        {
+          std::cout << "Original Image Orientation: " << output.first << "\n";
+          originalOrientationOutput = true;
+        }
+
+        joinFilter->SetInput(i, output.second);
+      }
+
+      joinFilter->Update();
+
+      std::string path, base, ext;
+      cbica::splitFileName(outputImageFile, path, base, ext);
+      if (ext != ".mha")
+      {
+        auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
+        cbica::WriteImage< ImageType >(joinFilter->GetOutput(), tempOutputFile);
+        cbica::WriteImage< ImageType >(cbica::ReadImage< ImageType >(tempOutputFile), outputImageFile);
+        std::remove(tempOutputFile.c_str());
+      }
+      else
+      {
+        cbica::WriteImage< ImageType >(joinFilter->GetOutput(), outputImageFile);
+      }
+      return EXIT_SUCCESS;
+    }
+
     return algorithmsRunner< ImageType >();
 
     break;

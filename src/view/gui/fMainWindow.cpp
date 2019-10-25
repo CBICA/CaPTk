@@ -1026,7 +1026,7 @@ fMainWindow::~fMainWindow()
 #endif
   }
 
-void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage)
+std::string fMainWindow::ConversionFrom2Dto3D(const std::string &fileName)
 {
   using ImageTypeFloat2D = itk::Image< float, 2 >;
   auto reader = itk::ImageFileReader< ImageTypeFloat2D >::New();
@@ -1048,7 +1048,7 @@ void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsI
   catch (itk::ExceptionObject& e)
   {
     ShowErrorMessage("Exception caught while reading the image '" + fileName + "':\n\n" + e.what());
-    return;
+    return "";
   }
 
   auto image_2D = reader->GetOutput();
@@ -1100,14 +1100,7 @@ void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsI
   auto imageName = m_tempFolderLocation + "/" + cbica::getFilenameBase(fileName) + ".nii.gz";
   cbica::WriteImage< ImageTypeFloat3D >(image_3D, imageName);
 
-  if (loadAsImage)
-  {
-    LoadSlicerImages(imageName, CAPTK::NIfTI);
-  }
-  else
-  {
-    readMaskFile(imageName);
-  }
+  return imageName;
 }
 
 void fMainWindow::about()
@@ -1605,13 +1598,13 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     imageManager->SetComparisonMode(false);
 
     bool bFirstLoad = false;
-    if (mSlicerManagers.size() == 0)
+    if (mSlicerManagers.empty())
     {
       bFirstLoad = true;
     }
     if (imageInfo.GetImageDimensions() == 2)
     {
-      ConversionFrom2Dto3D(fname, true);
+      fname = ConversionFrom2Dto3D(fname);
     }
     else if (!bFirstLoad)
     {
@@ -3120,28 +3113,32 @@ ImageTypeFloat3D::Pointer fMainWindow::getMaskImage()
 
 void fMainWindow::readMaskFile(const std::string &maskFileName)
 {
+  auto maskFileName_toRead = maskFileName;
   if (!mSlicerManagers.empty())
   {
-    if (cbica::IsDicom(maskFileName))
+    if (cbica::IsDicom(maskFileName_toRead))
     {
-      auto path = cbica::getFilenamePath(maskFileName);
+      auto path = cbica::getFilenamePath(maskFileName_toRead);
       auto filesInDir = cbica::filesInDirectory(path, false);
 
       if (filesInDir.size() == 1) // single DICOM slice
       {
-        dicomfilename = maskFileName;
-        ConversionFrom2Dto3D(maskFileName, false);
+        dicomfilename = maskFileName_toRead;
+        maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead);
       }
     }
     else
     {
-      auto maskInfo = cbica::ImageInfo(maskFileName);
-      if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) && (maskInfo.GetImageDimensions() == 2))
+      auto maskInfo = cbica::ImageInfo(maskFileName_toRead);
+      auto imageSize = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
+      auto maskSize = maskInfo.GetImageSize();
+      bool imageSanityCheckDone = false;
+      if ((imageSize[2] == 1) || (maskSize[2] == 1) || (maskInfo.GetImageDimensions() == 2))
       {
         // this is actually a 2D image which has been loaded in CaPTk as a pseudo-3D image
         auto origin_image = mSlicerManagers[0]->mOrigin;
         auto spacings_image = mSlicerManagers[0]->mITKImage->GetSpacing();
-        auto size_image = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
+        auto size_image = imageSize;
 
         auto origin_mask = maskInfo.GetImageOrigins();
         auto spacings_mask = maskInfo.GetImageSpacings();
@@ -3165,8 +3162,13 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
           }
           if (spacings_image[i] != spacings_mask[i])
           {
-            ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
-            return;
+            auto percentageDifference = std::abs(spacings_image[i] - spacings_mask[i] ) * 100;
+            percentageDifference /= spacings_image[i];
+            if (percentageDifference > 0.000001)
+            {
+              ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
+              return;
+            }
           }
           if (size_image[i] != size_mask[i])
           {
@@ -3174,19 +3176,25 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
             return;
           }
         }
-        ConversionFrom2Dto3D(maskFileName, false); // all sanity checks passed; load the mask 
+        maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead); // all sanity checks passed; load the mask 
+        imageSanityCheckDone = true;
       }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
-        SaveImage_withFile(0, temp_prev.c_str());
-        if (!cbica::ImageSanityCheck(maskFileName, temp_prev))
+        auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
+        //SaveImage_withFile(0, temp_prev.c_str());
+        if (!imageSanityCheckDone)
         {
-          ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
-          return;
+          if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
+          {
+            ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+          imageSanityCheckDone = true;
         }
       }
       using ImageType = itk::Image<unsigned int, 3>;
-      auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName);
+      auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName_toRead);
       inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
 
       auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();
@@ -5366,17 +5374,17 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
   }
 
   int i = 0, fileSizeCheck = files.size() + 1;
-  if (mSlicerManagers.size() == 0)
+  if (mSlicerManagers.empty())
   {
     {
       std::string fileName = files[i].toStdString();
       fileName = cbica::normPath(fileName);
       updateProgress(i + 1, "Opening " + fileName, files.size());
-      auto extension = cbica::getFilenameExtension(fileName);
-      if (!extension.empty())
-      {
-        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-      }
+      //auto extension = cbica::getFilenameExtension(fileName);
+      //if (!extension.empty())
+      //{
+      //  std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+      //}
       //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
       //  (extension == ".ima"))
       if (cbica::IsDicom(fileName))
@@ -5502,7 +5510,7 @@ void fMainWindow::openDicomImages(QString dir)
   imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
 
   bool bFirstLoad = false;
-  if (mSlicerManagers.size() == 0)
+  if (mSlicerManagers.empty())
   {
     bFirstLoad = true;
   }
@@ -8199,23 +8207,32 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     ImageTypeFloat3D::PointType originalOrigin;
     originalOrigin = mSlicerManagers[index]->mOrigin;
 
-    auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
-    infoChanger->ChangeDirectionOn();
-    infoChanger->ChangeOriginOn();
-    infoChanger->SetOutputDirection(originalDirection);
-    infoChanger->SetOutputOrigin(originalOrigin);
+    auto infoChanger1 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger1->ChangeDirectionOn();
+    infoChanger1->ChangeOriginOn();
+    infoChanger1->SetOutputDirection(originalDirection);
+    infoChanger1->SetOutputOrigin(originalOrigin);
+    infoChanger1->SetInput(currentROI);
+    infoChanger1->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger1->GetOutput(), outputDir + "/roi_DE_visualizationIncrease.nii.gz");
 
-    infoChanger->SetInput(currentROI);
-    infoChanger->Update();
-    cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), outputDir + "/roi_DE_visualizationIncrease.nii.gz");
+    auto infoChanger2 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger2->ChangeDirectionOn();
+    infoChanger2->ChangeOriginOn();
+    infoChanger2->SetOutputDirection(originalDirection);
+    infoChanger2->SetOutputOrigin(originalOrigin);
+    infoChanger2->SetInput(octantImage);
+    infoChanger2->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger2->GetOutput(), outputDir + "/roi_DE_octantImage.nii.gz");
 
-    infoChanger->SetInput(octantImage);
-    infoChanger->Update();
-    cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), outputDir + "/roi_DE_octantImage.nii.gz");
-
-    infoChanger->SetInput(newMaskImage_computed);
-    infoChanger->Update();
-    cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), outputDir + "/roi_DE_visualizationRatio.nii.gz");
+    auto infoChanger3 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger3->ChangeDirectionOn();
+    infoChanger3->ChangeOriginOn();
+    infoChanger3->SetOutputDirection(originalDirection);
+    infoChanger3->SetOutputOrigin(originalOrigin);
+    infoChanger3->SetInput(newMaskImage_computed);
+    infoChanger3->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger3->GetOutput(), outputDir + "/roi_DE_visualizationRatio.nii.gz");
 
     minMaxCalc->SetImage(newROIImage);
     minMaxCalc->Compute();
@@ -8232,11 +8249,16 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       }
     }
 
-    infoChanger->SetInput(newROIImage);
-    infoChanger->Update();
-    cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), outputDir + "/roiDE_visualizationProbability.nii.gz");
+    auto infoChanger4 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger4->ChangeDirectionOn();
+    infoChanger4->ChangeOriginOn();
+    infoChanger4->SetOutputDirection(originalDirection);
+    infoChanger4->SetOutputOrigin(originalOrigin);
+    infoChanger4->SetInput(newROIImage);
+    infoChanger4->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger4->GetOutput(), outputDir + "/roi_DE_visualizationProbability.nii.gz");
 
-    LoadSlicerImages(outputDir + "/roiDE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
+    LoadSlicerImages(outputDir + "/roi_DE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
     readMaskFile(outputDir + "/roi_DE_visualizationRatio.nii.gz");
   }
 }
