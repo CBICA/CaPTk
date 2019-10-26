@@ -22,6 +22,11 @@ QCheckBox::disabled
 {
   color: rgb(100,100,100);
 }
+QDoubleSpinBox
+{
+  background: rgb(255, 255, 255);
+  color: rgb(50,50,50);
+}
 QLineEdit
 {
   background: rgb(255, 255, 255);
