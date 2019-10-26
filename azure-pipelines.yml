@@ -281,7 +281,7 @@ jobs:
         sudo apt-get install mesa-common-dev libglu1-mesa-dev libgl1-mesa-dev freeglut3-dev
         sudo apt-get install doxygen
         export GIT_LFS_SKIP_SMUDGE=1
-    displayName: 'Install dependencies from Aptitude'
+      displayName: 'Install dependencies from Aptitude'
 
     # # Pull LFS
     # - bash: |
