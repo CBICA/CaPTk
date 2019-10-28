@@ -235,8 +235,9 @@ jobs:
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
-        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
       displayName: Uploading to NITRC
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
@@ -449,8 +450,9 @@ jobs:
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
-        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
-      displayName: Uploading to NITRC      
+      displayName: Uploading to NITRC 
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+     
 
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
@@ -705,8 +707,8 @@ jobs:
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
-        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
       displayName: Uploading to NITRC
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
 
 # - job: 'DockerBuild'
 #   displayName: "End-to-end Docker_CentOS image build and push"
