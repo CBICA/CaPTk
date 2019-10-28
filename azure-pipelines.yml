@@ -37,7 +37,7 @@ jobs:
     - script: |
         choco install wget
         choco install --force nsis.install 
-        choco install doxygen.install 
+        choco install doxygen.install --checksum --checksum64
       displayName: 'Install dependencies'
 
     # # Pull LFS
