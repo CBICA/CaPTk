@@ -1054,7 +1054,29 @@ namespace cbica
 
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
-  \param outputSpacing The output spacing, always isotropic
+  \param outputSpacing The desired output spacing
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \return The resized image
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const typename TImageType::SpacingType outputSpacing, const std::string interpolator = "Linear")
+  {
+    itk::Vector< double, TImageType::ImageDimension > desiredSpacing;
+
+    for (size_t i = 0; i < TImageType::ImageDimension; i++)
+    {
+      desiredSpacing[d] = outputSpacing[d];
+    }
+
+    return ResampleImage< TImageType >(inputImage, desiredSpacing, interpolator);
+  }
+
+  /**
+  \brief Resample an image to an isotropic resolution using the specified output spacing vector
+
+  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
+  \param inputImage The input image to process
+  \param outputSpacing The desired output spacing
   \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
   \return The resized image
   */
@@ -1088,7 +1110,8 @@ namespace cbica
 
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
-  \param outputSpacing The output spacing, always isotropic
+  \param outputSpacing The desired output spacing
+  \param outputSize The desired output size
   \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
   \return The resized image
   */
