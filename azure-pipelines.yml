@@ -36,7 +36,7 @@ jobs:
 
     - script: |
         choco install wget
-        choco install --force nsis.install 
+        choco install nsis.install 
         choco install doxygen.install --ignore-checksums
       displayName: 'Install dependencies'
 
