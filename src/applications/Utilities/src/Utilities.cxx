@@ -54,7 +54,7 @@ std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
-std::string changeOldValues, changeNewValues, resamplingResolution_full = "1.0,1.0,1.0";
+std::string changeOldValues, changeNewValues, resamplingResolution_full = "1.0,1.0,1.0", resamplingReference;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
 float imageStack2JoinSpacing = 1.0;
 int joinedImage2stackedAxis;
@@ -75,10 +75,36 @@ int algorithmsRunner()
 
   if (requestedAlgorithm == Resample)
   {
-    auto outputImage = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), resamplingResolution, resamplingInterpolator);
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    auto outputSpacing = inputImage->GetSpacing();
+    if (!resamplingReference.empty())
+    {
+      auto imageInfo_1 = cbica::ImageInfo(inputImageFile);
+      auto imageInfo_2 = cbica::ImageInfo(resamplingReference);
+      if (imageInfo_1.GetImageDimensions() != imageInfo_2.GetImageDimensions())
+      {
+        std::cerr << "The resampling reference image needs to be the same dimension as the input image.\n";
+        return EXIT_FAILURE;
+      }
+      outputSpacing = cbica::ReadImage< TImageType >(resamplingReference)->GetSpacing();
+    }
+    else
+    {
+      auto resolution_split = cbica::stringSplit(resamplingResolution_full, ",");
+      if (resolution_split.size() != TImageType::ImageDimension)
+      {
+        std::cerr << "The resampling resolution needs to be the same dimension as the input image.\n";
+        return EXIT_FAILURE;
+      }
+      for (size_t d = 0; d < TImageType::ImageDimension; d++)
+      {
+        outputSpacing[d] = std::atof(resolution_split[d].c_str());
+      }
+    }
+    auto outputImage = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), outputSpacing, resamplingInterpolator);
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
-    std::cout << "Resampled image to isotropic resolution of '" << resamplingResolution << "' using interpolator '" << resamplingInterpolator << "'.\n";
+    std::cout << "Resampled image to isotropic resolution of '" << outputSpacing << "' using interpolator '" << resamplingInterpolator << "'.\n";
     return EXIT_SUCCESS;
   }
 
@@ -770,12 +796,16 @@ int main(int argc, char** argv)
       requestedAlgorithm = Resample;
       if (parser.isPresent("rr"))
       {
-        parser.getParameterValue("rr", resamplingResolution);
+        parser.getParameterValue("rr", resamplingResolution_full);
       }
     }
     if (parser.isPresent("ri"))
     {
       parser.getParameterValue("ri", resamplingInterpolator);
+    }
+    else if (parser.isPresent("rf"))
+    {
+      parser.getParameterValue("rf", resamplingReference);
     }
   }
   else if (parser.isPresent("s"))
