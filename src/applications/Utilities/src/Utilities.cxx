@@ -76,7 +76,7 @@ int algorithmsRunner()
   if (requestedAlgorithm == Resample)
   {
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-    auto outputSpacing = inputImage->GetSpacing();
+    itk::Vector< double, TImageType::ImageDimension > outputSpacing = inputImage->GetSpacing();
     if (!resamplingReference.empty())
     {
       auto imageInfo_1 = cbica::ImageInfo(inputImageFile);
@@ -101,7 +101,7 @@ int algorithmsRunner()
         outputSpacing[d] = std::atof(resolution_split[d].c_str());
       }
     }
-    auto outputImage = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), outputSpacing, resamplingInterpolator);
+    auto outputImage = cbica::ResampleImage< TImageType >(inputImage, outputSpacing, resamplingInterpolator);
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
     std::cout << "Resampled image to isotropic resolution of '" << outputSpacing << "' using interpolator '" << resamplingInterpolator << "'.\n";
