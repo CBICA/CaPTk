@@ -819,14 +819,14 @@ int main(int argc, char** argv)
       {
         parser.getParameterValue("rr", resamplingResolution_full);
       }
+      else if (parser.isPresent("rf"))
+      {
+        parser.getParameterValue("rf", resamplingReference);
+      }
     }
     if (parser.isPresent("ri"))
     {
       parser.getParameterValue("ri", resamplingInterpolator);
-    }
-    else if (parser.isPresent("rf"))
-    {
-      parser.getParameterValue("rf", resamplingReference);
     }
   }
   else if (parser.isPresent("s"))
