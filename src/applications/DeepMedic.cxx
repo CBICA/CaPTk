@@ -361,7 +361,7 @@ void algorithmRunner()
 
   auto outputImageFile = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
   // do hole filling for skull stripping
-  if (inferenceType = SkullStripping)
+  if (inferenceType == SkullStripping)
   {
     std::cout << "=== Performing hole-filling operation for skull stripping.\n";
     if (cbica::exists(outputImageFile))
