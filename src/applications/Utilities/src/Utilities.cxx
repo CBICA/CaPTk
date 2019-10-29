@@ -655,6 +655,12 @@ int algorithmsRunner()
       masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
       masker->Update();
       cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
+      return EXIT_SUCCESS;
+    }
+    else
+    {
+      std::cerr << "The input mask and mask are not in the same space.\n";
+      return EXIT_FAILURE;
     }
   }
   
