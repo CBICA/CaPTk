@@ -1079,7 +1079,7 @@ namespace cbica
       }
     }
 
-    return ResampleImageWithSize< TImageType >(inputImage, outputSpacing, outputSize, interpolator);
+    return cbica::ResampleImage< TImageType >(inputImage, outputSpacing, outputSize, interpolator);
 
   }
 
@@ -1094,7 +1094,7 @@ namespace cbica
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImageWithSize(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > outputSpacing,
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > outputSpacing,
     typename TImageType::SizeType outputSize, const std::string interpolator = "Linear")
   {
     std::string interpolator_wrap = interpolator;
@@ -1315,7 +1315,7 @@ namespace cbica
       }
     }
 
-    return ResampleImageWithSize < TImageType >(inputImage, outputSpacing, outputSize, interpolator);
+    return cbica::ResampleImage < TImageType >(inputImage, outputSpacing, outputSize, interpolator);
 
   }
 
