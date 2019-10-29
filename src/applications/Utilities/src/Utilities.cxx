@@ -314,6 +314,18 @@ int algorithmsRunner()
       using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
       cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
     }
+    if (targetImageFile == "ushort")
+    {
+      using DefaultPixelType = unsigned short;
+      using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
+      cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
+    }
+    else if (targetImageFile == "short")
+    {
+      using DefaultPixelType = short;
+      using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
+      cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
+    }
     else if (targetImageFile == "uint")
     {
       using DefaultPixelType = unsigned int;
@@ -758,7 +770,7 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -r 100 -rf C:/reference.nii.gz -ri LINEAR", "Calculates an isotropic image from the input with spacing from the reference image using linear interpolation");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
-
+  
   if (parser.isPresent("i"))
   {
     parser.getParameterValue("i", inputImageFile);
