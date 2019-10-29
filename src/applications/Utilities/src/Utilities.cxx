@@ -644,6 +644,19 @@ int algorithmsRunner()
     std::cout << indexToConvert << " ==> " << output << "\n";
     return EXIT_SUCCESS;
   }
+
+  // if no other algorithm has been selected and mask & output files are present and in same space as input, apply it
+  if (cbica::isFile(inputMaskFile) && !outputImageFile.empty())
+  {
+    if (cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
+    {
+      auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
+      masker->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+      masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+      masker->Update();
+      cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
+    }
+  }
   
   return EXIT_SUCCESS;
 }
