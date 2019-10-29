@@ -406,7 +406,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("t2", "FLAIR", cbica::Parameter::FILE, "", "The input T2 image file.");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "", "The Optional input mask file.", "This is needed for normalization only");
   parser.addOptionalParameter("md", "modelDir", cbica::Parameter::DIRECTORY, "", "The trained model to use", "Defaults to 'CaPTk_installDir/data/deepMedic/brainSegmentation'");
-  parser.addRequiredParameter("o", "output", cbica::Parameter::DIRECTORY, "", "The output File.");
+  parser.addRequiredParameter("o", "output", cbica::Parameter::DIRECTORY, "", "The output directory");
 
   parser.addOptionalParameter("ql", "quantLower", cbica::Parameter::FLOAT, "0-100", "The Lower Quantile range to remove", "This is needed for normalization only", "Default: 5");
   parser.addOptionalParameter("qu", "quantUpper", cbica::Parameter::FLOAT, "0-100", "The Upper Quantile range to remove", "This is needed for normalization only", "Default: 95");
