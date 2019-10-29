@@ -420,11 +420,8 @@ Contains the following applications:
 - \subpage BreastCancer_breastSegmentation "Breast Cancer: Breast Segmentation"
 - \subpage LungCancer_SBRT "Lung Cancer: Radiomics Analysis of Lung Cancer (SBRT Lung)"
 - \subpage Glioblastoma_Directionality "Miscellaneous: Directionality Estimator"
-- \subpage Perfusion_Alignment "Miscellaneous: Perfusion Alignment"
-- \subpage Perfusion_Derivatives "Miscellaneous: Perfusion Derivatives"
 - \subpage Diffusion_Derivatives "Miscellaneous: Diffusion Derivatives"
 - \subpage Training_Module "Miscellaneous: Training Module"
-- \subpage PCA_Extraction "Miscellaneous: PCA Volume Extraction"
 
 --------
 */
@@ -1201,45 +1198,6 @@ Reference:
 */
 
 /**
-\page Perfusion_Alignment Miscellaneous: Perfusion Alignment
-
-This application does perfusion alignment of the input Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan.
-
-<b> REQUIREMENTS:</b>
-	-# A single DSC-MRI scan. 
-	-# A single dicom slice from the original DICOM corresponding to the DSC-MRI scan. 
-	-# A single T1 post-contrast MRI scan.
-	-# The Echo Time corresponding to the given DSC-MRI scan.
-	-# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
-	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
-
-<b> USAGE:</b>
-	-# Launch the application from "Applications" -> "Perfusion Alignment".
-	-# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
-	-# Press "Confirm" button.
-	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
-
-*/
-
-/**
-\page Perfusion_Derivatives Miscellaneous: Perfusion Derivatives
-This application extracts various measurements from a Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan. The exact measurements comprise i) an automatically-extracted proxy to relative Cerebral Blood Volume (ap-rCBV), ii) peak height (PH), iii) percent signal recovery (PSR). Note that the ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.
-
-<b> REQUIREMENTS:</b>
-	-# A single DSC-MRI scan. 
-	-# The Echo Time corresponding to the given DSC-MRI scan
-	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
-
-<b> USAGE:</b>
-	-# Launch the application from "Applications" -> "Perfusion Derivatives".
-	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
-	-# Press "Confirm" button.
-	-# The extracted measurements will be saved at the specified location (~5 minutes).
-
---------
-*/
-
-/**
 \page Diffusion_Derivatives Miscellaneous: Diffusion Derivatives
 This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).
 
@@ -1256,32 +1214,6 @@ This application extracts various measurements from a Diffusion Weighted MRI sca
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
 
 --------
-*/
-
-/**
-\page PCA_Extraction Miscellaneous: PCA Volume Extraction
-This application extracts the principal components from DSC-MRI scans as mentioned in [1].
-
-<b> REQUIREMENTS:</b>
-A single DSC-MRI image and a mask for which the measurements will be extracted.
-
-<b> USAGE:</b>
-	-# Load a DSC-MRI in CaPTk and the mask (Label:1) defining the voxels to extract the measurements.
-	-# Launch the application from "Applications" -> "PCA Volume Extraction".
-	-# Specify the number of principal components required and the output directory.
-	-# Press "Confirm" button. 
-	-# The principal components will be extracted at the specified location and also loaded in CaPTk (~5 minutes).
-
-<br>
-
---------
-
-Reference:
-
-<ol>
-  <li>H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458</li>
-</ol>
-
 */
 
 /**
