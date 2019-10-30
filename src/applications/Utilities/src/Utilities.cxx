@@ -682,8 +682,8 @@ int algorithmsRunner()
         return EXIT_FAILURE;
       }
       auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-      auto maskImage = cbica::ReadImage< TImageType >(inputMaskFile);
       using TBaseImageType = itk::Image< typename TImageType::PixelType, 3 >;
+      auto maskImage = cbica::ReadImage< TBaseImageType >(inputMaskFile);
       auto inputImages = cbica::GetExtractedImages<
         TImageType, TBaseImageType >(
           inputImage);
@@ -693,7 +693,7 @@ int algorithmsRunner()
 
       for (size_t i = 0; i < inputImages.size(); i++)
       {
-        auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
+        auto masker = itk::MaskImageFilter< TBaseImageType, TBaseImageType >::New();
         masker->SetInput(inputImages[i]);
         masker->SetMaskImage(maskImage);
         masker->Update();
