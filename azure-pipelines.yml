@@ -235,7 +235,7 @@ jobs:
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
       displayName: Uploading to NITRC
 
 - job: 'XenialBuild'
@@ -449,7 +449,7 @@ jobs:
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
       displayName: Uploading to NITRC      
 
 - job: 'MacOSBuild'
@@ -705,7 +705,7 @@ jobs:
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+        condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
       displayName: Uploading to NITRC
 
 # - job: 'DockerBuild'
