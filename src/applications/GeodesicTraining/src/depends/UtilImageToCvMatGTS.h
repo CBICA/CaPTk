@@ -342,7 +342,7 @@ namespace GeodesicTrainingSegmentation
 			return res;
 		}
 
-		inline void ScaleSomeOfTheColumns(cv::Mat& mat, int colStart, int colEnd, double ratio)
+		void ScaleSomeOfTheColumns(cv::Mat& mat, int colStart, int colEnd, double ratio)
 		{
 			for (int i_col = colStart; i_col <= colEnd; i_col++)
 			{

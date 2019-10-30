@@ -20,6 +20,7 @@
 
 #include <unordered_map>
 #include <set>
+#include <memory>
 
 namespace GeodesicTrainingSegmentation
 {
@@ -83,7 +84,9 @@ namespace GeodesicTrainingSegmentation
 	};
 
 	/** Balanced Subsampling */
-	inline void /*cv::Mat*/ CreateBalancedSubsample(std::shared_ptr<ParserGTS::Result>& data, std::unordered_map<int, int> labelsCountMap, int maxSamples)
+	bool /*cv::Mat*/ CreateBalancedSubsample(std::shared_ptr<ParserGTS::Result>& data, 
+		std::string& errorMessageIfApplicable,
+		std::unordered_map<int, int> labelsCountMap, int maxSamples)
 	{
 		typedef int LabelsPixelType;
 
@@ -107,6 +110,13 @@ namespace GeodesicTrainingSegmentation
 		{
 			maxForEachLabel[*it] = std::lround(maxSamples * labelsCountMap[*it] / totalLabels);
 			std::cout << "MAX FOR " << *it << ": " << maxForEachLabel[*it] << "\n";
+			if (maxForEachLabel[*it] < 3) {
+				errorMessageIfApplicable = std::string("Cannot create a balanced subsample, ") +
+					std::string("because one (or more) labels is outweighted by the others a lot. ") +
+					std::string("Draw more for the labels that you haven't drawn a lot for, or remove ") +
+					std::string("some samples from the ones that are large.");
+				return false;
+			}
 		}
 
 		// Shuffle training matrix and labels (with the same seed)
@@ -153,6 +163,7 @@ namespace GeodesicTrainingSegmentation
 		data->trainingMat = trainingMatNew;
 		data->labelsMat   = labelsMatNew;
 
+		return true;
 		//return sampleIdx;
 	}
 
