@@ -108,6 +108,112 @@ VariableSizeMatrixType FeatureReductionClass::MatrixTranspose(VariableSizeMatrix
   return output;
 }
 
+vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePointsDynamic(VectorVectorDouble &intensities)
+{
+  mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
+  size_t NumberOfFeatures = intensities[0].size();
+  size_t NumberOfSamples = intensities.size();
+
+  vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
+  std::vector<vtkSmartPointer<vtkDoubleArray>> VectorOfVariables;
+  int counter = 0;
+  int var_Counter = 0;
+  std::string var_string;
+
+  vtkSmartPointer<vtkPCAStatistics> pcaStatistics = vtkSmartPointer<vtkPCAStatistics>::New();
+#if VTK_MAJOR_VERSION <= 5
+  pcaStatistics->SetInput(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
+#else
+  pcaStatistics->SetInputData(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
+#endif
+
+for (int i = 0; i < NumberOfFeatures; i++)
+{
+    vtkSmartPointer<vtkDoubleArray> CurrentVariable = vtkSmartPointer<vtkDoubleArray>::New();
+    CurrentVariable->SetNumberOfComponents(1);
+    if (var_Counter == 0)
+      var_string = "A";
+    else if (var_Counter == 1)
+      var_string = "B";
+    else if (var_Counter == 2)
+      var_string = "C";
+    else if (var_Counter == 3)
+      var_string = "D";
+    else if (var_Counter == 4)
+      var_string = "E";
+    else if(var_Counter == 5)
+      var_string = "F";
+    else if (var_Counter == 6)
+      var_string = "G";
+    else if (var_Counter == 7)
+      var_string = "H";
+    else if (var_Counter == 8)
+      var_string = "I";
+    else if (var_Counter == 9)
+      var_string = "J";
+
+    std::string namefinal = var_string + std::to_string(counter);
+    CurrentVariable->SetName(namefinal.c_str());
+
+    for (size_t index = 0; index < NumberOfSamples; index++)
+      CurrentVariable->InsertNextValue(intensities[index][0]);
+    datasetTable->AddColumn(CurrentVariable);
+    pcaStatistics->SetColumnStatus(namefinal.c_str(), 1);
+    counter++;
+    if (counter == 9)
+    {
+      counter = 0;
+      var_Counter++;
+    }
+  }
+  pcaStatistics->RequestSelectedColumns();
+  pcaStatistics->SetDeriveOption(true);
+  pcaStatistics->Update();
+
+  VariableSizeMatrixType transposePCAMatrix;
+  transposePCAMatrix.SetSize(NumberOfFeatures, NumberOfFeatures);
+
+  vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
+  pcaStatistics->GetEigenvectors(eigenvectors);
+
+  for (vtkIdType i = 0; i < static_cast<vtkIdType>(NumberOfFeatures); i++)
+  {
+    double* evec = new double[eigenvectors->GetNumberOfComponents()];
+    eigenvectors->GetTuple(i, evec);
+    for (vtkIdType j = 0; j < eigenvectors->GetNumberOfComponents(); j++)
+      transposePCAMatrix[i][j] = evec[j];
+    delete evec;
+  }
+
+  PCATransformationMatrix = this->MatrixTranspose(transposePCAMatrix);
+
+  vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
+  for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
+  {
+    vtkSmartPointer<vtkDoubleArray> col = vtkSmartPointer<vtkDoubleArray>::New();
+    for (vtkIdType c = 0; c < static_cast<vtkIdType>(NumberOfSamples); c++)
+      col->InsertNextValue(0);
+    projectedDatasetTable->AddColumn(col);
+  }
+
+  for (size_t i = 0; i < NumberOfSamples; i++)
+  {
+    for (size_t j = 0; j < NumberOfFeatures; j++)
+    {
+      double sum = 0;
+      for (size_t k = 0; k < NumberOfFeatures; k++)
+        sum = sum + datasetTable->GetValue(i, k).ToDouble()*PCATransformationMatrix[k][j];
+      projectedDatasetTable->SetValue(i, j, vtkVariant(sum));
+    }
+  }
+  VariableLengthVectorType mMeanVector = this->ComputeMeanOfGivenFeatureVectors(projectedDatasetTable);
+  for (size_t c = 0; c < NumberOfFeatures; c++)
+    for (size_t r = 0; r < NumberOfSamples; r++)
+      projectedDatasetTable->SetValue(r, c, projectedDatasetTable->GetValue(r, c).ToDouble() - mMeanVector[c]);
+
+  return projectedDatasetTable;
+}
+
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities)
 {
   mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
