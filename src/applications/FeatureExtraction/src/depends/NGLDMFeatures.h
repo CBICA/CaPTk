@@ -3,7 +3,7 @@
 
 \brief NGLDM feature calculation (Neighbouring Grey Level Dependence Matrix based features)
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -14,7 +14,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 // ITK
 #include "itkImage.h"
-#include "itkHistogram.h"
+//#include "itkHistogram.h"
 #include "itkNumericTraits.h"
 #include "itkVectorContainer.h"
 #include "itkNeighborhoodIterator.h"

@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: GreedyRegistration
 inputs:
   movingImage:
@@ -101,3 +100,9 @@ inputs:
       position: 1
       prefix: -th
     doc: Number of threads for algorithm.If not suppllied gets set to default 4.
+hints:
+  SoftwareRequirement:
+    packages:
+      GreedyRegistration:
+        version:
+          - 1.7.3.nonRelease.20190819

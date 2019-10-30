@@ -3,7 +3,7 @@
 
 \brief Morphologic feature calculation
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -64,7 +64,7 @@ public:
 
       auto i2l = itk::LabelImageToShapeLabelMapFilter < TShapeImageType >::New();
       i2l->SetInput(connected->GetOutput());
-      //i2l->ComputeFeretDiameterOn();
+      i2l->ComputeFeretDiameterOn();
       i2l->ComputePerimeterOn();
       //i2l->ComputeOrientedBoundingBoxOn();
       i2l->Update();
@@ -125,7 +125,7 @@ public:
 
           //std::cout << "EllipseDiameter" + "_Axis-" + std::to_string(d) << " = " << ellipseDiameter[d] << "\n";
         }
-        //m_features["FeretDiameter"] = labelObject->GetFeretDiameter();
+        this->m_features["FeretDiameter"] = labelObject->GetFeretDiameter();
         this->m_features["PerimeterOnBorder"] = labelObject->GetPerimeterOnBorder();
         this->m_features["Perimeter"] = labelObject->GetPerimeter();
         this->m_features["PixelsOnBorder"] = labelObject->GetNumberOfPixelsOnBorder();
@@ -147,7 +147,7 @@ public:
       else
       {
         auto size = this->m_Mask->GetBufferedRegion().GetSize();
-        size_t totalSizeThreshold = 0.05; // 5% threshold in case all connected components are chosen
+        size_t totalSizeThreshold = m_extractionType * 0.000001; // 10^-6 threshold in case all connected components are chosen
         for (size_t d = 1; d < TImageType::ImageDimension; d++)
         {
           totalSizeThreshold *= size[d];
@@ -228,7 +228,7 @@ private:
 
   enum ExtractionType
   {
-    Largest, All
+    Largest, AnythingElse
   };
 
   int m_extractionType = ExtractionType::Largest;

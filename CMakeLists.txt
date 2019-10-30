@@ -9,9 +9,11 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # WARNING: captk-pkg (the linux packager) directly tries to pattern match these lines (excluding the actual number/patch text)
 # to read the version number.
 # So small changes here to formatting or naming convention *may potentially break the linux packager*!
+# STRING(TIMESTAMP TODAY "%Y%m%d")
+
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 1 )
+SET( PROJECT_VERSION_PATCH 3.nonRelease.20191026 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -42,8 +44,26 @@ INCLUDE( CaPTk_macros )
 #SET (SVN_REVISION "${SVN_REVISION}")
 
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
-SET( QT_VERSION "5.12.1" CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
-SET( OPENCV_VERSION "3.4.5" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
+
+# claire option is not present for Windows, unfortunately
+IF( UNIX )
+  SET( BUILD_CLAIRE OFF CACHE BOOL "Do you want to build CLAIRE (this changes the Superbuild)?" )
+ENDIF()
+
+SET( QT_VERSION_ACTUAL "5.12.1" )
+if(UNIX)
+  if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    if(EXISTS "/etc/issue")
+      file(READ "/etc/issue" LINUX_ISSUE)
+      if(LINUX_ISSUE MATCHES "CentOS")
+        SET( QT_VERSION_ACTUAL "5.11.1" )
+      endif()
+    endif()
+  endif()
+endif()
+
+SET( QT_VERSION ${QT_VERSION_ACTUAL} CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
+SET( OPENCV_VERSION "3.4.7" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
 
 SET(CAPTK_BUILD_DIR "${PROJECT_BINARY_DIR}" CACHE STRING "CaPTk build directory" FORCE )
 ADD_DEFINITIONS(-DCAPTK_BUILD_DIR="${PROJECT_BINARY_DIR}")
@@ -75,13 +95,14 @@ ELSE()
   
   IF( EXISTS ${PROJECT_BINARY_DIR}/ITK-build/ITKConfig.cmake )
     SET( ITK_DIR "${PROJECT_BINARY_DIR}/ITK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
+    SET( DCMTK_DIR "${PROJECT_BINARY_DIR}/DCMTK-build/" CACHE STRING "ITK_DIR Path for use in other builds" FORCE )
 
     IF (APPLE) # THIS QT FOLDER STRUCTURE WAS NOT REQUIRED FOR 5.11.2 
       SET( ENV{PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/bin:$ENV{PATH}" CACHE PATH "" FORCE)
-      SET( ENV{CMAKE_PREFIX_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/bin:${PROJECT_BINARY_DIR}/ITK-build/:${PROJECT_BINARY_DIR}/OpenCV-build/:${PROJECT_BINARY_DIR}/VTK-build:$ENV{CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE )
+      SET( ENV{CMAKE_PREFIX_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/bin:${PROJECT_BINARY_DIR}/ITK-build/:${PROJECT_BINARY_DIR}/DCMTK-build/:${PROJECT_BINARY_DIR}/OpenCV-build/:${PROJECT_BINARY_DIR}/VTK-build:$ENV{CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE )
       SET( ENV{CMAKE_PROGRAM_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/clang_64/bin:$ENV{CMAKE_PROGRAM_PATH}" CACHE PATH "" FORCE )
     ELSE()
-      SET( ENV{CMAKE_PREFIX_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:${PROJECT_BINARY_DIR}/ITK-build/:${PROJECT_BINARY_DIR}/OpenCV-build/:${PROJECT_BINARY_DIR}/VTK-build:$ENV{CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE )
+      SET( ENV{CMAKE_PREFIX_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:${PROJECT_BINARY_DIR}/ITK-build/:${PROJECT_BINARY_DIR}/DCMTK-build/:${PROJECT_BINARY_DIR}/OpenCV-build/:${PROJECT_BINARY_DIR}/VTK-build:$ENV{CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE )
       SET( ENV{LD_LIBRARY_PATH} "${QT_EXTRACTED_DIR}/${QT_VERSION}/lib/:$ENV{LD_LIBRARY_PATH}" CACHE PATH "" FORCE )
       SET( ENV{CMAKE_PROGRAM_PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{CMAKE_PROGRAM_PATH}" CACHE PATH "" FORCE )
       SET( ENV{PATH} "${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/lib/cmake/Qt5/:${PROJECT_BINARY_DIR}/qt/${QT_VERSION}/bin:$ENV{PATH}" CACHE PATH "" FORCE)
@@ -111,7 +132,7 @@ ENDIF()
 SET( PROJECT_VENDOR "CBICA - UPenn" )
 SET( LICENSE_FILE "${PROJECT_SOURCE_DIR}/LICENSE" )
 SET( README_FILE  "${PROJECT_SOURCE_DIR}/README.txt" )
-SET( PROJECT_DOMAIN "http://www.med.upenn.edu/cbica/captk/" )
+SET( PROJECT_DOMAIN "https://www.med.upenn.edu/cbica/captk/" )
 SET( PROJECT_CONTACT "software@cbica.upenn.edu" )
 SET( COPYRIGHT "Copyright (c) 2019 CBICA. All rights reserved.")
 SET( IDENTIFIER "")
@@ -139,6 +160,7 @@ MARK_AS_ADVANCED(BUILD_DOCUMENTATION)
 MARK_AS_ADVANCED(BUILD_DOCUMENTATION_ONLY)
 IF( BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_DOCUMENTATION ON )
+  SET( CAPTK_UPDATE_DOCS ON ) #in this case, the HTML files are updated all the time 
 ENDIF()
 IF( BUILD_DOCUMENTATION )
   ADD_SUBDIRECTORY( docs_sources )
@@ -149,6 +171,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( CAPTK_BUILD_OPTION "PACKAGE_PROJECT" CACHE STRING "Toggle between packaging mode (optimized code) or developer mode (provides debugging info)" )
 
   SET_PROPERTY( CACHE CAPTK_BUILD_OPTION PROPERTY STRINGS PACKAGE_PROJECT DEVELOPER_MODE )
+  SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 
   IF( CAPTK_BUILD_OPTION STREQUAL PACKAGE_PROJECT)
 
@@ -184,6 +207,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
   MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
+
+  # MESSAGE( AUTHOR_WARNING "=== [DEBUG] Building CaPTk version=${PROJECT_VERSION}" )
   
   SET( CMAKE_COLOR_MAKEFILE ON )
   # option to compile only the viewer
@@ -308,6 +333,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${ITK_LIBRARIES}
     ${VTK_LIBRARIES}
     ${OpenCV_LIBRARIES}
+    ${OpenMP_LIBRARIES}
   )
 
   IF(UNIX AND NOT APPLE)
@@ -449,6 +475,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${GEODESIC_TRAINING_INCLUDE_DIRS}
     ${APPLICATION_INCLUDES}
     ${CACHED_INCLUDE_DIRS}
+    ${OpenMP_INCLUDE_DIRS}
   )
   
   IF( BUILD_CONFETTI )
@@ -766,13 +793,13 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB_RECURSE CWL_FILES "${DATA_DIR}/cwlFiles/*")
     FOREACH(cwlFile ${CWL_FILES})
       IF (APPLE)
-        SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/bin)
+        SET_SOURCE_FILES_PROPERTIES(${cwlFile} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/etc/cwlDefinitions)
         SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${cwlFile})
 
-        INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/bin)
+        INSTALL(FILES "${cwlFile}" DESTINATION ${EXE_NAME}.app/Contents/Resources/etc/cwlDefinitions)
 
       ELSE()
-        INSTALL(FILES "${cwlFile}" DESTINATION bin)
+        INSTALL(FILES "${cwlFile}" DESTINATION etc/cwlDefinitions)
       ENDIF()
     ENDFOREACH()
   
@@ -980,13 +1007,17 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
     # CPack settings
     IF(WIN32)
-      SET(CPACK_GENERATOR NSIS)
+      SET(CPACK_GENERATOR NSIS64)
       SET(CPACK_SOURCE_GENERATOR "ZIP")
       SET(CPACK_NSIS_DISPLAY_NAME "${PROJECT_NAME}")
       SET(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}")
       SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}_${${PROJECT_NAME}_Variant}\\\\${PROJECT_VERSION}")
       SET(CPACK_NSIS_INSTALL_ROOT "C:")
-      SET(CPACK_NSIS_DEFINES "RequestExecutionLevel user")
+      SET(CPACK_NSIS_DEFINES
+        "RequestExecutionLevel user
+        ManifestDPIAware true"
+      )
+      #SET(CPACK_NSIS_DEFINES "RequestExecutionLevel user ManifestDPIAware true")
       SET(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
       SET(CPACK_NSIS_MUI_ICON "${DATA_DIR}/icons/application/windows/captk.ico")
       SET(CPACK_NSIS_MUI_FINISHPAGE_RUN "${EXE_NAME}.exe")
@@ -1000,18 +1031,20 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       #SET(CPACK_NSIS_CREATE_ICONS_EXTRA "  CreateShortCut '$INSTDIR\\\\${EXE_NAME}.lnk' '$INSTDIR\\\\bin\\\\${EXE_NAME}.exe'")
       SET(CPACK_NSIS_CREATE_ICONS "CreateShortCut '\$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\README.lnk' '\$INSTDIR\\\\share\\\\doc\\\\index.html'")
       #SET(CPACK_NSIS_DELETE_ICONS_EXTRA "  Delete '$SMPROGRAMS\\\\$START_MENU\\\\${EXE_NAME}.lnk'")
-      SET(CPACK_NSIS_DELETE_ICONS "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\${EXE_NAME}.lnk'")
+      SET(CPACK_NSIS_DELETE_ICONS 
+        "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\${EXE_NAME}.lnk'
+        Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\README.lnk'"
+      )
       #SET(CPACK_NSIS_DELETE_ICONS "Delete '$DESKTOP\\\\${EXE_NAME}.lnk'")
       #SET(CPACK_NSIS_DELETE_ICONS_EXTRA "Delete '$INSTDIR\\\\${EXE_NAME}.lnk'")
-      SET(CPACK_NSIS_DELETE_ICONS "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\README.lnk'")
+      #SET(CPACK_NSIS_DELETE_ICONS "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\README.lnk'")
       SET(CPACK_NSIS_INSTALLED_ICON_NAME "${EXE_NAME}")
       SET(CPACK_SYSTEM_NAME "Win64")
     ELSEIF(APPLE)
       SET(CPACK_GENERATOR DragNDrop )
       SET(CPACK_DMG_FORMAT "UDBZ")
       SET(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
-       SET(CPACK_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
-
+      SET(CPACK_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET(CPACK_SYSTEM_NAME "OSX")
       # SET(CPACK_STRIP_FILES "${EXE_NAME}")
       # SET(CPACK_STRIP_FILES "${EXE_NAME}.app/Contents/MacOS/${EXE_NAME}")
@@ -1049,16 +1082,33 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       windeployqt(${EXE_NAME} bin)
     ELSEIF(APPLE)
       INCLUDE(ChmodFile)
-
       chmodFile(${EXE_NAME} dcm2nii)
       
       INCLUDE(Macdeployqt)
       macdeployqt(${EXE_NAME})
-
+      
       INCLUDE(MvFile)
       mvFile(${EXE_NAME} itksnap ITK-SNAP)
-      
       chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
+
+      INCLUDE(ChangeDylib)
+
+      FILE( GLOB EXECS
+        "${DATA_DIR}/cwlFiles/*"
+      )
+
+      FOREACH(EXEC ${EXECS})
+
+        GET_FILENAME_COMPONENT( EXEC_IN_BIN ${EXEC} NAME_WE )
+
+        # GET_TARGET_PROPERTY(TARGET_TYPE ${EXEC_IN_BIN} TYPE)
+        IF (NOT EXEC_IN_BIN STREQUAL "BreastTexturePipeline")
+          # MESSAGE( STATUS "[debug]EXEC_IN_BIN == ${EXEC_IN_BIN}")
+          changeLibOmpDylib(${EXE_NAME} ${EXEC_IN_BIN})
+        ENDIF ()
+        
+      ENDFOREACH()
+
     ENDIF()
 
     INCLUDE(CPack)
@@ -1099,6 +1149,20 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   # Execute a post install step. Make sure this is the last install command ran!
   IF( CMAKE_HOST_UNIX )
     INSTALL(CODE "EXECUTE_PROCESS(COMMAND ln -sf CaPTk captk WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)")
+  ENDIF()
+
+  IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
+    INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+    INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
+      DESTINATION libexec/MCR/v84/bin/glnxa64/
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    )
+  ELSEIF(EXISTS ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper)
+  INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper
+    DESTINATION libexec/MCR/v84/bin/glnxa64/
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  )
   ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )

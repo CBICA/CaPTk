@@ -22,7 +22,7 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
-</script><script type="text/javascript" async="async" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
+</script><script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.3.nonRelease.20191015</span>
    </div>
   </td>
  </tr>
@@ -117,28 +117,31 @@ $(document).ready(function(){initNavTree('Glioblastoma_Molecular.html','');});
 <li>"Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.</li>
 <li>"Output". Select the folder where the trained model will be saved.</li>
 <li>A pop-up window appears displaying the completion of model building. (Time depends on the number of patients: ~2*Patients minutes).</li>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">MolecularSubtypePredictor.exe -t 0 -i C:/MolecularSubtypeInput -o C:/MolecularSubtypeModel
-</pre></li>
 </ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/MolecularSubtypePredictor.exe -t 0 -i C:/MolecularSubtypeInput -o C:/MolecularSubtypeModel
+</pre></li>
+</ul>
 </li>
-<li>Use Existing Model<ol type="1">
+<li>Use Existing Model:<ol type="1">
 <li>"Model Directory". Choose the directory of a saved model.</li>
 <li>"Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.</li>
 <li>"Output". Select the output directory where a .csv file with the predicted molecular subtypes for all patients will be saved, and click on 'Confirm'.</li>
 <li>A pop-up window appears displaying the completion of subtype calculation. The window will also show the molecular subtype of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).</li>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">MolecularSubtypePredictor.exe -t 1 -i C:/MolecularSubtypeInput -m C:/MolecularSubtypeModel -o C:/MolecularSubtypeOutput
-</pre></li>
 </ol>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/MolecularSubtypePredictor.exe -t 1 -i C:/MolecularSubtypeInput -m C:/MolecularSubtypeModel -o C:/MolecularSubtypeOutput
+</pre></li>
+</ul>
 </li>
 </ul>
 <p><br />
 </p>
 <hr/>
 <p>References:</p>
-<ul>
-<li>
-L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127. </li>
-</ul>
+<ol type="1">
+<li>L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127. </li>
+</ol>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

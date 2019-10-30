@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: GeodesicTraining
 inputs:
   runtest:
@@ -241,3 +240,9 @@ inputs:
       position: 1
       prefix: -id
     doc: Input image(s) dimensions [only 3D supported for now].
+hints:
+  SoftwareRequirement:
+    packages:
+      GeodesicTraining:
+        version:
+          - 1.7.3.nonRelease.20190819

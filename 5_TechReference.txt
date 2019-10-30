@@ -1,37 +1,78 @@
-﻿	/**
+﻿/**
 
 \page Technical_Reference Technical Reference
 
 This section gives further technical details for all previous documentation material.
 
-- \subpage tr_Apps "Further Application Details and Assumptions"
-- \subpage tr_buildFromSource "Build CaPTk from Source"
-- \subpage tr_forDeves "For Developers"
+This section provides step-by-step guidance to apply the CaPTk functionalities:
+
+- \subpage tr_FeatureExtraction "Feature Extraction"
+- \subpage tr_integration "Integrating your Application in CaPTk"
+
+Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
+
+<b>NOTE:</b> The visualization of images is based on the physical coordinate system of each image (i.e., the origin and direction information from within the image file is used for rendering). In practice, use of a consistent coordinate framework results in images with different origins to appear misaligned (shifted) when compared to other neuro-imaging software packages that do rendering based on the Cartesian coordinate information in the image.
+
 */
 
 /**
+\page tr_FeatureExtraction Feature Extraction
 
-\page tr_Apps Further Application Details and Assumptions
+\section tr_fe_defaults Defaults
 
-Contents
-- <a href="#appsVisualization"><u>Image Visualization</u></a><br>
-- <a href="#appsFeatures"><u>Extracted Features</u></a><br>
+\subsection tr_fe_def_main Main Default Feature Extraction Parameters
 
---------
+For details, please see https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/1_params_default.csv.
 
+\subsection tr_fe_def_lattice Lattice Feature Extraction Parameters
 
+For details, please see https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/2_params_default_lattice.csv.
 
-### <a name="appsVisualization">Image Visualization</a>
-The visualization of images is based on the physical coordinate system of each image (i.e., the origin and direction information from within the image file is used for rendering). In practice, use of a consistent coordinate framework results in images with different origins to appear misaligned (shifted) when compared to other neuro-imaging software packages that do rendering based on the Cartesian coordinate information in the image.
-<br>
-<br>
-CaPTk has been optimized for monitors with 16:9 resolution, especially 1920x1080 at 100% scaling. More resolutions and scaling options are being actively tested and support will increase in subsequent releases.
+\section tr_fe_batch Batch Mode
 
---------
+An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureExtraction.csv</b>. An explanation of the inputs is given below (the headers are case-insensitive):
 
+<table border="1">
+    <tr>
+      <td align="center"><b>Header</b></td>
+      <td align="center"><b>Description</b></td>
+    </tr>
+    <tr>
+      <td>PATIENT_ID</td>
+      <td>The subject ID of the images getting processed</td>
+    </tr>
+    <tr>
+      <td>IMAGES</td>
+      <td>The co-registered input images for whom features are to be extracted; separated by '|'</td>
+    </tr>
+    <tr>
+      <td>MODALITIES</td>
+      <td>The corresponding modalities used in the output CSV; separated by '|'</td>
+    </tr>
+    <tr>
+      <td>ROIFile</td>
+      <td>The mask file which defines the annotated regions for extracting features</td>
+    </tr>
+    <tr>
+      <td>SELECTED_ROI</td>
+      <td>The selected annotations from which to extract features; separated by '|'</td>
+    </tr>
+    <tr>
+      <td>ROI_LABEL</td>
+      <td>The corresponding annotation labels used in the output CSV; separated by '|'</td>
+    </tr>
+    <tr>
+      <td>OUTPUT (OPTIONAL)</td>
+      <td>The output file for the current subject</td>
+    </tr>
+    <tr>
+      <td>PARAM_FILE (OPTIONAL)</td>
+      <td>The parameter file for the current subject</td>
+    </tr>
+</table>
 
+\section tr_fe_math Extracted Features
 
-### <a name="appsFeatures">Extracted Features</a>
 <table border="1">
     <tr>
       <td align="center"><b>Feature Family</b></td>
@@ -75,7 +116,7 @@ CaPTk has been optimized for monitors with 16:9 resolution, especially 1920x1080
         <ul>
           <li>Bin Frequency
         </ul>
-      <td>Num_Bins
+      <td>Bins
       <td>N.A.
       <td>10
       <td>
@@ -100,13 +141,15 @@ CaPTk has been optimized for monitors with 16:9 resolution, especially 1920x1080
           <li>Perimeter       
           <li>Roundness 
           <li>Eccentricity
+          <li>Ellipse Diameter
+          <li>Equivalent Spherical Radius
        </ul>
       <td>Dimensions <br>Axis
       <td>2D:3D <br>x,y,z
       <td>3D <br>z
       <td>
         <ul>
-          <li>Elongation =\f$ \sqrt{\frac{i_{2}}{i_{1}}} \f$ where i_{n} are the second moments of particle around its principal axes.
+          <li>Elongation =\f$ \sqrt{\frac{i_{2}}{i_{1}}} \f$ where \f$i_{n}\f$ are the second moments of particle around its principal axes.
           <li>Perimeter = \f$ 2 \pi r \f$ where r is the radius of the circle enclosing the shape.
           <li>Roundness = \f$ As/Ac = (Area of a shape)/(Area of circle) \f$ where circle has the same perimeter.
           <li>Eccentricity =\f$ \sqrt{1 - \frac{a*b}{c^{2}}} \f$  where c is the longest semi-principal axis of an ellipsoid fitted on an ROI, and a and b are the 2nd and 3rd longest semi-principal axes of the ellipsoid.
@@ -137,8 +180,8 @@ CaPTk has been optimized for monitors with 16:9 resolution, especially 1920x1080
           <li>Variance
           <li>Auto<br>Correlation          
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Radius <br><br>Dimensions <br><br>Offset <br><br>Axis
-      <td>N.A. <br><br>3:13 <br><br>N.A. <br><br>2D:3D <br><br>Individual/Average/Combined<br><br>x,y,z
+      <td>Bins <br><br>Radius <br><br>Dimensions <br><br>Offset <br><br>Axis
+      <td>N.A. <br><br>N.A. <br><br>2D:3D <br><br>Individual/Average/Combined<br><br>x,y,z
       <td>10 <br><br>13 <br><br>2 <br><br>3D  <br><br>Average <br><br>z
       <td> 
         For a given image, a Grey Level Co-occurrence Matrix is created and \f$ g(i,j) \f$ represents an element in matrix
@@ -170,22 +213,22 @@ CaPTk has been optimized for monitors with 16:9 resolution, especially 1920x1080
           <li>LRLGE
           <li>LRHGE    
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Radius <br><br>Dimensions <br><br>Axis <br><br>Offset <br><br>Distance_Range
-      <td>N.A. <br><br>3:13 <br><br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>Individual/Average/Combined<br><br>1:5
-      <td>10 <br><br>13 <br><br><br>2 <br><br>3D <br><br>z  <br><br>Average <br><br>1
+      <td>Bins <br><br>Radius <br><br>Dimensions <br><br>Axis <br><br>Offset
+      <td>N.A. <br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>Individual/Average/Combined
+      <td>10 <br><br>13 <br><br>2 <br><br>3D <br><br>z  <br><br>Average <br><br>1
       <td>
-        For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j.
+        For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j. Please note that some features are only extracted in DebugMode (by using the "-d" parameter from the command line); these defines features that are mathematically formulated in previous published material but not completely aligned with The Image Biomarker Standardisation Initiative.
         <ul>
-          <li>Short Run Emphasis (SRE) = \f$ \frac{1}{n_r}\sum_{i,j}^{N}\frac{p(i,j)}{j^2} \f$
-          <li>Long Run Emphasis (LRE) =\f$ \frac{1}{n_r}\sum_{j}^{N}p(i,j) \cdot j^2\f$
-          <li>Grey Level Non-uniformity (GLN) =\f$ \frac{1}{n_r}\sum_{i}^{M}\Big(\sum_{j}^{N}p(i,j) \Big)^2 \f$
-          <li>Run Length Non-uniformity (RLN) =\f$ \frac{1}{n_r}\sum_{j}^{N}\Big(\sum_{i}^{M}p(i,j) \Big)^2 \f$       
+          <li>[COMPLETE MODE] Short Run Emphasis (SRE) = \f$ \frac{1}{n_r}\sum_{i,j}^{N}\frac{p(i,j)}{j^2} \f$
+          <li>[COMPLETE MODE] Long Run Emphasis (LRE) =\f$ \frac{1}{n_r}\sum_{j}^{N}p(i,j) \cdot j^2\f$
+          <li>[COMPLETE MODE] Grey Level Non-uniformity (GLN) =\f$ \frac{1}{n_r}\sum_{i}^{M}\Big(\sum_{j}^{N}p(i,j) \Big)^2 \f$
+          <li>[COMPLETE MODE] Run Length Non-uniformity (RLN) =\f$ \frac{1}{n_r}\sum_{j}^{N}\Big(\sum_{i}^{M}p(i,j) \Big)^2 \f$       
           <li>Low Grey-Level Run Emphasis (LGRE)=\f$ \frac{1}{n_r}\sum_{i}^{M}\frac{p_g(i)}{i^2} \f$
           <li>High Grey-Level Run Emphasis (HGRE)=\f$ \frac{1}{n_r}\sum_{i}^{M}p_g(i) \cdot i^2 \f$
           <li>Short Run Low Grey-Level Emphasis (SRLGE)= \f$\frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}\frac{p(i,j)}{i^2 \cdot j^2} \f$ 
           <li>Short Run High Grey-Level Emphasis (SRLGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}\frac{p(i,j) \cdot i^2 }{j^2}\f$ 
-          <li>Long Run Low Grey-Level Emphasis (LRLGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}\frac{p(i,j) \cdot j^2 }{i^2} \f$ 
-          <li>Long Run High Grey-Level Emphasis (LRHGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}p(i,j) \cdot i^2 \cdot j^2 \f$ 
+          <li>[COMPLETE MODE] Long Run Low Grey-Level Emphasis (LRLGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}\frac{p(i,j) \cdot j^2 }{i^2} \f$ 
+          <li>[COMPLETE MODE] Long Run High Grey-Level Emphasis (LRHGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}p(i,j) \cdot i^2 \cdot j^2 \f$ 
         </ul>
         All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume. 
         <b>Note</b> that the creation of the GLRLM and its corresponding aforementioned features for all offsets are calculated using an existing ITK filter. The <b>Individual</b> option gives features for each individual offset, <b>Average</b> estimates the average across all offsets and assigns a single value for each feature and <b>Combined</b> combines the GLRLM matrices generated across offsets and calculates a single set of features from this matrix.
@@ -200,9 +243,9 @@ CaPTk has been optimized for monitors with 16:9 resolution, especially 1920x1080
           <li>Complexity
           <li>Strength
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Dimensions <br><br>Axis <br><br>Distance_Range
-      <td>N.A. <br><br>3:13 <br> <br><br>2D:3D <br><br>x,y,z <br><br>1:5
-      <td>10 <br><br>13 <br><br><br>3D <br><br>N.A. <br><br>1
+      <td>Bins <br><br>Dimensions <br><br>Axis
+      <td>N.A. <br><br>2D:3D <br><br>x,y,z 
+      <td>10 <br><br>13 <br><br>3D <br><br>N.A. <br><br>1
       <td> 
         <ul>
           <li>Coarseness =\f$ \Big[ \epsilon + \sum_{i=0}^{G_{k}} p_{i}s(i) \Big]\f$
@@ -232,9 +275,9 @@ CaPTk has been optimized for monitors with 16:9 resolution, especially 1920x1080
           <li>GLV
           <li>ZLV      
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Radius <br><br>Dimensions <br><br>Axis <br><br>Distance_Range
-      <td>N.A. <br><br>3:13 <br><br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>1:5
-      <td>10 <br><br>13 <br><br><br>2 <br><br>3D <br><br>z <br><br>4
+      <td>Bins <br><br>Radius <br><br>Dimensions <br><br>Axis
+      <td>N.A. <br><br>N.A. <br><br>2D:3D <br><br>x,y,z 
+      <td>10 <br><br>13 <br><br>2 <br><br>3D <br><br>z <br><br>4
       <td>
         For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j.
         <ul>
@@ -252,10 +295,46 @@ CaPTk has been optimized for monitors with 16:9 resolution, especially 1920x1080
         </ul> 
         All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.
     </tr>
+    <tr>
+      <td align="center">Lattice<br>-based
+      <td>
+        <ul>
+          <li>Selected features
+          <li>Feature Maps
+        </ul>
+      <td>
+        <ul>
+          <li>FullImage
+          <li>Window
+          <li>Step
+          <li>Boundary
+          <li>PatchBoundary
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li>0-1
+          <li>(mm)0:ImageSize
+          <li>(mm)0:ImageSize
+          <li>NoPadding:ZeroPadding
+          <li>Full:ROI:None
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li>0
+          <li>6.3
+          <li>6.3
+          <li>NoPadding
+          <li>Full
+        </ul>
+      </td>
+      <td>
+        Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriptions.
+      </td>
+    </tr>
 </table>
-\latexonly
-The complete list of features, their parameterization options and mathematical descriptions can be found in <code>share/doc/feaUsage.html</code> or in our web page (http://captk.projects.nitrc.org/feaUsage.html).
-\endlatexonly
+
 
 The parameterization of the <b>lattice-based strategy</b> for feature extraction is defined by:
 - The grid spacing representing the distance between consecutive lattice points (Default: 6.3mm). 
@@ -263,266 +342,10 @@ The parameterization of the <b>lattice-based strategy</b> for feature extraction
 
 */
 
-
-/**
-\page tr_buildFromSource Build CaPTk from Source
-Source code for the CaPTk graphical interface and applications is distributed for sites that wish to examine the code, collaborate with CBICA in future development, and for compatibility.
-
-Contents
-- <a href="#prerequisites"><u>Pre-requisites</u></a><br>
-- <a href="#actualBuild"><u>Build</u></a><br>
-- <a href="#cMakeForBuildTree"><u>Build Tree Configuration through CMake</u></a><br>
-- <a href="#actualCompile"><u>Compile the project</u></a><br>
-- <a href="#optionalBuilds"><u>Optional</u></a><br>
-- <a href="#linuxBuild"><u>Linux Build Guide</u></a><br>
-
---------
-
-### <a name="prerequisites">PRE-REQUISITES</a>
-Before building CaPTk, the following software libraries are required to be installed. <strong>Please note</strong> that to build in Windows, CMake needs to be used an appropriate compiler (Win64 version of Visual Studio is recommended). The selected solution platform is needed to match with dependent libraries.
-
-<table border="0">
-    <tr>
-      <td width="7%"><strong>Package</strong></td>      
-      <td width="7%"><strong>Version</strong></td>      
-      <td width="100%"><strong>Description</strong></td>  
-    </tr>
-    <tr>
-      <td>Archiver</td>
-      <td>n/a</td>
-      <td>gzip (http://www.gzip.org/) is recommended. <br><b>Windows Users</b>: 7-zip (http://www.7-zip.org/)</td>
-    </tr>
-    <tr>
-      <td>C++ compiler</td>
-      <td>n/a</td>
-      <td>Visual Studio 2017, GCC/4.9.2, LLVM 6.0.1 are supported; C++11 compliant compiler is needed</td>
-    </tr>
-    <tr>
-      <td>CMake (http://www.cmake.org/)</td>
-      <td>3.10 or higher</td>
-      <td>To configure the CaPTk compilation along with its dependencies.</td>
-    </tr>
-    <tr>
-      <td>Qt (http://qt-project.org/downloads)</td>
-      <td>5.10.x</td>
-      <td>The main GUI interface for CaPTk. Download and install the precompiled library.</td>
-    </tr>
-    <tr>
-      <td>VTK (http://www.vtk.org/)</td>
-      <td>8.1.0</td>
-      <td>Install Qt before setting VTK up. Instructions to compile VTK are given at http://www.vtk.org/Wiki/VTK/Configure_and_Build. During CMake configuration, enable the <b>VTK_USE_QT</b> and <b>VTK_USE_QVTK_QTOPENGL</b> flags. <br><b>GCC Users</b>: For compilation use the command <b>make CXXFLAGS=-std=c++11</b>.</td>
-    </tr>
-    <tr>
-      <td>OpenCV (http://opencv.org/downloads.html)</td>
-      <td>3.4 or higher</td>
-      <td>All machine learning algorithms. This generally comes pre-compiled; if not found for your system, steps similar to those done for VTK and ITK compilation can be followed. <br><b>GCC Users</b>: For compilation use the command <b>make CXXFLAGS=-std=c++11</b>.</td>
-    </tr>
-    <tr>
-      <td>ITK (http://www.itk.org/)</td>
-      <td>4.13 and above</td>
-      <td>Build VTK before proceeding to compile ITK. Instructions to compile ITK are given at http://www.itk.org/Wiki/ITK/Configuring_and_Building. During CMake configuration, enable the <b>Module_ITKVtkGlue</b>, <b>Module_ITKVideoBridgeOpenCV</b> and <b>VCL_INCLUDE_CXX_0X</b> flags. <br><b>GCC Users</b>: For compilation use the command <b>make CXXFLAGS=-std=c++11</b>.</td>
-    </tr>
-    <tr>
-        <td>Doxygen (http://www.stack.nl/~dimitri/doxygen/)</td>
-        <td>1.8+</td>
-        <td>[OPTIONAL] For documentation only.</td>
-    </tr>
-</table>
-
-Ensure all dependencies are met before proceeding.
-
---------
-
-### <a name="actualBuild">BUILD</a>
-Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org/software/bash/)). They will configure and build CaPTk using GNU Make (http://www.gnu.org/software/make/). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface.
-
-Extract source files and create the build directory:
-\verbatim
-tar xzf CaPTk-${version}-source.tar.gz
-mkdir CaPTk-${version}-build
-cd CaPTk-${version}-build
-\endverbatim
-<b>Windows Users</b>: an appropriate compression program (e.g., 7-zip (http://www.7-zip.org/)) might be used to extract the files.
-
---------
-
-<b> <a name="CMakeForBuildTree">RUN CMAKE TO CONFIGURE THE BUILD TREE</a></b>
-\verbatim
-cmake ../CaPTk-${version}-source
-\endverbatim
-Use the CMake variable <b>CMAKE_INSTALL_PREFIX</b> to specify the installation
-directory, as in:
-\verbatim
-cmake -DCMAKE_INSTALL_PREFIX=/opt/software/captk ../CaPTk-${version}-source
-\endverbatim
-
-For <b>GCC</b> users, CaPTk needs the <b>C++11</b> flag, so ensure that <b>"-std=c++11"</b> option gets added for <b>CMAKE_CXX_FLAGS</b> during the CMake configuration step. This should get done automatically by the CMakeLists.txt file provided but in case of custom build environments, it might get overwritten with other options.
-
-<b>Windows Users</b>: open CMake-GUI and select <code>CaPTk-${version}-source</code> as the "source" directory and select <code>CaPTk-${version}-build</code> as the "build" directory. Click on "Configure" and select the appropriate C++ compiler. If there weren't any configuration errors, click "Generate".
-
-CMake should be able to find the dependencies if they are specified in the <code>$PATH</code> variable in your environment. If you have custom installation directories, then ensure that they have been added to the <code>$PATH</code> variable or point the variable(s) <b>${Dependency}_DIR</b> to the appropriate build paths where <b>${Dependency}Config.cmake</b> is/are present (for example, in the case of ITK, point <code>ITK_DIR</code> to the directory where <code>ITKConfig.cmake</code> is present) - this should be either the build directory or the installation directory. If you are using a bash shell, it can be done using the following command:
-
-\verbatim
-cmake -DITKDIR=${path_to_custom_ITK_build_dir} -DVTK_DIR=${path_to_custom_VTK_build_dir} -DQT_QMAKE_EXECUTABLE=${path_to_custom_qt_installation} CaPTk-${version}-source
-\endverbatim
-
-<b>Windows Users</b>: set the variables <code>ITK_DIR</code>, <code>VTK_DIR</code> and <code>QT_QMAKE_EXECUTABLE</code> using the CMake-GUI.
-
-This step will generate compiler-specific project files (for example, Make file for GCC and Visual Studio solution file for MSVC). For a full list of generators, please see the CMake documentation on generators at https://cmake.org/cmake/help/v3.0/manual/cmake-generators.7.html</td>. CMake can be used to set various other configuration options and some of those options are:
-
-<table border="0">
-    <tr>
-        <td width="200px"><b>BUILD_DOCUMENTATION</b></td>
-        <td>Builds the documentation (HTML and PDF) from scratch</td>
-    </tr>
-    <tr>
-        <td><b>BUILD_TESTING</b></td>
-        <td>Enables unit testing of the software package</td>
-    </tr>
-    <tr>
-        <td><b>CMAKE_INSTALL_PREFIX</b></td>
-        <td>Path where the project will be installed</td>
-    </tr>
-    <tr>
-        <td><b>PACKAGE_PROJECT</b></td>
-        <td>Create installer for project (not available for all platforms)</td>
-    </tr>
-</table>
-
---------
-
-<b> <a name="actualCompile">COMPILE THE PROJECT</a></b>
-\verbatim
-make CXXFLAGS=-std=c++11 #this ensures c++11 flag is enabled for this build
-\endverbatim
-
-<b>Windows Users</b>: you should launch the generated solution file of Visual Studio (by default, only <code>Release</code> version of the code will be compiled - if this needs to be changed, it can be done so by editing the variable <code>CMAKE_CONFIGURATION_TYPE</code> during the CMake configuration step), and then build solution.
-
-<b> Compiling LIBRA</b>
-
-Open MATLAB runtime and change the directory to <code>CaPTk-${version}-source/src/applications/binaries/libra/Source</code> within the main directory of the LIBRA package and run the following command in MATLAB environment:
-
-\verbatim
-libra_compile('CaPTk-${version}-source/src/applications/binaries/libra/') # In Unix
-\endverbatim
-
-<b>Windows Users</b>: Use following command:
-
-\verbatim
-libra_compile('CaPTk-${version}-source\src\applications\binaries\libra\') # In Unix
-\endverbatim
-
-<b> [REQUIRED] Install </b>
-\verbatim
-make install
-\endverbatim
-
-<b>Windows Users</b>: you should build the <b>INSTALL</b> project.
-
-Upon the success of the above compilation and build process, CaPTk is installed into the directory specified by the <code>CMAKE_INSTALL_PREFIX</code>, which was set during step 3.2 above.
-
---------
-
-### <a name="optionalBuilds">[OPTIONAL]</a>
-
-<ul><li><b>Compile the documentation</b></li></ul>
-To build the documentation from scratch, the <code>BUILD_DOCUMENTATION</code> option in the CMake configuration needs to be enabled.
-
-\verbatim
-make doc
-\endverbatim
-
-<b>Windows Users</b>: the documentation is built automatically if <code>BUILD_DOCUMENTATION</code> is enabled. 
-
-<ul><li><b>Test the Compilation</b></li></ul>
-To perform tests, the <code>BUILD_TESTING</code> option in the CMake configuration needs to be enabled.
-
-\verbatim
-make test
-\endverbatim
-
-<b>Windows Users</b>: you should build the <b>RUN_TESTS</b> project.
-
-In case of failing tests, re-run the tests, but this time by executing CTest (http://www.cmake.org/cmake/help/v2.8.8/ctest.html) directly with the '-V' option to enable verbose output and redirect the output to a text file, as in the example below (works for both Windows and Linux on the command line or shell):
-
-\verbatim
-ctest -V >& CaPTk-test.log
-\endverbatim
-
-And send the file <b>CaPTk-test.log</b> as attachment of the issue report to <mailto:software@cbica.upenn.edu>.
-
-<ul><li><b>Strip executables (Linux only)</b></li></ul>
-\verbatim
-make install/strip
-\endverbatim
-
-<b>Note</b> - this is not needed if you plan to package the project.
-
-<ul><li><b>Package Project</b></li></ul>
-Enable the <b>PACKAGE_PROJECT</b> flag in the CMake configuration step to package the project.
-
-\verbatim
-make package
-sudo dpkg -i CaPTk-Linux.deb
-\endverbatim
-
-<b>Windows Users</b>: Build the <b>PACKAGE</b> project in Visual Studio; you will need NSIS (http://nsis.sourceforge.net/Main_Page) to package the project as an installer.
-
---------
-
-### <a name="linuxBuild">Linux Build Guide</a>
-
-<b>Note:</b> Make sure you have Qt 5.10.0 installed and in your PATH. You can download the open source version installer for free from the Qt website.
-
-The Linux installer is an automated build script that takes care of the entirety of going from source code to a packaged binary that can be run anywhere.
-
-Firstly, locate the build script within the scripts folder of the CaPTk root directory. The linux installation script is called `captk-pkg`.
-
-Open up a terminal window in the scripts directory, and mark the script as executable with the following command:
-
-\verbatim
-chmod +x ./captk-pkg
-\endverbatim
-
-After this, run the script in the terminal from the CaPTk root with the following commands:
-
-The first will navigate you up one directory to the root, and the second will run the script.
-
-\verbatim
-cd ../
-./scripts/captk-pkg
-\endverbatim
-
-The installation script takes care of the whole build and deployment process. You may notice some issues if the ITK-build directory from the dependency manager isn't found or not in the PATH variable. To fix this, simply pass it in to the script via:
-
-\verbatim
-./captk-pkg --itk=/path/to/itk
-\endverbatim
-
-This will generate an CaPTk.bin file in the root of CaPTk. Feel free to move this file anywhere and run it. You can run this from the commandline as such:
-
-\verbatim
-./CaPTk.bin
-\endverbatim
-
-
---------
-
-
-*/
 /**
 
-\page tr_forDeves For Developers
+\page tr_integration Integrating your Application in CaPTk
 
-Contents
-- <a href="#generalInfo"><u>General Information</u></a><br>
-- <a href="#dependencies"><u>Dependencies</u></a><br>
-- <a href="#cppIntegration"><u>Integrating your C++ application into CaPTk</u></a><br>
-- <a href="#pyIntegration"><u>Integrating your Python application into CaPTk</u></a><br>
-
---------
-
-### <a name="generalInfo">General Information</a>
 CaPTk is developed and maintained by the Center for Biomedical Image Computing and Analytics (CBICA) at the University of Pennsylvania, and draws upon research from several groups within the Center.
 
 New applications, written in any programming language, can be integrated into CaPTk at different levels. These applications can then run within CaPTk, while having direct access to the full breadth of CaPTk’s interactive capabilities.
@@ -549,22 +372,57 @@ Applications written in any language can be integrated with CaPTk via calls to s
 - EGFRvIII Surrogate Index provides the tightest possible integration with the CaPTk Console. All data (loaded images, ROIs, etc.) is passed in-memory and the visualization of results happens instantaneously.
 - All functions available in native C++ libraries (ITK (https://itk.org/), OpenCV (http://opencv.org/), VTK (http://www.vtk.org/)) are available for native applications to use.
 
---------
-
-### <a name="dependencies">Dependencies</a>
-<ol type="1">
-
-  <li>The <b>Graphical Layer</b> is currently written on a Qt4 (https://download.qt.io/archive/qt/4.8/) based framework on C++ for speed, stability and extensibility. Qt, thus, becomes the first dependency for compiling CaPTk. Qt was chosen because it is a well-known tool for developing GUI applications both in academia and also in industry. </li>  
-  <li>The basic file input/output operations are based on standard ITK (http://www.itk.org/) I/O (http://www.itk.org/Doxygen/html/group__IOFilters.html), thereby making it the second dependency. ITK was chosen on account of it being an industry and academic standard for developing medical image applications. It also has one of the most vibrant developer and user communities. Currently supported data formats are DICOM (http://dicom.nema.org/) and NIFTI (http://nifti.nimh.nih.gov/nifti-1). </li>  
-  <li>Rendering the data is done using VTK (http://www.vtk.org/), making it the third dependency. VTK has been specifically designed for medical image data and it utilizes various hardware rendering techniques which make applications developed on it very fluid. </li>  
-  <li>CMake (https://cmake.org/) is used to configure the project. This is the industry standard for cross-platform compilation.</li>  
-  <li>OpenCV (https://opencv.org)
-  <li>A C++ compiler (we develop on MSVC/2013 and GCC/4.9.2). 
-</ol>
+You need to compile CaPTk from source to proceed. The following sections give that information.
 
 --------
 
-### <a name="cppIntegration">Integrating your C++ application into CaPTk</a>
+\section tr_sourceBuid Building CaPTk from Sources 
+
+\subsection tr_sb_prerequisites Prerequisites
+
+Source code for the CaPTk graphical interface and applications is distributed for sites that wish to examine the code, collaborate with CBICA in future development, and for compatibility.
+
+For end-to-end build examples for Windows/Linux (Ubuntu Xenial)/macOS (10.13), please see our [Azure Pipelines configuration file](https://github.com/CBICA/CaPTk/blob/master/azure-pipelines.yml).
+
+Before building CaPTk, the following software libraries are required to be installed. <strong>Please note</strong> that to build in Windows, CMake needs to be used an appropriate compiler (Win64 version of Visual Studio is recommended). The selected solution platform is needed to match with dependent libraries. 
+
+| Package                           | Version                   | Description                                                                                                                                     |
+|-----------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| Archiver or Git                   | N.A.                      | - **Windows**: Built-in unzip tool<br>- **Linux**: [gzip](https://www.gzip.org/)                                                     |
+| C++ compiler                      | C++11 compliance needed   | - **Windows**: Visual Studio 2015/2017<br>- **Linux**: GCC/4.9.2-7.4.0<br>- **macOS**: CLang 10.0.0, LLVM 6.0.1                                     |
+| OpenGL                            | 3.2+ (hardware-dependent) | - **Windows/macOS**: Update graphics drivers<br>- **Ubuntu**: apt-get install libgl-dev<br>- **CentOS**: yum install mesa-libGL-devel<br>- [Details in FAQ](FAQ.html#gs_FAQ_3) |
+| [CMake](https://cmake.org/files/) | 3.10 - 3.12               | To configure the CaPTk compilation along with its dependencies (via Superbuild).                                                                |
+| X11 [Linux-only]                  | N.A.                      | - **Ubuntu**: apt-get install libxkbcommon-x11-0<br>- **CentOS**: yum install libXt-deve                                             |
+| dos2unix [Linux-only]             | N.A.                      | - **Ubuntu**: apt-get install dos2unix<br>- **CentOS**: yum install dos2unix                                                         |
+| [Doxygen](http://doxygen.nl/)     | 1.8+                      | OPTIONAL: For documentation only.                                                                                                               |
+
+Ensure all dependencies are met before proceeding.
+
+--------
+
+\subsection tr_sb_actualBuild Build
+
+Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org/software/bash/)). They will configure and build CaPTk using GNU Make (http://www.gnu.org/software/make/). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface or from PowerShell.
+
+Extract source files and create the build directory:
+
+\verbatim
+git clone https://github.com/CBICA/CaPTk.git
+git lfs fetch --all # downloads all the precompiled binaries for different applications and Qt
+cd CaPTk
+mkdir build # this is where we will build all the binaries
+cd build
+cmake .. # configure the superbuild first - builds ITK, VTK and OpenCV based on specific Qt version which is downloaded
+make -j # multi-threaded compilation: use 'make -j${N}' to specify number of threads to use; on Windows, compile the ALL_BUILD project
+cmake -DCMAKE_INSTALL_PREFIX=${path_to_where_you_want_to_install} .. # configure CaPTk
+make -j # multi-threaded compilation: use 'make -j${N}' to specify number of threads to use; on Windows, compile the ALL_BUILD project
+make install/strip # installs CaPTk and all its files to ${path_to_where_you_want_to_install}; on Windows, compile the INSTALL project
+\endverbatim
+
+--------
+
+\section tr_cppIntegration Integrating your C++ application into CaPTk
+
 Let’s say the name of your application is <b>yourSourceApp</b>. The following steps highlight the steps required for you to integrate your application into CaPTk:
 
 <ul style="list-style-type:disc">
@@ -580,7 +438,8 @@ Let’s say the name of your application is <b>yourSourceApp</b>. The following 
 
 --------
 
-### <a name="pyIntegration">Integrating your Python application into CaPTk</a>
+\section tr_pyIntegration Integrating your Python application into CaPTk
+
 Let’s say the name of your application is <b>yourPythonApp</b>. The following steps give a brief high-level overview regarding the steps required for integrating it with CaPTk:
 
 <ul style="list-style-type:disc">
@@ -596,11 +455,11 @@ Let’s say the name of your application is <b>yourPythonApp</b>. The following 
 
 --------
 
-
-
+--------
 \htmlonly
 <div align="right"><a href="Download.html"><b>Next (Download)<b></a>
 \endhtmlonly
+--------
 
 
-**/
+*/

@@ -4,6 +4,7 @@
   <navindex>
     <tab type="mainpage" visible="yes" title="Overview"/>
     <tab type="usergroup" visible="yes" title="Getting Started" url="Getting_Started.html">
+      <tab type="user" visible="yes" title="FAQ" url="gs_FAQ.html"/>
       <tab type="user" visible="yes" title="Components" url="gs_components.html"/>
       <tab type="user" visible="yes" title="Supported Images" url="gs_supportedImages.html"/>
       <tab type="user" visible="yes" title="Image Loading" url="gs_imageLoading.html"/>
@@ -18,60 +19,13 @@
       <tab type="user" visible="yes" title="Specialized Applications" url="gs_specializedApps.html"/>
       <tab type="user" visible="yes" title="Command Line Usage" url="gs_commandLineUsage.html"/>
     </tab>
-    <tab type="usergroup" visible="yes" title="How-To Guides" url="How_To_Guides.html">
-      <tab type="usergroup" visible="yes" title="Pre-processing" url="ht_Preprocessing.html">
-        <tab type="user" visible="yes" title="DICOM to NIfTI conversion" url="preprocessing_dcm2nii.html"/>
-        <tab type="user" visible="yes" title="Registration" url="preprocessing_reg.html"/>
-        <tab type="user" visible="yes" title="Denoise-SUSAN (ITK filter)" url="preprocessing_susan.html"/>
-        <tab type="user" visible="yes" title="N4 Bias Correction (ITK filter)" url="preprocessing_biasN4.html"/>
-        <tab type="user" visible="yes" title="Histogram Matching" url="preprocessing_histoMatch.html"/>
-        <tab type="user" visible="yes" title="DeepMedic Normalizer" url="preprocessing_dmNorm.html"/>
-      </tab>
-      <tab type="usergroup" visible="yes" title="Segmentation" url="ht_Segmentation.html"/>
-        <tab type="user" visible="yes" title="Geodesic Training Segmentation" url="seg_GeoTrain.html"/>
-        <tab type="user" visible="yes" title="Geodesic Distance Transform-based Segmentation" url="seg_Geodesic.html"/>
-        <tab type="user" visible="yes" title="ITK-SNAP" url="seg_SNAP.html"/>
-        <tab type="user" visible="yes" title="Deep Learning Segmentation" url="seg_DL.html"/>
-      </tab>
-      <tab type="user" visible="yes" title="Feature Extraction" url="ht_FeatureExtraction.html"/>
-      <tab type="usergroup" visible="yes" title="Specialized Applications Usage" url="ht_SpecialApps.html">
-        <tab type="user" visible="yes" title="Brain Cancer: WhiteStripe Normalization" url="Glioblastoma_WhiteStripe.html"/>
-        <tab type="user" visible="yes" title="Brain Cancer: Population Atlas" url="Glioblastoma_Atlas.html"/>
-        <tab type="user" visible="yes" title="Brain Cancer: Confetti" url="Glioblastoma_Confetti.html"/>
-        <tab type="user" visible="yes" title="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" url="Glioblastoma_Recurrence.html"/>
-        <tab type="user" visible="yes" title="Brain Cancer: Pseudoprogression Infiltration Index" url="Glioblastoma_Pseudoprogression.html"/>
-        <tab type="user" visible="yes" title="Brain Cancer: Glioblastoma Survival Prediction Index" url="Glioblastoma_Survival.html"/>
-        <tab type="user" visible="yes" title="Brain Cancer: Glioblastoma Molecular Subtype Prediction" url="Glioblastoma_Molecular.html"/>
-        <tab type="user" visible="yes" title="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" url="Glioblastoma_PHI.html"/>
-        <tab type="user" visible="yes" title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" url="Glioblastoma_EGFRvIII.html"/>
-        <tab type="user" visible="yes" title="Breast Cancer: Breast Density Estimation (LIBRA)" url="BreastCancer_LIBRA.html"/>
-        <tab type="user" visible="yes" title="Breast Cancer: Texture Feature Extraction" url="BreastCancer_texture.html"/>
-        <tab type="user" visible="yes" title="Breast Cancer: Breast Segmentation" url="BreastCancer_breastSegmentation.html"/>
-        <tab type="user" visible="yes" title="Lung Cancer: Radiomics Analysis of Lung Cancer (SBRT Lung)" url="LungCancer_SBRT.html"/>
-        <tab type="user" visible="yes" title="Miscellaneous: Directionality Estimator" url="Glioblastoma_Directionality.html"/>
-        <tab type="user" visible="yes" title="Miscellaneous: Perfusion Alignment" url="Perfusion_Alignment.html"/>
-        <tab type="user" visible="yes" title="Miscellaneous: Perfusion Derivatives" url="Perfusion_Derivatives.html"/>
-        <tab type="user" visible="yes" title="Miscellaneous: Diffusion Derivatives" url="Diffusion_Derivatives.html"/>
-        <tab type="user" visible="yes" title="Miscellaneous: Training Module" url="Training_Module.html"/>
-        <tab type="user" visible="yes" title="Miscellaneous: PCA Volume Extraction" url="PCA_Extraction.html"/>
-
-      </tab>
-    </tab>
-    <tab type="usergroup" visible="yes" title="Scientific Findings" url="Science.html">
-	  <tab type="user" visible="yes" title="Imaging Biomarker of EGFRvIII in GBM" url="phiEstimator.html"/>
-      <tab type="user" visible="yes" title="Overall Survival Prediction in GBM" url="survivalPredictor.html"/>
-      <tab type="user" visible="yes" title="Recurrence Prediction in GBM" url="recurrencePredictor.html"/>
-      <tab type="user" visible="yes" title="Breast Cancer Imaging Biomarkers" url="libraPapers.html"/>
-    </tab>
-    <tab type="usergroup" visible="yes" title="Technical Reference" url="Technical_Reference.html">
-      <tab type="user" visible="yes" title="Further Application Details and Assumptions" url="tr_Apps.html"/>
-      <tab type="user" visible="yes" title="Build CaPTk from Source" url="tr_buildFromSource.html"/>
-      <tab type="user" visible="yes" title="For Developers" url="tr_forDeves.html"/>
-	</tab>
-	<tab type="user" visible="yes" title="Download Instructions" url="Download.html"/> 
-	<tab type="user" visible="yes" title="Installation Instructions" url="Installation.html"/>
-  <tab type="user" visible="yes" title="Release Notes" url="ReleaseNotes.html"/>
-  <tab type="user" visible="yes" title="People (Credits)" url="People.html"/>
+    <tab type="usergroup" visible="yes" title="How-To Guides" url="How_To_Guides.html"/>
+    <tab type="usergroup" visible="yes" title="Scientific Findings" url="Science.html"/>
+    <tab type="user" visible="yes" title="Technical Reference" url="Technical_Reference.html"/>
+    <tab type="user" visible="yes" title="Download Instructions" url="Download.html"/> 
+    <tab type="user" visible="yes" title="Installation Instructions" url="Installation.html"/>
+    <tab type="user" visible="yes" title="Release Notes" url="ReleaseNotes.html"/>
+    <tab type="user" visible="yes" title="People (Credits)" url="People.html"/>
     <tab type="pages" visible="no" title="" intro=""/>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">

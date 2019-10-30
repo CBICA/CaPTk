@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: FeatureExtraction
 inputs:
   outputDir:
@@ -110,14 +109,14 @@ inputs:
     doc: "Exact offset values to pass on for GLCM & GLRLM.Should be same as ImageDimension and in the format '<offset1>,<offset2>,<offset3>'.This is scaled on the basis of the radius.Example: '-of 0x0x1,0x1x0'."
   debug:
     type: boolean?
-    label: true or false
+    label: True or False
     inputBinding:
       position: 1
       prefix: -d
     doc: Whether to print out additional debugging info.Defaults to '0'.
   debugWrite:
     type: boolean?
-    label: true or false
+    label: True or False
     inputBinding:
       position: 1
       prefix: -dw
@@ -129,3 +128,16 @@ inputs:
       position: 1
       prefix: -L
     doc: Full path to log file to store logging information.By default, only console output is generated.
+  unitTest:
+    type: File?
+    label: Path to reference output
+    inputBinding:
+      position: 1
+      prefix: -ut
+    doc: Whether to run unit test or not.Disabled for batch processing.
+hints:
+  SoftwareRequirement:
+    packages:
+      FeatureExtraction:
+        version:
+          - 1.7.3.nonRelease.20190819

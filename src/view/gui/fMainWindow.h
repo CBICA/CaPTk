@@ -3,7 +3,7 @@
 
 \brief Declaration of fMainWindow class
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -80,6 +80,7 @@ class SlicerManager;
 class Slicer;
 class SimpleImageManager;
 class fHelpDialog;
+class PreferencesDialog;
 
 #define USE_PROCESSDIALOG
 
@@ -257,6 +258,7 @@ private:
   fDeepMedicNormalizer deepMedicNormPanel;
   fWhiteStripeObj whiteStripeNormalizer;
   fDirectionalityDialog directionalityEstimator;
+  PreferencesDialog *preferenceDialog;
 
   fDrawingPanel *drawingPanel;
   fFeaturePanel *featurePanel;
@@ -290,6 +292,7 @@ private:
   QAction *actionLoad_Nifti_Images;
   QAction *actionLoad_Nifti_ROI;
   QAction *actionLoad_Dicom_Images;
+  QAction *actionPreferences;
 
 
   QAction *actionSave_Nifti_Images;
@@ -521,6 +524,8 @@ signals:
   void TissuePointsFocused(bool bFocused);
 
 public slots:
+	//!display Preferences dialog
+	void OnPreferencesMenuClicked();
 
   //! set Z slice position on image info panel
   void SetImageInfoZSlicePosition(int zslice);
@@ -1305,7 +1310,7 @@ public slots:
   void ApplicationSBRTAnalysis();
 
   //! Convert 2D image to 3D image with a single slice and write to temp folder
-  void ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage = false);
+  std::string ConversionFrom2Dto3D(const std::string &fileName);
 
   //! GUI control for Directionality Analysis
   void ApplicationDirectionality();

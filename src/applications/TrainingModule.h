@@ -5,7 +5,7 @@
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2016 University of Pennsylvania. All rights reserved. <br>

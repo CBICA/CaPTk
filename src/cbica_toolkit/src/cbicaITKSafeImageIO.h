@@ -75,45 +75,36 @@ namespace cbica
     //  exit(EXIT_FAILURE);
     //}
 
-    std::string fName_wrap = cbica::normPath(fName);
-
-    std::string fileExtension = cbica::getFilenameExtension(fName_wrap);
-    std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(), ::tolower);
-
     auto reader = /*typename*/ itk::ImageFileReader< TImageType >::New();
 
-    if (fileExtension == ".dcm")
+    if (cbica::IsDicom(fName) || cbica::isDir(fName))
     {
-      auto filesInDir = cbica::filesInDirectory(cbica::getFilenamePath(fName_wrap));
-      if (filesInDir.size() > 1)
-      {
-        std::cerr << "Trying to read DICOM file. Please use DICOMImageReader.\n";
-        return reader;
-      }
+      std::cerr << "Trying to read DICOM file. Please use ReadImage<>.\n";
+      return reader;
     }
 
-    if (supportedExtensions != "")
-    {
-      std::vector< std::string > extensions = cbica::stringSplit(supportedExtensions, delimitor);
+    //if (supportedExtensions != "")
+    //{
+    //  std::vector< std::string > extensions = cbica::stringSplit(supportedExtensions, delimitor);
 
-      bool supportedExtensionFound = false;
-      for (size_t i = 0; i < extensions.size(); i++)
-      {
-        if (extensions[i] == fileExtension)
-        {
-          supportedExtensionFound = true;
-        }
-      }
+    //  bool supportedExtensionFound = false;
+    //  for (size_t i = 0; i < extensions.size(); i++)
+    //  {
+    //    if (extensions[i] == fileExtension)
+    //    {
+    //      supportedExtensionFound = true;
+    //    }
+    //  }
 
-      if (!supportedExtensionFound)
-      {
-        std::cerr << "Supplied file name '" << fName_wrap << "' doesn't have a supported extension. \nSupported Extensions: " << supportedExtensions << "\n";
-        return reader;
-      }
-    }
+    //  if (!supportedExtensionFound)
+    //  {
+    //    std::cerr << "Supplied file name '" << fName_wrap << "' doesn't have a supported extension. \nSupported Extensions: " << supportedExtensions << "\n";
+    //    return reader;
+    //  }
+    //}
 
     // ensure that the requested image dimensions and read image dimensions match up
-    auto imageInfo = cbica::ImageInfo(fName_wrap);
+    auto imageInfo = cbica::ImageInfo(fName);
 
     // perform basic sanity check
     if ((imageInfo.GetImageDimensions() != TImageType::ImageDimension) &&
@@ -124,29 +115,29 @@ namespace cbica
       return reader;
     }
 
-    reader->SetFileName(fName_wrap);
+    reader->SetFileName(fName);
 
-    auto supportedExtsVector = cbica::stringSplit(supportedExtensions, ",");
+    //auto supportedExtsVector = cbica::stringSplit(supportedExtensions, ",");
 
-    if (std::find(supportedExtsVector.begin(), supportedExtsVector.end(), fileExtension) == supportedExtsVector.end())
-    {
-      std::cerr << "Extension of file doesn't match the supported extensions; can't read.\n";
-      return reader;
-    }
+    //if (std::find(supportedExtsVector.begin(), supportedExtsVector.end(), fileExtension) == supportedExtsVector.end())
+    //{
+    //  std::cerr << "Extension of file doesn't match the supported extensions; can't read.\n";
+    //  return reader;
+    //}
 
-    // set image IO type
-    if ((fileExtension == ".dcm") || (fileExtension == ".dicom"))
-    {
-      //auto ioType = itk::GDCMKImageIO::New();
-      //ioType->SetFileName(fName_wrap);
-      //reader->SetImageIO(ioType);
-    }
-    else if ((fileExtension == ".nii") || (fileExtension == ".nii.gz"))
-    {
-      auto ioType = itk::NiftiImageIO::New();
-      ioType->SetFileName(fName_wrap);
-      reader->SetImageIO(ioType);
-    }
+    //// set image IO type - this is done internally in itk::ImageFileReader
+    //if ((fileExtension == ".dcm") || (fileExtension == ".dicom"))
+    //{
+    //  //auto ioType = itk::GDCMKImageIO::New();
+    //  //ioType->SetFileName(fName_wrap);
+    //  //reader->SetImageIO(ioType);
+    //}
+    //else if ((fileExtension == ".nii") || (fileExtension == ".nii.gz"))
+    //{
+    //  auto ioType = itk::NiftiImageIO::New();
+    //  ioType->SetFileName(fName_wrap);
+    //  reader->SetImageIO(ioType);
+    //}
 
     try
     {
@@ -154,7 +145,7 @@ namespace cbica
     }
     catch (itk::ExceptionObject& e)
     {
-      std::cerr << "Exception caught while reading the image '" << fName_wrap << "': " << e.what() << "\n";
+      std::cerr << "Exception caught while reading the image '" << fName << "': " << e.what() << "\n";
       return reader;
     }
 
@@ -451,18 +442,19 @@ namespace cbica
     //  return;
     //}
 
+    // ensure that a new folder is created, if it isn't specified
+    auto fileName_path = cbica::getFilenamePath(fileName, false);
+    if (!cbica::isDir(fileName_path))
+    {
+      cbica::createDir(fileName_path);
+    }
+
     auto filter = /*typename*/ itk::CastImageFilter<ComputedImageType, ExpectedImageType>::New();
     filter->SetInput(imageToWrite);
     filter->Update();
 
     auto writer = /*typename*/ itk::ImageFileWriter< ExpectedImageType >::New();
-
-    auto ext = cbica::getFilenameExtension(fileName, false);
-    if ((ext == ".nii") || (ext == ".nii.gz"))
-    {
-      writer->SetImageIO(itk::NiftiImageIO::New());
-    }
-
+    
     writer->SetInput(filter->GetOutput());
     writer->SetFileName(fileName);
 
@@ -479,167 +471,282 @@ namespace cbica
     return;
   }
 
-  /*
-  \brief Write itk::ImageReader as DICOM to specified directory
-
-  This uses default dictionary created by GDCM::ImageIO
-
-  Usage:
-  \verbatim
-  typedef itk::Image< float, 3 > ComputedImageType;
-  typedef itk::Image< unsigned char, 3 > WrittenImageType;
-  itk::ImageSeriesReader< ComputedImageType >::Pointer inputImageReader = GetDicomImageReader< ComputedImageType >(inputDirName);
-  ComputedImageType::Pointer imageToWrite = GetImageAfterProcessing( inputImageReader->GetOutput() );
-  WriteImage< ComputedImageType, WrittenImageType >(imageToWrite, dirNameToWriteImage); // casts imageToWrite to WrittenImageType
-  WriteImage< ComputedImageType >(imageToWrite, dirNameToWriteImage); // writes imageToWrite as ComputedImageType
-  // at this point, the image has already been written
-  \endverbatim
-
-  \param imageToWrite Pointer to processed image data which is to be written
-  \param dirName File containing the image
-  \return itk::Image of specified pixel and dimension type
-  */
-  template <typename ComputedImageType = ImageTypeFloat3D>
-  void WriteDicomImage(const typename ComputedImageType::Pointer imageToWrite, const std::string &dirName)
-  {
-    auto reader = typename itk::ImageSeriesReader< ComputedImageType >::New();
-    WriteDicomImage< ComputedImageType >(reader, imageToWrite, dirName);
-  }
-
   /**
-  \brief Write the itk::Image as a DICOM to the specified directory
+  \brief Write itk::ImageReader as DICOM to specified directory
+  
+  This uses the dictionary created by the reference DICOM image
 
-  Usage:
-  \verbatim
-  typedef itk::Image< float, 3 > ComputedImageType;
-  typedef itk::Image< unsigned char, 3 > WrittenImageType;
-  itk::ImageSeriesReader< ComputedImageType >::Pointer inputImageReader = GetDicomImageReader< ComputedImageType >(inputDirName);
-  ComputedImageType::Pointer imageToWrite = GetImageAfterProcessing( inputImageReader->GetOutput() );
-  WriteImage< ComputedImageType, WrittenImageType >(inputImageReader, imageToWrite, dirNameToWriteImage); // casts imageToWrite to WrittenImageType
-  WriteImage< ComputedImageType >(inputImageReader, imageToWrite, dirNameToWriteImage); // writes imageToWrite as ComputedImageType
-  // at this point, the image has already been written
-  \endverbatim
-
-  \param inputImageReader The image reader for DICOM - this is necessary to populate the DICOM dictionary properly
+  \param dicomImageReferenceDir Reference DICOM image
   \param imageToWrite Pointer to processed image data which is to be written
-  \param dirName File containing the image
+  \param outputDir File containing the image
+  \param outputPrefix The prefix for the output filenames
   \return itk::Image of specified pixel and dimension type
   */
   template <typename ComputedImageType = ImageTypeFloat3D>
-  void WriteDicomImage(const typename itk::ImageSeriesReader< ComputedImageType >::Pointer inputImageReader, const typename ComputedImageType::Pointer imageToWrite, const std::string &dirName)
+  void WriteDicomImageFromReference(const std::string dicomImageReferenceDir, typename ComputedImageType::Pointer imageToWrite, const std::string &outputDir, const std::string& outputPrefix = "image")
   {
-    if (!cbica::isDir(dirName))
+    cbica::createDir(outputDir);
+    if (cbica::isDir(dicomImageReferenceDir))
     {
-      std::cout << "Specified directory wasn't found, creating...\n";
-      cbica::createDir(dirName);
-    }
+      using DicomImageType = itk::Image< int, ComputedImageType::ImageDimension >;
+      auto inputImageReader = itk::ImageSeriesReader< DicomImageType >::New();
+      auto dicomIO = itk::GDCMImageIO::New();
+      auto nameGenerator = itk::GDCMSeriesFileNames::New();
+      nameGenerator->SetInputDirectory(dicomImageReferenceDir);
+      inputImageReader->SetImageIO(dicomIO);
+      inputImageReader->SetFileNames(nameGenerator->GetInputFileNames());
+      try
+      {
+        inputImageReader->Update();
+      }
+      catch (itk::ExceptionObject &excp)
+      {
+        std::cerr << "Couldn't read the reference DICOM image; got the following error: " << excp << "\n";
+        exit(EXIT_FAILURE);
+      }
+      //WriteDicomImage< ComputedImageType/*, DicomImageType*/ >(reader, imageToWrite, outputDir);
 
-    // check write access
-    //if (((_access(dirName.c_str(), 2)) == -1) || ((_access(dirName.c_str(), 6)) == -1))
-    //{
-    //  ShowErrorMessage("You don't have write access in selected location. Please check.");
-    //  return;
-    //}
+      // check write access
+      //if (((_access(dirName.c_str(), 2)) == -1) || ((_access(dirName.c_str(), 6)) == -1))
+      //{
+      //  ShowErrorMessage("You don't have write access in selected location. Please check.");
+      //  return;
+      //}
 
-    using ExpectedImageType = itk::Image< short, ComputedImageType::ImageDimension >; // this is needed because DICOM currently only supports short/int
-    typedef itk::CastImageFilter<ComputedImageType, ExpectedImageType> CastFilterType;
-    typename CastFilterType::Pointer castFilter = CastFilterType::New();
-    castFilter->SetInput(imageToWrite);
-    castFilter->Update();
+      using ExpectedImageType = itk::Image< short, ComputedImageType::ImageDimension >; // this is needed because DICOM currently only supports short/int
+      typedef itk::CastImageFilter<ComputedImageType, ExpectedImageType> CastFilterType;
+      typename CastFilterType::Pointer castFilter = CastFilterType::New();
+      castFilter->SetInput(imageToWrite);
+      castFilter->Update();
 
-    //  typedef typename ExpectedImageType::PixelType DicomPixelType;
+      //  typedef typename ExpectedImageType::PixelType DicomPixelType;
 
-    auto dicomIO = itk::GDCMImageIO::New();
-    //auto dicomIO = MyGDCMImageIO::New();
-    dicomIO->SetComponentType(itk::ImageIOBase::IOComponentType::SHORT);
+      //auto dicomIO = itk::GDCMImageIO::New();
+      //auto dicomIO = MyGDCMImageIO::New();
+      dicomIO->SetComponentType(itk::ImageIOBase::IOComponentType::SHORT);
 
-    auto seriesWriter = itk::ImageSeriesWriter< ExpectedImageType, itk::Image<typename ExpectedImageType::PixelType, 2> >::New();
+      auto seriesWriter = itk::ImageSeriesWriter< ExpectedImageType, itk::Image<typename ExpectedImageType::PixelType, 2> >::New();
 
-    auto namesGenerator = itk::NumericSeriesFileNames::New();
-    //namesGenerator->SetUseSeriesDetails(false);
-    auto start = imageToWrite->GetLargestPossibleRegion().GetIndex();
-    auto size = imageToWrite->GetLargestPossibleRegion().GetSize();
-    namesGenerator->SetSeriesFormat((dirName + "/image%03d.dcm").c_str());
-    namesGenerator->SetStartIndex(start[2]);
-    namesGenerator->SetEndIndex(start[2] + size[2] - 1);
-    namesGenerator->SetIncrementIndex(1);
+      auto namesGenerator = itk::NumericSeriesFileNames::New();
+      //namesGenerator->SetUseSeriesDetails(false);
+      auto start = imageToWrite->GetLargestPossibleRegion().GetIndex();
+      auto size = imageToWrite->GetLargestPossibleRegion().GetSize();
+      namesGenerator->SetSeriesFormat((outputDir + "/" + outputPrefix + "%03d.dcm").c_str());
+      namesGenerator->SetStartIndex(start[2]);
+      namesGenerator->SetEndIndex(start[2] + size[2] - 1);
+      namesGenerator->SetIncrementIndex(1);
 
-    seriesWriter->SetInput(castFilter->GetOutput());
-    seriesWriter->SetImageIO(dicomIO);
-    seriesWriter->SetFileNames(namesGenerator->GetFileNames());
-
-    typename itk::ImageSeriesReader< ComputedImageType >::DictionaryArrayType outputArray;
-    if (inputImageReader.IsNull() || (inputImageReader->GetImageIO() == NULL))
-    {
-      //dicomIO->SetOrigin(0, imageToWrite->GetOrigin()[0]);
-      //dicomIO->SetOrigin(1, imageToWrite->GetOrigin()[1]);
-      //dicomIO->SetOrigin(2, imageToWrite->GetOrigin()[2]);
-      //dicomIO->SetSpacing(0, imageToWrite->GetSpacing()[0]);
-      //dicomIO->SetSpacing(1, imageToWrite->GetSpacing()[1]);
-      //dicomIO->SetSpacing(2, imageToWrite->GetSpacing()[2]);
-      //dicomIO->SetDimensions(0, imageToWrite->GetLargestPossibleRegion().GetSize()[0]);
-      //dicomIO->SetDimensions(1, imageToWrite->GetLargestPossibleRegion().GetSize()[1]);
-      //dicomIO->SetDimensions(2, imageToWrite->GetLargestPossibleRegion().GetSize()[2]);
+      auto dict = inputImageReader->GetMetaDataDictionary();
 
       typename ExpectedImageType::IndexType index;
       index[0] = 0;
       index[1] = 0;
       for (size_t i = 0; i < imageToWrite->GetLargestPossibleRegion().GetSize()[2]; i++)
       {
-        auto dict = new typename itk::ImageSeriesReader< ComputedImageType >::DictionaryType;
         typename ExpectedImageType::PointType position;
         index[2] = i;
         imageToWrite->TransformIndexToPhysicalPoint(index, position);
-        itk::EncapsulateMetaData<std::string>(*dict, "0020|0032", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2])); // patient position
-        itk::EncapsulateMetaData<std::string>(*dict, "0020|1041", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2])); // slice location
+        itk::EncapsulateMetaData<std::string>(dict, "0020|0032", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2])); // Image Position (Patient)
+        itk::EncapsulateMetaData<std::string>(dict, "0020|1041", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2])); // slice location
         //itk::EncapsulateMetaData<std::string>(*dict, "0020|0011", std::to_string(1)); 
         //itk::EncapsulateMetaData<std::string>(*dict, "0020|0013", std::to_string(i)); 
         //itk::EncapsulateMetaData<std::string>(*dict, "0018|5100", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2]));
         //itk::EncapsulateMetaData<std::string>(*dict, "2020|0010", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2]));
         //itk::EncapsulateMetaData<std::string>(*dict, "0018|5101", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2]));
         // direction
-        //if (ComputedImageType::ImageDimension == 2)
-        //{
-        //  itk::EncapsulateMetaData<std::string>(*dict, "0020|0037", std::to_string(*imageToWrite->GetDirection()[0]) + "\\" + std::to_string(*imageToWrite->GetDirection()[1]) + "\\0\\" + std::to_string(*imageToWrite->GetDirection()[2]) + "\\" + std::to_string(*imageToWrite->GetDirection()[3]) + "\\0"); // orientation
-        //}
-        //else if (ComputedImageType::ImageDimension == 3)
-        //{
-        //  itk::EncapsulateMetaData<std::string>(*dict, "0020|0037", 
-        //    std::to_string(*imageToWrite->GetDirection()[0]) + "\\" + std::to_string(*imageToWrite->GetDirection()[1]) + "\\" + std::to_string(*imageToWrite->GetDirection()[2]) + "\\" + 
-        //    std::to_string(*imageToWrite->GetDirection()[3]) + "\\" + std::to_string(*imageToWrite->GetDirection()[4]) + "\\" + std::to_string(*imageToWrite->GetDirection()[5]) + "\\" +
-        //    std::to_string(*imageToWrite->GetDirection()[6]) + "\\" + std::to_string(*imageToWrite->GetDirection()[7]) + "\\" + std::to_string(*imageToWrite->GetDirection()[8])
-        //    ); // orientation
-        //}
-        itk::EncapsulateMetaData<std::string>(*dict, "0018|0050", std::to_string(imageToWrite->GetSpacing()[2])); // Slice Thickness
-        itk::EncapsulateMetaData<std::string>(*dict, "0018|0088", std::to_string(imageToWrite->GetSpacing()[2])); // Spacing Between Slices
-        itk::EncapsulateMetaData<std::string>(*dict, "0028|0030", std::to_string(imageToWrite->GetSpacing()[0]) + "\\" + std::to_string(imageToWrite->GetSpacing()[1]));
-        //itk::EncapsulateMetaData<std::string>(*dict, "0008|0008", "DERIVED\\SECONDARY"); // Image Type
+        auto direction = imageToWrite->GetDirection();
+        if (ComputedImageType::ImageDimension == 2)
+        {
+          itk::EncapsulateMetaData<std::string>(dict, "0020|0037", std::to_string(*direction[0]) + "\\" + std::to_string(*direction[1]) + "\\0\\" + std::to_string(*direction[2]) + "\\" + std::to_string(*direction[3]) + "\\0"); // Image Orientation (Patient)
+          itk::EncapsulateMetaData<std::string>(dict, "0048|0102", std::to_string(*direction[0]) + "\\" + std::to_string(*direction[1]) + "\\0\\" + std::to_string(*direction[2]) + "\\" + std::to_string(*direction[3]) + "\\0"); // Image Orientation (slide)
+        }
+        else if (ComputedImageType::ImageDimension == 3)
+        {
+          itk::EncapsulateMetaData<std::string>(dict, "0020|0037",
+            std::to_string(*direction[0]) + "\\" + std::to_string(*direction[1]) + "\\" + std::to_string(*direction[2]) + "\\" +
+            std::to_string(*direction[3]) + "\\" + std::to_string(*direction[4]) + "\\" + std::to_string(*direction[5]) + "\\" +
+            std::to_string(*direction[6]) + "\\" + std::to_string(*direction[7]) + "\\" + std::to_string(*direction[8])
+            ); // Image Orientation (Patient)
+        }
+        itk::EncapsulateMetaData<std::string>(dict, "0018|0050", std::to_string(imageToWrite->GetSpacing()[2])); // Slice Thickness
+        itk::EncapsulateMetaData<std::string>(dict, "0018|0088", std::to_string(imageToWrite->GetSpacing()[2])); // Spacing Between Slices
+        itk::EncapsulateMetaData<std::string>(dict, "0028|0030", std::to_string(imageToWrite->GetSpacing()[0]) + "\\" + std::to_string(imageToWrite->GetSpacing()[1]));
+        itk::EncapsulateMetaData<std::string>(dict, "0008|0008", "DERIVED\\SECONDARY"); // Image Type
         //itk::EncapsulateMetaData<std::string>(*dict, "0008|0064", "DV"); // Conversion Type
         //itk::EncapsulateMetaData<std::string>(*dict, "0008|0060", "MR"); // Modality - can never gurantee MR
         //itk::EncapsulateMetaData<std::string>(*dict, "0018|0088", std::to_string(imageToWrite->GetSpacing()[2]));
+        itk::EncapsulateMetaData<std::string>(dict, "0008|0070", "CaPTk by CBICA @ Upenn"); // Manufacturer, used to distinguish between the original image and generated DICOM
+        itk::EncapsulateMetaData<std::string>(dict, "0008|1090", "http://www.cbica.upenn.edu/captk"); // Manufacturer's Model Name, used to distinguish between the original image and generated DICOM
 
-        outputArray.push_back(dict);
       }
 
-      seriesWriter->SetMetaDataDictionaryArray(&outputArray);
+      // set the metadata dictionary to the dicomIO
+      dicomIO->SetMetaDataDictionary(dict);
+
+      seriesWriter->SetInput(castFilter->GetOutput());
+      seriesWriter->SetFileNames(namesGenerator->GetFileNames());
+      seriesWriter->SetImageIO(dicomIO);
+      seriesWriter->SetMetaDataDictionaryArray(inputImageReader->GetMetaDataDictionaryArray()); // no dictionary information present without seriesReader
+
+      try
+      {
+        seriesWriter->Write();
+      }
+      catch (itk::ExceptionObject &e)
+      {
+        std::cerr << "Error occurred while trying to write the image '" << outputDir << "': " << e.what() << "\n";
+        exit(EXIT_FAILURE);
+      }
+      std::cout << "[DEBUG] Successfully written the output.\n";
+    }
+    else if (cbica::IsDicom(dicomImageReferenceDir)) // someone accidentally passed a dicom file
+    {
+      return WriteDicomImageFromReference< ComputedImageType >(cbica::getFilenamePath(dicomImageReferenceDir), imageToWrite, outputDir);
+      
+      //auto reader = itk::ImageSeriesReader< itk::Image< int, ComputedImageType::ImageDimension > >::New();
+      //WriteDicomImage< ComputedImageType/*, ComputedImageType*/ >(reader, imageToWrite, outputDir);
     }
     else
     {
-      dicomIO->SetMetaDataDictionary(inputImageReader->GetMetaDataDictionary());
-      seriesWriter->SetMetaDataDictionaryArray(inputImageReader->GetMetaDataDictionaryArray()); // no dictionary information present without seriesReader
-    }
-
-    try
-    {
-      seriesWriter->Write();
-    }
-    catch (itk::ExceptionObject &e)
-    {
-      std::cerr << "Error occurred while trying to write the image '" << dirName << "': " << e.what() << "\n";
+      std::cerr << "Valid reference DICOM was not passed.\n";
       exit(EXIT_FAILURE);
     }
-
   }
+
+  ///**
+  //\brief Write the itk::Image as a DICOM to the specified directory
+
+  //Usage:
+  //\verbatim
+  //typedef itk::Image< float, 3 > ComputedImageType;
+  //typedef itk::Image< unsigned char, 3 > WrittenImageType;
+  //itk::ImageSeriesReader< ComputedImageType >::Pointer inputImageReader = GetDicomImageReader< ComputedImageType >(inputDirName);
+  //ComputedImageType::Pointer imageToWrite = GetImageAfterProcessing( inputImageReader->GetOutput() );
+  //WriteImage< ComputedImageType, WrittenImageType >(inputImageReader, imageToWrite, dirNameToWriteImage); // casts imageToWrite to WrittenImageType
+  //WriteImage< ComputedImageType >(inputImageReader, imageToWrite, dirNameToWriteImage); // writes imageToWrite as ComputedImageType
+  //// at this point, the image has already been written
+  //\endverbatim
+
+  //\param inputImageReader The image reader for DICOM - this is necessary to populate the DICOM dictionary properly
+  //\param imageToWrite Pointer to processed image data which is to be written
+  //\param dirName File containing the image
+  //\return itk::Image of specified pixel and dimension type
+  //*/
+  //template < class ComputedImageType = ImageTypeFloat3D/*, class DicomImageType = ComputedImageType*/ >
+  //void WriteDicomImage(const typename itk::ImageSeriesReader< itk::Image< int, ComputedImageType::ImageDimension > >::Pointer inputImageReader, const typename ComputedImageType::Pointer imageToWrite, const std::string &dirName)
+  //{
+  //  if (!cbica::isDir(dirName))
+  //  {
+  //    std::cout << "Specified directory wasn't found, creating...\n";
+  //    cbica::createDir(dirName);
+  //  }
+
+  //  // check write access
+  //  //if (((_access(dirName.c_str(), 2)) == -1) || ((_access(dirName.c_str(), 6)) == -1))
+  //  //{
+  //  //  ShowErrorMessage("You don't have write access in selected location. Please check.");
+  //  //  return;
+  //  //}
+
+  //  using ExpectedImageType = itk::Image< short, ComputedImageType::ImageDimension >; // this is needed because DICOM currently only supports short/int
+  //  typedef itk::CastImageFilter<ComputedImageType, ExpectedImageType> CastFilterType;
+  //  typename CastFilterType::Pointer castFilter = CastFilterType::New();
+  //  castFilter->SetInput(imageToWrite);
+  //  castFilter->Update();
+
+  //  //  typedef typename ExpectedImageType::PixelType DicomPixelType;
+
+  //  auto dicomIO = itk::GDCMImageIO::New();
+  //  //auto dicomIO = MyGDCMImageIO::New();
+  //  dicomIO->SetComponentType(itk::ImageIOBase::IOComponentType::SHORT);
+
+  //  auto seriesWriter = itk::ImageSeriesWriter< ExpectedImageType, itk::Image<typename ExpectedImageType::PixelType, 2> >::New();
+
+  //  auto namesGenerator = itk::NumericSeriesFileNames::New();
+  //  //namesGenerator->SetUseSeriesDetails(false);
+  //  auto start = imageToWrite->GetLargestPossibleRegion().GetIndex();
+  //  auto size = imageToWrite->GetLargestPossibleRegion().GetSize();
+  //  namesGenerator->SetSeriesFormat((dirName + "/image%03d.dcm").c_str());
+  //  namesGenerator->SetStartIndex(start[2]);
+  //  namesGenerator->SetEndIndex(start[2] + size[2] - 1);
+  //  namesGenerator->SetIncrementIndex(1);
+
+  //  seriesWriter->SetInput(castFilter->GetOutput());
+  //  seriesWriter->SetImageIO(dicomIO);
+  //  seriesWriter->SetFileNames(namesGenerator->GetFileNames());
+
+  //  typename itk::ImageSeriesReader< ComputedImageType >::DictionaryArrayType outputArray;
+  //  if (inputImageReader.IsNull() || (inputImageReader->GetImageIO() == NULL))
+  //  {
+  //    //dicomIO->SetOrigin(0, imageToWrite->GetOrigin()[0]);
+  //    //dicomIO->SetOrigin(1, imageToWrite->GetOrigin()[1]);
+  //    //dicomIO->SetOrigin(2, imageToWrite->GetOrigin()[2]);
+  //    //dicomIO->SetSpacing(0, imageToWrite->GetSpacing()[0]);
+  //    //dicomIO->SetSpacing(1, imageToWrite->GetSpacing()[1]);
+  //    //dicomIO->SetSpacing(2, imageToWrite->GetSpacing()[2]);
+  //    //dicomIO->SetDimensions(0, imageToWrite->GetLargestPossibleRegion().GetSize()[0]);
+  //    //dicomIO->SetDimensions(1, imageToWrite->GetLargestPossibleRegion().GetSize()[1]);
+  //    //dicomIO->SetDimensions(2, imageToWrite->GetLargestPossibleRegion().GetSize()[2]);
+
+  //    typename ExpectedImageType::IndexType index;
+  //    index[0] = 0;
+  //    index[1] = 0;
+  //    for (size_t i = 0; i < imageToWrite->GetLargestPossibleRegion().GetSize()[2]; i++)
+  //    {
+  //      auto dict = new typename itk::ImageSeriesReader< ComputedImageType >::DictionaryType;
+  //      typename ExpectedImageType::PointType position;
+  //      index[2] = i;
+  //      imageToWrite->TransformIndexToPhysicalPoint(index, position);
+  //      itk::EncapsulateMetaData<std::string>(*dict, "0020|0032", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2])); // patient position
+  //      itk::EncapsulateMetaData<std::string>(*dict, "0020|1041", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2])); // slice location
+  //      //itk::EncapsulateMetaData<std::string>(*dict, "0020|0011", std::to_string(1)); 
+  //      //itk::EncapsulateMetaData<std::string>(*dict, "0020|0013", std::to_string(i)); 
+  //      //itk::EncapsulateMetaData<std::string>(*dict, "0018|5100", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2]));
+  //      //itk::EncapsulateMetaData<std::string>(*dict, "2020|0010", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2]));
+  //      //itk::EncapsulateMetaData<std::string>(*dict, "0018|5101", std::to_string(position[0]) + "\\" + std::to_string(position[1]) + "\\" + std::to_string(position[2]));
+  //      // direction
+  //      //if (ComputedImageType::ImageDimension == 2)
+  //      //{
+  //      //  itk::EncapsulateMetaData<std::string>(*dict, "0020|0037", std::to_string(*imageToWrite->GetDirection()[0]) + "\\" + std::to_string(*imageToWrite->GetDirection()[1]) + "\\0\\" + std::to_string(*imageToWrite->GetDirection()[2]) + "\\" + std::to_string(*imageToWrite->GetDirection()[3]) + "\\0"); // orientation
+  //      //}
+  //      //else if (ComputedImageType::ImageDimension == 3)
+  //      //{
+  //      //  itk::EncapsulateMetaData<std::string>(*dict, "0020|0037", 
+  //      //    std::to_string(*imageToWrite->GetDirection()[0]) + "\\" + std::to_string(*imageToWrite->GetDirection()[1]) + "\\" + std::to_string(*imageToWrite->GetDirection()[2]) + "\\" + 
+  //      //    std::to_string(*imageToWrite->GetDirection()[3]) + "\\" + std::to_string(*imageToWrite->GetDirection()[4]) + "\\" + std::to_string(*imageToWrite->GetDirection()[5]) + "\\" +
+  //      //    std::to_string(*imageToWrite->GetDirection()[6]) + "\\" + std::to_string(*imageToWrite->GetDirection()[7]) + "\\" + std::to_string(*imageToWrite->GetDirection()[8])
+  //      //    ); // orientation
+  //      //}
+  //      itk::EncapsulateMetaData<std::string>(*dict, "0018|0050", std::to_string(imageToWrite->GetSpacing()[2])); // Slice Thickness
+  //      itk::EncapsulateMetaData<std::string>(*dict, "0018|0088", std::to_string(imageToWrite->GetSpacing()[2])); // Spacing Between Slices
+  //      itk::EncapsulateMetaData<std::string>(*dict, "0028|0030", std::to_string(imageToWrite->GetSpacing()[0]) + "\\" + std::to_string(imageToWrite->GetSpacing()[1]));
+  //      //itk::EncapsulateMetaData<std::string>(*dict, "0008|0008", "DERIVED\\SECONDARY"); // Image Type
+  //      //itk::EncapsulateMetaData<std::string>(*dict, "0008|0064", "DV"); // Conversion Type
+  //      //itk::EncapsulateMetaData<std::string>(*dict, "0008|0060", "MR"); // Modality - can never gurantee MR
+  //      //itk::EncapsulateMetaData<std::string>(*dict, "0018|0088", std::to_string(imageToWrite->GetSpacing()[2]));
+
+  //      outputArray.push_back(dict);
+  //    }
+
+  //    seriesWriter->SetMetaDataDictionaryArray(&outputArray);
+  //  }
+  //  else
+  //  {
+  //    dicomIO->SetMetaDataDictionary(inputImageReader->GetMetaDataDictionary());
+  //    seriesWriter->SetMetaDataDictionaryArray(inputImageReader->GetMetaDataDictionaryArray()); // no dictionary information present without seriesReader
+  //  }
+
+  //  try
+  //  {
+  //    seriesWriter->Write();
+  //  }
+  //  catch (itk::ExceptionObject &e)
+  //  {
+  //    std::cerr << "Error occurred while trying to write the image '" << dirName << "': " << e.what() << "\n";
+  //    exit(EXIT_FAILURE);
+  //  }
+
+  //}
 
 
   /**
@@ -661,7 +768,16 @@ namespace cbica
   template <class TImageType = ImageTypeFloat3D >
   typename TImageType::Pointer ReadImage(const std::string &fName, const std::string &supportedExtensions = ".nii.gz,.nii,.dcm", const std::string &delimitor = ",")
   {
-    if (cbica::IsDicom(fName))
+    bool dicomDetected = false;
+    if (cbica::isDir(fName))
+    {
+      dicomDetected = true;
+    }
+    else if (cbica::IsDicom(fName))
+    {
+      dicomDetected = true;
+    }
+    if (dicomDetected)
     {
       DicomIOManager< TImageType > dcmSeriesReader;
       dcmSeriesReader.SetDirectoryPath(fName);

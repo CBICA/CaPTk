@@ -5,24 +5,32 @@ SET( OpenCV_DEPENDENCIES )
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
+SET( EXTRA_NON_WINDOWS_OPTIONS "")
+IF(NOT WIN32)
+SET( EXTRA_NON_WINDOWS_OPTIONS -DCMAKE_BUILD_TYPE=Release)
+ENDIF()
+
 MESSAGE( STATUS "Adding OpenCV-${OPENCV_VERSION} ...")
 
 ExternalProject_Add( 
   OpenCV
   DEPENDS Eigen VTK
-  URL https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip
+  # URL https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip
+  GIT_REPOSITORY https://github.com/opencv/opencv.git #  url from where to download
+  GIT_TAG ${OPENCV_VERSION}
   #GIT_REPOSITORY ${git_protocol}://github.com/opencv/opencv.git
   #GIT_TAG 3.4.1
   SOURCE_DIR OpenCV-source
   BINARY_DIR OpenCV-build
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
-  #INSTALL_COMMAND ""
+  INSTALL_COMMAND cmake -E echo "Skipping install step."
   #BUILD_COMMAND ""
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
     ${ep_common_args}
     #-DCMAKE_CONFIGURATION_TYPES=${CMAKE_CONFIGURATION_TYPES}
+    ${EXTRA_NON_WINDOWS_OPTIONS}
     -DENABLE_CXX11:BOOL=ON 
     -DBUILD_EXAMPLES:BOOL=OFF # examples are not needed
     -DBUILD_opencv_apps:BOOL=OFF 

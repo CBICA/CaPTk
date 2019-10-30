@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: BreastTexturePipeline
 inputs:
   inputImage:
@@ -45,3 +44,9 @@ inputs:
       position: 1
       prefix: -r
     doc: "What resizing factor is to be applied.Default: 100."
+hints:
+  SoftwareRequirement:
+    packages:
+      BreastTexturePipeline:
+        version:
+          - 1.7.3.nonRelease.20190819

@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: GeodesicSegmentation
 inputs:
   output:
@@ -66,3 +65,9 @@ inputs:
       position: 1
       prefix: -t
     doc: Threshold distance for geodesic mask.By default, full geodesic mask is written.
+hints:
+  SoftwareRequirement:
+    packages:
+      GeodesicSegmentation:
+        version:
+          - 1.7.3.nonRelease.20190819

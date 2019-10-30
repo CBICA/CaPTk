@@ -52,7 +52,10 @@ std::string findRelativeApplicationPath(const std::string appName)
 inline std::string getCaPTkDataDir()
 {
   auto captk_currentApplicationPath = cbica::normPath(cbica::getExecutablePath());
-  std::cout << "captk_currentApplicationPath: " << captk_currentApplicationPath << "\n";
+  if (debugMode)
+  {
+    std::cout << "Current Application Path: " << captk_currentApplicationPath << "\n";
+  }  
 
   auto captk_dataDir = captk_currentApplicationPath + "../data/";
   if (!cbica::exists(captk_dataDir))
@@ -82,6 +85,11 @@ int algorithmsRunner()
   if (debugMode)
   {
     std::cout << "Starting pre-processing.\n";
+  }
+  if (!cbica::IsDicom(inputImageFile))
+  {
+    std::cerr << "The input image is not a DICOM image; please provide a DICOM image to continue.\n";
+    return EXIT_FAILURE;
   }
   LibraPreprocess< LibraImageType > preprocessingObj;
   preprocessingObj.SetInputFileName(inputImageFile);

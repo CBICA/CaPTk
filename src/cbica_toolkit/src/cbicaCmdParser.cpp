@@ -3,7 +3,7 @@
 
 \brief Implementation file for CmdParser class.
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -1301,11 +1301,14 @@ namespace cbica
 
       config["cwlVersion"] = "v1.0";
       config["class"] = "CommandLineTool";
-      config["version"] = m_version;
+      //config["version"] = m_version;
       config["baseCommand"] = (m_exeName);
       
       YAML::Node inputs = config["inputs"];
-      
+
+      YAML::Node hints = config["hints"];
+      config["hints"]["SoftwareRequirement"]["packages"][m_exeName]["version"][0] = m_version;
+
       for (size_t i = 0; i < m_requiredParameters.size(); i++)
       {
         config["inputs"]["-" + m_requiredParameters[i].verbose];
@@ -1331,7 +1334,8 @@ namespace cbica
           (m_requiredParameters[i].descriptionLine5 == "" ? "" : (m_requiredParameters[i].descriptionLine5 + "."));
       }
 
-      if (m_optionalParameters.size() > 0) {
+      if (m_optionalParameters.size() > 0) 
+      {
         for (size_t i = 0; i < m_optionalParameters.size(); i++)
         {
           if (m_optionalParameters[i].verbose == "help" ||
@@ -1340,7 +1344,8 @@ namespace cbica
             m_optionalParameters[i].verbose == "LogFile") {
             continue;
           }
-          else {
+          else 
+          {
             config["inputs"]["-" + m_optionalParameters[i].verbose];
             config["inputs"][m_optionalParameters[i].verbose]["type"] =
               (m_optionalParameters[i].dataType_string == "STRING") ? "string?" :

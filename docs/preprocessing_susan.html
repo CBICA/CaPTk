@@ -22,7 +22,7 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
-</script><script type="text/javascript" async="async" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
+</script><script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.3.nonRelease.20191015</span>
    </div>
   </td>
  </tr>
@@ -74,14 +74,13 @@ $(document).ready(function(){initNavTree('preprocessing_susan.html','');});
 <li>Specify the output filename.</li>
 <li>Click on 'Save'.</li>
 <li>The output image is saved in the specified folder and automatically loaded in CaPTk.</li>
+<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss
+</pre></li>
 </ol>
-<p>This can also be used from the command line: </p><pre class="fragment">[WINDOWS] Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss 
-[LINUX] captk Preprocessing -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss
-</pre><hr/>
+<hr/>
 <p>Reference:</p>
-<ol>
-<li>
-S.M.Smith, J.M.Brady. "SUSAN-A new approach to low level image processing", International Journal of Computer Vision. 23(1):45-78, 1997. </li>
+<ol type="1">
+<li>S.M.Smith, J.M.Brady. "SUSAN-A new approach to low level image processing", International Journal of Computer Vision. 23(1):45-78, 1997. </li>
 </ol>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->

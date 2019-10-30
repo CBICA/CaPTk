@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: PerfusionDerivatives
 inputs:
   input:
@@ -66,3 +65,9 @@ inputs:
       position: 1
       prefix: -L
     doc: Full path to log file to store console outputs.By default, only console output is generated.
+hints:
+  SoftwareRequirement:
+    packages:
+      PerfusionDerivatives:
+        version:
+          - 1.7.3.nonRelease.20190819

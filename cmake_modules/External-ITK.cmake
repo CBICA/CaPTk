@@ -4,7 +4,7 @@
 
 SET( ITK_DEPENDENCIES )
 
-SET( ITK_DEPENDS VTK OpenCV )
+SET( ITK_DEPENDS VTK OpenCV DCMTK )
 
 IF( MSVC )
   #SET( EXTRA_WINDOWS_OPTIONS -DModule_SCIFIO:BOOL=ON )
@@ -15,24 +15,31 @@ ENDIF()
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
+SET( EXTRA_NON_WINDOWS_OPTIONS "")
+IF(NOT WIN32)
+SET( EXTRA_NON_WINDOWS_OPTIONS -DCMAKE_BUILD_TYPE=Release)
+ENDIF()
+
 MESSAGE( STATUS "Adding ITK-4.13.1 ...")
 
 ExternalProject_Add( 
   ITK
   DEPENDS ${ITK_DEPENDS}
-  URL https://github.com/InsightSoftwareConsortium/ITK/archive/v4.13.1.zip
-  #GIT_REPOSITORY ${git_protocol}://itk.org/ITK.git #  url from where to download
-  #GIT_TAG v4.13.0
+  # URL https://github.com/InsightSoftwareConsortium/ITK/archive/v4.13.1.zip
+  GIT_REPOSITORY https://github.com/InsightSoftwareConsortium/ITK.git #  url from where to download
+  GIT_TAG v4.13.1
   SOURCE_DIR ITK-source
   BINARY_DIR ITK-build
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
+#  PATCH_COMMAND git apply ${PROJECT_SOURCE_DIR}/cmake_modules/itk.patch
   #BUILD_COMMAND ""
-  #INSTALL_COMMAND ""
+  INSTALL_COMMAND cmake -E echo "Skipping install step."
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
     ${ep_common_args}   
     #-DCMAKE_CONFIGURATION_TYPES=${CMAKE_CONFIGURATION_TYPES}
+    ${EXTRA_NON_WINDOWS_OPTIONS}
     -DBUILD_EXAMPLES:BOOL=OFF # examples are not needed
     -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS} 
     -DBUILD_TESTING:BOOL=OFF # testing the ITK build is not required
@@ -50,6 +57,8 @@ ExternalProject_Add(
     -DVCL_INCLUDE_CXX_0X:BOOL=ON
     -DVCL_INCLUDE_CXX_0X:BOOL=ON
     -DDCMTK_USE_ICU:BOOL=OFF
+    -DITK_USE_SYSTEM_DCMTK:BOOL=ON
+    -DDCMTK_DIR:PATH=${DCMTK_DIR}
     -DCMAKE_DEBUG_POSTFIX:STRING=d
     ${EXTRA_WINDOWS_OPTIONS}
     #-DITK_LEGACY_REMOVE:BOOL=ON 

@@ -22,7 +22,7 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
-</script><script type="text/javascript" async="async" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
+</script><script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.3.nonRelease.20191015</span>
    </div>
   </td>
  </tr>
@@ -64,16 +64,41 @@ $(document).ready(function(){initNavTree('ReleaseNotes.html','');});
 <div class="title">Changelog: Release Notes </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h2>New Applications and Tools</h2>
-<ol type="1">
+<div class="textblock"><ul>
+<li>Light/Dark mode and font switcher</li>
+<li>Lots of new Utilities (NIfTI to DICOM &amp; DICOM-Seg object conversion, Orientation change, Thresholding, File format conversion)</li>
+<li>New functions to deal with image "series" (extraction and joining)</li>
+<li>Automated Docker builds</li>
+<li>Generic bug fixes and improvements</li>
+</ul>
+<h2>Known Issues</h2>
+<p><a href="https://github.com/CBICA/CaPTk/issues">https://github.com/CBICA/CaPTk/issues</a></p>
+<h2>Older Versions</h2>
+<h3>1.7.2</h3>
+<ul>
+<li>Preferences dialog added (see File &gt; Preferences)</li>
+<li>DICOM reading updates on the GUI</li>
+<li>DeepMedic runtime fixes</li>
+<li>Comparison mode works on 2 images</li>
+<li>Generic bug fixes and improvements</li>
+</ul>
+<h3>1.7.1</h3>
+<ul>
+<li>Better high DPI support for all supported platforms</li>
+<li>Updated documentation for whole package</li>
+<li>Generic bug fixes and improvements</li>
+</ul>
+<h3>1.7.0</h3>
+<ul>
+<li>New Applications and Tools<ul>
 <li>Perfusion Alignment</li>
 <li>Deep Learning Inference Engine based on DeepMedic</li>
 <li>Native DICOM ingestion</li>
 <li>Preprocessing and Utilities added to create pipelines</li>
 <li>Spherical drawing</li>
-</ol>
-<h2>Updates</h2>
-<ol type="1">
+</ul>
+</li>
+<li>Updates<ul>
 <li>New Feature Families and image resampling added to Feature Extraction Panel</li>
 <li>Packaging improvements for macOS and Linux</li>
 <li>Updated "--help" for CLI applications</li>
@@ -81,10 +106,9 @@ $(document).ready(function(){initNavTree('ReleaseNotes.html','');});
 <li>Comparison mode view</li>
 <li>Training Module improvements</li>
 <li>Annotation visualization improvements (single/multiple label view)</li>
-</ol>
-<h2>Known Issues</h2>
-<p><a href="https://github.com/CBICA/CaPTk/issues">https://github.com/CBICA/CaPTk/issues</a></p>
-<h2>Older Versions</h2>
+</ul>
+</li>
+</ul>
 <h3>1.6.1</h3>
 <ul>
 <li>Generic bug fixes in several applications</li>

@@ -29,7 +29,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 // stuff used in the program
 std::string loggerFile, multipatient_file, patient_id, image_path_string, modalities_string, maskfilename, 
-selected_roi_string, roi_labels_string, param_file, outputdir, offset_String;
+selected_roi_string, roi_labels_string, param_file, outputdir, offset_String, outputFilename;
 
 bool debug = false, debugWrite = false, verticalConc = false, featureMaps = false;
 
@@ -85,7 +85,7 @@ void algorithmRunner()
     std::cout << "No ROI labels have been provided for patient_id '" << patient_id << "', the ROI values will be used as labels instead.\n";
     //roi_labels = "all";
   }
-
+  cbica::dos2unix(param_file);
   std::vector< std::string > imageNames = image_paths;
 
   //check if all the input images and mask match dimension spacing and size
@@ -154,6 +154,19 @@ void algorithmRunner()
       }
     }
   }
+
+  if (debug)
+  {
+    //std::cout << "[DEBUG] All configuration tests have passed, setting up the FE class based on the following parameters:\n"; 
+    //std::cout << "[DEBUG] Patient ID: " << patient_id << "\n";
+    //std::cout << "[DEBUG] Images    : " << image_path_string << "\n";
+    //std::cout << "[DEBUG] Modalities: " << modalities_string << "\n";
+    //std::cout << "[DEBUG] Mask File : " << maskfilename << "\n";
+    //std::cout << "[DEBUG] ROI Values: " << selected_roi_string << "\n";
+    //std::cout << "[DEBUG] ROI Labels: " << roi_labels_string << "\n";
+    std::cout << "[DEBUG] Param File: " << param_file << "\n";
+  }
+
   features.SetValidMask();
   features.SetMaskImage(mask);
   features.SetRequestedFeatures(param_file);
@@ -162,9 +175,10 @@ void algorithmRunner()
   features.SetWriteFeatureMaps(featureMaps);
   features.SetNumberOfThreads(threads);
   features.Update();
+  outputFilename = features.GetOutputFile();
 }
 
-//! Calls cbica::stringSplit() by checking for both "," and "|" as deliminators
+//! Calls cbica::stringSplit() by checking for ",", ";" and "|" as deliminators
 std::vector< std::string > splitTheString(const std::string &inputString)
 {
   std::vector< std::string > returnVector;
@@ -175,6 +189,10 @@ std::vector< std::string > splitTheString(const std::string &inputString)
   else if (inputString.find("|") != std::string::npos)
   {
     returnVector = cbica::stringSplit(inputString, "|");
+  }
+  else if (inputString.find(";") != std::string::npos)
+  {
+    returnVector = cbica::stringSplit(inputString, ";");
   }
   else if(!inputString.empty()) // only a single value is present
   {
@@ -190,7 +208,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("p", "paramFile", cbica::Parameter::FILE, ".csv", "A csv file with all features and its parameters filled", "Default: '../data/1_params_default.csv'");
   parser.addRequiredParameter("o", "outputDir", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory to save results", "Result can be a CSV or Feature Maps (for lattice)");
 
-  parser.addOptionalParameter("b", "batchFile", cbica::Parameter::FILE, ".csv", "Input file with Multi-Patient Multi-Modality details", "Header format is as follows:", "'PATIENT_ID,IMAGES,MASK,ROI,SELECTED_ROI,ROI_LABEL,", "SELECTED_FEATURES,PARAM_FILE'", "Delineate individual fields by '|'");
+  parser.addOptionalParameter("b", "batchFile", cbica::Parameter::FILE, ".csv", "Input file with Multi-Patient Multi-Modality details", "Example: '${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureExtraction.csv'");
 
   parser.addOptionalParameter("n", "name_patient", cbica::Parameter::STRING, "none", "Patient id", "Required for single subject mode");
   parser.addOptionalParameter("i", "imagePaths", cbica::Parameter::STRING, "none", "Absolute path of each coregistered modality", "Delineate by ','", "Example: -i c:/test1.nii.gz,c:/test2.nii.gz", "Required for single subject mode");
@@ -203,10 +221,12 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("th", "threads", cbica::Parameter::INTEGER, "1-64", "Number of (OpenMP) threads to run FE on", "Defaults to '1'", "This gets disabled when lattice is disabled");
   parser.addOptionalParameter("of", "offsets", cbica::Parameter::STRING, "none", "Exact offset values to pass on for GLCM & GLRLM", "Should be same as ImageDimension and in the format '<offset1>,<offset2>,<offset3>'", "This is scaled on the basis of the radius", "Example: '-of 0x0x1,0x1x0'");
 
-  parser.addOptionalParameter("d", "debug", cbica::Parameter::BOOLEAN, "true or false", "Whether to print out additional debugging info", "Defaults to '0'");
-  parser.addOptionalParameter("dw", "debugWrite", cbica::Parameter::BOOLEAN, "true or false", "Whether to write intermediate files or not", "Defaults to '0'");
+  parser.addOptionalParameter("d", "debug", cbica::Parameter::BOOLEAN, "True or False", "Whether to print out additional debugging info", "Defaults to '0'");
+  parser.addOptionalParameter("dw", "debugWrite", cbica::Parameter::BOOLEAN, "True or False", "Whether to write intermediate files or not", "Defaults to '0'");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::FILE, "Text file with write access", "Full path to log file to store logging information", "By default, only console output is generated");
   //parser.exampleUsage("FeatureExtraction -n AAAC -i AAAC0_flair_pp_shrunk.nii.gz -p 1_params_default.csv -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -o featExParam1.csv -t FL -r 1 -l ED,NC");
+  parser.addOptionalParameter("ut", "unitTest", cbica::Parameter::FILE, "Path to reference output", "Whether to run unit test or not", "Disabled for batch processing");
+
 
   parser.addApplicationDescription("This does feature calculation based on the input image(s) and mask");
   parser.addExampleUsage("-n AAAC -i AAAC0_flair_pp_shrunk.nii.gz,AAAC0_t1_pp_shrunk.nii.gz  -t FL,T1 -m AAAC0_flair_pp_shrunk_testTumor.nii.gz -r 1,2 -l ED,NC -p 1_params_default.csv -o featExParam1.csv -vc 1", 
@@ -291,6 +311,20 @@ int main(int argc, char** argv)
     parser.getParameterValue("o", outputdir);
   }
 
+  if (debug)
+  {
+    std::cout << "[DEBUG] Performing dos2unix using CBICA TK function; doesn't do anything in Windows machines.\n";
+  }
+  if (parser.isPresent("b"))
+  {
+    parser.getParameterValue("b", multipatient_file);
+  }
+
+  if (parser.isPresent("n"))
+  {
+    parser.getParameterValue("n", patient_id);
+  }
+
   if (parser.isPresent("p"))
   {
     parser.getParameterValue("p", param_file);
@@ -310,40 +344,30 @@ int main(int argc, char** argv)
     }
     else
     {
-      std::string dataDir = "";
+      if (!patient_id.empty())
+      {      
+        std::string dataDir = "";
 #ifndef APPLE
-      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../../data/");
+        dataDir = cbica::normPath(cbica::getExecutablePath() + "/../../data/");
 #else
-      dataDir = cbica::normPath(cbica::getExecutablePath() + "/../Resources/data/features/";
+        dataDir = cbica::normPath(cbica::getExecutablePath() + "/../Resources/data/features/";
 #endif
-      temp = dataDir + baseParamFile;
-      if (cbica::isFile(temp))
-      {
-        param_file = temp;
+        temp = dataDir + baseParamFile;
+        if (cbica::isFile(temp))
+        {
+          param_file = temp;
+        }
+        else
+        {
+          std::cerr << "No default param file was found. Please set it manually using '-p'.\n";
+          return EXIT_FAILURE;
+        }
       }
-      else
+      else if (!multipatient_file.empty())
       {
-        std::cerr << "No default param file was found. Please set it manually using '-p'.\n";
-        return EXIT_FAILURE;
-      }
+        std::cout << "Will look for parameter file definition in the batch file under 'PARAM_FILE' header.\n";
+      }      
     }
-  }
-
-  if (debug)
-  {
-    std::cout << "[DEBUG] Performing dos2unix using CBICA TK function; doesn't do anything in Windows machines.\n";
-  }
-  cbica::dos2unix(param_file);
-  std::cout << "Using param file: " << param_file << "\n";
-
-  if (parser.isPresent("b"))
-  {
-    parser.getParameterValue("b", multipatient_file);
-  }
-
-  if (parser.isPresent("n"))
-  {
-    parser.getParameterValue("n", patient_id);
   }
 
   if (multipatient_file.empty() && patient_id.empty())
@@ -361,6 +385,14 @@ int main(int argc, char** argv)
   if (parser.isPresent("of"))
   {
     parser.getParameterValue("of", offset_String);
+  }
+
+  bool unitTestRequested = false;
+  std::string unitTestReferenceFile;
+  if (parser.isPresent("ut"))
+  {
+    unitTestRequested = true;
+    parser.getParameterValue("ut", unitTestReferenceFile);
   }
 
   if (!patient_id.empty())
@@ -434,6 +466,7 @@ int main(int argc, char** argv)
         maskfilename = m_tempFolderLocation + currentFileBase + "_2D.nii.gz";
         cbica::WriteImage< ActualImageType >(filter->GetOutput(), maskfilename);
         algorithmRunner< ActualImageType >();
+        cbica::deleteDir(m_tempFolderLocation);
       }
 
       // otherwise, it actually is a 3D image
@@ -449,6 +482,7 @@ int main(int argc, char** argv)
   }
   else // where multi-subject file is passed 
   {
+    unitTestRequested = false; // we are not comparing for batch files
     // cbica::Logging(loggerFile, "Multiple subject computation selected.\n");
     // TBD: use the size of allRows to enable parallel processing, if needed
     std::vector< std::vector < std::string > > allRows; // store the entire data of the CSV file as a vector of columns and rows (vector< rows <cols> >)
@@ -528,6 +562,10 @@ int main(int argc, char** argv)
           roi_labels_string = allRows[j][k];
           roi_labels = cbica::stringSplit(roi_labels_string, "|");
         }
+        if ((check_wrap == "paramfile") || (check_wrap == "parameterfile") || (check_wrap == "parameters")|| (check_wrap == "param_file")|| (check_wrap == "parameter_file"))
+        {
+          param_file = allRows[j][k];
+        }
         if ((check_wrap == "outputfile") || (check_wrap == "output") || (check_wrap == "outputdir"))
         {
           outputdir = allRows[j][k];
@@ -585,6 +623,64 @@ int main(int argc, char** argv)
       }
       }
     } // end of j-loop
+
+  }
+
+  if (unitTestRequested)
+  {
+    if (debug)
+    {
+      std::cout << "Started comparison.\n";
+    }
+    // unitTestReferenceFile
+    // outputFilename
+
+    // if results don't exist, exit with meaningful message
+    if (!cbica::fileExists(unitTestReferenceFile))
+    {
+      std::cerr << "Could not find the reference file '" << unitTestReferenceFile << "'\n";
+      return EXIT_FAILURE;
+    }
+    if (!cbica::fileExists(outputFilename))
+    {
+      std::cerr << "Could not find the final output file '" << outputFilename << "'\n";
+      return EXIT_FAILURE;
+    }
+
+    //std::string dirName_Wrap = dirName;
+
+    // store number of rows in the file
+    const size_t numberOfRows = cbica::numberOfRowsInFile(unitTestReferenceFile);
+    if (numberOfRows != cbica::numberOfRowsInFile(outputFilename))
+    {
+      std::cerr << "The number of rows in the output files is inconsistent; canont compare.\n";
+      return EXIT_FAILURE;
+    }
+
+    std::ifstream file_reference(unitTestReferenceFile.c_str()), file_output(outputFilename.c_str());
+
+    // contruct 2 structs to store the entire CSV results
+    for (size_t i = 0; i < numberOfRows; i++)
+    {
+      std::string line_reference;
+      std::getline(file_reference, line_reference, '\n');
+      line_reference.erase(std::remove(line_reference.begin(), line_reference.end(), '"'), line_reference.end());
+      auto currentRow_reference = cbica::stringSplit(line_reference, ",");
+
+      std::string line_output;
+      std::getline(file_output, line_output, '\n');
+      line_output.erase(std::remove(line_output.begin(), line_output.end(), '"'), line_output.end());
+      auto currentRow_output = cbica::stringSplit(line_output, ",");
+
+      float reference_value = std::atof(currentRow_reference[currentRow_reference.size() - 2].c_str());
+      float output_value = std::atof(currentRow_output[currentRow_output.size() - 2].c_str());
+
+      if ((reference_value - output_value) > 1e-6)
+      {
+        // this is an unacceptable difference
+        return EXIT_FAILURE;
+      }
+    }
 
   }
 

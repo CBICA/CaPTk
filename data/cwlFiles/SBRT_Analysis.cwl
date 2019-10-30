@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: SBRT_Analysis
 inputs:
   inputImage:
@@ -59,3 +58,9 @@ inputs:
       position: 1
       prefix: -D
     doc: Absolute path of model directory.For example C:/Model.
+hints:
+  SoftwareRequirement:
+    packages:
+      SBRT_Analysis:
+        version:
+          - 1.7.3.nonRelease.20190819

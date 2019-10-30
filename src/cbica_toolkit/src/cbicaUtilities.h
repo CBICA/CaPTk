@@ -5,7 +5,7 @@
 
 This needs c++11 flag enabled in gcc < 5.
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -185,8 +185,6 @@ namespace cbica
   \return True if path is valid and false for broken symbolic links
   */
   bool exists(const std::string &path);
-
-  std::vector<std::string> getCWLFilesInApplicationDir();
 
   /**
   \brief Create a temporary directory
@@ -729,6 +727,11 @@ namespace cbica
   \param csvFileName The full path of the file to parse, all paths are absolute or relative to current working directory
   */
   std::vector< std::vector< std::string > > readCSVDataFile(const std::string &csvFileName);
+
+  /**
+  \brief Get current timestamp to appent to a filename to prevent overwriting as YYYMMDDHHmmSS_hex
+  */
+  std::string getCurrentLocalTimestamp();
 
   /**
   \brief Get current local time as string delineated as YYYY:MM:DD

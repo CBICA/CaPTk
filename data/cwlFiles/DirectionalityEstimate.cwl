@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: DirectionalityEstimate
 inputs:
   labelMap:
@@ -39,9 +38,15 @@ inputs:
       prefix: -r
     doc: The real world coordinates (in mm) of file.Take example from tissue point file.Needs to be in same dimensionality as labelMap.Delineation is done using ','.
   index:
-    type: int?
+    type: string?
     label: labelMap Dimensions
     inputBinding:
       position: 1
       prefix: -i
     doc: The image indeces (in voxels) of file.Needs to be in same dimensionality as labelMap.Delineation is done using ','.
+hints:
+  SoftwareRequirement:
+    packages:
+      DirectionalityEstimate:
+        version:
+          - 1.7.3.nonRelease.20190819

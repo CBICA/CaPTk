@@ -5,7 +5,7 @@
 
 Dependecies: OpenMP
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -51,6 +51,7 @@ static const char  cSeparator = '/';
 //  static const char* cSeparators = "/";
 #endif
 
+#include <chrono>
 #include <fstream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -121,71 +122,6 @@ namespace cbica
       return true;
     else
       return true;
-  }
-
-  std::vector<std::string> getCWLFilesInApplicationDir() 
-  {
-    auto appDir = getExecutablePath();
-
-#ifdef __APPLE__
-    appDir += "../Resources/bin";
-#endif
-
-    auto filesInDir = filesInDirectory(appDir);
-    auto cwlFiles = filesInDir;
-    cwlFiles.clear();
-    for (size_t i = 0; i < filesInDir.size(); i++)
-    {
-      if (getFilenameExtension(filesInDir[i], false).find(".cwl") != std::string::npos)
-      {
-        cwlFiles.push_back(filesInDir[i]);
-      }
-    }
-    //std::vector<std::string> files;
-
-    //#ifdef _WIN32
-    //  WIN32_FIND_DATA data;
-    //  HANDLE hFind = FindFirstFile("\\*", &data);
-
-    //  if ( hFind != INVALID_HANDLE_VALUE ) {
-    //    do {
-    //      files.push_back(data.cFileName);
-    //    } while (FindNextFile(hFind, &data));
-    //    FindClose(hFind);
-    //  }
-    //#else
-    //  DIR *dir;
-    //  struct dirent *ent;
-    //  if ((dir = opendir(".")) != NULL) {
-    //    /* print all the files and directories within directory */
-    //    while ((ent = readdir (dir)) != NULL) {
-    //      if (ent->d_type == DT_REG) {  
-    //        files.push_back(ent->d_name);
-    //      }
-    //    }
-    //    closedir (dir);
-    //  } else {
-    //    /* could not open directory */
-    //    perror ("");
-    //    return files;
-    //  }
-    //#endif
-
-    //// Prune non cwl files
-    //std::vector<std::string> cwlfiles;
-    //for(auto const& value: files) {
-
-    //  if (value.substr(value.size() - 4) == ".cwl") {
-    //    cwlfiles.push_back(value);
-    //  }
-
-    //}
-
-    //// Sort cwl files
-    //std::sort(cwlfiles.begin(), cwlfiles.end());
-
-    return cwlFiles;
-
   }
 
   std::string getEnvironmentVariableValue(const std::string &environmentVariable)
@@ -1796,6 +1732,42 @@ namespace cbica
 #endif
 
     return buffer;
+  }
+
+  std::string getCurrentLocalTimestamp()
+  {
+    auto localTimeStamp = getCurrentLocalDateAndTime();
+
+    localTimeStamp = cbica::replaceString(localTimeStamp, ":", "");
+    localTimeStamp = cbica::replaceString(localTimeStamp, ",", "");
+
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+
+    using Days = std::chrono::duration<int, std::ratio_multiply<std::chrono::hours::period, std::ratio<8>>::type> ; /* UTC: +8:00 */
+
+    Days days = std::chrono::duration_cast<Days>(duration);
+    duration -= days;
+    auto hours = std::chrono::duration_cast<std::chrono::hours>(duration);
+    duration -= hours;
+    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration);
+    duration -= minutes;
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
+    duration -= seconds;
+    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+    duration -= milliseconds;
+    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration);
+    duration -= microseconds;
+    auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration);
+
+    long long integerWithHighResClockInfo = milliseconds.count() * 1000000 + microseconds.count() * 1000 + nanoseconds.count();
+    std::stringstream stream;
+    stream << std::hex << integerWithHighResClockInfo;
+    std::string result(stream.str());
+
+    localTimeStamp += "_" + stream.str();
+
+    return localTimeStamp;
   }
 
   std::string getCurrentLocalTime()

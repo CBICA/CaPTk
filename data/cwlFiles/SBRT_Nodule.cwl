@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: SBRT_Nodule
 inputs:
   petImage:
@@ -66,3 +65,9 @@ inputs:
       position: 1
       prefix: -L
     doc: Absolute path of log file.For example log_file.txt.
+hints:
+  SoftwareRequirement:
+    packages:
+      SBRT_Nodule:
+        version:
+          - 1.7.3.nonRelease.20190819

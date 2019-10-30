@@ -22,7 +22,7 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
-</script><script type="text/javascript" async="async" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
+</script><script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.3.nonRelease.20191015</span>
    </div>
   </td>
  </tr>
@@ -74,10 +74,10 @@ $(document).ready(function(){initNavTree('seg_Geodesic.html','');});
 <li>The mask is visualized automatically in the visualization panels.</li>
 <li>You can revise the resulted segmentation mask (Label:1), by selecting the "Geodesic" preset and changing the "Threshold" at the bottom right corner of CaPTk.</li>
 </ol>
-<p>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format: </p><pre class="fragment">[WINDOWS] GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
-[LINUX] captk GeodesicSegmentation -i /mnt/c/inputImage.nii.gz -m /mnt/c/maskWithOneLabel.nii.gz -o /mnt/c/outputImage.nii.gz -t 20
-</pre><p><br />
-</p>
+<ul>
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following format: <pre class="fragment">${CaPTk_InstallDir}/bin/GeodesicSegmentation.exe -i C:/inputImage.nii.gz -m C:/maskWithOneLabel.nii.gz -o C:/outputImage.nii.gz -t 20
+</pre></li>
+</ul>
 <hr/>
  </div></div><!-- PageDoc -->
 </div><!-- contents -->

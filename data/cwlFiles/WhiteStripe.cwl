@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: WhiteStripe
 inputs:
   inputImages:
@@ -87,3 +86,9 @@ inputs:
       position: 1
       prefix: -t1
     doc: "T1 Image being passed or not.Default: 1."
+hints:
+  SoftwareRequirement:
+    packages:
+      WhiteStripe:
+        version:
+          - 1.7.3.nonRelease.20190819

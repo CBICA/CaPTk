@@ -22,7 +22,7 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
-</script><script type="text/javascript" async="async" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
+</script><script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.3.nonRelease.20191015</span>
    </div>
   </td>
  </tr>
@@ -65,11 +65,13 @@ $(document).ready(function(){initNavTree('Technical_Reference.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>This section gives further technical details for all previous documentation material.</p>
+<p>This section provides step-by-step guidance to apply the CaPTk functionalities:</p>
 <ul>
-<li><a class="el" href="tr_Apps.html">Further Application Details and Assumptions</a></li>
-<li><a class="el" href="tr_buildFromSource.html">Build CaPTk from Source</a></li>
-<li><a class="el" href="tr_forDeves.html">For Developers</a> </li>
+<li><a class="el" href="tr_FeatureExtraction.html">Feature Extraction</a></li>
+<li><a class="el" href="tr_integration.html">Integrating your Application in CaPTk</a></li>
 </ul>
+<p>Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.</p>
+<p><b>NOTE:</b> The visualization of images is based on the physical coordinate system of each image (i.e., the origin and direction information from within the image file is used for rendering). In practice, use of a consistent coordinate framework results in images with different origins to appear misaligned (shifted) when compared to other neuro-imaging software packages that do rendering based on the Cartesian coordinate information in the image. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

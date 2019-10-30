@@ -2,7 +2,7 @@
 //
 //brief Implementation of fMainWindow class
 //
-//http://www.med.upenn.edu/sbia/software/ <br>
+//https://www.med.upenn.edu/sbia/software/ <br>
 //software@cbica.upenn.edu
 //
 //Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -28,6 +28,7 @@
 #include "SBRT_LungField.h"
 #include "SBRT_Nodule.h"
 #include "SBRT_Analysis.h"
+#include "PreferencesDialog.h"
 
 #include "cbicaITKSafeImageIO.h"
 #include "itkFlipImageFilter.h"
@@ -63,6 +64,7 @@
 #include "QtConcurrent/qtconcurrentrun.h"
 
 #include "itkTranslationTransform.h"
+#include "ApplicationPreferences.h"
 
 //#include "DicomSeriesReader.h"
 
@@ -162,6 +164,10 @@ fMainWindow::fMainWindow()
 
   setupUi(this);
 
+  //! load preferences
+  ApplicationPreferences::GetInstance()->DeSerializePreferences();
+  ApplicationPreferences::GetInstance()->DisplayPreferences();
+
   //! comparison mode OFF at startup
   this->SetComparisonMode(false);
 
@@ -187,6 +193,7 @@ fMainWindow::fMainWindow()
   actionAppGeodesicTraining = new QAction(this);
   actionHelp_Interactions = new QAction(this);
   actionAbout = new QAction(this);
+  actionPreferences = new QAction(this);
 
   //---------------setting menu and status bar for the main window---------------
   this->setStatusBar(statusbar);
@@ -229,6 +236,7 @@ fMainWindow::fMainWindow()
   sizePolicy5.setHorizontalStretch(0);
   sizePolicy5.setVerticalStretch(0);
 
+  preferenceDialog = new PreferencesDialog(nullptr);
   infoPanel = new fBottomImageInfoTip(centralwidget);
   imagesPanel = new fImagesPanel(); // New Images Panel
   m_tabWidget->addTab(imagesPanel, QString());
@@ -300,6 +308,7 @@ fMainWindow::fMainWindow()
   menuSaveFile->addAction(actionSave_Nifti_Images);
   menuSaveFile->addAction(actionSave_ROI_Images);
 
+  menuFile->addAction(actionPreferences);
   menuFile->addAction(actionExit);
 
   menuDownload->addAction("GreedyRegistration");
@@ -548,17 +557,14 @@ fMainWindow::fMainWindow()
   connect(actionSave_ROI_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomDrawing()));
   connect(actionSave_Nifti_Images, SIGNAL(triggered()), this, SLOT(SaveImage()));
   connect(actionSave_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomImage()));
+  connect(actionPreferences, SIGNAL(triggered()), this, SLOT(OnPreferencesMenuClicked()));
 
   connect(actionLoad_Nifti_ROI, SIGNAL(triggered()), this, SLOT(LoadDrawing()));
 
   connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
   connect(actionHelp_Interactions, SIGNAL(triggered()), this, SLOT(help_Interactions()));
-  connect(help_discussion, SIGNAL(triggered()), this, SLOT(help_Discussion()));
-  connect(help_download, SIGNAL(triggered()), this, SLOT(help_Downloads()));
-  connect(help_forum, SIGNAL(triggered()), this, SLOT(help_HelpForum()));
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
-  connect(help_features, SIGNAL(triggered()), this, SLOT(help_FeatureRequests()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
@@ -927,6 +933,7 @@ fMainWindow::fMainWindow()
   actionLoad_Nifti_ROI->setText(QApplication::translate("fMainWindow", "ROI", 0));
   actionLoad_Dicom_Images->setText(QApplication::translate("fMainWindow", "Dicom", 0));
 
+  actionPreferences->setText(QApplication::translate("fMainWindow", "Preferences", 0));
   actionSave_Nifti_Images->setText(QApplication::translate("fMainWindow", "Image (NIfTI)", 0));
   actionSave_Dicom_Images->setText(QApplication::translate("fMainWindow", "Image (DICOM)", 0));
   actionSave_ROI_Images->setText(QApplication::translate("fMainWindow", "ROI (NIfTI)", 0));
@@ -968,7 +975,8 @@ fMainWindow::~fMainWindow()
     delete mTissuePoints;
   }
 
-  if (cbica::filesInDirectory(m_tempFolderLocation).empty())
+  // delete the temp directory every single time
+  //if (cbica::filesInDirectory(m_tempFolderLocation).empty())
   {
     cbica::deleteDir(m_tempFolderLocation);
   }
@@ -984,6 +992,7 @@ fMainWindow::~fMainWindow()
   if (mHelpDlg)
     delete mHelpDlg;
 
+  ApplicationPreferences::GetInstance()->SerializePreferences();
 }
 
   void fMainWindow::loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage, const float maskOpacity,
@@ -1018,7 +1027,7 @@ fMainWindow::~fMainWindow()
 #endif
   }
 
-void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage)
+std::string fMainWindow::ConversionFrom2Dto3D(const std::string &fileName)
 {
   using ImageTypeFloat2D = itk::Image< float, 2 >;
   auto reader = itk::ImageFileReader< ImageTypeFloat2D >::New();
@@ -1040,7 +1049,7 @@ void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsI
   catch (itk::ExceptionObject& e)
   {
     ShowErrorMessage("Exception caught while reading the image '" + fileName + "':\n\n" + e.what());
-    return;
+    return "";
   }
 
   auto image_2D = reader->GetOutput();
@@ -1092,14 +1101,7 @@ void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsI
   auto imageName = m_tempFolderLocation + "/" + cbica::getFilenameBase(fileName) + ".nii.gz";
   cbica::WriteImage< ImageTypeFloat3D >(image_3D, imageName);
 
-  if (loadAsImage)
-  {
-    LoadSlicerImages(imageName, CAPTK::NIfTI);
-  }
-  else
-  {
-    readMaskFile(imageName);
-  }
+  return imageName;
 }
 
 void fMainWindow::about()
@@ -1597,13 +1599,13 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     imageManager->SetComparisonMode(false);
 
     bool bFirstLoad = false;
-    if (mSlicerManagers.size() == 0)
+    if (mSlicerManagers.empty())
     {
       bFirstLoad = true;
     }
     if (imageInfo.GetImageDimensions() == 2)
     {
-      ConversionFrom2Dto3D(fname, true);
+      fname = ConversionFrom2Dto3D(fname);
     }
     else if (!bFirstLoad)
     {
@@ -3112,28 +3114,32 @@ ImageTypeFloat3D::Pointer fMainWindow::getMaskImage()
 
 void fMainWindow::readMaskFile(const std::string &maskFileName)
 {
+  auto maskFileName_toRead = maskFileName;
   if (!mSlicerManagers.empty())
   {
-    if (cbica::IsDicom(maskFileName))
+    if (cbica::IsDicom(maskFileName_toRead))
     {
-      auto path = cbica::getFilenamePath(maskFileName);
+      auto path = cbica::getFilenamePath(maskFileName_toRead);
       auto filesInDir = cbica::filesInDirectory(path, false);
 
       if (filesInDir.size() == 1) // single DICOM slice
       {
-        dicomfilename = maskFileName;
-        ConversionFrom2Dto3D(maskFileName, false);
+        dicomfilename = maskFileName_toRead;
+        maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead);
       }
     }
     else
     {
-      auto maskInfo = cbica::ImageInfo(maskFileName);
-      if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) && (maskInfo.GetImageDimensions() == 2))
+      auto maskInfo = cbica::ImageInfo(maskFileName_toRead);
+      auto imageSize = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
+      auto maskSize = maskInfo.GetImageSize();
+      bool imageSanityCheckDone = false;
+      if ((imageSize[2] == 1) || (maskSize[2] == 1) || (maskInfo.GetImageDimensions() == 2))
       {
         // this is actually a 2D image which has been loaded in CaPTk as a pseudo-3D image
         auto origin_image = mSlicerManagers[0]->mOrigin;
         auto spacings_image = mSlicerManagers[0]->mITKImage->GetSpacing();
-        auto size_image = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
+        auto size_image = imageSize;
 
         auto origin_mask = maskInfo.GetImageOrigins();
         auto spacings_mask = maskInfo.GetImageSpacings();
@@ -3157,8 +3163,13 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
           }
           if (spacings_image[i] != spacings_mask[i])
           {
-            ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
-            return;
+            auto percentageDifference = std::abs(spacings_image[i] - spacings_mask[i] ) * 100;
+            percentageDifference /= spacings_image[i];
+            if (percentageDifference > 0.000001)
+            {
+              ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
+              return;
+            }
           }
           if (size_image[i] != size_mask[i])
           {
@@ -3166,19 +3177,25 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
             return;
           }
         }
-        ConversionFrom2Dto3D(maskFileName, false); // all sanity checks passed; load the mask 
+        maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead); // all sanity checks passed; load the mask 
+        imageSanityCheckDone = true;
       }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
-        SaveImage_withFile(0, temp_prev.c_str());
-        if (!cbica::ImageSanityCheck(maskFileName, temp_prev))
+        auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
+        //SaveImage_withFile(0, temp_prev.c_str());
+        if (!imageSanityCheckDone)
         {
-          ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
-          return;
+          if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
+          {
+            ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+          imageSanityCheckDone = true;
         }
       }
       using ImageType = itk::Image<unsigned int, 3>;
-      auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName);
+      auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName_toRead);
       inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
 
       auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();
@@ -5358,17 +5375,17 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
   }
 
   int i = 0, fileSizeCheck = files.size() + 1;
-  if (mSlicerManagers.size() == 0)
+  if (mSlicerManagers.empty())
   {
     {
       std::string fileName = files[i].toStdString();
       fileName = cbica::normPath(fileName);
       updateProgress(i + 1, "Opening " + fileName, files.size());
-      auto extension = cbica::getFilenameExtension(fileName);
-      if (!extension.empty())
-      {
-        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-      }
+      //auto extension = cbica::getFilenameExtension(fileName);
+      //if (!extension.empty())
+      //{
+      //  std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+      //}
       //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
       //  (extension == ".ima"))
       if (cbica::IsDicom(fileName))
@@ -5494,15 +5511,17 @@ void fMainWindow::openDicomImages(QString dir)
   imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
 
   bool bFirstLoad = false;
-  if (mSlicerManagers.size() == 0)
+  if (mSlicerManagers.empty())
   {
     bFirstLoad = true;
   }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
+
   imageManager->SetImage(currentImage);
   imageManager->SetOriginalDirection(currentImage->GetDirection());
+  imageManager->SetOriginalOrigin(currentImage->GetOrigin());
   //imageManager->SetImage(dicomSeriesReader->GetITKImage());
 
   //delete dicomSeriesReader; 
@@ -7122,9 +7141,10 @@ void fMainWindow::ApplicationTheia()
 
 void fMainWindow::EnableComparisonMode(bool enable)
 {
-  if (mSlicerManagers.size() < 3)
+  int nLoadedData = mSlicerManagers.size();
+  if (nLoadedData < 2 || nLoadedData > 3)
   {
-    ShowMessage("Please load 3 datasets to enable comparison mode", this);
+    ShowMessage("Comparison mode only works with 2 or 3 datasets. Please load 2 or 3 datasets to enable comparison mode", this);
     return;
   }
   if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1)) //! e.g. Mammography images
@@ -7135,7 +7155,7 @@ void fMainWindow::EnableComparisonMode(bool enable)
 
   this->SetComparisonMode(enable);
 
-  if (enable)
+  if (enable) //! enabling comparison
   {
     if (m_ComparisonViewerLeft.GetPointer() == nullptr &&
       m_ComparisonViewerCenter.GetPointer() == nullptr &&
@@ -7145,26 +7165,33 @@ void fMainWindow::EnableComparisonMode(bool enable)
       m_ComparisonViewerCenter = vtkSmartPointer<Slicer>::New();
       m_ComparisonViewerRight = vtkSmartPointer<Slicer>::New();
 
-      m_ComparisonViewerLeft->SetComparisonMode(true);
-      m_ComparisonViewerCenter->SetComparisonMode(true);
-      m_ComparisonViewerRight->SetComparisonMode(true);
+	  for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+	  {
+		  this->GetComparisonViewers()[i]->SetComparisonMode(true);
+	  }
     }
 
-      m_ComparisonViewerLeft->SetImage(mSlicerManagers[0]->GetSlicer(0)->GetImage(), mSlicerManagers[0]->GetSlicer(0)->GetTransform());
-      m_ComparisonViewerCenter->SetImage(mSlicerManagers[1]->GetSlicer(0)->GetImage(), mSlicerManagers[1]->GetSlicer(0)->GetTransform());
-      m_ComparisonViewerRight->SetImage(mSlicerManagers[2]->GetSlicer(0)->GetImage(), mSlicerManagers[2]->GetSlicer(0)->GetTransform());
+	for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+	{
+		this->GetComparisonViewers()[i]->SetImage(mSlicerManagers[i]->GetSlicer(0)->GetImage(), mSlicerManagers[i]->GetSlicer(0)->GetTransform());
+		this->GetComparisonViewers()[i]->SetMask(mSlicerManagers[0]->GetMask());
+		this->GetComparisonViewers()[i]->SetRenderWindow(0, nullptr);
+	}
 
-      m_ComparisonViewerLeft->SetMask(mSlicerManagers[0]->GetMask());
-      m_ComparisonViewerCenter->SetMask(mSlicerManagers[0]->GetMask());
-      m_ComparisonViewerRight->SetMask(mSlicerManagers[0]->GetMask());
+	if (nLoadedData == 2) //! 2 datasets are loaded
+	{
+		m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
 
-      m_ComparisonViewerLeft->SetRenderWindow(0, nullptr);
-      m_ComparisonViewerCenter->SetRenderWindow(0, nullptr);
-      m_ComparisonViewerRight->SetRenderWindow(0, nullptr);
-
-      m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
-      m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
-      m_ComparisonViewerRight->SetRenderWindow(0, SaggitalViewWidget->GetRenderWindow());
+		SaggitalViewWidget->hide();
+		SaggitalViewSlider->hide();
+	}
+	else if (nLoadedData == 3) //! 3 datasets are loaded
+	{
+		m_ComparisonViewerLeft->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		m_ComparisonViewerCenter->SetRenderWindow(0, CoronalViewWidget->GetRenderWindow());
+		m_ComparisonViewerRight->SetRenderWindow(0, SaggitalViewWidget->GetRenderWindow());
+	}
 
       for (int i = 0; i < this->GetComparisonViewers().size(); i++)
       {
@@ -7199,9 +7226,10 @@ void fMainWindow::EnableComparisonMode(bool enable)
         comparisonViewers[i]->SetColorLevel(levelSpinBox->value());
       }
 
-      m_ComparisonViewerLeft->SetDisplayMode(true);
-      m_ComparisonViewerCenter->SetDisplayMode(true);
-      m_ComparisonViewerRight->SetDisplayMode(true);
+	  for (int i = 0; i < comparisonViewers.size(); i++)
+	  {
+		  comparisonViewers[i]->SetDisplayMode(true);
+	  }
 
       //!comparison mode connections
       disconnect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
@@ -7212,23 +7240,43 @@ void fMainWindow::EnableComparisonMode(bool enable)
       connect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
       connect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
 
-      m_ComparisonViewerLeft->Render();
-      m_ComparisonViewerCenter->Render();
-      m_ComparisonViewerRight->Render();
+	  for (int i = 0; i < comparisonViewers.size(); i++)
+	  {
+		  comparisonViewers[i]->Render();
+	  }
   }
   else
   {
-    mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
-    mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
-    mSlicerManagers[2]->SetImage(mSlicerManagers[2]->GetITKImage());
+	  //! disabling comparison and coming back to regular mode
 
-    mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
-    mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
-    mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+	  if (nLoadedData == 2) //! 2 datasets loaded
+	  {
+		  mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
+		  mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
 
-    mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
-    mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
-    mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+
+		  SaggitalViewWidget->show();
+		  SaggitalViewSlider->show();
+	  }
+	  else if (nLoadedData == 3) //! 3 datasets loaded
+	  {
+		  mSlicerManagers[0]->SetImage(mSlicerManagers[0]->GetITKImage());
+		  mSlicerManagers[1]->SetImage(mSlicerManagers[1]->GetITKImage());
+		  mSlicerManagers[2]->SetImage(mSlicerManagers[2]->GetITKImage());
+
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+		  mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, nullptr);
+
+		  mSlicerManagers[0]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[1]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+		  mSlicerManagers[2]->GetSlicer(0)->SetRenderWindow(0, AxialViewWidget->GetRenderWindow());
+	  }
 
     //!regular mode connections
     connect(AxialViewSlider, SIGNAL(valueChanged(int)), this, SLOT(AxialViewSliderChanged()));
@@ -7239,9 +7287,10 @@ void fMainWindow::EnableComparisonMode(bool enable)
     disconnect(CoronalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
     disconnect(SaggitalViewSlider, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMovedInComparisonMode(int)));
 
-    m_ComparisonViewerLeft->SetDisplayMode(false);
-    m_ComparisonViewerCenter->SetDisplayMode(false);
-    m_ComparisonViewerRight->SetDisplayMode(false);
+	for (int i = 0; i < this->GetComparisonViewers().size(); i++)
+	{
+		this->GetComparisonViewers()[i]->SetDisplayMode(false);
+	}
 
     this->InitDisplay();
 
@@ -7316,28 +7365,28 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1CE:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/t1ce.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_t1ce = temp;
       break;
     }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T1:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/t1.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_t1 = temp;
       break;
     }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/t2.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_t2 = temp;
       break;
     }
     case CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR:
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/flair.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[i]->mITKImage, temp);
+      SaveImage_withFile(i, temp.c_str());
       file_flair = temp;
       break;
     }
@@ -7432,14 +7481,37 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, bool loadA
 
 void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, const std::string outputDir)
 {
-  std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
+  // first pass on our own stuff
+  auto filesInDir = cbica::filesInDirectory(inputDir);
+  auto readDicomImage = cbica::ReadImage< ImageTypeFloat3D >(inputDir);
 
-  if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
+  bool writeSuccess = false;
+
+  if (!readDicomImage)
   {
-    ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
-    return;
+    std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
+
+    if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
+    {
+      ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
+      return;
+    }
+    else
+    {
+      writeSuccess = true;
+    }
   }
   else
+  {
+    // adding a timestamp to the file to make it unique
+    auto timeStamp = cbica::getCurrentLocalDateAndTime();
+    timeStamp = cbica::replaceString(timeStamp, ":", "");
+    timeStamp = cbica::replaceString(timeStamp, ",", "");
+    cbica::WriteImage< ImageTypeFloat3D >(readDicomImage, outputDir + "/dicom2nifti_" + timeStamp + ".nii.gz");
+    writeSuccess = true;
+  }
+
+  if (writeSuccess)
   {
     ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
   }
@@ -7506,6 +7578,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   auto roi1Image = cbica::ReadImage< ImageTypeFloat3D >(roi1File);
   auto roi2Image = cbica::ReadImage< ImageTypeFloat3D >(roi2File);
   auto newROIImage = roi1Image;
+  auto newMaskImage_computed = cbica::CreateImage< ImageTypeFloat3D >(roi1Image);
   newROIImage->DisconnectPipeline();
 
   ImageTypeFloat3D::Pointer octantImage = ImageTypeFloat3D::New();
@@ -7551,7 +7624,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   int index = GetSlicerIndexFromItem(items[0]);
 
   auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageTypeFloat3D >::New();
-  minMaxCalc->SetImage(newROIImage);
+  minMaxCalc->SetImage(roi1Image);
   minMaxCalc->Compute();
   auto maxVal = minMaxCalc->GetMaximum();
 
@@ -7587,13 +7660,13 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
       for (size_t j = 0; j < numberOfSeeds; j++)
       {
-        if (mTissuePoints->mLandmarks[i].id == TU) // in the case a second point has been initialized for roi2
+        if (mTissuePoints->mLandmarks[j].id == TU) // in the case a second point has been initialized for roi2
         {
-          itk::Point< float, 3 > pointFromTumorPanel = mTissuePoints->mLandmarks[i].coordinates;
+          itk::Point< float, 3 > pointFromTumorPanel_2 = mTissuePoints->mLandmarks[j].coordinates;
 
-          x_index_pre = (pointFromTumorPanel[0] - imageOrigin[0]) / imageSpacing[0];
-          y_index_pre = (pointFromTumorPanel[1] - imageOrigin[1]) / imageSpacing[1];
-          z_index_pre = (pointFromTumorPanel[2] - imageOrigin[2]) / imageSpacing[2];
+          x_index_pre = (pointFromTumorPanel_2[0] - imageOrigin[0]) / imageSpacing[0];
+          y_index_pre = (pointFromTumorPanel_2[1] - imageOrigin[1]) / imageSpacing[1];
+          z_index_pre = (pointFromTumorPanel_2[2] - imageOrigin[2]) / imageSpacing[2];
         }
       }
 
@@ -7609,6 +7682,9 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       resampler->SetTransform(transform.GetPointer());
       resampler->SetInput(roi1Image);
       resampler->SetSize(roi1Image->GetLargestPossibleRegion().GetSize());
+      resampler->SetOutputOrigin(roi1Image->GetOrigin());
+      resampler->SetOutputDirection(roi1Image->GetDirection());
+      resampler->SetOutputSpacing(roi1Image->GetSpacing());
       resampler->Update();
 
       roi1Image = resampler->GetOutput();
@@ -7616,7 +7692,9 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   }
 
   // visualizing ROI_post with 2 colors to highlight the post-injection region
-  ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion());
+  ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), 
+    roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion()),
+    roiComputed(newMaskImage_computed, newMaskImage_computed->GetLargestPossibleRegion());
 
   for (octantIt.GoToBegin(); !octantIt.IsAtEnd(); ++octantIt)
     octantIt.Set(0);
@@ -7627,17 +7705,22 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     if (roi2It.Get() > 0)
     {
       auto currentIndex = roi2It.GetIndex();
-      float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
 
       roi1It.SetIndex(currentIndex);
+      roiNew.SetIndex(currentIndex);
 
+      //float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
+
+      // do not do anything with raw mask since orientation fixes have happened to it
       if (roi1It.Get() > 0) // if pre-injection ROI is defined, then the mask to be displayed is under label 1
       {
-        *pData = 1.0;
+        //*pData = 1.0;
+        roiComputed.Set(1);
       }
       else // this is for the section of the ROI which is post-injection
       {
-        *pData = 2.0;
+        //*pData = 2.0;
+        roiComputed.Set(2);
       }
     }
   }
@@ -7821,8 +7904,10 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
             && !((output_full_index[1] > currentIndex[1]) ^ (currentItrIndex[1] > currentIndex[1]))
             && !((output_full_index[2] > currentIndex[2]) ^ (currentItrIndex[2] > currentIndex[2])))
           {
-            float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentItrIndex[0], (int)currentItrIndex[1], (int)currentItrIndex[2]);
-            *pData = 3.0;
+            // do not do anything with raw mask since orientation fixes have happened to it
+            //float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentItrIndex[0], (int)currentItrIndex[1], (int)currentItrIndex[2]);
+            //*pData = 3.0;
+            roiComputed.Set(3);
           }
 
         }
@@ -7976,10 +8061,16 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       for (auto it_q1 = octrantVolume_1.begin(), it_q2 = octrantVolume_2.begin(), it_qRatio = octrantVolume_ratio.begin(), it_qPercent = octrantVolume_percent.begin();
         it_q1 != octrantVolume_1.end(); ++it_q1, ++it_q2, ++it_qRatio, ++it_qPercent)
       {
-        it_qPercent->second = (it_q2->second - it_q1->second) / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
-        it_qRatio->second = it_q2->second / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
-
-        volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(it_qPercent->second * 100 + 100) + "%\n";
+        if (it_q1->second > 0)
+        {
+          it_qPercent->second = (it_q2->second - it_q1->second) / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
+          it_qRatio->second = it_q2->second / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
+          volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(it_qPercent->second * 100 + 100) + "%\n";
+        }
+        else
+        {
+          volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(0) + "%\n";
+        }
       }
 
       volumeString += "\n\nFurther details and detailed visualization results can be found in the output folder";
@@ -8102,9 +8193,47 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     updateProgress(100, "Output saved to '" + saveFileName + "'");
 
     auto currentROI = convertVtkToItk<ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mMask);
-    cbica::WriteImage< ImageTypeFloat3D >(currentROI, outputDir + "/roi_DE_visualizationIncrease.nii.gz");
-    cbica::WriteImage< ImageTypeFloat3D >(octantImage, outputDir + "/roi_DE_octantImage.nii.gz");
-    cbica::WriteImage< ImageTypeFloat3D >(newROIImage, outputDir + "/roi_DE_visualizationRatio.nii.gz");
+
+    ImageTypeFloat3D::DirectionType originalDirection;
+    originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
+    originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
+    originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
+    originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
+    originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
+    originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
+    originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
+    originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
+    originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
+
+    ImageTypeFloat3D::PointType originalOrigin;
+    originalOrigin = mSlicerManagers[index]->mOrigin;
+
+    auto infoChanger1 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger1->ChangeDirectionOn();
+    infoChanger1->ChangeOriginOn();
+    infoChanger1->SetOutputDirection(originalDirection);
+    infoChanger1->SetOutputOrigin(originalOrigin);
+    infoChanger1->SetInput(currentROI);
+    infoChanger1->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger1->GetOutput(), outputDir + "/roi_DE_visualizationIncrease.nii.gz");
+
+    auto infoChanger2 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger2->ChangeDirectionOn();
+    infoChanger2->ChangeOriginOn();
+    infoChanger2->SetOutputDirection(originalDirection);
+    infoChanger2->SetOutputOrigin(originalOrigin);
+    infoChanger2->SetInput(octantImage);
+    infoChanger2->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger2->GetOutput(), outputDir + "/roi_DE_octantImage.nii.gz");
+
+    auto infoChanger3 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger3->ChangeDirectionOn();
+    infoChanger3->ChangeOriginOn();
+    infoChanger3->SetOutputDirection(originalDirection);
+    infoChanger3->SetOutputOrigin(originalOrigin);
+    infoChanger3->SetInput(newMaskImage_computed);
+    infoChanger3->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger3->GetOutput(), outputDir + "/roi_DE_visualizationRatio.nii.gz");
 
     minMaxCalc->SetImage(newROIImage);
     minMaxCalc->Compute();
@@ -8121,9 +8250,17 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       }
     }
 
-    cbica::WriteImage< ImageTypeFloat3D >(newROIImage, outputDir + "/roiDE_visualizationProbability.nii.gz");
+    auto infoChanger4 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger4->ChangeDirectionOn();
+    infoChanger4->ChangeOriginOn();
+    infoChanger4->SetOutputDirection(originalDirection);
+    infoChanger4->SetOutputOrigin(originalOrigin);
+    infoChanger4->SetInput(newROIImage);
+    infoChanger4->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger4->GetOutput(), outputDir + "/roi_DE_visualizationProbability.nii.gz");
 
-    LoadSlicerImages(outputDir + "/roiDE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
+    LoadSlicerImages(outputDir + "/roi_DE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
+    readMaskFile(outputDir + "/roi_DE_visualizationRatio.nii.gz");
   }
 }
 
@@ -8562,9 +8699,18 @@ std::vector<int> read_int_vector(std::string &nccRadii)
 std::vector<vtkSmartPointer<Slicer>> fMainWindow::GetComparisonViewers()
 {
   std::vector<vtkSmartPointer<Slicer>>comparisonViewers;
-  comparisonViewers.push_back(m_ComparisonViewerLeft);
-  comparisonViewers.push_back(m_ComparisonViewerCenter);
-  comparisonViewers.push_back(m_ComparisonViewerRight);
+  if (mSlicerManagers.size() == 2)
+  {
+	  comparisonViewers.push_back(m_ComparisonViewerLeft);
+	  comparisonViewers.push_back(m_ComparisonViewerCenter);
+  }
+  else if (mSlicerManagers.size() == 3)
+  {
+	  comparisonViewers.push_back(m_ComparisonViewerLeft);
+	  comparisonViewers.push_back(m_ComparisonViewerCenter);
+	  comparisonViewers.push_back(m_ComparisonViewerRight);
+  }
+  
   return comparisonViewers;
 }
 
@@ -8592,22 +8738,132 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames,
   std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
 {
-  // This happens because the qconcurrent doesn't allow more than 5 function parameters, without std::bind + not sure what else
-  std::vector<std::string> compVector = {
-    fixedFileName,
-    ((registrationMode) ? "true" : "false"),
-    metrics,
-    ((affineMode) ? "true" : "false"),
-    radii,
-    iterations
-  };
+  std::string configPathName;
+  std::string configFileName;
+  std::string extn = ".txt";
 
-  QtConcurrent::run(this, &fMainWindow::RegistrationWorker,
-    compVector,
-    inputFileNames,
-    outputFileNames,
-    matrixFileNames
-  );
+  std::vector<std::string> affineMatrix;
+  std::vector<std::string> outputImage;
+
+  updateProgress(5, "Starting Registration");
+
+  //auto TargetImage = cbica::ReadImage< ImageTypeFloat3D >(fixedFileName);
+
+  if (outputFileNames.size() != inputFileNames.size() || outputFileNames.size() != matrixFileNames.size() || matrixFileNames.size() != inputFileNames.size())
+  {
+    ShowErrorMessage("Number of input, matrix and output file names do not match");
+    return;
+  }
+
+  configPathName = itksys::SystemTools::GetFilenamePath(matrixFileNames[0]).c_str();
+  configFileName = configPathName + "/" + itksys::SystemTools::GetFilenameWithoutExtension(matrixFileNames[0]).c_str() + extn;
+
+  for (unsigned int i = 0; i < inputFileNames.size(); i++)
+  {
+    if (!cbica::isFile(inputFileNames[i]))
+    {
+      ShowErrorMessage("Input file '" + std::to_string(i) + "' is undefined; please check");
+      return;
+    }
+    updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
+
+    std::string fixedFileCommand = "-f " + fixedFileName;
+    std::string movingFileCommand = " -i " + inputFileNames[i];
+    std::string affineMatrixCommand = " -t " + matrixFileNames[i];
+    std::string outputCommand = " -o " + outputFileNames[i];
+    std::string metricsCommand = " -m " + metrics;
+    std::string iterationsCommand = " -n " + iterations;
+    QStringList args;
+    args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
+      << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
+      << "-m" << metrics.c_str() << "-n" << iterations.c_str();
+
+    if (metrics == "NCC")
+      args << "-ri" << radii.c_str();
+    if (affineMode)
+    {
+      args << "-a";
+    }
+    else
+    {
+      args << "-r";
+    }
+    std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
+
+    if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
+    {
+      ShowErrorMessage("Couldn't register with the default parameters; please use command line functionality");
+      return;
+    }
+    else
+    {
+      affineMatrix.push_back(matrixFileNames[i] + ".mat");
+    }
+
+    if (matrixFileNames[i].find("remove") != std::string::npos)
+    {
+      if (cbica::isFile(matrixFileNames[i]))
+      {
+        if (std::remove(matrixFileNames[i].c_str()) == 0)
+        {
+          updateProgress(80, "Cleaning temporary files");
+        }
+      }
+
+      updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "Writing File");
+    }
+
+    updateProgress(100, "Registration Complete.");
+
+    time_t t = std::time(0);
+    long int now = static_cast<long int> (t);
+
+    std::ofstream file;
+    file.open(configFileName.c_str());
+
+    std::string mode;
+
+    if (affineMode == true)
+      mode = "Affine";
+    else
+      mode = "Rigid";
+
+    if (file.is_open())
+    {
+      if (metrics != "NCC") {
+        file << fixedFileName << ","
+          << metrics << ","
+          << mode << ","
+          << iterations << ","
+          << now << "\n";
+      }
+      else {
+        file << fixedFileName << ","
+          << metrics << ","
+          << radii << ","
+          << mode << ","
+          << iterations << ","
+          << now << "\n";
+      }
+    }
+    file.close();
+  }
+  //// This happens because the qconcurrent doesn't allow more than 5 function parameters, without std::bind + not sure what else
+  //std::vector<std::string> compVector = {
+  //  fixedFileName,
+  //  ((registrationMode) ? "true" : "false"),
+  //  metrics,
+  //  ((affineMode) ? "true" : "false"),
+  //  radii,
+  //  iterations
+  //};
+
+  //QtConcurrent::run(this, &fMainWindow::RegistrationWorker,
+  //  compVector,
+  //  inputFileNames,
+  //  outputFileNames,
+  //  matrixFileNames
+  //);
   /*QFuture<void> r = QtConcurrent::run(std::bind(
     this, &fMainWindow::RegistrationWorker,
     fixedFileName, inputFileNames, outputFileNames,
@@ -9559,4 +9815,9 @@ std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(c
   //}
 
   return returnVector;
+}
+
+void fMainWindow::OnPreferencesMenuClicked()
+{
+	int result = this->preferenceDialog->exec();
 }

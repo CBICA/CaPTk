@@ -3,7 +3,7 @@
 
 This file contains the base for all Feature Extraction classes.
 
-http://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -20,6 +20,14 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkHistogram.h"
 
 #include "cbicaLogging.h"
+
+//! the histogram binning type
+enum HistogramBinningType
+{
+  FixedBinNumber,
+  FixedBinSize,
+  Equal
+};
 
 /**
 \class TextureFeatureBase
@@ -64,9 +72,17 @@ public:
     m_Bins = numBinValue;
   }
 
+  //! Set the histogram binning type
+  void SetHistogramBinningType(int type)
+  {
+    m_histogramBinningType = type;
+  }
+
 protected:
 
   unsigned int m_Bins = 10; //! the binning information
+
+  OffsetVectorPointer m_offsets; //! the offsets to consider
 
   typename TImageType::PixelType 
     m_minimum = 0, //! the minimum to consider during binning
@@ -74,7 +90,7 @@ protected:
 
   itk::Statistics::Histogram< double >::Pointer m_histogram; //! the actual histogram 
 
-  OffsetVectorPointer m_offsets; //! the offsets to consider
+  int m_histogramBinningType; //! the default binning type
 };
 
 #include "TextureFeatureBase.hxx"

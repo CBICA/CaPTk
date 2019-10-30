@@ -1,6 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-version: 1.7.1
 baseCommand: EGFRvIIISurrogateIndex
 inputs:
   image:
@@ -31,3 +30,9 @@ inputs:
       position: 1
       prefix: -cwl
     doc: Generates a .cwl file for the software.
+hints:
+  SoftwareRequirement:
+    packages:
+      EGFRvIIISurrogateIndex:
+        version:
+          - 1.7.3.nonRelease.20190819

@@ -2,29 +2,47 @@
 
 \page ReleaseNotes Changelog: Release Notes
 
-## New Applications and Tools
-
--# Perfusion Alignment
--# Deep Learning Inference Engine based on DeepMedic
--# Native DICOM ingestion
--# Preprocessing and Utilities added to create pipelines
--# Spherical drawing
-
-## Updates
-
--# New Feature Families and image resampling added to Feature Extraction Panel
--# Packaging improvements for macOS and Linux
--# Updated "--help" for CLI applications
--# CI/CD integration
--# Comparison mode view
--# Training Module improvements
--# Annotation visualization improvements (single/multiple label view)
+- Light/Dark mode and font switcher
+- Lots of new Utilities (NIfTI to DICOM & DICOM-Seg object conversion, Orientation change, Thresholding, File format conversion)
+- New functions to deal with image "series" (extraction and joining)
+- Automated Docker builds
+- Generic bug fixes and improvements 
 
 ## Known Issues
 
 https://github.com/CBICA/CaPTk/issues
 
 ## Older Versions
+
+### 1.7.2
+
+- Preferences dialog added (see File > Preferences)
+- DICOM reading updates on the GUI
+- DeepMedic runtime fixes
+- Comparison mode works on 2 images
+- Generic bug fixes and improvements 
+
+### 1.7.1 
+
+- Better high DPI support for all supported platforms
+- Updated documentation for whole package
+- Generic bug fixes and improvements 
+
+### 1.7.0
+- New Applications and Tools
+  - Perfusion Alignment
+  - Deep Learning Inference Engine based on DeepMedic
+  - Native DICOM ingestion
+  - Preprocessing and Utilities added to create pipelines
+  - Spherical drawing
+- Updates
+  - New Feature Families and image resampling added to Feature Extraction Panel
+  - Packaging improvements for macOS and Linux
+  - Updated "--help" for CLI applications
+  - CI/CD integration
+  - Comparison mode view
+  - Training Module improvements
+  - Annotation visualization improvements (single/multiple label view)
 
 ### 1.6.1
 - Generic bug fixes in several applications 
