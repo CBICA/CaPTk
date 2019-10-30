@@ -660,20 +660,51 @@ int algorithmsRunner()
   // if no other algorithm has been selected and mask & output files are present and in same space as input, apply it
   if (cbica::isFile(inputMaskFile) && !outputImageFile.empty())
   {
-    if (cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
+    auto errorMessage = "The input mask and mask are not in the same space.\n";
+    if (TImageType::ImageDimension != 4)
     {
+      if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
+      {
+        std::cerr << errorMessage;
+        return EXIT_FAILURE;
+      }
       auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
       masker->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
       masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
       masker->Update();
       cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
-      return EXIT_SUCCESS;
     }
     else
     {
-      std::cerr << "The input mask and mask are not in the same space.\n";
-      return EXIT_FAILURE;
+      if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile, true))
+      {
+        std::cerr << errorMessage;
+        return EXIT_FAILURE;
+      }
+      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+      using TBaseImageType = itk::Image< typename TImageType::PixelType, 3 >;
+      auto maskImage = cbica::ReadImage< TBaseImageType >(inputMaskFile);
+      auto inputImages = cbica::GetExtractedImages<
+        TImageType, TBaseImageType >(
+          inputImage);
+
+      std::vector< typename TBaseImageType::Pointer > outputImages;
+      outputImages.resize(inputImages.size());
+
+      for (size_t i = 0; i < inputImages.size(); i++)
+      {
+        auto masker = itk::MaskImageFilter< TBaseImageType, TBaseImageType >::New();
+        masker->SetInput(inputImages[i]);
+        masker->SetMaskImage(maskImage);
+        masker->Update();
+        outputImages[i] = masker->GetOutput();
+      }
+
+      auto output = cbica::GetJoinedImage< TBaseImageType, TImageType >(outputImages, inputImage->GetSpacing()[3]);
+      cbica::WriteImage< TImageType >(output, outputImageFile);
     }
+
+    return EXIT_SUCCESS;
   }
   
   return EXIT_SUCCESS;

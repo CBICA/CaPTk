@@ -191,8 +191,12 @@ VectorDouble EGFRStatusPredictor::PredictEGFRStatus(typename PerfusionImageType:
   progressUpdate(30);
 #endif
   FeatureReductionClass obj;
-  vtkSmartPointer<vtkTable> rpNear = obj.GetDiscerningPerfusionTimePoints(pNearIntensities);
-  vtkSmartPointer<vtkTable> rpFar = obj.GetDiscerningPerfusionTimePoints(pFarIntensities);
+  //vtkSmartPointer<vtkTable> rpNear = obj.GetDiscerningPerfusionTimePoints(pNearIntensities);
+  //vtkSmartPointer<vtkTable> rpFar = obj.GetDiscerningPerfusionTimePoints(pFarIntensities);
+
+  vtkSmartPointer<vtkTable> rpNear = obj.GetDiscerningPerfusionTimePointsDynamic(pNearIntensities);
+  vtkSmartPointer<vtkTable> rpFar = obj.GetDiscerningPerfusionTimePointsDynamic(pFarIntensities);
+
 
 #ifdef APP_BASE_CAPTK_H
   progressUpdate(40);

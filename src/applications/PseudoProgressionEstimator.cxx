@@ -10,7 +10,6 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
   std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
-
   std::sort(subjectNames.begin(), subjectNames.end());
 
   for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
@@ -48,7 +47,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
       {
         std::string filePath = subjectPath + "/SEGMENTATION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((files[i].find("label-map") != std::string::npos || files[i].find("label") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((files[i].find("label-map") != std::string::npos || files[i].find("segmentation") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           labelPath = subjectPath + "/SEGMENTATION/" + files[i];
         else if ((files[i].find("atlas") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           atlasPath = subjectPath + "/SEGMENTATION/" + files[i];
@@ -212,7 +211,6 @@ int main(int argc, char **argv)
   if (parser.compareParameter("i", tempPosition))
   {
     inputDirectoryName = argv[tempPosition + 1];
-    //inputDirectoryName = "E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/TrainingData";
   }
 
   if (parser.compareParameter("m", tempPosition))
