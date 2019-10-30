@@ -180,24 +180,9 @@
     <filename>LungCancer_SBRT</filename>
   </compound>
   <compound kind="page">
-    <name>Perfusion_Alignment</name>
-    <title>Miscellaneous: Perfusion Alignment</title>
-    <filename>Perfusion_Alignment</filename>
-  </compound>
-  <compound kind="page">
-    <name>Perfusion_Derivatives</name>
-    <title>Miscellaneous: Perfusion Derivatives</title>
-    <filename>Perfusion_Derivatives</filename>
-  </compound>
-  <compound kind="page">
     <name>Diffusion_Derivatives</name>
     <title>Miscellaneous: Diffusion Derivatives</title>
     <filename>Diffusion_Derivatives</filename>
-  </compound>
-  <compound kind="page">
-    <name>PCA_Extraction</name>
-    <title>Miscellaneous: PCA Volume Extraction</title>
-    <filename>PCA_Extraction</filename>
   </compound>
   <compound kind="page">
     <name>Training_Module</name>
