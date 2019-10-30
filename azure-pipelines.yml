@@ -582,8 +582,6 @@ jobs:
         cd bin
 
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-        pkgname="_Installer"
-        pkgname="$version$pkgname"
 
         sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
 
@@ -603,8 +601,6 @@ jobs:
 
     - bash: |
         cd bin
-        ls 
-        pwd 
 
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
         pkgname="_Installer"
