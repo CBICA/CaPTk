@@ -486,7 +486,6 @@ jobs:
       displayName: 'Caching'
 
     - bash: |
-        cmake --version
         brew install make doxygen libomp openmpi glfw
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
         export GIT_LFS_SKIP_SMUDGE=1
@@ -566,13 +565,13 @@ jobs:
     - bash: |
         cd bin
 
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-
         sudo rm -rf CaPTk_*
 
         cmake ../
         rm CMakeCache.txt
+        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
 
