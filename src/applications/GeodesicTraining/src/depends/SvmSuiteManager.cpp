@@ -1,7 +1,7 @@
 #include "SvmSuiteManager.h"
 
 void SvmSuite::Manager::GenerateConfigFromBestValues(std::string outputFileName) {
-	generateConfig(m_svm_descriptions, outputFileName);
+	generateConfig(m_svm_descriptions, outputFileName, m_save_models);
 }
 
 void SvmSuite::Manager::GenerateConfigFromBestValues() {
