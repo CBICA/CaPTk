@@ -54,7 +54,7 @@ std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
-std::string changeOldValues, changeNewValues;
+std::string changeOldValues, changeNewValues, resamplingResolution_full = "1.0,1.0,1.0", resamplingReference;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
 float imageStack2JoinSpacing = 1.0;
 int joinedImage2stackedAxis;
@@ -75,10 +75,36 @@ int algorithmsRunner()
 
   if (requestedAlgorithm == Resample)
   {
-    auto outputImage = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), resamplingResolution, resamplingInterpolator);
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    itk::Vector< double, TImageType::ImageDimension > outputSpacing = inputImage->GetSpacing();
+    if (!resamplingReference.empty())
+    {
+      auto imageInfo_1 = cbica::ImageInfo(inputImageFile);
+      auto imageInfo_2 = cbica::ImageInfo(resamplingReference);
+      if (imageInfo_1.GetImageDimensions() != imageInfo_2.GetImageDimensions())
+      {
+        std::cerr << "The resampling reference image needs to be the same dimension as the input image.\n";
+        return EXIT_FAILURE;
+      }
+      outputSpacing = cbica::ReadImage< TImageType >(resamplingReference)->GetSpacing();
+    }
+    else
+    {
+      auto resolution_split = cbica::stringSplit(resamplingResolution_full, ",");
+      if (resolution_split.size() != TImageType::ImageDimension)
+      {
+        std::cerr << "The resampling resolution needs to be the same dimension as the input image.\n";
+        return EXIT_FAILURE;
+      }
+      for (size_t d = 0; d < TImageType::ImageDimension; d++)
+      {
+        outputSpacing[d] = std::atof(resolution_split[d].c_str());
+      }
+    }
+    auto outputImage = cbica::ResampleImage< TImageType >(inputImage, outputSpacing, resamplingInterpolator);
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
-    std::cout << "Resampled image to isotropic resolution of '" << resamplingResolution << "' using interpolator '" << resamplingInterpolator << "'.\n";
+    std::cout << "Resampled image to isotropic resolution of '" << outputSpacing << "' using interpolator '" << resamplingInterpolator << "'.\n";
     return EXIT_SUCCESS;
   }
 
@@ -285,6 +311,18 @@ int algorithmsRunner()
     else if (targetImageFile == "char")
     {
       using DefaultPixelType = char;
+      using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
+      cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
+    }
+    if (targetImageFile == "ushort")
+    {
+      using DefaultPixelType = unsigned short;
+      using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
+      cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
+    }
+    else if (targetImageFile == "short")
+    {
+      using DefaultPixelType = short;
       using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
       cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
     }
@@ -618,6 +656,56 @@ int algorithmsRunner()
     std::cout << indexToConvert << " ==> " << output << "\n";
     return EXIT_SUCCESS;
   }
+
+  // if no other algorithm has been selected and mask & output files are present and in same space as input, apply it
+  if (cbica::isFile(inputMaskFile) && !outputImageFile.empty())
+  {
+    auto errorMessage = "The input mask and mask are not in the same space.\n";
+    if (TImageType::ImageDimension != 4)
+    {
+      if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
+      {
+        std::cerr << errorMessage;
+        return EXIT_FAILURE;
+      }
+      auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
+      masker->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+      masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+      masker->Update();
+      cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
+    }
+    else
+    {
+      if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile, true))
+      {
+        std::cerr << errorMessage;
+        return EXIT_FAILURE;
+      }
+      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+      using TBaseImageType = itk::Image< typename TImageType::PixelType, 3 >;
+      auto maskImage = cbica::ReadImage< TBaseImageType >(inputMaskFile);
+      auto inputImages = cbica::GetExtractedImages<
+        TImageType, TBaseImageType >(
+          inputImage);
+
+      std::vector< typename TBaseImageType::Pointer > outputImages;
+      outputImages.resize(inputImages.size());
+
+      for (size_t i = 0; i < inputImages.size(); i++)
+      {
+        auto masker = itk::MaskImageFilter< TBaseImageType, TBaseImageType >::New();
+        masker->SetInput(inputImages[i]);
+        masker->SetMaskImage(maskImage);
+        masker->Update();
+        outputImages[i] = masker->GetOutput();
+      }
+
+      auto output = cbica::GetJoinedImage< TBaseImageType, TImageType >(outputImages, inputImage->GetSpacing()[3]);
+      cbica::WriteImage< TImageType >(output, outputImageFile);
+    }
+
+    return EXIT_SUCCESS;
+  }
   
   return EXIT_SUCCESS;
 }
@@ -666,8 +754,9 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("o", "outputImage", cbica::Parameter::FILE, "NIfTI", "Output Image for processing");
   parser.addOptionalParameter("df", "dicomDirectory", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory containing single dicom series");
   parser.addOptionalParameter("r", "resize", cbica::Parameter::INTEGER, "10-500", "Resize an image based on the resizing factor given", "Example: -r 150 resizes inputImage by 150%", "Defaults to 100, i.e., no resizing", "Resampling can be done on image with 100");
-  parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::FLOAT, "0-10", "[Resample] Isotropic resolution of the voxels/pixels to change to", "Resize value needs to be 100", "Defaults to 1.0");
-  parser.addOptionalParameter("ri", "resizeInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE:BICUBIC", "The interpolation type to use for resampling or resizing", "Defaults to LINEAR");
+  parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::STRING, "0-10", "[Resample] Resolution of the voxels/pixels to change to", "Resize value needs to be 100", "Defaults to " + resamplingResolution_full, "Use '-rf' for a reference file");
+  parser.addOptionalParameter("rf", "resizeReference", cbica::Parameter::FILE, "NIfTI image", "[Resample] Reference image on which resampling is to be done", "Resize value needs to be 100", "Use '-ri' for resize resolution");
+  parser.addOptionalParameter("ri", "resizeInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE:BICUBIC", "[Resample] The interpolation type to use for resampling or resizing", "Defaults to LINEAR");
   parser.addOptionalParameter("s", "sanityCheck", cbica::Parameter::FILE, "NIfTI Reference", "Do sanity check of inputImage with the file provided in with this parameter", "Performs checks on size, origin & spacing", "Pass the target image after '-s'");
   parser.addOptionalParameter("inf", "information", cbica::Parameter::BOOLEAN, "true or false", "Output the information in inputImage", "If DICOM file is detected, the tags are written out");
   parser.addOptionalParameter("c", "cast", cbica::Parameter::STRING, "(u)char, (u)int, (u)long, (u)longlong, float, double", "Change the input image type", "Examples: '-c uchar', '-c float', '-c longlong'");
@@ -708,9 +797,11 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100 -tOI -100,10000", "Above & Below Threshold between 50 and 100 with outside value -100 and inside value 10000");
   parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output -j2e 1", "Extract the joined image into its series");
   parser.addExampleUsage("-i C:/test/ -o C:/output.nii.gz -e2j 1.5", "Join the extracted images into a single image with spacing in the new dimension as 1.5");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -r 100 -rr 1.0,1.0,1.0 -ri LINEAR", "Calculates an isotropic image from the input with spacing '1.0' in all dimensions using linear interpolation");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -r 100 -rf C:/reference.nii.gz -ri LINEAR", "Calculates an isotropic image from the input with spacing from the reference image using linear interpolation");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
-
+  
   if (parser.isPresent("i"))
   {
     parser.getParameterValue("i", inputImageFile);
@@ -769,7 +860,11 @@ int main(int argc, char** argv)
       requestedAlgorithm = Resample;
       if (parser.isPresent("rr"))
       {
-        parser.getParameterValue("rr", resamplingResolution);
+        parser.getParameterValue("rr", resamplingResolution_full);
+      }
+      else if (parser.isPresent("rf"))
+      {
+        parser.getParameterValue("rf", resamplingReference);
       }
     }
     if (parser.isPresent("ri"))
