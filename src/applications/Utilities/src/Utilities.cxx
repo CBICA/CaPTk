@@ -245,6 +245,7 @@ int algorithmsRunner()
   {
     auto referenceDicom = targetImageFile;
     cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+    std::cout << "Finished writing the DICOM file.\n";
   }
   else if (requestedAlgorithm == Nifti2DicomSeg)
   {
@@ -625,61 +626,49 @@ int algorithmsRunner()
   else if (cbica::isFile(inputMaskFile) && !outputImageFile.empty())
   {
     auto errorMessage = "The input mask and mask are not in the same space.\n";
-    if (TImageType::ImageDimension != 4)
+    if (cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
     {
-      if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
-      {
-        std::cerr << errorMessage;
-        return EXIT_FAILURE;
-      }
       auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
       masker->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
       masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
       masker->Update();
       cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
     }
+    else if (TImageType::ImageDimension == 4)
+    {
+      // input image is 4D and mask is 3D
+      if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile, true))
+      {
+        std::cerr << errorMessage;
+        return EXIT_FAILURE;
+      }
+
+      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+      using TBaseImageType = itk::Image< typename TImageType::PixelType, 3 >;
+      auto maskImage = cbica::ReadImage< TBaseImageType >(inputMaskFile);
+      auto inputImages = cbica::GetExtractedImages<
+        TImageType, TBaseImageType >(
+          inputImage);
+
+      std::vector< typename TBaseImageType::Pointer > outputImages;
+      outputImages.resize(inputImages.size());
+
+      for (size_t i = 0; i < inputImages.size(); i++)
+      {
+        auto masker = itk::MaskImageFilter< TBaseImageType, TBaseImageType >::New();
+        masker->SetInput(inputImages[i]);
+        masker->SetMaskImage(maskImage);
+        masker->Update();
+        outputImages[i] = masker->GetOutput();
+      }
+
+      auto output = cbica::GetJoinedImage< TBaseImageType, TImageType >(outputImages, inputImage->GetSpacing()[3]);
+      cbica::WriteImage< TImageType >(output, outputImageFile);
+    }
     else
     {
-      if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
-      {
-        // input image is 4D and mask is 3D
-        if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile, true))
-        {
-          std::cerr << errorMessage;
-          return EXIT_FAILURE;
-        }
-
-        auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-        using TBaseImageType = itk::Image< typename TImageType::PixelType, 3 >;
-        auto maskImage = cbica::ReadImage< TBaseImageType >(inputMaskFile);
-        auto inputImages = cbica::GetExtractedImages<
-          TImageType, TBaseImageType >(
-            inputImage);
-
-        std::vector< typename TBaseImageType::Pointer > outputImages;
-        outputImages.resize(inputImages.size());
-
-        for (size_t i = 0; i < inputImages.size(); i++)
-        {
-          auto masker = itk::MaskImageFilter< TBaseImageType, TBaseImageType >::New();
-          masker->SetInput(inputImages[i]);
-          masker->SetMaskImage(maskImage);
-          masker->Update();
-          outputImages[i] = masker->GetOutput();
-        }
-
-        auto output = cbica::GetJoinedImage< TBaseImageType, TImageType >(outputImages, inputImage->GetSpacing()[3]);
-        cbica::WriteImage< TImageType >(output, outputImageFile);
-      }
-      else
-      {
-        auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
-        masker->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
-        masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
-        masker->Update();
-        cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
-      }
-      return EXIT_SUCCESS;
+      std::cerr << errorMessage;
+      return EXIT_FAILURE;
     }
   }
   else
