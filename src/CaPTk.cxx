@@ -111,7 +111,7 @@ int main(int argc, char** argv)
         }
         // Pass them in
         auto commandToRun = getApplicationPath(cwlFileBase_actual) + argv_complete;
-        std::cout << "[DEBUG] commandToRun: " << commandToRun << "\n";
+        //std::cout << "[DEBUG] commandToRun: " << commandToRun << "\n";
 #ifndef WIN32
         return std::system(commandToRun.c_str());
 #else
