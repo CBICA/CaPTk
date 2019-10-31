@@ -24,20 +24,19 @@ namespace cbica
   ImageInfo::ImageInfo(const std::string &fName)
   {
     auto fName_norm = cbica::normPath(fName);
-    auto fName_ext = cbica::getFilenameExtension(fName);
-    if (!fName_ext.empty())
-    {
-      std::transform(fName_ext.begin(), fName_ext.end(), fName_ext.begin(), ::tolower);
-    }
-
     if (cbica::isFile(fName) /*&& (fName_ext != ".dcm")*/)
     {
+      auto fName_ext = cbica::getFilenameExtension(fName);
+      if (!fName_ext.empty())
+      {
+        std::transform(fName_ext.begin(), fName_ext.end(), fName_ext.begin(), ::tolower);
+      }
+
       m_fileName = fName_norm;
 
-      m_itkImageIOBase = itk::ImageIOFactory::CreateImageIO(m_fileName.c_str(), itk::ImageIOFactory::ReadMode);
-      
       if (cbica::IsDicom(fName_norm))
       {
+        m_dicomDetected = true; // we shall process this later
         gdcm::Reader reader;
         reader.SetFileName(m_fileName.c_str());
 
@@ -46,7 +45,9 @@ namespace cbica
           itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
         }
       }
-      
+
+      m_itkImageIOBase = itk::ImageIOFactory::CreateImageIO(m_fileName.c_str(), itk::ImageIOFactory::ReadMode);
+
       if (!m_itkImageIOBase->CanReadFile(m_fileName.c_str()))
       {
         itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
@@ -79,16 +80,29 @@ namespace cbica
         m_size.push_back(m_itkImageIOBase->GetDimensions(i));
       }
     }
-    //else if (fName_ext == ".dcm")
-    //{
-    //  m_dicomDetected = true;
-    //  // nothing to do here
-    //  return;
-    //}
+    else if (cbica::isDir(fName_norm))
+    {
+      auto filesInDir = cbica::filesInDirectory(fName_norm);
+      if (!filesInDir.empty())
+      {
+        if (cbica::IsDicom(filesInDir[0]))
+        {
+          m_dicomDetected = true;
+        }
+      }
+      // nothing to do here
+      return;
+    }
     else
     {
       std::cerr << "Please pass a supported image.\n";
       return;
+    }
+
+    // process DICOM files separately
+    if (m_dicomDetected)
+    {
+
     }
   }
 
