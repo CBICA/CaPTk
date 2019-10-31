@@ -580,8 +580,8 @@ namespace cbica
       //}
 
       itk::EncapsulateMetaData<std::string>(dict, "0008|0008", "DERIVED\\SECONDARY"); // Image Type
-      itk::EncapsulateMetaData<std::string>(dict, "0008|0070", "CaPTk by CBICA @ UPenn"); // Manufacturer, used to distinguish between the original image and generated DICOM
-      itk::EncapsulateMetaData<std::string>(dict, "0008|1090", "http://www.cbica.upenn.edu/captk"); // Manufacturer's Model Name, used to distinguish between the original image and generated DICOM
+      //itk::EncapsulateMetaData<std::string>(dict, "0008|103e", "Processed-CaPTk"); // # Series Description
+      itk::EncapsulateMetaData<std::string>(dict, "0008|0030", cbica::getCurrentLocalTime()); // # Study Time
 
       // set the metadata dictionary to the dicomIO
       dicomIO->SetMetaDataDictionary(dict);
@@ -589,7 +589,8 @@ namespace cbica
       seriesWriter->SetInput(castFilter->GetOutput());
       seriesWriter->SetFileNames(namesGenerator->GetFileNames());
       seriesWriter->SetImageIO(dicomIO);
-      seriesWriter->SetMetaDataDictionaryArray(inputImageReader->GetMetaDataDictionaryArray()); // no dictionary information present without seriesReader
+      //seriesWriter->SetMetaDataDictionary(dict); // just having this and not the line below generated an image which wasn't valid
+      seriesWriter->SetMetaDataDictionaryArray(inputImageReader->GetMetaDataDictionaryArray()); // this copies all the dicom information from the input image
 
       try
       {
