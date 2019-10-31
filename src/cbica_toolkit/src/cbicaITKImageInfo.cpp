@@ -33,52 +33,6 @@ namespace cbica
       }
 
       m_fileName = fName_norm;
-
-      if (cbica::IsDicom(fName_norm))
-      {
-        m_dicomDetected = true; // we shall process this later
-        gdcm::Reader reader;
-        reader.SetFileName(m_fileName.c_str());
-
-        if (!reader.CanRead())
-        {
-          itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
-        }
-      }
-
-      m_itkImageIOBase = itk::ImageIOFactory::CreateImageIO(m_fileName.c_str(), itk::ImageIOFactory::ReadMode);
-
-      if (!m_itkImageIOBase->CanReadFile(m_fileName.c_str()))
-      {
-        itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
-      }
-
-      // exception handling in case of NULL pointer initialization
-      if (m_itkImageIOBase)
-      {
-        m_itkImageIOBase->SetFileName(m_fileName);
-        m_itkImageIOBase->ReadImageInformation();
-      }
-      else
-      {
-        itkGenericExceptionMacro("Could not read the input image information from '" << m_fileName << "'\n");
-      }
-
-      m_itkImageIOBase->SetFileName(m_fileName);
-      m_itkImageIOBase->ReadImageInformation();
-
-      m_IOComponentType = m_itkImageIOBase->GetComponentType();
-      m_pixelType = m_itkImageIOBase->GetPixelType();
-      m_IOComponentType_asString = m_itkImageIOBase->GetComponentTypeAsString(m_IOComponentType);
-      m_pixelType_asString = m_itkImageIOBase->GetPixelTypeAsString(m_pixelType);
-      m_dimensions = m_itkImageIOBase->GetNumberOfDimensions();
-
-      for (size_t i = 0; i < m_dimensions; i++)
-      {
-        m_spacings.push_back(m_itkImageIOBase->GetSpacing(i));
-        m_origins.push_back(m_itkImageIOBase->GetOrigin(i));
-        m_size.push_back(m_itkImageIOBase->GetDimensions(i));
-      }
     }
     else if (cbica::isDir(fName_norm))
     {
@@ -87,7 +41,7 @@ namespace cbica
       {
         if (cbica::IsDicom(filesInDir[0]))
         {
-          m_dicomDetected = true;
+          m_fileName = filesInDir[0];
         }
         else
         {
@@ -100,19 +54,40 @@ namespace cbica
         std::cerr << "Empty Directory passed.\n";
         return;
       }
-      // nothing to do here
-      return;
+    }
+
+    m_itkImageIOBase = itk::ImageIOFactory::CreateImageIO(m_fileName.c_str(), itk::ImageIOFactory::ReadMode);
+
+    if (!m_itkImageIOBase->CanReadFile(m_fileName.c_str()))
+    {
+      itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
+    }
+
+    // exception handling in case of NULL pointer initialization
+    if (m_itkImageIOBase)
+    {
+      m_itkImageIOBase->SetFileName(m_fileName);
+      m_itkImageIOBase->ReadImageInformation();
     }
     else
     {
-      std::cerr << "Please pass a supported image.\n";
-      return;
+      itkGenericExceptionMacro("Could not read the input image information from '" << m_fileName << "'\n");
     }
 
-    // process DICOM files separately
-    if (m_dicomDetected)
-    {
+    m_itkImageIOBase->SetFileName(m_fileName);
+    m_itkImageIOBase->ReadImageInformation();
 
+    m_IOComponentType = m_itkImageIOBase->GetComponentType();
+    m_pixelType = m_itkImageIOBase->GetPixelType();
+    m_IOComponentType_asString = m_itkImageIOBase->GetComponentTypeAsString(m_IOComponentType);
+    m_pixelType_asString = m_itkImageIOBase->GetPixelTypeAsString(m_pixelType);
+    m_dimensions = m_itkImageIOBase->GetNumberOfDimensions();
+
+    for (size_t i = 0; i < m_dimensions; i++)
+    {
+      m_spacings.push_back(m_itkImageIOBase->GetSpacing(i));
+      m_origins.push_back(m_itkImageIOBase->GetOrigin(i));
+      m_size.push_back(m_itkImageIOBase->GetDimensions(i));
     }
   }
 
