@@ -1185,7 +1185,8 @@ int main(int argc, char** argv)
       {
         auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
         cbica::WriteImage< ImageType >(output.second, tempOutputFile);
-        cbica::WriteImage< ImageType >(cbica::ReadImage< ImageType >(tempOutputFile), outputImageFile);
+        auto reorientedInput = cbica::ReadImage< ImageType >(tempOutputFile);
+        cbica::WriteImage< ImageType >(reorientedInput, outputImageFile);
         std::remove(tempOutputFile.c_str());
       }
       else
