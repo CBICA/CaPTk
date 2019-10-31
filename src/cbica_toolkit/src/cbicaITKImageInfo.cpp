@@ -89,6 +89,16 @@ namespace cbica
         {
           m_dicomDetected = true;
         }
+        else
+        {
+          std::cerr << "Please pass a single file.\n";
+          return;
+        }
+      }
+      else
+      {
+        std::cerr << "Empty Directory passed.\n";
+        return;
       }
       // nothing to do here
       return;
