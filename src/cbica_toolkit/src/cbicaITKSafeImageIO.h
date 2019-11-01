@@ -536,7 +536,9 @@ namespace cbica
       namesGenerator->SetEndIndex(start[2] + size[2] - 1);
       namesGenerator->SetIncrementIndex(1);
 
-      auto dict = inputImageReader->GetMetaDataDictionary();
+      itk::MetaDataDictionary& dict = inputImageReader->GetMetaDataDictionary();
+      auto dictArray = inputImageReader->GetMetaDataDictionaryArray();
+      auto dict_0 = dictArray->at(0);
 
       //typename ExpectedImageType::IndexType index;
       //index[0] = 0;
@@ -579,18 +581,22 @@ namespace cbica
       //  itk::EncapsulateMetaData<std::string>(dict, "0008|1090", "http://www.cbica.upenn.edu/captk"); // Manufacturer's Model Name, used to distinguish between the original image and generated DICOM
       //}
 
-      itk::EncapsulateMetaData<std::string>(dict, "0008|0008", "DERIVED\\SECONDARY"); // Image Type
-      //itk::EncapsulateMetaData<std::string>(dict, "0008|103e", "Processed-CaPTk"); // # Series Description
-      itk::EncapsulateMetaData<std::string>(dict, "0008|0030", cbica::getCurrentLocalTime()); // # Study Time
+      std::string seriesDescription;
+      itk::ExposeMetaData< std::string >(*dict_0, "0008|103e", seriesDescription);
+      seriesDescription += ": Processed_CaPTk";
+
+      itk::EncapsulateMetaData<std::string>(*dict_0, "0008|0008", "DERIVED\\SECONDARY"); // Image Type
+      itk::EncapsulateMetaData<std::string>(*dict_0, "0008|103e", seriesDescription); // # Series Description
+      itk::EncapsulateMetaData<std::string>(*dict_0, "0008|0030", cbica::getCurrentLocalTime()); // # Study Time
 
       // set the metadata dictionary to the dicomIO
-      dicomIO->SetMetaDataDictionary(dict);
+      dicomIO->SetMetaDataDictionary(*dict_0);
 
       seriesWriter->SetInput(castFilter->GetOutput());
       seriesWriter->SetFileNames(namesGenerator->GetFileNames());
       seriesWriter->SetImageIO(dicomIO);
-      //seriesWriter->SetMetaDataDictionary(dict); // just having this and not the line below generated an image which wasn't valid
-      seriesWriter->SetMetaDataDictionaryArray(inputImageReader->GetMetaDataDictionaryArray()); // this copies all the dicom information from the input image
+      seriesWriter->SetMetaDataDictionary(*dict_0); // just having this and not the line below generated an image which wasn't valid
+      //seriesWriter->SetMetaDataDictionaryArray(inputImageReader->GetMetaDataDictionaryArray()); // this copies all the dicom information from the input image
 
       try
       {
