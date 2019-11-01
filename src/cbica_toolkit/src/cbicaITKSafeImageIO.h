@@ -580,6 +580,7 @@ namespace cbica
       //}
 
       auto dictArray = inputImageReader->GetMetaDataDictionaryArray();
+      // get the default series description and add some information to make it unique
       std::string seriesDescription;
       itk::ExposeMetaData< std::string >(*dictArray->at(0), "0008|103e", seriesDescription);
       seriesDescription += ": Processed_CaPTk";
@@ -594,7 +595,6 @@ namespace cbica
       seriesWriter->SetInput(castFilter->GetOutput());
       seriesWriter->SetFileNames(namesGenerator->GetFileNames());
       seriesWriter->SetImageIO(dicomIO);
-      //seriesWriter->SetMetaDataDictionary(*dict_0); // just having this and not the line below generated an image which wasn't valid
       seriesWriter->SetMetaDataDictionaryArray(dictArray); // this copies all the dicom information from the input image
 
       try
