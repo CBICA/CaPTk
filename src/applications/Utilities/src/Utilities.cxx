@@ -1181,6 +1181,10 @@ int main(int argc, char** argv)
       std::cout << "Original Image Orientation: " << output.first << "\n";
       std::string path, base, ext;
       cbica::splitFileName(outputImageFile, path, base, ext);
+      if (ext.find(".nii") != std::string::npos)
+      {
+        std::cerr << "WARNING: NIfTI files do support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
+      }
       if (ext != ".mha")
       {
         auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
