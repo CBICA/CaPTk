@@ -117,12 +117,6 @@ int main(int argc, char** argv)
         std::cout << "cwlFileBase_actual " + cwlFileBase_actual + "\n"; 
 
         auto strpath = getApplicationPath(cwlFileBase_actual);
-        std::cout << "strpath " + strpath + "\n"; 
-
-// #ifdef __APPLE__
-//         strpath += "../Resources/etc/cwlDefinitions/";
-// #endif  
-        // std::cout << strpath + argv_complete + "\n"; 
 
         return std::system((strpath + argv_complete).c_str());
       }
