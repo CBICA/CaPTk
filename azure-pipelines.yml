@@ -236,7 +236,7 @@ jobs:
         overwrite: true
         continueOnError: true
       displayName: Uploading to NITRC
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 
 - job: 'XenialBuild'
@@ -451,7 +451,7 @@ jobs:
         overwrite: true
         continueOnError: true
       displayName: Uploading to NITRC 
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
      
 
 - job: 'MacOSBuild'
@@ -703,7 +703,7 @@ jobs:
         overwrite: true
         continueOnError: true
       displayName: Uploading to NITRC
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'))
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 
 # - job: 'DockerBuild'
