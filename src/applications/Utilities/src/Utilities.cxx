@@ -70,10 +70,8 @@ int algorithmsRunner()
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
     std::cout << "Resizing by a factor of " << resize << "% completed.\n";
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == Resample)
+  else if (requestedAlgorithm == Resample)
   {
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
     itk::Vector< double, TImageType::ImageDimension > outputSpacing = inputImage->GetSpacing();
@@ -105,10 +103,8 @@ int algorithmsRunner()
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
     std::cout << "Resampled image to isotropic resolution of '" << outputSpacing << "' using interpolator '" << resamplingInterpolator << "'.\n";
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == UniqueValues)
+  else if (requestedAlgorithm == UniqueValues)
   {
     bool sort = true;
     if (uniqueValsSort == 0)
@@ -125,10 +121,8 @@ int algorithmsRunner()
         std::cout << cbica::to_string_precision(uniqueValues[i]) << "\n";
       }
     }
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == CreateMask)
+  else if (requestedAlgorithm == CreateMask)
   {
     auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -140,10 +134,8 @@ int algorithmsRunner()
 
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
     std::cout << "Create Mask completed.\n";
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == DicomLoadTesting)
+  else if (requestedAlgorithm == DicomLoadTesting)
   {
     auto readDicomImage = cbica::ReadImage< TImageType >(dicomFolderPath);
     if (!readDicomImage)
@@ -203,8 +195,7 @@ int algorithmsRunner()
     return differenceFailed;
     //return EXIT_FAILURE;
   }
-
-  if (requestedAlgorithm == Dicom2Nifti)
+  else if (requestedAlgorithm == Dicom2Nifti)
   {
     auto readDicomImage = cbica::ReadImage< TImageType >(inputImageFile);
     if (!readDicomImage)
@@ -248,18 +239,15 @@ int algorithmsRunner()
         std::cout << "Average Intensity Difference: " << diffFilter->GetMeanDifference() << "\n";
         std::cout << "Overall Intensity Difference: " << diffFilter->GetTotalDifference() << "\n";
       }
-
-      return EXIT_SUCCESS;
     }
   }
-
-  if (requestedAlgorithm == Nifti2Dicom)
+  else if (requestedAlgorithm == Nifti2Dicom)
   {
     auto referenceDicom = targetImageFile;
     cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+    std::cout << "Finished writing the DICOM file.\n";
   }
-
-  if (requestedAlgorithm == Nifti2DicomSeg)
+  else if (requestedAlgorithm == Nifti2DicomSeg)
   {
     if (TImageType::ImageDimension != 3)
     {
@@ -281,10 +269,8 @@ int algorithmsRunner()
       std::cerr << "The supplied reference DICOM directory, '" << targetImageFile << "' was not detected as a directory. Please try again.\n";
     }
     cbica::ConvertNiftiToDicomSeg(inputImageFile, actualDicomReferenceDir, dicomSegJSON, outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ChangeValue)
+  else if (requestedAlgorithm == ChangeValue)
   {
     auto outputImage = cbica::ChangeImageValues< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), changeOldValues, changeNewValues);
 
@@ -298,9 +284,9 @@ int algorithmsRunner()
     {
       return EXIT_FAILURE;
     }
-  }
 
-  if (requestedAlgorithm == Casting)
+  }
+  else if (requestedAlgorithm == Casting)
   {
     if (targetImageFile == "uchar")
     {
@@ -381,10 +367,8 @@ int algorithmsRunner()
     }
 
     std::cout << "Casting completed.\n";
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == TestComparison)
+  else if (requestedAlgorithm == TestComparison)
   {
     auto diffFilter = itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
@@ -417,10 +401,8 @@ int algorithmsRunner()
       std::cerr << "Images are in different spaces (size/origin/spacing mismatch).\n";
       return EXIT_FAILURE;
     }
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == BoundingBox)
+  else if (requestedAlgorithm == BoundingBox)
   {
     if (!cbica::ImageSanityCheck(inputImageFile, targetImageFile))
     {
@@ -546,10 +528,8 @@ int algorithmsRunner()
     }
 
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ThresholdAbove)
+  else if (requestedAlgorithm == ThresholdAbove)
   {
     auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -557,10 +537,8 @@ int algorithmsRunner()
     thresholder->ThresholdAbove(thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ThresholdBelow)
+  else if (requestedAlgorithm == ThresholdBelow)
   {
     auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -568,10 +546,8 @@ int algorithmsRunner()
     thresholder->ThresholdBelow(thresholdBelow);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ThresholdAboveAndBelow)
+  else if (requestedAlgorithm == ThresholdAboveAndBelow)
   {
     auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -579,10 +555,8 @@ int algorithmsRunner()
     thresholder->ThresholdOutside(thresholdBelow, thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ThresholdBinary)
+  else if (requestedAlgorithm == ThresholdBinary)
   {
     auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -592,10 +566,8 @@ int algorithmsRunner()
     thresholder->SetUpperThreshold(thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ThresholdOtsu)
+  else if (requestedAlgorithm == ThresholdOtsu)
   {
     auto thresholder = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -608,16 +580,12 @@ int algorithmsRunner()
     thresholder->Update();
     std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ConvertFormat)
+  else if (requestedAlgorithm == ConvertFormat)
   {
     cbica::WriteImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == Image2World)
+  else if (requestedAlgorithm == Image2World)
   {
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
     auto coordinate_split = cbica::stringSplit(coordinateToTransform, ",");
@@ -634,10 +602,8 @@ int algorithmsRunner()
     typename TImageType::PointType output;
     inputImage->TransformIndexToPhysicalPoint(indexToConvert, output);
     std::cout << indexToConvert << " ==> " << output << "\n";
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == World2Image)
+  else if (requestedAlgorithm == World2Image)
   {
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
     auto coordinate_split = cbica::stringSplit(coordinateToTransform, ",");
@@ -654,33 +620,29 @@ int algorithmsRunner()
     }
     inputImage->TransformPhysicalPointToIndex(indexToConvert, output);
     std::cout << indexToConvert << " ==> " << output << "\n";
-    return EXIT_SUCCESS;
   }
 
   // if no other algorithm has been selected and mask & output files are present and in same space as input, apply it
-  if (cbica::isFile(inputMaskFile) && !outputImageFile.empty())
+  else if (cbica::isFile(inputMaskFile) && !outputImageFile.empty())
   {
     auto errorMessage = "The input mask and mask are not in the same space.\n";
-    if (TImageType::ImageDimension != 4)
+    if (cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
     {
-      if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
-      {
-        std::cerr << errorMessage;
-        return EXIT_FAILURE;
-      }
       auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
       masker->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
       masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
       masker->Update();
       cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
     }
-    else
+    else if (TImageType::ImageDimension == 4)
     {
+      // input image is 4D and mask is 3D
       if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile, true))
       {
         std::cerr << errorMessage;
         return EXIT_FAILURE;
       }
+
       auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
       using TBaseImageType = itk::Image< typename TImageType::PixelType, 3 >;
       auto maskImage = cbica::ReadImage< TBaseImageType >(inputMaskFile);
@@ -703,8 +665,15 @@ int algorithmsRunner()
       auto output = cbica::GetJoinedImage< TBaseImageType, TImageType >(outputImages, inputImage->GetSpacing()[3]);
       cbica::WriteImage< TImageType >(output, outputImageFile);
     }
-
-    return EXIT_SUCCESS;
+    else
+    {
+      std::cerr << errorMessage;
+      return EXIT_FAILURE;
+    }
+  }
+  else
+  {
+    // no algorithm has been selected
   }
   
   return EXIT_SUCCESS;
@@ -1212,11 +1181,16 @@ int main(int argc, char** argv)
       std::cout << "Original Image Orientation: " << output.first << "\n";
       std::string path, base, ext;
       cbica::splitFileName(outputImageFile, path, base, ext);
+      if (ext.find(".nii") != std::string::npos)
+      {
+        std::cerr << "WARNING: NIfTI files do support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
+      }
       if (ext != ".mha")
       {
         auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
         cbica::WriteImage< ImageType >(output.second, tempOutputFile);
-        cbica::WriteImage< ImageType >(cbica::ReadImage< ImageType >(tempOutputFile), outputImageFile);
+        auto reorientedInput = cbica::ReadImage< ImageType >(tempOutputFile);
+        cbica::WriteImage< ImageType >(reorientedInput, outputImageFile);
         std::remove(tempOutputFile.c_str());
       }
       else

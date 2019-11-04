@@ -112,13 +112,15 @@ int main(int argc, char** argv)
           argv_complete += " " + std::string(argv[i]);
         }
         // Pass them in
-        std::cout << "file " + file + "\n";
-        std::cout << "cwlFileBase " + cwlFileBase + "\n"; 
-        std::cout << "cwlFileBase_actual " + cwlFileBase_actual + "\n"; 
-
-        auto strpath = getApplicationPath(cwlFileBase_actual);
-
-        return std::system((strpath + argv_complete).c_str());
+        auto commandToRun = getApplicationPath(cwlFileBase_actual) + argv_complete;
+        //std::cout << "[DEBUG] commandToRun: " << commandToRun << "\n";
+// #ifndef WIN32
+        return std::system(commandToRun.c_str());
+// #else
+//         auto returnCode = std::system(commandToRun.c_str());
+//         std::system("pause");
+//         return returnCode;
+// #endif
       }
     }
   }

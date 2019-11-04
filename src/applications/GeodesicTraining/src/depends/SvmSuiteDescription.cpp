@@ -373,14 +373,16 @@ std::vector<SvmSuite::SvmDescription> SvmSuite::SvmDescription::GetDefaultSvmDes
 {
 	SvmDescription rbfDesc;
 	rbfDesc.SetKernelType(cv::ml::SVM::KernelTypes::RBF);
-	rbfDesc.SetParameterRangeAuto(cv::ml::SVM::C);
+	// rbfDesc.SetParameterRangeAuto(cv::ml::SVM::C);
+	rbfDesc.SetParameterRange(cv::ml::SVM::C, 1.0, 400, 2.5);
 	rbfDesc.SetParameterRangeAuto(cv::ml::SVM::GAMMA);
 	rbfDesc.SetConsiderWeights(true);
 	rbfDesc.SetImportance(0.4);
 
 	SvmDescription chi2Desc;
 	chi2Desc.SetKernelType(cv::ml::SVM::KernelTypes::CHI2);
-	chi2Desc.SetParameterRangeAuto(cv::ml::SVM::C);
+	chi2Desc.SetParameterRange(cv::ml::SVM::C, 1.0, 400, 2.5);
+	// chi2Desc.SetParameterRangeAuto(cv::ml::SVM::C);
 	chi2Desc.SetParameterRangeAuto(cv::ml::SVM::GAMMA);
 	chi2Desc.SetConsiderWeights(true);
 	chi2Desc.SetImportance(0.3);
