@@ -89,7 +89,6 @@ int main(int argc, char** argv)
   {
     for (auto & file : cwlFiles)
     {
-
       auto cwlFileBase = cbica::getFilenameBase(file);
       auto cwlFileBase_actual = cwlFileBase;
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
@@ -111,7 +110,15 @@ int main(int argc, char** argv)
           argv_complete += " " + std::string(argv[i]);
         }
         // Pass them in
-        return std::system((getApplicationPath(cwlFileBase_actual) + argv_complete).c_str());
+        auto commandToRun = getApplicationPath(cwlFileBase_actual) + argv_complete;
+        //std::cout << "[DEBUG] commandToRun: " << commandToRun << "\n";
+#ifndef WIN32
+        return std::system(commandToRun.c_str());
+#else
+        auto returnCode = std::system(commandToRun.c_str());
+        std::system("pause");
+        return returnCode;
+#endif
       }
     }
   }

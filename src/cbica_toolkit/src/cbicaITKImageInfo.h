@@ -137,7 +137,7 @@ namespace cbica
         
   protected:
     std::string m_fileName;
-    itk::SmartPointer<itk::ImageIOBase> m_itkImageIOBase;
+    itk::ImageIOBase::Pointer m_itkImageIOBase;
     std::vector<double> m_spacings;
     std::vector<double> m_origins;
     std::vector<itk::SizeValueType> m_size;
