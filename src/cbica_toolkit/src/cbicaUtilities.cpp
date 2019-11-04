@@ -1992,6 +1992,7 @@ namespace cbica
         baseName = std::string(basename_var);
       }
 
+#ifdef __APPLE__
       idx = baseName.rfind('.');
       
       if (idx != std::string::npos)
@@ -2003,6 +2004,7 @@ namespace cbica
           baseName = replaceString(baseName, extension, "");
         }
       }
+#endif
 
 #if (_MSC_VER >= 1700)
       path_name[0] = NULL;
