@@ -65,6 +65,8 @@ int main(int argc, char** argv)
   std::string(PROJECT_SOURCE_DIR) + "/data/cwlFiles"
 #endif
   ;
+  // std::cout << cwlFolderPath + "\n"; 
+
   auto cwlFiles = cbica::filesInDirectory(cwlFolderPath);
 
   // parse the command line
@@ -112,13 +114,13 @@ int main(int argc, char** argv)
         // Pass them in
         auto commandToRun = getApplicationPath(cwlFileBase_actual) + argv_complete;
         //std::cout << "[DEBUG] commandToRun: " << commandToRun << "\n";
-#ifndef WIN32
+// #ifndef WIN32
         return std::system(commandToRun.c_str());
-#else
-        auto returnCode = std::system(commandToRun.c_str());
-        std::system("pause");
-        return returnCode;
-#endif
+// #else
+//         auto returnCode = std::system(commandToRun.c_str());
+//         std::system("pause");
+//         return returnCode;
+// #endif
       }
     }
   }
