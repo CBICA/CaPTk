@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.3.nonRelease.20190821</span>
+   &#160;<span id="projectnumber">1.7.3.nonRelease.20191101</span>
    </div>
   </td>
  </tr>
@@ -66,13 +66,35 @@ $(document).ready(function(){initNavTree('tr_FeatureExtraction.html','');});
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="tr_fe_defaults"></a>
 Defaults</h1>
-<p>Here we describe the various defaults.</p>
+<h2><a class="anchor" id="tr_fe_def_main"></a>
+Main Default Feature Extraction Parameters</h2>
+<p>For details, please see <a href="https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/1_params_default.csv">https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/1_params_default.csv</a>.</p>
+<h2><a class="anchor" id="tr_fe_def_lattice"></a>
+Lattice Feature Extraction Parameters</h2>
+<p>For details, please see <a href="https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/2_params_default_lattice.csv">https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/2_params_default_lattice.csv</a>.</p>
 <h1><a class="anchor" id="tr_fe_batch"></a>
 Batch Mode</h1>
-<p>Here we describe the batch processing mode.</p>
-<h1><a class="anchor" id="tr_fe_somethingElse"></a>
-Something Else</h1>
-<p>And the list goes on.</p>
+<p>An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureExtraction.csv</b>. An explanation of the inputs is given below (the headers are case-insensitive):</p>
+<table border="1">
+<tr>
+<td align="center"><b>Header</b> </td><td align="center"><b>Description</b>  </td></tr>
+<tr>
+<td>PATIENT_ID </td><td>The subject ID of the images getting processed  </td></tr>
+<tr>
+<td>IMAGES </td><td>The co-registered input images for whom features are to be extracted; separated by '|'  </td></tr>
+<tr>
+<td>MODALITIES </td><td>The corresponding modalities used in the output CSV; separated by '|'  </td></tr>
+<tr>
+<td>ROIFile </td><td>The mask file which defines the annotated regions for extracting features  </td></tr>
+<tr>
+<td>SELECTED_ROI </td><td>The selected annotations from which to extract features; separated by '|'  </td></tr>
+<tr>
+<td>ROI_LABEL </td><td>The corresponding annotation labels used in the output CSV; separated by '|'  </td></tr>
+<tr>
+<td>OUTPUT (OPTIONAL) </td><td>The output file for the current subject  </td></tr>
+<tr>
+<td>PARAM_FILE (OPTIONAL) </td><td>The parameter file for the current subject  </td></tr>
+</table>
 <h1><a class="anchor" id="tr_fe_math"></a>
 Extracted Features</h1>
 <table border="1">
@@ -122,7 +144,7 @@ Kurtosis = \( \frac{\sum_{i=1}^{N}(X_{i} - \bar{X})^{4}/N}{s^{4}} \) where \(\ba
 <li>
 Bin Frequency </li>
 </ul>
-</td><td>Num_Bins </td><td>N.A. </td><td>10 </td><td><ul>
+</td><td>Bins </td><td>N.A. </td><td>10 </td><td><ul>
 <li>
 Uses number of bins as input and the number of pixels in each bin would be the output. </li>
 </ul>
@@ -152,6 +174,10 @@ Elongation </li>
 Roundness </li>
 <li>
 Eccentricity </li>
+<li>
+Ellipse Diameter </li>
+<li>
+Equivalent Spherical Radius </li>
 </ul>
 </td><td>Dimensions <br />
 Axis </td><td>2D:3D <br />
@@ -204,9 +230,7 @@ Correlation</p>
 <p class="endli"></p>
 </li>
 </ul>
-</td><td>Num_Bins <br />
-<br />
-Num_Directions <br />
+</td><td>Bins <br />
 <br />
 Radius <br />
 <br />
@@ -215,8 +239,6 @@ Dimensions <br />
 Offset <br />
 <br />
 Axis </td><td>N.A. <br />
-<br />
-3:13 <br />
 <br />
 N.A. <br />
 <br />
@@ -281,9 +303,7 @@ LRLGE </li>
 <p class="endli"></p>
 </li>
 </ul>
-</td><td>Num_Bins <br />
-<br />
-Num_Directions <br />
+</td><td>Bins <br />
 <br />
 Radius <br />
 <br />
@@ -291,12 +311,7 @@ Dimensions <br />
 <br />
 Axis <br />
 <br />
-Offset <br />
-<br />
-Distance_Range </td><td>N.A. <br />
-<br />
-3:13 <br />
-<br />
+Offset </td><td>N.A. <br />
 <br />
 N.A. <br />
 <br />
@@ -304,12 +319,9 @@ N.A. <br />
 <br />
 x,y,z <br />
 <br />
-Individual/Average/Combined<br />
-<br />
-1:5 </td><td>10 <br />
+Individual/Average/Combined </td><td>10 <br />
 <br />
 13 <br />
-<br />
 <br />
 2 <br />
 <br />
@@ -359,27 +371,17 @@ Complexity </li>
 <li>
 Strength </li>
 </ul>
-</td><td>Num_Bins <br />
-<br />
-Num_Directions <br />
+</td><td>Bins <br />
 <br />
 Dimensions <br />
 <br />
-Axis <br />
-<br />
-Distance_Range </td><td>N.A. <br />
-<br />
-3:13 <br />
- <br />
+Axis </td><td>N.A. <br />
 <br />
 2D:3D <br />
 <br />
-x,y,z <br />
-<br />
-1:5 </td><td>10 <br />
+x,y,z </td><td>10 <br />
 <br />
 13 <br />
-<br />
 <br />
 3D <br />
 <br />
@@ -434,31 +436,21 @@ GLV </li>
 <p class="endli"></p>
 </li>
 </ul>
-</td><td>Num_Bins <br />
-<br />
-Num_Directions <br />
+</td><td>Bins <br />
 <br />
 Radius <br />
 <br />
 Dimensions <br />
 <br />
-Axis <br />
-<br />
-Distance_Range </td><td>N.A. <br />
-<br />
-3:13 <br />
-<br />
+Axis </td><td>N.A. <br />
 <br />
 N.A. <br />
 <br />
 2D:3D <br />
 <br />
-x,y,z <br />
-<br />
-1:5 </td><td>10 <br />
+x,y,z </td><td>10 <br />
 <br />
 13 <br />
-<br />
 <br />
 2 <br />
 <br />
@@ -491,6 +483,51 @@ Long Zone Low Grey-Level Emphasis (LZLGE) = \( \frac{1}{n_r}\sum_{i}^{M}\sum_{j}
 Long Zone High Grey-Level Emphasis (LZHGE) = \( \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}p(i,j) \cdot i^2 \cdot j^2 \) </li>
 </ul>
 All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.  </td></tr>
+<tr>
+<td align="center">Lattice<br />
+-based </td><td><ul>
+<li>
+Selected features </li>
+<li>
+Feature Maps </li>
+</ul>
+</td><td><ul>
+<li>
+FullImage </li>
+<li>
+Window </li>
+<li>
+Step </li>
+<li>
+Boundary </li>
+<li>
+PatchBoundary </li>
+</ul>
+</td><td><ul>
+<li>
+0-1 </li>
+<li>
+(mm)0:ImageSize </li>
+<li>
+(mm)0:ImageSize </li>
+<li>
+NoPadding:ZeroPadding </li>
+<li>
+Full:ROI:None </li>
+</ul>
+</td><td><ul>
+<li>
+0 </li>
+<li>
+6.3 </li>
+<li>
+6.3 </li>
+<li>
+NoPadding </li>
+<li>
+Full </li>
+</ul>
+</td><td>Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriptions.   </td></tr>
 </table>
 <p>The parameterization of the <b>lattice-based strategy</b> for feature extraction is defined by:</p><ul>
 <li>The grid spacing representing the distance between consecutive lattice points (Default: 6.3mm).</li>

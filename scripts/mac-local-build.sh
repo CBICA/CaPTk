@@ -28,40 +28,60 @@ CAPTK_CMD () {
 # tar xfz binaries_macos.zip --directory externalApps
 
 # rm -rf CMakeCache.txt
-# # echo "Run Dependency Manager"
-# # echo $CC
-# ### COMMENT OUT THE LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
+# echo "Run Dependency Manager"
+# echo $CC
+### COMMENT OUT THE LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
+# wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
+# wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+
 # export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 # export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-# cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
-# # cmake ../ -DCMAKE_INSTALL_PREFIX="./superbuild"
+# cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+# cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
 # make -j 2
 
-### BUILD CAPTK
-sudo rm -rf CaPTk_*
+# ### BUILD CAPTK
+# sudo rm -rf CaPTk_*
 
-echo "Run CaPTk Build"
+# echo "Run CaPTk Build"
+
+# cmake ../
+# rm CMakeCache.txt
+# export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+# export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+
+# export CMAKE_PREFIX_PATH=/Users/phucngo/Desktop/CaPTk/bin/ITK-build:/Users/phucngo/Desktop/CaPTk/bin/DCMTK-build:/Users/phucngo/Desktop/CaPTk/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+# cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
+
+# make -j 2
+
+version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+pkgname="_Installer"
+pkgname="$version$pkgname"
+
+sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
+
+rm -rf CaPTk*.app
 
 cmake ../
 rm CMakeCache.txt
 export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-cmake ../
-make -j 2
 
-version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-pkgname="_Installer"
-pkgname="$version$pkgname"
+export CMAKE_PREFIX_PATH=/Users/phucngo/Desktop/CaPTk/bin/ITK-build:/Users/phucngo/Desktop/CaPTk/bin/DCMTK-build:/Users/phucngo/Desktop/CaPTk/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
+
+make -j 2
 
 rm -rf *.pkg 
 rm -rf _CPack*
 make package
 
 # sudo install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib @executable_path/../../Frameworks/libomp.dylib ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/bin/DeepMedic
-``
-pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
+
+pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
 productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
 
@@ -85,7 +105,7 @@ xml='<?xml version="1.0" encoding="utf-8"?>
 
 echo $xml > "./distribution.xml"
 
-productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
+productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
 }
 

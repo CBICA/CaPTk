@@ -15,96 +15,138 @@ jobs:
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-      fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+      # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+
+    # submodule 
+    - bash: |
+        git submodule update --init --recursive
+        # ls -lt
+        # ls ./src/applications/Preprocessing/greedy
+      displayName: 'Git Submodule Init and Update'
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_windows.tar.gz" | "$(Build.DefinitionName)"'
-        path: $(Build.SourcesDirectory) 
+        key: '"bin_windows_20191101.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_WINDOWS
         restoreKeys: |
-          "bin_windows.tar.gz"
+          "bin_windows_20191101.tar.gz"
         continueOnError : true
       displayName: 'Caching'
 
     - script: |
-        choco install doxygen.install git-lfs.install nsis.install
-        git lfs install
+        choco install doxygen.install nsis.install wget
       displayName: 'Install dependencies'
-  
-    # Pull LFS
-    - bash: |
-        export GIT_LFS_SKIP_SMUDGE=1
-        git lfs pull --include "binaries/precompiledApps/windows.zip"
-        git lfs pull --include "binaries/qt_5.12.1/windows.zip"
-        #echo "Not doing this until quota is improved on GitHub"
-      displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+
+    # # Pull LFS
+    # - bash: |
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #     # git lfs pull --include "binaries/precompiledApps/windows.zip"
+    #     # git lfs pull --include "binaries/qt_5.12.1/windows.zip"
+    #     #echo "Not doing this until quota is improved on GitHub"
+    #   displayName: 'Pull LFS'
+    #   condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # - powershell: |
     #     wmic logicaldisk get size,freespace,caption
     #   displayName: 'Disk space check'
 
-    # Moving LFS Files
     - bash: |
-        mkdir bin
-        cd bin
-        mv ../binaries/precompiledApps/windows.zip ./binaries_windows.zip
-        mv ../binaries/qt_5.12.1/windows.zip ./qt.zip
-        rm -rf ../binaries/*
-        rm -rf ../data/georgetown
-        rm -rf ../data/georgetown
-        rm -rf ../docs
-        rm -rf ../src/applications/individualApps/libra_source/doc
-        rm -rf ../src/applications/individualApps/libra_source/LIBRA_Software_Manual.pdf
-        rm -rf ../.git
-        ls -lt
-      displayName: 'Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
-
-    - bash: |
-        tar xvfz bin_windows.tar.gz
-        rm -rf bin_windows.tar.gz
-        ls
+        tar xvfz bin_windows_20191101.tar.gz
+        rm -rf bin_windows_20191101.tar.gz
+        # ls
         mv bin_windows bin
-        ls
+        # ls
         cd bin
         tar xvfz qt.tar.gz
         tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
-        # rm CMakeCache.txt 
-
+        # rm CMakeCache.txt
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
+
+    - powershell: |
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
+      displayName: 'Downloading via wget'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        mv ../binaries_windows.zip .
+        mv ../qt.zip .
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
+        rm -rf ../binaries/*
+        rm -rf ../data/georgetown
+        rm -rf ../data/georgetown
+        rm -rf ../docs
+        rm -rf ../.git
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./installLibs" -DCMAKE_CONFIGURATION_TYPES="Release" ..
+        # freeing up space
+        rm -rf ../src/applications/individualApps/libra_source/doc
+        rm -rf ../src/applications/individualApps/libra_source/LIBRA_Software_Manual.pdf
+        # freeing up space
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         cmake --build . --target ALL_BUILD --config Release
         rm -rf installLibs
         rm -rf qt.zip
+        rm -rf binaries_windows.zip
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
-    
-    - powershell: |
-        wmic logicaldisk get size,freespace,caption
-      displayName: 'Disk space check'
+
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
+
+    # - powershell: |
+    #     wmic logicaldisk get size,freespace,caption
+    #   displayName: 'Disk space check'
 
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DBUILD_TESTING=OFF ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
         cmake --build . --target ALL_BUILD --config Release
-        rm -rf binaries_windows.zip
+        rm -rf externalApps
       displayName: 'Configure and compile CaPTk'
-       
-    # - powershell: |
-    #     wmic logicaldisk get size,freespace,caption
-    #   displayName: 'Disk space check'
+
+    - powershell: |
+        get-psdrive | Where Free*
+        cd bin
+        # Remove-Item install_manifest.txt
+        pwd
+
+        switch((ls -r|measure -s Length).Sum) {
+          {$_ -gt 1GB} {
+            '{0:0.0} GiB' -f ($_/1GB)
+            break
+          }
+          {$_ -gt 1MB} {
+            '{0:0.0} MiB' -f ($_/1MB)
+            break
+          }
+          {$_ -gt 1KB} {
+            '{0:0.0} KiB' -f ($_/1KB)
+            break
+          }
+          default { "$_ bytes" }
+        }
+      displayName: 'Disk space check'
 
     #- script: |
     #    cd bin
@@ -115,20 +157,24 @@ jobs:
     #    setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
     #    cmake --build . --target RUN_TESTS --config Release
     #  displayName: 'Performing the Tests'
-    
+
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        rm -rf binaries_windows.zip
+        rm -rf install_manifest.txt
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
         cmake --build . --target PACKAGE --config Release
 
         ls -lt *_Installer.*
-    
+
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
-        
+
         cd ../
-        
-      displayName: 'Package CaPTk'
+
+      displayName: 'Build & Package CaPTk'
 
     - bash: |
         rm -rf src
@@ -136,38 +182,62 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
+        rm -rf bin_windows_20191101.tar.gz
+        rm -rf install_manifest.txt
+        rm -rf CMakeLists.txt
 
         cd bin
         rm -rf *proj*
 
-        tar cvfz qt.tar.gz qt
         tar cvfz externalApps.tar.gz externalApps
+        tar cvfz qt.tar.gz qt
 
         rm -rf qt
         rm -rf externalApps
         rm -rf _CPack*
+        rm -rf CMakeCache.txt
 
+        # cmake -UPROJECT_VERSION # delete the project version definition
+        
         cd ../
 
         mv bin bin_windows
-        tar cvfz bin_windows.tar.gz bin_windows
+        tar cvfz bin_windows_20191101.tar.gz bin_windows
+        rm -rf bin_windows
       displayName: 'Zipping bin'
-    
-    # - powershell: |
-    #     wmic logicaldisk get size,freespace,caption
-    #   displayName: 'Disk space check'
+
+    - powershell: |
+        get-psdrive | Where Free*
+
+        cd $(Build.ArtifactStagingDirectory)
+        pwd
+
+      displayName: 'Disk space check'
 
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: '$(Build.DefinitionName)_installer_Windows'
-    
+
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_Windows'
         downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+
 
 - job: 'XenialBuild'
   displayName: "End-to-end Linux (Xenial) build"
@@ -178,73 +248,82 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+      #fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+
+    # submodule 
+    - bash: |
+        git submodule update --init --recursive
+        # ls -lt
+        # ls ./src/applications/Preprocessing/greedy
+      displayName: 'Git Submodule Init and Update'
+
+    - bash: |
+        df -k .
+      displayName: 'Disk space check'
+
     - task: CacheBeta@0
       inputs:
-        key: '"bin_linux.tar.gz" | "$(Build.DefinitionName)"'
-        path: $(Build.SourcesDirectory) 
+        key: '"bin_linux_20191101.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
         restoreKeys: |
-          "bin_linux.tar.gz"
+          "bin_linux_20191101.tar.gz"
       displayName: 'Caching'
 
     # Dependency manager
     - bash: |
-        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 doxygen
-        
+        #sudo apt-get update && sudo apt-get dist-upgrade -y
+        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 
+        echo "Installing MPI stuff"
+        sudo apt-get install mpich libopenmpi-dev 
+        echo "Installing OpenGL stuff"
+        sudo apt-get install mesa-common-dev libglu1-mesa-dev libgl1-mesa-dev freeglut3-dev
+        sudo apt-get install doxygen
+        export GIT_LFS_SKIP_SMUDGE=1
       displayName: 'Install dependencies from Aptitude'
 
-    # Pull LFS
-    - bash: |
-        curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-        sudo apt-get install git-lfs
-        git lfs install
-
-        export GIT_LFS_SKIP_SMUDGE=1
-        git lfs pull --include "binaries/precompiledApps/linux.zip"
-        git lfs pull --include "binaries/qt_5.12.1/linux.zip"
-        #echo "Not doing this until quota is improved on GitHub"
-      displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
-
-    # Testing libgcrypt
-    - bash: |
-        ldconfig -p | grep libgcrypt
-        dpkg -l | grep libgcrypt
-      displayName: 'Testing libgcrypt version'
-
-    # # Testing LFS
+    # # Pull LFS
     # - bash: |
-    #     ls -lt binaries/qt_5.12.1/
-    #     ls -lt binaries/precompiledApps/
-    #   displayName: 'Testing LFS pull'
+    #     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+    #     sudo apt-get install git-lfs
+    #     git lfs install
 
-    # Moving LFS Files
-    - bash: |
-        mkdir bin
-        cd bin
-        mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
-        mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
-        ls -lt
-      displayName: 'Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #     git lfs pull --include "binaries/precompiledApps/linux.zip"
+    #     git lfs pull --include "binaries/qt_5.12.1/linux.zip"
+    #     #echo "Not doing this until quota is improved on GitHub"
+    #   displayName: 'Pull LFS'
+    #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xvfz bin_linux.tar.gz
-        rm -rf bin_linux.tar.gz
-        ls
+        tar xvfz bin_linux_20191101.tar.gz
+        rm -rf bin_linux_20191101.tar.gz
+        # ls
         mv bin_linux bin
-        ls
+        # ls
         cd bin
         tar xvfz qt.tar.gz
         tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
-        # mv binaries_windows externalApps
-        # rm CMakeCache.txt 
-
+        mv binaries_linux externalApps
+        # rm CMakeCache.txt
         ls -lt
       displayName: 'Unzip bin if cached'
       condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
+
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        # mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+        # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
@@ -254,35 +333,59 @@ jobs:
       displayName: 'Configure and compile Superbuild'
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
-    # Configure and build CaPTk
-    - bash: |
-        cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
-        make -j2
-        make install/strip
-      displayName: 'Configure and compile CaPTk'
+    # - bash: |
+    #     tar cvfz bin_linux_20191101.tar.gz bin
+    #   displayName: 'Zipping Superbuild'
 
-    # Check qt
+    - bash: |
+        df -k .
+      displayName: 'Disk space check'
+
+      # Check qt
     - bash: |
         cd bin
         ls -a
         ls ./qt/
       displayName: 'Check qt'
-      
+
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
+
+    # Configure and build CaPTk
+    - bash: |
+        cd bin
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        make -j2
+        make install/strip
+      displayName: 'Configure and compile CaPTk'
+
     # Check libra
     - bash: |
         cd bin/install/appdir/usr/bin/
         ls -l
       displayName: 'Checking ${installDir}/bin'
-      
+
+    - bash: |
+        wget http://files.directadmin.com/services/debian_7.0_64/libmysqlclient.so.18
+        sudo cp -fv libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/
+        cd /usr/lib/x86_64-linux-gnu
+        sudo chmod 755 libmysqlclient.so.18
+        sudo ldconfig
+      displayName: 'SQL lib fix for PKG_COPY_QT_LIBS'
+
     # Build a package
     - bash: |
         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf regression
         rm -rf binaries
 
-        # export PKG_FAST_MODE=1
+        export PKG_FAST_MODE=1
+        # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
         ./scripts/captk-pkg
 
@@ -291,8 +394,9 @@ jobs:
 
         rm -rf scripts
 
+        # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.bin
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
-        
+
       displayName: 'Set up environment variables for packager and build a package'
 
     - bash: |
@@ -301,6 +405,8 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
+        rm -rf bin_linux_20191101.tar.gz
+        rm -rf CMakeLists.txt
 
         cd bin
 
@@ -310,24 +416,22 @@ jobs:
         rm -rf qt
         rm -rf externalApps
         rm -rf _CPack*
+        rm -rf CMakeCache.txt
 
+        # cmake -UPROJECT_VERSION # delete the project version definition
+        
         cd ../
 
         mv bin bin_linux
-        tar cvfz bin_linux.tar.gz bin_linux
+        tar cvfz bin_linux_20191101.tar.gz bin_linux
+        rm -rf bin_linux
       displayName: 'Zipping bin'
-    
-    #- script: |
-    #    cd bin
-    #    export GIT_LFS_SKIP_SMUDGE=1
-    #    git lfs pull --include "data/TestData.zip"
-    #    make tests
-    #  displayName: 'Performing the Tests'
-    
+
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: '$(Build.DefinitionName)_installer_Linux'
+        continueOnError: true
 
     - task: DownloadBuildArtifacts@0
       inputs:
@@ -335,7 +439,21 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_Linux'
         downloadPath: '$(System.ArtifactsDirectory)'
-    
+        continueOnError: true
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC 
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+     
+
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
   timeoutInMinutes: 0
@@ -345,76 +463,72 @@ jobs:
     vmImage: 'MacOS-10.13'
 
   steps:
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+      # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+
+    # submodule 
+    - bash: |
+        git submodule update --init --recursive
+        # ls -lt
+        # ls ./src/applications/Preprocessing/greedy
+      displayName: 'Git Submodule Init and Update'
+
     - task: CacheBeta@0
       inputs:
-        key: '"bin_mac.tar.gz" | "$(Build.DefinitionName)"'
-        path: $(Build.SourcesDirectory) 
+        key: '"bin_macos_20191101.tar.gz" | "$(Build.DefinitionName)"'
+        path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_MAC
         continueOnError : true
         restoreKeys: |
-          "bin_mac.tar.gz"
+          "bin_macos_20191101.tar.gz"
       displayName: 'Caching'
 
     - bash: |
-        brew install make doxygen libomp
+        brew install make doxygen libomp openmpi glfw
         #brew install caskroom/cask/mactex # latex is not used for documentation right now
-      displayName: 'Brew dependencies'
-    
-    - bash: |
-        brew install git-lfs
-        git lfs install
-      displayName: 'Brew dependency install LFS'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
-    
-    # Pull LFS
-    - bash: |
         export GIT_LFS_SKIP_SMUDGE=1
-        git lfs pull --include "binaries/precompiledApps/macos.zip"
-        git lfs pull --include "binaries/qt_5.12.1/macos.zip"
-        #echo "Not doing this until quota is improved on GitHub"
-      displayName: 'Pull LFS'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      displayName: 'Brew dependencies'
 
-    # # Testing LFS
     # - bash: |
-    #     # ls -lt binaries/qt_5.12.1/
-    #     # ls -lt binaries/precompiledApps/
-    #     ls binaries
-    #     ls binaries/precompiledApps
-    #     ls -lt binaries/qt_5.12.1/
-    #   displayName: 'Testing binaries'
+    #     brew install git-lfs
+    #     git lfs install
+    #   displayName: 'Brew dependency install LFS'
+    #   condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
-    # Moving LFS Files
+    # # Pull LFS
+    # - bash: |
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #     git lfs pull --include "binaries/precompiledApps/macos.zip"
+    #     git lfs pull --include "binaries/qt_5.12.1/macos.zip"
+    #     #echo "Not doing this until quota is improved on GitHub"
+    #   displayName: 'Pull LFS'
+    #   condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
+
     - bash: |
-        mkdir bin
-        cd bin
-        mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-        mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
-        ls -lt
-      displayName: 'Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
-      
-    - bash: |
-        tar xvfz bin_mac.tar.gz
-        rm -rf bin_mac.tar.gz
-        ls
-        mv bin_mac bin
-        ls
+        tar xvfz bin_macos_20191101.tar.gz
+        rm -rf bin_macos_20191101.tar.gz
+        # ls
+        mv bin_macos bin
+        # ls
         cd bin
         tar xvfz qt.tar.gz
         tar xvfz externalApps.tar.gz
         rm -rf *.tar.gz
-
         ls -lt
       displayName: 'Unzip bin if cached'
-      condition: eq(variables.CACHE_RESTORED_MAC, 'true')
+      condition: eq(variables['CACHE_RESTORED_MAC'], 'true')
 
-    #- bash: |
-    #    rm -rf binaries/*linux*.zip
-    #    rm -rf binaries/*windows*.zip
-    #    rm -rf history
-    #    rm -rf src/applications/individualApps/libra/MCRInstaller.zip
-    #  displayName: 'Take the nuclear option'
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+        # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+        # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+      condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
     - bash: |
         cd bin
@@ -423,18 +537,31 @@ jobs:
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-        # cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
         make -j 2
-  
+
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_MAC, 'true')
+      condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
+
+     # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
+
+    - bash: |
+        tar cvfz bin_macos_20191101.tar.gz bin
+      displayName: 'Zipping Superbuild'
+
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
 
     - bash: |
         cd bin
-
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
         sudo rm -rf CaPTk_*
 
@@ -442,11 +569,34 @@ jobs:
         rm CMakeCache.txt
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-        cmake ../
+
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
 
         make -j 2
-      displayName: 'Export variables for llvm then configure and compile CaPTk'
-    
+      displayName: 'Configure and compile CaPTk'
+
+    - bash: |
+        cd bin
+
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+
+        sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
+
+        rm -rf CaPTk*.app
+
+        cmake ../
+        rm CMakeCache.txt
+        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
+
+        make -j 2
+
+      displayName: 'Ensure documentation is picked up properly'
+
+
     - bash: |
         cd bin
 
@@ -454,37 +604,15 @@ jobs:
         pkgname="_Installer"
         pkgname="$version$pkgname"
 
-        sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
-
-        # rm CMakeCache.txt
-        rm -rf CaPTk*.app
-
-        cmake ../
-        rm CMakeCache.txt
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-        cmake ../
-
-        make -j 2
-
-      displayName: 'Ensure documentation is picked up properly'
-    
-    
-    - bash: |
-        cd bin 
-        
-        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-        pkgname="_Installer"
-        pkgname="$version$pkgname"
-
-        rm -rf *.pkg 
-        rm -rf _CPack*
+        rm -rf *.pkg
+        # rm -rf _CPack*
+        rm -rf install_manifest.txt
         make package
-        
+
         # echo "Change deepmedic libomp dylib path"
         # sudo install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib @executable_path/../../Frameworks/libomp.dylib ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/bin/DeepMedic
 
-        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/  ./CaPTk_$version.pkg
+        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
         productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
 
@@ -504,25 +632,28 @@ jobs:
                 <pkg-ref id="com.cbica.captk"/>
             </choice>
             <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
-        </installer-gui-script>' 
+        </installer-gui-script>'
 
         echo $xml > "./distribution.xml"
 
-        productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
-        
+        productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
+
+        # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.pkg
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
         sudo rm -rf _CPack*
 
         # sudo rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
-    
+
     - bash: |
         rm -rf src
         rm -rf docs*
         rm -rf data
         rm -rf binaries
         rm -rf scripts
+        rm -rf bin_macos_20191101.tar.gz
+        rm -rf CMakeLists.txt
 
         cd bin
         tar cvfz qt.tar.gz qt
@@ -531,19 +662,25 @@ jobs:
         rm -rf qt
         rm -rf externalApps
         rm -rf _CPack*
+        rm -rf CMakeCache.txt
+        
+        # cmake -UPROJECT_VERSION # delete the project version definition
+        
         cd ../
         # ls
-        mv bin bin_mac
+        mv bin bin_macos
         # ls
-        tar cvfz bin_mac.tar.gz bin_mac
+        tar cvfz bin_macos_20191101.tar.gz bin_macos
+        # rm -rf bin_macos
       displayName: 'Zipping bin'
+      
     #- script: |
     #    cd bin
     #    export GIT_LFS_SKIP_SMUDGE=1
     #    git lfs pull --include "data/TestData.zip"
     #    make tests
     #  displayName: 'Performing the Tests'
-    
+
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -555,7 +692,173 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
-  
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+
+
+# - job: 'DockerBuild'
+#   displayName: "End-to-end Docker_CentOS image build and push"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 360
+
+#   variables:
+#     dockerId: cbica
+#     imageName: captk
+#     tagName: latest
+
+#   pool:
+#     vmImage: 'Ubuntu-16.04'
+
+#   steps:
+#     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+#       # fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+
+#     - task: Docker@1 
+#       displayName: 'Build the Image'
+#       inputs:
+#         containerregistrytype: 'container Registry'
+#         dockerRegistryEndpoint: cbicaDockerHub
+#         imageName: 'cbica/captk:latest'
+#         command: build an image
+#         dockerFile: '**/Dockerfile'
+
+#     - task: Docker@1
+#       displayName: Login
+#       inputs:
+#         containerregistrytype: 'container Registry'
+#         dockerRegistryEndpoint: cbicaDockerHub
+#         command: login
+
+#     - task: Docker@1
+#       displayName: 'Push the Image'
+#       inputs:
+#         command: push an image
+#         imageName: 'cbica/captk:latest'
+
+# - job: 'CentOSBuild'
+#   displayName: "End-to-end Linux (CentOS) build on Docker"
+#   timeoutInMinutes: 0
+#   cancelTimeoutInMinutes: 300
+
+#   pool:
+#     vmImage: 'Ubuntu-16.04'
+
+#   container: centos
+
+#   steps:
+#     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+#       #fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+
+#     # submodule 
+#     - bash: |
+#         cd CaPTk
+#         git submodule init
+#         git submodule update
+#       displayName: 'Git Submodule Init and Update'
+
+#     # # Pull LFS
+#     # - bash: |
+#     #     export GIT_LFS_SKIP_SMUDGE=1
+#     #     git lfs pull --include "binaries/precompiledApps/linux.zip"
+#     #     git lfs pull --include "binaries/qt_5.12.1/linux.zip"
+#     #     #echo "Not doing this until quota is improved on GitHub"
+#     #   displayName: 'Pull LFS'
+#     #   # condition: ne(variables.CACHE_RESTORED_LINUX_CENTOS, 'true')
+
+#     # Configure and build CaPTk
+#     - bash: |
+#         cd CaPTk/bin
+#         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+#         cmake -DITK_DIR=$(Build.SourcesDirectory)/bin/ITK-build -DDCMTK_DIR=$(Build.SourcesDirectory)/bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF -DQT_DOWNLOAD_FORCE=ON ..
+#         make -j2
+#         make install/strip
+#       displayName: 'Configure and compile CaPTk'
+
+#     # Check qt
+#     - bash: |
+#         cd $(Build.SourcesDirectory)/bin
+#         ls -a
+#         ls ./qt/
+#       displayName: 'Check qt'
+
+#     # Check libra
+#     - bash: |
+#         cd $(Build.SourcesDirectory)/bin/install/appdir/usr/bin/
+#         ls -l
+#       displayName: 'Checking ${installDir}/bin'
+
+#     # Build a package
+#     - bash: |
+#         cd $(Build.SourcesDirectory)
+#         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
+#         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+#         rm -rf regression
+#         rm -rf binaries
+
+#         # export PKG_FAST_MODE=1
+#         ./scripts/captk-pkg
+
+#         rm -rf src
+#         rm -rf docs*
+#         rm -rf scripts
+
+#         mv *_Installer.* $(Build.ArtifactStagingDirectory)
+
+#       displayName: 'Set up environment variables for packager and build a package'
+
+#     - bash: |
+#         cd $(Build.SourcesDirectory)
+#         rm -rf src
+#         rm -rf docs*
+#         rm -rf data
+#         rm -rf binaries
+#         rm -rf scripts
+
+#         cd bin
+
+#         tar cvfz qt.tar.gz qt
+#         tar cvfz externalApps.tar.gz externalApps
+
+#         rm -rf qt
+#         rm -rf externalApps
+#         rm -rf _CPack*
+
+#         cd ../
+
+#         mv bin bin_linux
+#         tar cvfz bin_linux_centos.tar.gz bin_linux
+#       displayName: 'Zipping bin'
+
+#     #- script: |
+#     #    cd bin
+#     #    export GIT_LFS_SKIP_SMUDGE=1
+#     #    git lfs pull --include "data/TestData.zip"
+#     #    make tests
+#     #  displayName: 'Performing the Tests'
+
+#     # - task: PublishBuildArtifacts@1
+#     #   inputs:
+#     #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#     #     artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
+
+#     # - task: DownloadBuildArtifacts@0
+#     #   inputs:
+#     #     buildType: 'current'
+#     #     downloadType: 'single'
+#     #     artifactName: '$(Build.DefinitionName)_installer_Linux_centos'
+#     #     downloadPath: '$(System.ArtifactsDirectory)'
+
+
 #### SELF-HOSTED AGENTS
 
 # - job: 'XenialSelfHostedBuild'
@@ -597,18 +900,20 @@ jobs:
 #         ls -a
 #         ls ./qt/
 #       displayName: 'Check qt'
-      
+
 #     # Check libra
 #     - bash: |
 #         cd bin/install/appdir/usr/bin/
 #         ls -l
 #       displayName: 'Checking ${installDir}/bin'
-      
+
 #     # Build a package
 #     - bash: |
 #         export PATH=`pwd`/bin/qt/5.12.1/bin:$PATH
 #         export PATH=`pwd`/bin/qt/5.12.1/libexec:$PATH
 #         export CMAKE_PREFIX_PATH=`pwd`/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+#         export PKG_FAST_MODE=1
+#         export PKG_COPY_QT_LIBS=1
 
 #         make install
 
@@ -617,7 +922,7 @@ jobs:
 #         rm -rf bin
 
 #         mv CaPTk_*_Installer.bin $(Build.ArtifactStagingDirectory)
-        
+
 #       displayName: 'Set up environment variables for packager and build a package'
 
 #     - task: PublishBuildArtifacts@1
@@ -655,9 +960,9 @@ jobs:
 #       displayName: 'Export variables'
 
 #     - bash: |
-#         mkdir bin
+#         mkdir -p bin
 #       displayName: 'Create build directory'
-  
+
 #     - bash: |
 #         cd bin
 
@@ -680,9 +985,9 @@ jobs:
 #         cmake ../
 #         cmake ../
 
-#         make 
+#         make
 #       displayName: 'Export variables for llvm then configure and compile CaPTk'
-  
+
 #     - bash: |
 #         cd bin
 
@@ -697,13 +1002,13 @@ jobs:
 #         cmake ../
 #         cmake ../
 
-#         make 
+#         make
 #       displayName: 'Ensure documentations are picked up properly'
-  
-  
+
+
 #     - bash: |
-#         cd bin 
-      
+#         cd bin
+
 #         make package
 
 #         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
@@ -730,12 +1035,12 @@ jobs:
 #                 <pkg-ref id="com.cbica.captk"/>
 #             </choice>
 #             <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
-#         </installer-gui-script>' 
+#         </installer-gui-script>'
 
 #         echo $xml > "./distribution.xml"
 
 #         productbuild --distribution ./distribution.xml --resources ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
-      
+
 #         mv *Installer.pkg $(Build.ArtifactStagingDirectory)
 #         rm -rf *
 #       displayName: 'Package CaPTk (.dmg and .pkg)'

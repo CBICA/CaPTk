@@ -1,6 +1,8 @@
 #ifndef H_CBICA_UTIL_GTS
 #define H_CBICA_UTIL_GTS
 
+#pragma warning(disable : 4996) //_CRT_SECURE_NO_WARNINGS
+
 #include <ctime>
 #include <chrono>
 #include <iostream>

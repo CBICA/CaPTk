@@ -180,29 +180,19 @@
     <filename>LungCancer_SBRT</filename>
   </compound>
   <compound kind="page">
-    <name>Perfusion_Alignment</name>
-    <title>Miscellaneous: Perfusion Alignment</title>
-    <filename>Perfusion_Alignment</filename>
-  </compound>
-  <compound kind="page">
-    <name>Perfusion_Derivatives</name>
-    <title>Miscellaneous: Perfusion Derivatives</title>
-    <filename>Perfusion_Derivatives</filename>
-  </compound>
-  <compound kind="page">
     <name>Diffusion_Derivatives</name>
     <title>Miscellaneous: Diffusion Derivatives</title>
     <filename>Diffusion_Derivatives</filename>
   </compound>
   <compound kind="page">
-    <name>PCA_Extraction</name>
-    <title>Miscellaneous: PCA Volume Extraction</title>
-    <filename>PCA_Extraction</filename>
-  </compound>
-  <compound kind="page">
     <name>Training_Module</name>
     <title>Miscellaneous: Training Module</title>
     <filename>Training_Module</filename>
+  </compound>
+  <compound kind="page">
+    <name>ht_utilities</name>
+    <title>Utilities (CLI only)</title>
+    <filename>ht_utilities</filename>
   </compound>
   <compound kind="page">
     <name>Science</name>
@@ -223,8 +213,9 @@
     <title>Feature Extraction</title>
     <filename>tr_FeatureExtraction</filename>
     <docanchor file="tr_FeatureExtraction" title="Defaults">tr_fe_defaults</docanchor>
+    <docanchor file="tr_FeatureExtraction" title="Main Default Feature Extraction Parameters">tr_fe_def_main</docanchor>
+    <docanchor file="tr_FeatureExtraction" title="Lattice Feature Extraction Parameters">tr_fe_def_lattice</docanchor>
     <docanchor file="tr_FeatureExtraction" title="Batch Mode">tr_fe_batch</docanchor>
-    <docanchor file="tr_FeatureExtraction" title="Something Else">tr_fe_somethingElse</docanchor>
     <docanchor file="tr_FeatureExtraction" title="Extracted Features">tr_fe_math</docanchor>
   </compound>
   <compound kind="page">

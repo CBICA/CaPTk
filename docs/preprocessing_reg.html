@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.3.nonRelease.20190821</span>
+   &#160;<span id="projectnumber">1.7.3.nonRelease.20191101</span>
    </div>
   </td>
  </tr>
@@ -75,7 +75,7 @@ $(document).ready(function(){initNavTree('preprocessing_reg.html','');});
 <li>Specify the moving images (up to 5) and their respective output images.</li>
 <li>Click on 'Register'.</li>
 <li>The output image is saved in the specified locations.</li>
-<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/GreedyRegistration.exe -i C:/test/moving.nii.gz -f C:/test/fixed.nii.gz -o C:/test/output.nii.gz -t C:/test/output.mat -reg -trf -a -m MI -n 100x50x5 -th 4
+<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/Preprocessing.exe -i moving.nii.gz -rFI fixed.nii.gz -o output.nii.gz -reg Affine -rME NCC-2x2x2 -rIS 1 -rNI 100,50,5
 </pre></li>
 </ol>
 <hr/>

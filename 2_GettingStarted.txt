@@ -106,6 +106,12 @@ The "Overlay" functionality enables the visualization between two loaded images:
 -# Check the tick box "Change Opacity".
 -# Moving the slider changes the opacity between the "Overlay" and the "Underlay" images.
 
+
+The "Comparison Mode" puts the loaded images (3 maximum) side-by-side for easy visualization along the same axis.
+
+\image html comparisonMode.png "Comparison Mode visualization"
+\image latex comparisonMode.png "Comparison Mode visualization"
+
 --------
 
 \section gs_tabDocking Tab Docking (Windows-only)
@@ -388,6 +394,10 @@ sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sud
   - https://community.khronos.org/t/how-to-update-opengl/75314
   - https://ubuntuforums.org/showthread.php?t=2326268
   - https://www.techwalla.com/articles/how-to-update-opengl-drivers
+  - [A reply to a related issue](https://github.com/CBICA/CaPTk/issues/654#issuecomment-543744366):
+\verbatim
+MESA_GL_VERSION_OVERRIDE=4.5 #put the opengl version you want to use here
+\endverbatim
 
 \section gs_FAQ_4 What if I am having issues with the Linux Installer?
 
