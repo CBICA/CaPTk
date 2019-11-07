@@ -1952,6 +1952,7 @@ namespace cbica
       if (idx != std::string::npos)
       {
         extension = "." + dataFile_wrap.substr(idx + 1);
+
         if (extension.find("/") != std::string::npos)
           extension = "";
         else {
@@ -1961,7 +1962,6 @@ namespace cbica
         }
       }
       // else // there is no extension for file
-
       path_name = dirname(cbica::constCharToChar(dataFile_wrap.c_str()));
       basename_var = basename(cbica::constCharToChar(dataFile_wrap.c_str()));
 #endif
@@ -1991,6 +1991,20 @@ namespace cbica
       {
         baseName = std::string(basename_var);
       }
+
+#ifdef __APPLE__
+      idx = baseName.rfind('.');
+      
+      if (idx != std::string::npos)
+      {
+        extension = "." + baseName.substr(idx + 1);
+        if (extension.find("/") != std::string::npos)
+          extension = "";
+        else {
+          baseName = replaceString(baseName, extension, "");
+        }
+      }
+#endif
 
 #if (_MSC_VER >= 1700)
       path_name[0] = NULL;
@@ -2035,7 +2049,7 @@ namespace cbica
     for (size_t pos = 0;; pos += replaceWith.length())
     {
       pos = return_string.find(toReplace, pos);
-      // std::cout << "pos: " << pos << std::endl;
+
       if (pos == std::string::npos)
         break;
 
