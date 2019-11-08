@@ -742,16 +742,19 @@ void Slicer::UpdateOrientation()
     switch (this->SliceOrientation)
     {
     case vtkImageViewer2::SLICE_ORIENTATION_XY:
+		this->mCornerAnnotation->SetText(0, "Axial");
       cam->SetFocalPoint(0, 0, 0);
       cam->SetPosition(0, 0, -1);
       cam->SetViewUp(0, -1, 0);
       break;
     case vtkImageViewer2::SLICE_ORIENTATION_XZ:
+		this->mCornerAnnotation->SetText(0, "Coronal");
       cam->SetFocalPoint(0, 0, 0);
       cam->SetPosition(0, -1, 0);
       cam->SetViewUp(0, 0, 1);
       break;
     case vtkImageViewer2::SLICE_ORIENTATION_YZ:
+		this->mCornerAnnotation->SetText(0, "Sagittal");
       cam->SetFocalPoint(0, 0, 0);
       cam->SetPosition(1, 0, 0);
       cam->SetViewUp(0, 0, 1);
