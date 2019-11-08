@@ -34,6 +34,7 @@ class vtkVertexGlyphFilter;
 class vtkLabeledDataMapper;
 class vtkRegularPolygonSource;
 class vtkInteractorStyle;
+class vtkCornerAnnotation;
 
 class Slicer : public vtkImageViewer2
 {
