@@ -123,7 +123,9 @@ Slicer::Slicer()
   borderWidget = vtkSmartPointer<vtkBorderWidget>::New();
   borderCallback = new vtkBorderCallback();
 
-
+  this->mCornerAnnotation = vtkSmartPointer<vtkCornerAnnotation>::New();
+  this->mCornerAnnotation->GetTextProperty()->SetColor(1, 1, 1);
+  this->Renderer->AddViewProp(mCornerAnnotation);
 }
 
 void Slicer::SetActive(bool active)
