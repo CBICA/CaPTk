@@ -45,6 +45,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "vtkInteractorStyleImage.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkRenderWindowInteractor.h"
+#include <vtkCornerAnnotation.h>
 
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
