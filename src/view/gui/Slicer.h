@@ -186,6 +186,8 @@ public:
 
   //!slicer knows if the viewing mode is comparison mode or not
   bool m_ComparisonMode; 
+
+  vtkSmartPointer<vtkCornerAnnotation> mCornerAnnotation;
 };
 
 
