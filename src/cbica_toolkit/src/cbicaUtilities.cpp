@@ -124,71 +124,6 @@ namespace cbica
       return true;
   }
 
-  std::vector<std::string> getCWLFilesInApplicationDir() 
-  {
-    auto appDir = getExecutablePath();
-
-#ifdef __APPLE__
-    appDir += "../Resources/bin";
-#endif
-
-    auto filesInDir = filesInDirectory(appDir);
-    auto cwlFiles = filesInDir;
-    cwlFiles.clear();
-    for (size_t i = 0; i < filesInDir.size(); i++)
-    {
-      if (getFilenameExtension(filesInDir[i], false).find(".cwl") != std::string::npos)
-      {
-        cwlFiles.push_back(filesInDir[i]);
-      }
-    }
-    //std::vector<std::string> files;
-
-    //#ifdef _WIN32
-    //  WIN32_FIND_DATA data;
-    //  HANDLE hFind = FindFirstFile("\\*", &data);
-
-    //  if ( hFind != INVALID_HANDLE_VALUE ) {
-    //    do {
-    //      files.push_back(data.cFileName);
-    //    } while (FindNextFile(hFind, &data));
-    //    FindClose(hFind);
-    //  }
-    //#else
-    //  DIR *dir;
-    //  struct dirent *ent;
-    //  if ((dir = opendir(".")) != NULL) {
-    //    /* print all the files and directories within directory */
-    //    while ((ent = readdir (dir)) != NULL) {
-    //      if (ent->d_type == DT_REG) {  
-    //        files.push_back(ent->d_name);
-    //      }
-    //    }
-    //    closedir (dir);
-    //  } else {
-    //    /* could not open directory */
-    //    perror ("");
-    //    return files;
-    //  }
-    //#endif
-
-    //// Prune non cwl files
-    //std::vector<std::string> cwlfiles;
-    //for(auto const& value: files) {
-
-    //  if (value.substr(value.size() - 4) == ".cwl") {
-    //    cwlfiles.push_back(value);
-    //  }
-
-    //}
-
-    //// Sort cwl files
-    //std::sort(cwlfiles.begin(), cwlfiles.end());
-
-    return cwlFiles;
-
-  }
-
   std::string getEnvironmentVariableValue(const std::string &environmentVariable)
   {
     std::string returnString = "";
@@ -2017,6 +1952,7 @@ namespace cbica
       if (idx != std::string::npos)
       {
         extension = "." + dataFile_wrap.substr(idx + 1);
+
         if (extension.find("/") != std::string::npos)
           extension = "";
         else {
@@ -2026,7 +1962,6 @@ namespace cbica
         }
       }
       // else // there is no extension for file
-
       path_name = dirname(cbica::constCharToChar(dataFile_wrap.c_str()));
       basename_var = basename(cbica::constCharToChar(dataFile_wrap.c_str()));
 #endif
@@ -2056,6 +1991,20 @@ namespace cbica
       {
         baseName = std::string(basename_var);
       }
+
+#ifdef __APPLE__
+      idx = baseName.rfind('.');
+      
+      if (idx != std::string::npos)
+      {
+        extension = "." + baseName.substr(idx + 1);
+        if (extension.find("/") != std::string::npos)
+          extension = "";
+        else {
+          baseName = replaceString(baseName, extension, "");
+        }
+      }
+#endif
 
 #if (_MSC_VER >= 1700)
       path_name[0] = NULL;
@@ -2100,7 +2049,7 @@ namespace cbica
     for (size_t pos = 0;; pos += replaceWith.length())
     {
       pos = return_string.find(toReplace, pos);
-      // std::cout << "pos: " << pos << std::endl;
+
       if (pos == std::string::npos)
         break;
 

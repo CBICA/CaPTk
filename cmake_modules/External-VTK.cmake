@@ -7,16 +7,16 @@ SET(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 SET( EXTRA_NON_WINDOWS_OPTIONS "")
 IF(NOT WIN32)
-SET( EXTRA_NON_WINDOWS_OPTIONS -DCMAKE_BUILD_TYPE:STRING="Release")
+SET( EXTRA_NON_WINDOWS_OPTIONS -DCMAKE_BUILD_TYPE=Release)
 ENDIF()
 
 MESSAGE( STATUS "Adding VTK-8.1.0 ...")
 
 ExternalProject_Add( 
   VTK
-  URL https://github.com/Kitware/VTK/archive/v8.1.0.zip
-  #GIT_REPOSITORY ${git_protocol}://github.com/Kitware/VTK.git
-  #GIT_TAG v8.1.0
+  # URL https://github.com/Kitware/VTK/archive/v8.1.0.zip
+  GIT_REPOSITORY https://github.com/Kitware/VTK.git #  url from where to download
+  GIT_TAG v8.1.0
   SOURCE_DIR VTK-source
   BINARY_DIR VTK-build
   UPDATE_COMMAND ""

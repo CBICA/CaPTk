@@ -64,6 +64,7 @@
 #include "QtConcurrent/qtconcurrentrun.h"
 
 #include "itkTranslationTransform.h"
+#include "ApplicationPreferences.h"
 
 //#include "DicomSeriesReader.h"
 
@@ -162,6 +163,10 @@ fMainWindow::fMainWindow()
 {
 
   setupUi(this);
+
+  //! load preferences
+  ApplicationPreferences::GetInstance()->DeSerializePreferences();
+  ApplicationPreferences::GetInstance()->DisplayPreferences();
 
   //! comparison mode OFF at startup
   this->SetComparisonMode(false);
@@ -366,7 +371,8 @@ fMainWindow::fMainWindow()
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
-  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
+  //std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
   std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
 #ifndef __APPLE__
@@ -500,6 +506,7 @@ fMainWindow::fMainWindow()
   connect(featurePanel, SIGNAL(helpClicked_FeaUsage(std::string)), this, SLOT(help_contextual(std::string)));
   connect(&registrationPanel, SIGNAL(Registrationsignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)), this, SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)));
 
+  cbica::createDir(loggerFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
   if (cbica::directoryExists(m_tempFolderLocation))
   {
@@ -986,6 +993,7 @@ fMainWindow::~fMainWindow()
   if (mHelpDlg)
     delete mHelpDlg;
 
+  ApplicationPreferences::GetInstance()->SerializePreferences();
 }
 
   void fMainWindow::loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage, const float maskOpacity,
@@ -1020,7 +1028,7 @@ fMainWindow::~fMainWindow()
 #endif
   }
 
-void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage)
+std::string fMainWindow::ConversionFrom2Dto3D(const std::string &fileName)
 {
   using ImageTypeFloat2D = itk::Image< float, 2 >;
   auto reader = itk::ImageFileReader< ImageTypeFloat2D >::New();
@@ -1042,7 +1050,7 @@ void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsI
   catch (itk::ExceptionObject& e)
   {
     ShowErrorMessage("Exception caught while reading the image '" + fileName + "':\n\n" + e.what());
-    return;
+    return "";
   }
 
   auto image_2D = reader->GetOutput();
@@ -1094,14 +1102,7 @@ void fMainWindow::ConversionFrom2Dto3D(const std::string &fileName, bool loadAsI
   auto imageName = m_tempFolderLocation + "/" + cbica::getFilenameBase(fileName) + ".nii.gz";
   cbica::WriteImage< ImageTypeFloat3D >(image_3D, imageName);
 
-  if (loadAsImage)
-  {
-    LoadSlicerImages(imageName, CAPTK::NIfTI);
-  }
-  else
-  {
-    readMaskFile(imageName);
-  }
+  return imageName;
 }
 
 void fMainWindow::about()
@@ -1599,13 +1600,13 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     imageManager->SetComparisonMode(false);
 
     bool bFirstLoad = false;
-    if (mSlicerManagers.size() == 0)
+    if (mSlicerManagers.empty())
     {
       bFirstLoad = true;
     }
     if (imageInfo.GetImageDimensions() == 2)
     {
-      ConversionFrom2Dto3D(fname, true);
+      fname = ConversionFrom2Dto3D(fname);
     }
     else if (!bFirstLoad)
     {
@@ -3114,28 +3115,32 @@ ImageTypeFloat3D::Pointer fMainWindow::getMaskImage()
 
 void fMainWindow::readMaskFile(const std::string &maskFileName)
 {
+  auto maskFileName_toRead = maskFileName;
   if (!mSlicerManagers.empty())
   {
-    if (cbica::IsDicom(maskFileName))
+    if (cbica::IsDicom(maskFileName_toRead))
     {
-      auto path = cbica::getFilenamePath(maskFileName);
+      auto path = cbica::getFilenamePath(maskFileName_toRead);
       auto filesInDir = cbica::filesInDirectory(path, false);
 
       if (filesInDir.size() == 1) // single DICOM slice
       {
-        dicomfilename = maskFileName;
-        ConversionFrom2Dto3D(maskFileName, false);
+        dicomfilename = maskFileName_toRead;
+        maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead);
       }
     }
     else
     {
-      auto maskInfo = cbica::ImageInfo(maskFileName);
-      if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] == 1) && (maskInfo.GetImageDimensions() == 2))
+      auto maskInfo = cbica::ImageInfo(maskFileName_toRead);
+      auto imageSize = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
+      auto maskSize = maskInfo.GetImageSize();
+      bool imageSanityCheckDone = false;
+      if ((imageSize[2] == 1) || (maskSize[2] == 1) || (maskInfo.GetImageDimensions() == 2))
       {
         // this is actually a 2D image which has been loaded in CaPTk as a pseudo-3D image
         auto origin_image = mSlicerManagers[0]->mOrigin;
         auto spacings_image = mSlicerManagers[0]->mITKImage->GetSpacing();
-        auto size_image = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
+        auto size_image = imageSize;
 
         auto origin_mask = maskInfo.GetImageOrigins();
         auto spacings_mask = maskInfo.GetImageSpacings();
@@ -3159,8 +3164,13 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
           }
           if (spacings_image[i] != spacings_mask[i])
           {
-            ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
-            return;
+            auto percentageDifference = std::abs(spacings_image[i] - spacings_mask[i] ) * 100;
+            percentageDifference /= spacings_image[i];
+            if (percentageDifference > 0.000001)
+            {
+              ShowErrorMessage("The spacings of the previously loaded image and mask are inconsistent; cannot load");
+              return;
+            }
           }
           if (size_image[i] != size_mask[i])
           {
@@ -3168,19 +3178,25 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
             return;
           }
         }
-        ConversionFrom2Dto3D(maskFileName, false); // all sanity checks passed; load the mask 
+        maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead); // all sanity checks passed; load the mask 
+        imageSanityCheckDone = true;
       }
       {
         auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
-        SaveImage_withFile(0, temp_prev.c_str());
-        if (!cbica::ImageSanityCheck(maskFileName, temp_prev))
+        auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
+        //SaveImage_withFile(0, temp_prev.c_str());
+        if (!imageSanityCheckDone)
         {
-          ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
-          return;
+          if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
+          {
+            ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
+            return;
+          }
+          imageSanityCheckDone = true;
         }
       }
       using ImageType = itk::Image<unsigned int, 3>;
-      auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName);
+      auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName_toRead);
       inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
 
       auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();
@@ -5360,17 +5376,17 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
   }
 
   int i = 0, fileSizeCheck = files.size() + 1;
-  if (mSlicerManagers.size() == 0)
+  if (mSlicerManagers.empty())
   {
     {
       std::string fileName = files[i].toStdString();
       fileName = cbica::normPath(fileName);
       updateProgress(i + 1, "Opening " + fileName, files.size());
-      auto extension = cbica::getFilenameExtension(fileName);
-      if (!extension.empty())
-      {
-        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-      }
+      //auto extension = cbica::getFilenameExtension(fileName);
+      //if (!extension.empty())
+      //{
+      //  std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+      //}
       //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
       //  (extension == ".ima"))
       if (cbica::IsDicom(fileName))
@@ -5496,7 +5512,7 @@ void fMainWindow::openDicomImages(QString dir)
   imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
 
   bool bFirstLoad = false;
-  if (mSlicerManagers.size() == 0)
+  if (mSlicerManagers.empty())
   {
     bFirstLoad = true;
   }
@@ -7563,6 +7579,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   auto roi1Image = cbica::ReadImage< ImageTypeFloat3D >(roi1File);
   auto roi2Image = cbica::ReadImage< ImageTypeFloat3D >(roi2File);
   auto newROIImage = roi1Image;
+  auto newMaskImage_computed = cbica::CreateImage< ImageTypeFloat3D >(roi1Image);
   newROIImage->DisconnectPipeline();
 
   ImageTypeFloat3D::Pointer octantImage = ImageTypeFloat3D::New();
@@ -7608,7 +7625,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   int index = GetSlicerIndexFromItem(items[0]);
 
   auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageTypeFloat3D >::New();
-  minMaxCalc->SetImage(newROIImage);
+  minMaxCalc->SetImage(roi1Image);
   minMaxCalc->Compute();
   auto maxVal = minMaxCalc->GetMaximum();
 
@@ -7644,13 +7661,13 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
       for (size_t j = 0; j < numberOfSeeds; j++)
       {
-        if (mTissuePoints->mLandmarks[i].id == TU) // in the case a second point has been initialized for roi2
+        if (mTissuePoints->mLandmarks[j].id == TU) // in the case a second point has been initialized for roi2
         {
-          itk::Point< float, 3 > pointFromTumorPanel = mTissuePoints->mLandmarks[i].coordinates;
+          itk::Point< float, 3 > pointFromTumorPanel_2 = mTissuePoints->mLandmarks[j].coordinates;
 
-          x_index_pre = (pointFromTumorPanel[0] - imageOrigin[0]) / imageSpacing[0];
-          y_index_pre = (pointFromTumorPanel[1] - imageOrigin[1]) / imageSpacing[1];
-          z_index_pre = (pointFromTumorPanel[2] - imageOrigin[2]) / imageSpacing[2];
+          x_index_pre = (pointFromTumorPanel_2[0] - imageOrigin[0]) / imageSpacing[0];
+          y_index_pre = (pointFromTumorPanel_2[1] - imageOrigin[1]) / imageSpacing[1];
+          z_index_pre = (pointFromTumorPanel_2[2] - imageOrigin[2]) / imageSpacing[2];
         }
       }
 
@@ -7666,6 +7683,9 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       resampler->SetTransform(transform.GetPointer());
       resampler->SetInput(roi1Image);
       resampler->SetSize(roi1Image->GetLargestPossibleRegion().GetSize());
+      resampler->SetOutputOrigin(roi1Image->GetOrigin());
+      resampler->SetOutputDirection(roi1Image->GetDirection());
+      resampler->SetOutputSpacing(roi1Image->GetSpacing());
       resampler->Update();
 
       roi1Image = resampler->GetOutput();
@@ -7673,7 +7693,9 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   }
 
   // visualizing ROI_post with 2 colors to highlight the post-injection region
-  ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion());
+  ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), 
+    roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion()),
+    roiComputed(newMaskImage_computed, newMaskImage_computed->GetLargestPossibleRegion());
 
   for (octantIt.GoToBegin(); !octantIt.IsAtEnd(); ++octantIt)
     octantIt.Set(0);
@@ -7684,17 +7706,22 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     if (roi2It.Get() > 0)
     {
       auto currentIndex = roi2It.GetIndex();
-      float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
 
       roi1It.SetIndex(currentIndex);
+      roiNew.SetIndex(currentIndex);
 
+      //float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
+
+      // do not do anything with raw mask since orientation fixes have happened to it
       if (roi1It.Get() > 0) // if pre-injection ROI is defined, then the mask to be displayed is under label 1
       {
-        *pData = 1.0;
+        //*pData = 1.0;
+        roiComputed.Set(1);
       }
       else // this is for the section of the ROI which is post-injection
       {
-        *pData = 2.0;
+        //*pData = 2.0;
+        roiComputed.Set(2);
       }
     }
   }
@@ -7878,8 +7905,10 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
             && !((output_full_index[1] > currentIndex[1]) ^ (currentItrIndex[1] > currentIndex[1]))
             && !((output_full_index[2] > currentIndex[2]) ^ (currentItrIndex[2] > currentIndex[2])))
           {
-            float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentItrIndex[0], (int)currentItrIndex[1], (int)currentItrIndex[2]);
-            *pData = 3.0;
+            // do not do anything with raw mask since orientation fixes have happened to it
+            //float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentItrIndex[0], (int)currentItrIndex[1], (int)currentItrIndex[2]);
+            //*pData = 3.0;
+            roiComputed.Set(3);
           }
 
         }
@@ -8033,10 +8062,16 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       for (auto it_q1 = octrantVolume_1.begin(), it_q2 = octrantVolume_2.begin(), it_qRatio = octrantVolume_ratio.begin(), it_qPercent = octrantVolume_percent.begin();
         it_q1 != octrantVolume_1.end(); ++it_q1, ++it_q2, ++it_qRatio, ++it_qPercent)
       {
-        it_qPercent->second = (it_q2->second - it_q1->second) / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
-        it_qRatio->second = it_q2->second / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
-
-        volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(it_qPercent->second * 100 + 100) + "%\n";
+        if (it_q1->second > 0)
+        {
+          it_qPercent->second = (it_q2->second - it_q1->second) / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
+          it_qRatio->second = it_q2->second / it_q1->second; // volumeMultiplier is not needed since it will get cancelled out
+          volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(it_qPercent->second * 100 + 100) + "%\n";
+        }
+        else
+        {
+          volumeString += "Octant[" + QString::number(it_q1->first + 1) + "]: Change = " + QString::number(0) + "%\n";
+        }
       }
 
       volumeString += "\n\nFurther details and detailed visualization results can be found in the output folder";
@@ -8159,9 +8194,47 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
     updateProgress(100, "Output saved to '" + saveFileName + "'");
 
     auto currentROI = convertVtkToItk<ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mMask);
-    cbica::WriteImage< ImageTypeFloat3D >(currentROI, outputDir + "/roi_DE_visualizationIncrease.nii.gz");
-    cbica::WriteImage< ImageTypeFloat3D >(octantImage, outputDir + "/roi_DE_octantImage.nii.gz");
-    cbica::WriteImage< ImageTypeFloat3D >(newROIImage, outputDir + "/roi_DE_visualizationRatio.nii.gz");
+
+    ImageTypeFloat3D::DirectionType originalDirection;
+    originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
+    originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
+    originalDirection[0][2] = mSlicerManagers[index]->mDirection(0, 2);
+    originalDirection[1][0] = mSlicerManagers[index]->mDirection(1, 0);
+    originalDirection[1][1] = mSlicerManagers[index]->mDirection(1, 1);
+    originalDirection[1][2] = mSlicerManagers[index]->mDirection(1, 2);
+    originalDirection[2][0] = mSlicerManagers[index]->mDirection(2, 0);
+    originalDirection[2][1] = mSlicerManagers[index]->mDirection(2, 1);
+    originalDirection[2][2] = mSlicerManagers[index]->mDirection(2, 2);
+
+    ImageTypeFloat3D::PointType originalOrigin;
+    originalOrigin = mSlicerManagers[index]->mOrigin;
+
+    auto infoChanger1 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger1->ChangeDirectionOn();
+    infoChanger1->ChangeOriginOn();
+    infoChanger1->SetOutputDirection(originalDirection);
+    infoChanger1->SetOutputOrigin(originalOrigin);
+    infoChanger1->SetInput(currentROI);
+    infoChanger1->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger1->GetOutput(), outputDir + "/roi_DE_visualizationIncrease.nii.gz");
+
+    auto infoChanger2 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger2->ChangeDirectionOn();
+    infoChanger2->ChangeOriginOn();
+    infoChanger2->SetOutputDirection(originalDirection);
+    infoChanger2->SetOutputOrigin(originalOrigin);
+    infoChanger2->SetInput(octantImage);
+    infoChanger2->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger2->GetOutput(), outputDir + "/roi_DE_octantImage.nii.gz");
+
+    auto infoChanger3 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger3->ChangeDirectionOn();
+    infoChanger3->ChangeOriginOn();
+    infoChanger3->SetOutputDirection(originalDirection);
+    infoChanger3->SetOutputOrigin(originalOrigin);
+    infoChanger3->SetInput(newMaskImage_computed);
+    infoChanger3->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger3->GetOutput(), outputDir + "/roi_DE_visualizationRatio.nii.gz");
 
     minMaxCalc->SetImage(newROIImage);
     minMaxCalc->Compute();
@@ -8178,9 +8251,17 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
       }
     }
 
-    cbica::WriteImage< ImageTypeFloat3D >(newROIImage, outputDir + "/roiDE_visualizationProbability.nii.gz");
+    auto infoChanger4 = itk::ChangeInformationImageFilter< ImageTypeFloat3D >::New();
+    infoChanger4->ChangeDirectionOn();
+    infoChanger4->ChangeOriginOn();
+    infoChanger4->SetOutputDirection(originalDirection);
+    infoChanger4->SetOutputOrigin(originalOrigin);
+    infoChanger4->SetInput(newROIImage);
+    infoChanger4->Update();
+    cbica::WriteImage< ImageTypeFloat3D >(infoChanger4->GetOutput(), outputDir + "/roi_DE_visualizationProbability.nii.gz");
 
-    LoadSlicerImages(outputDir + "/roiDE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
+    LoadSlicerImages(outputDir + "/roi_DE_visualizationProbability.nii.gz", CAPTK::ImageExtension::NIfTI);
+    readMaskFile(outputDir + "/roi_DE_visualizationRatio.nii.gz");
   }
 }
 

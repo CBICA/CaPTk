@@ -1310,7 +1310,7 @@ public slots:
   void ApplicationSBRTAnalysis();
 
   //! Convert 2D image to 3D image with a single slice and write to temp folder
-  void ConversionFrom2Dto3D(const std::string &fileName, bool loadAsImage = false);
+  std::string ConversionFrom2Dto3D(const std::string &fileName);
 
   //! GUI control for Directionality Analysis
   void ApplicationDirectionality();

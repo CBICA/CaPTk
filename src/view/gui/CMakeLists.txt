@@ -79,6 +79,8 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/PreferencesDialog.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/IPreferencePage.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/IPreferencePage.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.cpp"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
   #"${CMAKE_CURRENT_SOURCE_DIR}/ApplicationBase.h"

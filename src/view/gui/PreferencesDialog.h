@@ -45,6 +45,9 @@ public slots:
 	//! cancel handler
 	void OnRejected();
 
+	//! restore preferences
+	void RestorePreferences();
+
 private:
 
 	//! set up UI

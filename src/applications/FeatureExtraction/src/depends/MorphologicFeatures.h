@@ -64,7 +64,7 @@ public:
 
       auto i2l = itk::LabelImageToShapeLabelMapFilter < TShapeImageType >::New();
       i2l->SetInput(connected->GetOutput());
-      //i2l->ComputeFeretDiameterOn();
+      i2l->ComputeFeretDiameterOn();
       i2l->ComputePerimeterOn();
       //i2l->ComputeOrientedBoundingBoxOn();
       i2l->Update();
@@ -125,7 +125,7 @@ public:
 
           //std::cout << "EllipseDiameter" + "_Axis-" + std::to_string(d) << " = " << ellipseDiameter[d] << "\n";
         }
-        //m_features["FeretDiameter"] = labelObject->GetFeretDiameter();
+        this->m_features["FeretDiameter"] = labelObject->GetFeretDiameter();
         this->m_features["PerimeterOnBorder"] = labelObject->GetPerimeterOnBorder();
         this->m_features["Perimeter"] = labelObject->GetPerimeter();
         this->m_features["PixelsOnBorder"] = labelObject->GetNumberOfPixelsOnBorder();

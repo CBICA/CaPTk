@@ -51,8 +51,23 @@ int main(int argc, char** argv)
   float cmd_maskOpacity = 1;
   bool comparisonMode = false;
 
-  // this is used to populate the available CWL files for the cli
-  auto cwlFiles = cbica::getCWLFilesInApplicationDir();
+  // this is used to populate the available CWL files for the cli  
+  auto cwlFolderPath = 
+#ifdef CAPTK_PACKAGE_PROJECT
+  cbica::normPath(cbica::getExecutablePath() + 
+#ifdef __APPLE__
+    "../Resources/etc/cwlDefinitions/"
+#else
+    "../etc/cwlDefinitions/"
+#endif
+    )
+#else
+  std::string(PROJECT_SOURCE_DIR) + "/data/cwlFiles"
+#endif
+  ;
+  // std::cout << cwlFolderPath + "\n"; 
+
+  auto cwlFiles = cbica::filesInDirectory(cwlFolderPath);
 
   // parse the command line
   auto parser = cbica::CmdParser(argc, argv, "CaPTk");
@@ -76,8 +91,8 @@ int main(int argc, char** argv)
   {
     for (auto & file : cwlFiles)
     {
-
       auto cwlFileBase = cbica::getFilenameBase(file);
+      auto cwlFileBase_actual = cwlFileBase;
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
       auto argv_1 = std::string(argv[1]);
       argv_1 = cbica::getFilenameBase(argv_1, false);
@@ -97,7 +112,15 @@ int main(int argc, char** argv)
           argv_complete += " " + std::string(argv[i]);
         }
         // Pass them in
-        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
+        auto commandToRun = getApplicationPath(cwlFileBase_actual) + argv_complete;
+        //std::cout << "[DEBUG] commandToRun: " << commandToRun << "\n";
+// #ifndef WIN32
+        return std::system(commandToRun.c_str());
+// #else
+//         auto returnCode = std::system(commandToRun.c_str());
+//         std::system("pause");
+//         return returnCode;
+// #endif
       }
     }
   }
