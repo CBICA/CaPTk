@@ -37,8 +37,12 @@ This work is supported by the NIH/NCI/ITCR* grant U24-CA189523.
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">software@cbica.upenn.edu</a>.
 
+--------------------------------------------------------------------
+
+--------------------------------------------------------------------
 \htmlonly
 <div align="right"><a href="Getting_Started.html"><b>Next (Getting Started)<b></a>
 \endhtmlonly
 
+--------------------------------------------------------------------
 */
