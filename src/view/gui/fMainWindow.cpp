@@ -4525,21 +4525,21 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
     return;
   }
 
-  ////! Following image flip is needed to correct the image orientation issue
-  //typedef itk::FlipImageFilter< ImageType> FlipType;
-  //FlipType::Pointer flip = FlipType::New();
-  //FlipType::FlipAxesArrayType flipAxesSet;
+  //! Following image flip is needed to correct the image orientation issue
+  typedef itk::FlipImageFilter< ImageType> FlipType;
+  FlipType::Pointer flip = FlipType::New();
+  FlipType::FlipAxesArrayType flipAxesSet;
 
-  //flipAxesSet[0] = 0;
-  //flipAxesSet[1] = -1;
-  //flipAxesSet[2] = 0;
+  flipAxesSet[0] = 0;
+  flipAxesSet[1] = -1;
+  flipAxesSet[2] = 0;
 
-  //flip->SetFlipAxes(flipAxesSet);
-  //flip->FlipAboutOriginOff();
-  //flip->SetInput(getMaskImage());
-  //flip->Update();
+  flip->SetFlipAxes(flipAxesSet);
+  flip->FlipAboutOriginOff();
+  flip->SetInput(getMaskImage());
+  flip->Update();
 
-  cbica::WriteImage< ImageTypeFloat3D >(/*flip->GetOutput()*/getMaskImage(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
+  cbica::WriteImage< ImageTypeFloat3D >(flip->GetOutput()/*getMaskImage()*/, m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
 
   maskName = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
   cbica::Logging(loggerFile, "written temp mask");
@@ -4613,7 +4613,7 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
   segObject.WriteLabel(seedAvail);
   cbica::Logging(loggerFile, "written labels");
 
-  readMaskFile(m_tempFolderLocation + "/outputImage" + "_segmentation.nii.gz");
+  readMaskFile(m_tempFolderLocation + "/outputImage_segmentation.nii.gz");
 
   cbica::Logging(loggerFile, "loaded images");
 
