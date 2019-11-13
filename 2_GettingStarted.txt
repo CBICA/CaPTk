@@ -2,6 +2,13 @@
 
 \page Getting_Started Getting Started
 
+For Download/Installation Instructions, please see the following:
+
+- [Download Instructions](Download.html)
+- [Installation Instructions](Installation.html)
+
+For Frequently Asked Questions, please see the dedicated [FAQ](FAQ.html) section.
+
 CaPTk has been designed as a modular platform, currently incorporating components for:
 -# User interaction (e.g., coordinate definition, region annotation, and spherical approximation of abnormalities)
   - \ref gs_imageLoading
