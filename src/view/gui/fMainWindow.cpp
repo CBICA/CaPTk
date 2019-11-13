@@ -6547,12 +6547,9 @@ void fMainWindow::ApplicationEGFRvIIISVM()
 #ifdef BUILD_ITKSNAP
 void fMainWindow::ApplicationITKSNAP()
 {
-  if (mSlicerManagers.size() > 0)
+  if (mSlicerManagers.empty())
   {
-  }
-  else
-  {
-    ShowErrorMessage("Please load a single image and ROI before calling ITK-SNAP", this);
+    ShowErrorMessage("Please load a single image before calling ITK-SNAP", this);
     return;
   }
 
