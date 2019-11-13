@@ -3116,6 +3116,7 @@ ImageTypeFloat3D::Pointer fMainWindow::getMaskImage()
 void fMainWindow::readMaskFile(const std::string &maskFileName)
 {
   auto maskFileName_toRead = maskFileName;
+  bool imageSanityCheckDone = false;
   if (!mSlicerManagers.empty())
   {
     if (cbica::IsDicom(maskFileName_toRead))
@@ -3128,13 +3129,19 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
         dicomfilename = maskFileName_toRead;
         maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead);
       }
+      else
+      {
+        auto temp_prev = cbica::normPath(m_tempFolderLocation + "/convertedMask.nii.gz");
+        auto maskFromDicom = cbica::ReadImage< ImageTypeFloat3D >(maskFileName_toRead);
+        cbica::WriteImage< ImageTypeFloat3D >(maskFromDicom, temp_prev);
+        maskFileName_toRead = temp_prev;
+      }
     }
     else
     {
       auto maskInfo = cbica::ImageInfo(maskFileName_toRead);
       auto imageSize = mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize();
       auto maskSize = maskInfo.GetImageSize();
-      bool imageSanityCheckDone = false;
       if ((imageSize[2] == 1) || (maskSize[2] == 1) || (maskInfo.GetImageDimensions() == 2))
       {
         // this is actually a 2D image which has been loaded in CaPTk as a pseudo-3D image
@@ -3164,7 +3171,7 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
           }
           if (spacings_image[i] != spacings_mask[i])
           {
-            auto percentageDifference = std::abs(spacings_image[i] - spacings_mask[i] ) * 100;
+            auto percentageDifference = std::abs(spacings_image[i] - spacings_mask[i]) * 100;
             percentageDifference /= spacings_image[i];
             if (percentageDifference > 0.000001)
             {
@@ -3181,126 +3188,124 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
         maskFileName_toRead = ConversionFrom2Dto3D(maskFileName_toRead); // all sanity checks passed; load the mask 
         imageSanityCheckDone = true;
       }
-      {
-        auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
-        auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
-        //SaveImage_withFile(0, temp_prev.c_str());
-        if (!imageSanityCheckDone)
-        {
-          if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
-          {
-            ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
-            return;
-          }
-          imageSanityCheckDone = true;
-        }
-      }
-      using ImageType = itk::Image<unsigned int, 3>;
-      auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName_toRead);
-      inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
-
-      auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();
-      minMaxCalc->SetImage(inputImage);
-      minMaxCalc->Compute();
-      auto maxVal = minMaxCalc->GetMaximum();
-
-      if (maxVal > 0)
-      {
-        itk::ImageRegionIteratorWithIndex <ImageType> maskIt(inputImage, inputImage->GetLargestPossibleRegion());
-        maskIt.GoToBegin();
-        while (!maskIt.IsAtEnd())
-        {
-          /*
-          change to this & also in manual:
-          1 for necrosis
-          2 for edema
-          3 for non-enhancing tumor
-          4 for enhancing tumor
-          */
-          ImageType::IndexType currentIndex = maskIt.GetIndex();
-          float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
-          *pData = 0; // this is done in order to ensure that previously loaded mask is removed
-          // this is done to take into account all possible label drawings
-          switch (maskIt.Get())
-          { // multiLabel: uncomment everything inside this loop and remove references to "near" and "far"
-          case DRAW_MODE_LABEL_1:
-            *pData = DRAW_MODE_LABEL_1;
-            break;
-          case 10: // GLISTR defines this as CSF
-            *pData = DRAW_MODE_LABEL_7;
-            break;
-          case DRAW_MODE_LABEL_2:
-            *pData = DRAW_MODE_LABEL_2;
-            break;
-          case 150: // GLISTR defines this is as GM
-            *pData = DRAW_MODE_LABEL_5;
-            break;
-          case DRAW_MODE_LABEL_3:
-            *pData = DRAW_MODE_LABEL_3;
-            break;
-          case 250: // GLISTR defines this is as WM
-            *pData = DRAW_MODE_LABEL_3;
-            break;
-          case DRAW_MODE_LABEL_4:
-            *pData = DRAW_MODE_LABEL_4;
-            break;
-          case 25: // GLISTR defines this is as VS
-            *pData = DRAW_MODE_LABEL_4;
-            break;
-          case DRAW_MODE_LABEL_5: // this is an ambiguous index since GLISTR also uses this for CB
-          {
-            if (maxVal > DRAW_MODE_LABEL_9) // this means we are reading in GLISTR output
-            {
-              *pData = DRAW_MODE_LABEL_9;
-            }
-            else
-            {
-              *pData = DRAW_MODE_LABEL_5;
-            }
-            break;
-          }
-          case 100: // GLISTR defines this is as ED
-            *pData = DRAW_MODE_LABEL_2;
-            break;
-          case DRAW_MODE_LABEL_6:
-            *pData = DRAW_MODE_LABEL_6;
-            break;
-          case 175: // GLISTR defines this is as NCR
-            *pData = DRAW_MODE_LABEL_1;
-            break;
-          case DRAW_MODE_LABEL_7:
-            *pData = DRAW_MODE_LABEL_7;
-            break;
-          case 200: // GLISTR defines this is as TU
-            *pData = DRAW_MODE_LABEL_4;
-            break;
-          case DRAW_MODE_LABEL_8:
-            *pData = DRAW_MODE_LABEL_8;
-            break;
-          case 185: // GLISTR defines this is as NE
-            *pData = DRAW_MODE_LABEL_1;
-            break;
-          case DRAW_MODE_LABEL_9:
-            *pData = DRAW_MODE_LABEL_9;
-            break;
-          case 255: // contingency case in case a map is defined as 255 and 0
-            *pData = DRAW_MODE_LABEL_1;
-            break;
-          default:
-            // nothing defined for other cases
-            break;
-          }
-          ++maskIt;
-        }
-      }
-      else
-      {
-        ShowErrorMessage("Mask file has no pixels greater than '0'");
-      }
-
-      UpdateRenderWindows();
-      updateProgress(0, "Mask loaded");
     }
+    //auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+    auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
+    //SaveImage_withFile(0, temp_prev.c_str());
+    if (!imageSanityCheckDone)
+    {
+      if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
+      {
+        ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
+        return;
+      }
+      imageSanityCheckDone = true;
+    }
+    using ImageType = itk::Image<unsigned int, 3>;
+    auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName_toRead);
+    inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
+
+    auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();
+    minMaxCalc->SetImage(inputImage);
+    minMaxCalc->Compute();
+    auto maxVal = minMaxCalc->GetMaximum();
+
+    if (maxVal > 0)
+    {
+      itk::ImageRegionIteratorWithIndex <ImageType> maskIt(inputImage, inputImage->GetLargestPossibleRegion());
+      maskIt.GoToBegin();
+      while (!maskIt.IsAtEnd())
+      {
+        /*
+        change to this & also in manual:
+        1 for necrosis
+        2 for edema
+        3 for non-enhancing tumor
+        4 for enhancing tumor
+        */
+        ImageType::IndexType currentIndex = maskIt.GetIndex();
+        float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
+        *pData = 0; // this is done in order to ensure that previously loaded mask is removed
+        // this is done to take into account all possible label drawings
+        switch (maskIt.Get())
+        { // multiLabel: uncomment everything inside this loop and remove references to "near" and "far"
+        case DRAW_MODE_LABEL_1:
+          *pData = DRAW_MODE_LABEL_1;
+          break;
+        case 10: // GLISTR defines this as CSF
+          *pData = DRAW_MODE_LABEL_7;
+          break;
+        case DRAW_MODE_LABEL_2:
+          *pData = DRAW_MODE_LABEL_2;
+          break;
+        case 150: // GLISTR defines this is as GM
+          *pData = DRAW_MODE_LABEL_5;
+          break;
+        case DRAW_MODE_LABEL_3:
+          *pData = DRAW_MODE_LABEL_3;
+          break;
+        case 250: // GLISTR defines this is as WM
+          *pData = DRAW_MODE_LABEL_3;
+          break;
+        case DRAW_MODE_LABEL_4:
+          *pData = DRAW_MODE_LABEL_4;
+          break;
+        case 25: // GLISTR defines this is as VS
+          *pData = DRAW_MODE_LABEL_4;
+          break;
+        case DRAW_MODE_LABEL_5: // this is an ambiguous index since GLISTR also uses this for CB
+        {
+          if (maxVal > DRAW_MODE_LABEL_9) // this means we are reading in GLISTR output
+          {
+            *pData = DRAW_MODE_LABEL_9;
+          }
+          else
+          {
+            *pData = DRAW_MODE_LABEL_5;
+          }
+          break;
+        }
+        case 100: // GLISTR defines this is as ED
+          *pData = DRAW_MODE_LABEL_2;
+          break;
+        case DRAW_MODE_LABEL_6:
+          *pData = DRAW_MODE_LABEL_6;
+          break;
+        case 175: // GLISTR defines this is as NCR
+          *pData = DRAW_MODE_LABEL_1;
+          break;
+        case DRAW_MODE_LABEL_7:
+          *pData = DRAW_MODE_LABEL_7;
+          break;
+        case 200: // GLISTR defines this is as TU
+          *pData = DRAW_MODE_LABEL_4;
+          break;
+        case DRAW_MODE_LABEL_8:
+          *pData = DRAW_MODE_LABEL_8;
+          break;
+        case 185: // GLISTR defines this is as NE
+          *pData = DRAW_MODE_LABEL_1;
+          break;
+        case DRAW_MODE_LABEL_9:
+          *pData = DRAW_MODE_LABEL_9;
+          break;
+        case 255: // contingency case in case a map is defined as 255 and 0
+          *pData = DRAW_MODE_LABEL_1;
+          break;
+        default:
+          // nothing defined for other cases
+          break;
+        }
+        ++maskIt;
+      }
+    }
+    else
+    {
+      ShowErrorMessage("Mask file has no pixels greater than '0'");
+    }
+
+    UpdateRenderWindows();
+    updateProgress(0, "Mask loaded");
   }
   else
   {
