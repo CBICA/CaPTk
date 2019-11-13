@@ -4501,13 +4501,15 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      SaveImage_withFile(index, temp.c_str());
+      //cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
       ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      SaveImage_withFile(index, temp.c_str());
+      //cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
       petImageFile = temp;
     }
     else
@@ -4523,21 +4525,21 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
     return;
   }
 
-  //! Following image flip is needed to correct the image orientation issue
-  typedef itk::FlipImageFilter< ImageType> FlipType;
-  FlipType::Pointer flip = FlipType::New();
-  FlipType::FlipAxesArrayType flipAxesSet;
+  ////! Following image flip is needed to correct the image orientation issue
+  //typedef itk::FlipImageFilter< ImageType> FlipType;
+  //FlipType::Pointer flip = FlipType::New();
+  //FlipType::FlipAxesArrayType flipAxesSet;
 
-  flipAxesSet[0] = 0;
-  flipAxesSet[1] = -1;
-  flipAxesSet[2] = 0;
+  //flipAxesSet[0] = 0;
+  //flipAxesSet[1] = -1;
+  //flipAxesSet[2] = 0;
 
-  flip->SetFlipAxes(flipAxesSet);
-  flip->FlipAboutOriginOff();
-  flip->SetInput(getMaskImage());
-  flip->Update();
+  //flip->SetFlipAxes(flipAxesSet);
+  //flip->FlipAboutOriginOff();
+  //flip->SetInput(getMaskImage());
+  //flip->Update();
 
-  cbica::WriteImage< ImageTypeFloat3D >(flip->GetOutput(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
+  cbica::WriteImage< ImageTypeFloat3D >(/*flip->GetOutput()*/getMaskImage(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
 
   maskName = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
   cbica::Logging(loggerFile, "written temp mask");
@@ -5867,13 +5869,15 @@ void fMainWindow::ApplicationSBRTLungField()
     if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_CT)
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/ct.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      SaveImage_withFile(index, temp.c_str());
+      //cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
       ctImageFile = temp;
     }
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PET)
     {
       auto temp = cbica::normPath(m_tempFolderLocation + "/pet.nii.gz");
-      cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
+      SaveImage_withFile(index, temp.c_str());
+      //cbica::WriteImage< ImageTypeFloat3D >(mSlicerManagers[index]->mITKImage, temp);
       petImageFile = temp;
     }
     else
@@ -5895,21 +5899,21 @@ void fMainWindow::ApplicationSBRTLungField()
   int iter = 150;
   int ptSz = 1;
 
-  //! Following image flip is needed to correct the image orientation issue
-  typedef itk::FlipImageFilter< ImageType> FlipType;
-  FlipType::Pointer flip = FlipType::New();
-  FlipType::FlipAxesArrayType flipAxesSet;
+  ////! Following image flip is needed to correct the image orientation issue
+  //typedef itk::FlipImageFilter< ImageType> FlipType;
+  //FlipType::Pointer flip = FlipType::New();
+  //FlipType::FlipAxesArrayType flipAxesSet;
 
-  flipAxesSet[0] = 0;
-  flipAxesSet[1] = -1;
-  flipAxesSet[2] = 0;
+  //flipAxesSet[0] = 0;
+  //flipAxesSet[1] = -1;
+  //flipAxesSet[2] = 0;
 
-  flip->SetFlipAxes(flipAxesSet);
-  flip->FlipAboutOriginOff();
-  flip->SetInput(getMaskImage());
-  flip->Update();
+  //flip->SetFlipAxes(flipAxesSet);
+  //flip->FlipAboutOriginOff();
+  //flip->SetInput(getMaskImage());
+  //flip->Update();
 
-  cbica::WriteImage< ImageTypeFloat3D >(flip->GetOutput(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
+  cbica::WriteImage< ImageTypeFloat3D >(/*flip->GetOutput()*/getMaskImage(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
   cbica::Logging(loggerFile, "written temp mask");
   auto loadedMaskFile = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
 
