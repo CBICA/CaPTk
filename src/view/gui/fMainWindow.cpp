@@ -4539,9 +4539,10 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
   flip->SetInput(getMaskImage());
   flip->Update();
 
-  cbica::WriteImage< ImageTypeFloat3D >(flip->GetOutput()/*getMaskImage()*/, m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
-
   maskName = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
+
+  cbica::WriteImage< ImageTypeFloat3D >(flip->GetOutput()/*getMaskImage()*/, maskName);
+
   cbica::Logging(loggerFile, "written temp mask");
 
   int maskAvail;
@@ -4613,7 +4614,23 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
   segObject.WriteLabel(seedAvail);
   cbica::Logging(loggerFile, "written labels");
 
-  readMaskFile(m_tempFolderLocation + "/outputImage_segmentation.nii.gz");
+  auto finalOutputSegmentationFile = m_tempFolderLocation + "/outputImage_segmentation.nii.gz";
+
+  using FlipType = itk::FlipImageFilter< ImageType >;
+  auto flipper = FlipType::New();
+  FlipType::FlipAxesArrayType flipAxesSet_2;
+
+  flipAxesSet_2[0] = 0;
+  flipAxesSet_2[1] = -1;
+  flipAxesSet_2[2] = 0;
+
+  flipper->SetFlipAxes(flipAxesSet_2);
+  flipper->FlipAboutOriginOff();
+  flipper->SetInput(cbica::ReadImage< ImageType >(finalOutputSegmentationFile));
+  flipper->Update();
+  cbica::WriteImage< ImageType >(flipper->GetOutput(), finalOutputSegmentationFile);
+
+  readMaskFile(finalOutputSegmentationFile);
 
   cbica::Logging(loggerFile, "loaded images");
 
@@ -5970,6 +5987,20 @@ void fMainWindow::ApplicationSBRTLungField()
   updateProgress(100, "Writing Labels");
   lfObject.WriteLabel(m_tempFolderLocation + "/outputImage");
   cbica::Logging(loggerFile, "written labels");
+
+  using FlipType = itk::FlipImageFilter< ImageType >;
+  auto flipper = FlipType::New();
+  FlipType::FlipAxesArrayType flipAxesSet_2;
+
+  flipAxesSet_2[0] = 0;
+  flipAxesSet_2[1] = -1;
+  flipAxesSet_2[2] = 0;
+
+  flipper->SetFlipAxes(flipAxesSet_2);
+  flipper->FlipAboutOriginOff();
+  flipper->SetInput(cbica::ReadImage< ImageType >(m_tempFolderLocation + "/outputImage_lf.nii.gz"));
+  flipper->Update();
+  cbica::WriteImage< ImageType >(flipper->GetOutput(), m_tempFolderLocation + "/outputImage_lf.nii.gz");
 
   readMaskFile(m_tempFolderLocation + "/outputImage_lf.nii.gz");
 
