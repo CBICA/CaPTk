@@ -8,40 +8,40 @@ install_captk () {
   # Prep stage
 
   # Check for file
-  if [ -f ~/CaPTk ]
+  if [ -f ./CaPTk ]
   then
-    echo "Fatal: ~/CaPTk exists and is a file, not a directory"
+    echo "Fatal: ./CaPTk exists and is a file, not a directory"
     echo "To install, please ensure this file is renamed or moved"
     exit 1
   fi
 
   # Check for directory
-  if [ -d ~/CaPTk ]
+  if [ -d ./CaPTk ]
   then
-    echo "~/CaPTk exists. Proceeding..."
+    echo "./CaPTk exists. Proceeding..."
   else
-    echo "Creating ~/CaPTk/..."
-    mkdir ~/CaPTk/
+    echo "Creating ./CaPTk/..."
+    mkdir ./CaPTk/
   fi
 
   # Version number. 'version' file should be provided by captk-pkg
   ver=`cat version`
 
   # Check version dir/file
-  if [ -f ~/CaPTk/${ver} ]
+  if [ -f ./CaPTk/${ver} ]
   then
-    echo "Fatal: ~/CaPTk/${ver} exists and is a file, not a directory"
+    echo "Fatal: ./CaPTk/${ver} exists and is a file, not a directory"
     echo "To install, please ensure this file is renamed or moved"
     exit 1
   fi
 
   # Check for directory
-  if [ -d ~/CaPTk/${ver} ]
+  if [ -d ./CaPTk/${ver} ]
   then
-    echo "~/CaPTk/${ver} exists. Proceeding..."
+    echo "./CaPTk/${ver} exists. Proceeding..."
   else
-    echo "Creating ~/CaPTk/${ver}/..."
-    mkdir ~/CaPTk/${ver}/
+    echo "Creating ./CaPTk/${ver}/..."
+    mkdir ./CaPTk/${ver}/
   fi
 
 
@@ -78,7 +78,7 @@ install_captk () {
   fi
 
   # Move file but preserve pid
-  mv ./CaPTk.bin ~/CaPTk/${ver}/CaPTk-${ver}.bin 2>/dev/null &
+  mv ./CaPTk.bin ./CaPTk/${ver}/CaPTk-${ver}.bin 2>/dev/null &
   pid=$!
     
   # The latest in bash spinner technology from npm
@@ -95,29 +95,29 @@ install_captk () {
   printf "\n"
 
   # Last case
-  chmod +x ~/CaPTk/${ver}/CaPTk-${ver}.bin
+  chmod +x ./CaPTk/${ver}/CaPTk-${ver}.bin
   if [ $? -ne 0 ]; then
-    echo "WARNING: It appears as if something is wrong with your installation. Please make sure there is enough room on your disk, and that CaPTk-${ver}.bin is present under ~/CaPTk"
+    echo "WARNING: It appears as if something is wrong with your installation. Please make sure there is enough room on your disk, and that CaPTk-${ver}.bin is present under ./CaPTk"
     exit 1
   fi
 
   # CWL
   echo "Installing CWL"
-  mv ./*.cwl ~/CaPTk/${ver}/ 2>/dev/null
+  mv ./*.cwl ./CaPTk/${ver}/ 2>/dev/null
 
   # Creating a symbolic link
   echo "Creating symbolic link 'captk'"
-  cd ~/CaPTk/${ver}/
+  cd ./CaPTk/${ver}/
   ln -s ./CaPTk-${ver}.bin captk
 
   # Display any warnings at the end
   if [ ${fusefail} -eq 1 ]
   then
-    echo "WARNING: You may have issues running the AppImage since FUSE was not detected on your filesystem; please extract the installation files using the \"~/CaPTk/${ver}/captk --appimage-extract\" option"
+    echo "WARNING: You may have issues running the AppImage since FUSE was not detected on your filesystem; please extract the installation files using the \"./CaPTk/${ver}/captk --appimage-extract\" option"
   fi
 
   echo "Done."
-  echo "To run CaPTk, enter the command \"~/CaPTk/${ver}/captk\" in your console."
+  echo "To run CaPTk, enter the command \"./CaPTk/${ver}/captk\" in your console."
   
 }
 
