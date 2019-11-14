@@ -4539,7 +4539,7 @@ void fMainWindow::CallSBRTNodule(const std::string seedImage, const int labelVal
   //flip->SetInput(getMaskImage());
   //flip->Update();
 
-  //maskName = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
+  maskName = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
 
   cbica::WriteImage< ImageTypeFloat3D >(/*flip->GetOutput()*/getMaskImage(), maskName);
 
