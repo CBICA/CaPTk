@@ -202,6 +202,7 @@ RUN_DEPLOYQT () {
   # Replace AppRun
   rm ./appdir/AppRun
   cp ../../data/applications/AppRun ./appdir/
+  # cp ../../data/applications/CaPTk.desktop ./appdir/
 
   if [ -z "$PKG_COPY_QT_LIBS" ]; then
   
