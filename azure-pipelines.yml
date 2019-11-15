@@ -717,8 +717,7 @@ jobs:
     # submodule 
     - bash: |
         git submodule update --init --recursive
-        # ls -lt
-        # ls ./src/applications/Preprocessing/greedy
+
       displayName: 'Git Submodule Init and Update'
 
     # Moving LFS Files
