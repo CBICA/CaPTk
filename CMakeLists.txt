@@ -13,7 +13,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 3.nonRelease.20191114 )
+SET( PROJECT_VERSION_PATCH 3.nonRelease.20191116 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
