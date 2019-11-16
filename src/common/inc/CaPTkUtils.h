@@ -142,7 +142,8 @@ inline int guessImageType(const std::string &fileName)
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_RAD;
   }
   else if ((fileName_wrap.find("_ax") != std::string::npos) || (fileName_wrap.find("ax_") != std::string::npos) || 
-    (fileName_wrap.find("axial_") != std::string::npos) || (fileName_wrap.find("_axial") != std::string::npos))
+    (fileName_wrap.find("axial_") != std::string::npos) || (fileName_wrap.find("_axial") != std::string::npos) ||
+    (fileName_wrap.find("axial.nii.gz") != std::string::npos) || (fileName_wrap.find("ax.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_AX;
   }
