@@ -1091,7 +1091,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       mvFile(${EXE_NAME} itksnap ITK-SNAP)
       chmodFile(${EXE_NAME} "ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
 
-      INCLUDE(ChangeDylib)
+      # INCLUDE(ChangeDylib)
 
       FILE( GLOB EXECS
         "${DATA_DIR}/cwlFiles/*"
