@@ -203,7 +203,7 @@ public:
 
             if (m_calculateFeretDiameter)
             {
-              m_features["FeretDiameter" + labelString] = labelObject->GetFeretDiameter();
+              this->m_features["FeretDiameter" + labelString] = labelObject->GetFeretDiameter();
             }
             this->m_features["PerimeterOnBorder" + labelString] = labelObject->GetPerimeterOnBorder();
             this->m_features["Perimeter" + labelString] = labelObject->GetPerimeter();
