@@ -722,6 +722,7 @@ jobs:
 
     # Moving LFS Files
     - bash: |
+        rm -rf bin
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
