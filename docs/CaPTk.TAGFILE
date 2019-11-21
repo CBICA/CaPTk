@@ -32,7 +32,9 @@
     <docanchor file="FAQ" title="FUSE Issues">gs_FAQ_4_1</docanchor>
     <docanchor file="FAQ" title="GLIBCXX or GLIBC Issues">gs_FAQ_4_2</docanchor>
     <docanchor file="FAQ" title="Is there a minimum recommended screen resolution for running CaPTk?">gs_FAQ_5</docanchor>
-    <docanchor file="FAQ" title="What if I am having an issue not listed here?">gs_FAQ_6</docanchor>
+    <docanchor file="FAQ" title="Where can I find the CaPTk Docker Image?">gs_FAQ_6</docanchor>
+    <docanchor file="FAQ" title="How do I run the CaPTk Docker Image to show the interface?">gs_FAQ_7</docanchor>
+    <docanchor file="FAQ" title="What if I am having an issue not listed here?">gs_FAQ_8</docanchor>
   </compound>
   <compound kind="page">
     <name>How_To_Guides</name>
