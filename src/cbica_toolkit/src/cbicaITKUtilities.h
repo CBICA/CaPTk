@@ -172,7 +172,7 @@ namespace cbica
         (fileName_wrap.find(baseModalityStringToCheck) != std::string::npos)
         )
       {
-      return true;
+        return true;
       }
     };
 
