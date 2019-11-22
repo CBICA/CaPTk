@@ -2861,8 +2861,6 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
 
   std::cout << "PCA_PC10 read.\n";
 
-  std::cout << "Finished reading all model files" << std::endl;
-
   reader->SetFileName(modeldirectory + "/Mean_Others.csv");
   reader->Parse();
   dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
@@ -2895,7 +2893,6 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
   }
   std::cout << "Finished reading all model files" << std::endl;
   int a = 0;
-  std::cout << "Finished reading all model files" << std::endl;
 }
 
 
