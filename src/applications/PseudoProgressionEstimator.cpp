@@ -2624,7 +2624,7 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     Mean_PERF[i] = dataMatrix(0, i);
 
   //-------------others related data reading------------------
-  int PCA_Others_Size = /*20*/255;
+  int PCA_Others_Size = 20;
   reader->SetFileName(modeldirectory + "/PCA_Others.csv");
   reader->Parse();
   dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
