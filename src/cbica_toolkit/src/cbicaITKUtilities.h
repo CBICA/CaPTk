@@ -255,9 +255,9 @@ namespace cbica
       modalityCheckerFunction("labelmap") || 
       modalityCheckerFunction("label-map") || 
       modalityCheckerFunction("segmentation") ||
-      modalityCheckerFunction("label") || 
-      modalityCheckerFunction("roi") ||
-      modalityCheckerFunction("annotation"))
+      modalityCheckerFunction("annotation") ||
+      modalityCheckerFunction("label") ||
+      modalityCheckerFunction("roi"))
     {
       ImageSubType = ImageModalityType::IMAGE_TYPE_SEG;
     }
