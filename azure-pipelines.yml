@@ -715,10 +715,10 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
     # submodule 
-    - bash: |
-        git submodule update --init --recursive
+    # - bash: |
+    #     git submodule update --init --recursive
 
-      displayName: 'Git Submodule Init and Update'
+    #   displayName: 'Git Submodule Init and Update'
 
     # Moving LFS Files
     - bash: |
@@ -744,28 +744,30 @@ jobs:
 
       displayName: 'Configure and compile Superbuild'
 
-    #  # Check qt
-    # - bash: |
-    #     cd bin
-    #     ls -a
-    #     ls ./qt/
-    #   displayName: 'Check qt'
+     # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
 
-    # - bash: |
-    #     git pull origin master
-    #     git log -1
-    #     cat CMakeLists.txt | grep -i "PROJECT_VERSION"
-    #   displayName: 'Testing git pull and version'
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
 
     - bash: |
         cd bin
 
-        cmake ../
+        rm -rf CaPTk_*
 
+        cmake ../
+        rm CMakeCache.txt
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:/usr/local/lib:$CMAKE_PREFIX_PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
 
         make -j 2
