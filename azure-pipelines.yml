@@ -712,50 +712,50 @@ jobs:
   pool: Default
 
   steps:
-    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+    # - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
-    # submodule 
+    # # submodule 
+    # # - bash: |
+    # #     git submodule update --init --recursive
+
+    # #   displayName: 'Git Submodule Init and Update'
+
+    # # Moving LFS Files
     # - bash: |
-    #     git submodule update --init --recursive
+    #     # rm -rf bin
+    #     mkdir -p bin
+    #     cd bin
+    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
+    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+    #     # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+    #     # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+    #     ls -lt
+    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    #   displayName: 'Git Submodule Init and Update'
+    # - bash: |
+    #     cd bin
 
-    # Moving LFS Files
-    - bash: |
-        # rm -rf bin
-        mkdir -p bin
-        cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
-        # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-        # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
-        ls -lt
-      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+    #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+    #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-    - bash: |
-        cd bin
+    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+    #     make -j 2
 
-        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+    #   displayName: 'Configure and compile Superbuild'
 
-        make -j 2
+    #  # Check qt
+    # - bash: |
+    #     cd bin
+    #     ls -a
+    #     ls ./qt/
+    #   displayName: 'Check qt'
 
-      displayName: 'Configure and compile Superbuild'
-
-     # Check qt
-    - bash: |
-        cd bin
-        ls -a
-        ls ./qt/
-      displayName: 'Check qt'
-
-    - bash: |
-        git pull origin master
-        git log -1
-        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
-      displayName: 'Testing git pull and version'
+    # - bash: |
+    #     git pull origin master
+    #     git log -1
+    #     cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+    #   displayName: 'Testing git pull and version'
 
     - bash: |
         cd bin
