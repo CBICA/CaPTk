@@ -715,10 +715,10 @@ jobs:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
     # submodule 
-    # - bash: |
-    #     git submodule update --init --recursive
+    - bash: |
+        git submodule update --init --recursive
 
-    #   displayName: 'Git Submodule Init and Update'
+      displayName: 'Git Submodule Init and Update'
 
     # Moving LFS Files
     - bash: |
@@ -726,7 +726,7 @@ jobs:
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
         # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
         # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
