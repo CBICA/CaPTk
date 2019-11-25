@@ -130,6 +130,8 @@ public:
   void ConvertImageToImageDisplayExtent(vtkSmartPointer< vtkImageData > sourceImage, const int sourceExtent[6], vtkSmartPointer< vtkImageData > targetImage, int targetExtent[6]);
   void ClipDisplayedExtent(int extent[6], int refExtent[6]);
 
+  void SetImageSeriesDescription(std::string description);
+
   bool mActive;
 
 
