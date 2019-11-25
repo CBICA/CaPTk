@@ -709,8 +709,7 @@ jobs:
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool: 
-    name: 'cbica-osx3'
+  pool: 'Default'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
