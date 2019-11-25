@@ -674,17 +674,17 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
       return results;
     }
   }
-  std::cout << "Feature writing started:" << std::endl;
-  typedef itk::CSVNumericObjectFileWriter<double, 144, 448> WriterTypeMatrix;
-  WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();
-  MatrixType data;
-  data.set_size(144,448);
-  for (int i = 0; i < 144; i++)
-  	for (int j = 0; j < 448; j++)
-  		data(i, j) = FeaturesOfAllSubjects(i, j);
-  writermatrix->SetFileName(outputdirectory+ "/plain_test_features.csv");
-  writermatrix->SetInput(&data);
-  writermatrix->Write();
+  //std::cout << "Feature writing started:" << std::endl;
+  //typedef itk::CSVNumericObjectFileWriter<double, 144, 448> WriterTypeMatrix;
+  //WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();
+  //MatrixType data;
+  //data.set_size(144,448);
+  //for (int i = 0; i < 144; i++)
+  //	for (int j = 0; j < 448; j++)
+  //		data(i, j) = FeaturesOfAllSubjects(i, j);
+  //writermatrix->SetFileName(outputdirectory+ "/plain_test_features.csv");
+  //writermatrix->SetInput(&data);
+  //writermatrix->Write();
   
 
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
@@ -698,27 +698,27 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
     ScaledFeatureSetAfterAddingLabel(i, j) = 0;
   }
 
-  typedef itk::CSVNumericObjectFileWriter<double, 144, 449> WriterTypeMatrix1;
-  WriterTypeMatrix1::Pointer writermatrix1 = WriterTypeMatrix1::New();
-  data.set_size(144, 449);
-  for (int i = 0; i < 144; i++)
-    for (int j = 0; j < 449; j++)
-      data(i, j) = ScaledFeatureSetAfterAddingLabel(i, j);
-  writermatrix->SetFileName(outputdirectory + "/scaled_test_features.csv");
-  writermatrix->SetInput(&data);
-  writermatrix->Write();
+  //typedef itk::CSVNumericObjectFileWriter<double, 144, 449> WriterTypeMatrix1;
+  //WriterTypeMatrix1::Pointer writermatrix1 = WriterTypeMatrix1::New();
+  //data.set_size(144, 449);
+  //for (int i = 0; i < 144; i++)
+  //  for (int j = 0; j < 449; j++)
+  //    data(i, j) = ScaledFeatureSetAfterAddingLabel(i, j);
+  //writermatrix->SetFileName(outputdirectory + "/scaled_test_features.csv");
+  //writermatrix->SetInput(&data);
+  //writermatrix->Write();
 
   VariableSizeMatrixType ModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel);
 
-  typedef itk::CSVNumericObjectFileWriter<double, 144, 8> WriterTypeMatrix2;
-  WriterTypeMatrix2::Pointer writermatrix2 = WriterTypeMatrix2::New();
-  data.set_size(144, 8);
-  for (int i = 0; i < 144; i++)
-    for (int j = 0; j < 8; j++)
-      data(i, j) = ModelSelectedFeatures(i, j);
-  writermatrix2->SetFileName(outputdirectory + "/selected_test_features.csv");
-  writermatrix2->SetInput(&data);
-  writermatrix2->Write();
+  //typedef itk::CSVNumericObjectFileWriter<double, 144, 8> WriterTypeMatrix2;
+  //WriterTypeMatrix2::Pointer writermatrix2 = WriterTypeMatrix2::New();
+  //data.set_size(144, 8);
+  //for (int i = 0; i < 144; i++)
+  //  for (int j = 0; j < 8; j++)
+  //    data(i, j) = ModelSelectedFeatures(i, j);
+  //writermatrix2->SetFileName(outputdirectory + "/selected_test_features.csv");
+  //writermatrix2->SetInput(&data);
+  //writermatrix2->Write();
 
   //---------------------------------------------------------------------------------------------------------------	
   try

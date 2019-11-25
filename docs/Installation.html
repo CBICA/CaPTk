@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.3.Beta</span>
+   &#160;<span id="projectnumber">1.7.5.nonRelease.20191122</span>
    </div>
   </td>
  </tr>
@@ -77,7 +77,9 @@ $(document).ready(function(){initNavTree('Installation.html','');});
 <li>To run the AppImage, first open a terminal in the same directory as the .bin file.</li>
 <li>You will want to make sure it is runnable as an executable with the following command: <pre class="fragment">chmod +x CaPTk_${Version}.bin
 </pre></li>
-<li>Run the following command to start CaPTk: <pre class="fragment">./CaPTk_${Version}.bin
+<li>To install CaPTk to the current directory where the AppImage was downloaded, run the following command: <pre class="fragment">./CaPTk_${Version}.bin
+</pre></li>
+<li>To specify a preferred directory to install CaPTk, run the following command: <pre class="fragment">./CaPTk_${Version}.bin --target {path_to_preferred_directory}
 </pre></li>
 <li>Follow prompts to install.</li>
 </ul>

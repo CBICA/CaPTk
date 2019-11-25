@@ -53,7 +53,9 @@ var NAVTREE =
         [ "GLIBCXX or GLIBC Issues", "FAQ.html#gs_FAQ_4_2", null ]
       ] ],
       [ "Is there a minimum recommended screen resolution for running CaPTk?", "FAQ.html#gs_FAQ_5", null ],
-      [ "What if I am having an issue not listed here?", "FAQ.html#gs_FAQ_6", null ]
+      [ "Where can I find the CaPTk Docker Image?", "FAQ.html#gs_FAQ_6", null ],
+      [ "How do I run the CaPTk Docker Image to show the interface?", "FAQ.html#gs_FAQ_7", null ],
+      [ "What if I am having an issue not listed here?", "FAQ.html#gs_FAQ_8", null ]
     ] ],
     [ "How To Guides", "How_To_Guides.html", "How_To_Guides" ],
     [ "Scientific Findings using CaPTk", "Science.html", [

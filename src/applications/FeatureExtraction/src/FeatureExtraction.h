@@ -98,14 +98,18 @@ GaborWavelets,Directions,Int,03:13,8,The number of directions around the center 
 enum Params
 {
   Dimension, Axis, Radius, Neighborhood, Bins, Bins_Min, Directions, Offset, Range,
-  LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, LatticeFullImage,
-  GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, ResamplingInterpolator_Mask, LBPStyle, ParamMax
+  LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, 
+  LatticeFullImage, GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, 
+  QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, 
+  ResamplingInterpolator_Mask, LBPStyle, MorphologicFeret, ParamMax
 };
 static const char ParamsString[ParamMax + 1][30] =
 {
   "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Bins_Min", "Directions", "Offset", "Range",
-  "Window", "Step", "Boundary", "PatchBoundary", "Weight", "FullImage",
-  "FMax", "Gamma", "Level", "ETA", "Epsilon", "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
+  "Window", "Step", "Boundary", "PatchBoundary", "Weight", 
+  "FullImage", "FMax", "Gamma", "Level", "ETA", "Epsilon", 
+  "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", 
+  "ResamplingInterpolator_Mask", "LBPStyle", "Feret", "ParamMax"
 };
 
 enum FeatureFamily
@@ -742,6 +746,7 @@ private:
   bool m_patchOnRoiEnabled = false; //! whether to pull the entire patch or only along the ROI
   bool m_patchBoundaryDisregarded = false; //! only considers patches with all pixels != 0
   bool m_patchFullImageComputation = false; //! whether or not the entire image is to be considered for lattice computation or not
+  bool m_morphologicCalculateFeret = false; //! controls calculation of feret diameter
   typename TImageType::Pointer m_featureMapBaseImage; //! the feature map base: this is only used as the base image for the lattice feature maps
   std::map< std::string, // FeatureFamily_FeatureName
     typename TImageType::Pointer > m_downscaledFeatureMaps; // each feature map (represented by the string in key)

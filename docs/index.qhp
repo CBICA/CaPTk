@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.3.Beta" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.5.nonRelease.20191122" ref="index.html">
         <section title="Overview" ref="index.html" />
         <section title="Getting Started" ref="Getting_Started.html">
           <section title="Frequently Asked Questions" ref="Getting_Started.html#gs_FAQ" />
@@ -35,7 +35,9 @@
             <section title="GLIBCXX or GLIBC Issues" ref="FAQ.html#gs_FAQ_4_2" />
           </section>
           <section title="Is there a minimum recommended screen resolution for running CaPTk?" ref="FAQ.html#gs_FAQ_5" />
-          <section title="What if I am having an issue not listed here?" ref="FAQ.html#gs_FAQ_6" />
+          <section title="Where can I find the CaPTk Docker Image?" ref="FAQ.html#gs_FAQ_6" />
+          <section title="How do I run the CaPTk Docker Image to show the interface?" ref="FAQ.html#gs_FAQ_7" />
+          <section title="What if I am having an issue not listed here?" ref="FAQ.html#gs_FAQ_8" />
         </section>
         <section title="How To Guides" ref="How_To_Guides.html">
           <section title="Pre-processing" ref="ht_Preprocessing.html">
