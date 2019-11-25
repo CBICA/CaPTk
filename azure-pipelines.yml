@@ -746,8 +746,8 @@ jobs:
 
      # Check qt
     - bash: |
-        cd ../../../superbuild
-        cp -r * ./bin
+        mkdir -p bin
+        cp -r ../../../superbuild/ ./bin
       displayName: 'Move superbuild'
 
     - bash: |
