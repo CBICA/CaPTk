@@ -748,10 +748,7 @@ jobs:
     - bash: |
         mkdir -p bin
         cp -r ../../../superbuild/ ./bin
-        mkdir -p qt
-        tar xfz qt.zip --directory qt
-        mkdir -p externalApps
-        tar xfz binaries_macos.zip --directory externalApps
+        
       displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
