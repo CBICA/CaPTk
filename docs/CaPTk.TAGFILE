@@ -1,5 +1,55 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <tagfile>
+  <compound kind="file">
+    <name>2_GettingStarted.txt</name>
+    <path>/cbica/home/sakoc/git/CaPTk/</path>
+    <filename>2__GettingStarted_8txt</filename>
+  </compound>
+  <compound kind="file">
+    <name>3_HowToGuides.txt</name>
+    <path>/cbica/home/sakoc/git/CaPTk/</path>
+    <filename>3__HowToGuides_8txt</filename>
+  </compound>
+  <compound kind="file">
+    <name>4_Science.txt</name>
+    <path>/cbica/home/sakoc/git/CaPTk/</path>
+    <filename>4__Science_8txt</filename>
+  </compound>
+  <compound kind="file">
+    <name>5_TechReference.txt</name>
+    <path>/cbica/home/sakoc/git/CaPTk/</path>
+    <filename>5__TechReference_8txt</filename>
+  </compound>
+  <compound kind="file">
+    <name>6.1_Download.txt</name>
+    <path>/cbica/home/sakoc/git/CaPTk/</path>
+    <filename>6_81__Download_8txt</filename>
+  </compound>
+  <compound kind="file">
+    <name>6.2_Installation.txt</name>
+    <path>/cbica/home/sakoc/git/CaPTk/</path>
+    <filename>6_82__Installation_8txt</filename>
+  </compound>
+  <compound kind="file">
+    <name>7_ReleaseNotes.txt</name>
+    <path>/cbica/home/sakoc/git/CaPTk/</path>
+    <filename>7__ReleaseNotes_8txt</filename>
+  </compound>
+  <compound kind="file">
+    <name>8_People.txt</name>
+    <path>/cbica/home/sakoc/git/CaPTk/</path>
+    <filename>8__People_8txt</filename>
+  </compound>
+  <compound kind="file">
+    <name>Extras.txt</name>
+    <path>/cbica/home/sakoc/git/CaPTk/</path>
+    <filename>Extras_8txt</filename>
+  </compound>
+  <compound kind="file">
+    <name>README.txt</name>
+    <path>/cbica/home/sakoc/git/CaPTk/</path>
+    <filename>README_8txt</filename>
+  </compound>
   <compound kind="page">
     <name>Getting_Started</name>
     <title>Getting Started</title>

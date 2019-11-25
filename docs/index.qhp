@@ -164,9 +164,13 @@
       <file>bdwn.png</file>
       <file>sync_on.png</file>
       <file>sync_off.png</file>
+      <file>doc.png</file>
+      <file>folderopen.png</file>
+      <file>folderclosed.png</file>
+      <file>arrowdown.png</file>
+      <file>arrowright.png</file>
+      <file>splitbar.png</file>
       <file>doxygen.css</file>
-      <file>jquery.js</file>
-      <file>dynsections.js</file>
       <file>Getting_Started.html</file>
       <file>FAQ.html</file>
       <file>How_To_Guides.html</file>

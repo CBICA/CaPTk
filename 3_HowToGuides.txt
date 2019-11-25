@@ -741,10 +741,10 @@ This application provides an estimate of the pseudo-progression after radiothera
       - "my_T1CE_file.nii.gz"
       - "my_FLAIR_file.nii.gz"
     -# DTI
-      - "my_AX_file.nii.gz"
-      - "my_FA_file.nii.gz"
-      - "my_RAD_file.nii.gz"
-      - "my_TR_file.nii.gz"
+      - "my_axial_file.nii.gz"
+      - "my_fractional_file.nii.gz"
+      - "my_radial_file.nii.gz"
+      - "my_trace_file.nii.gz"
     -# PERFUSION
       - "my_PERFUSION_file.nii.gz"
     -# SEGMENTATION
