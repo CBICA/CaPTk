@@ -273,6 +273,7 @@ void SlicerManager::UpdateSlicer(int num, bool state)
 void SlicerManager::SetSlicerWindow(int i, vtkRenderWindow* RW)
 {
   mSlicers[i]->SetRenderWindow(i, RW);
+  mSlicers[i]->SetImageSeriesDescription(this->mBaseFileName);
 }
 
 void SlicerManager::SetInteractorStyleNavigator(int i, vtkInteractorStyle* style)

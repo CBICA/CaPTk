@@ -1106,6 +1106,10 @@ void Slicer::ClipDisplayedExtent(int extent[6], int refExtent[6])
     }
   }
 }
+void Slicer::SetImageSeriesDescription(std::string description)
+{
+	this->mCornerAnnotation->SetText(vtkCornerAnnotation::UpperLeft, description.c_str());
+}
 void Slicer::ResetMap()
 {
   mMask->DeepCopy(mMaskOriginal);
