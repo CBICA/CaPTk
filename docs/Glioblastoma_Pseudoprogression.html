@@ -63,38 +63,42 @@ $(document).ready(function(){initNavTree('Glioblastoma_Pseudoprogression.html','
 <div class="contents">
 <div class="textblock"><p>This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].</p>
 <p><b>REQUIREMENTS:</b></p><ol type="1">
-<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
+<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DSC-PH, DSC-PSR, DSC-RCBV, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
 <li>Segmentation label of the demarcated region of interest (Label=1) in a single NIfTI (.nii.gz) file.</li>
-<li>The data for each patient should be organized in the following directory structure.<ul>
+<li>The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.<ul>
 <li>SubjectID<ol type="a">
+<li><b>features.csv</b> (training only)</li>
 <li>CONVENTIONAL<ul>
-<li>"my_T1_file.nii.gz"</li>
-<li>"my_T2_file.nii.gz"</li>
-<li>"my_T1CE_file.nii.gz"</li>
-<li>"my_FLAIR_file.nii.gz"</li>
+<li>"my_&lt;b&gt;t1&lt;/b&gt;_file.nii.gz"</li>
+<li>"my_&lt;b&gt;t2&lt;/b&gt;_file.nii.gz"</li>
+<li>"my_&lt;b&gt;t1ce&lt;/b&gt;_file.nii.gz"</li>
+<li>"my_&lt;b&gt;flair&lt;/b&gt;_file.nii.gz"</li>
 </ul>
 </li>
 <li>DTI<ul>
-<li>"my_axial_file.nii.gz"</li>
-<li>"my_fractional_file.nii.gz"</li>
-<li>"my_radial_file.nii.gz"</li>
-<li>"my_trace_file.nii.gz"</li>
+<li>"my_&lt;b&gt;axial&lt;/b&gt;_file.nii.gz"</li>
+<li>"my_&lt;b&gt;fractional&lt;/b&gt;_file.nii.gz"</li>
+<li>"my_&lt;b&gt;radial&lt;/b&gt;_file.nii.gz"</li>
+<li>"my_&lt;b&gt;trace&lt;/b&gt;_file.nii.gz"</li>
 </ul>
 </li>
 <li>PERFUSION<ul>
-<li>"my_PERFUSION_file.nii.gz"</li>
+<li>"my_perf_&lt;b&gt;truncated&lt;/b&gt;_file.nii.gz"</li>
+<li>"my_&lt;b&gt;ph&lt;/b&gt;_file.nii.gz"</li>
+<li>"my_&lt;b&gt;psr&lt;/b&gt;_file.nii.gz"</li>
+<li>"my_&lt;b&gt;rcbv&lt;/b&gt;_file.nii.gz"</li>
 </ul>
 </li>
 <li>SEGMENTATION<ul>
-<li>"my_segmentation_file.nii.gz"</li>
+<li>"my_&lt;b&gt;segmentation&lt;/b&gt;_file.nii.gz"</li>
 </ul>
 </li>
 </ol>
 </li>
 </ul>
 </li>
-<li>The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:<ul>
-<li>Data_of_multiple_patients<ol type="a">
+<li>The data of the single or multiple patients should be organized in the above mentioned structure and reside under one input folder as follows.<ul>
+<li>Input_Folder<ol type="a">
 <li>Subject_ID1</li>
 <li>Subject_ID2</li>
 <li>...</li>
@@ -117,7 +121,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Pseudoprogression.html','
 <li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around.</li>
 </ul>
 <ol type="1">
-<li>NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM for calculating perfusion derivatives. <pre class="fragment">${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionModel
+<li>NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM. <pre class="fragment">${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionModelDirectory
 </pre></li>
 </ol>
 </li>
@@ -129,7 +133,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Pseudoprogression.html','
 <li>A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).</li>
 </ol>
 <ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionOutput -m C:/PseudoprogressionModel
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionModelDirectory
 </pre></li>
 </ul>
 </li>

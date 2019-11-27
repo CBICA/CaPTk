@@ -733,10 +733,10 @@ This application provides an estimate of the pseudo-progression after radiothera
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DSC-PH, DSC-PSR, DSC-RCBV, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
 -# Segmentation label of the demarcated region of interest (Label=1) in a single NIfTI (.nii.gz) file.
--# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD<\b> to be identified as respective requirements.
+-# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - SubjectID
-    -# <b>features.csv<\b> (training only)
-	-# CONVENTIONAL 
+  	-# <b>features.csv</b> (training only)
+    -# CONVENTIONAL 
       - "my_<b>t1</b>_file.nii.gz"
       - "my_<b>t2</b>_file.nii.gz"
       - "my_<b>t1ce</b>_file.nii.gz"
@@ -748,9 +748,9 @@ This application provides an estimate of the pseudo-progression after radiothera
       - "my_<b>trace</b>_file.nii.gz"
     -# PERFUSION
       - "my_perf_<b>truncated</b>_file.nii.gz"
-	  - "my_<b>ph</b>_file.nii.gz"
-	  - "my_<b>psr</b>_file.nii.gz"
-	  - "my_<b>rcbv</b>_file.nii.gz"
+      - "my_<b>ph</b>_file.nii.gz"
+      - "my_<b>psr</b>_file.nii.gz"
+      - "my_<b>rcbv</b>_file.nii.gz"
     -# SEGMENTATION
       - "my_<b>segmentation</b>_file.nii.gz"
 -# The data of the single or multiple patients should be organized in the above mentioned structure and reside under one input folder as follows. 
