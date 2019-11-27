@@ -731,26 +731,30 @@ Reference:
 This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].
 
 <b>REQUIREMENTS:</b>
--# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
+-# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DSC-PH, DSC-PSR, DSC-RCBV, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
 -# Segmentation label of the demarcated region of interest (Label=1) in a single NIfTI (.nii.gz) file.
--# The data for each patient should be organized in the following directory structure. 
+-# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD<\b> to be identified as respective requirements.
   - SubjectID
-    -# CONVENTIONAL 
-      - "my_T1_file.nii.gz"
-      - "my_T2_file.nii.gz"
-      - "my_T1CE_file.nii.gz"
-      - "my_FLAIR_file.nii.gz"
+    -# <b>features.csv<\b> (training only)
+	-# CONVENTIONAL 
+      - "my_<b>t1</b>_file.nii.gz"
+      - "my_<b>t2</b>_file.nii.gz"
+      - "my_<b>t1ce</b>_file.nii.gz"
+      - "my_<b>flair</b>_file.nii.gz"
     -# DTI
-      - "my_axial_file.nii.gz"
-      - "my_fractional_file.nii.gz"
-      - "my_radial_file.nii.gz"
-      - "my_trace_file.nii.gz"
+      - "my_<b>axial</b>_file.nii.gz"
+      - "my_<b>fractional</b>_file.nii.gz"
+      - "my_<b>radial</b>_file.nii.gz"
+      - "my_<b>trace</b>_file.nii.gz"
     -# PERFUSION
-      - "my_PERFUSION_file.nii.gz"
+      - "my_perf_<b>truncated</b>_file.nii.gz"
+	  - "my_<b>ph</b>_file.nii.gz"
+	  - "my_<b>psr</b>_file.nii.gz"
+	  - "my_<b>rcbv</b>_file.nii.gz"
     -# SEGMENTATION
-      - "my_segmentation_file.nii.gz"
--# The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
-	- Data_of_multiple_patients
+      - "my_<b>segmentation</b>_file.nii.gz"
+-# The data of the single or multiple patients should be organized in the above mentioned structure and reside under one input folder as follows. 
+	- Input_Folder
 		-# Subject_ID1
 		-# Subject_ID2
 		-# ...
@@ -765,9 +769,9 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
-    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM for calculating perfusion derivatives. 
+    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM. 
 \verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionModel
+${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionModelDirectory
 \endverbatim
 
 	- Use existing model: 
@@ -778,7 +782,7 @@ ${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/Pseudoprogress
 		-# A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
 \verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionOutput -m C:/PseudoprogressionModel
+${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionModelDirectory
 \endverbatim
 
 <b>RESULT INTERPRETATION:</b>
