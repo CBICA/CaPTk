@@ -149,14 +149,14 @@ jobs:
       displayName: 'Disk space check'
 
     - script: |
-       cd bin
-       export GIT_LFS_SKIP_SMUDGE=1
-       git lfs pull --include "data/TestData.zip"
-       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-       cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
-       setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-       cmake --build . --target RUN_TESTS --config Release
-     displayName: 'Performing the Tests'
+        cd bin
+        export GIT_LFS_SKIP_SMUDGE=1
+        git lfs pull --include "data/TestData.zip"
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        cmake --build . --target RUN_TESTS --config Release
+      displayName: 'Performing the Tests'
 
     - script: |
         cd bin
