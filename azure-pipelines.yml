@@ -360,7 +360,7 @@ jobs:
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
         make -j2
-        make tests
+        make test
       displayName: 'Configure and compile CaPTk'
 
     # Configure and build CaPTk
@@ -686,7 +686,7 @@ jobs:
        cd bin
        export GIT_LFS_SKIP_SMUDGE=1
        git lfs pull --include "data/TestData.zip"
-       make tests
+       make test
      displayName: 'Performing the Tests'
 
     - task: PublishBuildArtifacts@1
@@ -994,7 +994,7 @@ jobs:
 #     #    cd bin
 #     #    export GIT_LFS_SKIP_SMUDGE=1
 #     #    git lfs pull --include "data/TestData.zip"
-#     #    make tests
+#     #    make test
 #     #  displayName: 'Performing the Tests'
 
 #     # - task: PublishBuildArtifacts@1
