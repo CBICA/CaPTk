@@ -66,34 +66,34 @@ $(document).ready(function(){initNavTree('Glioblastoma_Pseudoprogression.html','
 <div class="contents">
 <div class="textblock"><p>This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].</p>
 <p><b>REQUIREMENTS:</b></p><ol type="1">
-<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DSC-PH, DSC-PSR, DSC-RCBV, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
+<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-4D, DSC-PH, DSC-PSR, DSC-RCBV, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
 <li>Segmentation label of the demarcated region of interest (Label=1) in a single NIfTI (.nii.gz) file.</li>
 <li>The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.<ul>
 <li>SubjectID<ol type="a">
 <li><b>features.csv</b> (training only)</li>
 <li>CONVENTIONAL<ul>
 <li>my_<b>t1</b>_file.nii.gz</li>
-<li>"my_&lt;b&gt;t2&lt;/b&gt;_file.nii.gz"</li>
-<li>"my_&lt;b&gt;t1ce&lt;/b&gt;_file.nii.gz"</li>
-<li>"my_&lt;b&gt;flair&lt;/b&gt;_file.nii.gz"</li>
+<li>my_<b>t2</b>_file.nii.gz</li>
+<li>my_<b>t1ce</b>_file.nii.gz</li>
+<li>my_<b>flair</b>_file.nii.gz</li>
 </ul>
 </li>
 <li>DTI<ul>
-<li>"my_&lt;b&gt;axial&lt;/b&gt;_file.nii.gz"</li>
-<li>"my_&lt;b&gt;fractional&lt;/b&gt;_file.nii.gz"</li>
-<li>"my_&lt;b&gt;radial&lt;/b&gt;_file.nii.gz"</li>
-<li>"my_&lt;b&gt;trace&lt;/b&gt;_file.nii.gz"</li>
+<li>my_<b>axial</b>_file.nii.gz</li>
+<li>my_<b>fractional</b>_file.nii.gz</li>
+<li>my_<b>radial</b>_file.nii.gz</li>
+<li>my_<b>trace</b>_file.nii.gz</li>
 </ul>
 </li>
 <li>PERFUSION<ul>
-<li>"my_perf_&lt;b&gt;truncated&lt;/b&gt;_file.nii.gz"</li>
-<li>"my_&lt;b&gt;ph&lt;/b&gt;_file.nii.gz"</li>
-<li>"my_&lt;b&gt;psr&lt;/b&gt;_file.nii.gz"</li>
-<li>"my_&lt;b&gt;rcbv&lt;/b&gt;_file.nii.gz"</li>
+<li>my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number time points)</li>
+<li>my_<b>ph</b>_file.nii.gz</li>
+<li>my_<b>psr</b>_file.nii.gz</li>
+<li>my_<b>rcbv</b>_file.nii.gz</li>
 </ul>
 </li>
 <li>SEGMENTATION<ul>
-<li>"my_&lt;b&gt;segmentation&lt;/b&gt;_file.nii.gz"</li>
+<li>my_<b>segmentation</b>_file.nii.gz</li>
 </ul>
 </li>
 </ol>

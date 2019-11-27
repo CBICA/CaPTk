@@ -69,6 +69,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_PHI.html','');});
 <li>T1-Gd: To annotate the immediate peritumoral ROI.</li>
 <li>T2-FLAIR: To annotate the distant peritumoral ROI.</li>
 <li>DSC-MRI: To perform the analysis and extract the PHI.</li>
+<li>(Command-line only) ROI Label file consisting of near-region (Label=1) and far-region (Label=2)</li>
 </ol>
 <p><b>USAGE:</b></p><ol type="1">
 <li>Annotate 2 ROIs: one near (Label:1) the enhancing tumor and another far (Label:2) from it (but still within the peritumoral region). Rules for ROI annotation are provided below [3].</li>
@@ -76,7 +77,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_PHI.html','');});
 <li>A pop-up window appears displaying the results (within &lt;1 minute).</li>
 </ol>
 <ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -i C:/inputImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -i C:/inputDSCImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
 </pre></li>
 </ul>
 <p><b>RULES FOR ROI ANNOTATION</b>:</p><ul>
