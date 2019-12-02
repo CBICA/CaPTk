@@ -704,6 +704,119 @@ jobs:
   #     displayName: Uploading to NITRC
   #     condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
+- job: 'WindowsBuild'
+  displayName: "End-to-end Windows build & package"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+
+  pool: 'Default'
+
+  steps:
+    - checkout: self  
+
+    # submodule 
+    - bash: |
+        git submodule update --init --recursive
+        # ls -lt
+        # ls ./src/applications/Preprocessing/greedy
+      displayName: 'Git Submodule Init and Update'
+
+    # - script: |
+    #     choco install doxygen.install nsis.install wget
+    #   displayName: 'Install dependencies'
+
+    # - powershell: |
+    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
+    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
+    #   displayName: 'Downloading via wget'
+
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
+        ls -lt
+      displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
+
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./installLibs" -DCMAKE_CONFIGURATION_TYPES="Release" ..
+        # freeing up space
+        rm -rf ../src/applications/individualApps/libra_source/doc
+        rm -rf ../src/applications/individualApps/libra_source/LIBRA_Software_Manual.pdf
+        # freeing up space
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        cmake --build . --target ALL_BUILD --config Release
+        rm -rf installLibs
+
+      displayName: 'Configure and compile Superbuild'
+
+    # - bash: |
+    #     mkdir -p bin
+    #     cp -r ../../../superbuild/ ./bin
+        
+    #   displayName: 'Move superbuild and qt and compiled apps'
+
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
+
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        cmake --build . --target ALL_BUILD --config Release
+        rm -rf externalApps
+      displayName: 'Configure and compile CaPTk'
+
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        rm -rf binaries_windows.zip
+        rm -rf install_manifest.txt
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        cmake --build . --target PACKAGE --config Release
+
+        ls -lt *_Installer.*
+
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+
+        cd ../
+
+      displayName: 'Build & Package CaPTk'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+
 - job: 'MacOSSelfHostBuild'
   displayName: "Self-hosted MacOS agent"
   timeoutInMinutes: 0
