@@ -715,10 +715,9 @@ jobs:
     - checkout: self  
 
     # submodule 
-    - bash: |
+    - powershell: |
         git submodule update --init --recursive
-        # ls -lt
-        # ls ./src/applications/Preprocessing/greedy
+
       displayName: 'Git Submodule Init and Update'
 
     # - script: |
@@ -731,7 +730,7 @@ jobs:
     #   displayName: 'Downloading via wget'
 
     # Moving LFS Files
-    - bash: |
+    - powershell: |
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
@@ -759,7 +758,7 @@ jobs:
         
     #   displayName: 'Move superbuild and qt and compiled apps'
 
-    - bash: |
+    - powershell: |
         git pull origin master
         git log -1
         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
