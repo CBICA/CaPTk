@@ -68,38 +68,40 @@ $(document).ready(function(){initNavTree('Glioblastoma_Recurrence.html','');});
 <p><b>REQUIREMENTS:</b></p><ol type="1">
 <li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
 <li>Segmentation labels of the tumor sub-regions in a single NIfTI (.nii.gz) file: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)</li>
-<li>The data for each patient should be organized in the following directory structure.<ul>
-<li>SubjectID<ol type="a">
+<li>(For training only) Segmentation labels of the near-region and far-region within the Edema. ROI (Label=1), other (Label=0)</li>
+<li>The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must i nclude words in <b>BOLD</b> to be identified as respective required files.<ul>
+<li>Subject_ID<ol type="a">
+<li><b>features.csv</b></li>
 <li>CONVENTIONAL<ul>
-<li>"my_T1_file.nii.gz"</li>
-<li>"my_T2_file.nii.gz"</li>
-<li>"my_T1CE_file.nii.gz"</li>
-<li>"my_FLAIR_file.nii.gz"</li>
+<li>my_<b>t1</b>_file.nii.gz</li>
+<li>my_<b>t2</b>_file.nii.gz</li>
+<li>my_<b>t1ce</b>_file.nii.gz</li>
+<li>my_<b>flair</b>_file.nii.gz</li>
 </ul>
 </li>
 <li>DTI<ul>
-<li>"my_AX_file.nii.gz"</li>
-<li>"my_FA_file.nii.gz"</li>
-<li>"my_RAD_file.nii.gz"</li>
-<li>"my_TR_file.nii.gz"</li>
+<li>my_<b>axial</b>_file.nii.gz</li>
+<li>my_<b>fractional</b>_file.nii.gz</li>
+<li>my_<b>radial</b>_file.nii.gz</li>
+<li>my_<b>trace</b>_file.nii.gz</li>
 </ul>
 </li>
 <li>PERFUSION<ul>
-<li>"my_PERFUSION_file.nii.gz"</li>
+<li>my_<b>perf</b>usion_file.nii.gz</li>
 </ul>
 </li>
 <li>SEGMENTATION<ul>
-<li>"my_segmentation_file.nii.gz"</li>
-<li>"my_near_region_file.nii.gz" (only for training a new model)</li>
-<li>"my_far_region_file.nii.gz" (only for training a new model)</li>
+<li>my_tumor_segmentation_<b>label</b>_file.nii.gz</li>
+<li>my_<b>near</b>_region_file.nii.gz (only for training a new model)</li>
+<li>my_<b>far</b>_region_file.nii.gz (only for training a new model)</li>
 </ul>
 </li>
 </ol>
 </li>
 </ul>
 </li>
-<li>The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:<ul>
-<li>Data_of_multiple_patients<ol type="a">
+<li>The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:<ul>
+<li>Input_Directory<ol type="a">
 <li>Subject_ID1</li>
 <li>Subject_ID2</li>
 <li>...</li>

@@ -393,30 +393,31 @@ This application provides the prediction of the molecular subtype of <i>de novo<
 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multi-modal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV. 
--# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)
+-# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
+-# Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
 -# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and molecular subtype (in second column) for training a new model, and age only for molecular subtype prediction of new patients. 
--# The data for each patient should be organized in the following directory structure. 
+-# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - Subject_ID
-    -# features.csv file 
-    -# CONVENTIONAL 
-      - "my_T1_file.nii.gz"
-      - "my_T2_file.nii.gz"
-      - "my_T1CE_file.nii.gz"
-      - "my_FLAIR_file.nii.gz"
+    -# <b>features.csv</b>
+    -# CONVENTIONAL
+      - my_<b>t1</b>_file.nii.gz
+      - my_<b>t2</b>_file.nii.gz
+      - my_<b>t1ce</b>_file.nii.gz
+      - my_<b>flair</b>_file.nii.gz
     -# DTI
-      - "my_AX_file.nii.gz"
-      - "my_FA_file.nii.gz"
-      - "my_RAD_file.nii.gz"
-      - "my_TR_file.nii.gz"
+      - my_<b>axial</b>_file.nii.gz
+      - my_<b>fractional</b>_file.nii.gz
+      - my_<b>radial</b>_file.nii.gz
+      - my_<b>trace</b>_file.nii.gz
     -# PERFUSION
-      - "my_rCBV_file.nii.gz"
-      - "my_PSR_file.nii.gz"
-      - "my_PH_file.nii.gz"
+      - my_<b>rcbv</b>_file.nii.gz
+      - my_<b>psr</b>_file.nii.gz
+      - my_<b>ph</b>_file.nii.gz
     -# SEGMENTATION
-      - "original_segmentation_file.nii.gz"
-      - "segmentation_file_in_atlas_space.nii.gz"
+      - label_<b>segmentation</b>_file.nii.gz (in same space as above images)
+      - label_in_<b>atlas</b>_space.nii.gz (in common atlas space)
 -# The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
-	- Data_of_multiple_patients
+	- Input_Directory
 		-# Subject_ID1
 		-# Subject_ID2
 		-# ...
@@ -424,7 +425,7 @@ This application provides the prediction of the molecular subtype of <i>de novo<
       
 <b>USAGE:</b>
 - Train New Model: 
-	-# "Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
+	-# "Select Subjects". Select the input directory that follows the folder structure described above.
 	-# "Output". Select the folder where the trained model will be saved.
 	-# A pop-up window appears displaying the completion of model building. (Time depends on the number of patients: ~2*Patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
@@ -434,7 +435,7 @@ ${CaPTk_InstallDir}/bin/MolecularSubtypePredictor.exe -t 0 -i C:/MolecularSubtyp
 
 - Use Existing Model:
 	-# "Model Directory". Choose the directory of a saved model.
-	-# "Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
+	-# "Test Subjects". Select the input directory that follows the folder structure described above.
 	-# "Output". Select the output directory where a .csv file with the predicted molecular subtypes for all patients will be saved, and click on 'Confirm'.
 	-# A pop-up window appears displaying the completion of subtype calculation. The window will also show the molecular subtype of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
@@ -490,14 +491,15 @@ This application evaluates the Epidermal Growth Factor Receptor splice variant I
 	-# T1-Gd: To annotate the immediate peritumoral ROI.
 	-# T2-FLAIR: To annotate the distant peritumoral ROI.
 	-# DSC-MRI: To perform the analysis and extract the PHI.
-
+  -# (Command-line only) ROI Label file consisting of near-region (Label=1) and far-region (Label=2)
+ 
 <b>USAGE:</b>
 	-# Annotate 2 ROIs: one near (Label:1) the enhancing tumor and another far (Label:2) from it (but still within the peritumoral region). Rules for ROI annotation are provided below [3].
 	-# Once the 2 ROIs are annotated, the application can be launched by using the menu option: 'Applications -> EGFRvIII Surrogate Index'.
 	-# A pop-up window appears displaying the results (within <1 minute).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -i C:/inputImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
+${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -i C:/inputDSCImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
 \endverbatim
 
 <b>RULES FOR ROI ANNOTATION</b>:
@@ -531,26 +533,29 @@ This application provides a probability map of deeply infiltrating tumor in the 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
 -# Segmentation labels of the tumor sub-regions in a single NIfTI (.nii.gz) file: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)
--# The data for each patient should be organized in the following directory structure. 
-  - SubjectID
-    -# CONVENTIONAL 
-      - "my_T1_file.nii.gz"
-      - "my_T2_file.nii.gz"
-      - "my_T1CE_file.nii.gz"
-      - "my_FLAIR_file.nii.gz"
+-# (For training only) Segmentation labels of the near-region and far-region within the Edema. ROI (Label=1), other (Label=0)
+-# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must i
+nclude words in <b>BOLD</b> to be identified as respective required files.
+  - Subject_ID
+    -# <b>features.csv</b>
+    -# CONVENTIONAL
+      - my_<b>t1</b>_file.nii.gz
+      - my_<b>t2</b>_file.nii.gz
+      - my_<b>t1ce</b>_file.nii.gz
+      - my_<b>flair</b>_file.nii.gz
     -# DTI
-      - "my_AX_file.nii.gz"
-      - "my_FA_file.nii.gz"
-      - "my_RAD_file.nii.gz"
-      - "my_TR_file.nii.gz"
+      - my_<b>axial</b>_file.nii.gz
+      - my_<b>fractional</b>_file.nii.gz
+      - my_<b>radial</b>_file.nii.gz
+      - my_<b>trace</b>_file.nii.gz
     -# PERFUSION
-      - "my_PERFUSION_file.nii.gz"
+      - my_<b>perf</b>usion_file.nii.gz
     -# SEGMENTATION
-      - "my_segmentation_file.nii.gz"
-      - "my_near_region_file.nii.gz" (only for training a new model)
-      - "my_far_region_file.nii.gz" (only for training a new model)
--# The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
-	- Data_of_multiple_patients
+      - my_tumor_segmentation_<b>label</b>_file.nii.gz
+      - my_<b>near</b>_region_file.nii.gz (only for training a new model)
+      - my_<b>far</b>_region_file.nii.gz (only for training a new model) 
+-# The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
+	- Input_Directory
 		-# Subject_ID1
 		-# Subject_ID2
 		-# ...
@@ -604,30 +609,31 @@ This application provides the survival prediction index (SPI) of <i>de novo</i> 
 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
--# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)
+-# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
+-# Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
 -# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and survival (in second column) for training a new model, and age only for survival prediction of new patients. 
--# The data for each patient should be organized in the following directory structure. 
+-# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - Subject_ID
-    -# features.csv file 
-    -# CONVENTIONAL 
-      - "my_T1_file.nii.gz"
-      - "my_T2_file.nii.gz"
-      - "my_T1CE_file.nii.gz"
-      - "my_FLAIR_file.nii.gz"
+    -# <b>features.csv</b>
+    -# CONVENTIONAL
+      - my_<b>t1</b>_file.nii.gz
+      - my_<b>t2</b>_file.nii.gz
+      - my_<b>t1ce</b>_file.nii.gz
+      - my_<b>flair</b>_file.nii.gz
     -# DTI
-      - "my_AX_file.nii.gz"
-      - "my_FA_file.nii.gz"
-      - "my_RAD_file.nii.gz"
-      - "my_TR_file.nii.gz"
+      - my_<b>axial</b>_file.nii.gz
+      - my_<b>fractional</b>_file.nii.gz
+      - my_<b>radial</b>_file.nii.gz
+      - my_<b>trace</b>_file.nii.gz
     -# PERFUSION
-      - "my_rCBV_file.nii.gz"
-      - "my_PSR_file.nii.gz"
-      - "my_PH_file.nii.gz"
+      - my_<b>rcbv</b>_file.nii.gz
+      - my_<b>psr</b>_file.nii.gz
+      - my_<b>ph</b>_file.nii.gz
     -# SEGMENTATION
-      - "original_segmentation_file.nii.gz"
-      - "segmentation_file_in_atlas_space.nii.gz"
--# The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
-	- Data_of_multiple_patients
+      - label_<b>segmentation</b>_file.nii.gz (in same space as above images)
+      - label_in_<b>atlas</b>_space.nii.gz (in common atlas space)
+-# The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
+	- Input_directory
 		-# Subject_ID1
 		-# Subject_ID2
 		-# ...
@@ -635,7 +641,7 @@ This application provides the survival prediction index (SPI) of <i>de novo</i> 
       
 <b>USAGE:</b>
 - Train New Model: 
-	-# "Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
+	-# "Select Subjects". Select the input directory that follows the folder structure described above.
 	-# "Output". Select the folder where the trained model will be saved.
 	-# A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
@@ -645,7 +651,7 @@ ${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 0 -i C:/SurvivalInput -o C:/Sur
 
 - Use Existing Model
 	-# "Model Directory". Choose the directory of a saved model.
-	-# "Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
+	-# "Test Subjects". Select the input directory that follows the folder structure described above.
 	-# "Output". Select the output directory where a .csv file with the classification scores for all patients will be saved, and click on 'Confirm'. The first column and the second column of .csv will be distancce of sample from the hyperplance of 6-months model and 18-months model, respectively. 
 	-# A pop-up window appears displaying the completion of results. The window will also show the SPI index (distance) of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
@@ -668,30 +674,31 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
--# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)
+-# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
+-# Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
 -# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and EGFRvIII status (in second column, binarized values like 0 and 1) for training a new model, and age only for mutation detection of new patients. 
--# The data for each patient should be organized in the following directory structure. 
+-# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - Subject_ID
-    -# features.csv file 
-    -# CONVENTIONAL 
-      - "my_T1_file.nii.gz"
-      - "my_T2_file.nii.gz"
-      - "my_T1CE_file.nii.gz"
-      - "my_FLAIR_file.nii.gz"
+    -# <b>features.csv</b>
+    -# CONVENTIONAL
+      - my_<b>t1</b>_file.nii.gz
+      - my_<b>t2</b>_file.nii.gz
+      - my_<b>t1ce</b>_file.nii.gz
+      - my_<b>flair</b>_file.nii.gz
     -# DTI
-      - "my_AX_file.nii.gz"
-      - "my_FA_file.nii.gz"
-      - "my_RAD_file.nii.gz"
-      - "my_TR_file.nii.gz"
+      - my_<b>axial</b>_file.nii.gz
+      - my_<b>fractional</b>_file.nii.gz
+      - my_<b>radial</b>_file.nii.gz
+      - my_<b>trace</b>_file.nii.gz
     -# PERFUSION
-      - "my_rCBV_file.nii.gz"
-      - "my_PSR_file.nii.gz"
-      - "my_PH_file.nii.gz"
+      - my_<b>rcbv</b>_file.nii.gz
+      - my_<b>psr</b>_file.nii.gz
+      - my_<b>ph</b>_file.nii.gz
     -# SEGMENTATION
-      - "original_segmentation_file.nii.gz"
-      - "segmentation_file_in_atlas_space.nii.gz"
--# The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
-	- Data_of_multiple_patients
+      - my_<b>label</b>_file.nii.gz (in same space as above images)
+      - my_<b>atlas</b>_file.nii.gz (in common atlas space)
+-# The data of simgle or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
+	- Input_Directory
 		-# Subject_ID1
 		-# Subject_ID2
 		-# ...
@@ -699,7 +706,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
       
 <b>USAGE:</b>
 - Train New Model: 
-	-# "Select Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
+	-# "Select Subjects". Select the input directory that follows the folder structure described above.
 	-# "Output". Select the folder where the trained model will be saved.
 	-# A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
@@ -709,7 +716,7 @@ ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInput -o C
 
 - Use Existing Model
 	-# "Model Directory". Choose the directory of a saved model.
-	-# "Test Subjects". Select the input directory (e.g., Data_of_multiple_patients) that follows the folder structure described above.
+	-# "Test Subjects". Select the input directory that follows the folder structure described above.
 	-# "Output". Select the output directory where a .csv file with the mutation status for all patients will be saved, and click on 'Confirm'.
 	-# A pop-up window appears displaying the completion of result calculation. The window will also show the detected mutation status of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
@@ -731,26 +738,30 @@ Reference:
 This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].
 
 <b>REQUIREMENTS:</b>
--# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
+-# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-4D, DSC-PH, DSC-PSR, DSC-RCBV, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
 -# Segmentation label of the demarcated region of interest (Label=1) in a single NIfTI (.nii.gz) file.
--# The data for each patient should be organized in the following directory structure. 
+-# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - SubjectID
+  	-# <b>features.csv</b> (training only)
     -# CONVENTIONAL 
-      - "my_T1_file.nii.gz"
-      - "my_T2_file.nii.gz"
-      - "my_T1CE_file.nii.gz"
-      - "my_FLAIR_file.nii.gz"
+      - my_<b>t1</b>_file.nii.gz
+      - my_<b>t2</b>_file.nii.gz
+      - my_<b>t1ce</b>_file.nii.gz
+      - my_<b>flair</b>_file.nii.gz
     -# DTI
-      - "my_AX_file.nii.gz"
-      - "my_FA_file.nii.gz"
-      - "my_RAD_file.nii.gz"
-      - "my_TR_file.nii.gz"
+      - my_<b>axial</b>_file.nii.gz
+      - my_<b>fractional</b>_file.nii.gz
+      - my_<b>radial</b>_file.nii.gz
+      - my_<b>trace</b>_file.nii.gz
     -# PERFUSION
-      - "my_PERFUSION_file.nii.gz"
+      - my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number time points)
+      - my_<b>ph</b>_file.nii.gz
+      - my_<b>psr</b>_file.nii.gz
+      - my_<b>rcbv</b>_file.nii.gz
     -# SEGMENTATION
-      - "my_segmentation_file.nii.gz"
--# The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
-	- Data_of_multiple_patients
+      - my_<b>segmentation</b>_file.nii.gz
+-# The data of the single or multiple patients should be organized in the above mentioned structure and reside under one input folder as follows.
+	- Input_Folder
 		-# Subject_ID1
 		-# Subject_ID2
 		-# ...
@@ -765,9 +776,9 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
-    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM for calculating perfusion derivatives. 
+    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM. 
 \verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionModel
+${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionModelDirectory
 \endverbatim
 
 	- Use existing model: 
@@ -778,7 +789,7 @@ ${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/Pseudoprogress
 		-# A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
 \verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionSubjects -o C:/PseudoprogressionOutput -m C:/PseudoprogressionModel
+${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionModelDirectory
 \endverbatim
 
 <b>RESULT INTERPRETATION:</b>
@@ -1116,7 +1127,7 @@ ${CaPTk_InstallDir}/bin/ DiffusionDerivatives.exe -i C:/inputDWI.nii.gz -m C:/ma
 
 /**
 \page Training_Module Miscellaneous: Training Module
-This applicatiparameterizeachine">Support Vector Machineparameterize
+This application allows training/testing using Support Vector Machine
 
 <b> REQUIREMENTS:</b>
 Input features file (CSV) and a target label file (CSV).
