@@ -14,6 +14,8 @@ var Technical_Reference =
         [ "Build", "tr_integration.html#tr_sb_actualBuild", null ]
       ] ],
       [ "Integrating your C++ application into CaPTk", "tr_integration.html#tr_cppIntegration", null ],
-      [ "Integrating your Python application into CaPTk", "tr_integration.html#tr_pyIntegration", null ]
+      [ "Integrating your Python application into CaPTk", "tr_integration.html#tr_pyIntegration", [
+        [ "\\htmlonly", "tr_integration.html#autotoc_md74", null ]
+      ] ]
     ] ]
 ];
