@@ -687,7 +687,7 @@ jobs:
        export GIT_LFS_SKIP_SMUDGE=1
        git lfs pull --include "data/TestData.zip"
        make test
-     displayName: 'Performing the Tests'
+      displayName: 'Performing the Tests'
 
     - task: PublishBuildArtifacts@1
       inputs:
