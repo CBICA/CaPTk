@@ -704,8 +704,8 @@ jobs:
   #     displayName: Uploading to NITRC
   #     condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
-- job: 'CBICA_WIN7_SelfHost'
-  displayName: "Self-hosted agent on cbica-win7"
+- job: 'HOME_WIN10_SelfHost'
+  displayName: "Self-hosted agent on home-win10"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
