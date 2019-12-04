@@ -720,15 +720,6 @@ jobs:
 
       displayName: 'Git Submodule Init and Update'
 
-    # - script: |
-    #     choco install doxygen.install nsis.install wget
-    #   displayName: 'Install dependencies'
-
-    # - powershell: |
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
-    #   displayName: 'Downloading via wget'
-
     # Moving LFS Files
     - bash: |
         mkdir bin
