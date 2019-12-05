@@ -314,11 +314,11 @@ ADD_TEST(NAME WhiteStripeVersionTest COMMAND WhiteStripe -v )
 # CaPTk Utilities not created
 # ADD_TEST(NAME UtilitiesTestHistoMatch COMMAND CaPTk_Utilities -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -o ${TESTING_OUTPUT_DIR}/histoMatch.nii.gz -hm 40 -hl 120 )
 
-# buffer test
-ADD_TEST(NAME BufferTest COMMAND ${TEST_EXE_NAME} --bufferTest "random" )
+# # buffer test
+# ADD_TEST(NAME BufferTest COMMAND ${TEST_EXE_NAME} --bufferTest "random" )
 
-# geodesic test
-ADD_TEST(NAME GeodesicTest COMMAND ${TEST_EXE_NAME} --geodesic "${TESTING_DATA_DIR}/Geodesic/" )
+# # geodesic test
+# ADD_TEST(NAME GeodesicTest COMMAND ${TEST_EXE_NAME} --geodesic "${TESTING_DATA_DIR}/Geodesic/" )
 
-# EGFRvIII test
-ADD_TEST(NAME EGFRvIIITest COMMAND ${TEST_EXE_NAME} --egfrviii "${TESTING_DATA_DIR}/EGFRvIII/" )
+# # EGFRvIII test
+# ADD_TEST(NAME EGFRvIIITest COMMAND ${TEST_EXE_NAME} --egfrviii "${TESTING_DATA_DIR}/EGFRvIII/" )
