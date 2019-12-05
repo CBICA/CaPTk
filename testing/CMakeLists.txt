@@ -146,7 +146,7 @@ ADD_TEST(NAME DiffusionDerivativesVersionTest COMMAND DiffusionDerivatives -v )
 
 # Directionality Estimate Tests
 
-ADD_TEST(NAME DirectionalityEstimateTest COMMAND DirectionalityEstimate -l ${TESTING_DATA_DIR}/direst/img_timepoint_1.nii.gz -o ${TESTING_OUTPUT_DIR}/dirEst.txt )
+# ADD_TEST(NAME DirectionalityEstimateTest COMMAND DirectionalityEstimate -l ${TESTING_DATA_DIR}/direst/img_timepoint_1.nii.gz -o ${TESTING_OUTPUT_DIR}/dirEst.txt )
 
 ADD_TEST(NAME DirectionalityEstimateHelpTest COMMAND DirectionalityEstimate -h )
 ADD_TEST(NAME DirectionalityEstimateVersionTest COMMAND DirectionalityEstimate -v )
