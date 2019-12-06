@@ -136,8 +136,8 @@ TARGET_LINK_LIBRARIES(${TEST_EXE_NAME} ${DEPENDENT_LIBS} ${LIBNAME_CBICATK} ${LI
 # " -o " + outputDirectory).c_str());
 
 # DeepMedic Tests
-ADD_TEST(NAME DeepMedicTestSeg COMMAND DeepMedic -md ${PROJECT_SOURCE_DIR}/data/deepMedic/saved_models/brainTumorSegmentation -o ${TESTING_OUTPUT_DIR}/deepmedic/ -t1 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1_LPS_r.nii.gz -t1c ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1ce_LPS_r.nii.gz -t2 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t2_LPS_r.nii.gz -fl ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_flair_LPS_r.nii.gz )
-ADD_TEST(NAME DeepMedicTestSkull COMMAND DeepMedic -md ${PROJECT_SOURCE_DIR}/data/deepMedic/saved_models/skullStripping -o ${TESTING_OUTPUT_DIR}/deepmedic/ -t1 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1_LPS_r.nii.gz -t1c ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1ce_LPS_r.nii.gz -t2 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t2_LPS_r.nii.gz -fl ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_flair_LPS_r.nii.gz )
+# ADD_TEST(NAME DeepMedicTestSeg COMMAND DeepMedic -md ${PROJECT_SOURCE_DIR}/data/deepMedic/saved_models/brainTumorSegmentation -o ${TESTING_OUTPUT_DIR}/deepmedic/ -t1 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1_LPS_r.nii.gz -t1c ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1ce_LPS_r.nii.gz -t2 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t2_LPS_r.nii.gz -fl ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_flair_LPS_r.nii.gz )
+# ADD_TEST(NAME DeepMedicTestSkull COMMAND DeepMedic -md ${PROJECT_SOURCE_DIR}/data/deepMedic/saved_models/skullStripping -o ${TESTING_OUTPUT_DIR}/deepmedic/ -t1 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1_LPS_r.nii.gz -t1c ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1ce_LPS_r.nii.gz -t2 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t2_LPS_r.nii.gz -fl ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_flair_LPS_r.nii.gz )
 
 # Diffusion Derivatives (Incomplete)
 
