@@ -17,7 +17,7 @@ IF( NOT EXISTS "${TESTING_DATA_DIR}" )
   
   SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/data/TestData.zip" )
   SET( FILE_TO_EXTRACT "${CMAKE_CURRENT_BINARY_DIR}/TestData.zip")
-  SET( DOWNLOAD_URL "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData/TestData.zip" ) #ftp://www.nitrc.org/home/groups/captk/downloads/SampleData/TestData.zip
+  SET( DOWNLOAD_URL "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData/TestData.zip" ) 
   
   IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
     
@@ -48,7 +48,7 @@ IF( NOT EXISTS "${TESTING_DATA_DIR}" )
     )
     
     IF(NOT RESULT_CODE EQUAL 0)
-      MESSAGE( WARNING "Extracting the pre-compiled applications failed" )
+      MESSAGE( WARNING "Extracting the test data failed" )
     ENDIF()
     
   ENDIF()
