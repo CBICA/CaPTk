@@ -430,7 +430,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       SUBDIRLIST(SUBDIRECTORIES ${SUBDIRPATH}/lib)
       MESSAGE("[DEBUG] ItkSnap subdirs:${SUBDIRECTORIES}")
       FOREACH(itkSnapLib ${SUBDIRECTORIES})
-        INSTALL(DIRECTORY ${itkSnapLib}
+        INSTALL(DIRECTORY ${SUBDIRPATH}/lib/${itkSnapLib}
           DESTINATION lib
         )
       ENDFOREACH()
