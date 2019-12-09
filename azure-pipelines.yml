@@ -729,7 +729,7 @@ jobs:
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
 
-    - script: |
+    - bash: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./installLibs" -DCMAKE_CONFIGURATION_TYPES="Release" ..
@@ -753,7 +753,7 @@ jobs:
         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
       displayName: 'Testing git pull and version'
 
-    - script: |
+    - bash: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
@@ -763,7 +763,7 @@ jobs:
         rm -rf externalApps
       displayName: 'Configure and compile CaPTk'
 
-    - script: |
+    - bash: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
