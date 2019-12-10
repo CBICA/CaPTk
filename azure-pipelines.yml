@@ -739,11 +739,12 @@ jobs:
 
       displayName: 'Configure and compile Superbuild'
 
-    # - bash: |
-    #     mkdir -p bin
-    #     cp -r ../../../superbuild/ ./bin
+    - bash: |
+        # mkdir -p bin
+        # cp -r ../../../superbuild/ ./bin
+        cp -r ./ ../../../../superbuild
         
-    #   displayName: 'Move superbuild and qt and compiled apps'
+      displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
         git pull origin master
