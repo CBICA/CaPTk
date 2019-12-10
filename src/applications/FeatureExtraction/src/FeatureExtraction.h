@@ -287,9 +287,16 @@ public:
   */
   void SetOutputFilename(std::string filename)
   {
+    auto ext = cbica::getFilenameExtension(filename);
     if (cbica::isDir(filename))
     {
       m_outputPath = filename;
+      m_outputFile = m_outputPath + "/results.csv";
+    }
+    else if (ext.empty()) // this is a directory, check if it is present and if not, create it
+    {
+      m_outputPath = filename;
+      cbica::createDir(m_outputPath);
       m_outputFile = m_outputPath + "/results.csv";
     }
     else
