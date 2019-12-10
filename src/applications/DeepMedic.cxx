@@ -378,6 +378,13 @@ void algorithmRunner()
     }
     std::cout << "=== Done.\n";
   }
+  else if (inferenceType == TumorSegmentation)
+  {
+    auto outputImageWithOldValues = cbica::ReadImage< TImageType >(outputImageFile);
+    auto outputImageWithNewValues = cbica::ChangeImageValues< TImageType >(outputImageWithOldValues, "3", "4");
+
+    cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile);
+  }
 
   // registration of segmentation back to patient space
   {
