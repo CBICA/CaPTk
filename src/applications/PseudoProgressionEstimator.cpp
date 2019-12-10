@@ -227,10 +227,6 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
   VariableSizeMatrixType TrainingData = LoadPseudoProgressionTestingData(qualifiedsubjects, traininglabels, outputdirectory, modeldirectory);
   WriteCSVFiles(TrainingData, outputdirectory + "/testingfeatures.csv");
 
-
-
-
-
   MatrixType meanMatrix;
   VariableLengthVectorType mean;
   VariableLengthVectorType stddevition;
@@ -274,17 +270,17 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
   std::cout << "parameters read." << std::endl;
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(TrainingData, mean, stddevition);
 
-  ////remove the nan values
-  //for (unsigned int index1 = 0; index1 < ScaledTestingData.Rows(); index1++)
-  //{
-  //  for (unsigned int index2 = 0; index2 < ScaledTestingData.Cols(); index2++)
-  //  {
-  //    if (std::isnan(ScaledTestingData[index1][index2]))
-  //      ScaledTestingData[index1][index2] = 0;
-  //  }
-  //}
+  //remove the nan values
+  for (unsigned int index1 = 0; index1 < ScaledTestingData.Rows(); index1++)
+  {
+    for (unsigned int index2 = 0; index2 < ScaledTestingData.Cols(); index2++)
+    {
+      if (std::isnan(ScaledTestingData[index1][index2]))
+        ScaledTestingData[index1][index2] = 0;
+    }
+  }
 
-  //WriteCSVFiles(ScaledTestingData, outputdirectory + "/scaledtestingfeatures.csv");
+  WriteCSVFiles(ScaledTestingData, outputdirectory + "/scaledtestingfeatures.csv");
 
   std::cout << "scaling done." << std::endl;
   VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
@@ -296,7 +292,6 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
       ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
     ScaledFeatureSetAfterAddingLabel(i, j) = 0;
   }
-
   //feature selection process for test data
   VariableLengthVectorType psuSelectedFeatures;
   VariableLengthVectorType recSelectedFeatures;
@@ -310,9 +305,9 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     reader->Parse();
     dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
 
-    psuSelectedFeatures.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      psuSelectedFeatures[i] = dataMatrix(i, 0);
+    psuSelectedFeatures.SetSize(dataMatrix.rows());
+    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
+      psuSelectedFeatures[i] = dataMatrix(i, 1);
   }
   catch (const std::exception& e1)
   {
@@ -320,6 +315,7 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     //return results;
   }
 
+  std::cout << "PSU features all loaded." << std::endl;
   try
   {
     reader->SetFileName(modeldirectory + "/REC_SelectedFeatures.csv");
@@ -329,9 +325,9 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     reader->Parse();
     dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
 
-    recSelectedFeatures.SetSize(dataMatrix.size());
-    for (unsigned int i = 0; i < dataMatrix.size(); i++)
-      recSelectedFeatures[i] = dataMatrix(i, 0);
+    recSelectedFeatures.SetSize(dataMatrix.rows());
+    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
+      recSelectedFeatures[i] = dataMatrix(i, 1);
   }
   catch (const std::exception& e1)
   {
@@ -339,11 +335,14 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     //return results;
   }
 
+  std::cout << "Selected features loaded." << std::endl;
+
+
   VariableSizeMatrixType PseudoModelSelectedFeatures = GetModelSelectedFeatures(ScaledFeatureSetAfterAddingLabel, psuSelectedFeatures);
   VariableSizeMatrixType RecurrenceModelSelectedFeatures = GetModelSelectedFeatures(ScaledFeatureSetAfterAddingLabel, recSelectedFeatures);
 
-  //WriteCSVFiles(PseudoModelSelectedFeatures, outputdirectory + "/PSU_SelectedTestFeatures.csv");
-  //WriteCSVFiles(RecurrenceModelSelectedFeatures, outputdirectory + "/REC_SelectedTestFeatures.csv");
+  WriteCSVFiles(PseudoModelSelectedFeatures, outputdirectory + "/PSU_SelectedTestFeatures.csv");
+  WriteCSVFiles(RecurrenceModelSelectedFeatures, outputdirectory + "/REC_SelectedTestFeatures.csv");
   //  std::cout << "selected features done: size:" << PseudoModelSelectedFeatures.Rows() << " columns: " << PseudoModelSelectedFeatures.Cols() << std::endl;
   try
   {

@@ -10,6 +10,8 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
   std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+  subjectNames.push_back("ACQB_2019.11.12");
+  subjectNames.push_back("ACUR_2019.11.14");
   std::sort(subjectNames.begin(), subjectNames.end());
 
   for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
