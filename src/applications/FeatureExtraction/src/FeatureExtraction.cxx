@@ -28,7 +28,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 //#include "cbicaITKImageInfo.h"
 
 // stuff used in the program
-std::string loggerFile, multipatient_file, patient_id, image_path_string, modalities_string, maskfilename, 
+std::string loggerFile, multipatient_file, patient_id = "DEF", image_path_string, modalities_string, maskfilename, 
 selected_roi_string, roi_labels_string, param_file, outputdir, offset_String, outputFilename;
 
 bool debug = false, debugWrite = false, verticalConc = false, featureMaps = false;
