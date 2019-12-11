@@ -731,7 +731,7 @@ private:
   bool m_writeIntermediateFiles = false; //! write intermediate files in feature extraction, done in m_outputPath/intermediate
   bool m_algorithmDone = false; // check if processing is finished or not
   bool m_maskValidated = false; // whether the mask image has been validated or not
-  std::string m_patientID = "DEF"; //! used to write first field of CSV
+  std::string m_patientID; //! used to write first field of CSV
   std::string m_trainingFile_features; //! this is the string to populate with features for the current subject
   std::string m_trainingFile_featureNames; //! this contains all the feature names for the training file
   ROIConstruction< TImageType > m_roiConstructor; //! sets up the ROIs
