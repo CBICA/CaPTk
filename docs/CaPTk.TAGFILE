@@ -257,39 +257,40 @@
     <filename>ReleaseNotes</filename>
     <docanchor file="ReleaseNotes" title="Known Issues">autotoc_md88</docanchor>
     <docanchor file="ReleaseNotes" title="Older Versions">autotoc_md89</docanchor>
-    <docanchor file="ReleaseNotes" title="1.7.2">autotoc_md90</docanchor>
-    <docanchor file="ReleaseNotes" title="1.7.1">autotoc_md91</docanchor>
-    <docanchor file="ReleaseNotes" title="1.7.0">autotoc_md92</docanchor>
-    <docanchor file="ReleaseNotes" title="1.6.1">autotoc_md93</docanchor>
-    <docanchor file="ReleaseNotes" title="1.6.0">autotoc_md94</docanchor>
-    <docanchor file="ReleaseNotes" title="1.5.0">autotoc_md95</docanchor>
-    <docanchor file="ReleaseNotes" title="1.3.0">autotoc_md96</docanchor>
-    <docanchor file="ReleaseNotes" title="1.2.0">autotoc_md97</docanchor>
-    <docanchor file="ReleaseNotes" title="1.1.0">autotoc_md98</docanchor>
-    <docanchor file="ReleaseNotes" title="1.0.1">autotoc_md99</docanchor>
-    <docanchor file="ReleaseNotes" title="2017.02.01">autotoc_md100</docanchor>
-    <docanchor file="ReleaseNotes" title="2016.10.14">autotoc_md101</docanchor>
-    <docanchor file="ReleaseNotes" title="2016.09.05">autotoc_md102</docanchor>
-    <docanchor file="ReleaseNotes" title="0.0.2">autotoc_md103</docanchor>
-    <docanchor file="ReleaseNotes" title="0.0.1">autotoc_md104</docanchor>
-    <docanchor file="ReleaseNotes" title="\htmlonly">autotoc_md107</docanchor>
+    <docanchor file="ReleaseNotes" title="1.7.3">autotoc_md90</docanchor>
+    <docanchor file="ReleaseNotes" title="1.7.2">autotoc_md91</docanchor>
+    <docanchor file="ReleaseNotes" title="1.7.1">autotoc_md92</docanchor>
+    <docanchor file="ReleaseNotes" title="1.7.0">autotoc_md93</docanchor>
+    <docanchor file="ReleaseNotes" title="1.6.1">autotoc_md94</docanchor>
+    <docanchor file="ReleaseNotes" title="1.6.0">autotoc_md95</docanchor>
+    <docanchor file="ReleaseNotes" title="1.5.0">autotoc_md96</docanchor>
+    <docanchor file="ReleaseNotes" title="1.3.0">autotoc_md97</docanchor>
+    <docanchor file="ReleaseNotes" title="1.2.0">autotoc_md98</docanchor>
+    <docanchor file="ReleaseNotes" title="1.1.0">autotoc_md99</docanchor>
+    <docanchor file="ReleaseNotes" title="1.0.1">autotoc_md100</docanchor>
+    <docanchor file="ReleaseNotes" title="2017.02.01">autotoc_md101</docanchor>
+    <docanchor file="ReleaseNotes" title="2016.10.14">autotoc_md102</docanchor>
+    <docanchor file="ReleaseNotes" title="2016.09.05">autotoc_md103</docanchor>
+    <docanchor file="ReleaseNotes" title="0.0.2">autotoc_md104</docanchor>
+    <docanchor file="ReleaseNotes" title="0.0.1">autotoc_md105</docanchor>
+    <docanchor file="ReleaseNotes" title="\htmlonly">autotoc_md108</docanchor>
   </compound>
   <compound kind="page">
     <name>People</name>
     <title>People (Credits)</title>
     <filename>People</filename>
-    <docanchor file="People" title="Advisors:">autotoc_md108</docanchor>
-    <docanchor file="People" title="Developers:">autotoc_md109</docanchor>
-    <docanchor file="People" title="Collaborators:">autotoc_md110</docanchor>
+    <docanchor file="People" title="Advisors:">autotoc_md109</docanchor>
+    <docanchor file="People" title="Developers:">autotoc_md110</docanchor>
+    <docanchor file="People" title="Collaborators:">autotoc_md111</docanchor>
   </compound>
   <compound kind="page">
     <name>index</name>
     <title>Overview</title>
     <filename>index</filename>
-    <docanchor file="index" title="Bug Tracker and Feature Request">autotoc_md111</docanchor>
-    <docanchor file="index" title="Frequently Asked Questions (FAQ)">autotoc_md112</docanchor>
-    <docanchor file="index" title="Supporting Grant">autotoc_md113</docanchor>
-    <docanchor file="index" title="Disclaimer">autotoc_md114</docanchor>
-    <docanchor file="index" title="Contact">autotoc_md115</docanchor>
+    <docanchor file="index" title="Bug Tracker and Feature Request">autotoc_md112</docanchor>
+    <docanchor file="index" title="Frequently Asked Questions (FAQ)">autotoc_md113</docanchor>
+    <docanchor file="index" title="Supporting Grant">autotoc_md114</docanchor>
+    <docanchor file="index" title="Disclaimer">autotoc_md115</docanchor>
+    <docanchor file="index" title="Contact">autotoc_md116</docanchor>
   </compound>
 </tagfile>
