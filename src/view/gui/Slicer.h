@@ -130,6 +130,7 @@ public:
   void ConvertImageToImageDisplayExtent(vtkSmartPointer< vtkImageData > sourceImage, const int sourceExtent[6], vtkSmartPointer< vtkImageData > targetImage, int targetExtent[6]);
   void ClipDisplayedExtent(int extent[6], int refExtent[6]);
 
+  //! set image series description to be displayed on slicer
   void SetImageSeriesDescription(std::string description);
 
   bool mActive;
