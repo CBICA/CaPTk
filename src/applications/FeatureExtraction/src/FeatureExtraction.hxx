@@ -1548,7 +1548,20 @@ void FeatureExtraction< TImage >::SetSelectedROIsAndLabels(std::vector< std::str
     for (size_t i = 0; i < roi.size(); i++)
     {
       m_roi.push_back(std::atoi(roi[i].c_str()));
-      m_roiLabels.push_back(roi_labels[i]);
+    }
+    if (roi.size() == roi_labels.size()) // use roi names, when defined
+    {
+      for (size_t i = 0; i < roi.size(); i++)
+      {
+        m_roiLabels.push_back(roi_labels[i]);
+      }
+    }
+    else // otherwise, populate with default string values
+    {
+      for (size_t i = 0; i < roi.size(); i++)
+      {
+        m_roiLabels.push_back(roi[i]);
+      }
     }
   }
   m_algorithmDone = false;
