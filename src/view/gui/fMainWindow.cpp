@@ -7215,6 +7215,7 @@ void fMainWindow::EnableComparisonMode(bool enable)
 		this->GetComparisonViewers()[i]->SetImage(mSlicerManagers[i]->GetSlicer(0)->GetImage(), mSlicerManagers[i]->GetSlicer(0)->GetTransform());
 		this->GetComparisonViewers()[i]->SetMask(mSlicerManagers[0]->GetMask());
 		this->GetComparisonViewers()[i]->SetRenderWindow(0, nullptr);
+		this->GetComparisonViewers()[i]->SetImageSeriesDescription(mSlicerManagers[i]->mBaseFileName);
 	}
 
 	if (nLoadedData == 2) //! 2 datasets are loaded

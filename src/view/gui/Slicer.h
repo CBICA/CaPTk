@@ -34,6 +34,7 @@ class vtkVertexGlyphFilter;
 class vtkLabeledDataMapper;
 class vtkRegularPolygonSource;
 class vtkInteractorStyle;
+class vtkCornerAnnotation;
 
 class Slicer : public vtkImageViewer2
 {
@@ -129,6 +130,9 @@ public:
   void ConvertImageToImageDisplayExtent(vtkSmartPointer< vtkImageData > sourceImage, const int sourceExtent[6], vtkSmartPointer< vtkImageData > targetImage, int targetExtent[6]);
   void ClipDisplayedExtent(int extent[6], int refExtent[6]);
 
+  //! set image series description to be displayed on slicer
+  void SetImageSeriesDescription(std::string description);
+
   bool mActive;
 
 
@@ -185,6 +189,8 @@ public:
 
   //!slicer knows if the viewing mode is comparison mode or not
   bool m_ComparisonMode; 
+
+  vtkSmartPointer<vtkCornerAnnotation> mCornerAnnotation;
 };
 
 
