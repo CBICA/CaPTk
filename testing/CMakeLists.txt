@@ -17,7 +17,7 @@ IF( NOT EXISTS "${TESTING_DATA_DIR}" )
   
   SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/data/TestData.zip" )
   SET( FILE_TO_EXTRACT "${CMAKE_CURRENT_BINARY_DIR}/TestData.zip")
-  SET( DOWNLOAD_URL "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData/TestData.zip" ) #ftp://www.nitrc.org/home/groups/captk/downloads/SampleData/TestData.zip
+  SET( DOWNLOAD_URL "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData/TestData.zip" ) 
   
   IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
     
@@ -48,7 +48,7 @@ IF( NOT EXISTS "${TESTING_DATA_DIR}" )
     )
     
     IF(NOT RESULT_CODE EQUAL 0)
-      MESSAGE( WARNING "Extracting the pre-compiled applications failed" )
+      MESSAGE( WARNING "Extracting the test data failed" )
     ENDIF()
     
   ENDIF()
@@ -136,8 +136,8 @@ TARGET_LINK_LIBRARIES(${TEST_EXE_NAME} ${DEPENDENT_LIBS} ${LIBNAME_CBICATK} ${LI
 # " -o " + outputDirectory).c_str());
 
 # DeepMedic Tests
-ADD_TEST(NAME DeepMedicTestSeg COMMAND DeepMedic -md ${PROJECT_SOURCE_DIR}/data/deepMedic/saved_models/brainTumorSegmentation -t1 ${TESTING_DATA_DIR}/deepmedic/ -t1c ${TESTING_DATA_DIR}/deepmedic/ -t2 ${TESTING_DATA_DIR}/deepmedic/ -fl ${TESTING_DATA_DIR}/deepmedic/ -o ${TESTING_OUTPUT_DIR}/deepmedic/ )
-ADD_TEST(NAME DeepMedicTestSkull COMMAND DeepMedic -md ${PROJECT_SOURCE_DIR}/data/deepMedic/saved_models/skullStripping -t1 ${TESTING_DATA_DIR}/deepmedic/ -t1c ${TESTING_DATA_DIR}/deepmedic/ -t2 ${TESTING_DATA_DIR}/deepmedic/ -fl ${TESTING_DATA_DIR}/deepmedic/ -o ${TESTING_OUTPUT_DIR}/deepmedic/ )
+# ADD_TEST(NAME DeepMedicTestSeg COMMAND DeepMedic -md ${PROJECT_SOURCE_DIR}/data/deepMedic/saved_models/brainTumorSegmentation -o ${TESTING_OUTPUT_DIR}/deepmedic/ -t1 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1_LPS_r.nii.gz -t1c ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1ce_LPS_r.nii.gz -t2 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t2_LPS_r.nii.gz -fl ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_flair_LPS_r.nii.gz )
+# ADD_TEST(NAME DeepMedicTestSkull COMMAND DeepMedic -md ${PROJECT_SOURCE_DIR}/data/deepMedic/saved_models/skullStripping -o ${TESTING_OUTPUT_DIR}/deepmedic/ -t1 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1_LPS_r.nii.gz -t1c ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t1ce_LPS_r.nii.gz -t2 ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_t2_LPS_r.nii.gz -fl ${TESTING_DATA_DIR}/deepmedic/AAAB_2006.10.28_flair_LPS_r.nii.gz )
 
 # Diffusion Derivatives (Incomplete)
 
@@ -146,7 +146,7 @@ ADD_TEST(NAME DiffusionDerivativesVersionTest COMMAND DiffusionDerivatives -v )
 
 # Directionality Estimate Tests
 
-ADD_TEST(NAME DirectionalityEstimateTest COMMAND DirectionalityEstimate -l ${TESTING_DATA_DIR}/direst/img_timepoint_1.nii.gz -o ${TESTING_OUTPUT_DIR}/dirEst.txt )
+# ADD_TEST(NAME DirectionalityEstimateTest COMMAND DirectionalityEstimate -l ${TESTING_DATA_DIR}/direst/img_timepoint_1.nii.gz -o ${TESTING_OUTPUT_DIR}/dirEst.txt )
 
 ADD_TEST(NAME DirectionalityEstimateHelpTest COMMAND DirectionalityEstimate -h )
 ADD_TEST(NAME DirectionalityEstimateVersionTest COMMAND DirectionalityEstimate -v )
@@ -169,7 +169,7 @@ ADD_TEST(NAME EGFRvIIISurrogateIndexHelpTest COMMAND EGFRvIIISurrogateIndex -h )
 ADD_TEST(NAME EGFRvIIISurrogateIndexVersionTest COMMAND EGFRvIIISurrogateIndex -v )
 
 # Feature Extraction Tests
-ADD_TEST(NAME FeatureExtractionRegressionTest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${TESTING_DATA_DIR}/FeatureExtraction/params.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_ref.csv -t Mod -r 1 -l ROI --verticalConc 1 -ut ${TESTING_DATA_DIR}/FeatureExtraction/baseline.csv )
+# ADD_TEST(NAME FeatureExtractionRegressionTest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${TESTING_DATA_DIR}/FeatureExtraction/params.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_ref.csv -t Mod -r 1 -l ROI --verticalConc 1 -ut ${TESTING_DATA_DIR}/FeatureExtraction/baseline.csv )
 ADD_TEST(NAME FeatureExtractionMultipleROITest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_lattice.csv -t Mod -r 1,2 -l ED,NC )
 ADD_TEST(NAME FeatureExtractionMultipleModalityTest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz,${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_multiMod.csv -t Mod1,Mod2 -r 1 -l ED )
 ADD_TEST(NAME FeatureExtractionMultipleModalityMultipleROITest COMMAND FeatureExtraction -n Test -i ${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz,${TESTING_DATA_DIR}/FeatureExtraction/image.nii.gz -p ${PROJECT_SOURCE_DIR}/src/applications/FeatureExtraction/data/2_params_default_lattice.csv -m ${TESTING_DATA_DIR}/FeatureExtraction/mask.nii.gz -o ${TESTING_OUTPUT_DIR}/featExMapWrite_multiModMultiROI.csv -t Mod1,Mod2 -r 1,2 -l ED,NC )
@@ -314,11 +314,11 @@ ADD_TEST(NAME WhiteStripeVersionTest COMMAND WhiteStripe -v )
 # CaPTk Utilities not created
 # ADD_TEST(NAME UtilitiesTestHistoMatch COMMAND CaPTk_Utilities -i ${TESTING_DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz -o ${TESTING_OUTPUT_DIR}/histoMatch.nii.gz -hm 40 -hl 120 )
 
-# buffer test
-ADD_TEST(NAME BufferTest COMMAND ${TEST_EXE_NAME} --bufferTest "random" )
+# # buffer test
+# ADD_TEST(NAME BufferTest COMMAND ${TEST_EXE_NAME} --bufferTest "random" )
 
-# geodesic test
-ADD_TEST(NAME GeodesicTest COMMAND ${TEST_EXE_NAME} --geodesic "${TESTING_DATA_DIR}/Geodesic/" )
+# # geodesic test
+# ADD_TEST(NAME GeodesicTest COMMAND ${TEST_EXE_NAME} --geodesic "${TESTING_DATA_DIR}/Geodesic/" )
 
-# EGFRvIII test
-ADD_TEST(NAME EGFRvIIITest COMMAND ${TEST_EXE_NAME} --egfrviii "${TESTING_DATA_DIR}/EGFRvIII/" )
+# # EGFRvIII test
+# ADD_TEST(NAME EGFRvIIITest COMMAND ${TEST_EXE_NAME} --egfrviii "${TESTING_DATA_DIR}/EGFRvIII/" )

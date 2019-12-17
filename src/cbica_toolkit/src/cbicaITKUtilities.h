@@ -126,6 +126,143 @@ protected:
 */
 namespace cbica
 {
+  //! The image type
+  enum ImageModalityType
+  {
+    IMAGE_TYPE_UNDEFINED = 0, IMAGE_TYPE_T1, IMAGE_TYPE_T1CE, IMAGE_TYPE_T2,
+    IMAGE_TYPE_T2FLAIR, IMAGE_TYPE_AX, IMAGE_TYPE_FA, IMAGE_TYPE_RAD, IMAGE_TYPE_TR,
+    IMAGE_TYPE_PERFUSION, IMAGE_TYPE_DTI, IMAGE_TYPE_RECURRENCE_OUTPUT, IMAGE_TYPE_PP, IMAGE_TYPE_CT,
+    IMAGE_TYPE_PET, IMAGE_TYPE_PSR, IMAGE_TYPE_PH, IMAGE_TYPE_RCBV, IMAGE_TYPE_SEG,
+    IMAGE_TYPE_ATLAS, IMAGE_TYPE_PARAMS, IMAGE_TYPE_SUDOID, IMAGE_TYPE_NEAR, IMAGE_TYPE_FAR,
+    IMAGE_MAMMOGRAM, IMAGE_TYPE_FEATURES
+  };
+
+  //! The modality strings that are used in the GUI 
+  static const char ImageModalityString[ImageModalityType::IMAGE_TYPE_FEATURES + 1][15] =
+  {
+    "DEF", "T1", "T1Gd", "T2",
+    "FLAIR", "DTI_AX", "DTI_FA", "DTI_RAD", "DTI_TR",
+    "PERFUSION", "DTI", "REC", "PP", "CT",
+    "PET", "pSR", "PH", "RCBV", "SEG",
+    "ATLAS", "PARAMS", "SUDOID", "NEAR", "FAR",
+    "FFDM", "FEAT"
+  };
+
+  /**
+  \brief Guess Image Type
+
+  \param str String to guess
+  \return deduced type
+  */
+  inline int guessImageType(const std::string &fileName)
+  {
+    int ImageSubType = ImageModalityType::IMAGE_TYPE_UNDEFINED;
+    std::string fileName_wrap = fileName;
+    std::transform(fileName_wrap.begin(), fileName_wrap.end(), fileName_wrap.begin(), ::tolower);
+    auto ext = cbica::getFilenameExtension(fileName_wrap, false);
+
+    // lambda function to check the different string combinations in a file for modality check
+    auto modalityCheckerFunction = [&](std::string baseModalityStringToCheck)
+    {
+      if (
+        (fileName_wrap.find(baseModalityStringToCheck + ext) != std::string::npos) ||
+        (fileName_wrap.find("_" + baseModalityStringToCheck) != std::string::npos) ||
+        (fileName_wrap.find(baseModalityStringToCheck + "_") != std::string::npos) ||
+        (fileName_wrap.find("." + baseModalityStringToCheck + ".") != std::string::npos) ||
+        (fileName_wrap.find(baseModalityStringToCheck) != std::string::npos)
+        )
+      {
+        return true;
+      }
+    };
+
+    // using the lambda to figure out the modality
+    if (
+      modalityCheckerFunction("t1ce") ||
+      modalityCheckerFunction("t1gd") ||
+      modalityCheckerFunction("t1gad") ||
+      modalityCheckerFunction("t1-ce") ||
+      modalityCheckerFunction("t1-gd") ||
+      modalityCheckerFunction("t1-gad")
+      )
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_T1CE;
+    }
+    else if (modalityCheckerFunction("t1"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_T1;
+    }
+    else if (modalityCheckerFunction("t2"))
+    {
+      if ((fileName_wrap.find("flair") != std::string::npos)) // if there is "flair" present in this case, simply return flair
+      {
+        ImageSubType = ImageModalityType::IMAGE_TYPE_T2FLAIR;
+      }
+      else
+      {
+        ImageSubType = ImageModalityType::IMAGE_TYPE_T2;
+      }
+    }
+    else if (modalityCheckerFunction("flair"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_T2FLAIR;
+    }
+    else if (modalityCheckerFunction("dti") || modalityCheckerFunction("b0"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_DTI;
+    }
+    else if (modalityCheckerFunction("radial") || modalityCheckerFunction("rad"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_RAD;
+    }
+    else if (modalityCheckerFunction("axial") || modalityCheckerFunction("ax"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_AX;
+    }
+    else if (modalityCheckerFunction("fractional") || modalityCheckerFunction("fa"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_FA;
+    }
+    else if (modalityCheckerFunction("trace") || modalityCheckerFunction("tr"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_TR;
+    }
+    else if (modalityCheckerFunction("rcbv"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_RCBV;
+    }
+    else if (modalityCheckerFunction("psr"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PSR;
+    }
+    else if (modalityCheckerFunction("ph"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PH;
+    }
+    else if (modalityCheckerFunction("perf") || modalityCheckerFunction("dsc"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PERFUSION;
+    }
+    else if (modalityCheckerFunction("ct2pet") || modalityCheckerFunction("ct"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_CT;
+    }
+    else if (modalityCheckerFunction("pet"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PET;
+    }
+    else if (
+      modalityCheckerFunction("labelmap") || 
+      modalityCheckerFunction("label-map") || 
+      modalityCheckerFunction("segmentation") ||
+      modalityCheckerFunction("annotation") ||
+      modalityCheckerFunction("label") ||
+      modalityCheckerFunction("roi"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_SEG;
+    }
+    return ImageSubType;
+  }
   /**
   \brief Calculate and preserve the mask indeces
 
