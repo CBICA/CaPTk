@@ -2,6 +2,13 @@
 
 \page Getting_Started Getting Started
 
+For Download/Installation Instructions, please see the following:
+
+- [Download Instructions](Download.html)
+- [Installation Instructions](Installation.html)
+
+For Frequently Asked Questions, please see the dedicated [FAQ](FAQ.html) section.
+
 CaPTk has been designed as a modular platform, currently incorporating components for:
 -# User interaction (e.g., coordinate definition, region annotation, and spherical approximation of abnormalities)
   - \ref gs_imageLoading
@@ -450,7 +457,22 @@ sudo yum install devtoolset-6
   
 The minimum recommended resolution is 1200x1024. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
 
-\section gs_FAQ_6 What if I am having an issue not listed here?
+\section gs_FAQ_6 Where can I find the CaPTk Docker Image? 
+
+You can find all the builds in our Docker Hub repository: https://hub.docker.com/r/cbica/captk
+
+\section gs_FAQ_7 How do I run the CaPTk Docker Image to show the interface?
+
+\verbatim
+docker run -it \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v $(pwd)/test:/app \
+  -e DISPLAY=$DISPLAY \
+  -u qtuser \
+  cbica/captk
+\endverbatim
+
+\section gs_FAQ_8 What if I am having an issue not listed here?
   
 Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
 

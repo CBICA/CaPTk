@@ -126,6 +126,143 @@ protected:
 */
 namespace cbica
 {
+  //! The image type
+  enum ImageModalityType
+  {
+    IMAGE_TYPE_UNDEFINED = 0, IMAGE_TYPE_T1, IMAGE_TYPE_T1CE, IMAGE_TYPE_T2,
+    IMAGE_TYPE_T2FLAIR, IMAGE_TYPE_AX, IMAGE_TYPE_FA, IMAGE_TYPE_RAD, IMAGE_TYPE_TR,
+    IMAGE_TYPE_PERFUSION, IMAGE_TYPE_DTI, IMAGE_TYPE_RECURRENCE_OUTPUT, IMAGE_TYPE_PP, IMAGE_TYPE_CT,
+    IMAGE_TYPE_PET, IMAGE_TYPE_PSR, IMAGE_TYPE_PH, IMAGE_TYPE_RCBV, IMAGE_TYPE_SEG,
+    IMAGE_TYPE_ATLAS, IMAGE_TYPE_PARAMS, IMAGE_TYPE_SUDOID, IMAGE_TYPE_NEAR, IMAGE_TYPE_FAR,
+    IMAGE_MAMMOGRAM, IMAGE_TYPE_FEATURES
+  };
+
+  //! The modality strings that are used in the GUI 
+  static const char ImageModalityString[ImageModalityType::IMAGE_TYPE_FEATURES + 1][15] =
+  {
+    "DEF", "T1", "T1Gd", "T2",
+    "FLAIR", "DTI_AX", "DTI_FA", "DTI_RAD", "DTI_TR",
+    "PERFUSION", "DTI", "REC", "PP", "CT",
+    "PET", "pSR", "PH", "RCBV", "SEG",
+    "ATLAS", "PARAMS", "SUDOID", "NEAR", "FAR",
+    "FFDM", "FEAT"
+  };
+
+  /**
+  \brief Guess Image Type
+
+  \param str String to guess
+  \return deduced type
+  */
+  inline int guessImageType(const std::string &fileName)
+  {
+    int ImageSubType = ImageModalityType::IMAGE_TYPE_UNDEFINED;
+    std::string fileName_wrap = fileName;
+    std::transform(fileName_wrap.begin(), fileName_wrap.end(), fileName_wrap.begin(), ::tolower);
+    auto ext = cbica::getFilenameExtension(fileName_wrap, false);
+
+    // lambda function to check the different string combinations in a file for modality check
+    auto modalityCheckerFunction = [&](std::string baseModalityStringToCheck)
+    {
+      if (
+        (fileName_wrap.find(baseModalityStringToCheck + ext) != std::string::npos) ||
+        (fileName_wrap.find("_" + baseModalityStringToCheck) != std::string::npos) ||
+        (fileName_wrap.find(baseModalityStringToCheck + "_") != std::string::npos) ||
+        (fileName_wrap.find("." + baseModalityStringToCheck + ".") != std::string::npos) ||
+        (fileName_wrap.find(baseModalityStringToCheck) != std::string::npos)
+        )
+      {
+        return true;
+      }
+    };
+
+    // using the lambda to figure out the modality
+    if (
+      modalityCheckerFunction("t1ce") ||
+      modalityCheckerFunction("t1gd") ||
+      modalityCheckerFunction("t1gad") ||
+      modalityCheckerFunction("t1-ce") ||
+      modalityCheckerFunction("t1-gd") ||
+      modalityCheckerFunction("t1-gad")
+      )
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_T1CE;
+    }
+    else if (modalityCheckerFunction("t1"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_T1;
+    }
+    else if (modalityCheckerFunction("t2"))
+    {
+      if ((fileName_wrap.find("flair") != std::string::npos)) // if there is "flair" present in this case, simply return flair
+      {
+        ImageSubType = ImageModalityType::IMAGE_TYPE_T2FLAIR;
+      }
+      else
+      {
+        ImageSubType = ImageModalityType::IMAGE_TYPE_T2;
+      }
+    }
+    else if (modalityCheckerFunction("flair"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_T2FLAIR;
+    }
+    else if (modalityCheckerFunction("dti") || modalityCheckerFunction("b0"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_DTI;
+    }
+    else if (modalityCheckerFunction("radial") || modalityCheckerFunction("rad"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_RAD;
+    }
+    else if (modalityCheckerFunction("axial") || modalityCheckerFunction("ax"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_AX;
+    }
+    else if (modalityCheckerFunction("fractional") || modalityCheckerFunction("fa"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_FA;
+    }
+    else if (modalityCheckerFunction("trace") || modalityCheckerFunction("tr"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_TR;
+    }
+    else if (modalityCheckerFunction("rcbv"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_RCBV;
+    }
+    else if (modalityCheckerFunction("psr"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PSR;
+    }
+    else if (modalityCheckerFunction("ph"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PH;
+    }
+    else if (modalityCheckerFunction("perf") || modalityCheckerFunction("dsc"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PERFUSION;
+    }
+    else if (modalityCheckerFunction("ct2pet") || modalityCheckerFunction("ct"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_CT;
+    }
+    else if (modalityCheckerFunction("pet"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PET;
+    }
+    else if (
+      modalityCheckerFunction("labelmap") || 
+      modalityCheckerFunction("label-map") || 
+      modalityCheckerFunction("segmentation") ||
+      modalityCheckerFunction("annotation") ||
+      modalityCheckerFunction("label") ||
+      modalityCheckerFunction("roi"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_SEG;
+    }
+    return ImageSubType;
+  }
   /**
   \brief Calculate and preserve the mask indeces
 
@@ -288,7 +425,7 @@ namespace cbica
     auto imageInfo2 = cbica::ImageInfo(image2);
 
     auto dims = imageInfo1.GetImageDimensions();
-    
+
     if (FourDImageCheck)
     {
       dims = 3; // this is for 4D images only
@@ -347,44 +484,44 @@ namespace cbica
   }
 
   /**
-  \brief This function returns a joined N-D image with an input of a vector of (N-1)-D images 
+  \brief This function returns a joined N-D image with an input of a vector of (N-1)-D images
 
   Uses the itk::JoinSeriesImageFilter to accomplish this
-  
+
   \param inputImage The vector of images from which the larger image is to be extracted
   \param newSpacing The spacing in the new dimension
   */
   template< class TInputImageType, class TOutputImageType >
   typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages, double newSpacing = 1.0)
   {
-   if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
-   {
-     std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
-     //return typename TOutputImageType::New();
-     exit(EXIT_FAILURE);
-   }
-   auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
-   joinFilter->SetSpacing(newSpacing);
-   
-   for (size_t N = 0; N < inputImages.size(); N++)
-   {
-     if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
-     {
-       std::cerr << "Image Sanity check failed in index '" << N << "'\n";
-       //return typename TOutputImageType::New();
-       exit(EXIT_FAILURE);
-     }
-     joinFilter->SetInput(N, inputImages[N]);
-   }
-   try
-   {
-     joinFilter->Update();
-   }
-   catch (const std::exception& e)
-   {
-     std::cerr << "Joining failed: " << e.what() << "\n";
-   }
-   return joinFilter->GetOutput();
+    if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
+    {
+      std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
+      //return typename TOutputImageType::New();
+      exit(EXIT_FAILURE);
+    }
+    auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
+    joinFilter->SetSpacing(newSpacing);
+
+    for (size_t N = 0; N < inputImages.size(); N++)
+    {
+      if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
+      {
+        std::cerr << "Image Sanity check failed in index '" << N << "'\n";
+        //return typename TOutputImageType::New();
+        exit(EXIT_FAILURE);
+      }
+      joinFilter->SetInput(N, inputImages[N]);
+    }
+    try
+    {
+      joinFilter->Update();
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << "Joining failed: " << e.what() << "\n";
+    }
+    return joinFilter->GetOutput();
   }
 
   /**
@@ -397,54 +534,54 @@ namespace cbica
   \param directionsCollapseIdentity Whether direction cosines are to be normalized to identity or not; defaults to not
   */
   template< class TInputImageType, class TOutputImageType >
-  std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage, 
-   int axisToExtract = TInputImageType::ImageDimension - 1, bool directionsCollapseIdentity = false)
+  std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage,
+    int axisToExtract = TInputImageType::ImageDimension - 1, bool directionsCollapseIdentity = false)
   {
-   std::vector<typename TOutputImageType::Pointer> returnImages;
+    std::vector<typename TOutputImageType::Pointer> returnImages;
 
-   if (TOutputImageType::ImageDimension != TInputImageType::ImageDimension - 1)
-   {
-     std::cerr << "Only works when input and output image dimensions are N and (N-1), respectively.\n";
-     return returnImages;
-   }
-   // set the sub-image properties
-   auto imageSize = inputImage->GetLargestPossibleRegion().GetSize();
-   auto regionSize = imageSize;
-   regionSize[axisToExtract] = 0;
-   returnImages.resize(imageSize[axisToExtract]);
+    if (TOutputImageType::ImageDimension != TInputImageType::ImageDimension - 1)
+    {
+      std::cerr << "Only works when input and output image dimensions are N and (N-1), respectively.\n";
+      return returnImages;
+    }
+    // set the sub-image properties
+    auto imageSize = inputImage->GetLargestPossibleRegion().GetSize();
+    auto regionSize = imageSize;
+    regionSize[axisToExtract] = 0;
+    returnImages.resize(imageSize[axisToExtract]);
 
-   typename TInputImageType::IndexType regionIndex;
-   regionIndex.Fill(0);
+    typename TInputImageType::IndexType regionIndex;
+    regionIndex.Fill(0);
 
-   // loop through time points
-   for (size_t i = 0; i < imageSize[axisToExtract]; i++)
-   {
-     regionIndex[axisToExtract] = i;
-     typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
-     auto extractor = /*typename*/ itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
-     extractor->SetExtractionRegion(desiredRegion);
-     extractor->SetInput(inputImage);
-     if (directionsCollapseIdentity)
-     {
-       extractor->SetDirectionCollapseToIdentity();
-     }
-     else
-     {
-       extractor->SetDirectionCollapseToSubmatrix();
-     }
-     try
-     {
-       extractor->Update();
-     }
-     catch (const std::exception& e)
-     {
-       std::cerr << "Extracting failed: " << e.what() << "\n";
-     }
-     auto temp = extractor->GetOutput();
-     //temp->DisconnectPipeline(); // ensure a hard copy is done 
-     returnImages[i] = temp;
-   }
-   return returnImages;
+    // loop through time points
+    for (size_t i = 0; i < imageSize[axisToExtract]; i++)
+    {
+      regionIndex[axisToExtract] = i;
+      typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
+      auto extractor = /*typename*/ itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->SetInput(inputImage);
+      if (directionsCollapseIdentity)
+      {
+        extractor->SetDirectionCollapseToIdentity();
+      }
+      else
+      {
+        extractor->SetDirectionCollapseToSubmatrix();
+      }
+      try
+      {
+        extractor->Update();
+      }
+      catch (const std::exception& e)
+      {
+        std::cerr << "Extracting failed: " << e.what() << "\n";
+      }
+      auto temp = extractor->GetOutput();
+      //temp->DisconnectPipeline(); // ensure a hard copy is done 
+      returnImages[i] = temp;
+    }
+    return returnImages;
   }
 
   ///**
@@ -736,7 +873,7 @@ namespace cbica
 
     auto desiredOrientation_wrap = desiredOrientation;
     std::transform(desiredOrientation_wrap.begin(), desiredOrientation_wrap.end(), desiredOrientation_wrap.begin(), ::toupper);
-    
+
     std::map< std::string, itk::SpatialOrientation::ValidCoordinateOrientationFlags > orientationMap;
     orientationMap["Axial"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI;
     orientationMap["Coronal"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSA;
@@ -1054,46 +1191,13 @@ namespace cbica
 
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
-  \param outputSpacing The output spacing, always isotropic
+  \param outputSpacing The desired output spacing
+  \param outputSize The desired output size
   \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > &outputSpacing, const std::string interpolator = "Linear")
-  {
-    auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
-    auto outputSpacingVector = outputSpacing;
-    auto inputSpacing = inputImage->GetSpacing();
-    if (TImageType::ImageDimension != 4)
-    {
-      for (size_t i = 0; i < TImageType::ImageDimension; i++)
-      {
-        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
-      }
-    }
-    else // preserve all time points of a time series image
-    {
-      for (size_t i = 0; i < 3; i++)
-      {
-        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
-      }
-    }
-
-    return ResampleImage< TImageType >(inputImage, outputSpacingVector, outputSize, interpolator);
-
-  }
-
-  /**
-  \brief Resample an image to an isotropic resolution using the specified output spacing vector
-
-  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
-  \param inputImage The input image to process
-  \param outputSpacing The output spacing, always isotropic
-  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
-  \return The resized image
-  */
-  template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const typename TImageType::SpacingType outputSpacing,
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > outputSpacing,
     typename TImageType::SizeType outputSize, const std::string interpolator = "Linear")
   {
     std::string interpolator_wrap = interpolator;
@@ -1246,6 +1350,39 @@ namespace cbica
   }
 
   /**
+  \brief Resample an image to an isotropic resolution using the specified output spacing vector
+
+  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
+  \param inputImage The input image to process
+  \param outputSpacing The desired output spacing
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \return The resized image
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > outputSpacing, const std::string interpolator = "Linear")
+  {
+    auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
+    auto inputSpacing = inputImage->GetSpacing();
+    if (TImageType::ImageDimension != 4)
+    {
+      for (size_t i = 0; i < TImageType::ImageDimension; i++)
+      {
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
+      }
+    }
+    else // preserve all time points of a time series image
+    {
+      for (size_t i = 0; i < 3; i++)
+      {
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
+      }
+    }
+
+    return ResampleImage< TImageType >(inputImage, outputSpacing, outputSize, interpolator);
+
+  }
+
+  /**
   \brief Resample an image to an isotropic resolution using the specified output spacing
 
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
@@ -1314,7 +1451,7 @@ namespace cbica
       }
     }
 
-    return ResampleImage < TImageType >(inputImage, outputSpacing, outputSize, interpolator);
+    return ResampleImage< TImageType >(inputImage, outputSpacing, outputSize, interpolator);
 
   }
 

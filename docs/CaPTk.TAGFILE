@@ -32,7 +32,9 @@
     <docanchor file="FAQ" title="FUSE Issues">gs_FAQ_4_1</docanchor>
     <docanchor file="FAQ" title="GLIBCXX or GLIBC Issues">gs_FAQ_4_2</docanchor>
     <docanchor file="FAQ" title="Is there a minimum recommended screen resolution for running CaPTk?">gs_FAQ_5</docanchor>
-    <docanchor file="FAQ" title="What if I am having an issue not listed here?">gs_FAQ_6</docanchor>
+    <docanchor file="FAQ" title="Where can I find the CaPTk Docker Image?">gs_FAQ_6</docanchor>
+    <docanchor file="FAQ" title="How do I run the CaPTk Docker Image to show the interface?">gs_FAQ_7</docanchor>
+    <docanchor file="FAQ" title="What if I am having an issue not listed here?">gs_FAQ_8</docanchor>
   </compound>
   <compound kind="page">
     <name>How_To_Guides</name>
@@ -43,6 +45,7 @@
     <name>ht_Preprocessing</name>
     <title>Pre-processing</title>
     <filename>ht_Preprocessing</filename>
+    <docanchor file="ht_Preprocessing" title="\verbatim">autotoc_md23</docanchor>
   </compound>
   <compound kind="page">
     <name>preprocessing_dcm2nii</name>
@@ -180,29 +183,15 @@
     <filename>LungCancer_SBRT</filename>
   </compound>
   <compound kind="page">
-    <name>Perfusion_Alignment</name>
-    <title>Miscellaneous: Perfusion Alignment</title>
-    <filename>Perfusion_Alignment</filename>
-  </compound>
-  <compound kind="page">
-    <name>Perfusion_Derivatives</name>
-    <title>Miscellaneous: Perfusion Derivatives</title>
-    <filename>Perfusion_Derivatives</filename>
-  </compound>
-  <compound kind="page">
     <name>Diffusion_Derivatives</name>
     <title>Miscellaneous: Diffusion Derivatives</title>
     <filename>Diffusion_Derivatives</filename>
   </compound>
   <compound kind="page">
-    <name>PCA_Extraction</name>
-    <title>Miscellaneous: PCA Volume Extraction</title>
-    <filename>PCA_Extraction</filename>
-  </compound>
-  <compound kind="page">
     <name>Training_Module</name>
     <title>Miscellaneous: Training Module</title>
     <filename>Training_Module</filename>
+    <docanchor file="Training_Module" title="\htmlonly">autotoc_md55</docanchor>
   </compound>
   <compound kind="page">
     <name>ht_utilities</name>
@@ -217,6 +206,7 @@
     <docanchor file="Science" title="Prediction of Overall Survival in Glioblastoma Patients">survivalPredictor</docanchor>
     <docanchor file="Science" title="Probability Maps of Potential Recurrence of Glioblastoma Tumors">recurrencePredictor</docanchor>
     <docanchor file="Science" title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer">libraPapers</docanchor>
+    <docanchor file="Science" title="\htmlonly">autotoc_md66</docanchor>
   </compound>
   <compound kind="page">
     <name>Technical_Reference</name>
@@ -242,30 +232,65 @@
     <docanchor file="tr_integration" title="Build">tr_sb_actualBuild</docanchor>
     <docanchor file="tr_integration" title="Integrating your C++ application into CaPTk">tr_cppIntegration</docanchor>
     <docanchor file="tr_integration" title="Integrating your Python application into CaPTk">tr_pyIntegration</docanchor>
+    <docanchor file="tr_integration" title="\htmlonly">autotoc_md74</docanchor>
   </compound>
   <compound kind="page">
     <name>Download</name>
     <title>Download Instructions</title>
     <filename>Download</filename>
+    <docanchor file="Download" title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following paper:">autotoc_md76</docanchor>
+    <docanchor file="Download" title="License">autotoc_md78</docanchor>
+    <docanchor file="Download" title="\htmlonly">autotoc_md81</docanchor>
   </compound>
   <compound kind="page">
     <name>Installation</name>
     <title>Installation Instructions</title>
     <filename>Installation</filename>
+    <docanchor file="Installation" title="Windows">autotoc_md82</docanchor>
+    <docanchor file="Installation" title="Linux">autotoc_md83</docanchor>
+    <docanchor file="Installation" title="macOS">autotoc_md84</docanchor>
+    <docanchor file="Installation" title="\htmlonly">autotoc_md87</docanchor>
   </compound>
   <compound kind="page">
     <name>ReleaseNotes</name>
     <title>Changelog: Release Notes</title>
     <filename>ReleaseNotes</filename>
+    <docanchor file="ReleaseNotes" title="Known Issues">autotoc_md88</docanchor>
+    <docanchor file="ReleaseNotes" title="Older Versions">autotoc_md89</docanchor>
+    <docanchor file="ReleaseNotes" title="1.7.3">autotoc_md90</docanchor>
+    <docanchor file="ReleaseNotes" title="1.7.2">autotoc_md91</docanchor>
+    <docanchor file="ReleaseNotes" title="1.7.1">autotoc_md92</docanchor>
+    <docanchor file="ReleaseNotes" title="1.7.0">autotoc_md93</docanchor>
+    <docanchor file="ReleaseNotes" title="1.6.1">autotoc_md94</docanchor>
+    <docanchor file="ReleaseNotes" title="1.6.0">autotoc_md95</docanchor>
+    <docanchor file="ReleaseNotes" title="1.5.0">autotoc_md96</docanchor>
+    <docanchor file="ReleaseNotes" title="1.3.0">autotoc_md97</docanchor>
+    <docanchor file="ReleaseNotes" title="1.2.0">autotoc_md98</docanchor>
+    <docanchor file="ReleaseNotes" title="1.1.0">autotoc_md99</docanchor>
+    <docanchor file="ReleaseNotes" title="1.0.1">autotoc_md100</docanchor>
+    <docanchor file="ReleaseNotes" title="2017.02.01">autotoc_md101</docanchor>
+    <docanchor file="ReleaseNotes" title="2016.10.14">autotoc_md102</docanchor>
+    <docanchor file="ReleaseNotes" title="2016.09.05">autotoc_md103</docanchor>
+    <docanchor file="ReleaseNotes" title="0.0.2">autotoc_md104</docanchor>
+    <docanchor file="ReleaseNotes" title="0.0.1">autotoc_md105</docanchor>
+    <docanchor file="ReleaseNotes" title="\htmlonly">autotoc_md108</docanchor>
   </compound>
   <compound kind="page">
     <name>People</name>
     <title>People (Credits)</title>
     <filename>People</filename>
+    <docanchor file="People" title="Advisors:">autotoc_md109</docanchor>
+    <docanchor file="People" title="Developers:">autotoc_md110</docanchor>
+    <docanchor file="People" title="Collaborators:">autotoc_md111</docanchor>
   </compound>
   <compound kind="page">
     <name>index</name>
     <title>Overview</title>
     <filename>index</filename>
+    <docanchor file="index" title="Bug Tracker and Feature Request">autotoc_md112</docanchor>
+    <docanchor file="index" title="Frequently Asked Questions (FAQ)">autotoc_md113</docanchor>
+    <docanchor file="index" title="Supporting Grant">autotoc_md114</docanchor>
+    <docanchor file="index" title="Disclaimer">autotoc_md115</docanchor>
+    <docanchor file="index" title="Contact">autotoc_md116</docanchor>
   </compound>
 </tagfile>

@@ -137,22 +137,26 @@ inline int guessImageType(const std::string &fileName)
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_DTI;
   }
   else if ((fileName_wrap.find("_rad") != std::string::npos) || (fileName_wrap.find("rad_") != std::string::npos) ||
-    (fileName_wrap.find("radial_") != std::string::npos) || (fileName_wrap.find("_radial") != std::string::npos))
+    (fileName_wrap.find("radial_") != std::string::npos) || (fileName_wrap.find("_radial") != std::string::npos) ||
+    (fileName_wrap.find("radial.nii.gz") != std::string::npos) || (fileName_wrap.find("rad.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_RAD;
   }
   else if ((fileName_wrap.find("_ax") != std::string::npos) || (fileName_wrap.find("ax_") != std::string::npos) || 
-    (fileName_wrap.find("axial_") != std::string::npos) || (fileName_wrap.find("_axial") != std::string::npos))
+    (fileName_wrap.find("axial_") != std::string::npos) || (fileName_wrap.find("_axial") != std::string::npos) ||
+    (fileName_wrap.find("axial.nii.gz") != std::string::npos) || (fileName_wrap.find("ax.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_AX;
   }
   else if ((fileName_wrap.find("_fa") != std::string::npos) || (fileName_wrap.find("fa_") != std::string::npos) ||
-    (fileName_wrap.find("fractional_") != std::string::npos) || (fileName_wrap.find("_fractional") != std::string::npos))
+    (fileName_wrap.find("fractional_") != std::string::npos) || (fileName_wrap.find("_fractional") != std::string::npos) ||
+    (fileName_wrap.find("fractional.nii.gz") != std::string::npos) || (fileName_wrap.find("fa.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_FA;
   }
   else if ((fileName_wrap.find("_tr") != std::string::npos) || (fileName_wrap.find("tr_") != std::string::npos) ||
-    (fileName_wrap.find("trace_") != std::string::npos) || (fileName_wrap.find("_trace") != std::string::npos))
+    (fileName_wrap.find("trace_") != std::string::npos) || (fileName_wrap.find("_trace") != std::string::npos) ||
+    (fileName_wrap.find("trace.nii.gz") != std::string::npos) || (fileName_wrap.find("tr.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_TR;
   }

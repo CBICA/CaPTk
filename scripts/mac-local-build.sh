@@ -28,9 +28,9 @@ CAPTK_CMD () {
 # tar xfz binaries_macos.zip --directory externalApps
 
 # rm -rf CMakeCache.txt
-# # echo "Run Dependency Manager"
-# # echo $CC
-# ### COMMENT OUT THE LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
+# echo "Run Dependency Manager"
+# echo $CC
+### COMMENT OUT THE LINES BELOW IF DEPENDENCY MANAGER HAS BEEN BUILT
 # wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
 # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
 
@@ -42,20 +42,20 @@ CAPTK_CMD () {
 
 # make -j 2
 
-### BUILD CAPTK
-sudo rm -rf CaPTk_*
+# ### BUILD CAPTK
+# sudo rm -rf CaPTk_*
 
-echo "Run CaPTk Build"
+# echo "Run CaPTk Build"
 
-cmake ../
-rm CMakeCache.txt
-export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+# cmake ../
+# rm CMakeCache.txt
+# export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+# export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-export CMAKE_PREFIX_PATH=/Users/phucngo/Desktop/CaPTk/bin/ITK-build:/Users/phucngo/Desktop/CaPTk/bin/DCMTK-build:/Users/phucngo/Desktop/CaPTk/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
+# export CMAKE_PREFIX_PATH=/Users/phucngo/Desktop/CaPTk/bin/ITK-build:/Users/phucngo/Desktop/CaPTk/bin/DCMTK-build:/Users/phucngo/Desktop/CaPTk/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+# cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
 
-make -j 2
+# make -j 2
 
 version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
 pkgname="_Installer"

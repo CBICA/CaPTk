@@ -14,9 +14,10 @@ var ht_SpecialApps =
     [ "Breast Cancer: Breast Segmentation", "BreastCancer_breastSegmentation.html", null ],
     [ "Lung Cancer: Radiomics Analysis of Lung Cancer", "LungCancer_SBRT.html", null ],
     [ "Miscellaneous: Directionality Estimator", "Glioblastoma_Directionality.html", null ],
-    [ "Miscellaneous: Perfusion Alignment", "Perfusion_Alignment.html", null ],
-    [ "Miscellaneous: Perfusion Derivatives", "Perfusion_Derivatives.html", null ],
     [ "Miscellaneous: Diffusion Derivatives", "Diffusion_Derivatives.html", null ],
-    [ "Miscellaneous: PCA Volume Extraction", "PCA_Extraction.html", null ],
-    [ "Miscellaneous: Training Module", "Training_Module.html", null ]
+    [ "Miscellaneous: Training Module", "Training_Module.html", [
+      [ "\\verbatim", "ht_Preprocessing.html#autotoc_md23", [
+        [ "\\htmlonly", "Training_Module.html#autotoc_md55", null ]
+      ] ]
+    ] ]
 ];

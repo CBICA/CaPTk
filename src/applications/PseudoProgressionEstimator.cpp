@@ -225,7 +225,7 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
 
   std::vector<double> traininglabels;
   VariableSizeMatrixType TrainingData = LoadPseudoProgressionTestingData(qualifiedsubjects, traininglabels, outputdirectory, modeldirectory);
-  //WriteCSVFiles(TrainingData, outputdirectory + "/testingfeatures.csv");
+  WriteCSVFiles(TrainingData, outputdirectory + "/testingfeatures.csv");
 
 
 
@@ -787,8 +787,11 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
     std::cout << "Loading Perfusion Image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = testingsubjects[sid];
     ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-    NiftiDataManager m_obj;
-    auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    //NiftiDataManager m_obj;
+    //auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    using ImageTypePerfusion = itk::Image< float, 4 >;
+    auto perfImagePointerNifti = cbica::ReadImage< ImageTypePerfusion >(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    
     std::vector<ImageType::IndexType> indices;
 
     VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
@@ -853,6 +856,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 
   //Apply existing PCA model on the test patient
   //--------------------------------------------------------------------------------------------
+  std::cout << "Combining and calculating perfusion PCA on test data: "<< std::endl;
   PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCAForTestData(PerfusionDataMap, PCA_PERF, Mean_PERF);
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
 
@@ -968,8 +972,8 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 
 
     //calculate perfusion based features from all the pre-calculated perfusion images
-    //for (int i = 0; i < 10; i++)
-    //  OtherFeaturesInMap["Z" + std::to_string(i)] = GetAllFeaturesPerImagePerROI<ImageType>(RevisedPerfusionImagesOfAllPatients[sid][i], LabelImagePointer, "PCA_" + std::to_string(i));
+    for (int i = 0; i < 10; i++)
+      OtherFeaturesInMap["Z" + std::to_string(i)] = GetAllFeaturesPerImagePerROI<ImageType>(RevisedPerfusionImagesOfAllPatients[sid][i], LabelImagePointer, "PCA_" + std::to_string(i));
 
     //5 shape features per patient
     VectorDouble ShapeFeatures = GetShapeFeatures<ImageType>(LabelImagePointer);
@@ -1089,6 +1093,10 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
   VectorVectorDouble PSRReducedIntensityHistogram = mFeatureReductionLocalPtr.ApplyPCAOnTestDataWithGivenTransformations(PSIntensityHistogram, PCA_PSR, Mean_PSR);
   VectorVectorDouble RCReducedIntensityHistogram = mFeatureReductionLocalPtr.ApplyPCAOnTestDataWithGivenTransformations(RCIntensityHistogram, PCA_RCBV, Mean_RCBV);
 
+  std::cout << PCA1IntensityHistogram.size() << " " << PCA1IntensityHistogram[0].size() << std::endl;
+  std::cout << PCA_PC1.Rows() << " " << PCA_PC1.Cols() << std::endl;
+  std::cout << Mean_PC1.Size() << std::endl;
+
 
   VectorVectorDouble PC1ReducedIntensityHistogram = mFeatureReductionLocalPtr.ApplyPCAOnTestDataWithGivenTransformations(PCA1IntensityHistogram, PCA_PC1, Mean_PC1);
   VectorVectorDouble PC2ReducedIntensityHistogram = mFeatureReductionLocalPtr.ApplyPCAOnTestDataWithGivenTransformations(PCA2IntensityHistogram, PCA_PC2, Mean_PC2);
@@ -1135,6 +1143,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(RCReducedIntensityHistogram[i][j]);
 
+    std::cout<<PC1ReducedIntensityHistogram.size() << " " << PC1ReducedIntensityHistogram[0].size() << std::endl;
     std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC1ReducedIntensityHistogram[i][j]);
@@ -1571,7 +1580,7 @@ PerfusionMapType PseudoProgressionEstimator::CombineAndCalculatePerfusionPCAForT
     for (unsigned int i = 0; i < Features.Rows(); i++)
     {
       VectorDouble oneVector;
-      for (unsigned int j = 0; j < 45; j++)
+      for (unsigned int j = 0; j < Features.Cols(); j++)
         oneVector.push_back(Features(i, j));
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
@@ -2597,7 +2606,7 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
   reader->HasColumnHeadersOff();
   reader->HasRowHeadersOff();
 
-
+  std::cout << "Reading model files" << std::endl;
   //-------------perfusion related data reading------------------
   reader->SetFileName(modeldirectory + "/PCA_PERF.csv");
   reader->Parse();
@@ -2606,7 +2615,6 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
   for (unsigned int i = 0; i < dataMatrix.rows(); i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PERF(i, j) = dataMatrix(i, j);
-
 
   reader->SetFileName(modeldirectory + "/Mean_PERF.csv");
   reader->Parse();
@@ -2675,11 +2683,15 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1(i, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_T1 read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1CE(i - start_counter, j) = dataMatrix(i, j);
+
+  std::cout << "PCA_T1CE read.\n";
 
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
@@ -2687,11 +2699,15 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T2(i - start_counter, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_T2 read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_FL(i - start_counter, j) = dataMatrix(i, j);
+
+  std::cout << "PCA_FL read.\n";
 
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
@@ -2699,11 +2715,15 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1T1CE(i - start_counter, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_T1T1CE read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T2FL(i - start_counter, j) = dataMatrix(i, j);
+
+  std::cout << "PCA_T2FL read.\n";
 
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
@@ -2711,11 +2731,15 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_AX(i - start_counter, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_AX read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_FA(i - start_counter, j) = dataMatrix(i, j);
+
+  std::cout << "PCA_FA read.\n";
 
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
@@ -2723,23 +2747,31 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_RAD(i - start_counter, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_RAD read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_TR(i - start_counter, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_TR read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PH(i - start_counter, j) = dataMatrix(i, j);
-  
+
+  std::cout << "PCA_PH read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PSR(i - start_counter, j) = dataMatrix(i, j);
+
+  std::cout << "PCA_PSR read.\n";
 
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
@@ -2747,23 +2779,31 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_RCBV(i - start_counter, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_RCBV read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC1(i - start_counter, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_PC1 read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC2(i - start_counter, j) = dataMatrix(i, j);
-  
+
+  std::cout << "PCA_PC2 read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC3(i - start_counter, j) = dataMatrix(i, j);
+
+  std::cout << "PCA_PC3 read.\n";
 
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
@@ -2771,11 +2811,15 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC4(i - start_counter, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_PC4 read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC5(i - start_counter, j) = dataMatrix(i, j);
+
+  std::cout << "PCA_PC5 read.\n";
 
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
@@ -2783,11 +2827,15 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC6(i - start_counter, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_PC6 read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC7(i - start_counter, j) = dataMatrix(i, j);
+
+  std::cout << "PCA_PC7 read.\n";
 
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
@@ -2795,11 +2843,15 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC8(i - start_counter, j) = dataMatrix(i, j);
 
+  std::cout << "PCA_PC8 read.\n";
+
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC9(i - start_counter, j) = dataMatrix(i, j);
+
+  std::cout << "PCA_PC9 read.\n";
 
   start_counter = start_counter + PCA_Others_Size;
   end_counter = end_counter + PCA_Others_Size;
@@ -2807,7 +2859,7 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC10(i - start_counter, j) = dataMatrix(i, j);
 
-
+  std::cout << "PCA_PC10 read.\n";
 
   reader->SetFileName(modeldirectory + "/Mean_Others.csv");
   reader->Parse();
@@ -2839,6 +2891,7 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     Mean_PC9[i] = dataMatrix(21, i);
     Mean_PC10[i] = dataMatrix(22, i);
   }
+  std::cout << "Finished reading all model files" << std::endl;
   int a = 0;
 }
 

@@ -22,7 +22,7 @@
 
 std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, modelDirName, inputBVecName, outputDirectory, loggerFileIn;
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;
-bool maskProvided = false;
+bool maskProvided = false, debugMode = false;
 int inferenceType = 0;
 
 enum InferenceTypes
@@ -351,6 +351,8 @@ void algorithmRunner()
     " -test " + cbica::normPath(getCaPTkDataDir() + "/deepMedic/configFiles/testApiConfig.txt") +
     " -o " + outputDirectory;
 
+  std::cout << "Running the following command:\n" << fullCommand << "\n";
+
   if (std::system(fullCommand.c_str()) != 0)
   {
     std::cerr << "DeepMedic exited with code !=0.\n";
@@ -359,7 +361,7 @@ void algorithmRunner()
 
   auto outputImageFile = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
   // do hole filling for skull stripping
-  if (inferenceType = SkullStripping)
+  if (inferenceType == SkullStripping)
   {
     std::cout << "=== Performing hole-filling operation for skull stripping.\n";
     if (cbica::exists(outputImageFile))
@@ -375,6 +377,13 @@ void algorithmRunner()
       cbica::WriteImage< TImageType >(holeFiller->GetOutput(), outputImageFile);
     }
     std::cout << "=== Done.\n";
+  }
+  else if (inferenceType == TumorSegmentation)
+  {
+    auto outputImageWithOldValues = cbica::ReadImage< TImageType >(outputImageFile);
+    auto outputImageWithNewValues = cbica::ChangeImageValues< TImageType >(outputImageWithOldValues, "3", "4");
+
+    cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile);
   }
 
   // registration of segmentation back to patient space
@@ -404,7 +413,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("t2", "FLAIR", cbica::Parameter::FILE, "", "The input T2 image file.");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "", "The Optional input mask file.", "This is needed for normalization only");
   parser.addOptionalParameter("md", "modelDir", cbica::Parameter::DIRECTORY, "", "The trained model to use", "Defaults to 'CaPTk_installDir/data/deepMedic/brainSegmentation'");
-  parser.addRequiredParameter("o", "output", cbica::Parameter::DIRECTORY, "", "The output File.");
+  parser.addRequiredParameter("o", "output", cbica::Parameter::DIRECTORY, "", "The output directory");
 
   parser.addOptionalParameter("ql", "quantLower", cbica::Parameter::FLOAT, "0-100", "The Lower Quantile range to remove", "This is needed for normalization only", "Default: 5");
   parser.addOptionalParameter("qu", "quantUpper", cbica::Parameter::FLOAT, "0-100", "The Upper Quantile range to remove", "This is needed for normalization only", "Default: 95");
@@ -412,8 +421,8 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("cu", "cutOffUpper", cbica::Parameter::FLOAT, "0-10", "The Upper Cut-off (multiple of stdDev) to remove", "This is needed for normalization only", "Default: 3");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   parser.addApplicationDescription("This is a Deep Learning based inference engine based on DeepMedic (see documentation for details)");
-  parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -m c:/CaPTk_install/data/deepMedic/saved_models/skullStripping", "This does a skull stripping of the input structural data");
-  parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -m c:/CaPTk_install/data/deepMedic/saved_models/brainTumorSegmentation", "This does a tumor segmentation of the input structural data");
+  parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping", "This does a skull stripping of the input structural data");
+  parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/brainTumorSegmentation", "This does a tumor segmentation of the input structural data");
 
   // parameters to get from the command line
   cbica::Logging logger;
@@ -422,6 +431,11 @@ int main(int argc, char **argv)
   {
     parser.getParameterValue("L", loggerFileIn);
     logger.UseNewFile(loggerFileIn);
+  }
+
+  if (parser.isPresent("d"))
+  {
+    parser.getParameterValue("d", debugMode);
   }
   parser.getParameterValue("t1c", inputT1ce);
   parser.getParameterValue("t1", inputT1);
