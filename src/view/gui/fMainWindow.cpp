@@ -6699,7 +6699,7 @@ void fMainWindow::ApplicationGeodesicTraining()
   }
 
 
-  /* ----  ---- */
+  /* ---- Parsing, conversions, and initializations ---- */
 
   // The algorithm needs to know if the images are 2D or 3D
   unsigned int dimensions = (
@@ -6720,7 +6720,6 @@ void fMainWindow::ApplicationGeodesicTraining()
   LabelsImagePointer2D previousResult2D;
   LabelsImagePointer3D mask;
   LabelsImagePointer2D mask2D;
-  std::cout << "TEST1\n";
 
   // Check if there are at least two different labels in the image (function in UtilImageToCvMatGTS.h)
   auto labelsMap = GeodesicTrainingSegmentation::ParserGTS::CountsOfEachLabel<LabelsImageType3D>(currentROI);
@@ -6730,7 +6729,6 @@ void fMainWindow::ApplicationGeodesicTraining()
     m_IsGeodesicTrainingRunning = false;
     return;
   }
-  std::cout << "TEST2\n";
 
   // Find the input images (always 3D at first)
   std::vector<InputImagePointer3D> inputImages;
@@ -6739,7 +6737,6 @@ void fMainWindow::ApplicationGeodesicTraining()
     inputImages.push_back(sm->mITKImage);
   }
   std::vector<InputImagePointer2D> inputImages2D(inputImages.size());
-  std::cout << "TEST3\n";
 
   // Find the mask (always 3D)
   if (!isRerun)
@@ -6757,31 +6754,25 @@ void fMainWindow::ApplicationGeodesicTraining()
       mask           = cbica::ReadImage<LabelsImageType3D>(
         m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz"
       );
-      std::cout << "TEST4\n";
       previousResult = cbica::ReadImage<LabelsImageType3D>(
         m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz"
       );
-      std::cout << "TEST5\n";
     }
     else {
       mask2D           = cbica::ReadImage<LabelsImageType2D>(
         m_tempFolderLocation + "/GeodesicTrainingOutput/mask.nii.gz"
       );
-      std::cout << "TEST6\n";
       previousResult2D = cbica::ReadImage<LabelsImageType2D>(
         m_tempFolderLocation + "/GeodesicTrainingOutput/labels_res.nii.gz"
       );
-      std::cout << "TEST7\n";
     }
   }
-  std::cout << "TEST8\n";
 
   // Convert to 2D if needed
   if (dimensions == 2)
   {
     auto regionSize = inputImages[0]->GetLargestPossibleRegion().GetSize();
     regionSize[2] = 0; // Only 2D image is needed
-    std::cout << "TEST9\n";
 
     // Convert input images
     for (size_t i = 0; i < inputImages.size(); i++)
@@ -6797,7 +6788,6 @@ void fMainWindow::ApplicationGeodesicTraining()
       inputImages2D[i] = extractor->GetOutput();
       inputImages2D[i]->DisconnectPipeline();
     }
-    std::cout << "TEST10\n";
 
     if (mask2D == nullptr) // that means it wasn't loaded from file
     {    
@@ -6813,7 +6803,6 @@ void fMainWindow::ApplicationGeodesicTraining()
       mask2D = extractor->GetOutput();
       mask2D->DisconnectPipeline();
     }
-    std::cout << "TEST11\n";
 
     // Convert currentROI to 2D block
     {
@@ -6828,9 +6817,7 @@ void fMainWindow::ApplicationGeodesicTraining()
       currentROI2D = extractor->GetOutput();
       currentROI2D->DisconnectPipeline();
     }
-    std::cout << "TEST12\n";
   }
-  std::cout << "TEST13\n";
 
   // Keep only the actual seeds on the mask if it's a rerun 
   // (and not the previous output segmentation on which the user draws the corrections)
@@ -6873,13 +6860,15 @@ void fMainWindow::ApplicationGeodesicTraining()
       }
     }
   }
-  std::cout << "TEST14\n";
 
   // Create cache dir
   if (!cbica::isDir(m_tempFolderLocation + "/GeodesicTrainingOutput"))
   {
     cbica::createDir(m_tempFolderLocation + "/GeodesicTrainingOutput");
   }
+
+
+  /* ---- Run ---- */
 
   if (dimensions == 3)
   {
@@ -6928,7 +6917,6 @@ void fMainWindow::ApplicationGeodesicTraining()
     m_GeodesicTrainingCaPTkApp2D->SetOutputPath(m_tempFolderLocation + "/GeodesicTrainingOutput");
     m_GeodesicTrainingCaPTkApp2D->Run(inputImages2D, mask2D);
   }
-  std::cout << "TEST15\n";
 }
 #endif
 
