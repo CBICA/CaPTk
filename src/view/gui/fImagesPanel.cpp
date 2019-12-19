@@ -130,6 +130,7 @@ void fImagesPanel::NewImageLoaded(QString idstr, const std::string &filename, in
   
   //! tell table to resize to contents after we add stuff into the table
   m_imagesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+  m_imagesTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 void fImagesPanel::helpClicked()
