@@ -79,9 +79,6 @@ public:
     m_imagesTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Name"));
     m_imagesTable->setHorizontalHeaderItem(3, new QTableWidgetItem("Modality"));
     m_imagesTable->setHorizontalHeaderItem(4, new QTableWidgetItem("Overlay"));
-	//m_imagesTable->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Fixed);
-	m_imagesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);//resizeSections(QHeaderView::Fixed);
-
 
 	//! non-visualizing table, no-op now
     m_nonVisImagesTable = new QTableWidget();
