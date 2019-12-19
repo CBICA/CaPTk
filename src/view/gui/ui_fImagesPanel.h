@@ -81,6 +81,7 @@ public:
     m_imagesTable->setHorizontalHeaderItem(4, new QTableWidgetItem("Overlay"));
 
 
+	//! non-visualizing table, no-op now
     m_nonVisImagesTable = new QTableWidget();
     m_nonVisImagesTable->setColumnCount(3);
     m_nonVisImagesTable->setSelectionBehavior(QAbstractItemView::SelectRows);
