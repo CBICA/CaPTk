@@ -128,6 +128,8 @@ void fImagesPanel::NewImageLoaded(QString idstr, const std::string &filename, in
   connect(overlayRB, SIGNAL(clicked()), caller, SLOT(overlayChanged()));
   connect(m_clearImagesBtn, SIGNAL(clicked()), caller, SLOT(CloseAllImages()));//TBD fix calling everytime
   
+  //! tell table to resize to contents after we add stuff into the table
+  m_imagesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 void fImagesPanel::helpClicked()
