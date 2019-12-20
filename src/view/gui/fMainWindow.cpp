@@ -252,14 +252,8 @@ fMainWindow::fMainWindow()
 
   m_toolTabdock->setWindowFlags(Qt::Window);
 
-#ifdef Q_OS_WIN
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
-#else
-  //TBD fix this - work around untill solved
-  m_toolTabdock->setFeatures(QDockWidget::NoDockWidgetFeatures);
-#endif
   m_toolTabdock->setWidget(m_tabWidget);
-  //overallGridLayout->addWidget(m_toolTabdock, 0, 0, 1, 3);
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
   this->m_toolTabdock->setWindowTitle("Double click to undock");
 
