@@ -259,7 +259,9 @@ fMainWindow::fMainWindow()
   m_toolTabdock->setFeatures(QDockWidget::NoDockWidgetFeatures);
 #endif
   m_toolTabdock->setWidget(m_tabWidget);
-  overallGridLayout->addWidget(m_toolTabdock, 0, 0, 1, 3);
+  //overallGridLayout->addWidget(m_toolTabdock, 0, 0, 1, 3);
+  this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
+  this->m_toolTabdock->setWindowTitle("Double click to undock");
 
   QFrame * frame = new QFrame(this);
   sizePolicy5.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
@@ -2697,12 +2699,11 @@ void fMainWindow::toolTabDockChanged(bool bUnDocked)
 {
   if (bUnDocked)
   {
-    m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight() * 10);
-    m_toolTabdock->show();
+	  this->m_toolTabdock->setWindowTitle("Double click to dock");
   }
   else
   {
-    m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
+	  this->m_toolTabdock->setWindowTitle("Double click to undock");
   }
 }
 
