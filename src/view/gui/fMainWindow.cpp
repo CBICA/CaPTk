@@ -257,6 +257,13 @@ fMainWindow::fMainWindow()
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
   this->m_toolTabdock->setWindowTitle("Double click to undock");
 
+  //! automatic undock on low resolution
+  //! to be tested thoroughly
+  QScreen *scr = QGuiApplication::primaryScreen();
+  //!if primary screen resolution is lower than 1200x1024(any of x,y values)
+  if (scr->size().width() < 1200 || scr->size().height() < 1024)
+	  this->m_toolTabdock->setFloating(true);
+
   QFrame * frame = new QFrame(this);
   sizePolicy5.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
   frame->setSizePolicy(sizePolicy5);
