@@ -275,6 +275,10 @@ void FeatureExtraction< TImage >::CalculateMorphologic(const typename TImage::Po
   {
     morphologicCalculator.EnableDebugMode();
   }
+  if (m_morphologicCalculateFeret)
+  {
+    morphologicCalculator.EnableCalculateFeretDiameter();
+  }
   morphologicCalculator.Update();
   auto temp = morphologicCalculator.GetOutput();
   if (temp.empty())
@@ -1438,6 +1442,14 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         else if (outer_key == ParamsString[LBPStyle])
         {
           m_LBPStyle = std::atoi(currentValue.c_str());
+        }
+        else if (outer_key == ParamsString[MorphologicFeret])
+        {
+          auto temp = std::atoi(currentValue.c_str());
+          if (temp == 1)
+          {
+            m_morphologicCalculateFeret = true;
+          }
         }
       }
     } // end of feature parameter map iterator 

@@ -28,7 +28,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 //#include "cbicaITKImageInfo.h"
 
 // stuff used in the program
-std::string loggerFile, multipatient_file, patient_id, image_path_string, modalities_string, maskfilename, 
+std::string loggerFile, multipatient_file, patient_id = "DEFAULT", image_path_string, modalities_string, maskfilename, 
 selected_roi_string, roi_labels_string, param_file, outputdir, offset_String, outputFilename;
 
 bool debug = false, debugWrite = false, verticalConc = false, featureMaps = false;
@@ -288,6 +288,10 @@ int main(int argc, char** argv)
     parser.getParameterValue("t", modalities_string);
     modality_names = splitTheString(modalities_string);
   }
+  else
+  {
+    modality_names.push_back("DEFAULT");
+  }
 
   if (parser.isPresent("m"))
   {
@@ -517,7 +521,7 @@ int main(int argc, char** argv)
       threads = maxThreads;
     }
 
-#pragma omp parallel for num_threads(threads)
+//#pragma omp parallel for num_threads(threads)
     for (int j = 1; j < static_cast<int>(allRows.size()); j++)
     {
       patient_id.clear();
@@ -575,6 +579,14 @@ int main(int argc, char** argv)
         //  outputdir = outputdir + "/" + patient_id + ".csv";
         //}
       } // end of k-loop
+
+      if (modality_names.empty())
+      {
+        for (size_t numberOfInputImages = 0; numberOfInputImages < image_paths.size(); numberOfInputImages++)
+        {
+          modality_names.push_back("DEFAULT");
+        }
+      }
 
       if (debug)
       {

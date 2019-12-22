@@ -1,18 +1,17 @@
 /*
-@ @licstart  The following is the entire license notice for the
+@licstart  The following is the entire license notice for the
 JavaScript code in this file.
 
-Copyright (C) 1997-2017 by Dimitri van Heesch
+Copyright (C) 1997-2019 by Dimitri van Heesch
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+it under the terms of version 2 of the GNU General Public License as published by
+the Free Software Foundation
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
@@ -32,6 +31,11 @@ var NAVTREE =
       [ "Image Visualization", "Getting_Started.html#gs_imageVisualization", null ],
       [ "Tab Docking (Windows-only)", "Getting_Started.html#gs_tabDocking", null ],
       [ "Coordinate definition (Seed-point initialization)", "Getting_Started.html#gs_seedpoints", [
+        [ "Bug Tracker and Feature Request", "index.html#autotoc_md112", null ],
+        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md113", null ],
+        [ "Supporting Grant", "index.html#autotoc_md114", null ],
+        [ "Disclaimer", "index.html#autotoc_md115", null ],
+        [ "Contact", "index.html#autotoc_md116", null ],
         [ "Tumor Points", "Getting_Started.html#gs_seedpoints_tumor", null ],
         [ "Tissue Points", "Getting_Started.html#gs_seedpoints_tissue", null ]
       ] ],
@@ -53,14 +57,18 @@ var NAVTREE =
         [ "GLIBCXX or GLIBC Issues", "FAQ.html#gs_FAQ_4_2", null ]
       ] ],
       [ "Is there a minimum recommended screen resolution for running CaPTk?", "FAQ.html#gs_FAQ_5", null ],
-      [ "What if I am having an issue not listed here?", "FAQ.html#gs_FAQ_6", null ]
+      [ "Where can I find the CaPTk Docker Image?", "FAQ.html#gs_FAQ_6", null ],
+      [ "How do I run the CaPTk Docker Image to show the interface?", "FAQ.html#gs_FAQ_7", null ],
+      [ "What if I am having an issue not listed here?", "FAQ.html#gs_FAQ_8", null ]
     ] ],
     [ "How To Guides", "How_To_Guides.html", "How_To_Guides" ],
     [ "Scientific Findings using CaPTk", "Science.html", [
       [ "Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients", "Science.html#phiEstimator", null ],
       [ "Prediction of Overall Survival in Glioblastoma Patients", "Science.html#survivalPredictor", null ],
       [ "Probability Maps of Potential Recurrence of Glioblastoma Tumors", "Science.html#recurrencePredictor", null ],
-      [ "Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer", "Science.html#libraPapers", null ]
+      [ "Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer", "Science.html#libraPapers", [
+        [ "\\htmlonly", "Science.html#autotoc_md66", null ]
+      ] ]
     ] ],
     [ "Technical Reference", "Technical_Reference.html", "Technical_Reference" ],
     [ "Download Instructions", "Download.html", null ],

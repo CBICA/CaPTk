@@ -13,7 +13,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 3.Beta )
+SET( PROJECT_VERSION_PATCH 5.nonRelease.20191204 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -227,21 +227,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   SET( THIRDPARTY_LIB_PATH ${PROJECT_SOURCE_DIR}/src/thirdparty )
   INCLUDE_DIRECTORIES( ${THIRDPARTY_LIB_PATH} )
-
-  # macro to find all sub-directories
-  MACRO(SUBDIRLIST result curdir)
-    FILE(GLOB children
-      RELATIVE ${curdir} ${curdir}/*
-      PATTERN "svn" EXCLUDE
-    )
-    SET(dirlist "")
-    FOREACH(child ${children})
-      IF(IS_DIRECTORY ${curdir}/${child})
-        LIST(APPEND dirlist ${child})
-      ENDIF()
-    ENDFOREACH()
-    SET(${result} ${dirlist})
-  ENDMACRO()
 
   ### third party library processing
   # find and include all third party libraries
