@@ -766,7 +766,7 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        # mkdir -p bin
+        mkdir -p bin
         # cp -r ../../../superbuild/ ./bin
         cd bin
         cp -r ./ ../../../../superbuild
