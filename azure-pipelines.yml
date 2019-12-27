@@ -767,9 +767,9 @@ jobs:
 
     - bash: |
         mkdir -p bin
-        # cp -r ../../../superbuild/ ./bin
-        cd bin
-        cp -r ./ ../../../../superbuild
+        cp -r ../../../superbuild/ ./bin
+        # cd bin
+        # cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
