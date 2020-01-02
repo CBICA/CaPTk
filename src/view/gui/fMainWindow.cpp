@@ -250,6 +250,7 @@ fMainWindow::fMainWindow()
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
+  m_toolTabdock = new QDockWidget();
   m_toolTabdock->setWindowFlags(Qt::Window);
 
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
