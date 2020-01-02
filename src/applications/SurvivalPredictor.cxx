@@ -101,6 +101,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 			}
 		}
 
+
 		if (cbica::directoryExists(subjectPath + "/DTI"))
 		{
 			files = cbica::filesInDirectory(subjectPath + "/DTI",false);
