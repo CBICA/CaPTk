@@ -113,6 +113,9 @@ void fImagesPanel::NewImageLoaded(QString idstr, const std::string &filename, in
   m_imagesTable->setCellWidget(rowIndex, IMAGES_COLUMN_MODALITY, modalitySwitcher);
 
   QRadioButton* overlayRB = new QRadioButton();
+
+  //! the following set focus policy call is needed to select only the radiobutton
+  //! without selecting the table row. Without it the event propagates to the parent
   overlayRB->setFocusPolicy(Qt::NoFocus);
   m_imagesTable->setCellWidget(rowIndex, IMAGES_COLUMN_OVERLAY, overlayRB);
 
