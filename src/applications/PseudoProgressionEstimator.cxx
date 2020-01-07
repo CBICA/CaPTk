@@ -165,6 +165,7 @@ int SurvivalPredictionOnExistingModel(const std::string modeldirectory,
   //}
   return EXIT_SUCCESS;
 }
+
 int PrepareNewSurvivalPredictionModel(const std::string inputdirectory, const std::string outputdirectory)
 {
   std::cout << "Module loaded: Prepare Pseudoprogression Prediction Model." << std::endl;
@@ -180,6 +181,7 @@ int PrepareNewSurvivalPredictionModel(const std::string inputdirectory, const st
     objPseudoProgressionEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, true, true, true, true);
   return EXIT_SUCCESS;
 }
+
 int main(int argc, char **argv)
 {
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PseudoProgressionEstimator");
