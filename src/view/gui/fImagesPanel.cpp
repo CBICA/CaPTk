@@ -113,6 +113,7 @@ void fImagesPanel::NewImageLoaded(QString idstr, const std::string &filename, in
   m_imagesTable->setCellWidget(rowIndex, IMAGES_COLUMN_MODALITY, modalitySwitcher);
 
   QRadioButton* overlayRB = new QRadioButton();
+  overlayRB->setFocusPolicy(Qt::NoFocus);
   m_imagesTable->setCellWidget(rowIndex, IMAGES_COLUMN_OVERLAY, overlayRB);
 
   QTableWidgetItem *item2 = new QTableWidgetItem(filename.c_str());
