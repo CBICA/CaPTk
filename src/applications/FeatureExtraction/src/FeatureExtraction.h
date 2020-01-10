@@ -343,12 +343,18 @@ public:
   /**
   \brief Enable vertically-concatenated output in CSV
   */
-  void SetVerticallyConcatenatedOutput(bool flag) { m_outputVerticallyConcatenated = flag; }
+  void SetVerticallyConcatenatedOutput(bool flag) 
+  { 
+    m_outputVerticallyConcatenated = flag; 
+  }
 
   /**
   \brief Enable/disable feature map writing
   */
-  void SetWriteFeatureMaps(bool flag) { m_writeFeatureMaps = flag; };
+  void SetWriteFeatureMaps(bool flag) 
+  { 
+    m_writeFeatureMaps = flag; 
+  }
 
   /**
   \brief Get the ROIs that were selected for the current process as a vector of ints
