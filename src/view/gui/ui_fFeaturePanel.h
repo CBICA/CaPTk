@@ -80,6 +80,7 @@ public:
   QLineEdit* m_roi;
   QLineEdit* m_roi_label;
 
+  QCheckBox* m_verticalConcat;
   QPushButton* m_btnBrowseSaveFile;
   QCheckBox* csv_format;
   QCheckBox* xml_format;
@@ -308,9 +309,11 @@ public:
     m_btnBrowseSaveFile = new QPushButton("...");
     m_btnBrowseSaveFile->setToolTip("Browse to select file");
 
-    csv_format = new QCheckBox(".csv");
+    m_verticalConcat = new QCheckBox("Vertically Concatenated Output");
+    m_verticalConcat->setToolTip("If not selected, this presents the output in the format for Training Module to use as input");
+    //csv_format = new QCheckBox(".csv");
     //csv_format->setToolTip(QString("Saves file in csv format"));
-    xml_format = new QCheckBox(".xml");
+    //xml_format = new QCheckBox(".xml");
     //xml_format->setToolTip(QString("Saves file in xml format"));
 
     // this is done solely for the reason for saving everything in the tempDir
@@ -318,7 +321,7 @@ public:
     m_txtSaveFileName = new QLineEdit(std::string(loggerFolder + "features.csv").c_str());
     m_txtSaveFileName->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
 
-   // flLayout->addWidget(label);
+    flLayout->addWidget(m_verticalConcat);
     flLayout->addWidget(m_txtSaveFileName);
     flLayout->addWidget(m_btnBrowseSaveFile);
     //flLayout->addWidget(csv_format);
@@ -331,6 +334,7 @@ public:
     saveLayout->addWidget(m_btnCompute);
     saveLayout->addStretch();
     saveGroup->setLayout(saveLayout);
+    saveGroup->setMaximumWidth(buttonWidth * 3);
 
 
     HelpButton = new QPushButton();
