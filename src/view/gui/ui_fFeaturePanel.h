@@ -309,7 +309,7 @@ public:
     m_btnBrowseSaveFile = new QPushButton("...");
     m_btnBrowseSaveFile->setToolTip("Browse to select file");
 
-    m_verticalConcat = new QCheckBox("Vertically Concatenated Output");
+    m_verticalConcat = new QCheckBox("Vertically Concatenated");
     m_verticalConcat->setToolTip("If not selected, this presents the output in the format for Training Module to use as input");
     //csv_format = new QCheckBox(".csv");
     //csv_format->setToolTip(QString("Saves file in csv format"));
