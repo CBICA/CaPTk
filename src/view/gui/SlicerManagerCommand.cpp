@@ -433,7 +433,6 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
 
     if (event == vtkCommand::WindowLevelEvent && mStartSlicer >= 0 && this->SM->GetPreset() <= 1)
     {
-
       // Adjust the window level here
       int *size = isi->GetInteractor()->GetRenderWindow()->GetSize();
       double window = this->InitialWindow;
@@ -1304,5 +1303,4 @@ void SlicerManagerCommand::makeStroke(int VisibleInWindow, double x, double y)
 
   this->SM->mMask->Modified();
   this->SM->GetSlicer(VisibleInWindow)->Render();
-
 }
