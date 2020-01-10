@@ -1210,7 +1210,6 @@ void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImag
   }
   else if (m_QuantizationExtent == "ROI")
   {
-
     statisticsCalculatorToUse = m_statistics_local;
   }
 
