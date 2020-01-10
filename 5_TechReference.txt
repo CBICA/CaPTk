@@ -28,6 +28,10 @@ For details, please see https://github.com/CBICA/CaPTk/blob/master/src/applicati
 
 For details, please see https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/2_params_default_lattice.csv.
 
+\subsection tr_fe_customization
+
+For details, please see https://github.com/CBICA/CaPTk/tree/master/src/applications/FeatureExtraction#the-parameter-file.
+
 \section tr_fe_batch Batch Mode
 
 An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureExtraction.csv</b> or https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/batchMode/batch_featureExtraction.csv. An explanation of the inputs is given below (the headers are case-insensitive):
