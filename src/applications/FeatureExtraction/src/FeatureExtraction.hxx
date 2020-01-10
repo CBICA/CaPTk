@@ -2142,7 +2142,7 @@ void FeatureExtraction< TImage >::Update()
       }
       else
       {
-        if (!m_patchFullImageComputation)
+        if (!m_patchFullImageComputation && (allROIs.size() > m_roi.size()))
         {
           j += m_roi.size();
         }
