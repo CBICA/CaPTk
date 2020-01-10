@@ -2,6 +2,7 @@ var Technical_Reference =
 [
     [ "Feature Extraction", "tr_FeatureExtraction.html", [
       [ "Defaults", "tr_FeatureExtraction.html#tr_fe_defaults", [
+        [ "\\verbatim", "ht_Preprocessing.html#autotoc_md23", null ],
         [ "Main Default Feature Extraction Parameters", "tr_FeatureExtraction.html#tr_fe_def_main", null ],
         [ "Lattice Feature Extraction Parameters", "tr_FeatureExtraction.html#tr_fe_def_lattice", null ]
       ] ],
@@ -14,8 +15,6 @@ var Technical_Reference =
         [ "Build", "tr_integration.html#tr_sb_actualBuild", null ]
       ] ],
       [ "Integrating your C++ application into CaPTk", "tr_integration.html#tr_cppIntegration", null ],
-      [ "Integrating your Python application into CaPTk", "tr_integration.html#tr_pyIntegration", [
-        [ "\\htmlonly", "tr_integration.html#autotoc_md74", null ]
-      ] ]
+      [ "Integrating your Python application into CaPTk", "tr_integration.html#tr_pyIntegration", null ]
     ] ]
 ];

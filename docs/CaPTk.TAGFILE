@@ -191,7 +191,6 @@
     <name>Training_Module</name>
     <title>Miscellaneous: Training Module</title>
     <filename>Training_Module</filename>
-    <docanchor file="Training_Module" title="\htmlonly">autotoc_md55</docanchor>
   </compound>
   <compound kind="page">
     <name>ht_utilities</name>
@@ -206,7 +205,6 @@
     <docanchor file="Science" title="Prediction of Overall Survival in Glioblastoma Patients">survivalPredictor</docanchor>
     <docanchor file="Science" title="Probability Maps of Potential Recurrence of Glioblastoma Tumors">recurrencePredictor</docanchor>
     <docanchor file="Science" title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer">libraPapers</docanchor>
-    <docanchor file="Science" title="\htmlonly">autotoc_md66</docanchor>
   </compound>
   <compound kind="page">
     <name>Technical_Reference</name>
@@ -232,7 +230,6 @@
     <docanchor file="tr_integration" title="Build">tr_sb_actualBuild</docanchor>
     <docanchor file="tr_integration" title="Integrating your C++ application into CaPTk">tr_cppIntegration</docanchor>
     <docanchor file="tr_integration" title="Integrating your Python application into CaPTk">tr_pyIntegration</docanchor>
-    <docanchor file="tr_integration" title="\htmlonly">autotoc_md74</docanchor>
   </compound>
   <compound kind="page">
     <name>Download</name>
@@ -240,7 +237,6 @@
     <filename>Download</filename>
     <docanchor file="Download" title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following paper:">autotoc_md76</docanchor>
     <docanchor file="Download" title="License">autotoc_md78</docanchor>
-    <docanchor file="Download" title="\htmlonly">autotoc_md81</docanchor>
   </compound>
   <compound kind="page">
     <name>Installation</name>
@@ -249,7 +245,6 @@
     <docanchor file="Installation" title="Windows">autotoc_md82</docanchor>
     <docanchor file="Installation" title="Linux">autotoc_md83</docanchor>
     <docanchor file="Installation" title="macOS">autotoc_md84</docanchor>
-    <docanchor file="Installation" title="\htmlonly">autotoc_md87</docanchor>
   </compound>
   <compound kind="page">
     <name>ReleaseNotes</name>
@@ -273,7 +268,6 @@
     <docanchor file="ReleaseNotes" title="2016.09.05">autotoc_md103</docanchor>
     <docanchor file="ReleaseNotes" title="0.0.2">autotoc_md104</docanchor>
     <docanchor file="ReleaseNotes" title="0.0.1">autotoc_md105</docanchor>
-    <docanchor file="ReleaseNotes" title="\htmlonly">autotoc_md108</docanchor>
   </compound>
   <compound kind="page">
     <name>People</name>
