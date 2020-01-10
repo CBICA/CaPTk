@@ -321,7 +321,7 @@ public:
     m_txtSaveFileName = new QLineEdit(std::string(loggerFolder + "features.csv").c_str());
     m_txtSaveFileName->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
 
-    flLayout->addWidget(m_verticalConcat);
+    //flLayout->addWidget(m_verticalConcat);
     flLayout->addWidget(m_txtSaveFileName);
     flLayout->addWidget(m_btnBrowseSaveFile);
     //flLayout->addWidget(csv_format);
@@ -330,6 +330,7 @@ public:
 
     QVBoxLayout* saveLayout = new QVBoxLayout();
     //saveLayout->addLayout(flLayout);
+    saveLayout->addWidget(m_verticalConcat);
     saveLayout->addWidget(saveGroup_file);
     saveLayout->addWidget(m_btnCompute);
     saveLayout->addStretch();
