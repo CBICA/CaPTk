@@ -287,7 +287,7 @@ public:
   */
   void SetOutputFilename(std::string filename)
   {
-    auto ext = cbica::getFilenameExtension(filename);
+    auto ext = cbica::getFilenameExtension(filename, false);
     if (cbica::isDir(filename))
     {
       m_outputPath = filename;
