@@ -33,7 +33,7 @@ fFeaturePanel::fFeaturePanel(QWidget * parent) : QWidget(parent)
   connect(m_btnBrowseSaveFile, SIGNAL(clicked()), this, SLOT(browseOutputFileName()));
   connect(m_cmbFeatureType, SIGNAL(currentIndexChanged(int)), this, SLOT(featureTypeChanged(int)));
   connect(HelpButton, SIGNAL(clicked()), this, SLOT(helpClicked()));
-  csv_format->setChecked(true);
+  //csv_format->setChecked(true);
   radio1->setChecked(true);
   loadFeatureFiles();
   featureTypeChanged(0);
