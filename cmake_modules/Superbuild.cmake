@@ -8,8 +8,8 @@ OPTION( USE_GIT_PROTOCOL "If behind a firewall turn this off to use https instea
 IF(MSVC)
   SET( CMAKE_CONFIGURATION_TYPES "Debug;Release")
 ELSEIF(UNIX)
-  SET( CMAKE_CONFIGURATION_TYPES "Release")
-  SET( CMAKE_BUILD_TYPE "Release" )
+  SET( CMAKE_CONFIGURATION_TYPES "Debug;Release")
+#  SET( CMAKE_BUILD_TYPE "Release" )
 ENDIF()
 
 INCLUDE( ExternalProject )
