@@ -295,7 +295,7 @@ void fFeaturePanel::computeFeature(int type)
     featureextractor.SetPatientID(m_patientID_label->text().toStdString());
     featureextractor.SetInputImages(images, modality);
     featureextractor.SetMaskImage(maskImg);
-    //featureextractor.SetVerticallyConcatenatedOutput(true);
+    featureextractor.SetVerticallyConcatenatedOutput(m_verticalConcat->isChecked());
     featureextractor.SetRequestedFeatures(featureMap, selectedFeatures);
     featureextractor.SetSelectedROIsAndLabels(roi_given, roi_label_given);
     featureextractor.SetOutputFilename(m_txtSaveFileName->text().toStdString());
