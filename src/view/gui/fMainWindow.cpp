@@ -5717,7 +5717,7 @@ void fMainWindow::ApplicationTexturePipeline()
   if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] != 1) /*||
     (mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)*/)
   {
-    ShowErrorMessage("This is only valid for mammogram images");
+    ShowErrorMessage("You have tried running an application that is only valid for mammogram images. Please load the correct image type or change the modality using the combo-box beside the image name.");
     return;
   }
 
@@ -5781,7 +5781,7 @@ void fMainWindow::ApplicationBreastSegmentation()
   if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] != 1) /*||
     (mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)*/)
   {
-    ShowErrorMessage("This is only valid for mammogram images");
+    ShowErrorMessage("You have tried running an application that is only valid for mammogram images. Please load the correct image type or change the modality using the combo-box beside the image name.");
     return;
   }
 
@@ -5836,7 +5836,7 @@ void fMainWindow::ApplicationLIBRASingle()
   if ((mSlicerManagers[0]->mITKImage->GetLargestPossibleRegion().GetSize()[2] != 1) /*||
     (mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)*/)
   {
-    ShowErrorMessage("This is only valid for mammogram images");
+    ShowErrorMessage("You have tried running an application that is only valid for mammogram images. Please load the correct image type or change the modality using the combo-box beside the image name.");
     return;
   }
 
@@ -7065,7 +7065,7 @@ void fMainWindow::ImageMamogramPreprocess()
 
   if (mSlicerManagers[0]->mImageSubType != CAPTK::ImageModalityType::IMAGE_MAMMOGRAM)
   {
-    ShowErrorMessage("This is only valid for mammogram images");
+    ShowErrorMessage("You have tried running an application that is only valid for mammogram images. Please load the correct image type or change the modality using the combo-box beside the image name.");
     return;
   }
 
