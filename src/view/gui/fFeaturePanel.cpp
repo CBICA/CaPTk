@@ -34,6 +34,7 @@ fFeaturePanel::fFeaturePanel(QWidget * parent) : QWidget(parent)
   connect(m_cmbFeatureType, SIGNAL(currentIndexChanged(int)), this, SLOT(featureTypeChanged(int)));
   connect(HelpButton, SIGNAL(clicked()), this, SLOT(helpClicked()));
   //csv_format->setChecked(true);
+  m_verticalConcat->setChecked(true);
   radio1->setChecked(true);
   loadFeatureFiles();
   featureTypeChanged(0);
@@ -313,23 +314,23 @@ void fFeaturePanel::computeFeature(int type)
   if (/*!featurevec.empty() && */!featureFileName.empty())
   {
 
-    if (csv_format->checkState() == Qt::Checked)
-    {
-      std::string filetype = "csv";
-      //      features_extraction.writeFeatureList(featureFileName, featurevec, filetype);
-    }
+    //if (csv_format->checkState() == Qt::Checked)
+    //{
+    //  std::string filetype = "csv";
+    //  //      features_extraction.writeFeatureList(featureFileName, featurevec, filetype);
+    //}
 
-    if ((csv_format->checkState() != Qt::Checked) && (xml_format->checkState() != Qt::Checked))
-    {
-      ShowErrorMessage("No format type selected; writing as XML");
-      csv_format->isEnabled();
-    }
+    //if ((csv_format->checkState() != Qt::Checked) && (xml_format->checkState() != Qt::Checked))
+    //{
+    //  ShowErrorMessage("No format type selected; writing as XML");
+    //  csv_format->isEnabled();
+    //}
 
-    if (xml_format->checkState() == Qt::Checked)
-    {
-      std::string filetype = "xml";
-      //      features_extraction.writeFeatureList(featureFileName, featurevec, filetype);
-    }
+    //if (xml_format->checkState() == Qt::Checked)
+    //{
+    //  std::string filetype = "xml";
+    //  //      features_extraction.writeFeatureList(featureFileName, featurevec, filetype);
+    //}
 
     ((fMainWindow*)m_listener)->updateProgress(100, "Feature export complete!");
   }
