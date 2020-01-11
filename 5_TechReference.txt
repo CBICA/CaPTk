@@ -8,6 +8,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
 
 - \subpage tr_FeatureExtraction "Feature Extraction"
 - \subpage tr_integration "Integrating your Application in CaPTk"
+- \subpage tr_sourceBuid "Building CaPTk from source"
 
 Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
 
