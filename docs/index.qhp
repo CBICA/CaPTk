@@ -95,6 +95,7 @@
         <section title="Defaults" ref="tr_FeatureExtraction.html#tr_fe_defaults">
           <section title="Main Default Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_main" />
           <section title="Lattice Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_lattice" />
+          <section title="tr_fe_customization" ref="tr_FeatureExtraction.html#tr_fe_customization" />
         </section>
         <section title="Batch Mode" ref="tr_FeatureExtraction.html#tr_fe_batch" />
         <section title="Extracted Features" ref="tr_FeatureExtraction.html#tr_fe_math" />
