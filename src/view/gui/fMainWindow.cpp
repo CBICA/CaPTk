@@ -1641,7 +1641,8 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
         }
         if (!cbica::ImageSanityCheck(fname, mSlicerManagers[0]->GetPathFileName(), fourDImage))
         {
-          ShowErrorMessage("The physical dimensions of the previously loaded image and current image are inconsistent; cannot load");
+          ShowErrorMessage("The physical dimensions of the previously loaded image and current image are inconsistent; proceeding to open registration dialog");
+          ImageRegistration();
           return;
         }
 
@@ -3202,7 +3203,8 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     {
       if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
       {
-        ShowErrorMessage("The physical dimensions of the previously loaded image and mask are inconsistent; cannot load");
+        ShowErrorMessage("The physical dimensions of the previously loaded image and the mask are inconsistent; proceeding to open registration dialog");
+        ImageRegistration();
         return;
       }
       imageSanityCheckDone = true;
