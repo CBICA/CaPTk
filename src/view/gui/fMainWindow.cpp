@@ -68,6 +68,16 @@
 
 //#include "DicomSeriesReader.h"
 
+#include <QFile>
+
+// For getting the total amount of installed ram
+#ifdef _WIN32
+#include <windows.h>
+#else
+// For both linux + mac
+#include <unistd.h>
+#endif
+
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
@@ -5405,6 +5415,49 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       return;
     }
   }
+
+  /**** Check if the total size of the files is more than a percentage 
+   *    of the available memory ****/
+
+  // Find total size of all files
+  unsigned long long imagesSize = 0;
+  for (auto& file : files)
+  {
+    QFile qFile(file);
+    if (qFile.open(QIODevice::ReadOnly)){
+        imagesSize += qFile.size();  //when file does open. This size is in bytes
+        qFile.close();
+    }
+  }
+
+  // Find total available memory (based on StackOverflow 2513505, Travis Gockel answer)
+  unsigned long long availableMemory;
+#ifdef _WIN32
+  MEMORYSTATUSEX status;
+  status.dwLength = sizeof(status);
+  GlobalMemoryStatusEx(&status);
+  availableMemory = status.ullTotalPhys;
+#else
+  long pages = sysconf(_SC_PHYS_PAGES);
+  long page_size = sysconf(_SC_PAGE_SIZE);
+  availableMemory = pages * page_size;
+#endif
+
+  // Print values
+  std::cout << "Images size: " << imagesSize << "\n";
+  std::cout << "Total RAM:   " << availableMemory << "\n";
+
+  // Compare (0.05 is arbitrary, it allows images up to 400MB for a 8GB system)
+  if (imagesSize > 0.05*availableMemory)
+  {
+    ShowErrorMessage(
+      "The images you are trying to load are too big to be handled by CaPTk given the available memory on the system.", 
+      this
+    );
+    return;
+  }
+
+  /**** Image Loading ****/
 
   int i = 0, fileSizeCheck = files.size() + 1;
   if (mSlicerManagers.empty())
