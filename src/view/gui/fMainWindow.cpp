@@ -5386,6 +5386,28 @@ void fMainWindow::overlayChanged(QTableWidgetItem *clickedItem)
 
 void fMainWindow::openImages(QStringList files, bool callingFromCmd)
 {
+	int ndirs = 0;
+	bool hasDir = this->hasDirectories(files, ndirs);
+
+	//! captk doesn't load directories
+	//! in case the user loaded multiple files, with some directories
+	//! we skip the directories and continue with loading the files after
+	//! showing a message
+	if (hasDir && !files.isEmpty())
+	{
+		QMessageBox msgbox;
+		msgbox.setText("CaPTk cannot load folders. Skipping folders and proceeding.");
+		int ret = msgbox.exec();
+	}
+	//! in case the user loaded directory(ies) only
+	//! we show a message and open the file load dialog
+	else if (hasDir && files.isEmpty())
+	{
+		QMessageBox msgbox;
+		msgbox.setText("CaPTk cannot load folders. Please load valid images.");
+		int ret = msgbox.exec();
+	}
+
   if (files.isEmpty())
   {
     if (!callingFromCmd)
@@ -9933,6 +9955,26 @@ std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(c
   //}
 
   return returnVector;
+}
+
+bool fMainWindow::hasDirectories(QStringList &files, int &nDirs)
+{
+	int nfiles = files.size();
+	bool hasDir = false;
+	QStringList::iterator itr;
+
+	//! iterating over all loaded files(can be multiple)
+	//! to check if there are directories
+	for (itr = files.begin(); itr != files.end(); ++itr)
+	{
+		if (QFileInfo(*itr).isDir())
+		{
+			hasDir = true;
+			nDirs++;
+			files.erase(itr);
+		}
+	}
+	return hasDir;
 }
 
 void fMainWindow::OnPreferencesMenuClicked()

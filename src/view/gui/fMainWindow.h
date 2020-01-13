@@ -355,6 +355,9 @@ private:
   **/
   std::vector< ActionAndName > populateStringListInMenu(const std::vector< std::string > &vectorOfInputs, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic);
 
+  //! check if input files also include directories
+  bool hasDirectories(QStringList &lst, int &nDirs);
+
   // initialize vectors of Actions and Names so that the process can be automated and the QAction is tied to its corresponding Name
   std::vector< ActionAndName >
     vectorOfGBMApps, // GBM-specific applications
