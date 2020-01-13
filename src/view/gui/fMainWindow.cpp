@@ -8756,7 +8756,9 @@ void fMainWindow::ChangeMaskOpacity(int newMaskOpacity) // multiLabel uncomment 
       this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
     }
   }
-  this->mSlicerManagers[0]->Render();
+  if (!this->mSlicerManagers.empty()) { // prevent crash if no images are loaded
+    this->mSlicerManagers[0]->Render();
+  }
 }
 
 void fMainWindow::ChangeDrawingLabel(int drawingLabel) // multiLabel uncomment this function
