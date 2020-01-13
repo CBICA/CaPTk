@@ -11,6 +11,16 @@ ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/ cbica_toolkit ) # t
 
 CAPTK_INITIAL_SETUP()
 
+# update submodule
+IF( NOT EXISTS "${PROJECT_SOURCE_DIR}/greedy/CMakeLists.txt" )
+  SET(git_cmd "git")
+  SET(git_arg "submodule update --init --recursive")
+  EXECUTE_PROCESS(COMMAND ${git_cmd} ${git_arg}
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE git_result
+  OUTPUT_VARIABLE git_ver)
+ENDIF()
+
 ADD_SUBDIRECTORY(greedy)
 
 INCLUDE_DIRECTORIES( ${CACHED_INCLUDE_DIRS} )

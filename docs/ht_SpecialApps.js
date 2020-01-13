@@ -15,9 +15,5 @@ var ht_SpecialApps =
     [ "Lung Cancer: Radiomics Analysis of Lung Cancer", "LungCancer_SBRT.html", null ],
     [ "Miscellaneous: Directionality Estimator", "Glioblastoma_Directionality.html", null ],
     [ "Miscellaneous: Diffusion Derivatives", "Diffusion_Derivatives.html", null ],
-    [ "Miscellaneous: Training Module", "Training_Module.html", [
-      [ "\\verbatim", "ht_Preprocessing.html#autotoc_md23", [
-        [ "\\htmlonly", "Training_Module.html#autotoc_md55", null ]
-      ] ]
-    ] ]
+    [ "Miscellaneous: Training Module", "Training_Module.html", null ]
 ];
