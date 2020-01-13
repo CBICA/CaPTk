@@ -294,9 +294,10 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
 
       if (event == vtkCommand::EndPickEvent)
       {
+        // this line was commented out to prevent adding the points twice
         if (!m_shapeBuffer.empty())
         {
-          this->SM->ActionAdded(m_shapeBuffer);
+          //this->SM->ActionAdded(m_shapeBuffer);
           m_shapeBuffer.clear();
         }
         if (!m_undoBuffer.empty())
@@ -978,7 +979,7 @@ std::vector<PointVal> SlicerManagerCommand::drawSphere(PointVal startPt, vtkSmar
       auto undoPt = drawPoint(tempPoint, image);
       if (undoPt.isValid())
       {
-        undoBuffer.push_back(tempPoint);
+        undoBuffer.push_back(undoPt);
         if (x_max < tempPoint.x)
         {
           x_max = tempPoint.x;
@@ -1023,7 +1024,7 @@ std::vector<PointVal> SlicerManagerCommand::drawSphere(PointVal startPt, vtkSmar
           auto undoPt = drawPoint(tempPoint, image);
           if (undoPt.isValid())
           {
-            undoBuffer.push_back(tempPoint);
+            undoBuffer.push_back(undoPt);
           }
         }
       }
