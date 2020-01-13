@@ -1053,9 +1053,14 @@ public slots:
   void ChangeDrawingLabel(int drawingLabel); // multiLabel uncomment this function
 
   /**
-  \brief Changes the opacity in the drawing
+  \brief Changes the selected opacity to draw with
   */
   void ChangeMaskOpacity(int newMaskOpacity); // multiLabel uncomment this function
+
+  /**
+  \brief Applies the selected opacity to the drawing
+  */
+  void RefreshMaskOpacity();
 
   /**
   \brief Checks whether required images are present for the recurrence estimation application
@@ -1476,6 +1481,7 @@ public:
   vtkSmartPointer<vtkImageData> mMask;
 
   SHAPE_MODE m_drawShapeMode;
+  int mSelectedMaskOpacity;
   int mCurrentNearPoints;
   int mCurrentFarPoints;
   int mCurrentInitPoints;
