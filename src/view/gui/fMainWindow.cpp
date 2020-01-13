@@ -5554,7 +5554,9 @@ void fMainWindow::openDicomImages(QString dir)
   auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(dir.toStdString());
   if (!currentImage)
   {
-    ShowMessage("Dicom Load Failed");
+	  ShowErrorMessage("Dicom load failed. CaPTk only supports a limited DICOM protocols \
+ for MR, CT and MG modalities. Please consider converting the dataset to Nifti \
+ before loading.",this);
     return;
   }
   SlicerManager* imageManager = new SlicerManager(3, mLandmarks, mSeedPoints, mTissuePoints);
