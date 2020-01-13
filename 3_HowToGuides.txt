@@ -334,7 +334,7 @@ References:
 ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
 \endverbatim
   
-  -# Batch processing is also available (for more details, please see the relevant [technical reference](tr_fe_batch.html) page):
+  -# Batch processing is also available (for more details, please see the relevant <a href="tr_FeatureExtraction.html#tr_fe_batch">technical reference</a> page):
 \verbatim
 ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv
 \endverbatim
@@ -346,7 +346,7 @@ ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.
 
 The above command extracts features defined in the parameter file defined in "-p" for the input images defined in "-i" in the regions defined in "-m" and "-r". The output is populated using the subject ID from "-n", modality information from "-t" and annotation label information from "-l" and saves the results in the path defined in "-o".
   
-  -# For more information on the defaults of the feature extraction and how to customize it, please see our [technical reference](tr_fe_defaults.html) page.
+  -# For more information on the defaults of the feature extraction and how to customize it, please see our <a href="tr_FeatureExtraction.html#tr_fe_defaults">technical reference</a> page.
   
   -# The output of Feature Extraction can be used to run the <a href="Training_Module.html">Training Module</a>.
 
