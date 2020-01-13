@@ -66,9 +66,7 @@ var NAVTREE =
       [ "Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients", "Science.html#phiEstimator", null ],
       [ "Prediction of Overall Survival in Glioblastoma Patients", "Science.html#survivalPredictor", null ],
       [ "Probability Maps of Potential Recurrence of Glioblastoma Tumors", "Science.html#recurrencePredictor", null ],
-      [ "Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer", "Science.html#libraPapers", [
-        [ "\\htmlonly", "Science.html#autotoc_md66", null ]
-      ] ]
+      [ "Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer", "Science.html#libraPapers", null ]
     ] ],
     [ "Technical Reference", "Technical_Reference.html", "Technical_Reference" ],
     [ "Download Instructions", "Download.html", null ],

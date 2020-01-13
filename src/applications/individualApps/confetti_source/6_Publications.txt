@@ -12,8 +12,11 @@ Information processing in medical imaging : proceedings of the . conference.
 --------------------------------------------------------------------
 
 --------------------------------------------------------------------
+
 \htmlonly
 <div align="right"><a href="Changelog.html"><b>Next (Changelog)<b></a>
 \endhtmlonly
+
 --------------------------------------------------------------------
+
 */

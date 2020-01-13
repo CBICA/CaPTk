@@ -455,11 +455,12 @@ Let’s say the name of your application is <b>yourPythonApp</b>. The following 
 
 --------
 
---------
+--------------------------------------------------------------------
+
 \htmlonly
 <div align="right"><a href="Download.html"><b>Next (Download)<b></a>
 \endhtmlonly
---------
 
+--------------------------------------------------------------------
 
 */
