@@ -8,6 +8,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
 
 - \subpage tr_FeatureExtraction "Feature Extraction"
 - \subpage tr_integration "Integrating your Application in CaPTk"
+- \subpage tr_sourceBuid "Building CaPTk from source"
 
 Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
 
@@ -27,6 +28,10 @@ For details, please see https://github.com/CBICA/CaPTk/blob/master/src/applicati
 \subsection tr_fe_def_lattice Lattice Feature Extraction Parameters
 
 For details, please see https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/2_params_default_lattice.csv.
+
+\subsection tr_fe_customization
+
+For details, please see https://github.com/CBICA/CaPTk/tree/master/src/applications/FeatureExtraction#the-parameter-file.
 
 \section tr_fe_batch Batch Mode
 
@@ -404,12 +409,13 @@ Ensure all dependencies are met before proceeding.
 
 Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org/software/bash/)). They will configure and build CaPTk using GNU Make (http://www.gnu.org/software/make/). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface or from PowerShell.
 
-Extract source files and create the build directory:
+An example of the list of commands to run to compile CaPTk and its dependencies:
 
 \verbatim
 git clone https://github.com/CBICA/CaPTk.git
-git lfs fetch --all # downloads all the precompiled binaries for different applications and Qt
+git lfs fetch --all # downloads all the precompiled binaries for different applications and Qt with the required installation options
 cd CaPTk
+git submodule update --init --recursive # this ensures all submodules are initialized and up-to-date
 mkdir build # this is where we will build all the binaries
 cd build
 cmake .. # configure the superbuild first - builds ITK, VTK and OpenCV based on specific Qt version which is downloaded
@@ -455,11 +461,12 @@ Let’s say the name of your application is <b>yourPythonApp</b>. The following 
 
 --------
 
---------
+--------------------------------------------------------------------
+
 \htmlonly
 <div align="right"><a href="Download.html"><b>Next (Download)<b></a>
 \endhtmlonly
---------
 
+--------------------------------------------------------------------
 
 */

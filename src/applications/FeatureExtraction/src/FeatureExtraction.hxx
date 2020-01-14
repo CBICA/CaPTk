@@ -1210,7 +1210,6 @@ void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImag
   }
   else if (m_QuantizationExtent == "ROI")
   {
-
     statisticsCalculatorToUse = m_statistics_local;
   }
 
@@ -1548,7 +1547,20 @@ void FeatureExtraction< TImage >::SetSelectedROIsAndLabels(std::vector< std::str
     for (size_t i = 0; i < roi.size(); i++)
     {
       m_roi.push_back(std::atoi(roi[i].c_str()));
-      m_roiLabels.push_back(roi_labels[i]);
+    }
+    if (roi.size() == roi_labels.size()) // use roi names, when defined
+    {
+      for (size_t i = 0; i < roi.size(); i++)
+      {
+        m_roiLabels.push_back(roi_labels[i]);
+      }
+    }
+    else // otherwise, populate with default string values
+    {
+      for (size_t i = 0; i < roi.size(); i++)
+      {
+        m_roiLabels.push_back(roi[i]);
+      }
     }
   }
   m_algorithmDone = false;
@@ -2130,7 +2142,7 @@ void FeatureExtraction< TImage >::Update()
       }
       else
       {
-        if (!m_patchFullImageComputation)
+        if (!m_patchFullImageComputation && (allROIs.size() > m_roi.size()))
         {
           j += m_roi.size();
         }
@@ -2929,27 +2941,16 @@ void FeatureExtraction< TImage >::Update()
         // write the above features into m_output
         if (m_outputVerticallyConcatenated)
         {
-          std::ofstream myfile;
-          myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
-
           cbica::stringReplace(currentPatientModalityROIFeatureFamilyFeature, "_", ",");
 
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Max" +
-            "," + currentMax + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Min" +
-            "," + currentMin + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Variance" +
-            "," + currentVar + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "StdDev" +
-            "," + currentStdDev + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Skewness" +
-            "," + currentSkew + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Kurtosis" +
-            "," + currentKurt + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Mean" +
-            "," + currentMean + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Median" +
-            "," + currentMedian + "," + "\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Max," + currentMax + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Min," + currentMin + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Variance," + currentVar + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "StdDev," + currentStdDev + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Skewness," + currentSkew + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Kurtosis," + currentKurt + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Mean," + currentMean + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Median," + currentMedian + ",\n";
         }
         else
         {
@@ -2975,7 +2976,7 @@ void FeatureExtraction< TImage >::Update()
       // write the features for training
       if (m_outputVerticallyConcatenated)
       {
-        if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
+        if (!cbica::isFile(m_outputFile) && m_LatticeFeatures.empty()) // if file is not present & no lattice features are extracted, write the CSV headers 
         {
           m_finalOutputToWrite = "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n" + m_finalOutputToWrite;
         }
