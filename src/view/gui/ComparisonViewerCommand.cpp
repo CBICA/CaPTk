@@ -88,7 +88,7 @@ void ComparisonViewerCommand::Execute(vtkObject *caller, unsigned long event, vo
 
       if (event == vtkCommand::EndPickEvent)
       {
-         if (!m_shapeBuffer.empty())
+        if (!m_shapeBuffer.empty())
         {
           this->SM->ActionAdded(m_shapeBuffer);
           m_shapeBuffer.clear();

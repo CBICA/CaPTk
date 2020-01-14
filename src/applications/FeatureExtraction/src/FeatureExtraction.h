@@ -287,7 +287,7 @@ public:
   */
   void SetOutputFilename(std::string filename)
   {
-    auto ext = cbica::getFilenameExtension(filename);
+    auto ext = cbica::getFilenameExtension(filename, false);
     if (cbica::isDir(filename))
     {
       m_outputPath = filename;
@@ -343,12 +343,18 @@ public:
   /**
   \brief Enable vertically-concatenated output in CSV
   */
-  void SetVerticallyConcatenatedOutput(bool flag) { m_outputVerticallyConcatenated = flag; }
+  void SetVerticallyConcatenatedOutput(bool flag) 
+  { 
+    m_outputVerticallyConcatenated = flag; 
+  }
 
   /**
   \brief Enable/disable feature map writing
   */
-  void SetWriteFeatureMaps(bool flag) { m_writeFeatureMaps = flag; };
+  void SetWriteFeatureMaps(bool flag) 
+  { 
+    m_writeFeatureMaps = flag; 
+  }
 
   /**
   \brief Get the ROIs that were selected for the current process as a vector of ints
@@ -752,7 +758,7 @@ private:
   bool m_fluxNeumannEnabled = false, m_zeroPaddingEnabled = false; //! the boundary conditions
   bool m_patchOnRoiEnabled = false; //! whether to pull the entire patch or only along the ROI
   bool m_patchBoundaryDisregarded = false; //! only considers patches with all pixels != 0
-  bool m_patchFullImageComputation = false; //! whether or not the entire image is to be considered for lattice computation or not
+  bool m_patchFullImageComputation = false; //! whether computations across the entire image need to happen in addition to lattice or not
   bool m_morphologicCalculateFeret = false; //! controls calculation of feret diameter
   typename TImageType::Pointer m_featureMapBaseImage; //! the feature map base: this is only used as the base image for the lattice feature maps
   std::map< std::string, // FeatureFamily_FeatureName
