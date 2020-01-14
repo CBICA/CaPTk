@@ -81,6 +81,7 @@ var NAVTREEINDEX0 =
 "seg_SNAP.html":[3,1,2],
 "tr_FeatureExtraction.html":[5,0],
 "tr_FeatureExtraction.html#tr_fe_batch":[5,0,1],
+"tr_FeatureExtraction.html#tr_fe_customization":[5,0,0,3],
 "tr_FeatureExtraction.html#tr_fe_def_lattice":[5,0,0,2],
 "tr_FeatureExtraction.html#tr_fe_def_main":[5,0,0,1],
 "tr_FeatureExtraction.html#tr_fe_defaults":[5,0,0],

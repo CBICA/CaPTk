@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.5.nonRelease.20191204" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.5.nonRelease.20190111" ref="index.html">
         <section title="Overview" ref="index.html">
           <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md112" />
           <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md113" />
@@ -95,6 +95,7 @@
         <section title="Defaults" ref="tr_FeatureExtraction.html#tr_fe_defaults">
           <section title="Main Default Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_main" />
           <section title="Lattice Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_lattice" />
+          <section title="tr_fe_customization" ref="tr_FeatureExtraction.html#tr_fe_customization" />
         </section>
         <section title="Batch Mode" ref="tr_FeatureExtraction.html#tr_fe_batch" />
         <section title="Extracted Features" ref="tr_FeatureExtraction.html#tr_fe_math" />
