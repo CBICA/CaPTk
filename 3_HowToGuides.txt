@@ -674,7 +674,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
--# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
+-# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), as well as the Edema (Label=2)
 -# Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
 -# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and EGFRvIII status (in second column, binarized values like 0 and 1) for training a new model, and age only for mutation detection of new patients. 
 -# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
@@ -711,7 +711,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 	-# A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInput -o C:/EGFRvIIIModel
+${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInputDirectory -o C:/EGFRvIIIInputModel
 \endverbatim
 
 - Use Existing Model
@@ -721,7 +721,7 @@ ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInput -o C
 	-# A pop-up window appears displaying the completion of result calculation. The window will also show the detected mutation status of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInput -m C:/EGFRvIIIModel -o C:/EGFRvIIIOutput
+${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInputDirectory -m C:/EGFRvIIIInputModel -o C:/EGFRvIIIOutputDirectory
 \endverbatim
 
 --------
