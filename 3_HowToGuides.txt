@@ -717,7 +717,7 @@ ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInputDirec
 - Use Existing Model
 	-# "Model Directory". Choose the directory of a saved model.
 	-# "Test Subjects". Select the input directory that follows the folder structure described above.
-	-# "Output". Select the output directory where a .csv file with the mutation status for all patients will be saved, and click on 'Confirm'.
+	-# "Output". Select the output directory where a .csv file with the mutation status for all patients will be saved, and click on 'Confirm'.The first and the second column of .csv will be subject's ID and distancce of the subject from the hyperplance of EGFRvIII model.
 	-# A pop-up window appears displaying the completion of result calculation. The window will also show the detected mutation status of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
@@ -754,7 +754,7 @@ This application provides an estimate of the pseudo-progression after radiothera
       - my_<b>radial</b>_file.nii.gz
       - my_<b>trace</b>_file.nii.gz
     -# PERFUSION
-      - my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number time points)
+      - my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number of time points)
       - my_<b>ph</b>_file.nii.gz
       - my_<b>psr</b>_file.nii.gz
       - my_<b>rcbv</b>_file.nii.gz
@@ -776,9 +776,9 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
-    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM. 
+    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM to load the DSC-4D images. 
 \verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionModelDirectory
+${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionInputModelDirectory
 \endverbatim
 
 	- Use existing model: 
@@ -789,7 +789,7 @@ ${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/Pseudoprogress
 		-# A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
 \verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionModelDirectory
+${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionInputModelDirectory
 \endverbatim
 
 <b>RESULT INTERPRETATION:</b>
