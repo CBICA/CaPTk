@@ -5445,10 +5445,6 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
   availableMemory = pages * page_size;
 #endif
 
-  // Print values
-  std::cout << "Images size: " << imagesSize << "\n";
-  std::cout << "Total RAM:   " << availableMemory << "\n";
-
   // Compare (0.05 is arbitrary, it allows images up to 400MB for a 8GB system)
   if (imagesSize > 0.05*availableMemory)
   {
