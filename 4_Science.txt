@@ -77,12 +77,14 @@ References:
 - A.D.Williams, A.So, M.Synnestvedt, C.M.Tewksbury, D.Kontos, M.K.Hsieh, L.Pantalone, E.F.Conant, M.Schnall, K.Dumon, N.Williams, J.Tchou. "Mammographic breast density decreases after bariatric surgery" Breast Cancer Res Treat. 165(3):565-572, 2017. DOI:10.1007/s10549-017-4361-y
 
 
---------
+--------------------------------------------------------------------
 
---------
+--------------------------------------------------------------------
+
 \htmlonly
 <div align="right"><a href="Technical_Reference.html"><b>Next (Technical References)<b></a></div>
 \endhtmlonly
---------
+
+--------------------------------------------------------------------
 
 */

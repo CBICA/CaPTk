@@ -472,9 +472,12 @@ int main(int argc, char** argv)
         algorithmRunner< ActualImageType >();
         cbica::deleteDir(m_tempFolderLocation);
       }
+      else
+      {
+        // otherwise, it actually is a 3D image
+        algorithmRunner< ImageType >();
+      }
 
-      // otherwise, it actually is a 3D image
-      algorithmRunner< ImageType >();
       break;
     }
     default:

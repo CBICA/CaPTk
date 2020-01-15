@@ -9,15 +9,15 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 	std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
 	std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
-	std::sort(subjectNames.begin(), subjectNames.end());
+  std::sort(subjectNames.begin(), subjectNames.end());
 
 	for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
 	{
 		std::string subjectPath = directoryname + "/" + subjectNames[sid];
 
-		std::string t1ceFilePath = "";
-		std::string t1FilePath = "";
-		std::string t2FilePath = "";
+		std::string t1ceFilePath    = "";
+		std::string t1FilePath      = "";
+		std::string t2FilePath      = "";
 		std::string t2FlairFilePath = "";
 		std::string axFilePath = "";
 		std::string faFilePath = "";
@@ -162,12 +162,13 @@ int EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory,
 	{
 		std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
     if(result[subjectID]>0)
-      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Mutation detected." << std::endl;
+      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) <<" Mutation detected." << std::endl;
     else
-      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Mutation not detected." << std::endl;
+      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Mutation not detected." << std::endl;
 	}
 	return EXIT_SUCCESS;
 }
+
 int PrepareNewEGFRvIIIPredictionModel(const std::string inputdirectory,const std::string outputdirectory)
 {
 	std::cout << "Module loaded: Prepare EGFRvIII Prediction Model." << std::endl;
@@ -181,6 +182,7 @@ int PrepareNewEGFRvIIIPredictionModel(const std::string inputdirectory,const std
 		objEGFRvIIIPredictor.PrepareNewEGFRvIIIPredictionModel(inputdirectory, QualifiedSubjects, outputdirectory);
 	return EXIT_SUCCESS;
 }
+
 int main(int argc, char **argv)
 {
 	cbica::CmdParser parser = cbica::CmdParser(argc, argv, "EGFRvIIIIndexPredictor");

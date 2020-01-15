@@ -156,7 +156,7 @@ for (int i = 0; i < NumberOfFeatures; i++)
     CurrentVariable->SetName(namefinal.c_str());
 
     for (size_t index = 0; index < NumberOfSamples; index++)
-      CurrentVariable->InsertNextValue(intensities[index][0]);
+      CurrentVariable->InsertNextValue(intensities[index][i]);
     datasetTable->AddColumn(CurrentVariable);
     pcaStatistics->SetColumnStatus(namefinal.c_str(), 1);
     counter++;
