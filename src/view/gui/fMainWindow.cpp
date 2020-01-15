@@ -5420,7 +5420,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
 
   /**** Check if the total size of the files is more than a percentage 
    *    of the available memory ****/
-  if isSizeOfLoadedFilesTooBig(files)
+  if (isSizeOfLoadedFilesTooBig(files))
   {
     ShowErrorMessage(
       "The images you are trying to load are too big to be handled by CaPTk given the available memory on the system.", 
