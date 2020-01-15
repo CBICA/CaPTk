@@ -5,6 +5,7 @@
 #include <QMetaType>
 #include <QStringList>
 #include <QFile>
+#include <QIODevice>
 #include "CaPTkEnums.h"
 #include "CaPTkDefines.h"
 
@@ -218,7 +219,7 @@ inline bool isSizeOfLoadedFilesTooBig(QStringList files, float maxPercentage = 0
 
   // Find total size of all files
   unsigned long long imagesSize = 0;
-  for (auto& file : files)
+  for (QString& file : files)
   {
     QFile qFile(file);
     if (qFile.open(QIODevice::ReadOnly)){
