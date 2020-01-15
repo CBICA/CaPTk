@@ -3,6 +3,8 @@
 #include <cmath>
 #include <string>
 #include <QMetaType>
+#include <QStringList>
+#include <QFile>
 #include "CaPTkEnums.h"
 #include "CaPTkDefines.h"
 
