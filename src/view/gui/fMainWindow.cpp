@@ -840,7 +840,7 @@ fMainWindow::fMainWindow()
   //connect(drawingPanel, SIGNAL(FillButtonClicked(int)), this, SLOT(FillLabel(int)));
   connect(drawingPanel, SIGNAL(shapesButtonClicked(int)), this, SLOT(updateDrawMode(int)));
   connect(drawingPanel, SIGNAL(CurrentDrawingLabelChanged(int)), this, SLOT(updateDrawMode()));
-  connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity(int)));
+  connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity()));
   connect(drawingPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
   connect(drawingPanel, SIGNAL(sig_ChangeLabelValuesClicked(const std::string, const std::string)), this, SLOT(CallLabelValuesChange(const std::string, const std::string)));
 
@@ -1014,7 +1014,7 @@ fMainWindow::~fMainWindow()
     if (!maskImage.empty())
     {
       this->readMaskFile(maskImage);
-      this->ChangeMaskOpacity(maskOpacity * 10);
+      this->ChangeMaskOpacity(maskOpacity);
     }
     if (!tumorPointFile.empty())
     {
@@ -5540,7 +5540,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       }
     }
   }
-  RefreshMaskOpacity(); // make sure desired mask opacity is set for drawing/etc
+  ChangeMaskOpacity(); // make sure desired mask opacity is set for drawing/etc
   updateProgress(0, "Loading complete", 100);
 }
 
@@ -8776,28 +8776,25 @@ void fMainWindow::ChangeBrushSize(int size)
   updateDrawMode();
 }
 
-void fMainWindow::RefreshMaskOpacity() // multiLabel uncomment this function
+void fMainWindow::ChangeMaskOpacity() // multiLabel uncomment this function
 {
-  double tempOpacity = mSelectedMaskOpacity * 0.1;
+  // If passed with no parameter, get the value from the drawing panel
+  double tempOpacity = drawingPanel->getCurrentOpacity() * 0.1; // drawingPanel selected opacity is an int (1-10), convert to float(0.1 - 1.0)
+  ChangeMaskOpacity(tempOpacity);
+}
+
+void fMainWindow::ChangeMaskOpacity(const float newOpacity)
+{
   for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
   {
     for (size_t j = 0; j < 3; j++)
     {
-      this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = tempOpacity;
-      this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(tempOpacity);
-      this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
+        this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = newOpacity;
+        this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(newOpacity);
+        this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
     }
   }
-  if (!this->mSlicerManagers.empty()) { // prevent crash if no images are loaded
-    this->mSlicerManagers[0]->Render();
-  }
-}
-
-// need to set the selected opacity so that it persists when images are closed
-void fMainWindow::ChangeMaskOpacity(int newMaskOpacity)
-{
-    mSelectedMaskOpacity = newMaskOpacity;
-    RefreshMaskOpacity();
+  UpdateRenderWindows(); // reflect the new value
 }
 
 void fMainWindow::ChangeDrawingLabel(int drawingLabel) // multiLabel uncomment this function
