@@ -5420,43 +5420,28 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
 
   /**** Check if the total size of the files is more than a percentage 
    *    of the available memory ****/
-
-  // Find total size of all files
-  unsigned long long imagesSize = 0;
-  for (auto& file : files)
+  if (isSizeOfLoadedFilesTooBig(files, loggerFile))
   {
-    QFile qFile(file);
-    if (qFile.open(QIODevice::ReadOnly)){
-        imagesSize += qFile.size();  //when file does open. This size is in bytes
-        qFile.close();
+    QMessageBox msgBox;
+    msgBox.setText("The images you are trying to load are too big to be handled by CaPTk given the available memory on the system.");
+    msgBox.setInformativeText("Do you want to proceed anyway?");
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Cancel);
+    
+    int ret = msgBox.exec();
+    
+    switch (ret) 
+    {
+      case QMessageBox::Ok:
+          // Ok was clicked
+          break;
+      case QMessageBox::Cancel:
+          // Cancel was clicked
+          return;
+      default:
+          // Should never be reached
+          break;
     }
-  }
-
-  // Find total available memory (based on StackOverflow 2513505, Travis Gockel answer)
-  unsigned long long availableMemory;
-#ifdef _WIN32
-  MEMORYSTATUSEX status;
-  status.dwLength = sizeof(status);
-  GlobalMemoryStatusEx(&status);
-  availableMemory = status.ullTotalPhys;
-#else
-  long pages = sysconf(_SC_PHYS_PAGES);
-  long page_size = sysconf(_SC_PAGE_SIZE);
-  availableMemory = pages * page_size;
-#endif
-
-  // Print values
-  std::cout << "Images size: " << imagesSize << "\n";
-  std::cout << "Total RAM:   " << availableMemory << "\n";
-
-  // Compare (0.05 is arbitrary, it allows images up to 400MB for a 8GB system)
-  if (imagesSize > 0.05*availableMemory)
-  {
-    ShowErrorMessage(
-      "The images you are trying to load are too big to be handled by CaPTk given the available memory on the system.", 
-      this
-    );
-    return;
   }
 
   /**** Image Loading ****/
