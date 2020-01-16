@@ -68,6 +68,8 @@
 
 //#include "DicomSeriesReader.h"
 
+#include <QFile>
+
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
@@ -5425,6 +5427,34 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       return;
     }
   }
+
+  /**** Check if the total size of the files is more than a percentage 
+   *    of the available memory ****/
+  if (isSizeOfLoadedFilesTooBig(files, loggerFile))
+  {
+    QMessageBox msgBox;
+    msgBox.setText("The images you are trying to load are too big to be handled by CaPTk given the available memory on the system.");
+    msgBox.setInformativeText("Do you want to proceed anyway?");
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Cancel);
+    
+    int ret = msgBox.exec();
+    
+    switch (ret) 
+    {
+      case QMessageBox::Ok:
+          // Ok was clicked
+          break;
+      case QMessageBox::Cancel:
+          // Cancel was clicked
+          return;
+      default:
+          // Should never be reached
+          break;
+    }
+  }
+
+  /**** Image Loading ****/
 
   int i = 0, fileSizeCheck = files.size() + 1;
   if (mSlicerManagers.empty())
