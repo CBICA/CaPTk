@@ -567,8 +567,8 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
       necoreIndices.push_back(imIt.GetIndex());
     else if (imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::EDEMA)
       edemaIndices.push_back(imIt.GetIndex());
-    else if (imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::VENT)
-      ventIndices.push_back(imIt.GetIndex());
+    //else if (imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::VENT)
+    //  ventIndices.push_back(imIt.GetIndex());
     else
     {
     }
@@ -733,9 +733,6 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   }
   VectorDouble VolumetricFeatures_Segmentation = GetVolumetricFeatures(edemaIndices.size(), etumorIndices.size(), necoreIndices.size(), brainIndices.size());
 
-
-
-
   etumorIndices.clear();
   necoreIndices.clear();
   tumorIndices.clear();
@@ -748,11 +745,11 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   atlimIt.GoToBegin();
   while (!atlimIt.IsAtEnd())
   {
-    if (atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::TUMOR)
-      etumorIndices.push_back(atlimIt.GetIndex());
-    else if (atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
-      necoreIndices.push_back(atlimIt.GetIndex());
-    else if (atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::EDEMA)
+    //if (atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::TUMOR)
+    //  etumorIndices.push_back(atlimIt.GetIndex());
+    //else if (atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
+    //  necoreIndices.push_back(atlimIt.GetIndex());
+    if (atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::EDEMA)
       edemaIndices.push_back(atlimIt.GetIndex());
     else if (atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::VENT)
       ventIndices.push_back(atlimIt.GetIndex());
@@ -761,8 +758,8 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
     }
     if (atlimIt.Get() > CAPTK::GLISTR_OUTPUT_LABELS::ALL)
       brainIndices.push_back(atlimIt.GetIndex());
-    if (atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::TUMOR || atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
-      tumorIndices.push_back(atlimIt.GetIndex());
+    //if (atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::TUMOR || atlimIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
+    //  tumorIndices.push_back(atlimIt.GetIndex());
     ++atlimIt;
   }
   RevisedImages = RevisedTumorArea<ImageType>(atlasImagePointer,10);
@@ -770,9 +767,9 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   etumorImage = RevisedImages[1];
   ncrImage = RevisedImages[2];
 
-  etumorIndices.clear();
-  necoreIndices.clear();
-  tumorIndices.clear();
+  //etumorIndices.clear();
+  //necoreIndices.clear();
+  //tumorIndices.clear();
   
 
   IteratorType ncrAtlasIt(ncrImage, ncrImage->GetLargestPossibleRegion());

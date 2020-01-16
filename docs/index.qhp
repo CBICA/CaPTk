@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.5.nonRelease.20191204" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.5.nonRelease.20200114" ref="index.html">
         <section title="Overview" ref="index.html">
           <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md112" />
           <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md113" />
@@ -80,76 +80,67 @@
         <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
         <section title="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
         <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
-        <section title="Miscellaneous: Training Module" ref="Training_Module.html">
-          <section title="\htmlonly" ref="Training_Module.html#autotoc_md55" />
+        <section title="Miscellaneous: Training Module" ref="Training_Module.html" />
+      </section>
+      <section title="Utilities (CLI only)" ref="ht_utilities.html" />
+    </section>
+    <section title="Scientific Findings using CaPTk" ref="Science.html">
+      <section title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients" ref="Science.html#phiEstimator" />
+      <section title="Prediction of Overall Survival in Glioblastoma Patients" ref="Science.html#survivalPredictor" />
+      <section title="Probability Maps of Potential Recurrence of Glioblastoma Tumors" ref="Science.html#recurrencePredictor" />
+      <section title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer" ref="Science.html#libraPapers" />
+    </section>
+    <section title="Technical Reference" ref="Technical_Reference.html">
+      <section title="Feature Extraction" ref="tr_FeatureExtraction.html">
+        <section title="Defaults" ref="tr_FeatureExtraction.html#tr_fe_defaults">
+          <section title="Main Default Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_main" />
+          <section title="Lattice Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_lattice" />
+          <section title="tr_fe_customization" ref="tr_FeatureExtraction.html#tr_fe_customization" />
         </section>
+        <section title="Batch Mode" ref="tr_FeatureExtraction.html#tr_fe_batch" />
+        <section title="Extracted Features" ref="tr_FeatureExtraction.html#tr_fe_math" />
+      </section>
+      <section title="Integrating your Application in CaPTk" ref="tr_integration.html">
+        <section title="Building CaPTk from Sources" ref="tr_integration.html#tr_sourceBuid">
+          <section title="Prerequisites" ref="tr_integration.html#tr_sb_prerequisites" />
+          <section title="Build" ref="tr_integration.html#tr_sb_actualBuild" />
+        </section>
+        <section title="Integrating your C++ application into CaPTk" ref="tr_integration.html#tr_cppIntegration" />
+        <section title="Integrating your Python application into CaPTk" ref="tr_integration.html#tr_pyIntegration" />
       </section>
     </section>
-    <section title="Utilities (CLI only)" ref="ht_utilities.html" />
-  </section>
-  <section title="Scientific Findings using CaPTk" ref="Science.html">
-    <section title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients" ref="Science.html#phiEstimator" />
-    <section title="Prediction of Overall Survival in Glioblastoma Patients" ref="Science.html#survivalPredictor" />
-    <section title="Probability Maps of Potential Recurrence of Glioblastoma Tumors" ref="Science.html#recurrencePredictor" />
-    <section title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer" ref="Science.html#libraPapers">
-      <section title="\htmlonly" ref="Science.html#autotoc_md66" />
+    <section title="Download Instructions" ref="Download.html">
+      <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following paper:" ref="Download.html#autotoc_md76" />
     </section>
+    <section title="License" ref="Download.html#autotoc_md78" />
   </section>
-  <section title="Technical Reference" ref="Technical_Reference.html">
-    <section title="Feature Extraction" ref="tr_FeatureExtraction.html">
-      <section title="Defaults" ref="tr_FeatureExtraction.html#tr_fe_defaults">
-        <section title="Main Default Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_main" />
-        <section title="Lattice Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_lattice" />
-      </section>
-      <section title="Batch Mode" ref="tr_FeatureExtraction.html#tr_fe_batch" />
-      <section title="Extracted Features" ref="tr_FeatureExtraction.html#tr_fe_math" />
-    </section>
-    <section title="Integrating your Application in CaPTk" ref="tr_integration.html">
-      <section title="Building CaPTk from Sources" ref="tr_integration.html#tr_sourceBuid">
-        <section title="Prerequisites" ref="tr_integration.html#tr_sb_prerequisites" />
-        <section title="Build" ref="tr_integration.html#tr_sb_actualBuild" />
-      </section>
-      <section title="Integrating your C++ application into CaPTk" ref="tr_integration.html#tr_cppIntegration" />
-      <section title="Integrating your Python application into CaPTk" ref="tr_integration.html#tr_pyIntegration">
-        <section title="\htmlonly" ref="tr_integration.html#autotoc_md74" />
-      </section>
-    </section>
-  </section>
-  <section title="Download Instructions" ref="Download.html">
-    <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following paper:" ref="Download.html#autotoc_md76" />
-  </section>
-  <section title="License" ref="Download.html#autotoc_md78" />
-  <section title="\htmlonly" ref="Download.html#autotoc_md81" />
-</section>
 </section>
 <section title="Installation Instructions" ref="Installation.html">
-<section title="Windows" ref="Installation.html#autotoc_md82" />
-<section title="Linux" ref="Installation.html#autotoc_md83" />
-<section title="macOS" ref="Installation.html#autotoc_md84" />
-<section title="\htmlonly" ref="Installation.html#autotoc_md87" />
+  <section title="Windows" ref="Installation.html#autotoc_md82" />
+  <section title="Linux" ref="Installation.html#autotoc_md83" />
+  <section title="macOS" ref="Installation.html#autotoc_md84" />
 </section>
 </section>
 <section title="Changelog: Release Notes" ref="ReleaseNotes.html">
 <section title="Known Issues" ref="ReleaseNotes.html#autotoc_md88" />
 <section title="Older Versions" ref="ReleaseNotes.html#autotoc_md89">
-<section title="1.7.3" ref="ReleaseNotes.html#autotoc_md90" />
-<section title="1.7.2" ref="ReleaseNotes.html#autotoc_md91" />
-<section title="1.7.1" ref="ReleaseNotes.html#autotoc_md92" />
-<section title="1.7.0" ref="ReleaseNotes.html#autotoc_md93" />
-<section title="1.6.1" ref="ReleaseNotes.html#autotoc_md94" />
-<section title="1.6.0" ref="ReleaseNotes.html#autotoc_md95" />
-<section title="1.5.0" ref="ReleaseNotes.html#autotoc_md96" />
-<section title="1.3.0" ref="ReleaseNotes.html#autotoc_md97" />
-<section title="1.2.0" ref="ReleaseNotes.html#autotoc_md98" />
-<section title="1.1.0" ref="ReleaseNotes.html#autotoc_md99" />
-<section title="1.0.1" ref="ReleaseNotes.html#autotoc_md100" />
-<section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md101" />
-<section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md102" />
-<section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md103" />
-<section title="0.0.2" ref="ReleaseNotes.html#autotoc_md104" />
-<section title="0.0.1" ref="ReleaseNotes.html#autotoc_md105" />
+  <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md90" />
+  <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md91" />
+  <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md92" />
+  <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md93" />
+  <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md94" />
+  <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md95" />
+  <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md96" />
+  <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md97" />
+  <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md98" />
+  <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md99" />
+  <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md100" />
+  <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md101" />
+  <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md102" />
+  <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md103" />
+  <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md104" />
+  <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md105" />
 </section>
-<section title="\htmlonly" ref="ReleaseNotes.html#autotoc_md108" />
 </section>
 </section>
 <section title="People (Credits)" ref="People.html">
