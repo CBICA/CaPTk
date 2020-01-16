@@ -70,14 +70,6 @@
 
 #include <QFile>
 
-// For getting the total amount of installed ram
-#ifdef _WIN32
-#include <windows.h>
-#else
-// For both linux + mac
-#include <unistd.h>
-#endif
-
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {

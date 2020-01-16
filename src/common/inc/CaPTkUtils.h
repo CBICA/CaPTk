@@ -10,6 +10,14 @@
 #include "CaPTkDefines.h"
 #include "cbicaLogging.h"
 
+// For getting the total amount of installed ram
+#ifdef _WIN32
+#include <windows.h>
+#else
+// For both linux + mac
+#include <unistd.h>
+#endif
+
 //! Structure to define a point value to check if it is defined in the image or not
 struct PointVal
 {
