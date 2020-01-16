@@ -1056,9 +1056,14 @@ public slots:
   void ChangeDrawingLabel(int drawingLabel); // multiLabel uncomment this function
 
   /**
-  \brief Changes the opacity in the drawing
+  \brief Changes the selected opacity to draw with, pulling directly from the opacity selected in the drawing panel
   */
-  void ChangeMaskOpacity(int newMaskOpacity); // multiLabel uncomment this function
+  void ChangeMaskOpacity(); // multiLabel uncomment this function
+
+  /**
+  \brief Changes the selected opacity to display by input of a number (float).
+  */
+  void ChangeMaskOpacity(float newOpacity);
 
   /**
   \brief Checks whether required images are present for the recurrence estimation application
