@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.5.nonRelease.20190111</span>
+   &#160;<span id="projectnumber">1.7.5.nonRelease.20200114</span>
    </div>
   </td>
  </tr>
@@ -83,7 +83,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Pseudoprogression.html','
 </ul>
 </li>
 <li>PERFUSION<ul>
-<li>my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number time points)</li>
+<li>my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number of time points)</li>
 <li>my_<b>ph</b>_file.nii.gz</li>
 <li>my_<b>psr</b>_file.nii.gz</li>
 <li>my_<b>rcbv</b>_file.nii.gz</li>
@@ -121,7 +121,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Pseudoprogression.html','
 <li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around.</li>
 </ul>
 <ol type="1">
-<li>NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM. <pre class="fragment">${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionModelDirectory
+<li>NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM to load the DSC-4D images. <pre class="fragment">${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionInputModelDirectory
 </pre></li>
 </ol>
 </li>
@@ -133,7 +133,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Pseudoprogression.html','
 <li>A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).</li>
 </ol>
 <ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionModelDirectory
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionInputModelDirectory
 </pre></li>
 </ul>
 </li>
