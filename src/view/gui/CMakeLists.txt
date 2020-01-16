@@ -52,6 +52,7 @@ SET( GUI
   fSBRTAnalysisDialog
   fTexturePipelineDialog
   AppearancePage
+  DragAndDropSharingDockWidget
   #fSegmentationPanel
   #fHelpAppDialog
 )
