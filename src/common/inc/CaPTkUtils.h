@@ -3,8 +3,20 @@
 #include <cmath>
 #include <string>
 #include <QMetaType>
+#include <QStringList>
+#include <QFile>
+#include <QIODevice>
 #include "CaPTkEnums.h"
 #include "CaPTkDefines.h"
+#include "cbicaLogging.h"
+
+// For getting the total amount of installed ram
+#ifdef _WIN32
+#include <windows.h>
+#else
+// For both linux + mac
+#include <unistd.h>
+#endif
 
 //! Structure to define a point value to check if it is defined in the image or not
 struct PointVal
@@ -200,6 +212,61 @@ inline int guessImageType(const std::string &fileName)
 inline bool isExtensionSupported(const std::string inputExtension)
 {
   if ((inputExtension == IMG_EXT || inputExtension == NII_EXT || inputExtension == NII_GZ_EXT))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+/** \brief Find total available memory (based on StackOverflow 2513505, Travis Gockel answer) */
+inline unsigned long long getTotalInstalledMemory()
+{
+#ifdef _WIN32
+  MEMORYSTATUSEX status;
+  status.dwLength = sizeof(status);
+  GlobalMemoryStatusEx(&status);
+  return status.ullTotalPhys;
+#else
+  long pages = sysconf(_SC_PHYS_PAGES);
+  long page_size = sysconf(_SC_PAGE_SIZE);
+  return pages * page_size;
+#endif
+}
+
+/** \brief Check if the total size of the files is more than a 
+ * percentage of the available memory
+ * */
+inline bool isSizeOfLoadedFilesTooBig(QStringList files, std::string loggerFile = "", 
+                               float maxPercentage = 0.05)
+{
+  // Find total size of all files
+  unsigned long long imagesSize = 0;
+  for (QString& file : files)
+  {
+    QFile qFile(file);
+    if (qFile.open(QIODevice::ReadOnly)){
+        imagesSize += qFile.size();  //when file does open. This size is in bytes
+        qFile.close();
+    }
+  }
+
+  /**** Get total amount of ram ****/
+  unsigned long long availableMemory = getTotalInstalledMemory();
+
+  // Log values
+  if (loggerFile != "")
+  {
+    cbica::Logging(loggerFile, 
+      "Images size: " + std::to_string(imagesSize));
+    cbica::Logging(loggerFile, 
+      "Total RAM: " + std::to_string(availableMemory));
+  }
+
+  // Compare (maxPercentage is arbitrary, default=0.05 it allows images up to 400MB for a 8GB system)
+  if (imagesSize > maxPercentage*availableMemory)
   {
     return true;
   }
