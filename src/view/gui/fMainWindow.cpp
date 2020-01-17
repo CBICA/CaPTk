@@ -814,10 +814,6 @@ fMainWindow::fMainWindow()
   connect(&fetalbrainpanel, SIGNAL(drawlinear()), this, SLOT(FetalBrain_Predict()));
   connect(&fetalbrainpanel, SIGNAL(TrainNewFetalModel(std::string, std::string)), this, SLOT(FetalBrain_TrainNewModel(const std::string &, const std::string &)));
 
-
-  connect(m_imagesTable, SIGNAL(itemSelectionChanged()), this, SLOT(DisplayChanged()));
-  connect(m_imagesTable, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(DisplayChanged(QTableWidgetItem*)));
-
   connect(imagesPanel, SIGNAL(sigImageTableSelectionChanged()), this, SLOT(DisplayChanged()));
 
   connect(windowSpinBox, SIGNAL(editingFinished()), this, SLOT(WindowLevelEdited()));
@@ -840,7 +836,7 @@ fMainWindow::fMainWindow()
   //connect(drawingPanel, SIGNAL(FillButtonClicked(int)), this, SLOT(FillLabel(int)));
   connect(drawingPanel, SIGNAL(shapesButtonClicked(int)), this, SLOT(updateDrawMode(int)));
   connect(drawingPanel, SIGNAL(CurrentDrawingLabelChanged(int)), this, SLOT(updateDrawMode()));
-  connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity(int)));
+  connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity()));
   connect(drawingPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
   connect(drawingPanel, SIGNAL(sig_ChangeLabelValuesClicked(const std::string, const std::string)), this, SLOT(CallLabelValuesChange(const std::string, const std::string)));
 
@@ -1014,7 +1010,7 @@ fMainWindow::~fMainWindow()
     if (!maskImage.empty())
     {
       this->readMaskFile(maskImage);
-      this->ChangeMaskOpacity(maskOpacity * 10);
+      this->ChangeMaskOpacity(maskOpacity);
     }
     if (!tumorPointFile.empty())
     {
@@ -5394,6 +5390,28 @@ void fMainWindow::overlayChanged(QTableWidgetItem *clickedItem)
 
 void fMainWindow::openImages(QStringList files, bool callingFromCmd)
 {
+	int ndirs = 0;
+	bool hasDir = this->hasDirectories(files, ndirs);
+
+	//! captk doesn't load directories
+	//! in case the user loaded multiple files, with some directories
+	//! we skip the directories and continue with loading the files after
+	//! showing a message
+	if (hasDir && !files.isEmpty())
+	{
+		QMessageBox msgbox;
+		msgbox.setText("CaPTk cannot load folders. Skipping folders and proceeding.");
+		int ret = msgbox.exec();
+	}
+	//! in case the user loaded directory(ies) only
+	//! we show a message and open the file load dialog
+	else if (hasDir && files.isEmpty())
+	{
+		QMessageBox msgbox;
+		msgbox.setText("CaPTk cannot load folders. Please load valid images.");
+		int ret = msgbox.exec();
+	}
+
   if (files.isEmpty())
   {
     if (!callingFromCmd)
@@ -5540,7 +5558,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       }
     }
   }
-
+  ChangeMaskOpacity(); // make sure desired mask opacity is set for drawing/etc
   updateProgress(0, "Loading complete", 100);
 }
 
@@ -5568,7 +5586,9 @@ void fMainWindow::openDicomImages(QString dir)
   auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(dir.toStdString());
   if (!currentImage)
   {
-    ShowMessage("Dicom Load Failed");
+	  ShowErrorMessage("Dicom load failed. CaPTk only supports a limited DICOM protocols \
+ for MR, CT and MG modalities. Please consider converting the dataset to Nifti \
+ before loading.",this);
     return;
   }
   SlicerManager* imageManager = new SlicerManager(3, mLandmarks, mSeedPoints, mTissuePoints);
@@ -8776,19 +8796,25 @@ void fMainWindow::ChangeBrushSize(int size)
   updateDrawMode();
 }
 
-void fMainWindow::ChangeMaskOpacity(int newMaskOpacity) // multiLabel uncomment this function
+void fMainWindow::ChangeMaskOpacity() // multiLabel uncomment this function
 {
-  double tempOpacity = newMaskOpacity * 0.1;
+  // If passed with no parameter, get the value from the drawing panel
+  double tempOpacity = drawingPanel->getCurrentOpacity() * 0.1; // drawingPanel selected opacity is an int (1-10), convert to float(0.1 - 1.0)
+  ChangeMaskOpacity(tempOpacity);
+}
+
+void fMainWindow::ChangeMaskOpacity(const float newOpacity)
+{
   for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
   {
     for (size_t j = 0; j < 3; j++)
     {
-      this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = tempOpacity;
-      this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(tempOpacity);
-      this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
+        this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = newOpacity;
+        this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(newOpacity);
+        this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
     }
   }
-  this->mSlicerManagers[0]->Render();
+  UpdateRenderWindows(); // reflect the new value
 }
 
 void fMainWindow::ChangeDrawingLabel(int drawingLabel) // multiLabel uncomment this function
@@ -9969,6 +9995,26 @@ std::vector< fMainWindow::ActionAndName >fMainWindow::populateStringListInMenu(c
   //}
 
   return returnVector;
+}
+
+bool fMainWindow::hasDirectories(QStringList &files, int &nDirs)
+{
+	int nfiles = files.size();
+	bool hasDir = false;
+	QStringList::iterator itr;
+
+	//! iterating over all loaded files(can be multiple)
+	//! to check if there are directories
+	for (itr = files.begin(); itr != files.end(); ++itr)
+	{
+		if (QFileInfo(*itr).isDir())
+		{
+			hasDir = true;
+			nDirs++;
+			files.erase(itr);
+		}
+	}
+	return hasDir;
 }
 
 void fMainWindow::OnPreferencesMenuClicked()

@@ -26,15 +26,16 @@
     <title>Frequently Asked Questions</title>
     <filename>FAQ</filename>
     <docanchor file="FAQ.html" title="Which platforms are supported by CaPTk installers?">gs_FAQ_1</docanchor>
-    <docanchor file="FAQ.html" title="How do I run CaPTk Applications from the Command Line?">gs_FAQ_2</docanchor>
-    <docanchor file="FAQ.html" title="What are the OpenGL requirements to run CaPTk?">gs_FAQ_3</docanchor>
-    <docanchor file="FAQ.html" title="What if I am having issues with the Linux Installer?">gs_FAQ_4</docanchor>
-    <docanchor file="FAQ.html" title="FUSE Issues">gs_FAQ_4_1</docanchor>
-    <docanchor file="FAQ.html" title="GLIBCXX or GLIBC Issues">gs_FAQ_4_2</docanchor>
-    <docanchor file="FAQ.html" title="Is there a minimum recommended screen resolution for running CaPTk?">gs_FAQ_5</docanchor>
-    <docanchor file="FAQ.html" title="Where can I find the CaPTk Docker Image?">gs_FAQ_6</docanchor>
-    <docanchor file="FAQ.html" title="How do I run the CaPTk Docker Image to show the interface?">gs_FAQ_7</docanchor>
-    <docanchor file="FAQ.html" title="What if I am having an issue not listed here?">gs_FAQ_8</docanchor>
+    <docanchor file="FAQ.html" title="What DICOM images are currently supported by CaPTk?">gs_FAQ_2</docanchor>
+    <docanchor file="FAQ.html" title="How do I run CaPTk Applications from the Command Line?">gs_FAQ_3</docanchor>
+    <docanchor file="FAQ.html" title="What are the OpenGL requirements to run CaPTk?">gs_FAQ_4</docanchor>
+    <docanchor file="FAQ.html" title="What if I am having issues with the Linux Installer?">gs_FAQ_5</docanchor>
+    <docanchor file="FAQ.html" title="FUSE Issues">gs_FAQ_5_1</docanchor>
+    <docanchor file="FAQ.html" title="GLIBCXX or GLIBC Issues">gs_FAQ_5_2</docanchor>
+    <docanchor file="FAQ.html" title="Is there a minimum recommended screen resolution for running CaPTk?">gs_FAQ_6</docanchor>
+    <docanchor file="FAQ.html" title="Where can I find the CaPTk Docker Image?">gs_FAQ_7</docanchor>
+    <docanchor file="FAQ.html" title="How do I run the CaPTk Docker Image to show the interface?">gs_FAQ_8</docanchor>
+    <docanchor file="FAQ.html" title="What if I am having an issue not listed here?">gs_FAQ_9</docanchor>
   </compound>
   <compound kind="page">
     <name>How_To_Guides</name>
