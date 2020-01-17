@@ -162,9 +162,9 @@ int EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory,
 	{
 		std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
     if(result[subjectID]>0)
-      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) <<" Mutation detected." << std::endl;
+      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) <<" Mutant." << std::endl;
     else
-      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Mutation not detected." << std::endl;
+      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Wildtype." << std::endl;
 	}
 	return EXIT_SUCCESS;
 }
