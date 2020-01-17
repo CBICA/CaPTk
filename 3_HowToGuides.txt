@@ -334,7 +334,7 @@ References:
 ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
 \endverbatim
   
-  -# Batch processing is also available (for more details, please see the relevant [technical reference](tr_fe_batch.html) page):
+  -# Batch processing is also available (for more details, please see the relevant <a href="tr_FeatureExtraction.html#tr_fe_batch">technical reference</a> page):
 \verbatim
 ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv
 \endverbatim
@@ -346,7 +346,7 @@ ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.
 
 The above command extracts features defined in the parameter file defined in "-p" for the input images defined in "-i" in the regions defined in "-m" and "-r". The output is populated using the subject ID from "-n", modality information from "-t" and annotation label information from "-l" and saves the results in the path defined in "-o".
   
-  -# For more information on the defaults of the feature extraction and how to customize it, please see our [technical reference](tr_fe_defaults.html) page.
+  -# For more information on the defaults of the feature extraction and how to customize it, please see our <a href="tr_FeatureExtraction.html#tr_fe_defaults">technical reference</a> page.
   
   -# The output of Feature Extraction can be used to run the <a href="Training_Module.html">Training Module</a>.
 
@@ -674,7 +674,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
--# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
+-# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), as well as the Edema (Label=2)
 -# Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
 -# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and EGFRvIII status (in second column, binarized values like 0 and 1) for training a new model, and age only for mutation detection of new patients. 
 -# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
@@ -711,17 +711,17 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 	-# A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInput -o C:/EGFRvIIIModel
+${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInputDirectory -o C:/EGFRvIIIInputModel
 \endverbatim
 
 - Use Existing Model
 	-# "Model Directory". Choose the directory of a saved model.
 	-# "Test Subjects". Select the input directory that follows the folder structure described above.
-	-# "Output". Select the output directory where a .csv file with the mutation status for all patients will be saved, and click on 'Confirm'.
+	-# "Output". Select the output directory where a .csv file with the mutation status for all patients will be saved, and click on 'Confirm'.The first and the second column of .csv will be subject's ID and distancce of the subject from the hyperplance of EGFRvIII model.
 	-# A pop-up window appears displaying the completion of result calculation. The window will also show the detected mutation status of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInput -m C:/EGFRvIIIModel -o C:/EGFRvIIIOutput
+${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInputDirectory -m C:/EGFRvIIIInputModel -o C:/EGFRvIIIOutputDirectory
 \endverbatim
 
 --------
@@ -754,7 +754,7 @@ This application provides an estimate of the pseudo-progression after radiothera
       - my_<b>radial</b>_file.nii.gz
       - my_<b>trace</b>_file.nii.gz
     -# PERFUSION
-      - my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number time points)
+      - my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number of time points)
       - my_<b>ph</b>_file.nii.gz
       - my_<b>psr</b>_file.nii.gz
       - my_<b>rcbv</b>_file.nii.gz
@@ -776,9 +776,9 @@ This application provides an estimate of the pseudo-progression after radiothera
 		-# Click on 'Confirm'.
 		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
-    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM. 
+    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM to load the DSC-4D images. 
 \verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionModelDirectory
+${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionInputModelDirectory
 \endverbatim
 
 	- Use existing model: 
@@ -789,7 +789,7 @@ ${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/Pseudoprogress
 		-# A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
 \verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionModelDirectory
+${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionInputModelDirectory
 \endverbatim
 
 <b>RESULT INTERPRETATION:</b>
@@ -1162,11 +1162,13 @@ ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.c
 <b>n</b> is the configuration type (-n 1 for cross-validation, -n 2 for split train-test, -n 3 for training only, -n 4 for testing only)
 <b>k</b> is the # of folds for cross-validation configuration, and size of train dataset for split train-test configuration
 
---------
+--------------------------------------------------------------------
+
 \htmlonly
 <div align="right"><a href="Science.html"><b>Next (Scientific Findings using CaPTk)<b></a></div>
 \endhtmlonly
---------
+
+--------------------------------------------------------------------
 
 */
 

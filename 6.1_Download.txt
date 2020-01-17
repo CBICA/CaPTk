@@ -4,20 +4,9 @@
 
 Visit our <b>Download Page</b> hosted in NIH-supported NITRC (https://www.nitrc.org/frs/?group_id=1059), to download the CaPTk <b>source code</b> and <b>binaries</b>.
 
-CaPTk is currently distributed in the form of pre-compiled (executable) Windows installer, as well as in the form of its source code. We are actively working on producing pre-compiled binaries for Linux and macOS machines too. The Windows executable package contains all required dependencies and does not need administrative privileges for installation.
+CaPTk is currently distributed in the form of pre-compiled (executable) Windows, Linux (compiled on Ubuntu 16.04) and macOS (compiled on 10.13) installers with all dependencies integrated in the package.
 
-The Linux executable assumes Qt 4.8.x installed on the system and in the PATH and was built using GCC 4.8.6 (default with Ubuntu 14.04); the custom path for installation can be specified using the following command: 
-
-\verbatim
-$package --target $desiredInstallDir
-\endverbatim
-
-<b>NOTE:</b> For Linux users, the following packages are needed to install the binary: <b>wget zip</b>. As an example, the installation command on Ubuntu for these packages will be:
-\verbatim
-sudo apt-get install wget zip
-\endverbatim
-<br>
-<br>
+Check the [Installation](Installation.html) guide for details on installation.
 
 --------------------------------------------------------------------
 ### Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following paper:
@@ -62,8 +51,10 @@ The incorporated packages include but are not limited to:
 --------------------------------------------------------------------
 
 --------------------------------------------------------------------
+
 \htmlonly
 <div align="right"><a href="Installation.html"><b>Next (Installation)<b></a>
 \endhtmlonly
+
 --------------------------------------------------------------------
 */

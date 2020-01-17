@@ -113,6 +113,10 @@ void fImagesPanel::NewImageLoaded(QString idstr, const std::string &filename, in
   m_imagesTable->setCellWidget(rowIndex, IMAGES_COLUMN_MODALITY, modalitySwitcher);
 
   QRadioButton* overlayRB = new QRadioButton();
+
+  //! the following set focus policy call is needed to select only the radiobutton
+  //! without selecting the table row. Without it the event propagates to the parent
+  overlayRB->setFocusPolicy(Qt::NoFocus);
   m_imagesTable->setCellWidget(rowIndex, IMAGES_COLUMN_OVERLAY, overlayRB);
 
   QTableWidgetItem *item2 = new QTableWidgetItem(filename.c_str());
@@ -128,6 +132,9 @@ void fImagesPanel::NewImageLoaded(QString idstr, const std::string &filename, in
   connect(overlayRB, SIGNAL(clicked()), caller, SLOT(overlayChanged()));
   connect(m_clearImagesBtn, SIGNAL(clicked()), caller, SLOT(CloseAllImages()));//TBD fix calling everytime
   
+  //! tell table to resize to contents after we add stuff into the table
+  m_imagesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+  m_imagesTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 void fImagesPanel::helpClicked()

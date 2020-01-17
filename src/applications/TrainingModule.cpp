@@ -758,7 +758,7 @@ VectorDouble TrainingModule::testOpenCVSVM(const VariableSizeMatrixType &testing
 
 bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory, const int classifiertype, const int foldtype, const int confType, const std::string modeldirectory)
 {
-  std::cout << "Training module" << std::endl;
+  std::cout << "Training module." << std::endl;
   //reading features and labels from the input data
   VariableSizeMatrixType FeaturesOfAllSubjects;
   VariableLengthVectorType LabelsOfAllSubjects;
@@ -785,6 +785,39 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     std::cout << std::string(e1.what());
     //logger.WriteError("Cannot find the file 'features.csv' in the input directory. Error code : " + std::string(e1.what()));
     return false;
+  }
+
+  std::cout << "Remove static features from the feature set." << std::endl;
+  unsigned int NumberOfSamples = FeaturesOfAllSubjects.Rows();
+  unsigned int NumberOfFeatures = FeaturesOfAllSubjects.Cols();
+  std::vector<int> mStdVector;
+  for (unsigned int featureNo = 0; featureNo < NumberOfFeatures; featureNo++)
+  {
+    double temp = 0.0;
+    for (unsigned int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
+      temp += FeaturesOfAllSubjects(sampleNo, featureNo);
+    double mean = temp / NumberOfSamples;
+    temp = 0.0;
+    for (unsigned int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
+      temp += (FeaturesOfAllSubjects(sampleNo, featureNo) - mean)*(FeaturesOfAllSubjects(sampleNo, featureNo) - mean);
+    if (std::sqrt(temp / (NumberOfSamples - 1)) == 0)
+      mStdVector.push_back(featureNo);
+  }
+  VariableSizeMatrixType FeaturesOfAllSubjectsAfterRemovingStaticFeatures;
+  FeaturesOfAllSubjectsAfterRemovingStaticFeatures.SetSize(FeaturesOfAllSubjects.Rows(), FeaturesOfAllSubjects.Cols() - mStdVector.size());
+
+  int featureCounter = 0;
+  for (unsigned int featureNo = 0; featureNo < NumberOfFeatures; featureNo++)
+  {
+    //check for the presence of this feature vector in the list of features to exclude
+    std::vector<int>::iterator it;
+    it = std::find(mStdVector.begin(), mStdVector.end(), featureNo);
+    if (it != mStdVector.end())
+      continue;
+
+    for (unsigned int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
+      FeaturesOfAllSubjectsAfterRemovingStaticFeatures(sampleNo, featureCounter) = FeaturesOfAllSubjects(sampleNo, featureNo);
+    featureCounter++;
   }
 
   try
@@ -819,7 +852,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     VariableSizeMatrixType scaledFeatureSet;
     VariableLengthVectorType meanVector;
     VariableLengthVectorType stdVector;
-    mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
+    mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjectsAfterRemovingStaticFeatures, scaledFeatureSet, meanVector, stdVector);
 
 
     //remove the nan values
@@ -838,8 +871,6 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
       if (std::isnan(stdVector[index1]))
         stdVector[index1] = 0;
     }
-
-
 
     std::ofstream myfile;
     myfile.open(outputdirectory + "/scaled_feature_set.csv");
@@ -876,7 +907,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     VariableSizeMatrixType scaledFeatureSet;
     VariableLengthVectorType meanVector;
     VariableLengthVectorType stdVector;
-    mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
+    mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjectsAfterRemovingStaticFeatures, scaledFeatureSet, meanVector, stdVector);
 
 
     //remove the nan values
@@ -927,9 +958,9 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     FinalResult = mTrainingSimulator.SplitTrainTest(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype);
   }
   else if (confType == 3)   //train
-    FinalResult = mTrainingSimulator.TrainData(FeaturesOfAllSubjects, LabelsOfAllSubjects, outputdirectory, classifiertype);
+    FinalResult = mTrainingSimulator.TrainData(FeaturesOfAllSubjectsAfterRemovingStaticFeatures, LabelsOfAllSubjects, outputdirectory, classifiertype);
   else   //test
-    FinalResult = mTrainingSimulator.TestData(FeaturesOfAllSubjects, modeldirectory, classifiertype, outputdirectory);
+    FinalResult = mTrainingSimulator.TestData(FeaturesOfAllSubjectsAfterRemovingStaticFeatures, modeldirectory, classifiertype, outputdirectory);
 
   //std::cout << "Accuray=" << FinalResult[0] << std::endl;
   //std::cout << "Sensitivity=" << FinalResult[1] << std::endl;

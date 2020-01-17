@@ -370,7 +370,11 @@ Detailed explanation of using the command line is available in the \ref How_To_G
 |      Linux     | Ubuntu 16.04, 18.04; Debian 9, CentOS 7 (source build) | Ubuntu 14.04; CentOS 6 |
 |      macOS     |                      10.13, 10.14                      |          10.12         |
 
-\section gs_FAQ_2 How do I run CaPTk Applications from the Command Line?
+\section gs_FAQ_2 What DICOM images are currently supported by CaPTk?
+  
+CaPTk has limited DICOM support. It only supports a limited protocols for MR, CT and MG modalities. DICOM loading has only been tested for images from UPenn. If you are not able to load your DICOM images, please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) and send some anonymized DICOM images for us to test.
+
+\section gs_FAQ_3 How do I run CaPTk Applications from the Command Line?
 
 
 - The full list of command line applications available is shown by running the following command (pretty much every application is available via the command line):
@@ -391,7 +395,7 @@ ${CaPTk_InstallDir}/bin/CaPTk -h
 
 - There are detailed examples of individual command line usage in the [How To](How_To_Guides.html) section of the documentation.
 
-\section gs_FAQ_3 What are the OpenGL requirements to run CaPTk?
+\section gs_FAQ_4 What are the OpenGL requirements to run CaPTk?
 
 - If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
   - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]:
@@ -406,11 +410,11 @@ sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sud
 MESA_GL_VERSION_OVERRIDE=4.5 #put the opengl version you want to use here
 \endverbatim
 
-\section gs_FAQ_4 What if I am having issues with the Linux Installer?
+\section gs_FAQ_5 What if I am having issues with the Linux Installer?
 
 This section highlights some of the common issues on Linux machines.
 
-\subsection gs_FAQ_4_1 FUSE Issues
+\subsection gs_FAQ_5_1 FUSE Issues
 
 If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: 
 \verbatim
@@ -433,7 +437,7 @@ FeatureExtraction \ # the executable should already be in the $PATH
 -o /usr/path/output.csv # the path to write the output 
 \endverbatim
     
-\subsection gs_FAQ_4_2 GLIBCXX or GLIBC Issues
+\subsection gs_FAQ_5_2 GLIBCXX or GLIBC Issues
 
 - This is happening because the Linux binaries are compiled using the [GCC-4.8 package on Ubuntu 16.04](https://packages.ubuntu.com/xenial/gcc-4.8); therefore you will need to update GCC 4.8.5 or newer in order to get CaPTk to work. Some examples are shown:
 
@@ -453,15 +457,15 @@ sudo yum install devtoolset-6
 
 - You can still build CaPTk from source using the instructions in [Technical Reference](Technical_Reference.html). Note that you will need a [C++11 compliant compiler](https://en.cppreference.com/w/cpp/compiler_support#cpp11).
 
-\section gs_FAQ_5 Is there a minimum recommended screen resolution for running CaPTk?
+\section gs_FAQ_6 Is there a minimum recommended screen resolution for running CaPTk?
   
 The minimum recommended resolution is 1200x1024. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
 
-\section gs_FAQ_6 Where can I find the CaPTk Docker Image? 
+\section gs_FAQ_7 Where can I find the CaPTk Docker Image? 
 
 You can find all the builds in our Docker Hub repository: https://hub.docker.com/r/cbica/captk
 
-\section gs_FAQ_7 How do I run the CaPTk Docker Image to show the interface?
+\section gs_FAQ_8 How do I run the CaPTk Docker Image to show the interface?
 
 \verbatim
 docker run -it \
@@ -472,7 +476,7 @@ docker run -it \
   cbica/captk
 \endverbatim
 
-\section gs_FAQ_8 What if I am having an issue not listed here?
+\section gs_FAQ_9 What if I am having an issue not listed here?
   
 Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
 
