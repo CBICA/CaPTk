@@ -603,7 +603,7 @@ VectorDouble TrainingModule::EffectSizeFeatureSelection(const VariableSizeMatrix
     double SC2 = sum2 / (NoOfSamplesC2 - 1);
     double SP = ((NoOfSamplesC1 - 1)*SC1 + (NoOfSamplesC2 - 1)*SC2) / (NoOfSamplesC1 + NoOfSamplesC2 - 2);
     double currentvalue = (mean_set1[featureNo] - mean_set2[featureNo]) / sqrt(SP);
-    if(isnan(currentvalue))
+    if(std::isnan(currentvalue))
       EffectSize.push_back(0.0001);
     else
       EffectSize.push_back(currentvalue);
