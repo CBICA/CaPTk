@@ -176,6 +176,7 @@ EXCLUDE_PATTERNS       = */.svn/* \
                          */licenses/* \
                          */dcmqi/* \
                          */greedy/* \
+                         */thirdparty/* \
                          CMake*
 EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           =
