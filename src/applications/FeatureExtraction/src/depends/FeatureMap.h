@@ -18,6 +18,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 #include <fstream>
 #include <sstream>
 #include <cctype>
+#include <mutex>
 
 #if defined(_WIN32)&& !defined(__GNUC__)
   #pragma warning( disable : 4503 )// Warnig related to decorated name length size
@@ -113,6 +114,8 @@ private:
   }
   bool readCsv(const std::string& fileName, std::vector<std::string>& header, std::vector<std::vector<std::string> >&   matrix)
   {
+    std::mutex file_mutex;
+    const std::lock_guard< std::mutex > lock(file_mutex); // this will release the lock when the function closes
     std::ifstream file(fileName.c_str());
     if (!file)
     {
