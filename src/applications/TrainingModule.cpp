@@ -16,7 +16,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 #include "TrainingModule.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/ml.hpp"
-
+#include <cmath>
 
 bool TrainingModule::CheckPerformanceStatus(double ist, double second, double third, double fourth, double fifth, double sixth, double seventh, double eighth, double ninth, double tenth)
 {
