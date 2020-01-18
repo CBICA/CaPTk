@@ -16,7 +16,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 #include "TrainingModule.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/ml.hpp"
-
+#include <cmath>
 
 bool TrainingModule::CheckPerformanceStatus(double ist, double second, double third, double fourth, double fifth, double sixth, double seventh, double eighth, double ninth, double tenth)
 {
@@ -603,7 +603,7 @@ VectorDouble TrainingModule::EffectSizeFeatureSelection(const VariableSizeMatrix
     double SC2 = sum2 / (NoOfSamplesC2 - 1);
     double SP = ((NoOfSamplesC1 - 1)*SC1 + (NoOfSamplesC2 - 1)*SC2) / (NoOfSamplesC1 + NoOfSamplesC2 - 2);
     double currentvalue = (mean_set1[featureNo] - mean_set2[featureNo]) / sqrt(SP);
-    if(isnan(currentvalue))
+    if(std::isnan(currentvalue))
       EffectSize.push_back(0.0001);
     else
       EffectSize.push_back(currentvalue);
