@@ -170,7 +170,7 @@ void algorithmRunner()
   features.SetValidMask();
   features.SetMaskImage(mask);
   features.SetRequestedFeatures(param_file);
-  features.SetOutputFilename(outputFilename);
+  features.SetOutputFilename(outputDir);
   features.SetVerticallyConcatenatedOutput(verticalConc);
   features.SetWriteFeatureMaps(featureMaps);
   features.SetNumberOfThreads(threads);
@@ -238,10 +238,11 @@ int main(int argc, char** argv)
   parser.getParameterValue("o", outputDir);
 
   // check if the user has passed a file or a directory
-  if (cbica::isFile(outputDir))
+  if (cbica::isFile(outputDir) || 
+    (cbica::getFilenameExtension(outputDir, false) == ".csv"))
   {
     outputFilename = outputDir;
-    outputDir = cbica::getFilenamePath(outputFilename);
+    outputDir = cbica::getFilenamePath(outputFilename, false);
   }
   else
   {

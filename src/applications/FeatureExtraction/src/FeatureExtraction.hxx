@@ -2038,7 +2038,7 @@ void FeatureExtraction< TImage >::Update()
           if (m_debug)
           {
             std::cout << "[DEBUG] Writing resampled image(s) to the output directory.\n";
-            cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/" + m_modality[i] +
+            cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/image_" + m_modality[i] +
               "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image +
               "_" + m_initializedTimestamp + ".nii.gz"));
           }
