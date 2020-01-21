@@ -29,7 +29,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 // stuff used in the program
 std::string loggerFile, multipatient_file, patient_id = "DEFAULT", image_path_string, modalities_string, maskfilename, 
-selected_roi_string, roi_labels_string, param_file, outputdir, offset_String, outputFilename;
+selected_roi_string, roi_labels_string, param_file, outputDir, offset_String, outputFilename;
 
 bool debug = false, debugWrite = false, verticalConc = false, featureMaps = false;
 
@@ -85,7 +85,7 @@ void algorithmRunner()
     std::cout << "No ROI labels have been provided for patient_id '" << patient_id << "', the ROI values will be used as labels instead.\n";
     //roi_labels = "all";
   }
-  //cbica::dos2unix(param_file);
+  param_file = cbica::dos2unix(param_file, outputDir);
   std::vector< std::string > imageNames = image_paths;
 
   //check if all the input images and mask match dimension spacing and size
@@ -170,7 +170,7 @@ void algorithmRunner()
   features.SetValidMask();
   features.SetMaskImage(mask);
   features.SetRequestedFeatures(param_file);
-  features.SetOutputFilename(cbica::normPath(outputdir));
+  features.SetOutputFilename(outputFilename);
   features.SetVerticallyConcatenatedOutput(verticalConc);
   features.SetWriteFeatureMaps(featureMaps);
   features.SetNumberOfThreads(threads);
@@ -234,6 +234,19 @@ int main(int argc, char** argv)
 
   //bool loggerRequested = false;
   //cbica::Logging logger;
+
+  parser.getParameterValue("o", outputDir);
+
+  // check if the user has passed a file or a directory
+  if (cbica::isFile(outputDir))
+  {
+    outputFilename = outputDir;
+    outputDir = cbica::getFilenamePath(outputFilename);
+  }
+  else
+  {
+    outputFilename = cbica::normalizePath(outputDir + "/results.csv");
+  }
 
   if (parser.isPresent("i"))
   {
@@ -309,11 +322,6 @@ int main(int argc, char** argv)
   //  loggerRequested = true;
   //  logger.UseNewFile(loggerFile);
   //}
-
-  if (parser.isPresent("o"))
-  {
-    parser.getParameterValue("o", outputdir);
-  }
 
   if (debug)
   {
@@ -494,11 +502,13 @@ int main(int argc, char** argv)
     // TBD: use the size of allRows to enable parallel processing, if needed
     std::vector< std::vector < std::string > > allRows; // store the entire data of the CSV file as a vector of columns and rows (vector< rows <cols> >)
 
-    //if (debug)
-    //{
-    //  std::cout << "[DEBUG] Performing dos2unix using CBICA TK function; doesn't do anything in Windows machines.\n";
-    //}
-    //cbica::dos2unix(multipatient_file);
+    if (debug)
+    {
+      std::cout << "[DEBUG] Performing dos2unix using CBICA TK function; doesn't do anything in Windows machines.\n";
+    }
+    
+    multipatient_file = cbica::dos2unix(multipatient_file, outputDir);
+
     std::ifstream inFile(multipatient_file.c_str());
     std::string csvPath = cbica::getFilenamePath(multipatient_file);
 
@@ -573,13 +583,13 @@ int main(int argc, char** argv)
         {
           param_file = allRows[j][k];
         }
-        if ((check_wrap == "outputfile") || (check_wrap == "output") || (check_wrap == "outputdir"))
+        if ((check_wrap == "outputfile") || (check_wrap == "output") || (check_wrap == "outputDir"))
         {
-          outputdir = allRows[j][k];
+          outputDir = allRows[j][k];
         }
-        //else if (cbica::isDir(outputdir))
+        //else if (cbica::isDir(outputDir))
         //{
-        //  outputdir = outputdir + "/" + patient_id + ".csv";
+        //  outputDir = outputDir + "/" + patient_id + ".csv";
         //}
       } // end of k-loop
 
