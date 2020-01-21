@@ -2094,7 +2094,7 @@ namespace cbica
     if (!in.is_open())
     {
       std::cerr << "Error: could not open '" << inputFile << "'\n";
-      return;
+      return "";
     }
     std::ofstream out(tempFile.c_str());
     std::istreambuf_iterator<char> input(in), end;
