@@ -468,7 +468,7 @@ int main(int argc, char** argv)
           filter->Update();
 
           auto currentFileBase = cbica::getFilenameBase(image_paths[i]);
-          image_paths[i] = m_tempFolderLocation + currentFileBase + "_2D.nii.gz";
+          image_paths[i] = m_tempFolderLocation + "image_" + modality_names[i] + "_2D.nii.gz";
           cbica::WriteImage< ActualImageType >(filter->GetOutput(), image_paths[i]);
         }
         filter->SetInput(cbica::ReadImage< ImageType >(maskfilename));
@@ -476,7 +476,7 @@ int main(int argc, char** argv)
         filter->Update();
 
         auto currentFileBase = cbica::getFilenameBase(maskfilename);
-        maskfilename = m_tempFolderLocation + currentFileBase + "_2D.nii.gz";
+        maskfilename = m_tempFolderLocation + "mask_" + currentFileBase + "_2D.nii.gz";
         cbica::WriteImage< ActualImageType >(filter->GetOutput(), maskfilename);
         algorithmRunner< ActualImageType >();
         cbica::deleteDir(m_tempFolderLocation);
