@@ -2081,11 +2081,14 @@ namespace cbica
     return cbica::constCharToChar(std::string(input));
   }
 
-  void dos2unix(const std::string inputFile)
+  std::string dos2unix(const std::string &inputFile, const std::string outputDir)
   {
 #ifndef WIN32 // this function is not needed for Windows systems
-    auto tempDir = createTmpDir();
-    auto tempFile = tempDir + "tempFile.txt";
+    std::string path, base, ext;
+    cbica::splitFileName(inputFile, path, base, ext);
+    cbica::getFilenameBase(inputFile);
+    auto tempDir = outputDir;
+    auto tempFile = tempDir + "/" + cbica::getFilenameBase(inputFile) + "_dos2unix" + ext;
 
     std::ifstream in(inputFile.c_str());
     if (!in.is_open())
@@ -2101,14 +2104,10 @@ namespace cbica
     out.close();
 
     std::remove(inputFile.c_str());
-    cbica::copyFile(tempFile, inputFile);
-
-    if (removeDirectoryRecursively(tempDir) != 0)
-    {
-      std::cerr << "There was an issue deleting the tempDir '" << tempDir << "'\n";
-    }
+    //cbica::copyFile(tempFile, inputFile);
+    return tempFile;
 #endif
-    return;
+    return inputFile;
   }
 
   size_t getTotalMemory()
