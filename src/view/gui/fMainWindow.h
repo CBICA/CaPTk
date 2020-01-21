@@ -355,6 +355,9 @@ private:
   **/
   std::vector< ActionAndName > populateStringListInMenu(const std::vector< std::string > &vectorOfInputs, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic);
 
+  //! check if input files also include directories
+  bool hasDirectories(QStringList &lst, int &nDirs);
+
   // initialize vectors of Actions and Names so that the process can be automated and the QAction is tied to its corresponding Name
   std::vector< ActionAndName >
     vectorOfGBMApps, // GBM-specific applications
@@ -1053,9 +1056,14 @@ public slots:
   void ChangeDrawingLabel(int drawingLabel); // multiLabel uncomment this function
 
   /**
-  \brief Changes the opacity in the drawing
+  \brief Changes the selected opacity to draw with, pulling directly from the opacity selected in the drawing panel
   */
-  void ChangeMaskOpacity(int newMaskOpacity); // multiLabel uncomment this function
+  void ChangeMaskOpacity(); // multiLabel uncomment this function
+
+  /**
+  \brief Changes the selected opacity to display by input of a number (float).
+  */
+  void ChangeMaskOpacity(float newOpacity);
 
   /**
   \brief Checks whether required images are present for the recurrence estimation application
