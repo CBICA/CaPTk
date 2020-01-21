@@ -18,6 +18,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "CaPTkGUIUtils.h"
 #include "cbicaLogging.h"
 #include "ApplicationPreferences.h"
+#include <QTimer>
 
 AppearancePage::AppearancePage(QWidget *parent) :
     QWidget(parent),
@@ -39,7 +40,9 @@ AppearancePage::AppearancePage(QWidget *parent) :
 	if (!QVariant(ApplicationPreferences::GetInstance()->GetFileAvailability()).toBool())
 	{
 		ui->themeComboBox->setCurrentIndex(ThemeType::Dark);
-		this->OnOkay();
+        ApplicationPreferences::GetInstance()->SetFont(this->m_SelectedFont.toString());
+        ApplicationPreferences::GetInstance()->SetTheme(QVariant::fromValue(this->m_SelectedTheme).toString());
+        ApplicationPreferences::GetInstance()->DisplayPreferences();
 	}
 
 }
@@ -103,19 +106,39 @@ void AppearancePage::OnSelectFontButtonClicked()
 
 void AppearancePage::OnOkay()
 {
-	//! update previous
-	this->m_PreviousFont = this->m_SelectedFont;
-	this->m_PreviousStyleSheet = this->m_SelectedStyleSheet;
-	this->m_PreviousTheme = this->m_SelectedTheme;
-
-	//! apply selected font and stylesheet
+    //! apply selected font and stylesheet for preview
 	qApp->setFont(this->m_SelectedFont);
 	qApp->setStyleSheet(this->m_SelectedStyleSheet);
 
-	ApplicationPreferences::GetInstance()->SetFont(this->m_SelectedFont.toString());
-	ApplicationPreferences::GetInstance()->SetTheme(QVariant::fromValue(this->m_SelectedTheme).toString());
-	ApplicationPreferences::GetInstance()->DisplayPreferences();
-	
+    //! Bring up a confirmation box and query user to keep or discard changes
+    QMessageBox* confirmationBox = new QMessageBox(); // no parent, to avoid the confirmation dialog also being unreadable
+    confirmationBox->setText("You are seeing a preview of your selected changes.");
+    confirmationBox->setInformativeText("If you do not confirm within 5 seconds, these changes will automatically revert.");
+    confirmationBox->setStandardButtons(QMessageBox::Apply | QMessageBox::Discard);
+    confirmationBox->setIcon(QMessageBox::NoIcon);
+    int timeout_in_milliseconds = 5000; // set a reasonable timeout before we auto-cancel
+    QTimer* confirmationTimer = new QTimer(this);
+    confirmationTimer->setSingleShot(true);
+    connect(confirmationTimer, SIGNAL(timeout()), confirmationBox, SLOT(reject()));
+    confirmationTimer->start(timeout_in_milliseconds);
+    confirmationBox->exec();
+    confirmationTimer->stop();
+    auto response = confirmationBox->result();
+
+    if(response == QMessageBox::Apply) { // If anything else happens, discard changes
+        ApplicationPreferences::GetInstance()->SetFont(this->m_SelectedFont.toString());
+        ApplicationPreferences::GetInstance()->SetTheme(QVariant::fromValue(this->m_SelectedTheme).toString());
+        ApplicationPreferences::GetInstance()->DisplayPreferences();
+        //! update previous settings to reflect the change
+        this->m_PreviousFont = this->m_SelectedFont;
+        this->m_PreviousStyleSheet = this->m_SelectedStyleSheet;
+        this->m_PreviousTheme = this->m_SelectedTheme;
+    }
+    else {
+        //! re-apply the previous font and stylesheet to the application
+        OnCancel();
+    }
+
 }
 
 void AppearancePage::OnCancel()
@@ -140,5 +163,6 @@ void AppearancePage::Restore()
 		ApplicationPreferences::GetInstance()->GetTheme().toStdString().c_str()));
 
 	ui->themeComboBox->setCurrentIndex(this->m_SelectedTheme);
-	this->OnOkay();
+    ApplicationPreferences::GetInstance()->DisplayPreferences();
+    //this->OnOkay();
 }
