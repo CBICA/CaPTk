@@ -111,7 +111,7 @@ void AppearancePage::OnOkay()
 	qApp->setStyleSheet(this->m_SelectedStyleSheet);
 
     //! Bring up a confirmation box and query user to keep or discard changes
-    QMessageBox* confirmationBox = new QMessageBox(this);
+    QMessageBox* confirmationBox = new QMessageBox(); // no parent, to avoid the confirmation dialog also being unreadable
     confirmationBox->setText("You are seeing a preview of your selected changes.");
     confirmationBox->setInformativeText("If you do not confirm within 5 seconds, these changes will automatically revert.");
     confirmationBox->setStandardButtons(QMessageBox::Apply | QMessageBox::Discard);
