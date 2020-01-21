@@ -54,7 +54,7 @@ These are UNTESTED development builds from the latest master. Use at your own ri
 | Linux (CentOS7)| https://www.nitrc.org/frs/downloadlink.php/11522 |
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11518 |
 
-## [Frequently Asked Questions (FAQ)](https://cbica.github.io/CaPTk/gs_FAQ.html)
+## [Frequently Asked Questions (FAQ)](https://cbica.github.io/CaPTk/Getting_Started.html#gs_FAQ)
 
 ## Contact
 For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.
