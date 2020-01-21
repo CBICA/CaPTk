@@ -85,7 +85,7 @@ void algorithmRunner()
     std::cout << "No ROI labels have been provided for patient_id '" << patient_id << "', the ROI values will be used as labels instead.\n";
     //roi_labels = "all";
   }
-  cbica::dos2unix(param_file);
+  //cbica::dos2unix(param_file);
   std::vector< std::string > imageNames = image_paths;
 
   //check if all the input images and mask match dimension spacing and size
@@ -494,11 +494,11 @@ int main(int argc, char** argv)
     // TBD: use the size of allRows to enable parallel processing, if needed
     std::vector< std::vector < std::string > > allRows; // store the entire data of the CSV file as a vector of columns and rows (vector< rows <cols> >)
 
-    if (debug)
-    {
-      std::cout << "[DEBUG] Performing dos2unix using CBICA TK function; doesn't do anything in Windows machines.\n";
-    }
-    cbica::dos2unix(multipatient_file);
+    //if (debug)
+    //{
+    //  std::cout << "[DEBUG] Performing dos2unix using CBICA TK function; doesn't do anything in Windows machines.\n";
+    //}
+    //cbica::dos2unix(multipatient_file);
     std::ifstream inFile(multipatient_file.c_str());
     std::string csvPath = cbica::getFilenamePath(multipatient_file);
 
