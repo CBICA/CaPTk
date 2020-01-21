@@ -2088,7 +2088,7 @@ namespace cbica
     cbica::splitFileName(inputFile, path, base, ext);
     cbica::getFilenameBase(inputFile);
     auto tempDir = outputDir;
-    auto tempFile = tempDir + "/" + cbica::getFilenameBase(inputFile) + "_dos2unix" + ext;
+    auto tempFile = tempDir + "/" + cbica::getFilenameBase(inputFile) + "_" + getCurrentProcessID() + "_dos2unix" + ext;
 
     std::ifstream in(inputFile.c_str());
     if (!in.is_open())
