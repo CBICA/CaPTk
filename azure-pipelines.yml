@@ -441,31 +441,31 @@ jobs:
         rm -rf bin_linux
       displayName: 'Zipping bin'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
-        continueOnError: true
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_Linux'
+    #     continueOnError: true
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
-        downloadPath: '$(System.ArtifactsDirectory)'
-        continueOnError: true
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_Linux'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
+    #     continueOnError: true
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC 
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC 
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
      
 
 - job: 'MacOSBuild'
@@ -706,29 +706,29 @@ jobs:
         # rm -rf bin_macos
       displayName: 'Zipping bin'
       
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 # - job: 'HOME_WIN10_SelfHost'
 #   displayName: "Self-hosted agent on home-win10"
@@ -817,108 +817,123 @@ jobs:
 #         artifactName: '$(Build.DefinitionName)_installer_Windows'
 #         downloadPath: '$(System.ArtifactsDirectory)'
 
-# - job: 'CLUSTER_SelfHost'
-#   displayName: "Self-hosted agent on the cluster"
-#   timeoutInMinutes: 0
-#   cancelTimeoutInMinutes: 300
+- job: 'CLUSTER_SelfHost'
+  displayName: "Self-hosted agent on the cluster"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
 
-#   pool: 'Linux'
+  pool: 'Default'
 
-#   steps:
-#     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+  steps:
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
-#     # submodule 
-#     - bash: |
-#         git submodule update --init --recursive
-#       displayName: 'Git Submodule Init and Update'
+    # submodule 
+    - bash: |
+        git submodule update --init --recursive
+      displayName: 'Git Submodule Init and Update'
 
-#     # # Dependency manager
-#     # - bash: |
-#     #     #sudo apt-get update && sudo apt-get dist-upgrade -y
-#     #     sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 
-#     #     echo "Installing MPI stuff"
-#     #     sudo apt-get install mpich libopenmpi-dev 
-#     #     echo "Installing OpenGL stuff"
-#     #     sudo apt-get install mesa-common-dev libglu1-mesa-dev libgl1-mesa-dev freeglut3-dev
-#     #     sudo apt-get install doxygen
-#     #     export GIT_LFS_SKIP_SMUDGE=1
-#     #   displayName: 'Install dependencies from Aptitude'
+    # # Dependency manager
+    # - bash: |
+    #     #sudo apt-get update && sudo apt-get dist-upgrade -y
+    #     sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 
+    #     echo "Installing MPI stuff"
+    #     sudo apt-get install mpich libopenmpi-dev 
+    #     echo "Installing OpenGL stuff"
+    #     sudo apt-get install mesa-common-dev libglu1-mesa-dev libgl1-mesa-dev freeglut3-dev
+    #     sudo apt-get install doxygen
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #   displayName: 'Install dependencies from Aptitude'
 
-#     # Moving LFS Files
-#     - bash: |
-#         mkdir -p bin
-#         cd bin
-#         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-#         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
-#         ls -lt
-#       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-#     # Configure and build superbuild
-#     - bash: |
-#         cd bin
-#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-#         make -j2
-#       displayName: 'Configure and compile Superbuild'
+    # Configure and build superbuild
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        make -j2
+      displayName: 'Configure and compile Superbuild'
 
-#     # - bash: |
-#     #     mkdir -p bin
-#     #     cp -r ../../../superbuild/ ./bin
+    - bash: |
+        # mkdir -p bin
+        # cp -r ../../../superbuild/ ./bin
+        cd bin
+        cp -r ./ ../../../../superbuild
         
-#     #   displayName: 'Move superbuild and qt and compiled apps'
+      displayName: 'Move superbuild and qt and compiled apps'
 
-#       # Check qt
-#     - bash: |
-#         cd bin
-#         ls -a
-#         ls ./qt/
-#       displayName: 'Check qt'
+      # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
 
-#     - bash: |
-#         git pull origin master
-#         git log -1
-#         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
-#       displayName: 'Testing git pull and version'
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
 
-#     # Configure and build CaPTk
-#     - bash: |
-#         cd bin
-#         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
-#         make -j2
-#         make install/strip
-#       displayName: 'Configure and compile CaPTk'
+    # Configure and build CaPTk
+    - bash: |
+        cd bin
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        make -j2
+        make install/strip
+      displayName: 'Configure and compile CaPTk'
 
-#     # Check libra
-#     - bash: |
-#         cd bin/install/appdir/usr/bin/
-#         ls -l
-#       displayName: 'Checking ${installDir}/bin'
+    # Check libra
+    - bash: |
+        cd bin/install/appdir/usr/bin/
+        ls -l
+      displayName: 'Checking ${installDir}/bin'
 
-#     # Build a package
-#     - bash: |
-#         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
-#         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+    # Build a package
+    - bash: |
+        export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
-#         export PKG_FAST_MODE=1
-#         ./scripts/captk-pkg
+        export PKG_FAST_MODE=1
+        ./scripts/captk-pkg
 
-#         mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
-#       displayName: 'Set up environment variables for packager and build a package'
+      displayName: 'Set up environment variables for packager and build a package'
 
-#     - task: PublishBuildArtifacts@1
-#       inputs:
-#         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#         artifactName: '$(Build.DefinitionName)_installer_Linux'
-#         continueOnError: true
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        continueOnError: true
 
-#     - task: DownloadBuildArtifacts@0
-#       inputs:
-#         buildType: 'current'
-#         downloadType: 'single'
-#         artifactName: '$(Build.DefinitionName)_installer_Linux'
-#         downloadPath: '$(System.ArtifactsDirectory)'
-#         continueOnError: true
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        downloadPath: '$(System.ArtifactsDirectory)'
+        continueOnError: true
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC 
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+
 
 - job: 'CBICA_OSX3_SelfHost'
   displayName: "Self-hosted agent on cbica-osx3"
@@ -1062,6 +1077,18 @@ jobs:
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 # - job: 'DockerBuild'
 #   displayName: "End-to-end Docker_CentOS image build and push"
