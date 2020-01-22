@@ -16,7 +16,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 #include "TrainingModule.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/ml.hpp"
-
+#include <cmath>
 
 bool TrainingModule::CheckPerformanceStatus(double ist, double second, double third, double fourth, double fifth, double sixth, double seventh, double eighth, double ninth, double tenth)
 {
@@ -602,7 +602,11 @@ VectorDouble TrainingModule::EffectSizeFeatureSelection(const VariableSizeMatrix
     double SC1 = sum1 / (NoOfSamplesC1 - 1);
     double SC2 = sum2 / (NoOfSamplesC2 - 1);
     double SP = ((NoOfSamplesC1 - 1)*SC1 + (NoOfSamplesC2 - 1)*SC2) / (NoOfSamplesC1 + NoOfSamplesC2 - 2);
-    EffectSize.push_back((mean_set1[featureNo] - mean_set2[featureNo]) / sqrt(SP));
+    double currentvalue = (mean_set1[featureNo] - mean_set2[featureNo]) / sqrt(SP);
+    if(std::isnan(currentvalue))
+      EffectSize.push_back(0.0001);
+    else
+      EffectSize.push_back(currentvalue);
   }
   //std::vector<size_t> indices = sort_indexes(EffectSize);
   //VariableSizeMatrixType selected_feature_set;
@@ -611,8 +615,6 @@ VectorDouble TrainingModule::EffectSizeFeatureSelection(const VariableSizeMatrix
   //	for (int index = 0; index < no_of_features; index++)
   //		selected_feature_set(index1, index) = training_features(index1, indices[index]);
 
-  //return selected_feature_set;
-  //EffectSize(find(isnan(EffectSize))) = 0.0001;
   return EffectSize;
 }
 
@@ -787,39 +789,41 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     return false;
   }
 
-  std::cout << "Remove static features from the feature set." << std::endl;
-  unsigned int NumberOfSamples = FeaturesOfAllSubjects.Rows();
-  unsigned int NumberOfFeatures = FeaturesOfAllSubjects.Cols();
-  std::vector<int> mStdVector;
-  for (unsigned int featureNo = 0; featureNo < NumberOfFeatures; featureNo++)
-  {
-    double temp = 0.0;
-    for (unsigned int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
-      temp += FeaturesOfAllSubjects(sampleNo, featureNo);
-    double mean = temp / NumberOfSamples;
-    temp = 0.0;
-    for (unsigned int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
-      temp += (FeaturesOfAllSubjects(sampleNo, featureNo) - mean)*(FeaturesOfAllSubjects(sampleNo, featureNo) - mean);
-    if (std::sqrt(temp / (NumberOfSamples - 1)) == 0)
-      mStdVector.push_back(featureNo);
-  }
-  VariableSizeMatrixType FeaturesOfAllSubjectsAfterRemovingStaticFeatures;
-  FeaturesOfAllSubjectsAfterRemovingStaticFeatures.SetSize(FeaturesOfAllSubjects.Rows(), FeaturesOfAllSubjects.Cols() - mStdVector.size());
+  //This segment of the code removes static features from the feature set. However, due to the removal of static features, the size of the feature set becomes smaller and introduces discreency between the training and the test dataset (that user may use later) in terms of the size and the selected features. 
+  //therefore, this code is commented until we find a better solution
 
-  int featureCounter = 0;
-  for (unsigned int featureNo = 0; featureNo < NumberOfFeatures; featureNo++)
-  {
-    //check for the presence of this feature vector in the list of features to exclude
-    std::vector<int>::iterator it;
-    it = std::find(mStdVector.begin(), mStdVector.end(), featureNo);
-    if (it != mStdVector.end())
-      continue;
+  //std::cout << "Remove static features from the feature set." << std::endl;
+  //unsigned int NumberOfSamples = FeaturesOfAllSubjects.Rows();
+  //unsigned int NumberOfFeatures = FeaturesOfAllSubjects.Cols();
+  //std::vector<int> mStdVector;
+  //for (unsigned int featureNo = 0; featureNo < NumberOfFeatures; featureNo++)
+  //{
+  //  double temp = 0.0;
+  //  for (unsigned int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
+  //    temp += FeaturesOfAllSubjects(sampleNo, featureNo);
+  //  double mean = temp / NumberOfSamples;
+  //  temp = 0.0;
+  //  for (unsigned int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
+  //    temp += (FeaturesOfAllSubjects(sampleNo, featureNo) - mean)*(FeaturesOfAllSubjects(sampleNo, featureNo) - mean);
+  //  if (std::sqrt(temp / (NumberOfSamples - 1)) == 0)
+  //    mStdVector.push_back(featureNo);
+  //}
 
-    for (unsigned int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
-      FeaturesOfAllSubjectsAfterRemovingStaticFeatures(sampleNo, featureCounter) = FeaturesOfAllSubjects(sampleNo, featureNo);
-    featureCounter++;
-  }
+  //FeaturesOfAllSubjectsAfterRemovingStaticFeatures.SetSize(FeaturesOfAllSubjects.Rows(), FeaturesOfAllSubjects.Cols() - mStdVector.size());
 
+  //int featureCounter = 0;
+  //for (unsigned int featureNo = 0; featureNo < NumberOfFeatures; featureNo++)
+  //{
+  //  //check for the presence of this feature vector in the list of features to exclude
+  //  std::vector<int>::iterator it;
+  //  it = std::find(mStdVector.begin(), mStdVector.end(), featureNo);
+  //  if (it != mStdVector.end())
+  //    continue;
+
+  //  for (unsigned int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
+  //    FeaturesOfAllSubjectsAfterRemovingStaticFeatures(sampleNo, featureCounter) = FeaturesOfAllSubjects(sampleNo, featureNo);
+  //  featureCounter++;
+  //}
   try
   {
     CSVFileReaderType::Pointer readerMean = CSVFileReaderType::New();
@@ -852,7 +856,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     VariableSizeMatrixType scaledFeatureSet;
     VariableLengthVectorType meanVector;
     VariableLengthVectorType stdVector;
-    mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjectsAfterRemovingStaticFeatures, scaledFeatureSet, meanVector, stdVector);
+    mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
 
 
     //remove the nan values
@@ -907,7 +911,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     VariableSizeMatrixType scaledFeatureSet;
     VariableLengthVectorType meanVector;
     VariableLengthVectorType stdVector;
-    mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjectsAfterRemovingStaticFeatures, scaledFeatureSet, meanVector, stdVector);
+    mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
 
 
     //remove the nan values
@@ -958,9 +962,9 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     FinalResult = mTrainingSimulator.SplitTrainTest(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype);
   }
   else if (confType == 3)   //train
-    FinalResult = mTrainingSimulator.TrainData(FeaturesOfAllSubjectsAfterRemovingStaticFeatures, LabelsOfAllSubjects, outputdirectory, classifiertype);
+    FinalResult = mTrainingSimulator.TrainData(FeaturesOfAllSubjects, LabelsOfAllSubjects, outputdirectory, classifiertype);
   else   //test
-    FinalResult = mTrainingSimulator.TestData(FeaturesOfAllSubjectsAfterRemovingStaticFeatures, modeldirectory, classifiertype, outputdirectory);
+    FinalResult = mTrainingSimulator.TestData(FeaturesOfAllSubjects, modeldirectory, classifiertype, outputdirectory);
 
   //std::cout << "Accuray=" << FinalResult[0] << std::endl;
   //std::cout << "Sensitivity=" << FinalResult[1] << std::endl;
