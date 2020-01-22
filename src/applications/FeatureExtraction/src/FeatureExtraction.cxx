@@ -40,15 +40,6 @@ std::vector< std::string > modality_names, image_paths, selected_roi, roi_labels
 
 //! The main algorithm, which is templated across the image type
 template< class TImageType >
-void algorithmRunner()
-{
-  std::vector<typename TImageType::Pointer> tempImages;
-  typename TImageType::Pointer tempMask;
-  algorithmRunner< TImageType >(tempImages, tempMask);
-}
-
-//! The main algorithm, which is templated across the image type
-template< class TImageType >
 void algorithmRunner(std::vector<typename TImageType::Pointer> inputImages, typename TImageType::Pointer inputMask)
 {
   FeatureExtraction<TImageType> features;
@@ -219,6 +210,15 @@ void algorithmRunner(std::vector<typename TImageType::Pointer> inputImages, type
   features.SetNumberOfThreads(threads);
   features.Update();
   outputFilename = features.GetOutputFile();
+}
+
+//! wrapper for the main algorithm
+template< class TImageType >
+void algorithmRunner()
+{
+  std::vector<typename TImageType::Pointer> tempImages;
+  typename TImageType::Pointer tempMask;
+  algorithmRunner< TImageType >(tempImages, tempMask);
 }
 
 //! Calls cbica::stringSplit() by checking for ",", ";" and "|" as deliminators
