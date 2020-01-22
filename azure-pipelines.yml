@@ -829,6 +829,7 @@ jobs:
 
     # submodule 
     - bash: |
+        module load git/2.25.0
         git submodule update --init --recursive
       displayName: 'Git Submodule Init and Update'
 
