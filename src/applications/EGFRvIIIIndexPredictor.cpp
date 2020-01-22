@@ -725,7 +725,7 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
   {
     std::ofstream myfile;
     myfile.open(outputdirectory + "/results.csv");
-    myfile << "SubjectName,Result \n";
+    myfile << "SubjectName,Score, Result \n";
     if (cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.csv") == true)
     {
       VariableLengthVectorType result;
@@ -733,14 +733,11 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
       for (size_t i = 0; i < result.Size(); i++)
       {
         std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[i];
-        //if (result[i]<0)
-        //  myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + ", Mutation not detected \n";
-        //else
-        //  myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + ", Mutation detected \n";
         results.push_back(-1*result[i]);
-        //
-        //std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[i];
-        myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(-1*result[i]) + "\n";
+        if(results[i]<0)
+            myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(results[i]) + ", Wildtype \n";
+        else
+          myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(results[i]) + ", Mutant \n";
       }
     }
     else if (cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.xml") == true)
@@ -751,12 +748,10 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
       for (size_t i = 0; i < result.size(); i++)
       {
         std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[i];
-        //if (result[i]<0)
-        //  myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + ", Mutation not detected \n";
-        //else
-        //  myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + ", Mutation detected \n";
-        myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(result[i]) + "\n";
-
+        if (result[i]<0)
+          myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(result[i]) + ", Wildtype \n";
+        else
+          myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(result[i]) + ", Mutant \n";
       }
     }
     myfile.close();
