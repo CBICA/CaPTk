@@ -126,6 +126,8 @@ private:
     {
       std::string line;
       std::getline(file, line);
+      // fix line ending problems 
+      std::remove_copy(line.begin(), line.end(), line.begin(), '\r');
       std::stringstream lineStream(line);
       std::vector<std::string> row;
       std::string cell;
