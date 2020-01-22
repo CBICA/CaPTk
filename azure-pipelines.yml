@@ -817,8 +817,8 @@ jobs:
 #         artifactName: '$(Build.DefinitionName)_installer_Windows'
 #         downloadPath: '$(System.ArtifactsDirectory)'
 
-- job: 'CLUSTER_SelfHost'
-  displayName: "Self-hosted agent on the cluster"
+- job: 'NgoPhCubic_SelfHost'
+  displayName: "Self-hosted agent on ngoph@cubic"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
