@@ -85,7 +85,7 @@ void algorithmRunner()
     std::cout << "No ROI labels have been provided for patient_id '" << patient_id << "', the ROI values will be used as labels instead.\n";
     //roi_labels = "all";
   }
-  param_file = cbica::dos2unix(param_file, outputDir);
+  //param_file = cbica::dos2unix(param_file, outputDir);
   std::vector< std::string > imageNames = image_paths;
 
   //check if all the input images and mask match dimension spacing and size
