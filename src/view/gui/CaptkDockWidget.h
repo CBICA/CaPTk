@@ -1,19 +1,19 @@
-#ifndef DRAGANDDROPSHARINGDOCKWIDGET_H
-#define DRAGANDDROPSHARINGDOCKWIDGET_H
+#ifndef CAPTKDOCKWIDGET_H
+#define CAPTKDOCKWIDGET_H
 
 #include <QDockWidget>
 
 
 /**
-\class DragAndDropSharingDockWidget
+\class CaptkDockWidget
 \brief This customized QDockWidget allows you to propagate drag-n-drop events to other widgets through signals.
 
 */
-class DragAndDropSharingDockWidget : public QDockWidget
+class CaptkDockWidget : public QDockWidget
 {
     Q_OBJECT
 public:
-    explicit DragAndDropSharingDockWidget(QWidget *parent = nullptr);
+    explicit CaptkDockWidget(QWidget *parent = nullptr);
     void dragEnterEvent(QDragEnterEvent* event);
     void dropEvent(QDropEvent* event);
 
@@ -23,4 +23,4 @@ signals:
 
 };
 
-#endif // DRAGANDDROPSHARINGDOCKWIDGET_H
+#endif // CAPTKDOCKWIDGET_H
