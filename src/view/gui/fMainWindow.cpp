@@ -987,10 +987,6 @@ fMainWindow::~fMainWindow()
   {
     delete mTissuePoints;
   }
-  if (m_toolTabdock)
-  {
-   delete m_toolTabdock;
-  }
 
   // delete the temp directory every single time
   //if (cbica::filesInDirectory(m_tempFolderLocation).empty())
