@@ -830,7 +830,7 @@ jobs:
     #     module load git/2.25.0
     #   displayName: 'Reload git'
 
-    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+    # - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
     # submodule 
     - bash: |
