@@ -2103,7 +2103,7 @@ namespace cbica
     std::remove_copy(input, end, output, '\r');
     out.close();
 
-    std::remove(inputFile.c_str());
+    //std::remove(inputFile.c_str());
     //cbica::copyFile(tempFile, inputFile);
     return tempFile;
 #endif
