@@ -111,21 +111,25 @@ void AppearancePage::OnOkay()
 	qApp->setStyleSheet(this->m_SelectedStyleSheet);
 
     //! Bring up a confirmation box and query user to keep or discard changes
-    QMessageBox* confirmationBox = new QMessageBox(this);
-    confirmationBox->setText("You are seeing a preview of your selected changes.");
-    confirmationBox->setInformativeText("If you do not confirm within 5 seconds, these changes will automatically revert.");
+    QMessageBox* confirmationBox = new QMessageBox(); // no parent, so as to keep style separate
+    confirmationBox->setFont(this->m_PreviousFont);
+    confirmationBox->setStyleSheet(this->m_PreviousStyleSheet);
+    confirmationBox->setText("You are seeing a preview of your selected changes. Do you wish to keep them?");
+    confirmationBox->setInformativeText("If you do not confirm within 10 seconds, these changes will automatically revert.");
     confirmationBox->setStandardButtons(QMessageBox::Apply | QMessageBox::Discard);
     confirmationBox->setIcon(QMessageBox::NoIcon);
-    int timeout_in_milliseconds = 5000; // set a reasonable timeout before we auto-cancel
+    int timeout_in_milliseconds = 10000; // set a reasonable timeout before we auto-cancel
     QTimer* confirmationTimer = new QTimer(this);
     confirmationTimer->setSingleShot(true);
     connect(confirmationTimer, SIGNAL(timeout()), confirmationBox, SLOT(reject()));
     confirmationTimer->start(timeout_in_milliseconds);
     confirmationBox->exec();
     confirmationTimer->stop();
-    auto response = confirmationBox->result();
+    auto response = confirmationBox->result(); // grab the response value
+    delete confirmationBox;
+    delete confirmationTimer;
 
-    if(response == QMessageBox::Apply) { // If anything else happens, discard changes
+    if(response == QMessageBox::Apply) { //! Configuration only sets permanently if the user explicitly confirms
         ApplicationPreferences::GetInstance()->SetFont(this->m_SelectedFont.toString());
         ApplicationPreferences::GetInstance()->SetTheme(QVariant::fromValue(this->m_SelectedTheme).toString());
         ApplicationPreferences::GetInstance()->DisplayPreferences();
