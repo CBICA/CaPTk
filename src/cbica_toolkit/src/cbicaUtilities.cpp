@@ -2081,30 +2081,47 @@ namespace cbica
     return cbica::constCharToChar(std::string(input));
   }
 
+  void dos2unixFile(const std::string &inputFile, const std::string outputFile)
+  {
+#ifndef WIN32 // this function is not needed for Windows systems
+    std::string path, base, ext;
+    cbica::splitFileName(inputFile, path, base, ext);
+    cbica::getFilenameBase(inputFile);
+
+    std::ifstream in(inputFile.c_str());
+    if (!in.is_open())
+    {
+      std::cerr << "Error: could not open '" << inputFile << "'\n";
+      return;
+    }
+    if (isFile(outputFile))
+    {
+      std::cerr << "File '" << outputFile << "' already exists, please try another.\n";
+      return;
+    }
+    std::ofstream out(outputFile.c_str());
+    std::istreambuf_iterator<char> input(in), end;
+    std::ostreambuf_iterator<char> output(out);
+
+    std::remove_copy(input, end, output, '\r');
+    out.close();
+#endif
+    return;
+  }
+
   std::string dos2unix(const std::string &inputFile, const std::string outputDir)
   {
 #ifndef WIN32 // this function is not needed for Windows systems
     std::string path, base, ext;
     cbica::splitFileName(inputFile, path, base, ext);
     cbica::getFilenameBase(inputFile);
-    auto tempDir = outputDir;
-    auto tempFile = tempDir + "/" + cbica::getFilenameBase(inputFile) + "_" + getCurrentProcessID() + "_dos2unix" + ext;
 
-    std::ifstream in(inputFile.c_str());
-    if (!in.is_open())
-    {
-      std::cerr << "Error: could not open '" << inputFile << "'\n";
-      return "";
-    }
-    std::ofstream out(tempFile.c_str());
-    std::istreambuf_iterator<char> input(in), end;
-    std::ostreambuf_iterator<char> output(out);
+    // generate a unique filename
+    auto tempFile = outputDir + "/" + cbica::getFilenameBase(inputFile) + "_" +
+      getCurrentProcessID() + "-" + getCurrentLocalTimestamp() + "_dos2unix" + ext;
 
-    std::remove_copy(input, end, output, '\r');
-    out.close();
+    dos2unixFile(inputFile, tempFile);
 
-    //std::remove(inputFile.c_str());
-    //cbica::copyFile(tempFile, inputFile);
     return tempFile;
 #endif
     return inputFile;
