@@ -66,7 +66,7 @@
 #include "itkTranslationTransform.h"
 #include "ApplicationPreferences.h"
 
-#include "DragAndDropSharingDockWidget.h"
+#include "CaptkDockWidget.h"
 
 //#include "DicomSeriesReader.h"
 
@@ -254,7 +254,7 @@ fMainWindow::fMainWindow()
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
-  m_toolTabdock = new DragAndDropSharingDockWidget(); // custom class to propagate drag-and-drop events to the main window
+  m_toolTabdock = new CaptkDockWidget(); // custom class to propagate drag-and-drop events to the main window
   m_toolTabdock->setWindowFlags(Qt::Window);
 
   // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
