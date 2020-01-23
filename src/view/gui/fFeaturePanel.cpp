@@ -160,7 +160,18 @@ void fFeaturePanel::computeFeature(int type)
 
   if (m_listener != NULL)
   {
-    images = ((fMainWindow*)m_listener)->getLodedImages(imagepaths, modality);
+    if (radio1->isChecked())
+    {
+      images.push_back(
+        ((fMainWindow*)m_listener)->mSlicerManagers[
+          ((fMainWindow*)m_listener)->mCurrentPickedImageIndex]->GetITKImage()
+            );
+    }
+    else
+    {
+      images = ((fMainWindow*)m_listener)->getLodedImages(imagepaths, modality);
+    }
+    ((fMainWindow*)m_listener)->mCurrentPickedImageIndex;
     if (imagepaths.size() < 1)
     {
       ShowErrorMessage("No valid images selected!", this);
