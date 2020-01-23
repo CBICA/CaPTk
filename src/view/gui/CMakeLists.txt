@@ -52,7 +52,7 @@ SET( GUI
   fSBRTAnalysisDialog
   fTexturePipelineDialog
   AppearancePage
-  CaptkDockWidget
+  CaPTkDockWidget
   #fSegmentationPanel
   #fHelpAppDialog
 )

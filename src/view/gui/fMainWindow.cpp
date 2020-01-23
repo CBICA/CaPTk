@@ -66,7 +66,7 @@
 #include "itkTranslationTransform.h"
 #include "ApplicationPreferences.h"
 
-#include "CaptkDockWidget.h"
+#include "CaPTkDockWidget.h"
 
 //#include "DicomSeriesReader.h"
 
@@ -254,7 +254,7 @@ fMainWindow::fMainWindow()
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
-  m_toolTabdock = new CaptkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
+  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
   m_toolTabdock->setWindowFlags(Qt::SubWindow); // setting this as "Qt::Window" causes it to be hidden, at least on Linux.
   // since the above window flag's effect is platform dependent, this may look strange on other platforms -- needs a test.
 
