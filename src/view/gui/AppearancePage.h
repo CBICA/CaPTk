@@ -46,6 +46,23 @@ public slots:
 private:
     Ui::AppearancePage *ui;
 
+    /**
+    \brief UndoSelectedChanges
+    */
+    void UndoSelectedChanges();
+    /**
+    \brief RefreshAppToSelectedAppearance
+    */
+    void RefreshAppToSelectedAppearance();
+    /**
+    \brief FinalizeSelectedChanges
+    */
+    void FinalizeSelectedChanges();
+    /**
+    \brief RaiseConfirmationDialog
+    */
+    int RaiseConfirmationDialog();
+
 	//! ivars for handling cancel cases
     QFont m_SelectedFont, m_PreviousFont;
 	QString m_SelectedStyleSheet, m_PreviousStyleSheet;
