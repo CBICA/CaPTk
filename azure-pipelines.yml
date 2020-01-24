@@ -849,14 +849,13 @@ jobs:
     #     export GIT_LFS_SKIP_SMUDGE=1
     #   displayName: 'Install dependencies from Aptitude'
 
-    # # Moving LFS Files
-    # - bash: |
-    #     mkdir -p bin
-    #     cd bin
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
-    #     ls -lt
-    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
     # # Configure and build superbuild
     # - bash: |
@@ -865,11 +864,11 @@ jobs:
     #     make -j2
     #   displayName: 'Configure and compile Superbuild'
 
-    # - bash: |
-    #     # mkdir -p bin
-    #     # cp -r ../../../superbuild/ ./bin
-    #     cd bin
-    #     cp -r ./ ../../../../superbuild
+    - bash: |
+        # mkdir -p bin
+        # cp -r ../../../superbuild/ ./bin
+        cd bin
+        cp -r ./ ../../../../superbuild
         
     #   displayName: 'Move superbuild and qt and compiled apps'
 
@@ -888,9 +887,8 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
-        mkdir -p bin
         cd bin
-        ls /cbica/home/patis/libs/captkDepends_dcmtk/
+
         export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/home/patis/libs/captkDepends_dcmtk/DCMTK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build -DDCMTK_DIR=/cbica/home/patis/libs/captkDepends_dcmtk/DCMTK-build -DBUILD_TESTING=OFF ..
         make -j2
