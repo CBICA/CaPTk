@@ -242,12 +242,12 @@ fMainWindow::fMainWindow()
 
   preferenceDialog = new PreferencesDialog(nullptr);
   infoPanel = new fBottomImageInfoTip(centralwidget);
-  imagesPanel = new fImagesPanel(); // New Images Panel
+  imagesPanel = new fImagesPanel(m_tabWidget); // New Images Panel
   m_tabWidget->addTab(imagesPanel, QString());
-  tumorPanel = new fTumorPanel();
+  tumorPanel = new fTumorPanel(m_tabWidget);
   m_tabWidget->addTab(tumorPanel, QString());
-  drawingPanel = new fDrawingPanel();
-  featurePanel = new fFeaturePanel();
+  drawingPanel = new fDrawingPanel(m_tabWidget);
+  featurePanel = new fFeaturePanel(m_tabWidget);
   m_tabWidget->addTab(drawingPanel, QString());
   m_tabWidget->addTab(featurePanel, "Feature Extraction");
   int minheight = /*std::max(drawingPanel->sizeHint().height(), featurePanel->sizeHint().height())*/featurePanel->sizeHint().height() + 25;
