@@ -890,6 +890,7 @@ jobs:
     - bash: |
         mkdir -p bin
         cd bin
+        ls /cbica/home/patis/libs/captkDepends_dcmtk/
         export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/home/patis/libs/captkDepends_dcmtk/DCMTK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         make -j2
