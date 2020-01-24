@@ -441,31 +441,31 @@ jobs:
         rm -rf bin_linux
       displayName: 'Zipping bin'
 
-    # - task: PublishBuildArtifacts@1
-    #   inputs:
-    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #     artifactName: '$(Build.DefinitionName)_installer_Linux'
-    #     continueOnError: true
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        continueOnError: true
 
-    # - task: DownloadBuildArtifacts@0
-    #   inputs:
-    #     buildType: 'current'
-    #     downloadType: 'single'
-    #     artifactName: '$(Build.DefinitionName)_installer_Linux'
-    #     downloadPath: '$(System.ArtifactsDirectory)'
-    #     continueOnError: true
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        downloadPath: '$(System.ArtifactsDirectory)'
+        continueOnError: true
 
-    # - task: CopyFilesOverSSH@0
-    #   inputs:
-    #     sshEndpoint: cbicaNITRC
-    #     sourceFolder: $(Build.ArtifactStagingDirectory)
-    #     contents: '*_Installer.*'
-    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-    #     cleanTargetFolder: false
-    #     overwrite: true
-    #     continueOnError: true
-    #   displayName: Uploading to NITRC 
-    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC 
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
      
 
 - job: 'MacOSBuild'
@@ -706,29 +706,29 @@ jobs:
         # rm -rf bin_macos
       displayName: 'Zipping bin'
       
-    # - task: PublishBuildArtifacts@1
-    #   inputs:
-    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_macOS'
 
-    # - task: DownloadBuildArtifacts@0
-    #   inputs:
-    #     buildType: 'current'
-    #     downloadType: 'single'
-    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
-    #     downloadPath: '$(System.ArtifactsDirectory)'
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_macOS'
+        downloadPath: '$(System.ArtifactsDirectory)'
 
-    # - task: CopyFilesOverSSH@0
-    #   inputs:
-    #     sshEndpoint: cbicaNITRC
-    #     sourceFolder: $(Build.ArtifactStagingDirectory)
-    #     contents: '*_Installer.*'
-    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-    #     cleanTargetFolder: false
-    #     overwrite: true
-    #     continueOnError: true
-    #   displayName: Uploading to NITRC
-    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 # - job: 'HOME_WIN10_SelfHost'
 #   displayName: "Self-hosted agent on home-win10"
@@ -918,14 +918,14 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
         continueOnError: true
 
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
         downloadPath: '$(System.ArtifactsDirectory)'
         continueOnError: true
 
@@ -1076,13 +1076,13 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
+        artifactName: '$(Build.DefinitionName)_installer_macOS_selfhost'
 
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
+        artifactName: '$(Build.DefinitionName)_installer_macOS_selfhost'
         downloadPath: '$(System.ArtifactsDirectory)'
 
     - task: CopyFilesOverSSH@0
