@@ -888,6 +888,7 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
+        mkdir -p bin
         cd bin
         export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/home/patis/libs/captkDepends_dcmtk/DCMTK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
@@ -956,32 +957,32 @@ jobs:
 
       displayName: 'Git Submodule Init and Update'
 
-    # Moving LFS Files
+    # # Moving LFS Files
+    # - bash: |
+    #     mkdir -p bin
+    #     cd bin
+    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
+    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+    #     # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+    #     # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+    #     ls -lt
+    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+
+    # - bash: |
+    #     cd bin
+
+    #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+    #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+
+    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+
+    #   displayName: 'Configure and compile Superbuild'
+
     - bash: |
         mkdir -p bin
-        cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
-        # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-        # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
-        ls -lt
-      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-
-    - bash: |
-        cd bin
-
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-
-        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-
-      displayName: 'Configure and compile Superbuild'
-
-    - bash: |
-        # mkdir -p bin
-        # cp -r ../../../superbuild/ ./bin
-        cd bin
-        cp -r ./ ../../../../superbuild
+        cp -r ../../../superbuild/ ./bin
+        # cd bin
+        # cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
