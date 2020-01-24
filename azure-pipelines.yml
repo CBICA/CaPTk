@@ -474,7 +474,7 @@ jobs:
   cancelTimeoutInMinutes: 300
 
   pool:
-    vmImage: 'MacOS-10.13'
+    vmImage: 'MacOS-10.14'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
@@ -889,8 +889,8 @@ jobs:
     - bash: |
         cd bin
 
-        export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/home/patis/libs/captkDepends_dcmtk/DCMTK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build -DDCMTK_DIR=/cbica/home/patis/libs/captkDepends_dcmtk/DCMTK-build -DBUILD_TESTING=OFF ..
+        # export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/home/patis/libs/captkDepends_dcmtk/DCMTK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr"  -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
@@ -904,7 +904,8 @@ jobs:
     # Build a package
     - bash: |
         export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/home/patis/libs/captkDepends_dcmtk/DCMTK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        
+        # export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/home/patis/libs/captkDepends_dcmtk/DCMTK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
         export PKG_FAST_MODE=1
         ./scripts/captk-pkg
