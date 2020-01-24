@@ -786,8 +786,22 @@ namespace cbica
   \brief Ensuring files written using Windows don't mess stuff up
 
   Base implementation from https://www.digitalpeer.com/blog/simple-text-processing-with-cpp-dos2unix-example
+
+  \param inputFile The Input file that needs to be fixed
+  \param outputDir The location to put the output file
+  \return The full path the new file
   */
-  void dos2unix(const std::string inputFile);
+  std::string dos2unix(const std::string &inputFile, const std::string outputDir);
+
+  /**
+  \brief Ensuring files written using Windows don't mess stuff up
+
+  Base implementation from https://www.digitalpeer.com/blog/simple-text-processing-with-cpp-dos2unix-example
+
+  \param inputFile The Input file that needs to be fixed
+  \param outputFile The absolute path of output file
+  */
+  void dos2unixFile(const std::string &inputFile, const std::string outputFile);
 
   //==================================== Template stuff ==================================//
 

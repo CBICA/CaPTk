@@ -2081,11 +2081,12 @@ namespace cbica
     return cbica::constCharToChar(std::string(input));
   }
 
-  void dos2unix(const std::string inputFile)
+  void dos2unixFile(const std::string &inputFile, const std::string outputFile)
   {
 #ifndef WIN32 // this function is not needed for Windows systems
-    auto tempDir = createTmpDir();
-    auto tempFile = tempDir + "tempFile.txt";
+    std::string path, base, ext;
+    cbica::splitFileName(inputFile, path, base, ext);
+    cbica::getFilenameBase(inputFile);
 
     std::ifstream in(inputFile.c_str());
     if (!in.is_open())
@@ -2093,22 +2094,37 @@ namespace cbica
       std::cerr << "Error: could not open '" << inputFile << "'\n";
       return;
     }
-    std::ofstream out(tempFile.c_str());
+    if (isFile(outputFile))
+    {
+      std::cerr << "File '" << outputFile << "' already exists, please try another.\n";
+      return;
+    }
+    std::ofstream out(outputFile.c_str());
     std::istreambuf_iterator<char> input(in), end;
     std::ostreambuf_iterator<char> output(out);
 
     std::remove_copy(input, end, output, '\r');
     out.close();
-
-    std::remove(inputFile.c_str());
-    cbica::copyFile(tempFile, inputFile);
-
-    if (removeDirectoryRecursively(tempDir) != 0)
-    {
-      std::cerr << "There was an issue deleting the tempDir '" << tempDir << "'\n";
-    }
 #endif
     return;
+  }
+
+  std::string dos2unix(const std::string &inputFile, const std::string outputDir)
+  {
+#ifndef WIN32 // this function is not needed for Windows systems
+    std::string path, base, ext;
+    cbica::splitFileName(inputFile, path, base, ext);
+    cbica::getFilenameBase(inputFile);
+
+    // generate a unique filename
+    auto tempFile = outputDir + "/" + cbica::getFilenameBase(inputFile) + "_" +
+      getCurrentProcessID() + "-" + getCurrentLocalTimestamp() + "_dos2unix" + ext;
+
+    dos2unixFile(inputFile, tempFile);
+
+    return tempFile;
+#endif
+    return inputFile;
   }
 
   size_t getTotalMemory()
