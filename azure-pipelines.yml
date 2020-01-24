@@ -825,10 +825,10 @@ jobs:
   pool: 'Linux'
 
   steps:
-    # reload git 
-    - bash: |
-        module load git/2.25.0
-      displayName: 'Reload git'
+    # # reload git 
+    # - bash: |
+    #     module load git/2.25.0
+    #   displayName: 'Reload git'
 
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
