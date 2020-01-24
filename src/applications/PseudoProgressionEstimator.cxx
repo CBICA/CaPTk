@@ -10,6 +10,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
   std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+
   std::sort(subjectNames.begin(), subjectNames.end());
 
   for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
@@ -71,7 +72,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
         else if ((filePath_lower.find("ph") != std::string::npos)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("truncated") != std::string::npos)
+        else if ((filePath_lower.find("perf") != std::string::npos)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           perfFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
