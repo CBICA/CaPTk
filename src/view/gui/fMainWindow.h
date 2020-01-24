@@ -497,15 +497,6 @@ public:
   */
   ImageTypeFloat3D::Pointer RescaleImageIntensity(ImageTypeFloat3D::Pointer image);
 
-  /*
-  \brief Drag event initialization
-  */
-  void dragEnterEvent(QDragEnterEvent *event);
-
-  /*
-  \brief Drop Event parsing
-  */
-  void dropEvent(QDropEvent *event);
 
   /*
   \brief This function is used to load parameters from the command line
@@ -538,6 +529,16 @@ public slots:
 
   //! slot on movement of slider in comparison mode
   void OnSliderMovedInComparisonMode(int);
+
+  /**
+  \brief Drag event initialization. Can accept events emitted from widgets.
+  */
+  void dragEnterEvent(QDragEnterEvent *event);
+
+  /**
+  \brief Drop Event parsing slot. Can accept events emitted from widgets.
+  */
+  void dropEvent(QDropEvent *event);
 
   /**
   \brief Updates draw mode when drawing panel changes

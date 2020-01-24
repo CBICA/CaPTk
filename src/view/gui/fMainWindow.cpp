@@ -66,6 +66,8 @@
 #include "itkTranslationTransform.h"
 #include "ApplicationPreferences.h"
 
+#include "CaPTkDockWidget.h"
+
 //#include "DicomSeriesReader.h"
 
 #include <QFile>
@@ -252,8 +254,13 @@ fMainWindow::fMainWindow()
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
-  m_toolTabdock = new QDockWidget();
-  m_toolTabdock->setWindowFlags(Qt::Window);
+  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
+  m_toolTabdock->setWindowFlags(Qt::SubWindow); // setting this as "Qt::Window" causes it to be hidden, at least on Linux.
+  // since the above window flag's effect is platform dependent, this may look strange on other platforms -- needs a test.
+
+  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
+  connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
+  connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
 
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
