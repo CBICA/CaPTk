@@ -238,7 +238,11 @@ fMainWindow::fMainWindow()
   sizePolicy5.setHorizontalStretch(0);
   sizePolicy5.setVerticalStretch(0);
 
+  m_toolTabdock = new QDockWidget(this);
+  m_toolTabdock->setWindowFlags(Qt::SubWindow); // SubWindow allows it to be shown while MainWindow is also visible
+
   preferenceDialog = new PreferencesDialog(nullptr);
+  m_tabWidget = new QTabWidget(m_toolTabdock);
   infoPanel = new fBottomImageInfoTip(centralwidget);
   imagesPanel = new fImagesPanel(m_tabWidget); // New Images Panel
   m_tabWidget->addTab(imagesPanel, QString());
@@ -251,9 +255,6 @@ fMainWindow::fMainWindow()
   int minheight = /*std::max(drawingPanel->sizeHint().height(), featurePanel->sizeHint().height())*/featurePanel->sizeHint().height() + 25;
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
-
-  m_toolTabdock = new QDockWidget();
-  m_toolTabdock->setWindowFlags(Qt::Window);
 
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
