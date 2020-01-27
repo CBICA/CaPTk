@@ -13,7 +13,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 6.nonRelease.20200123 )
+SET( PROJECT_VERSION_PATCH 6 )
 SET( PROJECT_VERSION_TWEAK )
 
 # Configure CCache if available
@@ -31,7 +31,6 @@ IF( CCacheExectuable )
   SET( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
   #MESSAGE( STATUS "Speeding up build with ccache" )
 ENDIF()
-
 
 IF(WIN32)
   # enable parallel builds for windows
