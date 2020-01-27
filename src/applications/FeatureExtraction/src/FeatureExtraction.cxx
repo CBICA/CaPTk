@@ -484,32 +484,15 @@ int main(int argc, char** argv)
       {
         // this is actually a 2D image so re-process accordingly
 
-        ImageType::IndexType regionIndex;
-        ImageType::SizeType regionSize;
-
-        regionIndex.Fill(0);
-
-        auto currentSize = genericImageInfo.GetImageSize();
-        auto currentOrigin = genericImageInfo.GetImageOrigins();
-        regionSize[0] = currentSize[0];
-        regionSize[1] = currentSize[1];
-        regionSize[2] = 0;
-
         using ActualImageType = itk::Image< float, 2 >;
         std::vector< ActualImageType::Pointer > inputImages; // vector of input image pointers - these are used so that I/O operations can be reduced
         inputImages.resize(image_paths.size());
         ActualImageType::Pointer maskImage;
 
-        ImageType::RegionType desiredRegion(regionIndex, regionSize);
         for (size_t i = 0; i < image_paths.size(); i++)
         {
-          auto imageFilter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
-          imageFilter->SetExtractionRegion(desiredRegion);
-          imageFilter->SetInput(cbica::ReadImage< ImageType >(image_paths[i]));
-          imageFilter->SetDirectionCollapseToSubmatrix(); // using this to preserve as much of the original image properties as possible
-          imageFilter->Update();
-
-          inputImages[i] = imageFilter->GetOutput();
+          auto temp = cbica::GetExtractedImages< ImageType, ActualImageType >(cbica::ReadImage< ImageType >(image_paths[i]));
+          inputImages[i] = temp[0];
           inputImages[i]->DisconnectPipeline(); // ensure the new image exists as a separate memory block
 
           // sanity check
@@ -523,12 +506,12 @@ int main(int argc, char** argv)
             }
           }
         }
-        auto maskFilter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
-        maskFilter->SetExtractionRegion(desiredRegion);
-        maskFilter->SetInput(cbica::ReadImage< ImageType >(maskfilename));
-        maskFilter->SetDirectionCollapseToSubmatrix(); // using this to preserve as much of the original image properties as possible
-        maskFilter->Update();
-        maskImage = maskFilter->GetOutput();
+
+        {
+          auto temp = cbica::GetExtractedImages< ImageType, ActualImageType >(cbica::ReadImage< ImageType >(maskfilename));
+          maskImage = temp[0];
+          maskImage->DisconnectPipeline();
+        }
 
         // sanity checks
         if (!cbica::ImageSanityCheck< ActualImageType >(inputImages[0], maskImage))
