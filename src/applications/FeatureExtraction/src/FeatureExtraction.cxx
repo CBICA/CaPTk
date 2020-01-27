@@ -484,24 +484,19 @@ int main(int argc, char** argv)
       {
         // this is actually a 2D image so re-process accordingly
 
-        //auto m_tempFolderLocation = cbica::getUserHomeDirectory() + "/.CaPTk/tmp_" + cbica::getCurrentProcessID() + "/";
-        //cbica::createDir(m_tempFolderLocation);
-
         ImageType::IndexType regionIndex;
         ImageType::SizeType regionSize;
+
+        regionIndex.Fill(0);
 
         auto currentSize = genericImageInfo.GetImageSize();
         auto currentOrigin = genericImageInfo.GetImageOrigins();
         regionSize[0] = currentSize[0];
         regionSize[1] = currentSize[1];
         regionSize[2] = 0;
-        for (size_t d = 0; d < 3; d++)
-        {
-          regionIndex[d] = /*currentOrigin[d]*/0;
-        }
 
         using ActualImageType = itk::Image< float, 2 >;
-        std::vector< ActualImageType::Pointer > inputImages;
+        std::vector< ActualImageType::Pointer > inputImages; // vector of input image pointers - these are used so that I/O operations can be reduced
         inputImages.resize(image_paths.size());
         ActualImageType::Pointer maskImage;
 
@@ -511,28 +506,39 @@ int main(int argc, char** argv)
           auto imageFilter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
           imageFilter->SetExtractionRegion(desiredRegion);
           imageFilter->SetInput(cbica::ReadImage< ImageType >(image_paths[i]));
-          imageFilter->SetDirectionCollapseToIdentity(); // This is required.
+          imageFilter->SetDirectionCollapseToSubmatrix(); // using this to preserve as much of the original image properties as possible
           imageFilter->Update();
 
           inputImages[i] = imageFilter->GetOutput();
-          inputImages[i]->DisconnectPipeline();
+          inputImages[i]->DisconnectPipeline(); // ensure the new image exists as a separate memory block
 
-          //auto currentFileBase = cbica::getFilenameBase(image_paths[i]);
-          //image_paths[i] = m_tempFolderLocation + "image_" + modality_names[i] + "_2D.nii.gz";
-          //cbica::WriteImage< ActualImageType >(filter->GetOutput(), image_paths[i]);
+          // sanity check
+          if (i > 0)
+          {
+            if (!cbica::ImageSanityCheck< ActualImageType >(inputImages[i], inputImages[i - 1]))
+            {
+              std::cerr << "The images corresponding to the following paths do not have consistent physical dimensions:\t" << image_paths[i - 1] <<
+                "\n\t" << image_paths[i] << "\n";
+              exit(EXIT_FAILURE);
+            }
+          }
         }
         auto maskFilter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
         maskFilter->SetExtractionRegion(desiredRegion);
         maskFilter->SetInput(cbica::ReadImage< ImageType >(maskfilename));
-        maskFilter->SetDirectionCollapseToIdentity(); // This is required.
+        maskFilter->SetDirectionCollapseToSubmatrix(); // using this to preserve as much of the original image properties as possible
         maskFilter->Update();
         maskImage = maskFilter->GetOutput();
 
-        //auto currentFileBase = cbica::getFilenameBase(maskfilename);
-        //maskfilename = m_tempFolderLocation + "mask_" + currentFileBase + "_2D.nii.gz";
-        //cbica::WriteImage< ActualImageType >(filter->GetOutput(), maskfilename);
+        // sanity checks
+        if (!cbica::ImageSanityCheck< ActualImageType >(inputImages[0], maskImage))
+        {
+          std::cerr << "The input image(s) and mask do not have consistent physical dimensions. Please resample and re-try.\n";
+          exit(EXIT_FAILURE);
+        }
+
+        // run the algorithm with new images
         algorithmRunner< ActualImageType >(inputImages, maskImage);
-        //cbica::deleteDir(m_tempFolderLocation);
       }
       else
       {
