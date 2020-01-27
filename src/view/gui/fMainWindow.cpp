@@ -6142,6 +6142,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
     return;
   }
 
+  analysisPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["LungCancer"]["Model"].as<std::string>());
   analysisPanel.exec();
 
   std::string inputFileName;
@@ -6443,6 +6444,7 @@ void fMainWindow::ApplicationRecurrence()
 {
   {
     recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+    recurrencePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["RecurrenceEstimator"]["Model"].as<std::string>());
     recurrencePanel.exec();
   }
 }
@@ -6454,6 +6456,7 @@ void fMainWindow::ApplicationPseudoProgression()
 {
   {
     pseudoPanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+    pseudoPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PseudoProgressionEstimator"]["Model"].as<std::string>());
     pseudoPanel.exec();
   }
 }
@@ -6493,6 +6496,7 @@ void fMainWindow::ApplicationWhiteStripe()
 void fMainWindow::ApplicationPopulationAtlas()
 {
   atlasPanel.SetCurrentImagePath(mInputPathName);
+  atlasPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PopulationAtlases"]["Model"].as<std::string>());
   atlasPanel.exec();
 }
 #endif
@@ -6629,6 +6633,7 @@ void fMainWindow::ApplicationImagingSubtype()
 void fMainWindow::ApplicationMolecularSubtype()
 {
   msubtypePanel.SetCurrentImagePath(mInputPathName);
+  msubtypePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["MolecularSubtypePredictor"]["Model"].as<std::string>());
   msubtypePanel.exec();
 }
 #endif
@@ -6638,6 +6643,7 @@ void fMainWindow::ApplicationMolecularSubtype()
 void fMainWindow::ApplicationSurvival()
 {
   survivalPanel.SetCurrentImagePath(mInputPathName);
+  survivalPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["SurvivalPredictor"]["Model"].as<std::string>());
   survivalPanel.setModal(false);
   survivalPanel.exec();
 }
