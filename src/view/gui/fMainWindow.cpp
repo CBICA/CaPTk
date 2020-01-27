@@ -68,7 +68,7 @@
 
 #include "CaPTkDockWidget.h"
 
-//#include "DicomSeriesReader.h"
+#include "yaml-cpp/yaml.h"
 
 #include <QFile>
 
@@ -165,8 +165,9 @@ inline std::string correctExtension(const std::string &inputFileName)
 
 fMainWindow::fMainWindow()
 {
-
   setupUi(this);
+
+  m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -327,7 +328,6 @@ fMainWindow::fMainWindow()
   menuFile->addAction(actionPreferences);
   menuFile->addAction(actionExit);
 
-  menuDownload->addAction("GreedyRegistration");
   m_tabWidget->setCurrentIndex(0);
 
   bottomLayout->addWidget(infoPanel);
@@ -1132,12 +1132,19 @@ void fMainWindow::help_Interactions()
 void fMainWindow::help_Download(QAction* action)
 {
   auto currentApp = action->text().toStdString();
-  std::string path = getCaPTkDataDir();
-  auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-  cbica::Logging(loggerFile, currentLink);
-  if (!openLink(currentLink))
+  auto currentLink = m_downloadLinks["inputs"][currentApp]["Data"].as<std::string>();
+  if (!currentLink.empty() && (currentLink != "N.A."))
   {
+    cbica::Logging(loggerFile, currentLink);
+    if (!openLink(currentLink))
+    {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
+      return;
+    }
+  }
+  else
+  {
+    ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
 }
