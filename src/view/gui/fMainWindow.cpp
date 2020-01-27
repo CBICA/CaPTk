@@ -6496,7 +6496,6 @@ void fMainWindow::ApplicationWhiteStripe()
 void fMainWindow::ApplicationPopulationAtlas()
 {
   atlasPanel.SetCurrentImagePath(mInputPathName);
-  atlasPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PopulationAtlases"]["Model"].as<std::string>());
   atlasPanel.exec();
 }
 #endif
