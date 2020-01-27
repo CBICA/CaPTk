@@ -6653,6 +6653,7 @@ void fMainWindow::ApplicationSurvival()
 void fMainWindow::ApplicationEGFRvIIISVM()
 {
   egfrv3Panel.SetCurrentImagePath(mInputPathName);
+  egfrv3Panel.SetTrainedModelLink(m_downloadLinks["inputs"]["EGFRvIIISVMIndex"]["Model"].as<std::string>());
   egfrv3Panel.setModal(false);
   egfrv3Panel.exec();
 }
