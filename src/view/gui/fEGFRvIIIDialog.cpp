@@ -205,14 +205,11 @@ void fEGFRvIIIPredictor::CheckForDisclaimer()
 
   if (box->exec() == QMessageBox::Ok)
   {
-    std::string path = captk_currentApplicationPath;
-    path = path.substr(0, path.length() - 3);
-    std::string link = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIIIndexPredictor_PretrainedModel.zip";
-    cbica::Logging(loggerFile, link);
+    cbica::Logging(loggerFile, m_trainedModelLink);
 
     //ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    if /*(std::system((link).c_str()) != 0)*/ (!openLink(link))
+    if /*(std::system((link).c_str()) != 0)*/ (!openLink(m_trainedModelLink))
     {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified model.", this);
       return;
