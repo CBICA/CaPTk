@@ -32,6 +32,7 @@ IF( CCacheExectuable )
   #MESSAGE( STATUS "Speeding up build with ccache" )
 ENDIF()
 
+
 IF(WIN32)
   # enable parallel builds for windows
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /MP")
