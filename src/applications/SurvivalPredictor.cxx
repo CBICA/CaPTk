@@ -8,7 +8,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 	std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
 	std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
-	std::sort(subjectNames.begin(), subjectNames.end());
+  std::sort(subjectNames.begin(), subjectNames.end());
 
 	for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
 	{
