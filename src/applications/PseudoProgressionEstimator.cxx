@@ -10,6 +10,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
   std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+
   std::sort(subjectNames.begin(), subjectNames.end());
 
   for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
@@ -71,7 +72,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
         else if ((filePath_lower.find("ph") != std::string::npos)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("truncated") != std::string::npos)
+        else if ((filePath_lower.find("perf") != std::string::npos)
           && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           perfFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
@@ -163,6 +164,7 @@ int SurvivalPredictionOnExistingModel(const std::string modeldirectory,
   //	std::map<ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
   //	//std::cout << static_cast<std::string>(onesubject[IMAGE_TYPE_SUDOID]) << ": " << result[subjectID] << std::endl;
   //}
+
   return EXIT_SUCCESS;
 }
 
@@ -173,11 +175,11 @@ int PrepareNewSurvivalPredictionModel(const std::string inputdirectory, const st
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(CAPTK::MachineLearningApplicationSubtype::TRAINING, inputdirectory, true, true, true, true);
   PseudoProgressionEstimator objPseudoProgressionEstimator;
   std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
-  //if (QualifiedSubjects.size() == 0)
-  //  std::cout << "No subject found with required input. Exiting...." << std::endl;
-  //else if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
-  //  std::cout << "There should be atleast 20 patients to build reliable pseudo-progression model. Exiting...." << std::endl;
-  //else
+  if (QualifiedSubjects.size() == 0)
+    std::cout << "No subject found with required input. Exiting...." << std::endl;
+  else if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
+    std::cout << "There should be atleast 20 patients to build reliable pseudo-progression model. Exiting...." << std::endl;
+  else
     objPseudoProgressionEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, true, true, true, true);
   return EXIT_SUCCESS;
 }
@@ -257,6 +259,14 @@ int main(int argc, char **argv)
     {
       std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
       return EXIT_FAILURE;
+    }
+    if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))
+    {
+      if (!cbica::IsCompatible(modelDirectoryName + "/VERSION.yaml"))
+      {
+        std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+        return EXIT_FAILURE;
+      }
     }
     SurvivalPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
   }
