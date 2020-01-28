@@ -502,28 +502,31 @@ int main(int argc, char** argv)
 
         using ActualImageType = itk::Image< float, 2 >;
         std::vector< ActualImageType::Pointer > inputImages;
+        inputImages.resize(image_paths.size());
         ActualImageType::Pointer maskImage;
 
         ImageType::RegionType desiredRegion(regionIndex, regionSize);
-        auto filter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
-        filter->SetExtractionRegion(desiredRegion);
         for (size_t i = 0; i < image_paths.size(); i++)
         {
-          filter->SetInput(cbica::ReadImage< ImageType >(image_paths[i]));
-          filter->SetDirectionCollapseToIdentity(); // This is required.
-          filter->Update();
+          auto imageFilter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
+          imageFilter->SetExtractionRegion(desiredRegion);
+          imageFilter->SetInput(cbica::ReadImage< ImageType >(image_paths[i]));
+          imageFilter->SetDirectionCollapseToIdentity(); // This is required.
+          imageFilter->Update();
 
-          inputImages.push_back(filter->GetOutput());
+          inputImages[i] = imageFilter->GetOutput();
+          inputImages[i]->DisconnectPipeline();
 
           //auto currentFileBase = cbica::getFilenameBase(image_paths[i]);
           //image_paths[i] = m_tempFolderLocation + "image_" + modality_names[i] + "_2D.nii.gz";
           //cbica::WriteImage< ActualImageType >(filter->GetOutput(), image_paths[i]);
         }
-        filter->SetInput(cbica::ReadImage< ImageType >(maskfilename));
-        filter->SetDirectionCollapseToIdentity(); // This is required.
-        filter->Update();
-
-        maskImage = filter->GetOutput();
+        auto maskFilter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
+        maskFilter->SetExtractionRegion(desiredRegion);
+        maskFilter->SetInput(cbica::ReadImage< ImageType >(maskfilename));
+        maskFilter->SetDirectionCollapseToIdentity(); // This is required.
+        maskFilter->Update();
+        maskImage = maskFilter->GetOutput();
 
         //auto currentFileBase = cbica::getFilenameBase(maskfilename);
         //maskfilename = m_tempFolderLocation + "mask_" + currentFileBase + "_2D.nii.gz";

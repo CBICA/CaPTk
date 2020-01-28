@@ -66,6 +66,8 @@
 #include "itkTranslationTransform.h"
 #include "ApplicationPreferences.h"
 
+#include "CaPTkDockWidget.h"
+
 //#include "DicomSeriesReader.h"
 
 #include <QFile>
@@ -9730,7 +9732,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
     if (cbica::fileExists(subjectPath + "/features.csv"))
       featuresFilePath = subjectPath + "/features.csv";
 
-    if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
+    if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty() || perfFilePath.empty())
       continue;
 
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
