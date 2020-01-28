@@ -1,7 +1,7 @@
 # CaPTk:  Cancer Imaging Phenomics Toolkit 
 
 <p align="center">
-    <img src="https://www.med.upenn.edu/cbica/assets/user-content/images/captk/baseScreenshot.png" />
+    <img src="https://raw.githubusercontent.com/CBICA/CaPTk/master/docs_sources/images/0_tutorial_1_mainUI_resized.png" />
     <br></br>
     <a href="https://dev.azure.com/CBICA/CaPTk/_build?definitionId=2" alt="Build Status"><img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
     <a href="https://hub.docker.com/r/cbica/captk/builds" alt="Build Status"><img src="https://img.shields.io/docker/cloud/automated/cbica/captk"></a>
