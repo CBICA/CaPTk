@@ -166,6 +166,11 @@ void fFeaturePanel::computeFeature(int type)
         ((fMainWindow*)m_listener)->mSlicerManagers[
           ((fMainWindow*)m_listener)->mCurrentPickedImageIndex]->GetITKImage()
             );
+      modality.push_back(
+        CAPTK::ImageModalityString[
+          ((fMainWindow*)m_listener)->mSlicerManagers[
+            ((fMainWindow*)m_listener)->mCurrentPickedImageIndex]->mImageSubType]
+      );
     }
     else
     {
