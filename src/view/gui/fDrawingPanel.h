@@ -116,7 +116,7 @@ public slots :
   void ChangeLabelValuesClicked();
 
 private:
-  int m_currentOpacity = 10; // set default to the tenth spinbox selection (1.0 mask opacity)
+  int m_currentOpacity; // set default to the tenth spinbox selection (1.0 mask opacity)
 };
 
 
