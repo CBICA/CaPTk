@@ -837,47 +837,34 @@ jobs:
         git submodule update --init --recursive
       displayName: 'Git Submodule Init and Update'
 
-    # # Dependency manager
-    # - bash: |
-    #     #sudo apt-get update && sudo apt-get dist-upgrade -y
-    #     sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 
-    #     echo "Installing MPI stuff"
-    #     sudo apt-get install mpich libopenmpi-dev 
-    #     echo "Installing OpenGL stuff"
-    #     sudo apt-get install mesa-common-dev libglu1-mesa-dev libgl1-mesa-dev freeglut3-dev
-    #     sudo apt-get install doxygen
-    #     export GIT_LFS_SKIP_SMUDGE=1
-    #   displayName: 'Install dependencies from Aptitude'
-
     # Moving LFS Files
-    # - bash: |
-    #     mkdir -p bin
-    #     cd bin
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-    #     ls -lt
-    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-
-    # # Configure and build superbuild
-    # - bash: |
-    #     cd bin
-    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-    #     make -j2
-    #   displayName: 'Configure and compile Superbuild'
-
     - bash: |
         mkdir -p bin
-        cp -r ../../../superbuild/ ./bin
-        # cd bin
-        # cp -r ./ ../../../../superbuild
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        # mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+        # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+
+    # Configure and build superbuild
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        make -j2
+      displayName: 'Configure and compile Superbuild'
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+
+
+    - bash: |
+        # mkdir -p bin
+        # cp -r ../../../superbuild/ ./bin
+        cd bin
+        cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
-
-    #   # Check qt
-    # - bash: |
-    #     cd bin
-    #     ls -a
-    #     ls ./qt/
-    #   displayName: 'Check qt'
 
     - bash: |
         git pull origin master
@@ -888,10 +875,22 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
+        make -j2
+      displayName: 'Configure and compile CaPTk with Testing enabled'
 
-        export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+    - script: |
+       cd bin
+       make test
+       rm -rf testing
+      displayName: 'Performing the Tests'
 
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr"  -DBUILD_TESTING=OFF ..
+    # Configure and build CaPTk
+    - bash: |
+        cd bin
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
@@ -904,11 +903,11 @@ jobs:
 
     # Build a package
     - bash: |
-        export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/libexec:$PATH
-        
-        export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
         export PKG_FAST_MODE=1
+        # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
 
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
