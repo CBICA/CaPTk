@@ -5,13 +5,13 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.5" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.6" ref="index.html">
         <section title="Overview" ref="index.html">
-          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md112" />
-          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md113" />
-          <section title="Supporting Grant" ref="index.html#autotoc_md114" />
-          <section title="Disclaimer" ref="index.html#autotoc_md115" />
-          <section title="Contact" ref="index.html#autotoc_md116" />
+          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md113" />
+          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md114" />
+          <section title="Supporting Grant" ref="index.html#autotoc_md115" />
+          <section title="Disclaimer" ref="index.html#autotoc_md116" />
+          <section title="Contact" ref="index.html#autotoc_md117" />
         </section>
       </section>
       <section title="Getting Started" ref="Getting_Started.html">
@@ -19,7 +19,7 @@
         <section title="Supported Images" ref="Getting_Started.html#gs_supportedImages" />
         <section title="Image Loading" ref="Getting_Started.html#gs_imageLoading" />
         <section title="Image Visualization" ref="Getting_Started.html#gs_imageVisualization" />
-        <section title="Tab Docking (Windows-only)" ref="Getting_Started.html#gs_tabDocking" />
+        <section title="Tab Docking" ref="Getting_Started.html#gs_tabDocking" />
         <section title="Coordinate definition (Seed-point initialization)" ref="Getting_Started.html#gs_seedpoints">
           <section title="Tumor Points" ref="Getting_Started.html#gs_seedpoints_tumor" />
           <section title="Tissue Points" ref="Getting_Started.html#gs_seedpoints_tissue" />
@@ -125,29 +125,30 @@
 <section title="Changelog: Release Notes" ref="ReleaseNotes.html">
 <section title="Known Issues" ref="ReleaseNotes.html#autotoc_md88" />
 <section title="Older Versions" ref="ReleaseNotes.html#autotoc_md89">
-  <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md90" />
-  <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md91" />
-  <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md92" />
-  <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md93" />
-  <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md94" />
-  <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md95" />
-  <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md96" />
-  <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md97" />
-  <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md98" />
-  <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md99" />
-  <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md100" />
-  <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md101" />
-  <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md102" />
-  <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md103" />
-  <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md104" />
-  <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md105" />
+  <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md90" />
+  <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md91" />
+  <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md92" />
+  <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md93" />
+  <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md94" />
+  <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md95" />
+  <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md96" />
+  <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md97" />
+  <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md98" />
+  <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md99" />
+  <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md100" />
+  <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md101" />
+  <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md102" />
+  <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md103" />
+  <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md104" />
+  <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md105" />
+  <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md106" />
 </section>
 </section>
 </section>
 <section title="People (Credits)" ref="People.html">
-<section title="Advisors:" ref="People.html#autotoc_md109" />
-<section title="Developers:" ref="People.html#autotoc_md110" />
-<section title="Collaborators:" ref="People.html#autotoc_md111" />
+<section title="Advisors:" ref="People.html#autotoc_md110" />
+<section title="Developers:" ref="People.html#autotoc_md111" />
+<section title="Collaborators:" ref="People.html#autotoc_md112" />
 </section>
 </section>
 </section>
