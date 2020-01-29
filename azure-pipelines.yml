@@ -850,12 +850,12 @@ jobs:
     #   displayName: 'Install dependencies from Aptitude'
 
     # Moving LFS Files
-    # - bash: |
-    #     mkdir -p bin
-    #     cd bin
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-    #     ls -lt
-    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
     # # Configure and build superbuild
     # - bash: |
@@ -865,10 +865,10 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        mkdir -p bin
-        cp -r ../../../superbuild/ ./bin
-        # cd bin
-        # cp -r ./ ../../../../superbuild
+        # mkdir -p bin
+        # cp -r ../../../superbuild/ ./bin
+        cd bin
+        cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
