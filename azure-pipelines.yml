@@ -850,12 +850,12 @@ jobs:
     #   displayName: 'Install dependencies from Aptitude'
 
     # Moving LFS Files
-    - bash: |
-        mkdir -p bin
-        cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-        ls -lt
-      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+    # - bash: |
+    #     mkdir -p bin
+    #     cd bin
+    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+    #     ls -lt
+    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
     # # Configure and build superbuild
     # - bash: |
@@ -865,10 +865,10 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        # mkdir -p bin
-        # cp -r ../../../superbuild/ ./bin
-        cd bin
-        cp -r ./ ../../../../superbuild
+        mkdir -p bin
+        cp -r ../../../superbuild/ ./bin
+        # cd bin
+        # cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
@@ -889,6 +889,8 @@ jobs:
     - bash: |
         cd bin
 
+        export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr"  -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
@@ -904,7 +906,7 @@ jobs:
     - bash: |
         export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/libexec:$PATH
         
-        # export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/home/patis/libs/captkDepends_dcmtk/DCMTK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends_dcmtk/ITK-build:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
         export PKG_FAST_MODE=1
         ./scripts/captk-pkg
