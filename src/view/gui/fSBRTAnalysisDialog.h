@@ -67,6 +67,12 @@ public:
  */
   QString mInputPathName;	//! path of currently loaded data
 
+  void SetTrainedModelLink(std::string link)
+  {
+    m_trainedModelLink = link;
+  }
+  std::string m_trainedModelLink;
+
  /*
  \brief slots
  */

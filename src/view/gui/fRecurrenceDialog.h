@@ -47,6 +47,12 @@ public:
 	  mLoggerFile = loggerPath;
   }
 
+  void SetTrainedModelLink(std::string link)
+  {
+    m_trainedModelLink = link;
+  }
+  std::string m_trainedModelLink;
+
   QString mInputPathName;
   std::string mLoggerFile;
 

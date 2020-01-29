@@ -66,7 +66,9 @@
 #include "itkTranslationTransform.h"
 #include "ApplicationPreferences.h"
 
-//#include "DicomSeriesReader.h"
+#include "CaPTkDockWidget.h"
+
+#include "yaml-cpp/yaml.h"
 
 #include <QFile>
 
@@ -163,8 +165,9 @@ inline std::string correctExtension(const std::string &inputFileName)
 
 fMainWindow::fMainWindow()
 {
-
   setupUi(this);
+
+  m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -252,8 +255,13 @@ fMainWindow::fMainWindow()
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
-  m_toolTabdock = new QDockWidget();
-  m_toolTabdock->setWindowFlags(Qt::Window);
+  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
+  m_toolTabdock->setWindowFlags(Qt::SubWindow); // setting this as "Qt::Window" causes it to be hidden, at least on Linux.
+  // since the above window flag's effect is platform dependent, this may look strange on other platforms -- needs a test.
+
+  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
+  connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
+  connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
 
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
@@ -320,7 +328,6 @@ fMainWindow::fMainWindow()
   menuFile->addAction(actionPreferences);
   menuFile->addAction(actionExit);
 
-  menuDownload->addAction("GreedyRegistration");
   m_tabWidget->setCurrentIndex(0);
 
   bottomLayout->addWidget(infoPanel);
@@ -1125,12 +1132,19 @@ void fMainWindow::help_Interactions()
 void fMainWindow::help_Download(QAction* action)
 {
   auto currentApp = action->text().toStdString();
-  std::string path = getCaPTkDataDir();
-  auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-  cbica::Logging(loggerFile, currentLink);
-  if (!openLink(currentLink))
+  auto currentLink = m_downloadLinks["inputs"][currentApp]["Data"].as<std::string>();
+  if (!currentLink.empty() && (currentLink != "N.A."))
   {
+    cbica::Logging(loggerFile, currentLink);
+    if (!openLink(currentLink))
+    {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
+      return;
+    }
+  }
+  else
+  {
+    ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
 }
@@ -6128,6 +6142,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
     return;
   }
 
+  analysisPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["LungCancer"]["Model"].as<std::string>());
   analysisPanel.exec();
 
   std::string inputFileName;
@@ -6429,6 +6444,7 @@ void fMainWindow::ApplicationRecurrence()
 {
   {
     recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+    recurrencePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["RecurrenceEstimator"]["Model"].as<std::string>());
     recurrencePanel.exec();
   }
 }
@@ -6440,6 +6456,7 @@ void fMainWindow::ApplicationPseudoProgression()
 {
   {
     pseudoPanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+    pseudoPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PseudoProgressionEstimator"]["Model"].as<std::string>());
     pseudoPanel.exec();
   }
 }
@@ -6615,6 +6632,7 @@ void fMainWindow::ApplicationImagingSubtype()
 void fMainWindow::ApplicationMolecularSubtype()
 {
   msubtypePanel.SetCurrentImagePath(mInputPathName);
+  msubtypePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["MolecularSubtypePredictor"]["Model"].as<std::string>());
   msubtypePanel.exec();
 }
 #endif
@@ -6624,6 +6642,7 @@ void fMainWindow::ApplicationMolecularSubtype()
 void fMainWindow::ApplicationSurvival()
 {
   survivalPanel.SetCurrentImagePath(mInputPathName);
+  survivalPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["SurvivalPredictor"]["Model"].as<std::string>());
   survivalPanel.setModal(false);
   survivalPanel.exec();
 }
@@ -6633,6 +6652,7 @@ void fMainWindow::ApplicationSurvival()
 void fMainWindow::ApplicationEGFRvIIISVM()
 {
   egfrv3Panel.SetCurrentImagePath(mInputPathName);
+  egfrv3Panel.SetTrainedModelLink(m_downloadLinks["inputs"]["EGFRvIIISVMIndex"]["Model"].as<std::string>());
   egfrv3Panel.setModal(false);
   egfrv3Panel.exec();
 }
@@ -9729,7 +9749,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
     if (cbica::fileExists(subjectPath + "/features.csv"))
       featuresFilePath = subjectPath + "/features.csv";
 
-    if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
+    if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty() || perfFilePath.empty())
       continue;
 
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
