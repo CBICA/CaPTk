@@ -15,6 +15,8 @@
 
 fDrawingPanel::fDrawingPanel(QWidget * parent) : QWidget(parent)
 {
+    //initialize default opacity
+  m_currentOpacity = 10; // set default to the tenth spinbox selection (1.0 mask opacity)
   setupUi(this);
 
   connect(clearSelectedLabelButton, SIGNAL(clicked()), this, SLOT(clearSelectedLabelButtonFunctionality()));
