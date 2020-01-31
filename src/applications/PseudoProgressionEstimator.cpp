@@ -337,7 +337,6 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
 
   std::cout << "Selected features loaded." << std::endl;
 
-
   VariableSizeMatrixType PseudoModelSelectedFeatures = GetModelSelectedFeatures(ScaledFeatureSetAfterAddingLabel, psuSelectedFeatures);
   VariableSizeMatrixType RecurrenceModelSelectedFeatures = GetModelSelectedFeatures(ScaledFeatureSetAfterAddingLabel, recSelectedFeatures);
 

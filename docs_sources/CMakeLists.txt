@@ -38,11 +38,28 @@ IF    (NOT DVIPS_CONVERTER)
   MESSAGE(STATUS "dvips command DVIPS_CONVERTER not found but usually required.")
 ENDIF (NOT DVIPS_CONVERTER)
 
+
+OPTION( CAPTK_BUILD_DOCUMENTATION_DEVELOPER "Build Developer documentation (from *.h) files or not" OFF )
+
+
 IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in")
-	#MESSAGE(STATUS "configured ${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in --> ${CMAKE_CURRENT_BINARY_DIR}/doxy.config")
-	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in 
-    ${CMAKE_CURRENT_BINARY_DIR}/doxy.config
-    @ONLY )
+  #MESSAGE(STATUS "configured ${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in --> ${CMAKE_CURRENT_BINARY_DIR}/doxy.config")
+  
+  IF( CAPTK_BUILD_DOCUMENTATION_DEVELOPER )
+
+    IF( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doxy_dev.config.in" )
+      CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doxy_dev.config.in 
+        ${CMAKE_CURRENT_BINARY_DIR}/doxy.config
+        @ONLY )
+    ELSE() # the required file was not found, so disable that option altogether
+      SET( CAPTK_BUILD_DOCUMENTATION_DEVELOPER OFF )
+    ENDIF()
+
+  ELSE()
+    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.in 
+      ${CMAKE_CURRENT_BINARY_DIR}/doxy.config
+      @ONLY )
+  ENDIF()
     
 	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/html_footer.html 
     ${CMAKE_CURRENT_BINARY_DIR}/html_footer.html

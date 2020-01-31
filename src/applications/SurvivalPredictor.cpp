@@ -612,6 +612,7 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 	VariableSizeMatrixType SixModelSelectedFeatures = SelectSixMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
 	VariableSizeMatrixType EighteenModelSelectedFeatures = SelectEighteenMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
 	
+  //WriteCSVFiles(FeaturesOfAllSubjects, outputdirectory + "/PlainTestFeaturescsv");
   //WriteCSVFiles(ScaledFeatureSetAfterAddingLabel, outputdirectory + "/ScaledFeatureSetAfterAddingLabel.csv");
   //WriteCSVFiles(SixModelSelectedFeatures, outputdirectory + "/SixModelSelectedFeatures.csv");
   //WriteCSVFiles(EighteenModelSelectedFeatures, outputdirectory + "/EighteenModelSelectedFeatures.csv");

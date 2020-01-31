@@ -38,7 +38,7 @@ Please see the dedicated [FAQ](FAQ.html) section.
 --------
 
 \section gs_supportedImages Supported Images
-Currently, CaPTk supports visualization of <b>MR, CT, PET, X-Ray and Full-field Digital Mammography (FFDM) </b> images in both NIfTI (i.e., <b>.nii</b>, <b>.nii.gz</b>) and DICOM (i.e., <b>.dcm</b>) formats. For MRI, the following modalities are currently supported (the image modality box equivalent is shown in parenthesis):
+Currently, CaPTk supports visualization of <b>MR, CT, PET, X-Ray and Full-field Digital Mammography (FFDM) </b> images in NIfTI (i.e., <b>.nii</b>, <b>.nii.gz</b>) format.  DICOM (i.e., <b>.dcm</b>) support is limited to a few protocols for MR, CT and MG modalities. In NIfTI format, for MRI, the following modalities are currently supported (the image modality box equivalent is shown in parenthesis):
 
 |   Acronym   |                               Image Type                              |
 |:-----------:|:---------------------------------------------------------------------:|
@@ -77,7 +77,7 @@ fnins.2013.00031
 --------
 
 \section gs_imageLoading Image Loading
-The <b>File -> Load</b> menu is used to load all image types.
+The <b>File -> Load</b> menu is used to load all image types. Images can also be loaded by dragging and dropping onto the application. In case of DICOM images, loading/dragging a single image loads the entire dicom series.
 
 \image html imageLoading_resize.png "Loading images for visualization/processing"
 \image latex imageLoading_resize.png "Loading images for visualization/processing"
@@ -121,7 +121,7 @@ The "Comparison Mode" puts the loaded images (3 maximum) side-by-side for easy v
 
 --------
 
-\section gs_tabDocking Tab Docking (Windows-only)
+\section gs_tabDocking Tab Docking
 Double clicking on the tab bar will dock/undock the entire section, resulting in larger visualization panels in your monitor. This behavior is replicated by single click of the dock/undock button at the end of the section as well.
 
 \image html dock_comparison_resize.png "Left is while dock is active and right is undocked behavior"

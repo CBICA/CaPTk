@@ -2,17 +2,23 @@
 
 \page ReleaseNotes Changelog: Release Notes
 
-- GUI improvements
-- Algorithmic fixes for Neuro applications
-- Better error handling added all around
-- Linux installation updates
+- New model and data for Pseudo-Progression Estimator
 - Generic bug fixes and improvements 
+- Documentation updates
 
 ## Known Issues
 
 https://github.com/CBICA/CaPTk/issues
 
 ## Older Versions
+
+### 1.7.5
+
+- GUI improvements
+- Algorithmic fixes for Neuro applications
+- Better error handling added all around
+- Linux installation updates
+- Generic bug fixes and improvements 
 
 ### 1.7.3
 

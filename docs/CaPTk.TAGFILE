@@ -8,7 +8,7 @@
     <docanchor file="Getting_Started.html" title="Supported Images">gs_supportedImages</docanchor>
     <docanchor file="Getting_Started.html" title="Image Loading">gs_imageLoading</docanchor>
     <docanchor file="Getting_Started.html" title="Image Visualization">gs_imageVisualization</docanchor>
-    <docanchor file="Getting_Started.html" title="Tab Docking (Windows-only)">gs_tabDocking</docanchor>
+    <docanchor file="Getting_Started.html" title="Tab Docking">gs_tabDocking</docanchor>
     <docanchor file="Getting_Started.html" title="Coordinate definition (Seed-point initialization)">gs_seedpoints</docanchor>
     <docanchor file="Getting_Started.html" title="Tumor Points">gs_seedpoints_tumor</docanchor>
     <docanchor file="Getting_Started.html" title="Tissue Points">gs_seedpoints_tissue</docanchor>

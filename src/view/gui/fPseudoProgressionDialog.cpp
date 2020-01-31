@@ -266,7 +266,7 @@ void fPseudoProgressionDialog::CheckForDisclaimer()
   {
     std::string path = captk_currentApplicationPath;
     path = path.substr(0, path.length() - 3);
-    std::string link = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PseudoProgressionEstimator_PretrainedModel.zip";
+    std::string link = "ftp://www.nitrc.org/home/groups/captk/downloads/models/PseudoProgressionEstimator_PretrainedModel.zip";
 
     cbica::Logging(loggerFile, link);
 

@@ -1652,10 +1652,14 @@ void FeatureExtraction< TImage >::SetRequestedFeatures(std::map< std::string, st
       temp[paramName] = currentFeature_ParamsAndVals;
     }
 
-    m_Features[currentFeature.first] = std::make_tuple(selectedFeatureFlagStruct->second, // whether the feature is to be extracted or not
-      temp, // parameters and respective values
-      currentFeature.first, currentFeature.first, // these are the modality and roi label names, which get overwritten with the correct values in the "Update" function
-      std::map < std::string, double >());
+    // error check for something weird happening on UI
+    if (!currentFeature.second.empty())
+    {
+      m_Features[currentFeature.first] = std::make_tuple(selectedFeatureFlagStruct->second, // whether the feature is to be extracted or not
+        temp, // parameters and respective values
+        currentFeature.first, currentFeature.first, // these are the modality and roi label names, which get overwritten with the correct values in the "Update" function
+        std::map < std::string, double >());
+    }
   }
   m_algorithmDone = false;
 }
@@ -2038,7 +2042,7 @@ void FeatureExtraction< TImage >::Update()
           if (m_debug)
           {
             std::cout << "[DEBUG] Writing resampled image(s) to the output directory.\n";
-            cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/" + m_modality[i] +
+            cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/image_" + m_modality[i] +
               "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image +
               "_" + m_initializedTimestamp + ".nii.gz"));
           }

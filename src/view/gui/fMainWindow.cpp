@@ -66,6 +66,8 @@
 #include "itkTranslationTransform.h"
 #include "ApplicationPreferences.h"
 
+#include "CaPTkDockWidget.h"
+
 //#include "DicomSeriesReader.h"
 
 #include <QFile>
@@ -240,20 +242,25 @@ fMainWindow::fMainWindow()
 
   preferenceDialog = new PreferencesDialog(nullptr);
   infoPanel = new fBottomImageInfoTip(centralwidget);
-  imagesPanel = new fImagesPanel(); // New Images Panel
+  imagesPanel = new fImagesPanel(m_tabWidget); // New Images Panel
   m_tabWidget->addTab(imagesPanel, QString());
-  tumorPanel = new fTumorPanel();
+  tumorPanel = new fTumorPanel(m_tabWidget);
   m_tabWidget->addTab(tumorPanel, QString());
-  drawingPanel = new fDrawingPanel();
-  featurePanel = new fFeaturePanel();
+  drawingPanel = new fDrawingPanel(m_tabWidget);
+  featurePanel = new fFeaturePanel(m_tabWidget);
   m_tabWidget->addTab(drawingPanel, QString());
   m_tabWidget->addTab(featurePanel, "Feature Extraction");
   int minheight = /*std::max(drawingPanel->sizeHint().height(), featurePanel->sizeHint().height())*/featurePanel->sizeHint().height() + 25;
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
-  m_toolTabdock = new QDockWidget();
-  m_toolTabdock->setWindowFlags(Qt::Window);
+  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
+  m_toolTabdock->setWindowFlags(Qt::SubWindow); // setting this as "Qt::Window" causes it to be hidden, at least on Linux.
+  // since the above window flag's effect is platform dependent, this may look strange on other platforms -- needs a test.
+
+  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
+  connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
+  connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
 
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
@@ -9729,7 +9736,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
     if (cbica::fileExists(subjectPath + "/features.csv"))
       featuresFilePath = subjectPath + "/features.csv";
 
-    if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
+    if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty() || perfFilePath.empty())
       continue;
 
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
