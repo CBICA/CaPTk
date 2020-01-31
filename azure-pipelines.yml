@@ -825,10 +825,6 @@ jobs:
   pool: 'Linux'
 
   steps:
-    # # reload git 
-    # - bash: |
-    #     module load git/2.25.0
-    #   displayName: 'Reload git'
 
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
@@ -842,20 +838,17 @@ jobs:
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
-        # mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
-        # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+  
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
         cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQt5Core_DIR="/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5Core" ..
         make -j2
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
 
     - bash: |
@@ -875,7 +868,7 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$CMAKE_PREFIX_PATH
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
         make -j2
       displayName: 'Configure and compile CaPTk with Testing enabled'
@@ -889,7 +882,7 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$CMAKE_PREFIX_PATH
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
@@ -903,8 +896,8 @@ jobs:
 
     # Build a package
     - bash: |
-        export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$CMAKE_PREFIX_PATH
 
         export PKG_FAST_MODE=1
         # export PKG_COPY_QT_LIBS=1
