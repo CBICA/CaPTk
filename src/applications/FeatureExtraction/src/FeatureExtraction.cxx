@@ -432,12 +432,6 @@ int main(int argc, char** argv)
       "Please provide a patient id or path to csv file containing patient details";
     return EXIT_FAILURE;
   }
-  if (!multipatient_file.empty() && !patient_id.empty())
-  {
-    std::cerr << "MULTIPLE INPUT PROVIDED" << "\n" <<
-      "Please provide either a patient id or path to csv file containing patient details";
-    return EXIT_FAILURE;
-  }
   if (parser.isPresent("of"))
   {
     parser.getParameterValue("of", offset_String);
@@ -451,7 +445,7 @@ int main(int argc, char** argv)
     parser.getParameterValue("ut", unitTestReferenceFile);
   }
 
-  if (!patient_id.empty())
+  if (multipatient_file.empty())
   {
     std::cout << "Single subject computation selected.\n";
 
