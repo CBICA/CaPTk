@@ -152,7 +152,7 @@ INCLUDE_DIRECTORIES( ${CaPTk_SOURCE_DIR}/src
   ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends
   ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
   #${CMAKE_CURRENT_SOURCE_DIR}/inc
-  #${VTK_INCLUDE_DIRS} 
+  ${VTK_INCLUDE_DIRS} 
 )
                      
 ADD_LIBRARY(

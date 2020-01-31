@@ -833,29 +833,29 @@ jobs:
         git submodule update --init --recursive
       displayName: 'Git Submodule Init and Update'
 
-    # Moving LFS Files
+    # # Moving LFS Files
+    # - bash: |
+    #     mkdir -p bin
+    #     cd bin
+    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+  
+    #     ls -lt
+    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+
+    # # Configure and build superbuild
+    # - bash: |
+    #     cd bin
+    #     export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQt5Core_DIR="/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5Core" ..
+    #     make -j2
+    #   displayName: 'Configure and compile Superbuild'
+
+
     - bash: |
         mkdir -p bin
-        cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-  
-        ls -lt
-      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-
-    # Configure and build superbuild
-    - bash: |
-        cd bin
-        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQt5Core_DIR="/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5Core" ..
-        make -j2
-      displayName: 'Configure and compile Superbuild'
-
-
-    - bash: |
-        # mkdir -p bin
-        # cp -r ../../../superbuild/ ./bin
-        cd bin
-        cp -r ./ ../../../../superbuild
+        cp -r ../../../superbuild/ ./bin
+        # cd bin
+        # cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
