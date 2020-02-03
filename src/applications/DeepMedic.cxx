@@ -20,7 +20,7 @@
 
 //#include "CAPTk.h"
 
-std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, modelDirName, inputBVecName, outputDirectory, loggerFileIn;
+std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, modelDirName, inputBVecName, outputDirectory, outputFile, loggerFileIn;
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;
 bool maskProvided = false, debugMode = false;
 int inferenceType = 0;
@@ -359,14 +359,14 @@ void algorithmRunner()
     exit(EXIT_FAILURE);
   }
 
-  auto outputImageFile = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
+  auto outputImageFile_temp = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
   // do hole filling for skull stripping
   if (inferenceType == SkullStripping)
   {
     std::cout << "=== Performing hole-filling operation for skull stripping.\n";
-    if (cbica::exists(outputImageFile))
+    if (cbica::exists(outputImageFile_temp))
     {
-      auto outputImageWithHoles = cbica::ReadImage< TImageType >(outputImageFile);
+      auto outputImageWithHoles = cbica::ReadImage< TImageType >(outputImageFile_temp);
 
       auto holeFiller = itk::BinaryFillholeImageFilter< TImageType >::New();
       holeFiller->SetInput(outputImageWithHoles);
@@ -374,31 +374,40 @@ void algorithmRunner()
       holeFiller->SetFullyConnected(false);
       holeFiller->Update();
 
-      cbica::WriteImage< TImageType >(holeFiller->GetOutput(), outputImageFile);
+      cbica::WriteImage< TImageType >(holeFiller->GetOutput(), outputImageFile_temp);
     }
     std::cout << "=== Done.\n";
   }
   else if (inferenceType == TumorSegmentation)
   {
-    auto outputImageWithOldValues = cbica::ReadImage< TImageType >(outputImageFile);
+    auto outputImageWithOldValues = cbica::ReadImage< TImageType >(outputImageFile_temp);
     auto outputImageWithNewValues = cbica::ChangeImageValues< TImageType >(outputImageWithOldValues, "3", "4");
 
-    cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile);
+    cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile_temp);
   }
 
   // registration of segmentation back to patient space
   {
     std::cout << "== Starting registration of output segmentation back to patient space.\n";
     auto t1cImg_original = cbica::ReadImage< TImageType >(inputT1ce);
-    auto resampledMask = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(outputImageFile), 
+    auto resampledMask = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(outputImageFile_temp),
       t1cImg_original->GetSpacing(),
       t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
     cbica::WriteImage< TImageType >(
       resampledMask,
-      outputImageFile
+      outputImageFile_temp
       );
     std::cout << "== Done.\n";
   }
+  
+  if (!outputFile.empty())
+  {
+    cbica::WriteImage< TImageType >(
+      cbica::ReadImage< TImageType >(outputImageFile),
+      outputFile
+      )
+  }
+
 
   return;
 }
@@ -441,7 +450,14 @@ int main(int argc, char **argv)
   parser.getParameterValue("t1", inputT1);
   parser.getParameterValue("t2", inputT2);
   parser.getParameterValue("fl", inputFlair);
-  parser.getParameterValue("o", outputDirectory);
+
+  parser.getParameterValue("o", outputDirectory);  
+  // sanity check in case the user has passed a file
+  if (!cbica::getFilenameExtension(outputDirectory, false).empty())
+  {
+    outputFile = outputDirectory;
+    outputDirectory = cbica::getFilenamePath(outputFile);
+  }
 
   if (parser.isPresent("m"))
   {
@@ -477,17 +493,6 @@ int main(int argc, char **argv)
     parser.getParameterValue("t", inferenceType);
   }
 
-  //std::cout << "Input File:" << inputFileName << std::endl;
-  //if (!inputMaskName.empty())
-  //{
-  //  std::cout << "Input Mask:" << inputMaskName << std::endl;
-  //}
-  //std::cout << "Output File:" << outputFileName << std::endl;
-  //std::cout << "Quant Lower:" << quantLower << std::endl;
-  //std::cout << "Quant Upper:" << quantUpper << std::endl;
-  //std::cout << "CutOff Lower:" << cutOffLower << std::endl;
-  //std::cout << "CutOff Upper:" << cutOffUpper << std::endl;
-
   auto imageInfo = cbica::ImageInfo(inputT1ce);
   
   if (!cbica::ImageSanityCheck(inputT1, inputT1ce))
@@ -510,6 +515,7 @@ int main(int argc, char **argv)
   {
     if(!cbica::ImageSanityCheck(inputT1ce, inputMaskName))
     {
+      std::cerr << "The input image(s) and mask are in inconsistent spaces, please register them before trying.\n";
       return EXIT_FAILURE;
     }
   }
@@ -527,7 +533,6 @@ int main(int argc, char **argv)
     std::cerr << "Only 2D images are supported right now.\n";
     return EXIT_FAILURE;
   }
-
 
   std::cout << "Finished successfully.\n";
   return EXIT_SUCCESS;
