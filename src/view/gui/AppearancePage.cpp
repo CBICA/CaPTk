@@ -195,6 +195,6 @@ bool AppearancePage::GetConfirmationFromUser()
 
 void AppearancePage::ApplySelectedAppearance()
 {
-    qApp->setFont(m_SelectedFont);
+    qApp->setFont(m_SelectedFont, "QWidget"); // Apply selection to all widgets and subwidgets
     qApp->setStyleSheet(m_SelectedStyleSheet);
 }
