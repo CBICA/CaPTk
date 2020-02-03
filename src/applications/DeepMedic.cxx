@@ -134,6 +134,11 @@ void algorithmRunner()
       return;
     }
   }
+  else
+  {
+    std::cout << "Using non-CaPTk approved model at user's own risk.\n";
+  }
+  
   auto filesInDir = cbica::filesInDirectory(modelDirName);
   for (size_t i = 0; i < filesInDir.size(); i++)
   {
