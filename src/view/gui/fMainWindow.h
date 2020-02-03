@@ -76,6 +76,9 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <QScopedPointer>
 #include "vtkGenericOpenGLRenderWindow.h"
 #include "fBottomImageInfoTip.h"
+
+#include "yaml-cpp/node/node.h"
+
 class SlicerManager;
 class Slicer;
 class SimpleImageManager;
@@ -330,6 +333,8 @@ private:
   vtkSmartPointer< vtkGenericOpenGLRenderWindow> CoronalRenWin;
 
   QHBoxLayout* bottomLayout;
+    
+  YAML::Node m_downloadLinks; //! structure to save download links
 
   /**
   \struct ActionAndName

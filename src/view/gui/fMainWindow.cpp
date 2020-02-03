@@ -68,7 +68,7 @@
 
 #include "CaPTkDockWidget.h"
 
-//#include "DicomSeriesReader.h"
+#include "yaml-cpp/yaml.h"
 
 #include <QFile>
 
@@ -165,8 +165,9 @@ inline std::string correctExtension(const std::string &inputFileName)
 
 fMainWindow::fMainWindow()
 {
-
   setupUi(this);
+
+  m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -327,7 +328,6 @@ fMainWindow::fMainWindow()
   menuFile->addAction(actionPreferences);
   menuFile->addAction(actionExit);
 
-  menuDownload->addAction("GreedyRegistration");
   m_tabWidget->setCurrentIndex(0);
 
   bottomLayout->addWidget(infoPanel);
@@ -1132,12 +1132,19 @@ void fMainWindow::help_Interactions()
 void fMainWindow::help_Download(QAction* action)
 {
   auto currentApp = action->text().toStdString();
-  std::string path = getCaPTkDataDir();
-  auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-  cbica::Logging(loggerFile, currentLink);
-  if (!openLink(currentLink))
+  auto currentLink = m_downloadLinks["inputs"][currentApp]["Data"].as<std::string>();
+  if (!currentLink.empty() && (currentLink != "N.A."))
   {
+    cbica::Logging(loggerFile, currentLink);
+    if (!openLink(currentLink))
+    {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
+      return;
+    }
+  }
+  else
+  {
+    ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
 }
@@ -6135,6 +6142,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
     return;
   }
 
+  analysisPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["LungCancer"]["Model"].as<std::string>());
   analysisPanel.exec();
 
   std::string inputFileName;
@@ -6436,6 +6444,7 @@ void fMainWindow::ApplicationRecurrence()
 {
   {
     recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+    recurrencePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["RecurrenceEstimator"]["Model"].as<std::string>());
     recurrencePanel.exec();
   }
 }
@@ -6447,6 +6456,7 @@ void fMainWindow::ApplicationPseudoProgression()
 {
   {
     pseudoPanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+    pseudoPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PseudoProgressionEstimator"]["Model"].as<std::string>());
     pseudoPanel.exec();
   }
 }
@@ -6622,6 +6632,7 @@ void fMainWindow::ApplicationImagingSubtype()
 void fMainWindow::ApplicationMolecularSubtype()
 {
   msubtypePanel.SetCurrentImagePath(mInputPathName);
+  msubtypePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["MolecularSubtypePredictor"]["Model"].as<std::string>());
   msubtypePanel.exec();
 }
 #endif
@@ -6631,6 +6642,7 @@ void fMainWindow::ApplicationMolecularSubtype()
 void fMainWindow::ApplicationSurvival()
 {
   survivalPanel.SetCurrentImagePath(mInputPathName);
+  survivalPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["SurvivalPredictor"]["Model"].as<std::string>());
   survivalPanel.setModal(false);
   survivalPanel.exec();
 }
@@ -6640,6 +6652,7 @@ void fMainWindow::ApplicationSurvival()
 void fMainWindow::ApplicationEGFRvIIISVM()
 {
   egfrv3Panel.SetCurrentImagePath(mInputPathName);
+  egfrv3Panel.SetTrainedModelLink(m_downloadLinks["inputs"]["EGFRvIIISVMIndex"]["Model"].as<std::string>());
   egfrv3Panel.setModal(false);
   egfrv3Panel.exec();
 }

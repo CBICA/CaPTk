@@ -2064,6 +2064,13 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
+      // sanity check for the generated ROIs and image to ensure they are in same physical space
+      if (!cbica::ImageSanityCheck< TImage >(m_inputImages[0], m_Mask))
+      {
+        std::cerr << "ERROR: the image and mask are not in the same physical space; please check properties, resample the images are re-try.\n";
+        exit(EXIT_FAILURE);
+      }
+
       if (m_debug)
       {
         m_logger.Write("Started Construction of ROIs");
@@ -2093,7 +2100,7 @@ void FeatureExtraction< TImage >::Update()
       auto inputImageSize = m_Mask->GetBufferedRegion().GetSize(); // size of the (down-sampled) feature map
       auto featureMapImageSpacing = m_Mask->GetSpacing(); // spacing of the (down-sampled) feature map
                                 //auto featureMapImageSize_world = cbica::GetDistances< TImage >(m_Mask); // size of the (down-sampled) feature map in world coordinates
-
+      
       if (m_LatticeComputation && m_writeFeatureMaps) // check if writing of feature maps has been requested or not
       {
         if (m_debug)
