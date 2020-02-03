@@ -241,7 +241,7 @@ fMainWindow::fMainWindow()
   sizePolicy5.setHorizontalStretch(0);
   sizePolicy5.setVerticalStretch(0);
 
-  m_toolTabdock = new QDockWidget(this);
+  m_toolTabdock = new CaPTkDockWidget(this);
   m_toolTabdock->setWindowFlags(Qt::SubWindow); // SubWindow allows it to be shown while MainWindow is also visible
 
   preferenceDialog = new PreferencesDialog(nullptr);
