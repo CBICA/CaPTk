@@ -833,14 +833,14 @@ jobs:
         git submodule update --init --recursive
       displayName: 'Git Submodule Init and Update'
 
-    # # Moving LFS Files
-    # - bash: |
-    #     mkdir -p bin
-    #     cd bin
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
   
-    #     ls -lt
-    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
     # # Configure and build superbuild
     # - bash: |
@@ -851,13 +851,13 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
 
-    - bash: |
-        mkdir -p bin
-        cp -r ../../../superbuild/ ./bin
-        # cd bin
-        # cp -r ./ ../../../../superbuild
+    # - bash: |
+    #     mkdir -p bin
+    #     cp -r ../../../superbuild/ ./bin
+    #     # cd bin
+    #     # cp -r ./ ../../../../superbuild
         
-      displayName: 'Move superbuild and qt and compiled apps'
+      # displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
         git pull origin master
@@ -868,8 +868,8 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$CMAKE_PREFIX_PATH
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
+        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=ON ..
         make -j2
       displayName: 'Configure and compile CaPTk with Testing enabled'
 
@@ -882,8 +882,8 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$CMAKE_PREFIX_PATH
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
@@ -897,7 +897,6 @@ jobs:
     # Build a package
     - bash: |
         export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$CMAKE_PREFIX_PATH
 
         export PKG_FAST_MODE=1
         # export PKG_COPY_QT_LIBS=1
@@ -921,17 +920,17 @@ jobs:
         downloadPath: '$(System.ArtifactsDirectory)'
         continueOnError: true
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC 
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC 
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 
 - job: 'CBICA_OSX3_SelfHost'
