@@ -71,7 +71,7 @@ private:
     bool GetConfirmationFromUser();
 
     /**
-     * @brief Initialize is called to set up the app appearance in a way that is decoupled from the AppearancePage dialog options.
+     * @brief Initialize is called to set up the app appearance in a way that is not linked directly to the AppearancePage dialog options.
      */
     void Initialize();
 };
