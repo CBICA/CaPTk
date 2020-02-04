@@ -610,10 +610,17 @@ jobs:
 
     - bash: |
         git_hash=$(git rev-parse --verify HEAD) # of the last commit
-        cd bin
+        date=$(date '+%Y.%m.%d')                        # date in "YYYY.mm.dd" form
 
-        # Append git commit hash to the version. This way devs won't have to change the patch number on PRs
-        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)_${git_hash}
+        cd bin
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+        ### In nonRelease builds
+        ### append git commit hash to the version. 
+        ### This way devs won't have to change the patch number on PRs
+        if [[ $version == *"nonRelease"* ]]; then
+            version=${version}_${date}_${git_hash}
+        fi
+
 
         sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
 
@@ -633,7 +640,17 @@ jobs:
 
     - bash: |
         git_hash=$(git rev-parse --verify HEAD) # of the last commit
+        date=$(date '+%Y.%m.%d')                        # date in "YYYY.mm.dd" form
+
         cd bin
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+        ### In nonRelease builds
+        ### append git commit hash to the version. 
+        ### This way devs won't have to change the patch number on PRs
+        if [[ $version == *"nonRelease"* ]]; then
+            version=${version}_${date}_${git_hash}
+        fi
+
 
         # Append git commit hash to the version. This way devs won't have to change the patch number on PRs
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)_${git_hash}
