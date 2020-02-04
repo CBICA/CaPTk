@@ -410,7 +410,7 @@ void algorithmRunner()
     cbica::WriteImage< TImageType >(
       cbica::ReadImage< TImageType >(outputImageFile_temp),
       outputFile
-      )
+      );
   }
 
 
