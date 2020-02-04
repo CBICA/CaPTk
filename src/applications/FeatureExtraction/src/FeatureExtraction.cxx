@@ -29,7 +29,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 // stuff used in the program
 std::string loggerFile, multipatient_file, patient_id = "DEFAULT", image_path_string, modalities_string, maskfilename, 
-selected_roi_string, roi_labels_string, param_file, outputDir, offset_String, outputFilename;
+selected_roi_string = "all", roi_labels_string = "all", param_file, outputDir, offset_String, outputFilename;
 
 bool debug = false, debugWrite = false, verticalConc = false, featureMaps = false;
 
@@ -93,12 +93,12 @@ void algorithmRunner(std::vector<typename TImageType::Pointer> inputImages, type
   if (selected_roi.empty())
   {
     std::cout << "No ROI values have been selected for patient_id '" << patient_id << "', computation shall be done on all ROIs present in mask.\n";
-    //selected_roi = "all";
+    //selected_roi_string = "all";
   }
   if (roi_labels.empty())
   {
     std::cout << "No ROI labels have been provided for patient_id '" << patient_id << "', the ROI values will be used as labels instead.\n";
-    //roi_labels = "all";
+    //roi_labels_string = "all";
   }
   //param_file = cbica::dos2unix(param_file, outputDir);
   std::vector< std::string > imageNames = image_paths;
@@ -157,7 +157,14 @@ void algorithmRunner(std::vector<typename TImageType::Pointer> inputImages, type
 
   features.SetPatientID(patient_id);
   features.SetInputImages(inputImages, modality_names);
-  features.SetSelectedROIsAndLabels(selected_roi, roi_labels);
+  if (selected_roi.empty() || roi_labels.empty())
+  {
+    features.SetSelectedROIsAndLabels(selected_roi_string, roi_labels_string);
+  }
+  else
+  {
+    features.SetSelectedROIsAndLabels(selected_roi, roi_labels);
+  }
 
   // check if the provided labels are present mask image. if not exit the program 
   typename TImageType::Pointer mask = cbica::ReadImage< TImageType >(maskfilename);
