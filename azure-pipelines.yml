@@ -615,7 +615,7 @@ jobs:
         cd bin
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
         ### In nonRelease builds
-        ### append git commit hash to the version. 
+        ### append date and git commit hash to the version. 
         ### This way devs won't have to change the patch number on PRs
         if [[ $version == *"nonRelease"* ]]; then
             version=${version}_${date}_${git_hash}
@@ -645,15 +645,13 @@ jobs:
         cd bin
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
         ### In nonRelease builds
-        ### append git commit hash to the version. 
+        ### append date and git commit hash to the version. 
         ### This way devs won't have to change the patch number on PRs
         if [[ $version == *"nonRelease"* ]]; then
             version=${version}_${date}_${git_hash}
         fi
 
 
-        # Append git commit hash to the version. This way devs won't have to change the patch number on PRs
-        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)_${git_hash}
         pkgname="_Installer"
         pkgname="$version$pkgname"
 
