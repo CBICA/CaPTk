@@ -609,9 +609,11 @@ jobs:
       displayName: 'Performing the Tests'
 
     - bash: |
+        git_hash=$(git rev-parse --verify HEAD) # of the last commit
         cd bin
 
-        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+        # Append git commit hash to the version. This way devs won't have to change the patch number on PRs
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)_${git_hash}
 
         sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
 
@@ -630,9 +632,11 @@ jobs:
 
 
     - bash: |
+        git_hash=$(git rev-parse --verify HEAD) # of the last commit
         cd bin
 
-        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+        # Append git commit hash to the version. This way devs won't have to change the patch number on PRs
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)_${git_hash}
         pkgname="_Installer"
         pkgname="$version$pkgname"
 
