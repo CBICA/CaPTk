@@ -71,9 +71,9 @@ private:
     bool GetConfirmationFromUser();
 
     /**
-     * @brief Initialize is called to set up the app appearance in a way that is not linked directly to the AppearancePage dialog options.
+     * @brief SetApplicationPreferences saves the current selections to the global ApplicationPreferences (allowing them to be saved to disk later).
      */
-    void Initialize();
+    void SetApplicationPreferences();
 };
 
 #endif // APPEARANCEPAGE_H

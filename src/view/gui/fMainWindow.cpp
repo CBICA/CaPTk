@@ -244,7 +244,6 @@ fMainWindow::fMainWindow()
   m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
   m_toolTabdock->setWindowFlags(Qt::SubWindow); // SubWindow allows it to be shown while MainWindow is also visible
 
-  preferenceDialog = new PreferencesDialog(nullptr);
   m_tabWidget = new QTabWidget(m_toolTabdock);
   infoPanel = new fBottomImageInfoTip(centralwidget);
   imagesPanel = new fImagesPanel(m_tabWidget); // New Images Panel
@@ -964,6 +963,8 @@ fMainWindow::fMainWindow()
   m_tabWidget->setTabText(m_tabWidget->indexOf(tumorPanel), QApplication::translate("fMainWindow", "Seed Points", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(drawingPanel), QApplication::translate("fMainWindow", "Drawing", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(imagesPanel), QApplication::translate("fMainWindow", "Images", 0));
+
+  preferenceDialog = new PreferencesDialog(nullptr);
 }
 
 fMainWindow::~fMainWindow()
@@ -9253,14 +9254,15 @@ void fMainWindow::closeEvent(QCloseEvent* event)
 
   if (!cbica::fileExists(closeConfirmation))
   {
-    auto msgBox = new QMessageBox();
+
+    auto msgBox = new QMessageBox(this);
     msgBox->setWindowTitle("Close Confirmation!");
     msgBox->setText("Are you certain you would like to exit?");
     msgBox->addButton(QMessageBox::Yes);
     msgBox->addButton(QMessageBox::No);
     msgBox->setDefaultButton(QMessageBox::No);
 
-    QCheckBox closeConfirmationBox("Never ask again");
+    QCheckBox closeConfirmationBox("Never ask again", msgBox);
     closeConfirmationBox.blockSignals(true);
     msgBox->addButton(&closeConfirmationBox, QMessageBox::ResetRole);
     if (msgBox->exec() == QMessageBox::Yes)

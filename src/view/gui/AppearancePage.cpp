@@ -41,7 +41,7 @@ AppearancePage::AppearancePage(QWidget *parent) :
 	if (!QVariant(ApplicationPreferences::GetInstance()->GetFileAvailability()).toBool())
 	{
 		ui->themeComboBox->setCurrentIndex(ThemeType::Dark);
-        this->Initialize();
+        this->ApplySelectedAppearance();
 	}
 
 }
@@ -67,18 +67,18 @@ void AppearancePage::OnChangeTheme(int theme)
 		bool success = f.open(QFile::ReadOnly);
 		if (success)
 		{
-			cbica::Logging(loggerFile, "file reading succeeded, qss file path = " + std::string(qssPath.c_str()));
+            //cbica::Logging(loggerFile, "file reading succeeded, qss file path = " + std::string(qssPath.c_str()));
 			this->m_SelectedStyleSheet = f.readAll();
 		}
 		else
 		{
-			cbica::Logging(loggerFile, "file reading failed, qss file path = " + std::string(qssPath.c_str()));
+            //cbica::Logging(loggerFile, "file reading failed, qss file path = " + std::string(qssPath.c_str()));
 		}
 		f.close();
 	}
 	else if (this->m_SelectedTheme == ThemeType::Light)
 	{
-		cbica::Logging(loggerFile, "applying LIGHT theme");
+        cbica::Logging(loggerFile, "applying LIGHT theme");
 		this->m_SelectedStyleSheet = "";
 	}
 }
@@ -103,30 +103,13 @@ void AppearancePage::OnSelectFontButtonClicked()
 	}
 }
 
-void AppearancePage::Initialize()
-{
-    //! update previous
-    this->m_PreviousFont = this->m_SelectedFont;
-    this->m_PreviousStyleSheet = this->m_SelectedStyleSheet;
-    this->m_PreviousTheme = this->m_SelectedTheme;
-
-    //! apply selected font and stylesheet
-    qApp->setFont(this->m_SelectedFont);
-    qApp->setStyleSheet(this->m_SelectedStyleSheet);
-
-    ApplicationPreferences::GetInstance()->SetFont(this->m_SelectedFont.toString());
-    ApplicationPreferences::GetInstance()->SetTheme(QVariant::fromValue(this->m_SelectedTheme).toString());
-    ApplicationPreferences::GetInstance()->DisplayPreferences();
-
-}
 
 void AppearancePage::OnOkay()
 {   //! apply selected font and stylesheet
     ApplySelectedAppearance();
     if (GetConfirmationFromUser()) {
-        ApplicationPreferences::GetInstance()->SetFont(this->m_SelectedFont.toString());
-        ApplicationPreferences::GetInstance()->SetTheme(QVariant::fromValue(this->m_SelectedTheme).toString());
-        ApplicationPreferences::GetInstance()->DisplayPreferences();
+        SetApplicationPreferences();
+        //ApplicationPreferences::GetInstance()->DisplayPreferences();
         //! update previous
         this->m_PreviousFont = this->m_SelectedFont;
         this->m_PreviousStyleSheet = this->m_SelectedStyleSheet;
@@ -153,15 +136,19 @@ void AppearancePage::OnCancel()
 
 void AppearancePage::Restore()
 {
-	this->m_SelectedFont.fromString(ApplicationPreferences::GetInstance()->GetFont());
-	ui->currentFontLabel->setText(this->m_SelectedFont.family());
+    if (QVariant(ApplicationPreferences::GetInstance()->GetFileAvailability()).toBool())
+    {
 
-	auto metaEnum = QMetaEnum::fromType<ThemeType>();
-	this->m_SelectedTheme = static_cast<ThemeType>(metaEnum.keyToValue(
-		ApplicationPreferences::GetInstance()->GetTheme().toStdString().c_str()));
+        this->m_SelectedFont.fromString(ApplicationPreferences::GetInstance()->GetFont());
+        ui->currentFontLabel->setText(this->m_SelectedFont.family());
 
-	ui->themeComboBox->setCurrentIndex(this->m_SelectedTheme);
-    this->Initialize();
+        auto metaEnum = QMetaEnum::fromType<ThemeType>();
+        this->m_SelectedTheme = static_cast<ThemeType>(metaEnum.keyToValue(
+                                                           ApplicationPreferences::GetInstance()->GetTheme().toStdString().c_str()));
+
+        ui->themeComboBox->setCurrentIndex(this->m_SelectedTheme);
+        this->ApplySelectedAppearance();
+    }
 }
 
 bool AppearancePage::GetConfirmationFromUser()
@@ -190,11 +177,21 @@ bool AppearancePage::GetConfirmationFromUser()
     auto response = confirmationBox->result(); // grab the response value
     delete confirmationTimer; // clean up timer and box
     delete confirmationBox;
-    if (response == QMessageBox::Apply) { return true; } else { return false; }
+    if (response == QMessageBox::Apply) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 void AppearancePage::ApplySelectedAppearance()
 {
     qApp->setFont(m_SelectedFont, "QWidget"); // Apply selection to all widgets and subwidgets
     qApp->setStyleSheet(m_SelectedStyleSheet);
+}
+
+void AppearancePage::SetApplicationPreferences() {
+    ApplicationPreferences::GetInstance()->SetFont(this->m_SelectedFont.toString());
+    ApplicationPreferences::GetInstance()->SetTheme(QVariant::fromValue(this->m_SelectedTheme).toString());
 }
