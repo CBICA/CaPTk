@@ -241,7 +241,7 @@ fMainWindow::fMainWindow()
   sizePolicy5.setHorizontalStretch(0);
   sizePolicy5.setVerticalStretch(0);
 
-  m_toolTabdock = new CaPTkDockWidget(this);
+  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
   m_toolTabdock->setWindowFlags(Qt::SubWindow); // SubWindow allows it to be shown while MainWindow is also visible
 
   preferenceDialog = new PreferencesDialog(nullptr);
@@ -263,6 +263,10 @@ fMainWindow::fMainWindow()
   m_toolTabdock->setWidget(m_tabWidget);
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
   this->m_toolTabdock->setWindowTitle("Double click to undock");
+
+  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
+  connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
+  connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
 
   //! automatic undock on low resolution
   //! to be tested thoroughly
