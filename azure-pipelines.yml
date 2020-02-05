@@ -830,6 +830,8 @@ jobs:
 
     # submodule 
     - bash: |
+        module purge && module load arch_specific && module load gcc/4.9.2 && module load git/2.25.0 && module load dcmtk/3.6.3
+
         git submodule update --init --recursive
       displayName: 'Git Submodule Init and Update'
 
@@ -867,6 +869,7 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
+        module purge && module load arch_specific && module load gcc/4.9.2 && module load git/2.25.0 && module load dcmtk/3.6.3
         cd bin
         export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH && export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH && export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends/ITK-build/:$CMAKE_PREFIX_PATH        
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=ON ..
