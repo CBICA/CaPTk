@@ -171,11 +171,35 @@ jobs:
 
         ls -lt *_Installer.*
 
-        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        #mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
         cd ../
 
       displayName: 'Build & Package CaPTk'
+
+    - bash: |
+        cd bin
+        git_hash=$(git rev-parse --verify HEAD) # of the last commit
+        date=$(date '+%Y.%m.%d')                # date in "YYYY.mm.dd" form
+
+        cd bin
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+
+        ### In nonRelease builds
+        ### append date and git commit hash to the version. 
+        ### This way devs won't have to change the patch number on PRs
+        if [[ $version == *"nonRelease"* ]]; then
+            version=${version}_${date}_${git_hash}
+        fi
+
+        mv *_Installer.* ./CaPTk_$version_Installer.exe
+        
+        ls -lt *_Installer.*
+
+        echo "Moving Installer to ArtifactStagingDirectory"
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+
+      displayName: 'Putting Git hash to built installer'
 
     - bash: |
         rm -rf src
@@ -409,9 +433,33 @@ jobs:
         rm -rf scripts
 
         # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.bin
-        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        #mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
       displayName: 'Set up environment variables for packager and build a package'
+
+    - bash: |
+        cd bin
+        git_hash=$(git rev-parse --verify HEAD) # of the last commit
+        date=$(date '+%Y.%m.%d')                # date in "YYYY.mm.dd" form
+
+        cd bin
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+
+        ### In nonRelease builds
+        ### append date and git commit hash to the version. 
+        ### This way devs won't have to change the patch number on PRs
+        if [[ $version == *"nonRelease"* ]]; then
+            version=${version}_${date}_${git_hash}
+        fi
+
+        mv *_Installer.* ./CaPTk_$version_Installer.bin
+        
+        ls -lt *_Installer.*
+
+        echo "Moving Installer to ArtifactStagingDirectory"
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+
+      displayName: 'Putting Git hash to built installer'
 
     - bash: |
         rm -rf src
@@ -690,12 +738,36 @@ jobs:
         productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
         # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.pkg
-        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        #mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
         sudo rm -rf _CPack*
 
         # sudo rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
+
+    - bash: |
+        cd bin
+        git_hash=$(git rev-parse --verify HEAD) # of the last commit
+        date=$(date '+%Y.%m.%d')                # date in "YYYY.mm.dd" form
+
+        cd bin
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+
+        ### In nonRelease builds
+        ### append date and git commit hash to the version. 
+        ### This way devs won't have to change the patch number on PRs
+        if [[ $version == *"nonRelease"* ]]; then
+            version=${version}_${date}_${git_hash}
+        fi
+
+        mv *_Installer.* ./CaPTk_$version_Installer.pkg
+        
+        ls -lt *_Installer.*
+
+        echo "Moving Installer to ArtifactStagingDirectory"
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+
+      displayName: 'Putting Git hash to built installer'
 
     - bash: |
         rm -rf src
