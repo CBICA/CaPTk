@@ -964,6 +964,8 @@ fMainWindow::fMainWindow()
   m_tabWidget->setTabText(m_tabWidget->indexOf(drawingPanel), QApplication::translate("fMainWindow", "Drawing", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(imagesPanel), QApplication::translate("fMainWindow", "Images", 0));
 
+  // Instantiate this last -- when instantiated, this restores appearance settings from saved preferences.
+  // Doing this after the UI elements are set up ensures that the restored style is applied to everything.
   preferenceDialog = new PreferencesDialog(nullptr);
 }
 

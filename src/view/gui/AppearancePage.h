@@ -73,7 +73,7 @@ private:
     /**
      * @brief SetApplicationPreferences saves the current selections to the global ApplicationPreferences (allowing them to be saved to disk later).
      */
-    void SetApplicationPreferences();
+    void UpdateAppearancePreferences();
 };
 
 #endif // APPEARANCEPAGE_H
