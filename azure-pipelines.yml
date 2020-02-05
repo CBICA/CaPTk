@@ -868,7 +868,8 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH && export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH && export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends/ITK-build/:$CMAKE_PREFIX_PATH        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=ON ..
+        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH && export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH && export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends/ITK-build/:$CMAKE_PREFIX_PATH        
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=ON ..
         make -j 2
       displayName: 'Configure and compile CaPTk with Testing enabled'
 
