@@ -1930,9 +1930,9 @@ void FeatureExtraction< TImage >::Update()
 
     if (!m_maskValidated)
     {
-      TConstIteratorType maskIt(m_Mask, m_Mask->GetBufferedRegion());
-      if (m_roi.size() != 0)
+      if (!m_roi.empty())
       {
+        TConstIteratorType maskIt(m_Mask, m_Mask->GetBufferedRegion());
         for (size_t x = 0; x < m_roi.size(); x++)
         {
           maskIt.GoToBegin();
