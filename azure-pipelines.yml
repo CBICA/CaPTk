@@ -609,6 +609,9 @@ jobs:
       displayName: 'Performing the Tests'
 
     - bash: |
+        cd bin
+
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
         sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
 
         rm -rf CaPTk*.app
@@ -626,6 +629,9 @@ jobs:
 
 
     - bash: |
+        cd bin
+
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
         pkgname="_Installer"
         pkgname="$version$pkgname"
 
