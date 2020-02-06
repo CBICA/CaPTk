@@ -13,8 +13,34 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 7.nonRelease.20200205.02 )
+SET( PROJECT_VERSION_PATCH 7.nonRelease )
 SET( PROJECT_VERSION_TWEAK )
+
+# check for the string "nonRelease" in the PROJECT_VERSION_PATCH variable
+# if it is found, add timestamp and git hash of commit to the version
+STRING(FIND ${PROJECT_VERSION_PATCH} "nonRelease" NONRELEASE_FOUND)
+IF( ${NONRELEASE_FOUND} GREATER 0 )
+  # add timestamp to version_patch if nonRelease
+  STRING(TIMESTAMP TODAY "%Y%m%d")
+
+  # add git current git hash to version_patch if in nonRelease
+  IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+    FIND_PACKAGE(Git)
+    IF(GIT_FOUND)
+      EXECUTE_PROCESS(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT_VARIABLE "GIT_HASH"
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+      #MESSAGE( STATUS "Git version: ${GIT_HASH}" )
+    ELSE(GIT_FOUND)
+      SET(GIT_HASH 0)
+    ENDIF(GIT_FOUND)
+  ENDIF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+  #MESSAGE( STATUS "TIMESTAMP: ${TODAY}")
+
+ENDIF()
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
