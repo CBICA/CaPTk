@@ -20,10 +20,10 @@ SET( PROJECT_VERSION_TWEAK )
 # if it is found, add timestamp and git hash of commit to the version
 STRING(FIND ${PROJECT_VERSION_PATCH} "nonRelease" NONRELEASE_FOUND)
 IF( ${NONRELEASE_FOUND} GREATER 0 )
-  # add timestamp to version_patch if nonRelease
+  # get the timestamp
   STRING(TIMESTAMP TODAY "%Y%m%d")
 
-  # add git current git hash to version_patch if in nonRelease
+  # get git hash
   IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
     FIND_PACKAGE(Git)
     IF(GIT_FOUND)
@@ -38,7 +38,9 @@ IF( ${NONRELEASE_FOUND} GREATER 0 )
       SET(GIT_HASH 0)
     ENDIF(GIT_FOUND)
   ENDIF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
-  #MESSAGE( STATUS "TIMESTAMP: ${TODAY}")
+  
+  SET( PROJECT_VERSION_PATCH "${PROJECT_VERSION_PATCH}.${TODAY}.${GIT_HASH}" )
+  #MESSAGE( STATUS "PROJECT_VERSION_PATCH: ${PROJECT_VERSION_PATCH}")
 
 ENDIF()
 
