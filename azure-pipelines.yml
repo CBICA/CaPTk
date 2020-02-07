@@ -347,6 +347,12 @@ jobs:
         cd bin
         ls -a
         ls ./qt/
+
+        cat ./OpenCV-build/CMakeCache.txt
+
+        echo "DONE"
+        cat ./OpenCV-build/CMakeFiles/Makefile.cmake
+
       displayName: 'Check qt'
 
     - bash: |
