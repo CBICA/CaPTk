@@ -612,7 +612,6 @@ jobs:
         cd bin
 
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-
         sudo rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
 
         rm -rf CaPTk*.app
