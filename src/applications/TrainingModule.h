@@ -61,6 +61,11 @@ public:
   VectorDouble TrainData(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
     const std::string outputfolder, const int classifiertype);
 
+  VectorDouble TrainData2(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
+    const std::string outputfolder, const int classifiertype);
+
+  std::vector<int> UpdateUnselectedFeatures(std::vector<int> SelectedFeatures, int size);
+
   bool Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory,const int classifierType, const int foldtype, const int conftype, const std::string modeldirectory);
 
   std::string mEighteenTrainedFile, mSixTrainedFile;
