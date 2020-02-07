@@ -2,6 +2,8 @@
 #include <QSettings>
 #include <QFile>
 #include <QDebug>
+#include "cbicaLogging.h"
+#include <CaPTkDefines.h>
 
 ApplicationPreferences* ApplicationPreferences::m_Instance = nullptr;
 QMutex ApplicationPreferences::m_Mutex;
@@ -39,19 +41,24 @@ QString ApplicationPreferences::GetTheme() const
 
 void ApplicationPreferences::SerializePreferences()
 {
-	QSettings appSettings(QSettings::IniFormat,QSettings::SystemScope,
+    QSettings appSettings(QSettings::IniFormat,QSettings::UserScope,
 		"UPenn", "CaPTk");
+
 	appSettings.beginGroup("Appearance");
 	appSettings.setValue("Font", this->m_Font);
 	appSettings.setValue("Theme", this->m_Theme);
 	appSettings.endGroup();
+
+    qDebug() << " status = " << appSettings.status();
+    cbica::Logging(loggerFile, "ApplicationPreferences::SerializePreferences status: " + QVariant::fromValue(appSettings.status()).toString().toStdString() );
 }
 
 void ApplicationPreferences::DeSerializePreferences()
 {
-	QSettings appSettings(QSettings::IniFormat, QSettings::SystemScope,
+    QSettings appSettings(QSettings::IniFormat, QSettings::UserScope,
 		"UPenn", "CaPTk");
 	QString filename = appSettings.fileName();
+    std::string fname = filename.toStdString();
 	if (QFile(filename).exists())
 	{
 		this->SetFileAvailability(QVariant(true).toString());

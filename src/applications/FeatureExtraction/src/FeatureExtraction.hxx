@@ -1652,10 +1652,14 @@ void FeatureExtraction< TImage >::SetRequestedFeatures(std::map< std::string, st
       temp[paramName] = currentFeature_ParamsAndVals;
     }
 
-    m_Features[currentFeature.first] = std::make_tuple(selectedFeatureFlagStruct->second, // whether the feature is to be extracted or not
-      temp, // parameters and respective values
-      currentFeature.first, currentFeature.first, // these are the modality and roi label names, which get overwritten with the correct values in the "Update" function
-      std::map < std::string, double >());
+    // error check for something weird happening on UI
+    if (!currentFeature.second.empty())
+    {
+      m_Features[currentFeature.first] = std::make_tuple(selectedFeatureFlagStruct->second, // whether the feature is to be extracted or not
+        temp, // parameters and respective values
+        currentFeature.first, currentFeature.first, // these are the modality and roi label names, which get overwritten with the correct values in the "Update" function
+        std::map < std::string, double >());
+    }
   }
   m_algorithmDone = false;
 }
@@ -1926,9 +1930,9 @@ void FeatureExtraction< TImage >::Update()
 
     if (!m_maskValidated)
     {
-      TConstIteratorType maskIt(m_Mask, m_Mask->GetBufferedRegion());
-      if (m_roi.size() != 0)
+      if (!m_roi.empty())
       {
+        TConstIteratorType maskIt(m_Mask, m_Mask->GetBufferedRegion());
         for (size_t x = 0; x < m_roi.size(); x++)
         {
           maskIt.GoToBegin();

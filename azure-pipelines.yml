@@ -26,11 +26,11 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_windows_20200122.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_windows_20200204.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_WINDOWS
         restoreKeys: |
-          "bin_windows_20200122.tar.gz"
+          "bin_windows_20200204.tar.gz"
         continueOnError : true
       displayName: 'Caching'
 
@@ -52,8 +52,8 @@ jobs:
     #   displayName: 'Disk space check'
 
     - bash: |
-        tar xvfz bin_windows_20200122.tar.gz
-        rm -rf bin_windows_20200122.tar.gz
+        tar xvfz bin_windows_20200204.tar.gz
+        rm -rf bin_windows_20200204.tar.gz
         # ls
         mv bin_windows bin
         # ls
@@ -183,7 +183,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_windows_20200122.tar.gz
+        rm -rf bin_windows_20200204.tar.gz
         rm -rf install_manifest.txt
         rm -rf CMakeLists.txt
 
@@ -203,7 +203,7 @@ jobs:
         cd ../
 
         mv bin bin_windows
-        tar cvfz bin_windows_20200122.tar.gz bin_windows
+        tar cvfz bin_windows_20200204.tar.gz bin_windows
         rm -rf bin_windows
       displayName: 'Zipping bin'
 
@@ -265,12 +265,12 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_linux_20200122.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_linux_20200204.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_LINUX
         continueOnError : true
         restoreKeys: |
-          "bin_linux_20200122.tar.gz"
+          "bin_linux_20200204.tar.gz"
       displayName: 'Caching'
 
     # Dependency manager
@@ -299,8 +299,8 @@ jobs:
     #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xvfz bin_linux_20200122.tar.gz
-        rm -rf bin_linux_20200122.tar.gz
+        tar xvfz bin_linux_20200204.tar.gz
+        rm -rf bin_linux_20200204.tar.gz
         # ls
         mv bin_linux bin
         # ls
@@ -335,7 +335,7 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # - bash: |
-    #     tar cvfz bin_linux_20200122.tar.gz bin
+    #     tar cvfz bin_linux_20200204.tar.gz bin
     #   displayName: 'Zipping Superbuild'
 
     - bash: |
@@ -419,7 +419,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_linux_20200122.tar.gz
+        rm -rf bin_linux_20200204.tar.gz
         rm -rf CMakeLists.txt
 
         cd bin
@@ -437,7 +437,7 @@ jobs:
         cd ../
 
         mv bin bin_linux
-        tar cvfz bin_linux_20200122.tar.gz bin_linux
+        tar cvfz bin_linux_20200204.tar.gz bin_linux
         rm -rf bin_linux
       displayName: 'Zipping bin'
 
@@ -489,12 +489,12 @@ jobs:
 
     - task: CacheBeta@0
       inputs:
-        key: '"bin_macos_20200122.tar.gz" | "$(Build.DefinitionName)"'
+        key: '"bin_macos_20200204.tar.gz" | "$(Build.DefinitionName)"'
         path: $(Build.SourcesDirectory)
         cacheHitVar: CACHE_RESTORED_MAC
         continueOnError : true
         restoreKeys: |
-          "bin_macos_20200122.tar.gz"
+          "bin_macos_20200204.tar.gz"
       displayName: 'Caching'
 
     - bash: |
@@ -519,8 +519,8 @@ jobs:
     #   condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
     - bash: |
-        tar xvfz bin_macos_20200122.tar.gz
-        rm -rf bin_macos_20200122.tar.gz
+        tar xvfz bin_macos_20200204.tar.gz
+        rm -rf bin_macos_20200204.tar.gz
         # ls
         mv bin_macos bin
         # ls
@@ -565,7 +565,7 @@ jobs:
       displayName: 'Check qt'
 
     - bash: |
-        tar cvfz bin_macos_20200122.tar.gz bin
+        tar cvfz bin_macos_20200204.tar.gz bin
       displayName: 'Zipping Superbuild'
 
     - bash: |
@@ -684,7 +684,7 @@ jobs:
         rm -rf data
         rm -rf binaries
         rm -rf scripts
-        rm -rf bin_macos_20200122.tar.gz
+        rm -rf bin_macos_20200204.tar.gz
         rm -rf CMakeLists.txt
 
         cd bin
@@ -702,7 +702,7 @@ jobs:
         # ls
         mv bin bin_macos
         # ls
-        tar cvfz bin_macos_20200122.tar.gz bin_macos
+        tar cvfz bin_macos_20200204.tar.gz bin_macos
         # rm -rf bin_macos
       displayName: 'Zipping bin'
       

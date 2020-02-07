@@ -198,7 +198,6 @@ public:
     PrefGridLayout->addWidget(thresholdLabel, 1, 2, 1, 1);
     PrefGridLayout->addWidget(thresholdSpinBox, 1, 3, 1, 1);
 
-    m_tabWidget = new QTabWidget();
     statusbar = new QStatusBar();
 
     retranslateUi(fMainWindow);

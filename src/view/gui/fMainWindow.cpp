@@ -241,32 +241,31 @@ fMainWindow::fMainWindow()
   sizePolicy5.setHorizontalStretch(0);
   sizePolicy5.setVerticalStretch(0);
 
-  preferenceDialog = new PreferencesDialog(nullptr);
+  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
+  m_toolTabdock->setWindowFlags(Qt::SubWindow); // SubWindow allows it to be shown while MainWindow is also visible
+
+  m_tabWidget = new QTabWidget(m_toolTabdock);
   infoPanel = new fBottomImageInfoTip(centralwidget);
-  imagesPanel = new fImagesPanel(); // New Images Panel
+  imagesPanel = new fImagesPanel(m_tabWidget); // New Images Panel
   m_tabWidget->addTab(imagesPanel, QString());
-  tumorPanel = new fTumorPanel();
+  tumorPanel = new fTumorPanel(m_tabWidget);
   m_tabWidget->addTab(tumorPanel, QString());
-  drawingPanel = new fDrawingPanel();
-  featurePanel = new fFeaturePanel();
+  drawingPanel = new fDrawingPanel(m_tabWidget);
+  featurePanel = new fFeaturePanel(m_tabWidget);
   m_tabWidget->addTab(drawingPanel, QString());
   m_tabWidget->addTab(featurePanel, "Feature Extraction");
   int minheight = /*std::max(drawingPanel->sizeHint().height(), featurePanel->sizeHint().height())*/featurePanel->sizeHint().height() + 25;
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
-  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
-  m_toolTabdock->setWindowFlags(Qt::SubWindow); // setting this as "Qt::Window" causes it to be hidden, at least on Linux.
-  // since the above window flag's effect is platform dependent, this may look strange on other platforms -- needs a test.
-
-  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
-  connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
-  connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
-
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
   this->m_toolTabdock->setWindowTitle("Double click to undock");
+
+  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
+  connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
+  connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
 
   //! automatic undock on low resolution
   //! to be tested thoroughly
@@ -964,6 +963,10 @@ fMainWindow::fMainWindow()
   m_tabWidget->setTabText(m_tabWidget->indexOf(tumorPanel), QApplication::translate("fMainWindow", "Seed Points", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(drawingPanel), QApplication::translate("fMainWindow", "Drawing", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(imagesPanel), QApplication::translate("fMainWindow", "Images", 0));
+
+  // Instantiate this last -- when instantiated, this restores appearance settings from saved preferences.
+  // Doing this after the UI elements are set up ensures that the restored style is applied to everything.
+  preferenceDialog = new PreferencesDialog(nullptr);
 }
 
 fMainWindow::~fMainWindow()
@@ -9253,14 +9256,15 @@ void fMainWindow::closeEvent(QCloseEvent* event)
 
   if (!cbica::fileExists(closeConfirmation))
   {
-    auto msgBox = new QMessageBox();
+
+    auto msgBox = new QMessageBox(this);
     msgBox->setWindowTitle("Close Confirmation!");
     msgBox->setText("Are you certain you would like to exit?");
     msgBox->addButton(QMessageBox::Yes);
     msgBox->addButton(QMessageBox::No);
     msgBox->setDefaultButton(QMessageBox::No);
 
-    QCheckBox closeConfirmationBox("Never ask again");
+    QCheckBox closeConfirmationBox("Never ask again", msgBox);
     closeConfirmationBox.blockSignals(true);
     msgBox->addButton(&closeConfirmationBox, QMessageBox::ResetRole);
     if (msgBox->exec() == QMessageBox::Yes)
