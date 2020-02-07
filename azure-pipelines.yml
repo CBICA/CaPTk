@@ -830,8 +830,6 @@ jobs:
 
     # submodule 
     - bash: |
-        module purge && module load arch_specific && module load gcc/4.9.2 && module load git/2.25.0 && module load dcmtk/3.6.3
-
         git submodule update --init --recursive
       displayName: 'Git Submodule Init and Update'
 
@@ -844,23 +842,6 @@ jobs:
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    # # Configure and build superbuild
-    # - bash: |
-    #     cd bin
-    #     export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DQt5Core_DIR="/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5Core" ..
-    #     make -j2
-    #   displayName: 'Configure and compile Superbuild'
-
-
-    # - bash: |
-    #     mkdir -p bin
-    #     cp -r ../../../superbuild/ ./bin
-    #     # cd bin
-    #     # cp -r ./ ../../../../superbuild
-        
-      # displayName: 'Move superbuild and qt and compiled apps'
-
     - bash: |
         git pull origin master
         git log -1
@@ -869,9 +850,10 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
-        module purge && module load arch_specific && module load gcc/4.9.2 && module load git/2.25.0 && module load dcmtk/3.6.3
+        export CMAKE_PREFIX_PATH="" && export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH && export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH
+        
         cd bin
-        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH && export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH && export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends/ITK-build/:$CMAKE_PREFIX_PATH        
+
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=ON ..
         make -j 2
       displayName: 'Configure and compile CaPTk with Testing enabled'
@@ -884,8 +866,10 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
+        export CMAKE_PREFIX_PATH="" && export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH && export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH
+
         cd bin
-        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH && export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH && export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends/ITK-build/:$CMAKE_PREFIX_PATH        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=ON ..
+
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
@@ -899,10 +883,9 @@ jobs:
 
     # Build a package
     - bash: |
-        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH && export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH && export CMAKE_PREFIX_PATH=/cbica/home/patis/libs/captkDepends/ITK-build/:$CMAKE_PREFIX_PATH        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=ON ..
+        export CMAKE_PREFIX_PATH="" && export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH && export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH
 
         export PKG_FAST_MODE=1
-        # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
 
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
