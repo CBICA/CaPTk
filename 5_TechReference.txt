@@ -21,13 +21,19 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 
 \section tr_fe_defaults Defaults
 
-\subsection tr_fe_def_main Main Default Feature Extraction Parameters
+The Feature Extraction module ships with a default set of parameters for 3D and 2D images (there are different extraction paradigms and compatible for both). See the subsequent sections for details.
 
-For details, please see https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/1_params_default.csv.
+\subsection tr_fe_def_main Default 3D Image Feature Extraction Parameters
 
-\subsection tr_fe_def_lattice Lattice Feature Extraction Parameters
+This is primarily targeted at brain tumor image feature extraction and users should customize it for their own dataset.
 
-For details, please see https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/2_params_default_lattice.csv.
+For a description of the parameters and related explanations, please see https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/1_params_default.csv.
+
+\subsection tr_fe_def_lattice Default 2D Image Feature Extraction Parameters
+
+This are primarily targeted at mammogram image feature extraction and users should customize it for their own dataset.
+
+For a description of the parameters and related explanations, please see https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/2_params_default_lattice.csv.
 
 \subsection tr_fe_customization
 
