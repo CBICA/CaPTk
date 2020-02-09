@@ -392,6 +392,10 @@ jobs:
         sudo ldconfig
       displayName: 'SQL lib fix for PKG_COPY_QT_LIBS'
 
+    - bash: |
+        df -k .
+      displayName: 'Disk space check'
+
     # Build a package
     - bash: |
         export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
