@@ -216,9 +216,9 @@
     <title>Feature Extraction</title>
     <filename>tr_FeatureExtraction</filename>
     <docanchor file="tr_FeatureExtraction.html" title="Defaults">tr_fe_defaults</docanchor>
-    <docanchor file="tr_FeatureExtraction.html" title="Main Default Feature Extraction Parameters">tr_fe_def_main</docanchor>
-    <docanchor file="tr_FeatureExtraction.html" title="Lattice Feature Extraction Parameters">tr_fe_def_lattice</docanchor>
-    <docanchor file="tr_FeatureExtraction.html">tr_fe_customization</docanchor>
+    <docanchor file="tr_FeatureExtraction.html" title="Default 3D Image Feature Extraction Parameters">tr_fe_def_main</docanchor>
+    <docanchor file="tr_FeatureExtraction.html" title="Default 2D Image Feature Extraction Parameters">tr_fe_def_lattice</docanchor>
+    <docanchor file="tr_FeatureExtraction.html" title="Customizing Parameters">tr_fe_customization</docanchor>
     <docanchor file="tr_FeatureExtraction.html" title="Batch Mode">tr_fe_batch</docanchor>
     <docanchor file="tr_FeatureExtraction.html" title="Extracted Features">tr_fe_math</docanchor>
   </compound>
