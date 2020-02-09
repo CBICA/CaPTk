@@ -307,7 +307,7 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
     </tr>
 </table>
 
-Detailed explanation of the mathematics and other details can be found in the [Image Biomarker Standardization Initiative page (IBSI)](https://ibsi.readthedocs.io/en/latest/).
+Detailed explanation of the mathematics and other details can be found in the [Image Biomarker Standardization Initiative (IBSI) page](https://ibsi.readthedocs.io/en/latest/).
 
 The parameterization of the <b>lattice-based strategy</b> for feature extraction is defined by:
 - The grid spacing representing the distance between consecutive lattice points (Default: 6.3mm). 
