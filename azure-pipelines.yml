@@ -402,6 +402,7 @@ jobs:
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         rm -rf regression
         rm -rf binaries
+        rm -rf bin/externalApps
 
         export PKG_FAST_MODE=1
         # export PKG_COPY_QT_LIBS=1
