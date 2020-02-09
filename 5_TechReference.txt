@@ -35,52 +35,13 @@ This are primarily targeted at mammogram image feature extraction and users shou
 
 For a description of the parameters and related explanations, please see https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/2_params_default_lattice.csv.
 
-\subsection tr_fe_customization
+\subsection tr_fe_customization Customizing Parameters
 
-For details, please see https://github.com/CBICA/CaPTk/tree/master/src/applications/FeatureExtraction#the-parameter-file.
+The user will need to pass a custom parameter file to Feature Extraction. For details on creating such a file, please see https://github.com/CBICA/CaPTk/tree/master/src/applications/FeatureExtraction#the-parameter-file.
 
 \section tr_fe_batch Batch Mode
 
-An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureExtraction.csv</b> or https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/batchMode/batch_featureExtraction.csv. An explanation of the inputs is given below (the headers are case-insensitive):
-
-<table border="1">
-    <tr>
-      <td align="center"><b>Header</b></td>
-      <td align="center"><b>Description</b></td>
-    </tr>
-    <tr>
-      <td>PATIENT_ID</td>
-      <td>The subject ID of the images getting processed</td>
-    </tr>
-    <tr>
-      <td>IMAGES</td>
-      <td>The co-registered input images for whom features are to be extracted; separated by '|'</td>
-    </tr>
-    <tr>
-      <td>MODALITIES</td>
-      <td>The corresponding modalities used in the output CSV; separated by '|'</td>
-    </tr>
-    <tr>
-      <td>ROIFile</td>
-      <td>The mask file which defines the annotated regions for extracting features</td>
-    </tr>
-    <tr>
-      <td>SELECTED_ROI</td>
-      <td>The selected annotations from which to extract features; separated by '|'</td>
-    </tr>
-    <tr>
-      <td>ROI_LABEL</td>
-      <td>The corresponding annotation labels used in the output CSV; separated by '|'</td>
-    </tr>
-    <tr>
-      <td>OUTPUT (OPTIONAL)</td>
-      <td>The output file for the current subject</td>
-    </tr>
-    <tr>
-      <td>PARAM_FILE (OPTIONAL)</td>
-      <td>The parameter file for the current subject</td>
-    </tr>
-</table>
+An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureExtraction.csv</b> or https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/batchMode/batch_featureExtraction.csv. 
 
 \section tr_fe_math Extracted Features
 
