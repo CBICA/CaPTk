@@ -625,12 +625,12 @@ int algorithmsRunner()
   }
   else if (requestedAlgorithm == LabelSimilarity)
   {
-    auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
-
-    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-    auto referenceImage = cbica::ReadImage< TImageType >(referenceMaskForSimilarity);
-    auto uniqueLabels = cbica::GetUniqueValuesInImage< TImageType >(inputImage);
-    auto uniqueLabelsRef = cbica::GetUniqueValuesInImage< TImageType >(referenceImage);
+    // this filter only works on unsigned int type
+    using DefaultImageType = itk::Image< unsigned int, TImageType::ImageDimension >;
+    auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
+    auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
+    auto uniqueLabels = cbica::GetUniqueValuesInImage< DefaultImageType >(inputImage);
+    auto uniqueLabelsRef = cbica::GetUniqueValuesInImage< DefaultImageType >(referenceImage);
 
     // sanity check
     if (uniqueLabels.size() != uniqueLabelsRef.size())
@@ -645,10 +645,12 @@ int algorithmsRunner()
         if (uniqueLabels[i] != uniqueLabelsRef[i])
         {
           std::cerr << "The label values in input and reference image are not consistent.\n";
-      return EXIT_FAILURE;
+          return EXIT_FAILURE;
         }
       }
     }
+
+    auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< DefaultImageType >::New();
 
     similarityFilter->SetSourceImage(inputImage);
     similarityFilter->SetTargetImage(referenceImage);
