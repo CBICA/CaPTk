@@ -636,7 +636,7 @@ int algorithmsRunner()
     if (uniqueLabels.size() != uniqueLabelsRef.size())
     {
       std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
-      return;
+      return EXIT_FAILURE;
     }
     else
     {
@@ -645,7 +645,7 @@ int algorithmsRunner()
         if (uniqueLabels[i] != uniqueLabelsRef[i])
         {
           std::cerr << "The label values in input and reference image are not consistent.\n";
-          return;
+      return EXIT_FAILURE;
         }
       }
     }
@@ -676,7 +676,7 @@ int algorithmsRunner()
         std::cout << "False Pos. Err.: " << similarityFilter->GetFalsePositiveError(uniqueLabels[i]) << "\n";
       }
     }
-    return;
+      return EXIT_SUCCESS;
   }
 
   // if no other algorithm has been selected and mask & output files are present and in same space as input, apply it
