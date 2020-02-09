@@ -13,6 +13,7 @@
 #include "itkOtsuThresholdImageFilter.h"
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
+#include "itkLabelOverlapMeasuresImageFilter.h"
 
 #include "cbicaDCMQIWrapper.h"
 
@@ -44,12 +45,13 @@ enum AvailableAlgorithms
   Image2World,
   World2Image,
   ImageStack2Join,
-  JoinedImage2Stack
+  JoinedImage2Stack,
+  LabelSimilarity
 };
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON, orientationDesired, coordinateToTransform;
+std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON, orientationDesired, coordinateToTransform, referenceMaskForSimilarity;
 std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
@@ -621,6 +623,61 @@ int algorithmsRunner()
     inputImage->TransformPhysicalPointToIndex(indexToConvert, output);
     std::cout << indexToConvert << " ==> " << output << "\n";
   }
+  else if (requestedAlgorithm == LabelSimilarity)
+  {
+    auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
+
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    auto referenceImage = cbica::ReadImage< TImageType >(referenceMaskForSimilarity);
+    auto uniqueLabels = cbica::GetUniqueValuesInImage< TImageType >(inputImage);
+    auto uniqueLabelsRef = cbica::GetUniqueValuesInImage< TImageType >(referenceImage);
+
+    // sanity check
+    if (uniqueLabels.size() != uniqueLabelsRef.size())
+    {
+      std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
+      return;
+    }
+    else
+    {
+      for (size_t i = 0; i < uniqueLabels.size(); i++)
+      {
+        if (uniqueLabels[i] != uniqueLabelsRef[i])
+        {
+          std::cerr << "The label values in input and reference image are not consistent.\n";
+          return;
+        }
+      }
+    }
+
+    similarityFilter->SetSourceImage(inputImage);
+    similarityFilter->SetTargetImage(referenceImage);
+    similarityFilter->Update();
+
+    std::cout << "=== All Labels ===\n";
+    std::cout << "Total Overlap:   " << similarityFilter->GetTotalOverlap() << "\n";
+    std::cout << "Union (Jaccard): " << similarityFilter->GetUnionOverlap() << "\n";
+    std::cout << "Mean (DICE):     " << similarityFilter->GetMeanOverlap() << "\n";
+    std::cout << "Volume Sim.:     " << similarityFilter->GetVolumeSimilarity() << "\n";
+    std::cout << "False Neg. Err.: " << similarityFilter->GetFalseNegativeError() << "\n";
+    std::cout << "False Pos. Err.: " << similarityFilter->GetFalsePositiveError() << "\n";
+
+    if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
+    {
+      std::cout << "=== Non-zero Labels ===\n";
+      for (size_t i = 0; i < uniqueLabels.size(); i++)
+      {
+        std::cout << "Label Value:     " << uniqueLabels[i] << "\n";
+        std::cout << "Target Overlap:  " << similarityFilter->GetTargetOverlap(uniqueLabels[i]) << "\n";
+        std::cout << "Union (Jaccard): " << similarityFilter->GetUnionOverlap(uniqueLabels[i]) << "\n";
+        std::cout << "Mean (DICE):     " << similarityFilter->GetMeanOverlap(uniqueLabels[i]) << "\n";
+        std::cout << "Volume Sim.:     " << similarityFilter->GetVolumeSimilarity(uniqueLabels[i]) << "\n";
+        std::cout << "False Neg. Err.: " << similarityFilter->GetFalseNegativeError(uniqueLabels[i]) << "\n";
+        std::cout << "False Pos. Err.: " << similarityFilter->GetFalsePositiveError(uniqueLabels[i]) << "\n";
+      }
+    }
+    return;
+  }
 
   // if no other algorithm has been selected and mask & output files are present and in same space as input, apply it
   else if (cbica::isFile(inputMaskFile) && !outputImageFile.empty())
@@ -753,6 +810,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
   parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
+  parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -768,6 +826,7 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-i C:/test/ -o C:/output.nii.gz -e2j 1.5", "Join the extracted images into a single image with spacing in the new dimension as 1.5");
   parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -r 100 -rr 1.0,1.0,1.0 -ri LINEAR", "Calculates an isotropic image from the input with spacing '1.0' in all dimensions using linear interpolation");
   parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -r 100 -rf C:/reference.nii.gz -ri LINEAR", "Calculates an isotropic image from the input with spacing from the reference image using linear interpolation");
+  parser.addExampleUsage("-ls C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz", "Calculates Total/Union/Mean Overlap (different DICE coefficients), Volume Similarity, False Positive/Negative Error for all labels");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
   
@@ -1089,6 +1148,11 @@ int main(int argc, char** argv)
       break;
     }
     return EXIT_SUCCESS;
+  }
+  else if (parser.isPresent("ls"))
+  {
+    requestedAlgorithm = LabelSimilarity;
+    parser.getParameterValue("ls", referenceMaskForSimilarity);
   }
 
   // this doesn't need any template initialization
