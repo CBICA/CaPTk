@@ -393,6 +393,8 @@ jobs:
       displayName: 'SQL lib fix for PKG_COPY_QT_LIBS'
 
     - bash: |
+        rm -rf regression
+        rm -rf binaries
         rm -rf bin_linux_20200204.tar.gz
         df -k .
       displayName: 'Disk space check'
