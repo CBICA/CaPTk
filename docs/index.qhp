@@ -94,9 +94,9 @@
     <section title="Technical Reference" ref="Technical_Reference.html">
       <section title="Feature Extraction" ref="tr_FeatureExtraction.html">
         <section title="Defaults" ref="tr_FeatureExtraction.html#tr_fe_defaults">
-          <section title="Main Default Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_main" />
-          <section title="Lattice Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_lattice" />
-          <section title="tr_fe_customization" ref="tr_FeatureExtraction.html#tr_fe_customization" />
+          <section title="Default 3D Image Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_main" />
+          <section title="Default 2D Image Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_lattice" />
+          <section title="Customizing Parameters" ref="tr_FeatureExtraction.html#tr_fe_customization" />
         </section>
         <section title="Batch Mode" ref="tr_FeatureExtraction.html#tr_fe_batch" />
         <section title="Extracted Features" ref="tr_FeatureExtraction.html#tr_fe_math" />
