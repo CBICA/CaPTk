@@ -353,6 +353,9 @@ jobs:
         echo "DONE"
         cat ./OpenCV-build/CMakeFiles/Makefile.cmake
 
+        cat ./OpenCV-build/CMakeVars.txt
+
+
       displayName: 'Check qt'
 
     - bash: |
