@@ -430,10 +430,30 @@ FOREACH(subdir ${SUBDIRECTORIES})
       SUBDIRLIST(SUBDIRECTORIES ${SUBDIRPATH}/lib)
       # MESSAGE("[DEBUG] ItkSnap subdirs:${SUBDIRECTORIES}")
       FOREACH(itkSnapLib ${SUBDIRECTORIES})
-        INSTALL(DIRECTORY ${SUBDIRPATH}/lib/${itkSnapLib}
-          DESTINATION lib
-          DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+
+        SUBDIRLIST(SUBDIRECTORIES_SNAP ${SUBDIRPATH}/lib)
+
+        # install all directories inside
+        FOREACH(itkSnapLib_subDirs ${SUBDIRECTORIES_SNAP})
+          INSTALL(DIRECTORY ${SUBDIRPATH}/lib/${itkSnapLib_subDirs}
+            DESTINATION lib/${itkSnapLib}
+            DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+          )
+        ENDFOREACH()
+        
+        # find stand-alone files and install them separately
+        FILE( GLOB FILES_SNAP
+          "${SUBDIRPATH}/lib/${itkSnapLib}/*"
         )
+
+        FOREACH(itkSnapLib_files ${FILES_SNAP})
+          INSTALL(
+            FILES ${SUBDIRPATH}/lib/${itkSnapLib}/${itkSnapLib_files}
+            DESTINATION lib/${itkSnapLib}
+            DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+          )
+        ENDFOREACH()
+
       ENDFOREACH()
     ENDIF()
 
