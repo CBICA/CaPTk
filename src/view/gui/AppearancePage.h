@@ -39,7 +39,15 @@ public:
 public slots:
 	void OnSelectFontButtonClicked();
 	void OnChangeTheme(int);
+
+    /**
+     * @brief OnOkay is called when the Appearance Page dialog is accepted. It prompts for user confirmation.
+     */
 	void OnOkay() override;
+
+    /**
+     * @brief OnCancel is called when the Appearance Page dialog is rejected. It resets the appearance to its previous configuration.
+     */
 	void OnCancel() override;
 	void Restore() override;
 
@@ -50,6 +58,22 @@ private:
     QFont m_SelectedFont, m_PreviousFont;
 	QString m_SelectedStyleSheet, m_PreviousStyleSheet;
 	ThemeType m_SelectedTheme, m_PreviousTheme;
+
+    /**
+     * @brief ApplySelectedAppearance applies whatever the currently selected font and stylesheet is to the global qApp.
+     */
+    void ApplySelectedAppearance();
+
+    /**
+     * @brief GetConfirmationFromUser raises a style-independent message box asking the user if they wish to keep their changes.
+     * @return  true if the user presses "Apply", false if "Cancel" or if 10 seconds pass
+     */
+    bool GetConfirmationFromUser();
+
+    /**
+     * @brief SetApplicationPreferences saves the current selections to the global ApplicationPreferences (allowing them to be saved to disk later).
+     */
+    void UpdateAppearancePreferences();
 };
 
 #endif // APPEARANCEPAGE_H

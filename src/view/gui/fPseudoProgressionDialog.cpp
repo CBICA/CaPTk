@@ -264,15 +264,11 @@ void fPseudoProgressionDialog::CheckForDisclaimer()
   QCoreApplication::processEvents();
   if (box->exec() == QMessageBox::Ok)
   {
-    std::string path = captk_currentApplicationPath;
-    path = path.substr(0, path.length() - 3);
-    std::string link = "ftp://www.nitrc.org/home/groups/captk/downloads/models/PseudoProgressionEstimator_PretrainedModel.zip";
+    cbica::Logging(loggerFile, m_trainedModelLink);
 
-    cbica::Logging(loggerFile, link);
+    //ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
-
-    if /*(std::system((link).c_str()) != 0)*/ (!openLink(link))
+    if /*(std::system((link).c_str()) != 0)*/ (!openLink(m_trainedModelLink))
     {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified model.", this);
       return;

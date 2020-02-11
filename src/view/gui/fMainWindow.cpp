@@ -68,7 +68,7 @@
 
 #include "CaPTkDockWidget.h"
 
-//#include "DicomSeriesReader.h"
+#include "yaml-cpp/yaml.h"
 
 #include <QFile>
 
@@ -165,8 +165,9 @@ inline std::string correctExtension(const std::string &inputFileName)
 
 fMainWindow::fMainWindow()
 {
-
   setupUi(this);
+
+  m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -240,32 +241,31 @@ fMainWindow::fMainWindow()
   sizePolicy5.setHorizontalStretch(0);
   sizePolicy5.setVerticalStretch(0);
 
-  preferenceDialog = new PreferencesDialog(nullptr);
+  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
+  m_toolTabdock->setWindowFlags(Qt::SubWindow); // SubWindow allows it to be shown while MainWindow is also visible
+
+  m_tabWidget = new QTabWidget(m_toolTabdock);
   infoPanel = new fBottomImageInfoTip(centralwidget);
-  imagesPanel = new fImagesPanel(); // New Images Panel
+  imagesPanel = new fImagesPanel(m_tabWidget); // New Images Panel
   m_tabWidget->addTab(imagesPanel, QString());
-  tumorPanel = new fTumorPanel();
+  tumorPanel = new fTumorPanel(m_tabWidget);
   m_tabWidget->addTab(tumorPanel, QString());
-  drawingPanel = new fDrawingPanel();
-  featurePanel = new fFeaturePanel();
+  drawingPanel = new fDrawingPanel(m_tabWidget);
+  featurePanel = new fFeaturePanel(m_tabWidget);
   m_tabWidget->addTab(drawingPanel, QString());
   m_tabWidget->addTab(featurePanel, "Feature Extraction");
   int minheight = /*std::max(drawingPanel->sizeHint().height(), featurePanel->sizeHint().height())*/featurePanel->sizeHint().height() + 25;
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
-  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
-  m_toolTabdock->setWindowFlags(Qt::SubWindow); // setting this as "Qt::Window" causes it to be hidden, at least on Linux.
-  // since the above window flag's effect is platform dependent, this may look strange on other platforms -- needs a test.
-
-  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
-  connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
-  connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
-
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
   this->m_toolTabdock->setWindowTitle("Double click to undock");
+
+  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
+  connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
+  connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
 
   //! automatic undock on low resolution
   //! to be tested thoroughly
@@ -327,7 +327,6 @@ fMainWindow::fMainWindow()
   menuFile->addAction(actionPreferences);
   menuFile->addAction(actionExit);
 
-  menuDownload->addAction("GreedyRegistration");
   m_tabWidget->setCurrentIndex(0);
 
   bottomLayout->addWidget(infoPanel);
@@ -964,6 +963,10 @@ fMainWindow::fMainWindow()
   m_tabWidget->setTabText(m_tabWidget->indexOf(tumorPanel), QApplication::translate("fMainWindow", "Seed Points", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(drawingPanel), QApplication::translate("fMainWindow", "Drawing", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(imagesPanel), QApplication::translate("fMainWindow", "Images", 0));
+
+  // Instantiate this last -- when instantiated, this restores appearance settings from saved preferences.
+  // Doing this after the UI elements are set up ensures that the restored style is applied to everything.
+  preferenceDialog = new PreferencesDialog(nullptr);
 }
 
 fMainWindow::~fMainWindow()
@@ -1132,12 +1135,19 @@ void fMainWindow::help_Interactions()
 void fMainWindow::help_Download(QAction* action)
 {
   auto currentApp = action->text().toStdString();
-  std::string path = getCaPTkDataDir();
-  auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-  cbica::Logging(loggerFile, currentLink);
-  if (!openLink(currentLink))
+  auto currentLink = m_downloadLinks["inputs"][currentApp]["Data"].as<std::string>();
+  if (!currentLink.empty() && (currentLink != "N.A."))
   {
+    cbica::Logging(loggerFile, currentLink);
+    if (!openLink(currentLink))
+    {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
+      return;
+    }
+  }
+  else
+  {
+    ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
 }
@@ -6135,6 +6145,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
     return;
   }
 
+  analysisPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["LungCancer"]["Model"].as<std::string>());
   analysisPanel.exec();
 
   std::string inputFileName;
@@ -6436,6 +6447,7 @@ void fMainWindow::ApplicationRecurrence()
 {
   {
     recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+    recurrencePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["RecurrenceEstimator"]["Model"].as<std::string>());
     recurrencePanel.exec();
   }
 }
@@ -6447,6 +6459,7 @@ void fMainWindow::ApplicationPseudoProgression()
 {
   {
     pseudoPanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+    pseudoPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PseudoProgressionEstimator"]["Model"].as<std::string>());
     pseudoPanel.exec();
   }
 }
@@ -6622,6 +6635,7 @@ void fMainWindow::ApplicationImagingSubtype()
 void fMainWindow::ApplicationMolecularSubtype()
 {
   msubtypePanel.SetCurrentImagePath(mInputPathName);
+  msubtypePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["MolecularSubtypePredictor"]["Model"].as<std::string>());
   msubtypePanel.exec();
 }
 #endif
@@ -6631,6 +6645,7 @@ void fMainWindow::ApplicationMolecularSubtype()
 void fMainWindow::ApplicationSurvival()
 {
   survivalPanel.SetCurrentImagePath(mInputPathName);
+  survivalPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["SurvivalPredictor"]["Model"].as<std::string>());
   survivalPanel.setModal(false);
   survivalPanel.exec();
 }
@@ -6640,6 +6655,7 @@ void fMainWindow::ApplicationSurvival()
 void fMainWindow::ApplicationEGFRvIIISVM()
 {
   egfrv3Panel.SetCurrentImagePath(mInputPathName);
+  egfrv3Panel.SetTrainedModelLink(m_downloadLinks["inputs"]["EGFRvIIISVMIndex"]["Model"].as<std::string>());
   egfrv3Panel.setModal(false);
   egfrv3Panel.exec();
 }
@@ -9240,14 +9256,15 @@ void fMainWindow::closeEvent(QCloseEvent* event)
 
   if (!cbica::fileExists(closeConfirmation))
   {
-    auto msgBox = new QMessageBox();
+
+    auto msgBox = new QMessageBox(this);
     msgBox->setWindowTitle("Close Confirmation!");
     msgBox->setText("Are you certain you would like to exit?");
     msgBox->addButton(QMessageBox::Yes);
     msgBox->addButton(QMessageBox::No);
     msgBox->setDefaultButton(QMessageBox::No);
 
-    QCheckBox closeConfirmationBox("Never ask again");
+    QCheckBox closeConfirmationBox("Never ask again", msgBox);
     closeConfirmationBox.blockSignals(true);
     msgBox->addButton(&closeConfirmationBox, QMessageBox::ResetRole);
     if (msgBox->exec() == QMessageBox::Yes)

@@ -166,20 +166,30 @@ void fFeaturePanel::computeFeature(int type)
         ((fMainWindow*)m_listener)->mSlicerManagers[
           ((fMainWindow*)m_listener)->mCurrentPickedImageIndex]->GetITKImage()
             );
+      modality.push_back(
+        CAPTK::ImageModalityString[
+          ((fMainWindow*)m_listener)->mSlicerManagers[
+            ((fMainWindow*)m_listener)->mCurrentPickedImageIndex]->mImageSubType]
+      );
     }
     else
     {
       images = ((fMainWindow*)m_listener)->getLodedImages(imagepaths, modality);
+      if (imagepaths.size() < 1)
+      {
+        ShowErrorMessage("No valid images selected!", this);
+        return;
+      }
+      if (images.size() != imagepaths.size())
+      {
+        ShowErrorMessage("No valid images selected!", this);
+        return;
+      }
     }
-    ((fMainWindow*)m_listener)->mCurrentPickedImageIndex;
-    if (imagepaths.size() < 1)
-    {
-      ShowErrorMessage("No valid images selected!", this);
-      return;
-    }
+    //((fMainWindow*)m_listener)->mCurrentPickedImageIndex;
     if (((fMainWindow*)m_listener)->isMaskDefined())
     {
-    maskImg = ((fMainWindow*)m_listener)->getMaskImage();
+      maskImg = ((fMainWindow*)m_listener)->getMaskImage();
     }
     else
     {
@@ -187,7 +197,7 @@ void fFeaturePanel::computeFeature(int type)
       return;
     }
   }
-  if (images.size() != imagepaths.size() || images.size() == 0)
+  if (images.size() == 0)
   {
     ShowErrorMessage("No valid images selected!", this);
     return;
