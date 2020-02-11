@@ -109,10 +109,7 @@ int main(int argc, char *argv[])
   //TrainingModule mTrainingSimulator;
   std::cout << "Calling function" << std::endl;
   if (mTrainingSimulator.Run(inputFeaturesFile, inputLabelsFile, outputDirectoryName, classifierType, foldType, confType,modelDirectoryName) == true)
-  {
-    std::cout << "The trained model and classification performance has been saved at the specified location!!!\n";
     std::cout << "Finished successfully!!!\n";
-  }
   else
     std::cout << "Encountered an error!!!\n";
 
