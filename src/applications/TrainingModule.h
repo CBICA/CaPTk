@@ -61,7 +61,7 @@ public:
   VectorDouble TrainData(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
     const std::string outputfolder, const int classifiertype);
 
-  VectorDouble TrainData2(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
+  bool TrainData2(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
     const std::string outputfolder, const int classifiertype);
 
   std::vector<int> UpdateUnselectedFeatures(std::vector<int> SelectedFeatures, int size);
@@ -80,6 +80,7 @@ public:
 
   VectorDouble InternalCrossValidation(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue,int kerneltype);
 
+  VectorDouble InternalCrossValidationResubstitution(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue, int kerneltype);
 
   VectorDouble SplitTrainTest(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder, const int classifiertype, const int training_size);
 
