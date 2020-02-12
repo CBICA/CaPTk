@@ -443,12 +443,13 @@ FOREACH(subdir ${SUBDIRECTORIES})
         
         # find stand-alone files and install them separately
         FILE( GLOB FILES_SNAP
+          LIST_DIRECTORIES FALSE
           "${SUBDIRPATH}/lib/${itkSnapLib}/*"
         )
 
         FOREACH(itkSnapLib_files ${FILES_SNAP})
           INSTALL(
-            FILES ${SUBDIRPATH}/lib/${itkSnapLib}/${itkSnapLib_files}
+            FILES ${itkSnapLib_files}
             DESTINATION lib/${itkSnapLib}
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
           )
