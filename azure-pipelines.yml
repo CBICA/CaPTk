@@ -26,11 +26,11 @@ jobs:
 
     # - task: CacheBeta@0
     #   inputs:
-    #     key: '"bin_windows_20200210.tar.gz" | "$(Build.DefinitionName)"'
+    #     key: '"bin_windows_20200212.tar.gz" | "$(Build.DefinitionName)"'
     #     path: $(Build.SourcesDirectory)
     #     cacheHitVar: CACHE_RESTORED_WINDOWS
     #     restoreKeys: |
-    #       "bin_windows_20200210.tar.gz"
+    #       "bin_windows_20200212.tar.gz"
     #     continueOnError : true
     #   displayName: 'Caching'
 
@@ -52,8 +52,8 @@ jobs:
     #   displayName: 'Disk space check'
 
     - bash: |
-        tar xvfz bin_windows_20200210.tar.gz
-        rm -rf bin_windows_20200210.tar.gz
+        tar xvfz bin_windows_20200212.tar.gz
+        rm -rf bin_windows_20200212.tar.gz
         # ls
         mv bin_windows bin
         # ls
@@ -177,35 +177,35 @@ jobs:
 
       displayName: 'Build & Package CaPTk'
 
-    - bash: |
-        rm -rf src
-        rm -rf docs*
-        rm -rf data
-        rm -rf binaries
-        rm -rf scripts
-        rm -rf bin_windows_20200210.tar.gz
-        rm -rf install_manifest.txt
-        rm -rf CMakeLists.txt
+    # - bash: |
+    #     rm -rf src
+    #     rm -rf docs*
+    #     rm -rf data
+    #     rm -rf binaries
+    #     rm -rf scripts
+    #     rm -rf bin_windows_20200212.tar.gz
+    #     rm -rf install_manifest.txt
+    #     rm -rf CMakeLists.txt
 
-        cd bin
-        rm -rf *proj*
+    #     cd bin
+    #     rm -rf *proj*
 
-        tar cvfz externalApps.tar.gz externalApps
-        tar cvfz qt.tar.gz qt
+    #     tar cvfz externalApps.tar.gz externalApps
+    #     tar cvfz qt.tar.gz qt
 
-        rm -rf qt
-        rm -rf externalApps
-        rm -rf _CPack*
-        rm -rf CMakeCache.txt
+    #     rm -rf qt
+    #     rm -rf externalApps
+    #     rm -rf _CPack*
+    #     rm -rf CMakeCache.txt
 
-        # cmake -UPROJECT_VERSION # delete the project version definition
+    #     # cmake -UPROJECT_VERSION # delete the project version definition
         
-        cd ../
+    #     cd ../
 
-        mv bin bin_windows
-        tar cvfz bin_windows_20200210.tar.gz bin_windows
-        rm -rf bin_windows
-      displayName: 'Zipping bin'
+    #     mv bin bin_windows
+    #     # tar cvfz bin_windows_20200212.tar.gz bin_windows
+    #     rm -rf bin_windows
+    #   displayName: 'Zipping bin'
 
     - powershell: |
         get-psdrive | Where Free*
@@ -263,15 +263,15 @@ jobs:
         df -k .
       displayName: 'Disk space check'
 
-    - task: CacheBeta@0
-      inputs:
-        key: '"bin_linux_20200210.tar.gz" | "$(Build.DefinitionName)"'
-        path: $(Build.SourcesDirectory)
-        cacheHitVar: CACHE_RESTORED_LINUX
-        continueOnError : true
-        restoreKeys: |
-          "bin_linux_20200210.tar.gz"
-      displayName: 'Caching'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: '"bin_linux_20200212.tar.gz" | "$(Build.DefinitionName)"'
+    #     path: $(Build.SourcesDirectory)
+    #     cacheHitVar: CACHE_RESTORED_LINUX
+    #     continueOnError : true
+    #     restoreKeys: |
+    #       "bin_linux_20200212.tar.gz"
+    #   displayName: 'Caching'
 
     # Dependency manager
     - bash: |
@@ -299,8 +299,8 @@ jobs:
     #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     - bash: |
-        tar xvfz bin_linux_20200210.tar.gz
-        rm -rf bin_linux_20200210.tar.gz
+        tar xvfz bin_linux_20200212.tar.gz
+        rm -rf bin_linux_20200212.tar.gz
         # ls
         mv bin_linux bin
         # ls
@@ -335,7 +335,7 @@ jobs:
       condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # - bash: |
-    #     tar cvfz bin_linux_20200210.tar.gz bin
+    #     tar cvfz bin_linux_20200212.tar.gz bin
     #   displayName: 'Zipping Superbuild'
 
     - bash: |
@@ -395,7 +395,7 @@ jobs:
     - bash: |
         rm -rf regression
         rm -rf binaries
-        rm -rf bin_linux_20200210.tar.gz
+        rm -rf bin_linux_20200212.tar.gz
         df -k .
       displayName: 'Disk space check'
 
@@ -420,32 +420,32 @@ jobs:
 
       displayName: 'Set up environment variables for packager and build a package'
 
-    - bash: |
-        rm -rf src
-        rm -rf docs*
-        rm -rf data
-        rm -rf binaries
-        rm -rf scripts
-        rm -rf CMakeLists.txt
+    # - bash: |
+    #     rm -rf src
+    #     rm -rf docs*
+    #     rm -rf data
+    #     rm -rf binaries
+    #     rm -rf scripts
+    #     rm -rf CMakeLists.txt
 
-        cd bin
+    #     cd bin
 
-        tar cvfz qt.tar.gz qt
-        tar cvfz externalApps.tar.gz externalApps
+    #     tar cvfz qt.tar.gz qt
+    #     tar cvfz externalApps.tar.gz externalApps
 
-        rm -rf qt
-        rm -rf externalApps
-        rm -rf _CPack*
-        rm -rf CMakeCache.txt
+    #     rm -rf qt
+    #     rm -rf externalApps
+    #     rm -rf _CPack*
+    #     rm -rf CMakeCache.txt
 
-        # cmake -UPROJECT_VERSION # delete the project version definition
+    #     # cmake -UPROJECT_VERSION # delete the project version definition
         
-        cd ../
+    #     cd ../
 
-        mv bin bin_linux
-        tar cvfz bin_linux_20200210.tar.gz bin_linux
-        rm -rf bin_linux
-      displayName: 'Zipping bin'
+    #     mv bin bin_linux
+    #     tar cvfz bin_linux_20200212.tar.gz bin_linux
+    #     rm -rf bin_linux
+    #   displayName: 'Zipping bin'
 
     - task: PublishBuildArtifacts@1
       inputs:
@@ -495,12 +495,12 @@ jobs:
 
     # - task: CacheBeta@0
     #   inputs:
-    #     key: '"bin_macos_20200210.tar.gz" | "$(Build.DefinitionName)"'
+    #     key: '"bin_macos_20200212.tar.gz" | "$(Build.DefinitionName)"'
     #     path: $(Build.SourcesDirectory)
     #     cacheHitVar: CACHE_RESTORED_MAC
     #     continueOnError : true
     #     restoreKeys: |
-    #       "bin_macos_20200210.tar.gz"
+    #       "bin_macos_20200212.tar.gz"
     #   displayName: 'Caching'
 
     - bash: |
@@ -525,8 +525,8 @@ jobs:
     #   condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
     - bash: |
-        tar xvfz bin_macos_20200210.tar.gz
-        rm -rf bin_macos_20200210.tar.gz
+        tar xvfz bin_macos_20200212.tar.gz
+        rm -rf bin_macos_20200212.tar.gz
         # ls
         mv bin_macos bin
         # ls
@@ -570,9 +570,9 @@ jobs:
         ls ./qt/
       displayName: 'Check qt'
 
-    - bash: |
-        tar cvfz bin_macos_20200210.tar.gz bin
-      displayName: 'Zipping Superbuild'
+    # - bash: |
+    #     tar cvfz bin_macos_20200212.tar.gz bin
+    #   displayName: 'Zipping Superbuild'
 
     - bash: |
         git pull origin master
@@ -683,33 +683,33 @@ jobs:
         # sudo rm -rf *
       displayName: 'Package CaPTk (.dmg and .pkg)'
 
-    - bash: |
-        rm -rf src
-        rm -rf docs*
-        rm -rf data
-        rm -rf binaries
-        rm -rf scripts
-        rm -rf bin_macos_20200210.tar.gz
-        rm -rf CMakeLists.txt
+    # - bash: |
+    #     rm -rf src
+    #     rm -rf docs*
+    #     rm -rf data
+    #     rm -rf binaries
+    #     rm -rf scripts
+    #     rm -rf bin_macos_20200212.tar.gz
+    #     rm -rf CMakeLists.txt
 
-        cd bin
-        tar cvfz qt.tar.gz qt
-        tar cvfz externalApps.tar.gz externalApps
+    #     cd bin
+    #     tar cvfz qt.tar.gz qt
+    #     tar cvfz externalApps.tar.gz externalApps
 
-        rm -rf qt
-        rm -rf externalApps
-        rm -rf _CPack*
-        rm -rf CMakeCache.txt
+    #     rm -rf qt
+    #     rm -rf externalApps
+    #     rm -rf _CPack*
+    #     rm -rf CMakeCache.txt
         
-        # cmake -UPROJECT_VERSION # delete the project version definition
+    #     # cmake -UPROJECT_VERSION # delete the project version definition
         
-        cd ../
-        # ls
-        mv bin bin_macos
-        # ls
-        tar cvfz bin_macos_20200210.tar.gz bin_macos
-        # rm -rf bin_macos
-      displayName: 'Zipping bin'
+    #     cd ../
+    #     # ls
+    #     mv bin bin_macos
+    #     # ls
+    #     tar cvfz bin_macos_20200212.tar.gz bin_macos
+    #     # rm -rf bin_macos
+    #   displayName: 'Zipping bin'
       
     - task: PublishBuildArtifacts@1
       inputs:
