@@ -348,12 +348,16 @@ jobs:
         ls -a
         ls ./qt/
 
-        cat ./OpenCV-build/CMakeCache.txt
+        # cat ./OpenCV-build/CMakeCache.txt
 
-        echo "DONE"
-        cat ./OpenCV-build/CMakeFiles/Makefile.cmake
+        # echo "DONE"
+        # cat ./OpenCV-build/CMakeFiles/Makefile.cmake
 
-        cat ./OpenCV-build/CMakeVars.txt
+        # cat ./OpenCV-build/CMakeVars.txt
+
+        ls ./Eigen-source/
+
+        ls ./Eigen-source/cmake
 
 
       displayName: 'Check qt'
