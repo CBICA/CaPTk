@@ -207,6 +207,20 @@ jobs:
     #     rm -rf bin_windows
     #   displayName: 'Zipping bin'
 
+    - bash: |
+        
+        rm -rf src
+        rm -rf docs*
+        rm -rf data
+        rm -rf binaries
+        rm -rf scripts
+        rm -rf bin_windows_20200212.tar.gz
+        rm -rf install_manifest.txt
+        rm -rf CMakeLists.txt
+        rm -rf bin
+
+      displayName: 'Freeing Space'
+
     - powershell: |
         get-psdrive | Where Free*
 
@@ -446,6 +460,20 @@ jobs:
     #     tar cvfz bin_linux_20200212.tar.gz bin_linux
     #     rm -rf bin_linux
     #   displayName: 'Zipping bin'
+
+    - bash: |
+        
+        rm -rf src
+        rm -rf docs*
+        rm -rf data
+        rm -rf binaries
+        rm -rf scripts
+        rm -rf bin_windows_20200212.tar.gz
+        rm -rf install_manifest.txt
+        rm -rf CMakeLists.txt
+        rm -rf bin
+
+      displayName: 'Freeing Space'
 
     - task: PublishBuildArtifacts@1
       inputs:
@@ -711,6 +739,20 @@ jobs:
     #     # rm -rf bin_macos
     #   displayName: 'Zipping bin'
       
+    - bash: |
+        
+        rm -rf src
+        rm -rf docs*
+        rm -rf data
+        rm -rf binaries
+        rm -rf scripts
+        rm -rf bin_windows_20200212.tar.gz
+        rm -rf install_manifest.txt
+        rm -rf CMakeLists.txt
+        rm -rf bin
+
+      displayName: 'Freeing Space'
+
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
