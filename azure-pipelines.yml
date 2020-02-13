@@ -51,20 +51,20 @@ jobs:
     #     wmic logicaldisk get size,freespace,caption
     #   displayName: 'Disk space check'
 
-    - bash: |
-        tar xvfz bin_windows_20200212.tar.gz
-        rm -rf bin_windows_20200212.tar.gz
-        # ls
-        mv bin_windows bin
-        # ls
-        cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
-        rm -rf *.tar.gz
-        # rm CMakeCache.txt
-        ls -lt
-      displayName: 'Unzip bin if cached'
-      condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
+    # - bash: |
+    #     tar xvfz bin_windows_20200212.tar.gz
+    #     rm -rf bin_windows_20200212.tar.gz
+    #     # ls
+    #     mv bin_windows bin
+    #     # ls
+    #     cd bin
+    #     tar xvfz qt.tar.gz
+    #     tar xvfz externalApps.tar.gz
+    #     rm -rf *.tar.gz
+    #     # rm CMakeCache.txt
+    #     ls -lt
+    #   displayName: 'Unzip bin if cached'
+    #   condition: eq(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - powershell: |
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
@@ -298,21 +298,21 @@ jobs:
     #   displayName: 'Pull LFS'
     #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
-    - bash: |
-        tar xvfz bin_linux_20200212.tar.gz
-        rm -rf bin_linux_20200212.tar.gz
-        # ls
-        mv bin_linux bin
-        # ls
-        cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
-        rm -rf *.tar.gz
-        mv binaries_linux externalApps
-        # rm CMakeCache.txt
-        ls -lt
-      displayName: 'Unzip bin if cached'
-      condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
+    # - bash: |
+    #     tar xvfz bin_linux_20200212.tar.gz
+    #     rm -rf bin_linux_20200212.tar.gz
+    #     # ls
+    #     mv bin_linux bin
+    #     # ls
+    #     cd bin
+    #     tar xvfz qt.tar.gz
+    #     tar xvfz externalApps.tar.gz
+    #     rm -rf *.tar.gz
+    #     mv binaries_linux externalApps
+    #     # rm CMakeCache.txt
+    #     ls -lt
+    #   displayName: 'Unzip bin if cached'
+    #   condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Moving LFS Files
     - bash: |
@@ -524,19 +524,19 @@ jobs:
     #   displayName: 'Pull LFS'
     #   condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
-    - bash: |
-        tar xvfz bin_macos_20200212.tar.gz
-        rm -rf bin_macos_20200212.tar.gz
-        # ls
-        mv bin_macos bin
-        # ls
-        cd bin
-        tar xvfz qt.tar.gz
-        tar xvfz externalApps.tar.gz
-        rm -rf *.tar.gz
-        ls -lt
-      displayName: 'Unzip bin if cached'
-      condition: eq(variables['CACHE_RESTORED_MAC'], 'true')
+    # - bash: |
+    #     tar xvfz bin_macos_20200212.tar.gz
+    #     rm -rf bin_macos_20200212.tar.gz
+    #     # ls
+    #     mv bin_macos bin
+    #     # ls
+    #     cd bin
+    #     tar xvfz qt.tar.gz
+    #     tar xvfz externalApps.tar.gz
+    #     rm -rf *.tar.gz
+    #     ls -lt
+    #   displayName: 'Unzip bin if cached'
+    #   condition: eq(variables['CACHE_RESTORED_MAC'], 'true')
 
     # Moving LFS Files
     - bash: |
