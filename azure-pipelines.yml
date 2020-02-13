@@ -749,7 +749,7 @@ jobs:
         rm -rf bin_windows_20200212.tar.gz
         rm -rf install_manifest.txt
         rm -rf CMakeLists.txt
-        rm -rf bin
+        sudo rm -rf bin
 
       displayName: 'Freeing Space'
 
