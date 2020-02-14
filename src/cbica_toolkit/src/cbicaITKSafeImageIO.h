@@ -800,7 +800,7 @@ namespace cbica
         catch (itk::ExceptionObject& e)
         {
           std::cerr << "Exception caught while reading the image '" + fName + "':\n" + e.what() << "\n";
-          return typename TImageType::New();
+          return TImageType::New();
         }
         return reader->GetOutput();
       }
