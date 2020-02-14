@@ -854,8 +854,30 @@ int main(int argc, char** argv)
   else if (parser.isPresent("d2n"))
   {
     requestedAlgorithm = Dicom2Nifti;
+
+	// check if the Nifti output filename has been specified?
+	if (parser.isPresent("o"))
+	{
+		parser.getParameterValue("o", outputImageFile);
+	}
+	else
+	{
+		std::cerr << "DICOM2Nifti conversion requested but the output Nifti filename was not found. Please use the '-o' parameter.\n";
+		return EXIT_FAILURE;
+	}
+
+	// check if the Dicom input has been specified?
+	if (parser.isPresent("i"))
+	{
+		parser.getParameterValue("i", inputImageFile);
+	}
+	else
+	{
+		std::cerr << "DICOM2Nifti conversion requested but the input Dicom data was not found. Please use the '-i' parameter.\n";
+		return EXIT_FAILURE;
+	}
     parser.getParameterValue("d2n", targetImageFile);
-    parser.getParameterValue("o", outputImageFile);
+
   }
   else if (parser.isPresent("n2d"))
   {
