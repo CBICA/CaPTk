@@ -787,23 +787,6 @@ namespace cbica
     }
     if (dicomDetected)
     {
-      if (TImageType::ImageDimension == 2)
-      {
-        auto reader = itk::ImageFileReader< TImageType >::New();
-        reader->SetFileName(fName);
-        reader->SetImageIO(itk::GDCMImageIO::New());
-
-        try
-        {
-          reader->Update();
-        }
-        catch (itk::ExceptionObject& e)
-        {
-          std::cerr << "Exception caught while reading the image '" + fName + "':\n" + e.what() << "\n";
-          return TImageType::New();
-        }
-        return reader->GetOutput();
-      }
       DicomIOManager< TImageType > dcmSeriesReader;
       dcmSeriesReader.SetDirectoryPath(fName);
       bool loadstatus = dcmSeriesReader.LoadDicom();
