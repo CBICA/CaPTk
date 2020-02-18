@@ -51,7 +51,7 @@ enum AvailableAlgorithms
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON, orientationDesired, coordinateToTransform, referenceMaskForSimilarity;
+std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator = "LINEAR", dicomSegJSON, orientationDesired, coordinateToTransform, referenceMaskForSimilarity;
 std::string dicomFolderPath;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
