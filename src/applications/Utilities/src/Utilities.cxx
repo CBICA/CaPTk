@@ -91,6 +91,14 @@ int algorithmsRunner()
     else
     {
       auto resolution_split = cbica::stringSplit(resamplingResolution_full, ",");
+      if (resolution_split.size() == 1)
+      {
+        std::cout << "Isotropic resultion of '" << resolution_split[0] << "' has been selected.\n";
+        for (size_t d = 1; d < TImageType::ImageDimension; d++)
+        {
+          resolution_split.push_back(resolution_split[0]);
+        }
+      }
       if (resolution_split.size() != TImageType::ImageDimension)
       {
         std::cerr << "The resampling resolution needs to be the same dimension as the input image.\n";
