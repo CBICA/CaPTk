@@ -365,13 +365,13 @@ void algorithmRunner()
   }
 
   auto outputImageFile_temp = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
-  // do hole filling for skull stripping
-  if (inferenceType == SkullStripping)
+  if (cbica::exists(outputImageFile_temp))
   {
-    std::cout << "=== Performing hole-filling operation for skull stripping.\n";
-    if (cbica::exists(outputImageFile_temp))
+    auto outputImage_temp = cbica::ReadImage< TImageType >(outputImageFile_temp);
+    if (inferenceType == SkullStripping)
     {
-      auto outputImageWithHoles = cbica::ReadImage< TImageType >(outputImageFile_temp);
+      std::cout << "=== Performing hole-filling operation for skull stripping.\n";
+      auto outputImageWithHoles = outputImage_temp;
 
       auto holeFiller = itk::BinaryFillholeImageFilter< TImageType >::New();
       holeFiller->SetInput(outputImageWithHoles);
@@ -380,39 +380,39 @@ void algorithmRunner()
       holeFiller->Update();
 
       cbica::WriteImage< TImageType >(holeFiller->GetOutput(), outputImageFile_temp);
+      std::cout << "=== Done.\n";
     }
-    std::cout << "=== Done.\n";
-  }
-  else if (inferenceType == TumorSegmentation)
-  {
-    auto outputImageWithOldValues = cbica::ReadImage< TImageType >(outputImageFile_temp);
-    auto outputImageWithNewValues = cbica::ChangeImageValues< TImageType >(outputImageWithOldValues, "3", "4");
+    else if (inferenceType == TumorSegmentation)
+    {
+      std::cout << "=== Changing the output label value from '3' to '4' for BraTS consistency.\n";
+      auto outputImageWithNewValues = cbica::ChangeImageValues< TImageType >(outputImage_temp, "3", "4");
 
-    cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile_temp);
-  }
+      cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile_temp);
+    }
+    
+    outputImage_temp = cbica::ReadImage< TImageType >(outputImageFile_temp);
 
-  // registration of segmentation back to patient space
-  {
-    std::cout << "== Starting registration of output segmentation back to patient space.\n";
-    auto t1cImg_original = cbica::ReadImage< TImageType >(inputT1ce);
-    auto resampledMask = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(outputImageFile_temp),
-      t1cImg_original->GetSpacing(),
-      t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
-    cbica::WriteImage< TImageType >(
-      resampledMask,
-      outputImageFile_temp
-      );
-    std::cout << "== Done.\n";
+    {
+      std::cout << "== Starting resampling of output segmentation back to patient space.\n";
+      auto t1cImg_original = cbica::ReadImage< TImageType >(inputT1ce);
+      auto resampledMask = cbica::ResampleImage< TImageType >(outputImage_temp,
+        t1cImg_original->GetSpacing(),
+        t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
+      cbica::WriteImage< TImageType >(
+        resampledMask,
+        outputImageFile_temp
+        );
+      std::cout << "== Done.\n";
+    }
+    
+    if (!outputFile.empty())
+    {
+      cbica::WriteImage< TImageType >(
+        cbica::ReadImage< TImageType >(outputImageFile_temp),
+        outputFile
+        );
+    }
   }
-  
-  if (!outputFile.empty())
-  {
-    cbica::WriteImage< TImageType >(
-      cbica::ReadImage< TImageType >(outputImageFile_temp),
-      outputFile
-      );
-  }
-
 
   return;
 }
