@@ -664,7 +664,7 @@ int algorithmsRunner()
     similarityFilter->SetTargetImage(referenceImage);
     similarityFilter->Update();
 
-    std::cout << "=== All Labels ===\n";
+    std::cout << "=== Entire Masked Area ===\n";
     std::cout << "Total Overlap:   " << similarityFilter->GetTotalOverlap() << "\n";
     std::cout << "Union (Jaccard): " << similarityFilter->GetUnionOverlap() << "\n";
     std::cout << "Mean (DICE):     " << similarityFilter->GetMeanOverlap() << "\n";
@@ -674,7 +674,7 @@ int algorithmsRunner()
 
     if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
     {
-      std::cout << "=== Non-zero Labels ===\n";
+      std::cout << "=== Individual Labels ===\n";
       for (size_t i = 0; i < uniqueLabels.size(); i++)
       {
         std::cout << "Label Value:     " << uniqueLabels[i] << "\n";
