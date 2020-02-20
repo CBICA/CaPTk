@@ -112,7 +112,7 @@ int algorithmsRunner()
     auto outputImage = cbica::ResampleImage< TImageType >(inputImage, outputSpacing, resamplingInterpolator);
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
-    std::cout << "Resampled image to isotropic resolution of '" << outputSpacing << "' using interpolator '" << resamplingInterpolator << "'.\n";
+    std::cout << "Resampled image to a resolution of '" << outputSpacing << "' using interpolator '" << resamplingInterpolator << "'.\n";
   }
   else if (requestedAlgorithm == UniqueValues)
   {
@@ -910,23 +910,26 @@ int main(int argc, char** argv)
   }
   else if (parser.isPresent("r"))
   {
+    requestedAlgorithm = Resize;
     parser.getParameterValue("r", resize);
-    if (resize != 100)
+    if (parser.isPresent("ri"))
     {
-      requestedAlgorithm = Resize;
+      parser.getParameterValue("ri", resamplingInterpolator);
     }
-    else
+  }
+  else if (parser.isPresent("rr"))
+  {
+    requestedAlgorithm = Resample;
+    parser.getParameterValue("rr", resamplingResolution_full);
+    if (parser.isPresent("ri"))
     {
-      requestedAlgorithm = Resample;
-      if (parser.isPresent("rr"))
-      {
-        parser.getParameterValue("rr", resamplingResolution_full);
-      }
-      else if (parser.isPresent("rf"))
-      {
-        parser.getParameterValue("rf", resamplingReference);
-      }
+      parser.getParameterValue("ri", resamplingInterpolator);
     }
+  }
+  else if (parser.isPresent("rf"))
+  {
+    requestedAlgorithm = Resample;
+    parser.getParameterValue("rf", resamplingReference);
     if (parser.isPresent("ri"))
     {
       parser.getParameterValue("ri", resamplingInterpolator);
