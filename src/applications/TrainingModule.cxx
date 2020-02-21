@@ -47,9 +47,6 @@ int main(int argc, char *argv[])
   int confType;
 
   TrainingModule mTrainingSimulator;
-  ////mTrainingSimulator.Run("W:/Projects/PSU/Selected1040/Features_PSU_1_Training.csv", "W:/Projects/PSU/Selected1040/Labels_PSU_1_Training.csv", "W:/Projects/PSU/Selected1040/Output1_TrainingTesting/PSU", 1, 0, 3, "");
-  //mTrainingSimulator.Run("E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/IterationsData/Features_PSU_Training_1.csv","E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/IterationsData/Labels_PSU_Training_1.csv","E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/IterationsData/Output1_TrainingTesting/PSU", 1, 0, 3,"");
-
   if ((argc < 1) || (parser.compareParameter("u", tempPosition)))
   {
     parser.echoUsage();
@@ -76,15 +73,11 @@ int main(int argc, char *argv[])
   {
     inputFeaturesFile = argv[tempPosition + 1];
     std::cout << "Input Features File:"<<inputFeaturesFile << std::endl;
-    //inputFeaturesFile = "W:/Projects/PSU/PSU_Selected_Features_WithoutScaling.csv";
-    //inputFeaturesFile = "W:/Projects/PSU/REC_Selected_Features_NewSheet_WithoutScaling.csv";
   }
   if (parser.compareParameter("l", tempPosition))
   {
     inputLabelsFile = argv[tempPosition + 1];
     std::cout << "Input Labels File:" << inputLabelsFile << std::endl;
-    //inputLabelsFile = "W:/Projects/PSU/labels_pseudoprogression.csv";
-    //inputLabelsFile = "W:/Projects/PSU/labels_recurrence.csv";
   }
   if (parser.compareParameter("o", tempPosition))
   {

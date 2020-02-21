@@ -95,8 +95,13 @@ public:
   std::string CheckDataQuality(const VariableSizeMatrixType & FeaturesOfAllSubjects, const VariableLengthVectorType & LabelsOfAllSubjects);
 
   VectorDouble InternalCrossValidationSplitTrainTest(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue, int kerneltype, int counter, std::string outputfolder);
+  
   template <typename T>
   std::vector<size_t> sort_indexes(const std::vector<T> &v);
+
+  //void WriteCSVFiles(VariableSizeMatrixType inputdata, std::string filepath);
+  //void WriteCSVFiles(VectorVectorDouble inputdata, std::string filepath);
+  //void WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath);
 
 private:
 
