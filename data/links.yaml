@@ -7,6 +7,7 @@ inputs:
   EGFRvIIISVMIndex:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIISVMIndex.zip
     Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/EGFRvIIIIndexPredictor.zip
+    # Install: ftp://www.nitrc.org/home/groups/captk/downloads/models/TrainingModule.zip
   EGFRvIIISurrogateIndex:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIISurrogateIndex.zip
     Model: N.A.
