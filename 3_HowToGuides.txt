@@ -45,7 +45,7 @@ Informatics Technology Initiative (NIfTI) file format.
 	
 <b>USAGE:</b>
 	-# Launch the tool using the 'Preprocessing' -> 'DICOM to NIfTI' menu option.
-	-# Specify the first DICOM image in series, and the output filename.
+	-# Specify the directory containing the DICOM images in the series, and the output filename.
 	-# Click on "Confirm".
   -# This can also be used from the command line:
 \verbatim
