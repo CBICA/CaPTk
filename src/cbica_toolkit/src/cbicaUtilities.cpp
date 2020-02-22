@@ -752,19 +752,19 @@ namespace cbica
     }
 #else
     //! Initialize pointers to file and user names
-    char path[PATH_MAX];
-    int pathlen;
-    pathlen = ::readlink("/proc/self/exe", path, sizeof(path) - 1);
-    if ( pathlen == -1 )
-    {
-      std::cerr << "[getFullPath()] Error during getting full path..";
-    }
-    return_string = std::string(path);
-    path[pathlen]='\0';
-    // char path[PATH_MAX];
-    // if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
-    //   //path = dirname(path);
-    //   std::cerr << "[getFullPath()] Error during getting full path..";
+    //char path[PATH_MAX];
+    //int pathlen;
+    //pathlen = ::readlink("/proc/self/exe", path, sizeof(path) - 1);
+    //if ( pathlen == -1 )
+    //{
+    //  std::cerr << "[getFullPath()] Error during getting full path..";
+    //}
+    //return_string = std::string(path);
+    //path[pathlen]='\0';
+     char path[PATH_MAX];
+     if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
+       //path = dirname(path);
+       std::cerr << "[getFullPath()] Error during getting full path..";
 #endif
 
     if( return_string.empty())
