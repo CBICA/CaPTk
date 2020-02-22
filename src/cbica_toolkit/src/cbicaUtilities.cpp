@@ -724,17 +724,9 @@ namespace cbica
 
   std::string getExecutablePath()
   {
-    auto getFullPath_return = getFullPath();
-    if (!isDir(getFullPath_return))
-    {
-      std::string path, base, ext;
-      splitFileName(getFullPath(), path, base, ext);
-      getFullPath_return = path;
-    }
-  // #ifdef __APPLE__
-  //   return "/Applications/CaPTk_1.6.2.Beta.app/Contents/MacOS/";
-  // #endif
-    return cbica::normPath(getFullPath_return) + "/";
+    std::string path, base, ext;
+    splitFileName(getFullPath(), path, base, ext);
+    return cbica::normPath(path) + "/";
   }
 
   std::string getFullPath()
@@ -764,13 +756,7 @@ namespace cbica
 
     if( return_string.empty())
     {
-      return_string = std::string(
-#ifdef linux
-        dirname(path)
-#else
-        path
-#endif
-      );
+      return_string = std::string(path);
       path[0] = '\0';
     }
 
