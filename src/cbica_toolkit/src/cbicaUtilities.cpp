@@ -764,15 +764,12 @@ namespace cbica
      char path[PATH_MAX];
      if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
        std::cerr << "[getFullPath()] Error during getting full path..";
-     //path = dirname(path);
+     path = dirname(path);
 #endif
 
     if( return_string.empty())
     {
       std::cout << "std::string(path): " << std::string(path) << "\n";
-#ifdef linux
-      std::cout << "std::string(dirname(path)): " << std::string(dirname(path)) << "\n";
-#endif
       return_string = std::string(path);
       path[0] = '\0';
     }
