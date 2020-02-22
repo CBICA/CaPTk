@@ -734,6 +734,7 @@ namespace cbica
 
   std::string getFullPath()
   {
+    std::string return_string;
 #if defined(_WIN32)
     //! Initialize pointers to file and user names
     char path[FILENAME_MAX];
@@ -752,13 +753,25 @@ namespace cbica
 #else
     //! Initialize pointers to file and user names
     char path[PATH_MAX];
-    if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
-      //path = dirname(path);
+    int pathlen;
+    pathlen = ::readlink("/proc/self/exe", path, sizeof(path) - 1);
+    if ( pathlen == -1 )
+    {
       std::cerr << "[getFullPath()] Error during getting full path..";
+    }
+    return_string = std::string(path);
+    path[pathlen]='\0';
+    // char path[PATH_MAX];
+    // if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
+    //   //path = dirname(path);
+    //   std::cerr << "[getFullPath()] Error during getting full path..";
 #endif
 
-    std::string return_string = std::string(path);
-    path[0] = '\0';
+    if( return_string.empty())
+    {
+      return_string = std::string(path);
+      path[0] = '\0';
+    }
 
     return return_string;
   }
