@@ -66,10 +66,10 @@ $(document).ready(function(){initNavTree('seg_DL.html',''); initResizable(); });
 <p><b> USAGE:</b></p><ol type="1">
 <li>Load the images that you want to segment in CaPTk.</li>
 <li>[OPTIONAL] Load the brain mask - this is used for normalization.</li>
-<li>[OPTIONAL] Select the appropriate pre-trained model folder (either brain tumor segmentation or skull stripping is available): for custom models, select appropriate option and browse to the model directory.</li>
+<li>Select the appropriate pre-trained model folder (either brain tumor segmentation or skull stripping is available): for custom models, select appropriate option and browse to the model directory.</li>
 <li>Select the output folder.</li>
 <li>Click on 'Applications' -&gt; 'Brain Tumor Segmentation' or 'Skull Stripping'</li>
-<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -o C:/data/output/ -m C:/data/optionalMask.nii.gz -md C:/data/pretrainedModelFolder/
+<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/DeepMedic.exe -md ${CaPTk_InstallDir}/data/deepMedic/saved_models/brainTumorSegmentation -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -m C:/data/optionalMask.nii.gz -o C:/data/outputSegmentation.nii.gz
 </pre> <br  />
 </li>
 </ol>
