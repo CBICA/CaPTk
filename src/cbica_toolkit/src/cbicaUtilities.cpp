@@ -752,6 +752,8 @@ namespace cbica
      char path[PATH_MAX];
      if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
        std::cerr << "[getFullPath()] Error during getting full path..";
+    std::string appPath = std::string( result, (count > 0) ? count : 0 );
+    std::cerr << "appPath: " << appPath << "\n";
 #endif
 
     return_string = std::string(path);
