@@ -278,7 +278,7 @@ private:
   QMenu* menuLoadFileDicom;
   QMenu* menuLoadFileNifti;
   QMenu* menuDownload;
-
+  
   QMenu* menuApp;
   QMenu* menuPreprocessing;
   QMenu* menuDeepLearning;
@@ -289,6 +289,10 @@ private:
   QAction *help_forum;
   QAction *help_bugs;
   QAction *help_features;
+
+  // precompiled Apps download
+  QMenu* menuAppDownload;
+  // QAction *appDownload;
   //-------------actions-------------
 
   QAction *actionLoad_Recurrence_Images;
@@ -372,6 +376,13 @@ private:
     vectorOfMiscApps, // the rest
     vectorOfPreprocessingActionsAndNames, // for preprocessing algorithms
     vectorOfDeepLearningActionsAndNames; // for deep learning applications
+  
+  std::vector< ActionAndName >
+    vectorOfGBMAppsDownload, // GBM-specific applications
+    vectorOfBreastAppsDownload, // breast-specific applications
+    vectorOfLungAppsDownload, // lung-specific applications
+    vectorOfSegmentationAppsDownload, // the segmentation applications
+    vectorOfMiscAppsDownload; // the rest
 
   QTableWidget * m_imagesTable;
   QTableWidget * m_nonVisImagesTable;
@@ -928,6 +939,8 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
+  void appDownload(QAction* action);
+
   //! Open the github issue tracker
   void help_BugTracker();
 
