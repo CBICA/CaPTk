@@ -754,11 +754,8 @@ namespace cbica
        std::cerr << "[getFullPath()] Error during getting full path..";
 #endif
 
-    if( return_string.empty())
-    {
-      return_string = std::string(path);
-      path[0] = '\0';
-    }
+    return_string = std::string(path);
+    path[0] = '\0';
 
     return return_string;
   }
