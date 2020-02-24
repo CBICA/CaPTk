@@ -773,7 +773,10 @@ fMainWindow::fMainWindow()
     {
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageHistogramMatching()));
     }
-    else if (vectorOfPreprocessingActionsAndNames[i].name.find("DeepMedicNormalizer") != std::string::npos)
+    else if ((vectorOfPreprocessingActionsAndNames[i].name.find("DeepMedicNormalizer") != std::string::npos)
+             || (vectorOfPreprocessingActionsAndNames[i].name.find("ZScoringNormalizer") != std::string::npos))
+            // TBD: Pick one of these and stick with it if we are going to use this approach.
+            // Currently this action is inconsistently referred to as one or the other.
     {
       vectorOfPreprocessingActionsAndNames[i].action->setText("Z-Scoring Normalizer"); // TBD set at source
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageDeepMedicNormalizer()));
@@ -7222,10 +7225,6 @@ void fMainWindow::ImageHistogramMatching()
 
 void fMainWindow::ImageDeepMedicNormalizer()
 {
-#ifndef WIN32
-  ShowErrorMessage("DeepMedic is currently not available for your platform but will be soon.", this);
-  return;
-#endif
   // open a simple dialog box with reference image, input and output
   deepMedicNormPanel.exec();
 }
