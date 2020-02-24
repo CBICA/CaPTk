@@ -754,7 +754,7 @@ namespace cbica
      if (count == -1)
        std::cerr << "[getFullPath()] Error during getting full path..";
     std::string appPath = std::string( path, (count > 0) ? count : 0 );
-    std::cerr << "appPath: " << appPath << "\n";
+    return appPath;
 #endif
 
     return_string = std::string(path);
