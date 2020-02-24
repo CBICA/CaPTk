@@ -181,8 +181,7 @@ fMainWindow::fMainWindow()
   help_discussion = new QAction(this);
   help_forum = new QAction(this);
   help_bugs = new QAction(this);
-  help_features = new QAction(this);
-  help_download = new QAction(this);
+  helpMenu_download = new QAction(this);
   actionLoad_Recurrence_Images = new QAction(this);
   actionLoad_Nifti_Images = new QAction(this);
   actionLoad_Dicom_Images = new QAction(this);
@@ -298,7 +297,7 @@ fMainWindow::fMainWindow()
   menuHelp->addAction(actionAbout);
 
   supportMenu->addAction(help_bugs);
-  supportMenu->addAction(help_download);
+  supportMenu->addAction(helpMenu_download);
 
   menubar->addMenu(menuFile);
   menubar->addMenu(menuPreprocessing);
@@ -583,6 +582,7 @@ fMainWindow::fMainWindow()
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
+  connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
@@ -957,8 +957,7 @@ fMainWindow::fMainWindow()
   help_discussion->setText(QApplication::translate("fMainWindow", "Discussion Forum", 0));
   help_forum->setText(QApplication::translate("fMainWindow", "Help Forum", 0));
   help_bugs->setText(QApplication::translate("fMainWindow", "Bugs and Feature", 0));
-  help_features->setText(QApplication::translate("fMainWindow", "Feature Requests", 0));
-  help_download->setText(QApplication::translate("fMainWindow", "Latest Downloads", 0));
+  helpMenu_download->setText(QApplication::translate("fMainWindow", "Latest Downloads", 0));
   actionAbout->setText(QApplication::translate("fMainWindow", "About", 0));
   actionExit->setText(QApplication::translate("fMainWindow", "Exit", 0));
   actionAppGeodesic->setText(QApplication::translate("fMainWindow", "Geodesic segmentation", 0));
