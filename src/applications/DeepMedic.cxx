@@ -365,13 +365,13 @@ void algorithmRunner()
   }
 
   auto outputImageFile_temp = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
-  // do hole filling for skull stripping
-  if (inferenceType == SkullStripping)
+  if (cbica::exists(outputImageFile_temp))
   {
-    std::cout << "=== Performing hole-filling operation for skull stripping.\n";
-    if (cbica::exists(outputImageFile_temp))
+    auto outputImage_temp = cbica::ReadImage< TImageType >(outputImageFile_temp);
+    if (inferenceType == SkullStripping)
     {
-      auto outputImageWithHoles = cbica::ReadImage< TImageType >(outputImageFile_temp);
+      std::cout << "=== Performing hole-filling operation for skull stripping.\n";
+      auto outputImageWithHoles = outputImage_temp;
 
       auto holeFiller = itk::BinaryFillholeImageFilter< TImageType >::New();
       holeFiller->SetInput(outputImageWithHoles);
@@ -380,39 +380,39 @@ void algorithmRunner()
       holeFiller->Update();
 
       cbica::WriteImage< TImageType >(holeFiller->GetOutput(), outputImageFile_temp);
+      std::cout << "=== Done.\n";
     }
-    std::cout << "=== Done.\n";
-  }
-  else if (inferenceType == TumorSegmentation)
-  {
-    auto outputImageWithOldValues = cbica::ReadImage< TImageType >(outputImageFile_temp);
-    auto outputImageWithNewValues = cbica::ChangeImageValues< TImageType >(outputImageWithOldValues, "3", "4");
+    else if (inferenceType == TumorSegmentation)
+    {
+      std::cout << "=== Changing the output label value from '3' to '4' for BraTS consistency.\n";
+      auto outputImageWithNewValues = cbica::ChangeImageValues< TImageType >(outputImage_temp, "3", "4");
 
-    cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile_temp);
-  }
+      cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile_temp);
+    }
+    
+    outputImage_temp = cbica::ReadImage< TImageType >(outputImageFile_temp);
 
-  // registration of segmentation back to patient space
-  {
-    std::cout << "== Starting registration of output segmentation back to patient space.\n";
-    auto t1cImg_original = cbica::ReadImage< TImageType >(inputT1ce);
-    auto resampledMask = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(outputImageFile_temp),
-      t1cImg_original->GetSpacing(),
-      t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
-    cbica::WriteImage< TImageType >(
-      resampledMask,
-      outputImageFile_temp
-      );
-    std::cout << "== Done.\n";
+    {
+      std::cout << "== Starting resampling of output segmentation back to patient space.\n";
+      auto t1cImg_original = cbica::ReadImage< TImageType >(inputT1ce);
+      auto resampledMask = cbica::ResampleImage< TImageType >(outputImage_temp,
+        t1cImg_original->GetSpacing(),
+        t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
+      cbica::WriteImage< TImageType >(
+        resampledMask,
+        outputImageFile_temp
+        );
+      std::cout << "== Done.\n";
+    }
+    
+    if (!outputFile.empty())
+    {
+      cbica::WriteImage< TImageType >(
+        cbica::ReadImage< TImageType >(outputImageFile_temp),
+        outputFile
+        );
+    }
   }
-  
-  if (!outputFile.empty())
-  {
-    cbica::WriteImage< TImageType >(
-      cbica::ReadImage< TImageType >(outputImageFile_temp),
-      outputFile
-      );
-  }
-
 
   return;
 }
@@ -426,7 +426,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("fl", "FLAIR", cbica::Parameter::FILE, "", "The input T2-FLAIR image file.");
   parser.addRequiredParameter("t2", "T2", cbica::Parameter::FILE, "", "The input T2 image file.");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "", "The Optional input mask file.", "This is needed for normalization only");
-  parser.addOptionalParameter("md", "modelDir", cbica::Parameter::DIRECTORY, "", "The trained model to use", "Defaults to 'CaPTk_installDir/data/deepMedic/brainSegmentation'");
+  parser.addRequiredParameter("md", "modelDir", cbica::Parameter::DIRECTORY, "", "The trained model to use", "See examples in '${CaPTk_installDir}/data/deepMedic/saved_models'");
   parser.addRequiredParameter("o", "output", cbica::Parameter::DIRECTORY, "", "The output directory");
 
   parser.addOptionalParameter("ql", "quantLower", cbica::Parameter::FLOAT, "0-100", "The Lower Quantile range to remove", "This is needed for normalization only", "Default: 5");
