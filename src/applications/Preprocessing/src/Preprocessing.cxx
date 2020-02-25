@@ -449,31 +449,13 @@ int algorithmsRunner()
         }
       }
 
-      //bool validMask = true;
-      //if (!inputMaskFile.empty())
-      //{
-      //  for (size_t i = 0; i < inputImageFiles.size(); i++)
-      //  {
-      //    if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFiles[i]))
-      //    {
-      //      validMask = false;
-      //      break;
-      //    }
-      //  }
-      //}
-
       // at this point, we have found the global minimum and maximum
-      auto rescaleRatio = (rescaleUpper - rescaleLower) / (maximum - minimum);
+      auto rescaleRatio = (rescaleUpper - rescaleLower) / (maximum - minimum); // calculate this once
       for (size_t i = 0; i < inputImages.size(); i++)
       {
         auto currentOutput = cbica::CreateImage< TImageType >(inputImages[i]);
         itk::ImageRegionConstIterator< TImageType > inputIterator(inputImages[i], inputImages[i]->GetLargestPossibleRegion());
         itk::ImageRegionIterator< TImageType > outputIterator(currentOutput, currentOutput->GetLargestPossibleRegion());
-        //if (validMask)
-        //{
-        //  auto maskImage = cbica::ReadImage< TImageType >(inputMaskFile)
-        //  itk::ImageRegionConstIterator< TImageType > inputIterator(cbica::ReadImage< TImageType > (inputMaskFile), inputImages[i]->GetLargestPossibleRegion());
-        //}
 
         for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++ inputIterator, ++outputIterator)
         {
