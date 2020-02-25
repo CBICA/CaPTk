@@ -449,25 +449,38 @@ int algorithmsRunner()
         }
       }
 
+      //bool validMask = true;
+      //if (!inputMaskFile.empty())
+      //{
+      //  for (size_t i = 0; i < inputImageFiles.size(); i++)
+      //  {
+      //    if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFiles[i]))
+      //    {
+      //      validMask = false;
+      //      break;
+      //    }
+      //  }
+      //}
+
       // at this point, we have found the global minimum and maximum
+      auto rescaleRatio = (rescaleUpper - rescaleLower) / (maximum - minimum);
       for (size_t i = 0; i < inputImages.size(); i++)
       {
-        auto rescaler = itk::RescaleIntensityImageFilter< TImageType >::New();
-        rescaler->SetInput(inputImages[i]);
-        rescaler->SetOutputMaximum(maximum);
-        rescaler->SetOutputMinimum(minimum);
+        auto currentOutput = cbica::CreateImage< TImageType >(inputImages[i]);
+        itk::ImageRegionConstIterator< TImageType > inputIterator(inputImages[i], inputImages[i]->GetLargestPossibleRegion());
+        itk::ImageRegionIterator< TImageType > outputIterator(currentOutput, currentOutput->GetLargestPossibleRegion());
+        //if (validMask)
+        //{
+        //  auto maskImage = cbica::ReadImage< TImageType >(inputMaskFile)
+        //  itk::ImageRegionConstIterator< TImageType > inputIterator(cbica::ReadImage< TImageType > (inputMaskFile), inputImages[i]->GetLargestPossibleRegion());
+        //}
 
-        try
+        for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++ inputIterator, ++outputIterator)
         {
-          rescaler->Update();
-        }
-        catch (const std::exception&e)
-        {
-          std::cerr << "Error caught during rescaling: " << e.what() << "\n";
-          return EXIT_FAILURE;
+          outputIterator.Set((inputIterator.Get() - minimum) * rescaleRatio);
         }
 
-        cbica::WriteImage< TImageType >(rescaler->GetOutput(), outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+        cbica::WriteImage< TImageType >(currentOutput, outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
       }
     }
     else
