@@ -14,6 +14,8 @@
 #include "itkPointSet.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkOtsuThresholdImageFilter.h"
+#include "itkRescaleIntensityImageFilter.h"
+#include "itkStatisticsImageFilter.h"
 
 //! Detail the available algorithms to make it easier to initialize
 enum AvailableAlgorithms
@@ -407,6 +409,82 @@ int algorithmsRunner()
     }
   }
 
+  else if (requestedAlgorithm == Rescaling)
+  {
+    typename TImageType::PixelType minimum = std::numeric_limits< typename TImageType::PixelType >::min(), 
+      maximum = std::numeric_limits< typename TImageType::PixelType >::max();
+
+    if (inputImageFile.find(",") != std::string::npos)
+    {
+      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
+
+      auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
+      std::vector< typename TImageType::Pointer > inputImages;
+      for (size_t i = 0; i < inputImageFiles.size(); i++)
+      {
+        auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+        inputImages.push_back(currentImage);
+        auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+        statsCalculator->SetInput(currentImage);
+        try
+        {
+          statsCalculator->Update();
+        }
+        catch (const std::exception&e)
+        {
+          std::cerr << "Error caught during stats calculation: " << e.what() << "\n";
+          return EXIT_FAILURE;
+        }
+
+        auto currentMin = statsCalculator->GetMinimum();
+        auto currentMax = statsCalculator->GetMaximum();
+
+        if (currentMin < minimum)
+        {
+          minimum = currentMin;
+        }
+        if (currentMax < maximum)
+        {
+          maximum = currentMax;
+        }
+      }
+
+      // at this point, we have found the global minimum and maximum
+      for (size_t i = 0; i < inputImages.size(); i++)
+      {
+        auto rescaler = itk::RescaleIntensityImageFilter< TImageType >::New();
+        rescaler->SetInput(inputImages[i]);
+        rescaler->SetOutputMaximum(maximum);
+        rescaler->SetOutputMinimum(minimum);
+
+        try
+        {
+          rescaler->Update();
+        }
+        catch (const std::exception&e)
+        {
+          std::cerr << "Error caught during rescaling: " << e.what() << "\n";
+          return EXIT_FAILURE;
+        }
+
+        cbica::WriteImage< TImageType >(rescaler->GetOutput(), outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+      }
+    }
+    else
+    {
+      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+      auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+      statsCalculator->SetInput(inputImage);
+
+      auto rescaler = itk::RescaleIntensityImageFilter< TImageType >::New();
+      rescaler->SetInput(inputImage);
+      rescaler->SetOutputMaximum(rescaleUpper);
+      rescaler->SetOutputMinimum(rescaleLower);
+
+      cbica::WriteImage< TImageType >(rescaler->GetOutput(), outputImageFile);
+    }
+  }
+
   return EXIT_SUCCESS;
 }
 
@@ -498,7 +576,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
   parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
-  parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed, the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
+  parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed (comma-separated), the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
 
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
 
@@ -700,6 +778,7 @@ int main(int argc, char** argv)
   }
   else if (parser.isPresent("rsc"))
   {
+    requestedAlgorithm = Rescaling;
     std::string temp;
     parser.getParameterValue("rsc", temp);
     auto delimitersToCheck = { ":", ",", "x" };
