@@ -5,13 +5,6 @@ FIND_PACKAGE( Git REQUIRED )
 
 OPTION( USE_GIT_PROTOCOL "If behind a firewall turn this off to use https instead." OFF )
 
-IF(MSVC)
-  SET( CMAKE_CONFIGURATION_TYPES "Debug;Release")
-ELSEIF(UNIX)
-  SET( CMAKE_CONFIGURATION_TYPES "Release")
-  SET( CMAKE_BUILD_TYPE "Release" )
-ENDIF()
-
 INCLUDE( ExternalProject )
 
 # check build path lenght for windows and give a warning if greater than 15
