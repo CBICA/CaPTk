@@ -43,7 +43,7 @@ registrationAffineTransformInput, registrationDeformableTransformInput;
 int histoMatchQuantiles = 40, histoMatchBins = 100,
 registrationTypeInt;
 bool registrationIntermediate = false, registrationSegmentationMoving = false;
-float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15,
+float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
 ssSigma = 0.5, ssIntensityThreshold = 80;
 int n3Bias_iterations = 50, n3Bias_fittingLevels = 4, n3Bias_otsuBins = 200, ssRadius = 1;
 
@@ -497,6 +497,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
   parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
+  parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::FLOAT, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + "-" + std::to_string(rescaleUpper));
 
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
 
