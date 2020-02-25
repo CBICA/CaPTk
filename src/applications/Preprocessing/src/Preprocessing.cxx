@@ -424,45 +424,31 @@ int algorithmsRunner()
       {
         auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
         inputImages.push_back(currentImage);
-        auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
-        statsCalculator->SetInput(currentImage);
-        try
-        {
-          statsCalculator->Update();
-        }
-        catch (const std::exception&e)
-        {
-          std::cerr << "Error caught during stats calculation: " << e.what() << "\n";
-          return EXIT_FAILURE;
-        }
-
-        auto currentMin = statsCalculator->GetMinimum();
-        auto currentMax = statsCalculator->GetMaximum();
-
-        if (currentMin < minimum)
-        {
-          minimum = currentMin;
-        }
-        if (currentMax < maximum)
-        {
-          maximum = currentMax;
-        }
       }
 
-      // at this point, we have found the global minimum and maximum
-      auto rescaleRatio = (rescaleUpper - rescaleLower) / (maximum - minimum); // calculate this once
-      for (size_t i = 0; i < inputImages.size(); i++)
+      using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
+      auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
+
+      auto rescaler = itk::RescaleIntensityImageFilter< NewImageType >::New();
+      rescaler->SetInput(combinedImage);
+      rescaler->SetOutputMaximum(rescaleUpper);
+      rescaler->SetOutputMinimum(rescaleLower);
+      try
       {
-        auto currentOutput = cbica::CreateImage< TImageType >(inputImages[i]);
-        itk::ImageRegionConstIterator< TImageType > inputIterator(inputImages[i], inputImages[i]->GetLargestPossibleRegion());
-        itk::ImageRegionIterator< TImageType > outputIterator(currentOutput, currentOutput->GetLargestPossibleRegion());
+        rescaler->Update();
+      }
+      catch (const std::exception&e)
+      {
+        std::cerr << "Error caught during rescaling: " << e.what() << "\n";
+        return EXIT_FAILURE;
+      }
 
-        for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++ inputIterator, ++outputIterator)
-        {
-          outputIterator.Set((inputIterator.Get() - minimum) * rescaleRatio);
-        }
+      auto outputImages = cbica::GetExtractedImages< NewImageType, TImageType >(rescaler->GetOutput());
 
-        cbica::WriteImage< TImageType >(currentOutput, outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+      // at this point, we have found the global minimum and maximum
+      for (size_t i = 0; i < outputImages.size(); i++)
+      {
+        cbica::WriteImage< TImageType >(outputImages[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
       }
     }
     else
