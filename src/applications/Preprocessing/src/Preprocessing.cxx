@@ -25,7 +25,8 @@ enum AvailableAlgorithms
   BiasCorrectionN3,
   BiasCorrectionN4,
   SusanDenoisingAlgo,
-  Registration
+  Registration,
+  Rescaling
 };
 
 // helper enum to make things smoother
@@ -497,7 +498,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
   parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
-  parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::FLOAT, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + "-" + std::to_string(rescaleUpper));
+  parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + "-" + std::to_string(rescaleUpper), "If multiple inputs are passed, the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
 
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
 
@@ -527,11 +528,13 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("o", outputImageFile);
   }
+
+  // parse all options from here
   if (parser.isPresent("p12"))
   {
     requestedAlgorithm = P1P2Preprocess;
   }
-  if (parser.isPresent("zn"))
+  else if (parser.isPresent("zn"))
   {
     requestedAlgorithm = ZScoreNormalize;
     std::string tempCutOff, tempQuant;
@@ -566,7 +569,7 @@ int main(int argc, char** argv)
       }
     }
   }
-  if (parser.isPresent("n3"))
+  else if (parser.isPresent("n3"))
   {
     if (parser.isPresent("n3I"))
     {
@@ -587,8 +590,7 @@ int main(int argc, char** argv)
 
     requestedAlgorithm = BiasCorrectionN3;
   }
-
-  if (parser.isPresent("n4"))
+  else if (parser.isPresent("n4"))
   {
     if (parser.isPresent("n4I"))
     {
@@ -609,8 +611,7 @@ int main(int argc, char** argv)
 
     requestedAlgorithm = BiasCorrectionN4;
   }
-
-  if (parser.isPresent("ss"))
+  else if (parser.isPresent("ss"))
   {
     requestedAlgorithm = SusanDenoisingAlgo;
 
@@ -627,7 +628,7 @@ int main(int argc, char** argv)
       parser.getParameterValue("ssT", ssIntensityThreshold);
     }
   }
-  if (parser.isPresent("hi"))
+  else if (parser.isPresent("hi"))
   {
     parser.getParameterValue("hi", targetImageFile);
     requestedAlgorithm = HistogramMatching;
@@ -640,8 +641,7 @@ int main(int argc, char** argv)
       parser.getParameterValue("hq", histoMatchQuantiles);
     }
   }
-
-  if (parser.isPresent("reg"))
+  else if (parser.isPresent("reg"))
   {
     requestedAlgorithm = Registration;
 
@@ -696,6 +696,19 @@ int main(int argc, char** argv)
     if (parser.isPresent("rID"))
     {
       parser.getParameterValue("rID", registrationDeformableTransformInput);
+    }
+  }
+  else if (parser.isPresent("rsc"))
+  {
+    std::string temp;
+    parser.getParameterValue("rsc", temp);
+    auto delimitersToCheck = { "-", ":", ",", "x" };
+    for (auto delimIter = delimitersToCheck.begin(); delimIter != delimitersToCheck.end(); ++delimIter)
+    {
+      if (temp.find(*delimIter) != std::string::npos)
+      {
+        auto bounds = cbica::stringSplit(temp, *delimIter);
+      }
     }
   }
 
