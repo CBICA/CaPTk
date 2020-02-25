@@ -498,7 +498,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
   parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
-  parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + "-" + std::to_string(rescaleUpper), "If multiple inputs are passed, the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
+  parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed, the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
 
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
 
@@ -702,12 +702,20 @@ int main(int argc, char** argv)
   {
     std::string temp;
     parser.getParameterValue("rsc", temp);
-    auto delimitersToCheck = { "-", ":", ",", "x" };
+    auto delimitersToCheck = { ":", ",", "x" };
     for (auto delimIter = delimitersToCheck.begin(); delimIter != delimitersToCheck.end(); ++delimIter)
     {
       if (temp.find(*delimIter) != std::string::npos)
       {
         auto bounds = cbica::stringSplit(temp, *delimIter);
+        rescaleLower = std::atof(bounds[0].c_str());
+        rescaleUpper = std::atof(bounds[1].c_str());
+
+        if (rescaleUpper < rescaleLower)
+        {
+          std::swap(rescaleLower, rescaleUpper);
+        }
+        break;
       }
     }
   }
