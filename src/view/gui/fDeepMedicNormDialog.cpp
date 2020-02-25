@@ -75,11 +75,28 @@ void fDeepMedicNormalizer::OpenInputImage()
 
 void fDeepMedicNormalizer::SelectOutputImage()
 {
-  QString outputImage = getSaveFile(this, mInputPathName, outputImageName->text());
+  std::string defaultExtension = ".nii.gz";
+  std::string path, base, ext; // reusable variables for split filenames
+  std::string outputWithExtension = outputImageName->text().toStdString();
+  // Safety check, add a .nii.gz to the default filename
+  cbica::splitFileName(outputImageName->text().toStdString(), path, base, ext);
+  if (ext.empty()) {
+      outputWithExtension += defaultExtension;
+  }
+
+  QString outputImage = getSaveFile(this, mInputPathName, QString::fromStdString(outputWithExtension));
+  cbica::splitFileName(outputImage.toStdString(), path, base, ext);
+  if (!base.empty() && ext.empty()) {
+      // if the user deliberately specifies an output file with no extension,
+      // it will cause a crash due to how ITK handles file writing.
+      // We could raise an error here asking for an extension, but for now just append .nii.gz
+      outputImage += QString::fromStdString(defaultExtension);
+
+  }
   if (outputImage.isNull() || outputImage.isEmpty())
     return;
   else
     outputImageName->setText(outputImage);
 
-  mInputPathName = cbica::getFilenameBase(outputImage.toStdString(), false).c_str(); // overwrite previous default path with new output
+  mInputPathName = cbica::getFilenamePath(outputImage.toStdString(), false).c_str(); // overwrite previous default path with new output
 }
