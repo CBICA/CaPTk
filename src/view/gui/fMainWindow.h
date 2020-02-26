@@ -285,7 +285,7 @@ private:
   QMenu* menuHelp;
 
   QAction *help_discussion;
-  QAction *help_download;
+  QAction *helpMenu_download;
   QAction *help_forum;
   QAction *help_bugs;
   QAction *help_features;
