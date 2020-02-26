@@ -726,14 +726,12 @@ namespace cbica
   {
     std::string path, base, ext;
     splitFileName(getFullPath(), path, base, ext);
-  // #ifdef __APPLE__
-  //   return "/Applications/CaPTk_1.6.2.Beta.app/Contents/MacOS/";
-  // #endif
     return cbica::normPath(path) + "/";
   }
 
   std::string getFullPath()
   {
+    std::string return_string;
 #if defined(_WIN32)
     //! Initialize pointers to file and user names
     char path[FILENAME_MAX];
@@ -751,13 +749,16 @@ namespace cbica
     }
 #else
     //! Initialize pointers to file and user names
-    char path[PATH_MAX];
-    if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
-      //path = dirname(path);
-      std::cerr << "[getFullPath()] Error during getting full path..";
+     char path[PATH_MAX];
+     ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
+     if (count == -1)
+       std::cerr << "[getFullPath()] Error during getting full path..";
+    std::string appPath = std::string( path, (count > 0) ? count : 0 );
+    path[0] = '\0';
+    return appPath;
 #endif
 
-    std::string return_string = std::string(path);
+    return_string = std::string(path);
     path[0] = '\0';
 
     return return_string;
