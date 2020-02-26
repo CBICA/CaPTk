@@ -119,7 +119,6 @@ int algorithmsRunner()
       {
         cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
       }
-
     }
     else
     {
@@ -139,11 +138,50 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == P1P2Preprocess)
   {
-    P1P2Normalizer< TImageType > normalizer;
-    normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
-    normalizer.Update();
-    cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
+    if (inputImageFile.find(",") != std::string::npos) // multiple input images passed
+    {
+      auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
+      std::vector< typename TImageType::Pointer > inputImages, inputMask;
+      for (size_t i = 0; i < inputImageFiles.size(); i++)
+      {
+        auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+        inputImages.push_back(currentImage);
+        //if (!inputMaskFile.empty())
+        //{
+        //  inputMask.push_back(cbica::ReadImage< TImageType >(inputMaskFile));
+        //}
+      }
+
+      using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
+      auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
+      //auto combinedMask = combinedImage;
+      //if (!inputMask.empty())
+      //{
+      //  combinedMask = cbica::GetJoinedImage< TImageType, NewImageType >(inputMask);
+      //}
+
+      P1P2Normalizer< NewImageType > normalizer;
+      normalizer.SetInputImage(combinedImage);
+      normalizer.Update();
+
+      auto combinedOutput = normalizer.GetOutput();
+      auto extractedOutputs = cbica::GetExtractedImages< NewImageType, TImageType >(combinedOutput);
+
+      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
+
+      for (size_t i = 0; i < extractedOutputs.size(); i++)
+      {
+        cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+      }
+    }
+    else
+    {
+      P1P2Normalizer< TImageType > normalizer;
+      normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
+      normalizer.Update();
+      cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+      return EXIT_SUCCESS;
+    }
   }
 
   else if (requestedAlgorithm == BiasCorrectionN3)
