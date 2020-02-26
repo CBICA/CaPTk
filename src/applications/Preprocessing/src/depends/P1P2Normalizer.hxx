@@ -123,7 +123,6 @@ std::map< std::string, double > P1P2Normalizer< TImageType >::GetStatisticsForIm
   results["Min"] = statsCalculator->GetMinimum();
   results["Std"] = std::sqrtf(statsCalculator->GetVariance());
   results["Mean"] = statsCalculator->GetMean();
-
-
+  
   return results;
 }
