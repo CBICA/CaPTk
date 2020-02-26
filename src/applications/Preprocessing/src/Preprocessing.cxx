@@ -48,7 +48,7 @@ registrationTypeInt;
 bool registrationIntermediate = false, registrationSegmentationMoving = false;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
 ssSigma = 0.5, ssIntensityThreshold = 80;
-int n3Bias_iterations = 50, n3Bias_fittingLevels = 4, n3Bias_otsuBins = 200, ssRadius = 1;
+int n3Bias_iterations = 50, n3Bias_fittingLevels = 50, n3Bias_otsuBins = 200, ssRadius = 1;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true, debugMode = false;
 
