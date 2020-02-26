@@ -666,26 +666,29 @@ int algorithmsRunner()
     similarityFilter->SetTargetImage(referenceImage);
     similarityFilter->Update();
 
-    std::cout << "=== Entire Masked Area ===\n";
-    std::cout << "Total Overlap:   " << similarityFilter->GetTotalOverlap() << "\n";
-    std::cout << "Union (Jaccard): " << similarityFilter->GetUnionOverlap() << "\n";
-    std::cout << "Mean (DICE):     " << similarityFilter->GetMeanOverlap() << "\n";
-    std::cout << "Volume Sim.:     " << similarityFilter->GetVolumeSimilarity() << "\n";
-    std::cout << "False Neg. Err.: " << similarityFilter->GetFalseNegativeError() << "\n";
-    std::cout << "False Pos. Err.: " << similarityFilter->GetFalsePositiveError() << "\n";
+    //std::cout << "=== Entire Masked Area ===\n";
+    std::cout << "Property,Value\n";
+    std::cout << "TotalOverlap," << similarityFilter->GetTotalOverlap() << "\n";
+    std::cout << "Union(Jaccard)_Overall," << similarityFilter->GetUnionOverlap() << "\n";
+    std::cout << "Mean(DICE)_Overall," << similarityFilter->GetMeanOverlap() << "\n";
+    std::cout << "VolumeSimilarity_Overall," << similarityFilter->GetVolumeSimilarity() << "\n";
+    std::cout << "FalseNegativeError_Overall," << similarityFilter->GetFalseNegativeError() << "\n";
+    std::cout << "FalsePositiveError_Overall," << similarityFilter->GetFalsePositiveError() << "\n";
 
     if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
     {
-      std::cout << "=== Individual Labels ===\n";
+      //std::cout << "=== Individual Labels ===\n";
+      //std::cout << "Property,Value\n";
       for (size_t i = 0; i < uniqueLabels.size(); i++)
       {
-        std::cout << "Label Value:     " << uniqueLabels[i] << "\n";
-        std::cout << "Target Overlap:  " << similarityFilter->GetTargetOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Union (Jaccard): " << similarityFilter->GetUnionOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Mean (DICE):     " << similarityFilter->GetMeanOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Volume Sim.:     " << similarityFilter->GetVolumeSimilarity(uniqueLabels[i]) << "\n";
-        std::cout << "False Neg. Err.: " << similarityFilter->GetFalseNegativeError(uniqueLabels[i]) << "\n";
-        std::cout << "False Pos. Err.: " << similarityFilter->GetFalsePositiveError(uniqueLabels[i]) << "\n";
+        auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
+        std::cout << "LabelValue," << uniqueLabels_string << "\n";
+        std::cout << "TargetOverlap_Label" + uniqueLabels_string + "," << similarityFilter->GetTargetOverlap(uniqueLabels[i]) << "\n";
+        std::cout << "Union(Jaccard)_Label" + uniqueLabels_string + "," << similarityFilter->GetUnionOverlap(uniqueLabels[i]) << "\n";
+        std::cout << "Mean(DICE)_Label" + uniqueLabels_string + "," << similarityFilter->GetMeanOverlap(uniqueLabels[i]) << "\n";
+        std::cout << "VolumeSimilarity_Label" + uniqueLabels_string + "," << similarityFilter->GetVolumeSimilarity(uniqueLabels[i]) << "\n";
+        std::cout << "FalseNegativeError_Label" + uniqueLabels_string + "," << similarityFilter->GetFalseNegativeError(uniqueLabels[i]) << "\n";
+        std::cout << "FalsePositiveError_Label" + uniqueLabels_string + "," << similarityFilter->GetFalsePositiveError(uniqueLabels[i]) << "\n";
       }
     }
       return EXIT_SUCCESS;
@@ -1233,9 +1236,34 @@ int main(int argc, char** argv)
 
   if (requestedAlgorithm == Information)
   {
+    std::cout << "ITK Image information:.\n";
+    auto dims = inputImageInfo.GetImageDimensions();
+    auto size = inputImageInfo.GetImageSize();
+    auto origin = inputImageInfo.GetImageOrigins();
+    auto spacing = inputImageInfo.GetImageSpacings();
+    auto size_string = std::to_string(size[0]);
+    auto origin_string = std::to_string(origin[0]);
+    auto spacing_string = std::to_string(spacing[0]);
+    size_t totalSize = size[0];
+    for (size_t i = 1; i < dims; i++)
+    {
+      size_string += "x" + std::to_string(size[i]);
+      origin_string += "x" + std::to_string(origin[i]);
+      spacing_string += "x" + std::to_string(spacing[i]);
+      totalSize *= size[i];
+    }
+    std::cout << "Property,Value\n";
+    std::cout << "Dimensions," << dims << "\n";
+    std::cout << "Size," << size_string << "\n";
+    std::cout << "Total," << totalSize << "\n";
+    std::cout << "Origin," << origin_string << "\n";
+    std::cout << "Spacing," << spacing_string << "\n";
+    std::cout << "Component," << inputImageInfo.GetComponentTypeAsString() << "\n";
+    std::cout << "Pixel Type," << inputImageInfo.GetPixelTypeAsString() << "\n";
+
     if (cbica::IsDicom(inputImageFile)) // if dicom file
     {
-      std::cout << "DICOM file detected, will print out all tags.\n";
+      std::cout << "DICOM file detected, will print out all tags from here.\n";
       DicomMetadataReader reader;
       reader.SetFilePath(inputImageFile);
       bool readStatus = reader.ReadMetaData();
@@ -1255,33 +1283,6 @@ int main(int argc, char** argv)
           << labelValuePair.first.c_str() << ","
           << labelValuePair.second.c_str() << "\n";
       }
-    }
-    else
-    {
-      std::cout << "Non-DICOM file detected, will print out ITK Image information.\n";
-      auto dims = inputImageInfo.GetImageDimensions();
-      auto size = inputImageInfo.GetImageSize();
-      auto origin = inputImageInfo.GetImageOrigins();
-      auto spacing = inputImageInfo.GetImageSpacings();
-      auto size_string = std::to_string(size[0]);
-      auto origin_string = std::to_string(origin[0]);
-      auto spacing_string = std::to_string(spacing[0]);
-      size_t totalSize = size[0];
-      for (size_t i = 1; i < dims; i++)
-      {
-        size_string += "x" + std::to_string(size[i]);
-        origin_string += "x" + std::to_string(origin[i]);
-        spacing_string += "x" + std::to_string(spacing[i]);
-        totalSize *= size[i];
-      }
-      std::cout << "Property,Value\n";
-      std::cout << "Dimensions," << dims << "\n";
-      std::cout << "Size," << size_string << "\n";
-      std::cout << "Total," << totalSize << "\n";
-      std::cout << "Origin," << origin_string << "\n";
-      std::cout << "Spacing," << spacing_string << "\n";
-      std::cout << "Component," << inputImageInfo.GetComponentTypeAsString() << "\n";
-      std::cout << "Pixel Type," << inputImageInfo.GetPixelTypeAsString() << "\n"; 
     }
     return EXIT_SUCCESS;
   }
