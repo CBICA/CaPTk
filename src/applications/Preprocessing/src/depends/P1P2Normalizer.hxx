@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "P1P2Normalizer.h"
 
 #include "itkDivideImageFilter.h"
