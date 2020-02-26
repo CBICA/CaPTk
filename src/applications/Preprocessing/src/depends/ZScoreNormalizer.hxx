@@ -275,7 +275,7 @@ std::map< std::string, double > ZScoreNormalizer< TImageType >::GetStatisticsFor
 
   results["Max"] = statsCalculator->GetMaximum();
   results["Min"] = statsCalculator->GetMinimum();
-  results["Std"] = std::sqrtf(statsCalculator->GetVariance());
+  results["Std"] = sqrtf(statsCalculator->GetVariance());
   results["Mean"] = statsCalculator->GetMean();
 
   return results;
