@@ -78,16 +78,62 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == ZScoreNormalize)
   {
-    ZScoreNormalizer< TImageType > normalizer;
-    normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
-    if (!inputMaskFile.empty())
+    if (inputImageFile.find(",") != std::string::npos) // multiple input images passed
     {
-      normalizer.SetInputMask(cbica::ReadImage< TImageType >(inputMaskFile));
+      auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
+      std::vector< typename TImageType::Pointer > inputImages, inputMask;
+      for (size_t i = 0; i < inputImageFiles.size(); i++)
+      {
+        auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+        inputImages.push_back(currentImage);
+        if (!inputMaskFile.empty())
+        {
+          inputMask.push_back(cbica::ReadImage< TImageType >(inputMaskFile));
+        }
+      }
+
+      using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
+      auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
+      auto combinedMask = combinedImage;
+      if (!inputMask.empty())
+      {
+        combinedMask = cbica::GetJoinedImage< TImageType, NewImageType >(inputMask);
+      }
+
+      ZScoreNormalizer< NewImageType > normalizer;
+      normalizer.SetInputImage(combinedImage);
+      if (!inputMask.empty())
+      {
+        normalizer.SetInputMask(combinedMask);
+      }
+      normalizer.SetCutoffs(zNormCutLow, zNormCutHigh);
+      normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
+      normalizer.Update();
+
+      auto combinedOutput = normalizer.GetOutput();
+      auto extractedOutputs = cbica::GetExtractedImages< NewImageType, TImageType >(combinedOutput);
+
+      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
+
+      for (size_t i = 0; i < extractedOutputs.size(); i++)
+      {
+        cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+      }
+
     }
-    normalizer.SetCutoffs(zNormCutLow, zNormCutHigh);
-    normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
-    normalizer.Update();
-    cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+    else
+    {
+      ZScoreNormalizer< TImageType > normalizer;
+      normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
+      if (!inputMaskFile.empty())
+      {
+        normalizer.SetInputMask(cbica::ReadImage< TImageType >(inputMaskFile));
+      }
+      normalizer.SetCutoffs(zNormCutLow, zNormCutHigh);
+      normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
+      normalizer.Update();
+      cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+    }
     return EXIT_SUCCESS;
   }
 
