@@ -14,6 +14,8 @@
 #include "itkPointSet.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkOtsuThresholdImageFilter.h"
+#include "itkRescaleIntensityImageFilter.h"
+#include "itkStatisticsImageFilter.h"
 
 //! Detail the available algorithms to make it easier to initialize
 enum AvailableAlgorithms
@@ -25,7 +27,8 @@ enum AvailableAlgorithms
   BiasCorrectionN3,
   BiasCorrectionN4,
   SusanDenoisingAlgo,
-  Registration
+  Registration,
+  Rescaling
 };
 
 // helper enum to make things smoother
@@ -43,7 +46,7 @@ registrationAffineTransformInput, registrationDeformableTransformInput;
 int histoMatchQuantiles = 40, histoMatchBins = 100,
 registrationTypeInt;
 bool registrationIntermediate = false, registrationSegmentationMoving = false;
-float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15,
+float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
 ssSigma = 0.5, ssIntensityThreshold = 80;
 int n3Bias_iterations = 50, n3Bias_fittingLevels = 4, n3Bias_otsuBins = 200, ssRadius = 1;
 
@@ -75,26 +78,110 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == ZScoreNormalize)
   {
-    ZScoreNormalizer< TImageType > normalizer;
-    normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
-    if (!inputMaskFile.empty())
+    if (inputImageFile.find(",") != std::string::npos) // multiple input images passed
     {
-      normalizer.SetInputMask(cbica::ReadImage< TImageType >(inputMaskFile));
+      auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
+      std::vector< typename TImageType::Pointer > inputImages, inputMask;
+      for (size_t i = 0; i < inputImageFiles.size(); i++)
+      {
+        auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+        inputImages.push_back(currentImage);
+        if (!inputMaskFile.empty())
+        {
+          inputMask.push_back(cbica::ReadImage< TImageType >(inputMaskFile));
+        }
+      }
+
+      using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
+      auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
+      auto combinedMask = combinedImage;
+      if (!inputMask.empty())
+      {
+        combinedMask = cbica::GetJoinedImage< TImageType, NewImageType >(inputMask);
+      }
+
+      ZScoreNormalizer< NewImageType > normalizer;
+      normalizer.SetInputImage(combinedImage);
+      if (!inputMask.empty())
+      {
+        normalizer.SetInputMask(combinedMask);
+      }
+      normalizer.SetCutoffs(zNormCutLow, zNormCutHigh);
+      normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
+      normalizer.Update();
+
+      auto combinedOutput = normalizer.GetOutput();
+      auto extractedOutputs = cbica::GetExtractedImages< NewImageType, TImageType >(combinedOutput);
+
+      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
+
+      for (size_t i = 0; i < extractedOutputs.size(); i++)
+      {
+        cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+      }
     }
-    normalizer.SetCutoffs(zNormCutLow, zNormCutHigh);
-    normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
-    normalizer.Update();
-    cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+    else
+    {
+      ZScoreNormalizer< TImageType > normalizer;
+      normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
+      if (!inputMaskFile.empty())
+      {
+        normalizer.SetInputMask(cbica::ReadImage< TImageType >(inputMaskFile));
+      }
+      normalizer.SetCutoffs(zNormCutLow, zNormCutHigh);
+      normalizer.SetQuantiles(zNormQuantLow, zNormQuantHigh);
+      normalizer.Update();
+      cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+    }
     return EXIT_SUCCESS;
   }
 
   else if (requestedAlgorithm == P1P2Preprocess)
   {
-    P1P2Normalizer< TImageType > normalizer;
-    normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
-    normalizer.Update();
-    cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
+    if (inputImageFile.find(",") != std::string::npos) // multiple input images passed
+    {
+      auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
+      std::vector< typename TImageType::Pointer > inputImages, inputMask;
+      for (size_t i = 0; i < inputImageFiles.size(); i++)
+      {
+        auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+        inputImages.push_back(currentImage);
+        //if (!inputMaskFile.empty())
+        //{
+        //  inputMask.push_back(cbica::ReadImage< TImageType >(inputMaskFile));
+        //}
+      }
+
+      using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
+      auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
+      //auto combinedMask = combinedImage;
+      //if (!inputMask.empty())
+      //{
+      //  combinedMask = cbica::GetJoinedImage< TImageType, NewImageType >(inputMask);
+      //}
+
+      P1P2Normalizer< NewImageType > normalizer;
+      normalizer.SetInputImage(combinedImage);
+      normalizer.Update();
+
+      auto combinedOutput = normalizer.GetOutput();
+      auto extractedOutputs = cbica::GetExtractedImages< NewImageType, TImageType >(combinedOutput);
+
+      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
+
+      for (size_t i = 0; i < extractedOutputs.size(); i++)
+      {
+        cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+      }
+    }
+    else
+    {
+      P1P2Normalizer< TImageType > normalizer;
+      normalizer.SetInputImage(cbica::ReadImage< TImageType >(inputImageFile));
+      normalizer.Update();
+      cbica::WriteImage< TImageType >(normalizer.GetOutput(), outputImageFile);
+      return EXIT_SUCCESS;
+    }
   }
 
   else if (requestedAlgorithm == BiasCorrectionN3)
@@ -406,6 +493,63 @@ int algorithmsRunner()
     }
   }
 
+  else if (requestedAlgorithm == Rescaling)
+  {
+    typename TImageType::PixelType minimum = std::numeric_limits< typename TImageType::PixelType >::min(), 
+      maximum = std::numeric_limits< typename TImageType::PixelType >::max();
+
+    if (inputImageFile.find(",") != std::string::npos)
+    {
+      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
+
+      auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
+      std::vector< typename TImageType::Pointer > inputImages;
+      for (size_t i = 0; i < inputImageFiles.size(); i++)
+      {
+        auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+        inputImages.push_back(currentImage);
+      }
+
+      using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
+      auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
+
+      auto rescaler = itk::RescaleIntensityImageFilter< NewImageType >::New();
+      rescaler->SetInput(combinedImage);
+      rescaler->SetOutputMaximum(rescaleUpper);
+      rescaler->SetOutputMinimum(rescaleLower);
+      try
+      {
+        rescaler->Update();
+      }
+      catch (const std::exception&e)
+      {
+        std::cerr << "Error caught during rescaling: " << e.what() << "\n";
+        return EXIT_FAILURE;
+      }
+
+      auto outputImages = cbica::GetExtractedImages< NewImageType, TImageType >(rescaler->GetOutput());
+
+      // at this point, we have found the global minimum and maximum
+      for (size_t i = 0; i < outputImages.size(); i++)
+      {
+        cbica::WriteImage< TImageType >(outputImages[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+      }
+    }
+    else
+    {
+      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+      auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+      statsCalculator->SetInput(inputImage);
+
+      auto rescaler = itk::RescaleIntensityImageFilter< TImageType >::New();
+      rescaler->SetInput(inputImage);
+      rescaler->SetOutputMaximum(rescaleUpper);
+      rescaler->SetOutputMinimum(rescaleLower);
+
+      cbica::WriteImage< TImageType >(rescaler->GetOutput(), outputImageFile);
+    }
+  }
+
   return EXIT_SUCCESS;
 }
 
@@ -497,6 +641,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
   parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
+  parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed (comma-separated), the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
 
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
 
@@ -526,11 +671,13 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("o", outputImageFile);
   }
+
+  // parse all options from here
   if (parser.isPresent("p12"))
   {
     requestedAlgorithm = P1P2Preprocess;
   }
-  if (parser.isPresent("zn"))
+  else if (parser.isPresent("zn"))
   {
     requestedAlgorithm = ZScoreNormalize;
     std::string tempCutOff, tempQuant;
@@ -565,7 +712,7 @@ int main(int argc, char** argv)
       }
     }
   }
-  if (parser.isPresent("n3"))
+  else if (parser.isPresent("n3"))
   {
     if (parser.isPresent("n3I"))
     {
@@ -586,8 +733,7 @@ int main(int argc, char** argv)
 
     requestedAlgorithm = BiasCorrectionN3;
   }
-
-  if (parser.isPresent("n4"))
+  else if (parser.isPresent("n4"))
   {
     if (parser.isPresent("n4I"))
     {
@@ -608,8 +754,7 @@ int main(int argc, char** argv)
 
     requestedAlgorithm = BiasCorrectionN4;
   }
-
-  if (parser.isPresent("ss"))
+  else if (parser.isPresent("ss"))
   {
     requestedAlgorithm = SusanDenoisingAlgo;
 
@@ -626,7 +771,7 @@ int main(int argc, char** argv)
       parser.getParameterValue("ssT", ssIntensityThreshold);
     }
   }
-  if (parser.isPresent("hi"))
+  else if (parser.isPresent("hi"))
   {
     parser.getParameterValue("hi", targetImageFile);
     requestedAlgorithm = HistogramMatching;
@@ -639,8 +784,7 @@ int main(int argc, char** argv)
       parser.getParameterValue("hq", histoMatchQuantiles);
     }
   }
-
-  if (parser.isPresent("reg"))
+  else if (parser.isPresent("reg"))
   {
     requestedAlgorithm = Registration;
 
@@ -695,6 +839,28 @@ int main(int argc, char** argv)
     if (parser.isPresent("rID"))
     {
       parser.getParameterValue("rID", registrationDeformableTransformInput);
+    }
+  }
+  else if (parser.isPresent("rsc"))
+  {
+    requestedAlgorithm = Rescaling;
+    std::string temp;
+    parser.getParameterValue("rsc", temp);
+    auto delimitersToCheck = { ":", ",", "x" };
+    for (auto delimIter = delimitersToCheck.begin(); delimIter != delimitersToCheck.end(); ++delimIter)
+    {
+      if (temp.find(*delimIter) != std::string::npos)
+      {
+        auto bounds = cbica::stringSplit(temp, *delimIter);
+        rescaleLower = std::atof(bounds[0].c_str());
+        rescaleUpper = std::atof(bounds[1].c_str());
+
+        if (rescaleUpper < rescaleLower)
+        {
+          std::swap(rescaleLower, rescaleUpper);
+        }
+        break;
+      }
     }
   }
 
