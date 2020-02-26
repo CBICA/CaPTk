@@ -76,9 +76,11 @@ IF(MSVC)
                                     # like it happens for azure, where it takes
                                     # a longer time to build when it has to generate
                                     # all the config types, even if only one ends up built
-    SET( CMAKE_CONFIGURATION_TYPES "Debug;Release") # And then build type is selected in Visual Studio
-                                                    # or by something like: 
-                                                    # "cmake --build . --target ALL_BUILD --config Release"
+    SET( CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE
+        STRING "Available configuration types" FORCE) 
+                                    # And then build type is selected in Visual Studio
+                                    # or by something like: 
+                                    # "cmake --build . --target ALL_BUILD --config Release"
   ENDIF(NOT CMAKE_CONFIGURATION_TYPES)
 ELSEIF(UNIX)
   IF(NOT CMAKE_BUILD_TYPE)
