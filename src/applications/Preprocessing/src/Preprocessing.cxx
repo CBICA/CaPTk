@@ -48,7 +48,7 @@ registrationTypeInt;
 bool registrationIntermediate = false, registrationSegmentationMoving = false;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
 ssSigma = 0.5, ssIntensityThreshold = 80, n3Bias_filterNoise = 0.01;
-int n3Bias_splineOrder = 3, ssRadius = 1;
+int n3Bias_splineOrder = 3, n3Bias_otsuBins = 10, ssRadius = 1;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true, debugMode = false;
 
@@ -619,12 +619,11 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization");
   parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: 5,95");
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
-  parser.addOptionalParameter("n3", "n3BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N3 bias correction", "Optional parameters: mask or bins, iterations, fitting levels");
-  parser.addOptionalParameter("n4", "n4BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N4 bias correction", "Optional parameters: mask or bins, iterations, fitting levels");
+  parser.addOptionalParameter("n3", "n3BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N3 bias correction", "Optional parameters: mask or bins, spline order, filter noise level");
+  parser.addOptionalParameter("n4", "n4BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N4 bias correction", "Optional parameters: mask or bins, spline order, filter noise level");
   parser.addOptionalParameter("nS", "nSplieOrder", cbica::Parameter::INTEGER, "N.A.", "The spline order for the bias correction", "Defaults to " + std::to_string(n3Bias_splineOrder));
   parser.addOptionalParameter("nF", "nFilterNoise", cbica::Parameter::FLOAT, "N.A.", "The filter noise level for the bias correction", "Defaults to " + std::to_string(n3Bias_filterNoise));
-  parser.addOptionalParameter("n4B", "n4BiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3 Bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(n3Bias_otsuBins));
-  parser.addOptionalParameter("n4W", "n4BiasWidth", cbica::Parameter::INTEGER, "N.A.", "The full width at half maximum", "Defaults to " + std::to_string(n3Bias_fwhm));
+  parser.addOptionalParameter("nB", "nBiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3/N4 bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(n3Bias_otsuBins));
   parser.addOptionalParameter("ss", "susanSmooth", cbica::Parameter::STRING, "N.A.", "Susan smoothing of an image");
   parser.addOptionalParameter("ssS", "susanSigma", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Sigma", "Defaults to " + std::to_string(ssSigma));
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
@@ -717,7 +716,11 @@ int main(int argc, char** argv)
     }
     if (parser.isPresent("nF"))
     {
-      parser.getParameterValue("n3F", n3Bias_filterNoise);
+      parser.getParameterValue("nF", n3Bias_filterNoise);
+    }
+    if (parser.isPresent("nB"))
+    {
+      parser.getParameterValue("nB", n3Bias_otsuBins);
     }
 
     requestedAlgorithm = BiasCorrectionN3;
@@ -731,6 +734,10 @@ int main(int argc, char** argv)
     if (parser.isPresent("nF"))
     {
       parser.getParameterValue("n3F", n3Bias_filterNoise);
+    }
+    if (parser.isPresent("nB"))
+    {
+      parser.getParameterValue("nB", n3Bias_otsuBins);
     }
 
     requestedAlgorithm = BiasCorrectionN4;
