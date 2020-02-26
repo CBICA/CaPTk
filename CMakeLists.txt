@@ -79,7 +79,7 @@ IF(MSVC)
     SET( CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE
         STRING "Available configuration types" FORCE) 
                                     # And then build type is selected in Visual Studio
-                                    Linux  # or by something like: 
+                                    # or by something like: 
                                     # "cmake --build . --target ALL_BUILD --config Release"
   ENDIF(NOT CMAKE_CONFIGURATION_TYPES)
 ELSE() # UNIX or MAC
