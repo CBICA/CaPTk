@@ -126,7 +126,7 @@ int algorithmsRunner()
 
       for (size_t i = 0; i < extractedOutputs.size(); i++)
       {
-        cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+        cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + "_zscored.nii.gz");
       }
     }
     else
@@ -577,9 +577,10 @@ int algorithmsRunner()
         auto outputImages = cbica::GetExtractedImages< NewImageType, TImageType >(rescaler->GetOutput());
 
         // at this point, we have found the global minimum and maximum
+        auto fileEnding = "_rescaled-" + std::to_string(rescaleLower) + "-" + std::to_string(rescaleUpper) + ".nii.gz";
         for (size_t i = 0; i < outputImages.size(); i++)
         {
-          cbica::WriteImage< TImageType >(outputImages[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+          cbica::WriteImage< TImageType >(outputImages[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + fileEnding);
         }
       }
       else
