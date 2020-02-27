@@ -40,6 +40,7 @@ enum RegistrationTypeEnum
 int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile;
+std::vector< std::string > inputImageFiles; // store multiple image files
 std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "SSD", registrationIterations = "100,50,5",
 registrationAffineTransformInput, registrationDeformableTransformInput;
 
@@ -62,25 +63,33 @@ int algorithmsRunner()
       std::cout << "Starting Histogram Matching.\n";
     }
 
-    auto input = cbica::ReadImage< TImageType >(inputImageFile);
-    auto target = cbica::ReadImage< TImageType >(targetImageFile);
-    if (debugMode)
+    if (!inputImageFiles.empty()) // multiple images passed
     {
-      std::cout << "Finished reading input and target images.\n";
+      std::cerr << "This operation cannot currently be performed with multiple images.\n";
+      return EXIT_FAILURE;
+    }
+    else
+    {
+      auto input = cbica::ReadImage< TImageType >(inputImageFile);
+      auto target = cbica::ReadImage< TImageType >(targetImageFile);
+      if (debugMode)
+      {
+        std::cout << "Finished reading input and target images.\n";
+      }
+
+      cbica::WriteImage< TImageType >(
+        cbica::GetHistogramMatchedImage< TImageType >(
+          input, target, histoMatchQuantiles, histoMatchBins), outputImageFile);
     }
 
-    cbica::WriteImage< TImageType >(
-      cbica::GetHistogramMatchedImage< TImageType >(
-        input, target, histoMatchQuantiles, histoMatchBins), outputImageFile);
     std::cout << "Histogram matching completed.\n";
     return EXIT_SUCCESS;
   }
 
   else if (requestedAlgorithm == ZScoreNormalize)
   {
-    if (inputImageFile.find(",") != std::string::npos) // multiple input images passed
+    if (!inputImageFiles.empty()) // multiple images passed
     {
-      auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
       std::vector< typename TImageType::Pointer > inputImages, inputMask;
       for (size_t i = 0; i < inputImageFiles.size(); i++)
       {
@@ -138,9 +147,8 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == P1P2Preprocess)
   {
-    if (inputImageFile.find(",") != std::string::npos) // multiple input images passed
+    if (!inputImageFiles.empty()) // multiple images passed
     {
-      auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
       std::vector< typename TImageType::Pointer > inputImages, inputMask;
       for (size_t i = 0; i < inputImageFiles.size(); i++)
       {
@@ -186,309 +194,340 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == BiasCorrectionN3)
   {
-    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-    auto corrector = itk::N3MRIBiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
-    corrector->SetInput(inputImage);
-    corrector->SetSplineOrder(n3Bias_splineOrder);
-    corrector->SetWeinerFilterNoise(n3Bias_filterNoise);
-    corrector->SetBiasFieldFullWidthAtHalfMaximum(n3Bias_fwhm);
-    corrector->SetConvergenceThreshold(0.0000001);
-    if (!inputMaskFile.empty())
+    if (!inputImageFiles.empty()) // multiple images passed
     {
-      corrector->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+      std::cerr << "This operation cannot currently be performed with multiple images.\n";
+      return EXIT_FAILURE;
     }
     else
     {
-      auto otsu = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
-      otsu->SetInput(inputImage);
-      otsu->SetNumberOfHistogramBins(n3Bias_otsuBins);
-      otsu->SetInsideValue(0);
-      otsu->SetOutsideValue(1);
-      otsu->Update();
-      corrector->SetMaskImage(otsu->GetOutput());
-    }
-    corrector->Update();
+      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+      auto corrector = itk::N3MRIBiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
+      corrector->SetInput(inputImage);
+      corrector->SetSplineOrder(n3Bias_splineOrder);
+      corrector->SetWeinerFilterNoise(n3Bias_filterNoise);
+      corrector->SetBiasFieldFullWidthAtHalfMaximum(n3Bias_fwhm);
+      corrector->SetConvergenceThreshold(0.0000001);
+      if (!inputMaskFile.empty())
+      {
+        corrector->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+      }
+      else
+      {
+        auto otsu = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
+        otsu->SetInput(inputImage);
+        otsu->SetNumberOfHistogramBins(n3Bias_otsuBins);
+        otsu->SetInsideValue(0);
+        otsu->SetOutsideValue(1);
+        otsu->Update();
+        corrector->SetMaskImage(otsu->GetOutput());
+      }
+      corrector->Update();
 
-    cbica::WriteImage< TImageType >(corrector->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
+      cbica::WriteImage< TImageType >(corrector->GetOutput(), outputImageFile);
+      return EXIT_SUCCESS;
+    }
   }
 
   else if (requestedAlgorithm == BiasCorrectionN4)
   {
-    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-    using TBiasCorrectorType = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >;
-    auto corrector = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
-    corrector->SetInput(inputImage);
-    corrector->SetSplineOrder(n3Bias_splineOrder);
-    corrector->SetWienerFilterNoise(n3Bias_filterNoise);
-    corrector->SetBiasFieldFullWidthAtHalfMaximum(n3Bias_fwhm);
-    corrector->SetConvergenceThreshold(0.0000001);
-    if (!inputMaskFile.empty())
+    if (!inputImageFiles.empty()) // multiple images passed
     {
-      corrector->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+      std::cerr << "This operation cannot currently be performed with multiple images.\n";
+      return EXIT_FAILURE;
     }
     else
     {
-      auto otsu = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
-      otsu->SetInput(inputImage);
-      otsu->SetNumberOfHistogramBins(n3Bias_otsuBins);
-      otsu->SetInsideValue(0);
-      otsu->SetOutsideValue(1);
-      otsu->Update();
-      corrector->SetMaskImage(otsu->GetOutput());
+      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+      using TBiasCorrectorType = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >;
+      auto corrector = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
+      corrector->SetInput(inputImage);
+      corrector->SetSplineOrder(n3Bias_splineOrder);
+      corrector->SetWienerFilterNoise(n3Bias_filterNoise);
+      corrector->SetBiasFieldFullWidthAtHalfMaximum(n3Bias_fwhm);
+      corrector->SetConvergenceThreshold(0.0000001);
+      if (!inputMaskFile.empty())
+      {
+        corrector->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+      }
+      else
+      {
+        auto otsu = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
+        otsu->SetInput(inputImage);
+        otsu->SetNumberOfHistogramBins(n3Bias_otsuBins);
+        otsu->SetInsideValue(0);
+        otsu->SetOutsideValue(1);
+        otsu->Update();
+        corrector->SetMaskImage(otsu->GetOutput());
+      }
+      corrector->Update();
+      auto tempOutput = corrector->GetOutput();
+
+      cbica::WriteImage< TImageType >(tempOutput, outputImageFile);
     }
-    corrector->Update();
-    auto tempOutput = corrector->GetOutput();
-
-    cbica::WriteImage< TImageType >(tempOutput, outputImageFile);
-
   }
 
   else if (requestedAlgorithm == SusanDenoisingAlgo)
   {
-    SusanDenoising denoiser;
-    denoiser.SetSigma(ssSigma);
-    denoiser.SetIntensityVariationThreshold(ssIntensityThreshold);
-    denoiser.SetRadius(ssRadius);
+    if (!inputImageFiles.empty()) // multiple images passed
+    {
+      std::cerr << "This operation cannot currently be performed with multiple images.\n";
+      return EXIT_FAILURE;
+    }
+    else
+    {
+      SusanDenoising denoiser;
+      denoiser.SetSigma(ssSigma);
+      denoiser.SetIntensityVariationThreshold(ssIntensityThreshold);
+      denoiser.SetRadius(ssRadius);
 
-    cbica::WriteImage< TImageType >(
-      denoiser.Run< TImageType >(cbica::ReadImage< TImageType >(inputImageFile)),
-      outputImageFile
-      );
+      cbica::WriteImage< TImageType >(
+        denoiser.Run< TImageType >(cbica::ReadImage< TImageType >(inputImageFile)),
+        outputImageFile
+        );
 
-    return EXIT_SUCCESS;
+      return EXIT_SUCCESS;
+    }
   }
 
   else if (requestedAlgorithm == Registration)
   {
-    // call the greedy executable here with the proper API. 
-    // see TumorGrowthModelling regarding how it is done there
-    std::string greedyPathAndDim = cbica::getExecutablePath() + "greedy" + 
+    if (!inputImageFiles.empty()) // multiple images passed
+    {
+      std::cerr << "This operation cannot currently be performed with multiple images.\n";
+      return EXIT_FAILURE;
+    }
+    else
+    {
+      // call the greedy executable here with the proper API. 
+      // see TumorGrowthModelling regarding how it is done there
+      std::string greedyPathAndDim = cbica::getExecutablePath() + "greedy" +
 #if WIN32
-      ".exe" +
+        ".exe" +
 #endif
-      " -d " + std::to_string(TImageType::ImageDimension);
+        " -d " + std::to_string(TImageType::ImageDimension);
 
-    std::string commonCommands; // put all the common things for the affine/deform/reslice in single place
+      std::string commonCommands; // put all the common things for the affine/deform/reslice in single place
 
-    // add iterations to command
-    std::string iterations;
-    {
-      auto temp = cbica::stringSplit(registrationIterations, ",");
-      iterations += temp[0];
-      for (size_t i = 1; i < temp.size(); i++)
+      // add iterations to command
+      std::string iterations;
       {
-        iterations += "x" + temp[i];
+        auto temp = cbica::stringSplit(registrationIterations, ",");
+        iterations += temp[0];
+        for (size_t i = 1; i < temp.size(); i++)
+        {
+          iterations += "x" + temp[i];
+        }
       }
-    }
 
-    commonCommands += " -n " + iterations;
+      commonCommands += " -n " + iterations;
 
-    // add mask file to command
-    if (cbica::fileExists(inputMaskFile))
-    {
-      commonCommands += " -mm " + inputMaskFile;
-    }
-
-    // add the fixed and moving files
-    commonCommands += " -i " + cbica::normPath(registrationFixedImageFile) + " " + cbica::normPath(inputImageFile);
-
-    std::string metricsCommand = " -m ";
-    if (registrationMetrics.find("NCC") != std::string::npos)
-    {
-      // convert 'NCC-AxBxC' to 'NCC AxBxC' for Greedy's API
-      metricsCommand += cbica::stringReplace(registrationMetrics, "-", " ");
-    }
-    else
-    {
-      metricsCommand += registrationMetrics;
-    }
-
-    if (outputImageFile.empty())
-    {
-      std::cerr << "WARNING: Output filename is not defined; will try to save in input directory.\n";
-      outputImageFile = cbica::getFilenamePath(inputImageFile) + "/registrationOutput.nii.gz";
-    }
-    auto outputDir = cbica::getFilenamePath(outputImageFile, false);
-    auto inputFile_base = cbica::getFilenameBase(inputImageFile);
-    auto fixedFile_base = cbica::getFilenameBase(registrationFixedImageFile);
-    std::map< std::string, std::string > intermediateFiles;
-    auto const _registrationMetrics = "_" + registrationMetrics;
-    auto const _registrationMetricsNII = _registrationMetrics + ".nii.gz";
-    auto const _fixedFileTOInputFileBase = fixedFile_base + "TO" + inputFile_base;
-    auto const _inputFileTOFixedFileBase = inputFile_base + "TO" + fixedFile_base;
-
-    bool defaultNamedUsed = false;
-    // populate default names for intermediate files
-    if (registrationAffineTransformInput.empty())
-    {
-      intermediateFiles["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
-      defaultNamedUsed = true;
-    }
-    else
-    {
-      intermediateFiles["Affine"] = registrationAffineTransformInput;
-    }
-    if (registrationDeformableTransformInput.empty())
-    {
-      intermediateFiles["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-      intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
-      defaultNamedUsed = true;
-    }
-    else
-    {
-      intermediateFiles["Deform"] = registrationDeformableTransformInput;
-      std::string path, base, ext;
-      cbica::splitFileName(registrationDeformableTransformInput, path, base, ext);
-      intermediateFiles["DeformInv"] = path + "/" + base + "-Inv.nii.gz";
-    }
-
-    std::string commandToCall;
-    if (!cbica::fileExists(registrationAffineTransformInput))
-    {
-      // we always do affine
-      commandToCall = greedyPathAndDim + " -a" +
-        commonCommands +
-        metricsCommand +
-        " -ia-image-centers -o " + intermediateFiles["Affine"];
-      ;
-      if (debugMode)
+      // add mask file to command
+      if (cbica::fileExists(inputMaskFile))
       {
-        std::cout << "Starting Affine registration.\n";
-        std::cout << "commandToCall: \n" << commandToCall << "\n";
+        commonCommands += " -mm " + inputMaskFile;
       }
-      if (std::system(commandToCall.c_str()) != 0)
+
+      // add the fixed and moving files
+      commonCommands += " -i " + cbica::normPath(registrationFixedImageFile) + " " + cbica::normPath(inputImageFile);
+
+      std::string metricsCommand = " -m ";
+      if (registrationMetrics.find("NCC") != std::string::npos)
       {
-        std::cerr << "Something went wrong when calling Greedy Affine.\n";
-        return EXIT_FAILURE;
-      }
-    }
-    
-    switch (registrationTypeInt)
-    {
-    case RegistrationTypeEnum::Rigid:
-    {
-      // not going to be defined
-      break;
-    }
-    case RegistrationTypeEnum::Affine:
-    {
-      if (registrationSegmentationMoving)
-      {
-        commandToCall = greedyPathAndDim +
-          " -rf " + registrationFixedImageFile +
-          " -rm " + inputImageFile +
-          " " + outputImageFile +
-          " -ri NN -r " + intermediateFiles["Affine"];
+        // convert 'NCC-AxBxC' to 'NCC AxBxC' for Greedy's API
+        metricsCommand += cbica::stringReplace(registrationMetrics, "-", " ");
       }
       else
       {
-        commandToCall = greedyPathAndDim +
-          " -rf " + registrationFixedImageFile +
-          " -rm " + inputImageFile +
-          " " + outputImageFile +
-          " -ri LABEL 0.2vox -r " + intermediateFiles["Affine"];
+        metricsCommand += registrationMetrics;
       }
 
-      if (std::system(commandToCall.c_str()) != 0)
+      if (outputImageFile.empty())
       {
-        std::cerr << "Something went wrong when calling Greedy Reslice Affine.\n";
-        return EXIT_FAILURE;
+        std::cerr << "WARNING: Output filename is not defined; will try to save in input directory.\n";
+        outputImageFile = cbica::getFilenamePath(inputImageFile) + "/registrationOutput.nii.gz";
+      }
+      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
+      auto inputFile_base = cbica::getFilenameBase(inputImageFile);
+      auto fixedFile_base = cbica::getFilenameBase(registrationFixedImageFile);
+      std::map< std::string, std::string > intermediateFiles;
+      auto const _registrationMetrics = "_" + registrationMetrics;
+      auto const _registrationMetricsNII = _registrationMetrics + ".nii.gz";
+      auto const _fixedFileTOInputFileBase = fixedFile_base + "TO" + inputFile_base;
+      auto const _inputFileTOFixedFileBase = inputFile_base + "TO" + fixedFile_base;
+
+      bool defaultNamedUsed = false;
+      // populate default names for intermediate files
+      if (registrationAffineTransformInput.empty())
+      {
+        intermediateFiles["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
+        defaultNamedUsed = true;
+      }
+      else
+      {
+        intermediateFiles["Affine"] = registrationAffineTransformInput;
+      }
+      if (registrationDeformableTransformInput.empty())
+      {
+        intermediateFiles["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
+        intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+        defaultNamedUsed = true;
+      }
+      else
+      {
+        intermediateFiles["Deform"] = registrationDeformableTransformInput;
+        std::string path, base, ext;
+        cbica::splitFileName(registrationDeformableTransformInput, path, base, ext);
+        intermediateFiles["DeformInv"] = path + "/" + base + "-Inv.nii.gz";
       }
 
-      break;
-    }
-    default: // we shall always assume deformable
-    {
-      if (!cbica::fileExists(registrationDeformableTransformInput))
+      std::string commandToCall;
+      if (!cbica::fileExists(registrationAffineTransformInput))
       {
-        if (debugMode)
-        {
-          std::cout << "Starting Deformable registration.\n";
-        }
-        commandToCall = greedyPathAndDim +
+        // we always do affine
+        commandToCall = greedyPathAndDim + " -a" +
           commonCommands +
           metricsCommand +
-          " -it " + intermediateFiles["Affine"] +
-          " -o " + intermediateFiles["Deform"] +
-          " -oinv " + intermediateFiles["DeformInv"];
-
+          " -ia-image-centers -o " + intermediateFiles["Affine"];
+        ;
+        if (debugMode)
+        {
+          std::cout << "Starting Affine registration.\n";
+          std::cout << "commandToCall: \n" << commandToCall << "\n";
+        }
         if (std::system(commandToCall.c_str()) != 0)
         {
-          std::cerr << "Something went wrong when calling Greedy Deformable.\n";
+          std::cerr << "Something went wrong when calling Greedy Affine.\n";
           return EXIT_FAILURE;
         }
       }
 
-      if (registrationSegmentationMoving)
+      switch (registrationTypeInt)
       {
-        commandToCall = greedyPathAndDim +
-          " -rf " + registrationFixedImageFile +
-          " -rm " + inputImageFile +
-          " " + outputImageFile +
-          " -ri NN -r " + intermediateFiles["Deform"] + 
-          " " + intermediateFiles["Affine"];
+      case RegistrationTypeEnum::Rigid:
+      {
+        // not going to be defined
+        break;
       }
-      else
+      case RegistrationTypeEnum::Affine:
       {
-        commandToCall = greedyPathAndDim +
-          " -rf " + registrationFixedImageFile +
-          " -rm " + inputImageFile +
-          " " + outputImageFile +
-          " -ri LABEL 0.2vox -r " + intermediateFiles["Deform"] +
-          " " + intermediateFiles["Affine"];
-      }
-
-      if (std::system(commandToCall.c_str()) != 0)
-      {
-        std::cerr << "Something went wrong when calling Greedy Reslice Deform.\n";
-        return EXIT_FAILURE;
-      }
-
-      auto outputImageFileInv = outputImageFile;
-      {
-        std::string path, base, ext;
-        cbica::splitFileName(outputImageFileInv, path, base, ext);
-        outputImageFileInv = cbica::normPath(path + "/" + base + "_inv" + ext);
-      }
-      if (registrationSegmentationMoving)
-      {
-        commandToCall = greedyPathAndDim +
-          " -rf " + registrationFixedImageFile +
-          " -rm " + inputImageFile +
-          " " + outputImageFileInv +
-          " -ri NN -r " + intermediateFiles["DeformInv"] +
-          " " + intermediateFiles["Affine"] + ",-1";
-      }
-      else
-      {
-        commandToCall = greedyPathAndDim +
-          " -rf " + registrationFixedImageFile +
-          " -rm " + inputImageFile +
-          " " + outputImageFileInv +
-          " -ri LABEL 0.2vox -r " + intermediateFiles["DeformInv"] +
-          " " + intermediateFiles["Affine"] + ",-1";
-      }
-
-      if (std::system(commandToCall.c_str()) != 0)
-      {
-        std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
-        return EXIT_FAILURE;
-      }
-
-      break;
-    }
-    }
-
-    // delete all intermediate files if the flag is not set
-    if (!registrationIntermediate)
-    {
-      // only do the deletion if default names are used
-      if (defaultNamedUsed)
-      {
-        for (const auto& it : intermediateFiles)
+        if (registrationSegmentationMoving)
         {
-          std::remove(it.second.c_str());
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -rm " + inputImageFile +
+            " " + outputImageFile +
+            " -ri NN -r " + intermediateFiles["Affine"];
+        }
+        else
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -rm " + inputImageFile +
+            " " + outputImageFile +
+            " -ri LABEL 0.2vox -r " + intermediateFiles["Affine"];
+        }
+
+        if (std::system(commandToCall.c_str()) != 0)
+        {
+          std::cerr << "Something went wrong when calling Greedy Reslice Affine.\n";
+          return EXIT_FAILURE;
+        }
+
+        break;
+      }
+      default: // we shall always assume deformable
+      {
+        if (!cbica::fileExists(registrationDeformableTransformInput))
+        {
+          if (debugMode)
+          {
+            std::cout << "Starting Deformable registration.\n";
+          }
+          commandToCall = greedyPathAndDim +
+            commonCommands +
+            metricsCommand +
+            " -it " + intermediateFiles["Affine"] +
+            " -o " + intermediateFiles["Deform"] +
+            " -oinv " + intermediateFiles["DeformInv"];
+
+          if (std::system(commandToCall.c_str()) != 0)
+          {
+            std::cerr << "Something went wrong when calling Greedy Deformable.\n";
+            return EXIT_FAILURE;
+          }
+        }
+
+        if (registrationSegmentationMoving)
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -rm " + inputImageFile +
+            " " + outputImageFile +
+            " -ri NN -r " + intermediateFiles["Deform"] +
+            " " + intermediateFiles["Affine"];
+        }
+        else
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -rm " + inputImageFile +
+            " " + outputImageFile +
+            " -ri LABEL 0.2vox -r " + intermediateFiles["Deform"] +
+            " " + intermediateFiles["Affine"];
+        }
+
+        if (std::system(commandToCall.c_str()) != 0)
+        {
+          std::cerr << "Something went wrong when calling Greedy Reslice Deform.\n";
+          return EXIT_FAILURE;
+        }
+
+        auto outputImageFileInv = outputImageFile;
+        {
+          std::string path, base, ext;
+          cbica::splitFileName(outputImageFileInv, path, base, ext);
+          outputImageFileInv = cbica::normPath(path + "/" + base + "_inv" + ext);
+        }
+        if (registrationSegmentationMoving)
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -rm " + inputImageFile +
+            " " + outputImageFileInv +
+            " -ri NN -r " + intermediateFiles["DeformInv"] +
+            " " + intermediateFiles["Affine"] + ",-1";
+        }
+        else
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -rm " + inputImageFile +
+            " " + outputImageFileInv +
+            " -ri LABEL 0.2vox -r " + intermediateFiles["DeformInv"] +
+            " " + intermediateFiles["Affine"] + ",-1";
+        }
+
+        if (std::system(commandToCall.c_str()) != 0)
+        {
+          std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
+          return EXIT_FAILURE;
+        }
+
+        break;
+      }
+      }
+
+      // delete all intermediate files if the flag is not set
+      if (!registrationIntermediate)
+      {
+        // only do the deletion if default names are used
+        if (defaultNamedUsed)
+        {
+          for (const auto& it : intermediateFiles)
+          {
+            std::remove(it.second.c_str());
+          }
         }
       }
     }
@@ -496,58 +535,66 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == Rescaling)
   {
-    typename TImageType::PixelType minimum = std::numeric_limits< typename TImageType::PixelType >::min(), 
-      maximum = std::numeric_limits< typename TImageType::PixelType >::max();
-
-    if (inputImageFile.find(",") != std::string::npos)
+    if (!inputImageFiles.empty()) // multiple images passed
     {
-      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
-
-      auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
-      std::vector< typename TImageType::Pointer > inputImages;
-      for (size_t i = 0; i < inputImageFiles.size(); i++)
-      {
-        auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
-        inputImages.push_back(currentImage);
-      }
-
-      using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
-      auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
-
-      auto rescaler = itk::RescaleIntensityImageFilter< NewImageType >::New();
-      rescaler->SetInput(combinedImage);
-      rescaler->SetOutputMaximum(rescaleUpper);
-      rescaler->SetOutputMinimum(rescaleLower);
-      try
-      {
-        rescaler->Update();
-      }
-      catch (const std::exception&e)
-      {
-        std::cerr << "Error caught during rescaling: " << e.what() << "\n";
-        return EXIT_FAILURE;
-      }
-
-      auto outputImages = cbica::GetExtractedImages< NewImageType, TImageType >(rescaler->GetOutput());
-
-      // at this point, we have found the global minimum and maximum
-      for (size_t i = 0; i < outputImages.size(); i++)
-      {
-        cbica::WriteImage< TImageType >(outputImages[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
-      }
+      std::cerr << "This operation cannot currently be performed with multiple images.\n";
+      return EXIT_FAILURE;
     }
     else
     {
-      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-      auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
-      statsCalculator->SetInput(inputImage);
+      typename TImageType::PixelType minimum = std::numeric_limits< typename TImageType::PixelType >::min(),
+        maximum = std::numeric_limits< typename TImageType::PixelType >::max();
 
-      auto rescaler = itk::RescaleIntensityImageFilter< TImageType >::New();
-      rescaler->SetInput(inputImage);
-      rescaler->SetOutputMaximum(rescaleUpper);
-      rescaler->SetOutputMinimum(rescaleLower);
+      if (inputImageFile.find(",") != std::string::npos)
+      {
+        auto outputDir = cbica::getFilenamePath(outputImageFile, false);
 
-      cbica::WriteImage< TImageType >(rescaler->GetOutput(), outputImageFile);
+        auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
+        std::vector< typename TImageType::Pointer > inputImages;
+        for (size_t i = 0; i < inputImageFiles.size(); i++)
+        {
+          auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+          inputImages.push_back(currentImage);
+        }
+
+        using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
+        auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
+
+        auto rescaler = itk::RescaleIntensityImageFilter< NewImageType >::New();
+        rescaler->SetInput(combinedImage);
+        rescaler->SetOutputMaximum(rescaleUpper);
+        rescaler->SetOutputMinimum(rescaleLower);
+        try
+        {
+          rescaler->Update();
+        }
+        catch (const std::exception&e)
+        {
+          std::cerr << "Error caught during rescaling: " << e.what() << "\n";
+          return EXIT_FAILURE;
+        }
+
+        auto outputImages = cbica::GetExtractedImages< NewImageType, TImageType >(rescaler->GetOutput());
+
+        // at this point, we have found the global minimum and maximum
+        for (size_t i = 0; i < outputImages.size(); i++)
+        {
+          cbica::WriteImage< TImageType >(outputImages[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
+        }
+      }
+      else
+      {
+        auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+        auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+        statsCalculator->SetInput(inputImage);
+
+        auto rescaler = itk::RescaleIntensityImageFilter< TImageType >::New();
+        rescaler->SetInput(inputImage);
+        rescaler->SetOutputMaximum(rescaleUpper);
+        rescaler->SetOutputMinimum(rescaleLower);
+
+        cbica::WriteImage< TImageType >(rescaler->GetOutput(), outputImageFile);
+      }
     }
   }
 
@@ -658,6 +705,18 @@ int main(int argc, char** argv)
   if (parser.isPresent("i"))
   {
     parser.getParameterValue("i", inputImageFile);
+    if (inputImageFile.find(",") != std::string::npos) // multiple images are getting passed;
+    {
+      inputImageFiles = cbica::stringSplit(inputImageFile, ",");
+      for (size_t n = 0; n < inputImageFiles.size(); n++) // perform sanity check
+      {
+        if (!cbica::ImageSanityCheck(inputImageFiles[0], inputImageFiles[1]))
+        {
+          std::cerr << "The images cannot be processed together since they aren't defined in the same physical space.\n";
+          return EXIT_FAILURE;
+        }
+      }
+    }
   }
   if (parser.isPresent("m"))
   {
@@ -852,6 +911,10 @@ int main(int argc, char** argv)
     }
   }
 
+  if (!inputImageFiles.empty()) // if multiple images are passed, set up the algorithm runner using the first image
+  {
+    inputImageFile = inputImageFiles[0]; 
+  }
   auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
   switch (inputImageInfo.GetImageDimensions())
