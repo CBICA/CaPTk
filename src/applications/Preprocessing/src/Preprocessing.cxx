@@ -154,6 +154,7 @@ int algorithmsRunner()
       {
         auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
         inputImages.push_back(currentImage);
+        /// commented for future expansion
         //if (!inputMaskFile.empty())
         //{
         //  inputMask.push_back(cbica::ReadImage< TImageType >(inputMaskFile));
@@ -163,6 +164,7 @@ int algorithmsRunner()
       using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
       auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
       //auto combinedMask = combinedImage;
+      /// commented for future expansion
       //if (!inputMask.empty())
       //{
       //  combinedMask = cbica::GetJoinedImage< TImageType, NewImageType >(inputMask);
