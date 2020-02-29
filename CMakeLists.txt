@@ -1168,7 +1168,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   # Execute a post install step. Make sure this is the last install command ran!
   IF( CMAKE_HOST_UNIX )
     INSTALL(CODE "EXECUTE_PROCESS(COMMAND ln -sf CaPTk captk WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)")
-    INSTALL(CODE "EXECUTE_PROCESS(COMMAND chmod 755 matlab_helper WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/libexec/MCR/v84/bin/glnxa64/)")
+    # INSTALL(CODE "EXECUTE_PROCESS(COMMAND chmod 755 matlab_helper WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/libexec/MCR/v84/bin/glnxa64/)")
 
     # IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
     #   INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
