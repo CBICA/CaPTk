@@ -62,11 +62,11 @@ public:
     const std::string outputfolder, const int classifiertype);
 
   bool TrainData2(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
-    const std::string outputfolder, const int classifiertype);
+    const std::string outputfolder, const int classifiertype,const int featureselectiontype);
 
   std::vector<int> UpdateUnselectedFeatures(std::vector<int> SelectedFeatures, int size);
 
-  bool Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory,const int classifierType, const int foldtype, const int conftype, const std::string modeldirectory);
+  bool Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory,const int classifierType, const int foldtype, const int conftype, const int featureselectiontype,const std::string modeldirectory);
 
   std::string mEighteenTrainedFile, mSixTrainedFile;
 
@@ -76,7 +76,7 @@ public:
   VectorDouble CalculatePerformanceMeasures(VectorDouble predictedLabels, VectorDouble GivenLabels);
 
   VectorDouble CrossValidation(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder,
-    const int classifiertype, const int foldtype);
+    const int classifiertype, const int foldtype,const int featureselectiontype);
 
   VectorDouble InternalCrossValidation(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue,int kerneltype);
 
@@ -96,6 +96,11 @@ public:
 
   VectorDouble InternalCrossValidationSplitTrainTest(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue, int kerneltype, int counter, std::string outputfolder);
   
+  std::vector<int> EffectSizeBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const int classifiertype,VectorDouble & crossvalidatedaccuracies);
+  std::vector<int> SVMFFSBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const int classifiertype);
+//  std::vector<int> CorrelationBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels);
+
+
   template <typename T>
   std::vector<size_t> sort_indexes(const std::vector<T> &v);
 

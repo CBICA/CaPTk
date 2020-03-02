@@ -345,13 +345,13 @@ VectorDouble TrainingModule::InternalCrossValidationSplitTrainTest(VariableSizeM
   return results;
 }
 
-VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder, const int classifiertype, const int number_of_folds)
+VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder, const int classifiertype, const int number_of_folds, const int featureselectiontype)
 {
   MapType FoldingDataMap;
   int fold_size = inputLabels.Size() / number_of_folds;
   int remainder = inputLabels.Size() % number_of_folds;
 
-  //make loops for training and validation, CVO partition like structure
+  //make loops for stratifing training and validation sets, CVO partition like structure
   for (int index = 0; index < number_of_folds; index++)
   {
     //find training and testing indices
@@ -391,7 +391,7 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
       if (found == 0)
         trainingindices.push_back(index3);
     }
-    //find training and testing labels and features
+    //find training and testing labels and features corresponding to training and testing indices
     trainingfeatures.SetSize(trainingindices.size(), inputFeatures.Cols());
     for (unsigned int i = 0; i < trainingindices.size(); i++)
     {
@@ -414,101 +414,29 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
   {
      std::cout << "***************************** index=" << index << "*********************************" << std::endl << std::endl;
     cbica::Logging(loggerFile, "***************************** index=" + std::to_string(index) + "*********************************\n\n");
-
-    std::vector<int> SelectedFeatures;
-    std::vector<double> CrossValidatedBalancedAccuraciesFinal;
-    std::vector<int> UnselectedFeatures = UpdateUnselectedFeatures(SelectedFeatures, inputFeatures.Cols());
-
     VariableSizeMatrixType scaledFeatureSet = std::get<2>(FoldingDataMap[index]);
     std::vector<double> traininglabels = std::get<1>(FoldingDataMap[index]);
 
-    //feature selection mechanism
-    //---------------------------
-    while (UnselectedFeatures.size() > 0)
+
+    std::vector<int> FinalSelectedFeatures;
+    VectorDouble crossvalidatedAccuracies;
+    if (featureselectiontype == 1)
+      FinalSelectedFeatures = EffectSizeBasedFeatureSelection(scaledFeatureSet, traininglabels, classifiertype, crossvalidatedAccuracies);
+    //else if (featureselectiontype == 2)
+    //  FinalSelectedFeatures = CorrelationBasedFeatureSelection(scaledFeatureSet,traininglabels,classifiertype);
+    else if (featureselectiontype == 3)
+      FinalSelectedFeatures = SVMFFSBasedFeatureSelection(scaledFeatureSet, traininglabels, classifiertype);
+    //else if (featureselectiontype == 4)
+    //  FinalSelectedFeatures = SVMRFEBasedFeatureSelection(scaledFeatureSet,traininglabels,classifiertype);
+    else
     {
-      std::vector<double> CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures;
-      for (unsigned int featureNo = 0; featureNo < UnselectedFeatures.size(); featureNo++)
-      {
-        VariableSizeMatrixType reducedFeatureSet;
-        reducedFeatureSet.SetSize(scaledFeatureSet.Rows(), SelectedFeatures.size() + 1);
-
-        //copy the already selected features to the current feature set
-        for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
-        {
-          for (unsigned int k = 0; k < SelectedFeatures.size(); k++)
-          {
-            double value = (int)(scaledFeatureSet(j, SelectedFeatures[k]) * 10000 + .5);
-            reducedFeatureSet(j, k) = (double)value / 10000;
-          }
-        }
-
-        //copy the new feature to the current feature set
-        for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
-        {
-          double value = (int)(scaledFeatureSet(j, UnselectedFeatures[featureNo]) * 10000 + .5);
-          reducedFeatureSet(j, reducedFeatureSet.Cols() - 1) = (double)value / 10000;
-        }
-
-        //check crossvalidated performance after adding the current feature
-        double bestCV = 0;
-        double bestC = 1;
-        double bestG = 1 / reducedFeatureSet.Cols();
-        if (classifiertype == 2)
-        {
-          for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-            for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
-            {
-              VectorDouble result = InternalCrossValidationResubstitution(reducedFeatureSet, traininglabels, pow(2, cValue), pow(2, gValue), classifiertype);
-              if (result[3] > bestCV)
-              {
-                bestC = pow(2, cValue);
-                bestG = pow(2, gValue);
-                bestCV = result[3];
-              }
-            }
-        }
-        else
-        {
-          for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-          {
-            VectorDouble result = InternalCrossValidationResubstitution(reducedFeatureSet, traininglabels, pow(2, cValue), 0.1, classifiertype);
-            if (result[3] > bestCV)
-            {
-              bestC = pow(2, cValue);
-              bestCV = result[3];
-            }
-          }
-        }
-        //VectorDouble result = InternalCrossValidationResubstitution(reducedFeatureSet, traininglabels, 1, 0.1, classifiertype);
-        //bestCV = result[3];
-        CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.push_back(bestCV);
-      }
-      //sort cross-validated balanced accuracies and pick the best selected feature
-      int index = std::distance(CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.begin(), std::max_element(CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.begin(), CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.end()));
-      CrossValidatedBalancedAccuraciesFinal.push_back(CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures[index]);
-      SelectedFeatures.push_back(UnselectedFeatures[index]);
-      std::cout << "CurrentSize=" << SelectedFeatures.size() << " Performance=" << CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures[index] << std::endl;
-      //for (int counter = 0; counter < SelectedFeatures.size(); counter++)
-      //  std::cout << SelectedFeatures[counter] << std::endl;
-      UnselectedFeatures = UpdateUnselectedFeatures(SelectedFeatures, scaledFeatureSet.Cols());
+      std::cout << "The selected feature selection method is not avaialble inside CaPTk. Please select another method..." << std::endl;
     }
 
-    std::cout << "Feature Selection Done!!!" << std::endl;
-    VariableLengthVectorType MovingAverageOnCrossValidatedPerformance;
-    MovingAverageOnCrossValidatedPerformance.SetSize(CrossValidatedBalancedAccuraciesFinal.size());
-    for (int index = 0; index < MovingAverageOnCrossValidatedPerformance.Size(); index++)
-      MovingAverageOnCrossValidatedPerformance[index] = 0;
-
-    for (unsigned int index = 1; index < CrossValidatedBalancedAccuraciesFinal.size() - 1; index++)
-      MovingAverageOnCrossValidatedPerformance[index] = (CrossValidatedBalancedAccuraciesFinal[index] + CrossValidatedBalancedAccuraciesFinal[index - 1] + CrossValidatedBalancedAccuraciesFinal[index + 1]) / 3;
-
-    int max_performance_counter = std::distance(CrossValidatedBalancedAccuraciesFinal.begin(), std::max_element(CrossValidatedBalancedAccuraciesFinal.begin(), CrossValidatedBalancedAccuraciesFinal.end()));
-    std::vector<int> FinalSelectedFeatures;
-    for (int index = 0; index <= max_performance_counter; index++)
-      FinalSelectedFeatures.push_back(SelectedFeatures[index]);
 
     //Write the selected features
      WriteCSVFiles(FinalSelectedFeatures, outputfolder + "/SelectedFeatures_FoldNo_" + std::to_string(index + 1) + ".csv");
+     WriteCSVFiles(crossvalidatedAccuracies, outputfolder + "/CrossValidatedAccuracies_FoldNo_" + std::to_string(index + 1) + ".csv");
 
     //optimize classifiers parameters on the selected feature set
     VariableSizeMatrixType FinalSelectedFeatureSet;
@@ -553,87 +481,6 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
 
 
 
-    ////-----------------------------------------------------
-    //double numberOfSelectedFeatures = 0;
-    //VectorDouble EffectSize = EffectSizeFeatureSelection(std::get<2>(FoldingDataMap[index]), std::get<1>(FoldingDataMap[index]));
-    //for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
-    //{
-    //  if (EffectSize[eSizeCounter] < 0)
-    //    EffectSize[eSizeCounter] = EffectSize[eSizeCounter] * -1;
-    //}
-
-    //std::vector<size_t> indices = sort_indexes(EffectSize);
-
-    ////keep on copy the  features
-    //std::vector<double> PerFeaturePerformance;
-    //for (unsigned int featureNo = 0; featureNo < EffectSize.size(); featureNo++)
-    //{
-    //  VariableSizeMatrixType reducedFeatureSet;
-    //  reducedFeatureSet.SetSize(std::get<1>(FoldingDataMap[index]).size(), featureNo + 1);
-
-    //  //copy the reduced features to the reduced feature set
-    //  for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
-    //    for (unsigned int k = 0; k < reducedFeatureSet.Cols(); k++)
-    //      reducedFeatureSet(j, k) = std::get<2>(FoldingDataMap[index])(j, indices[k]);
-
-    //  //check performance using cross-validation
-    //  VectorDouble performance = InternalCrossValidation(reducedFeatureSet, std::get<1>(FoldingDataMap[index]), 1, 0.01, classifiertype);
-    //  PerFeaturePerformance.push_back(performance[3]);
-    //  //std::cout << "feature #: " << featureNo << "performance=" <<performance[3]<< std::endl;
-    //  cbica::Logging(loggerFile, "feature #: " + std::to_string(featureNo) + " performance=" + std::to_string(performance[3]) + "\n");
-
-    //  //check whether to contiue the loop or break due to no increase in perfrmance
-    //  if (featureNo >= 10)
-    //  {
-    //    if (CheckPerformanceStatus(PerFeaturePerformance[featureNo], PerFeaturePerformance[featureNo - 1], PerFeaturePerformance[featureNo - 2], PerFeaturePerformance[featureNo - 3], PerFeaturePerformance[featureNo - 4], PerFeaturePerformance[featureNo - 5], PerFeaturePerformance[featureNo - 6], PerFeaturePerformance[featureNo - 7], PerFeaturePerformance[featureNo - 8], PerFeaturePerformance[featureNo - 9]) == false)
-    //    {
-    //      numberOfSelectedFeatures = featureNo - 9;
-    //      break;
-    //    }
-    //    else
-    //      numberOfSelectedFeatures = featureNo - 9;
-    //  }
-    //}
-    //VariableSizeMatrixType selectedFeatureSet;
-    //selectedFeatureSet.SetSize(std::get<1>(FoldingDataMap[index]).size(), numberOfSelectedFeatures);
-    //for (unsigned int j = 0; j < selectedFeatureSet.Rows(); j++)
-    //  for (unsigned int k = 0; k < numberOfSelectedFeatures; k++)
-    //    selectedFeatureSet(j, k) = std::get<2>(FoldingDataMap[index])(j, k);
-
-
-
-    ////selection of the optimal values of classifiers
-    //double bestC = 0;
-    //double bestG = 0;
-    //double bestCV = 0;
-    //if (classifiertype == 2)
-    //{
-    //  for (double cValue = 1; cValue <= 10; cValue++)
-    //  {
-    //    for (double gValue = 0.01; gValue <= 5; gValue = gValue + 0.05)
-    //    {
-    //      VectorDouble result = InternalCrossValidation(selectedFeatureSet, std::get<1>(FoldingDataMap[index]), cValue, gValue, classifiertype);
-    //      if (result[3] > bestCV)
-    //      {
-    //        bestC = cValue;
-    //        bestG = gValue;
-    //        bestCV = result[3];
-    //      }
-    //    }
-    //  }
-    //}
-    //else
-    //{
-    //  for (double cValue = 1; cValue <= 10; cValue++)
-    //  {
-    //    VectorDouble result = InternalCrossValidation(selectedFeatureSet, std::get<1>(FoldingDataMap[index]), cValue, 0.01, classifiertype);
-    //    if (result[3] > bestCV)
-    //    {
-    //      bestC = cValue;
-    //      bestCV = result[3];
-    //    }
-    //  }
-    //}
 
 
 
@@ -817,7 +664,88 @@ VectorDouble TrainingModule::EffectSizeFeatureSelection(const VariableSizeMatrix
 
   return EffectSize;
 }
-
+//
+//VectorDouble TrainingModule::CorrelationBasedFeatureSelection(const VariableSizeMatrixType training_features, std::vector<double> target)
+//{
+//  //make set 1and set2
+//  int NoOfSamplesC1 = 0;
+//  int NoOfSamplesC2 = 0;
+//  std::vector<double> indices_set1;
+//  std::vector<double> indices_set2;
+//  VariableSizeMatrixType features_set1;
+//  VariableSizeMatrixType features_set2;
+//  VariableLengthVectorType mean_set1;
+//  VariableLengthVectorType mean_set2;
+//
+//  for (int index = 0; index < target.size(); index++)
+//  {
+//    if (target[index] == -1)
+//      NoOfSamplesC1++;
+//    else if (target[index] == 1)
+//      NoOfSamplesC2++;
+//  }
+//  features_set1.SetSize(NoOfSamplesC1, training_features.Cols());
+//  features_set2.SetSize(NoOfSamplesC2, training_features.Cols());
+//  mean_set1.SetSize(training_features.Cols());
+//  mean_set2.SetSize(training_features.Cols());
+//
+//  NoOfSamplesC1 = 0;
+//  NoOfSamplesC2 = 0;
+//  for (unsigned int index = 0; index < target.size(); index++)
+//  {
+//    if (target[index] == -1)
+//    {
+//      for (unsigned int featureNo = 0; featureNo < training_features.Cols(); featureNo++)
+//        features_set1(NoOfSamplesC1, featureNo) = training_features(index, featureNo);
+//      NoOfSamplesC1++;
+//    }
+//    else if (target[index] == 1)
+//    {
+//      for (unsigned int featureNo = 0; featureNo < training_features.Cols(); featureNo++)
+//        features_set2(NoOfSamplesC2, featureNo) = training_features(index, featureNo);
+//      NoOfSamplesC2++;
+//    }
+//  }
+//  std::vector<double> EffectSize;
+//  for (unsigned int featureNo = 0; featureNo < training_features.Cols(); featureNo++)
+//  {
+//    double temp = 0.0;
+//    for (int sampleNo = 0; sampleNo < NoOfSamplesC1; sampleNo++)
+//      temp = temp + features_set1(sampleNo, featureNo);
+//    mean_set1[featureNo] = temp / NoOfSamplesC1;
+//
+//    temp = 0.0;
+//    for (int sampleNo = 0; sampleNo < NoOfSamplesC2; sampleNo++)
+//      temp = temp + features_set2(sampleNo, featureNo);
+//    mean_set2[featureNo] = temp / NoOfSamplesC2;
+//
+//
+//    double sum1 = 0;
+//    double sum2 = 0;
+//    for (int sampleNo = 0; sampleNo < NoOfSamplesC1; sampleNo++)
+//      sum1 = sum1 + (features_set1(sampleNo, featureNo) - mean_set1[featureNo])*(features_set1(sampleNo, featureNo) - mean_set1[featureNo]);
+//
+//    for (int sampleNo = 0; sampleNo < NoOfSamplesC2; sampleNo++)
+//      sum2 = sum2 + (features_set2(sampleNo, featureNo) - mean_set2[featureNo])*(features_set2(sampleNo, featureNo) - mean_set2[featureNo]);
+//
+//    double SC1 = sum1 / (NoOfSamplesC1 - 1);
+//    double SC2 = sum2 / (NoOfSamplesC2 - 1);
+//    double SP = ((NoOfSamplesC1 - 1)*SC1 + (NoOfSamplesC2 - 1)*SC2) / (NoOfSamplesC1 + NoOfSamplesC2 - 2);
+//    double currentvalue = (mean_set1[featureNo] - mean_set2[featureNo]) / sqrt(SP);
+//    if (std::isnan(currentvalue))
+//      EffectSize.push_back(0.0001);
+//    else
+//      EffectSize.push_back(currentvalue);
+//  }
+//  //std::vector<size_t> indices = sort_indexes(EffectSize);
+//  //VariableSizeMatrixType selected_feature_set;
+//
+//  //for (int index1 = 0; index1 < training_features.Rows(); index1++)
+//  //	for (int index = 0; index < no_of_features; index++)
+//  //		selected_feature_set(index1, index) = training_features(index1, indices[index]);
+//
+//  return EffectSize;
+//}
 
 
 
@@ -958,7 +886,7 @@ VectorDouble TrainingModule::testOpenCVSVM(const VariableSizeMatrixType &testing
 
 
 
-bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory, const int classifiertype, const int foldtype, const int confType, const std::string modeldirectory)
+bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory, const int classifiertype, const int foldtype, const int confType, const int featureselectiontype,const std::string modeldirectory)
 {
   std::cout << "Training module." << std::endl;
   //reading features and labels from the input data
@@ -1078,7 +1006,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
     WriteCSVFiles(stdVector, outputdirectory + "/zscore_std.csv");
 
     std::cout << "Scaling parameters written." << std::endl;
-    FinalResult = mTrainingSimulator.CrossValidation(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype);
+    FinalResult = mTrainingSimulator.CrossValidation(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype,featureselectiontype);
   }
   else if (confType == 2)
   {
@@ -1139,7 +1067,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile, const std::string 
   }
   else if (confType == 3)   //train
   {
-    if (mTrainingSimulator.TrainData2(FeaturesOfAllSubjects, LabelsOfAllSubjects, outputdirectory, classifiertype) == true)
+    if (mTrainingSimulator.TrainData2(FeaturesOfAllSubjects, LabelsOfAllSubjects, outputdirectory, classifiertype,featureselectiontype) == true)
       std::cout << "Training finished successfully: Trained model saved in the specified output directory." << std::endl;
   }
   else   //test
@@ -1704,9 +1632,9 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
 }
 
 bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
-  const std::string outputdirectory, const int classifiertype)
+  const std::string outputdirectory, const int classifiertype,const int featureselectiontype)
 {
-  //feature scaling mechanism
+  //scaling of the given features
   //---------------------------
   std::cout << "Scaling started" << std::endl;
   FeatureScalingClass mFeaturesScaling;
@@ -1715,8 +1643,7 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
   VariableLengthVectorType stdVector;
   mFeaturesScaling.ScaleGivenTrainingFeatures(inputFeatures, scaledFeatureSet, meanVector, stdVector);
 
-
-  //remove the nan values
+  //remove the nan values introduced after the scaling process
   for (unsigned int index1 = 0; index1 < scaledFeatureSet.Rows(); index1++)
   {
     for (unsigned int index2 = 0; index2 < scaledFeatureSet.Cols(); index2++)
@@ -1732,35 +1659,10 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
     if (std::isnan(stdVector[index1]))
       stdVector[index1] = 0;
   }
-  std::cout << "Starting writing scaled parameters." << std::endl;
-  std::ofstream myfile;
-  myfile.open(outputdirectory + "/scaled_feature_set.csv");
-  for (unsigned int index1 = 0; index1 < scaledFeatureSet.Rows(); index1++)
-  {
-    std::string onerow = "";
-    for (unsigned int index2 = 0; index2 < scaledFeatureSet.Cols(); index2++)
-    {
-      if (index2 == 0)
-        onerow = std::to_string(scaledFeatureSet[index1][index2]);
-      else
-        onerow = onerow + "," + std::to_string(scaledFeatureSet[index1][index2]);
-    }
-    onerow = onerow + "\n";
-    myfile << onerow;
-  }
-  myfile.close();
-
-  myfile.open(outputdirectory + "/zscore_mean.csv");
-  for (unsigned int index1 = 0; index1 < meanVector.Size(); index1++)
-    myfile << std::to_string(meanVector[index1]) + "\n";
-  myfile.close();
-  myfile.open(outputdirectory + "/zscore_std.csv");
-  for (unsigned int index1 = 0; index1 < stdVector.Size(); index1++)
-    myfile << std::to_string(stdVector[index1]) + "\n";
-  myfile.close();
+  WriteCSVFiles(scaledFeatureSet,outputdirectory + "/scaled_feature_set.csv");
+  WriteCSVFiles(meanVector,outputdirectory + "/zscore_mean.csv");
+  WriteCSVFiles(stdVector, outputdirectory + "/zscore_std.csv");
   std::cout << "Scaling parameters written." << std::endl;
-
-
   
   //copy the training labels
   //---------------------------
@@ -1769,123 +1671,26 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
   for (unsigned int index = 0; index < inputLabels.Size(); index++)
     traininglabels.push_back(inputLabels[index]);
 
-
-  ////sorting based on effect sizes
-  ////-----------------------------
-  //VectorDouble EffectSize = EffectSizeFeatureSelection(inputFeatures, traininglabels);  //to convert to vector double
-  //for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
-  //{
-  //  if (EffectSize[eSizeCounter] < 0)
-  //    EffectSize[eSizeCounter] = EffectSize[eSizeCounter] * -1;
-  //}
-  //std::vector<size_t> indices = sort_indexes(EffectSize);
-
-  //myfile.open(outputdirectory + "/effectsizes.csv");
-  //for (unsigned int index1 = 0; index1 < EffectSize.size(); index1++)
-  //  myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
-  //myfile.close();
-
-  //VariableSizeMatrixType CrossValidatedPerformances;
-  //CrossValidatedPerformances.SetSize(inputFeatures.Cols(), 8);
-  //for (unsigned int index1 = 0; index1 < CrossValidatedPerformances.Rows(); index1++)
-  //  for (unsigned int index2 = 0; index2 < CrossValidatedPerformances.Cols(); index2++)
-  //    CrossValidatedPerformances[index1][index2] = 0;
-
-  std::vector<int> SelectedFeatures;
-  std::vector<double> CrossValidatedBalancedAccuraciesFinal;
-  std::vector<int> UnselectedFeatures = UpdateUnselectedFeatures(SelectedFeatures,inputFeatures.Cols());
-
-  //feature selection mechanism
-  //---------------------------
-  while (UnselectedFeatures.size() > 0)
+  std::vector<int> FinalSelectedFeatures;
+  VectorDouble crossvalidatedAccuracies; 
+  if (featureselectiontype == 1)
+    FinalSelectedFeatures = EffectSizeBasedFeatureSelection(scaledFeatureSet,traininglabels,classifiertype, crossvalidatedAccuracies);
+  //else if (featureselectiontype == 2)
+  //  FinalSelectedFeatures = CorrelationBasedFeatureSelection(scaledFeatureSet,traininglabels,classifiertype);
+  else if (featureselectiontype == 3)
+  FinalSelectedFeatures = SVMFFSBasedFeatureSelection(scaledFeatureSet, traininglabels, classifiertype);
+  //else if (featureselectiontype == 4)
+  //  FinalSelectedFeatures = SVMRFEBasedFeatureSelection(scaledFeatureSet,traininglabels,classifiertype);
+  else
   {
-    std::vector<double> CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures;
-    for (unsigned int featureNo = 0; featureNo < UnselectedFeatures.size(); featureNo++)
-    {
-      VariableSizeMatrixType reducedFeatureSet;
-      reducedFeatureSet.SetSize(traininglabels.size(), SelectedFeatures.size() + 1);
-
-      //copy the already selected features to the current feature set
-      for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
-      {
-        for (unsigned int k = 0; k < SelectedFeatures.size(); k++)
-        {
-          double value = (int)(scaledFeatureSet(j, SelectedFeatures[k]) * 10000 + .5);
-          reducedFeatureSet(j, k)= (double)value / 10000;
-        }
-      }
-
-      //copy the new feature to the current feature set
-      for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
-      {
-        double value = (int)(scaledFeatureSet(j, UnselectedFeatures[featureNo]) * 10000 + .5);
-        reducedFeatureSet(j, reducedFeatureSet.Cols() - 1) = (double)value / 10000;
-      }
-
-
-      //check crossvalidated performance after adding the current feature
-      double bestCV = 0;
-      double bestC = 1;
-      double bestG = 1 / reducedFeatureSet.Cols();
-      if (classifiertype == 2)
-      {
-        for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-          for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
-          {
-            VectorDouble result = InternalCrossValidationResubstitution(reducedFeatureSet, traininglabels, pow(2, cValue), pow(2, gValue), classifiertype);
-            if (result[3] > bestCV)
-            {
-              bestC = pow(2, cValue);
-              bestG = pow(2, gValue);
-              bestCV = result[3];
-            }
-          }
-      }
-      else
-      {
-        for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-        {
-          VectorDouble result = InternalCrossValidationResubstitution(reducedFeatureSet, traininglabels, pow(2, cValue), 0.01, classifiertype);
-          if (result[3] > bestCV)
-          {
-            bestC = pow(2, cValue);
-            bestCV = result[3];
-          }
-        }
-      }
-      //VectorDouble result = InternalCrossValidationResubstitution(reducedFeatureSet, traininglabels, 1, 0.1, classifiertype);
-      //bestCV = result[3];
-      CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.push_back(bestCV);
-    }
-    //sort cross-validated balanced accuracies and pick the best selected feature
-    int index = std::distance(CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.begin(), std::max_element(CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.begin(), CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.end()));
-    CrossValidatedBalancedAccuraciesFinal.push_back(CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures[index]);
-    SelectedFeatures.push_back(UnselectedFeatures[index]);
-    std::cout << "CurrentSize="<<SelectedFeatures.size() <<" Performance="<< CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures[index] << std::endl;
-    //for (int counter = 0; counter < SelectedFeatures.size(); counter++)
-    //  std::cout << SelectedFeatures[counter] << std::endl;
-    UnselectedFeatures = UpdateUnselectedFeatures(SelectedFeatures, inputFeatures.Cols());
+    std::cout << "The selected feature selection method is not avaialble inside CaPTk. Please select another method..." << std::endl;
+    return false;
   }
 
-  std::cout << "Feature Selection Done!!!" << std::endl;
-  VariableLengthVectorType MovingAverageOnCrossValidatedPerformance;
-  MovingAverageOnCrossValidatedPerformance.SetSize(CrossValidatedBalancedAccuraciesFinal.size());
-  for (int index = 0; index < MovingAverageOnCrossValidatedPerformance.Size(); index++)
-    MovingAverageOnCrossValidatedPerformance[index] = 0;
 
-  for (unsigned int index = 1; index < CrossValidatedBalancedAccuraciesFinal.size() - 1; index++)
-    MovingAverageOnCrossValidatedPerformance[index] = (CrossValidatedBalancedAccuraciesFinal[index] +CrossValidatedBalancedAccuraciesFinal[index-1]+CrossValidatedBalancedAccuraciesFinal[index+1]) / 3;
-  
-  int max_performance_counter = std::distance(CrossValidatedBalancedAccuraciesFinal.begin(), std::max_element(CrossValidatedBalancedAccuraciesFinal.begin(), CrossValidatedBalancedAccuraciesFinal.end()));
-  std::vector<int> FinalSelectedFeatures;
-  for (int index = 0; index <= max_performance_counter; index++)
-    FinalSelectedFeatures.push_back(SelectedFeatures[index]);
-
-  //Write the selected features
-  myfile.open(outputdirectory + "/selectedfeatures.csv");
-  for (int counter = 0; counter < FinalSelectedFeatures.size(); counter++)
-    myfile << std::to_string(FinalSelectedFeatures[counter]) + "\n";
-  myfile.close();
+  //Write the selected features and crossvalidated accuracies
+  WriteCSVFiles(FinalSelectedFeatures,outputdirectory + "/SelectedFeatures.csv");
+  WriteCSVFiles(crossvalidatedAccuracies, outputdirectory + "/CrossValidatedAccuracies.csv");
 
   //optimize classifiers parameters on the selected feature set
   VariableSizeMatrixType FinalSelectedFeatureSet;
@@ -2163,4 +1968,168 @@ std::vector<int> TrainingModule::UpdateUnselectedFeatures(std::vector<int> Selec
   return UnselectedFeatures;
 }
 //-----------------------------------------------------------------------------------------------------------
+std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const int classifiertype)
+{
+  std::vector<int> SelectedFeatures;
+  std::vector<double> CrossValidatedBalancedAccuraciesFinal;
+  std::vector<int> UnselectedFeatures = UpdateUnselectedFeatures(SelectedFeatures, inputdata.Cols());
 
+  //feature selection mechanism
+  //---------------------------
+  while (UnselectedFeatures.size() > 0)
+  {
+    std::vector<double> CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures;
+    for (unsigned int featureNo = 0; featureNo < UnselectedFeatures.size(); featureNo++)
+    {
+      VariableSizeMatrixType reducedFeatureSet;
+      reducedFeatureSet.SetSize(labels.size(), SelectedFeatures.size() + 1);
+
+      //copy the already selected features to the current feature set
+      for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
+      {
+        for (unsigned int k = 0; k < SelectedFeatures.size(); k++)
+        {
+          double value = (int)(inputdata(j, SelectedFeatures[k]) * 10000 + .5);
+          reducedFeatureSet(j, k) = (double)value / 10000;
+        }
+      }
+
+      //copy the new feature to the current feature set
+      for (unsigned int j = 0; j < reducedFeatureSet.Rows(); j++)
+      {
+        double value = (int)(inputdata(j, UnselectedFeatures[featureNo]) * 10000 + .5);
+        reducedFeatureSet(j, reducedFeatureSet.Cols() - 1) = (double)value / 10000;
+      }
+
+
+      //check crossvalidated performance after adding the current feature
+      double bestCV = 0;
+      double bestC = 1;
+      double bestG = 1 / reducedFeatureSet.Cols();
+      if (classifiertype == 2)
+      {
+        for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
+          for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
+          {
+            VectorDouble result = InternalCrossValidationResubstitution(reducedFeatureSet, labels, pow(2, cValue), pow(2, gValue), classifiertype);
+            if (result[3] > bestCV)
+            {
+              bestC = pow(2, cValue);
+              bestG = pow(2, gValue);
+              bestCV = result[3];
+            }
+          }
+      }
+      else
+      {
+        for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
+        {
+          VectorDouble result = InternalCrossValidationResubstitution(reducedFeatureSet, labels, pow(2, cValue), 0.01, classifiertype);
+          if (result[3] > bestCV)
+          {
+            bestC = pow(2, cValue);
+            bestCV = result[3];
+          }
+        }
+      }
+      //VectorDouble result = InternalCrossValidationResubstitution(reducedFeatureSet, traininglabels, 1, 0.1, classifiertype);
+      //bestCV = result[3];
+      CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.push_back(bestCV);
+    }
+    //sort cross-validated balanced accuracies and pick the best selected feature
+    int index = std::distance(CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.begin(), std::max_element(CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.begin(), CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.end()));
+    CrossValidatedBalancedAccuraciesFinal.push_back(CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures[index]);
+    SelectedFeatures.push_back(UnselectedFeatures[index]);
+    std::cout << "CurrentSize=" << SelectedFeatures.size() << " Performance=" << CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures[index] << std::endl;
+    //for (int counter = 0; counter < SelectedFeatures.size(); counter++)
+    //  std::cout << SelectedFeatures[counter] << std::endl;
+    UnselectedFeatures = UpdateUnselectedFeatures(SelectedFeatures, inputdata.Cols());
+  }
+
+  std::cout << "Feature Selection Done!!!" << std::endl;
+  VariableLengthVectorType MovingAverageOnCrossValidatedPerformance;
+  MovingAverageOnCrossValidatedPerformance.SetSize(CrossValidatedBalancedAccuraciesFinal.size());
+  for (int index = 0; index < MovingAverageOnCrossValidatedPerformance.Size(); index++)
+    MovingAverageOnCrossValidatedPerformance[index] = 0;
+
+  for (unsigned int index = 1; index < CrossValidatedBalancedAccuraciesFinal.size() - 1; index++)
+    MovingAverageOnCrossValidatedPerformance[index] = (CrossValidatedBalancedAccuraciesFinal[index] + CrossValidatedBalancedAccuraciesFinal[index - 1] + CrossValidatedBalancedAccuraciesFinal[index + 1]) / 3;
+
+  int max_performance_counter = std::distance(CrossValidatedBalancedAccuraciesFinal.begin(), std::max_element(CrossValidatedBalancedAccuraciesFinal.begin(), CrossValidatedBalancedAccuraciesFinal.end()));
+  std::vector<int> FinalSelectedFeatures;
+  for (int index = 0; index <= max_performance_counter; index++)
+    FinalSelectedFeatures.push_back(SelectedFeatures[index]);
+  return FinalSelectedFeatures;
+}
+std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels,const int classifiertype,VectorDouble & crossvalidatedaccuracies)
+{
+  double numberOfSelectedFeatures = 0;
+  VectorDouble EffectSize = EffectSizeFeatureSelection(inputdata, labels);
+  for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
+  {
+    if (EffectSize[eSizeCounter] < 0)
+      EffectSize[eSizeCounter] = EffectSize[eSizeCounter] * -1;
+  }
+  std::vector<size_t> indices = sort_indexes(EffectSize);
+
+  //keep on copy the  features
+  std::vector<double> CrossValidatedBalancedAccuracies;
+  std::vector<double> PerFeaturePerformance;
+  for (unsigned int featureNo = 0; featureNo < EffectSize.size(); featureNo++)
+  {
+    VariableSizeMatrixType currentFeatureSet;
+    currentFeatureSet.SetSize(labels.size(), featureNo + 1);
+
+    //copy the current feature to the feature set
+    for (unsigned int j = 0; j < currentFeatureSet.Rows(); j++)
+      for (unsigned int k = 0; k < currentFeatureSet.Cols(); k++)
+        currentFeatureSet(j, k) = inputdata(j, indices[k]);
+
+    //check crossvalidated performance after adding the current feature
+    double bestCV = 0;
+    double bestC = 1;
+    double bestG = 1 / currentFeatureSet.Cols();
+    if (classifiertype == 2)
+    {
+      for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
+        for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
+        {
+          VectorDouble result = InternalCrossValidationResubstitution(currentFeatureSet, labels, pow(2, cValue), pow(2, gValue), classifiertype);
+          if (result[3] > bestCV)
+          {
+            bestC = pow(2, cValue);
+            bestG = pow(2, gValue);
+            bestCV = result[3];
+          }
+        }
+    }
+    else
+    {
+      for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
+      {
+        VectorDouble result = InternalCrossValidationResubstitution(currentFeatureSet, labels, pow(2, cValue), 0.01, classifiertype);
+        if (result[3] > bestCV)
+        {
+          bestC = pow(2, cValue);
+          bestCV = result[3];
+        }
+      }
+    }
+    CrossValidatedBalancedAccuracies.push_back(bestCV);
+  }
+  crossvalidatedaccuracies = CrossValidatedBalancedAccuracies;
+  std::cout << "Feature Selection Done!!!" << std::endl;
+  std::vector<double> MovingAverageOnCrossValidatedPerformance;
+  MovingAverageOnCrossValidatedPerformance.push_back(0);  //can not use first index for averaging
+  for (unsigned int index = 1; index < CrossValidatedBalancedAccuracies.size() - 1; index++)
+    MovingAverageOnCrossValidatedPerformance.push_back((CrossValidatedBalancedAccuracies[index] + CrossValidatedBalancedAccuracies[index - 1] + CrossValidatedBalancedAccuracies[index + 1]) / 3);
+  MovingAverageOnCrossValidatedPerformance.push_back(0);  //can not use last index for averaging
+  std::cout << "Moving average calculation complete!!!" << MovingAverageOnCrossValidatedPerformance.size()<< std::endl;
+
+  int max_performance_counter = std::distance(MovingAverageOnCrossValidatedPerformance.begin(), std::max_element(MovingAverageOnCrossValidatedPerformance.begin(), MovingAverageOnCrossValidatedPerformance.end()));
+  std::vector<int> FinalSelectedFeatures;
+  for (int index = 0; index <= max_performance_counter; index++)
+    FinalSelectedFeatures.push_back(indices[index]);
+
+  return FinalSelectedFeatures;
+}
