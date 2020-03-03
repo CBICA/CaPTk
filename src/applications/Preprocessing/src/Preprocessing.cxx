@@ -296,10 +296,10 @@ int algorithmsRunner()
   {
     if (!inputImageFiles.empty()) // multiple images passed
     {
-      std::cerr << "This operation cannot currently be performed with multiple images.\n";
-      return EXIT_FAILURE;
+      inputImageFiles.push_back(inputImageFile);
     }
-    else
+
+    for (size_t i = 0; i < inputImageFiles.size(); i++)
     {
       // call the greedy executable here with the proper API. 
       // see TumorGrowthModelling regarding how it is done there
@@ -331,7 +331,7 @@ int algorithmsRunner()
       }
 
       // add the fixed and moving files
-      commonCommands += " -i " + cbica::normPath(registrationFixedImageFile) + " " + cbica::normPath(inputImageFile);
+      commonCommands += " -i " + cbica::normPath(registrationFixedImageFile) + " " + cbica::normPath(inputImageFiles[i]);
 
       std::string metricsCommand = " -m ";
       if (registrationMetrics.find("NCC") != std::string::npos)
@@ -679,12 +679,12 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
-  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable", "The kind of registration to perform", "Defaults to '" + registrationType, "Can use Mask File");
+  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable", "The kind of registration to perform", "Defaults to " + registrationType, "Can use Mask File with '-m' and multiple moving images with '-i'");
   parser.addOptionalParameter("rFI", "regFixedImg", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration", "Needed for registration");
-  parser.addOptionalParameter("rME", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metris to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
-  parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The umber of iterations per level of multi-res", "Defaults to " + registrationIterations);
+  parser.addOptionalParameter("rME", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metrics to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
+  parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The number of iterations per level of multi-res", "Defaults to " + registrationIterations);
   parser.addOptionalParameter("rIS", "regInterSave", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the intermediate files are to be saved or not", "Defaults to " + std::to_string(registrationIntermediate));
-  parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
+  parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image(s) is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
   parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
   parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed (comma-separated), the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
