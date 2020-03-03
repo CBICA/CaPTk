@@ -1241,17 +1241,21 @@ int main(int argc, char** argv)
     auto size = inputImageInfo.GetImageSize();
     auto origin = inputImageInfo.GetImageOrigins();
     auto spacing = inputImageInfo.GetImageSpacings();
+    auto directions = inputImageInfo.GetImageDirections();
     auto size_string = std::to_string(size[0]);
     auto origin_string = std::to_string(origin[0]);
     auto spacing_string = std::to_string(spacing[0]);
+    auto directions_string = "[" + std::to_string(directions[0][0]) + "x" + std::to_string(directions[0][1]) + "x" + std::to_string(directions[0][2]);
     size_t totalSize = size[0];
     for (size_t i = 1; i < dims; i++)
     {
       size_string += "x" + std::to_string(size[i]);
       origin_string += "x" + std::to_string(origin[i]);
       spacing_string += "x" + std::to_string(spacing[i]);
+      directions_string += ";" + std::to_string(directions[i][0]) + "x" + std::to_string(directions[i][1]) + "x" + std::to_string(directions[i][2]);
       totalSize *= size[i];
     }
+    directions_string += "]";
     std::cout << "Property,Value\n";
     std::cout << "Dimensions," << dims << "\n";
     std::cout << "Size," << size_string << "\n";
@@ -1260,6 +1264,7 @@ int main(int argc, char** argv)
     std::cout << "Spacing," << spacing_string << "\n";
     std::cout << "Component," << inputImageInfo.GetComponentTypeAsString() << "\n";
     std::cout << "Pixel Type," << inputImageInfo.GetPixelTypeAsString() << "\n";
+    std::cout << "Directions," << directions_string << "\n";
 
     if (cbica::IsDicom(inputImageFile)) // if dicom file
     {
