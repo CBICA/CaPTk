@@ -39,7 +39,7 @@ enum RegistrationTypeEnum
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile;
+std::string inputImageFile, inputMaskFile, outputImageFile, outputDir, targetImageFile;
 std::vector< std::string > inputImageFiles; // store multiple image files
 std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "SSD", registrationIterations = "100,50,5",
 registrationAffineTransformInput, registrationDeformableTransformInput;
@@ -122,8 +122,6 @@ int algorithmsRunner()
       auto combinedOutput = normalizer.GetOutput();
       auto extractedOutputs = cbica::GetExtractedImages< NewImageType, TImageType >(combinedOutput);
 
-      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
-
       for (size_t i = 0; i < extractedOutputs.size(); i++)
       {
         cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + "_zscored.nii.gz");
@@ -176,8 +174,6 @@ int algorithmsRunner()
 
       auto combinedOutput = normalizer.GetOutput();
       auto extractedOutputs = cbica::GetExtractedImages< NewImageType, TImageType >(combinedOutput);
-
-      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
 
       for (size_t i = 0; i < extractedOutputs.size(); i++)
       {
@@ -349,7 +345,6 @@ int algorithmsRunner()
         std::cerr << "WARNING: Output filename is not defined; will try to save in input directory.\n";
         outputImageFile = cbica::getFilenamePath(inputImageFile) + "/registrationOutput.nii.gz";
       }
-      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
       auto inputFile_base = cbica::getFilenameBase(inputImageFile);
       auto fixedFile_base = cbica::getFilenameBase(registrationFixedImageFile);
       std::map< std::string, std::string > intermediateFiles;
@@ -537,67 +532,56 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == Rescaling)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
+    typename TImageType::PixelType minimum = std::numeric_limits< typename TImageType::PixelType >::min(),
+      maximum = std::numeric_limits< typename TImageType::PixelType >::max();
+
+    if (inputImageFiles.size() > 1) // multiple input images passed
     {
-      std::cerr << "This operation cannot currently be performed with multiple images.\n";
-      return EXIT_FAILURE;
+      std::vector< typename TImageType::Pointer > inputImages;
+      for (size_t i = 0; i < inputImageFiles.size(); i++)
+      {
+        auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+        inputImages.push_back(currentImage);
+      }
+
+      using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
+      auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
+
+      auto rescaler = itk::RescaleIntensityImageFilter< NewImageType >::New();
+      rescaler->SetInput(combinedImage);
+      rescaler->SetOutputMaximum(rescaleUpper);
+      rescaler->SetOutputMinimum(rescaleLower);
+      try
+      {
+        rescaler->Update();
+      }
+      catch (const std::exception&e)
+      {
+        std::cerr << "Error caught during rescaling: " << e.what() << "\n";
+        return EXIT_FAILURE;
+      }
+
+      auto outputImages = cbica::GetExtractedImages< NewImageType, TImageType >(rescaler->GetOutput());
+
+      // at this point, we have found the global minimum and maximum
+      auto fileEnding = "_rescaled-" + std::to_string(rescaleLower) + "-" + std::to_string(rescaleUpper) + ".nii.gz";
+      for (size_t i = 0; i < outputImages.size(); i++)
+      {
+        cbica::WriteImage< TImageType >(outputImages[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + fileEnding);
+      }
     }
     else
     {
-      typename TImageType::PixelType minimum = std::numeric_limits< typename TImageType::PixelType >::min(),
-        maximum = std::numeric_limits< typename TImageType::PixelType >::max();
+      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+      auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+      statsCalculator->SetInput(inputImage);
 
-      if (inputImageFile.find(",") != std::string::npos)
-      {
-        auto outputDir = cbica::getFilenamePath(outputImageFile, false);
+      auto rescaler = itk::RescaleIntensityImageFilter< TImageType >::New();
+      rescaler->SetInput(inputImage);
+      rescaler->SetOutputMaximum(rescaleUpper);
+      rescaler->SetOutputMinimum(rescaleLower);
 
-        auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
-        std::vector< typename TImageType::Pointer > inputImages;
-        for (size_t i = 0; i < inputImageFiles.size(); i++)
-        {
-          auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
-          inputImages.push_back(currentImage);
-        }
-
-        using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
-        auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
-
-        auto rescaler = itk::RescaleIntensityImageFilter< NewImageType >::New();
-        rescaler->SetInput(combinedImage);
-        rescaler->SetOutputMaximum(rescaleUpper);
-        rescaler->SetOutputMinimum(rescaleLower);
-        try
-        {
-          rescaler->Update();
-        }
-        catch (const std::exception&e)
-        {
-          std::cerr << "Error caught during rescaling: " << e.what() << "\n";
-          return EXIT_FAILURE;
-        }
-
-        auto outputImages = cbica::GetExtractedImages< NewImageType, TImageType >(rescaler->GetOutput());
-
-        // at this point, we have found the global minimum and maximum
-        auto fileEnding = "_rescaled-" + std::to_string(rescaleLower) + "-" + std::to_string(rescaleUpper) + ".nii.gz";
-        for (size_t i = 0; i < outputImages.size(); i++)
-        {
-          cbica::WriteImage< TImageType >(outputImages[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + fileEnding);
-        }
-      }
-      else
-      {
-        auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-        auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
-        statsCalculator->SetInput(inputImage);
-
-        auto rescaler = itk::RescaleIntensityImageFilter< TImageType >::New();
-        rescaler->SetInput(inputImage);
-        rescaler->SetOutputMaximum(rescaleUpper);
-        rescaler->SetOutputMinimum(rescaleLower);
-
-        cbica::WriteImage< TImageType >(rescaler->GetOutput(), outputImageFile);
-      }
+      cbica::WriteImage< TImageType >(rescaler->GetOutput(), outputImageFile);
     }
   }
 
@@ -728,6 +712,8 @@ int main(int argc, char** argv)
   if (parser.isPresent("o"))
   {
     parser.getParameterValue("o", outputImageFile);
+    outputDir = cbica::getFilenamePath(outputImageFile, false);
+    cbica::createDir(outputDir);
   }
 
   // parse all options from here
