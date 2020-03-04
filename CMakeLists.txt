@@ -69,30 +69,8 @@ ENDIF()
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules/)
 INCLUDE( CaPTk_macros )
 
-### Build type
-IF(MSVC)
-  IF(NOT CMAKE_CONFIGURATION_TYPES) # That's because a dev might want to control 
-                                    # CMAKE_CONFIGURATION_TYPES manually
-                                    # like it happens for azure, where it takes
-                                    # a longer time to build when it has to generate
-                                    # all the config types, even if only one ends up built
-    SET( CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE
-        STRING "Available configuration types" FORCE) 
-                                    # And then build type is selected in Visual Studio
-                                    # or by something like: 
-                                    # "cmake --build . --target ALL_BUILD --config Release"
-  ENDIF(NOT CMAKE_CONFIGURATION_TYPES)
-ELSE() # UNIX or MAC
-  IF(NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE "Release" CACHE  ## Release is the default
-        STRING "Choose the type of build." FORCE)
-  ENDIF(NOT CMAKE_BUILD_TYPE)
+#SET (SVN_REVISION "${SVN_REVISION}")
 
-  SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-        "Debug" "Release") # CMAKE_BUILD_TYPE will appear as a combobox
-ENDIF()
-
-### Superbuild option in case the user wants to manually trigger it
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
 
 # claire option is not present for Windows, unfortunately
@@ -219,11 +197,17 @@ IF( BUILD_DOCUMENTATION )
 ENDIF ()
 
 IF( NOT BUILD_DOCUMENTATION_ONLY )
+  # Provide build configuration option
+  SET( CAPTK_BUILD_OPTION "PACKAGE_PROJECT" CACHE STRING "Toggle between packaging mode (optimized code) or developer mode (provides debugging info)" )
 
-  IF( CMAKE_BUILD_TYPE STREQUAL "Release")
-    ### Operations only relevant in Release
+  SET_PROPERTY( CACHE CAPTK_BUILD_OPTION PROPERTY STRINGS PACKAGE_PROJECT DEVELOPER_MODE )
+  SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+
+  IF( CAPTK_BUILD_OPTION STREQUAL PACKAGE_PROJECT)
+
     SET( CAPTK_PACKAGE_PROJECT ON )
     SET( CAPTK_UPDATE_DOCS ON CACHE BOOL "Copy HTML files to $PROJECT_SOURCE_DIR/docs for git commit" )
+    SET( CMAKE_CONFIGURATION_TYPES "Release" CACHE STRING "Default configuration types" FORCE )
     ADD_DEFINITIONS(-DCAPTK_PACKAGE_PROJECT)
 
     # add a few compiler options for GCC and MSVC
@@ -232,8 +216,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF()
 
     if(APPLE)
+
       SET (CAPTK_MACOSX_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${PROJECT}" )
+      
     endif()
 
     IF(MSVC)
@@ -241,14 +227,15 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ENDIF(MSVC)
 
   ELSE()
-    ### Debug
-    SET( CAPTK_PACKAGE_PROJECT OFF ) # Remove ability to create a package/installer
-    REMOVE_DEFINITIONS(-DCAPTK_PACKAGE_PROJECT)
+
+    SET( CAPTK_PACKAGE_PROJECT OFF )
+    SET( CMAKE_CONFIGURATION_TYPES "Debug" CACHE STRING "Default configuration types" FORCE )
 
   ENDIF()
 
   OPTION( CAPTK_DISABLE_CWL "Disable CWL file generation - useful for debug builds or devops" ON )
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
+  MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
   MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
 
   # MESSAGE( AUTHOR_WARNING "=== [DEBUG] Building CaPTk version=${PROJECT_VERSION}" )
