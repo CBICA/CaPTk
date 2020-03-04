@@ -788,7 +788,15 @@ namespace cbica
     if (dicomDetected)
     {
       DicomIOManager< TImageType > dcmSeriesReader;
-      dcmSeriesReader.SetDirectoryPath(fName);
+      auto fName_wrap = fName;
+      if (cbica::isFile(fName))
+      {
+        dcmSeriesReader.SetDirectoryPath(cbica::getFilenamePath(fName));
+      }
+      else
+      {
+        dcmSeriesReader.SetDirectoryPath(fName_wrap);
+      }
       bool loadstatus = dcmSeriesReader.LoadDicom();
       if (!loadstatus)
       {
