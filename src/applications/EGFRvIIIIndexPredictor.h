@@ -238,7 +238,10 @@ public:
   template<class ImageType>
   VectorDouble GetSpatialLocationFeaturesForFixedNumberOfRegions(const typename ImageType::Pointer &labelImagePointer,const typename ImageType::Pointer &atlasImagePointer,const int number);
   
-
+  template<class ImageType>
+  std::vector<double> GetSpatialLocationFeaturesForEGFRTrainingWithLOO(typename ImageType::Pointer labelImagePointer,
+    typename ImageType::Pointer EGFRvIII_Neg_Atlas,
+    typename ImageType::Pointer EGFRvIII_Pos_Atlas, int label);
 
   /**
   \brief Prepares a new survival prediction model
@@ -267,12 +270,12 @@ public:
 
 
 
-  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures);
+  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures,const VariableLengthVectorType &SelectedFeatures);
 
   template<class ImageType>
   typename ImageType::Pointer RemoveSmallerComponentsFromTumor(const typename ImageType::Pointer &etumorImage, const typename ImageType::Pointer &ncrImage);
 
-  VariableLengthVectorType DistanceFunctionLinear(const VariableSizeMatrixType &testData, const std::string &filename, const double &rho, const double &bestg);
+  VariableLengthVectorType DistanceFunctionLinear(const VariableSizeMatrixType &testData, const std::string &filename);
   VectorDouble CombineEstimates(const VariableLengthVectorType &estimates1, const VariableLengthVectorType &estimates2);
   VectorDouble CombineEstimates(const VectorDouble &estimates1, const VectorDouble &estimates2);
 
@@ -291,10 +294,17 @@ public:
   template<class ImageType>
   typename ImageType::Pointer CapImageIntensityWithPercentile(const typename ImageType::Pointer &image);
 
-  void Run()
-  {
+  ImageType::Pointer MakeAtlases(const std::vector<ImageType::Pointer> &SegmentationaAllPatients, const std::vector<int> &LabelsAllPatientsconst, const int atlas_no);
 
-  }
+  bool SelectModelFeaturesForTrainingSVMFFSel(const VariableSizeMatrixType &scaledFeatureSet, const VectorDouble &AllLabels,const std::string outputdirectory);
+  std::vector<int> UpdateUnselectedFeatures(std::vector<int> SelectedFeatures, int featuresize);
+  VectorDouble InternalCrossValidationResubstitution(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue, int kerneltype);
+  VectorDouble CalculatePerformanceMeasures(VariableLengthVectorType predictedLabels, VectorDouble GivenLabels);
+  bool SelectModelFeaturesForTrainingFromStudy(const VariableSizeMatrixType &scaledFeatureSet, const VectorDouble &AllLabels, const std::string outputdirectory);
+
+
+  void Run()
+  {}
 
 private:
 
@@ -831,6 +841,7 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
 
 
   std::vector<double> spatialLocationFeatures_4 = GetSpatialLocationFeaturesForEGFR<ImageType>(atlasImagePointer, NEGAtlasImagePointer, POSAtlasImagePointer);
+  //std::vector<double> spatialLocationFeatures_4 = GetSpatialLocationFeaturesForEGFRTrainingWithLOO<ImageType>(atlasImagePointer, NEGAtlasImagePointer, POSAtlasImagePointer, label);
   VectorDouble spatialLocationFeatures_9        = GetSpatialLocationFeaturesForFixedNumberOfRegions<ImageType>(atlasImagePointer, templateImagePointer9regions,9);
   VectorDouble spatialLocationFeatures_21       = GetSpatialLocationFeaturesForFixedNumberOfRegions<ImageType>(atlasImagePointer, templateImagePointer21regions,21);
 
@@ -1197,7 +1208,7 @@ std::vector<double> EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForEGFR(ty
 {
   typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
 
-//find max and min 
+  //find max and min 
   IteratorType negAtlasIt(EGFRvIII_Neg_Atlas, EGFRvIII_Neg_Atlas->GetLargestPossibleRegion());
   IteratorType posAtlasIt(EGFRvIII_Pos_Atlas, EGFRvIII_Pos_Atlas->GetLargestPossibleRegion());
   negAtlasIt.GoToBegin();
@@ -1261,35 +1272,175 @@ std::vector<double> EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForEGFR(ty
   {
     if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON)
     {
-      probNEGAtlas.push_back(negAtlasIt.Get());
-      probPOSAtlas.push_back(posAtlasIt.Get());
+      if (negAtlasIt.Get() > 0)
+        probNEGAtlas.push_back(negAtlasIt.Get());
+      if (posAtlasIt.Get() > 0)
+        probPOSAtlas.push_back(posAtlasIt.Get());
     }
     ++tumorIt;
     ++negAtlasIt;
     ++posAtlasIt;
   }
-  double max_POS_Atlas = *std::max_element(std::begin(probPOSAtlas), std::end(probPOSAtlas));
-  double max_NEG_Atlas = *std::max_element(std::begin(probNEGAtlas), std::end(probNEGAtlas));
 
   double sumPOS = 0;
   double sumNEG = 0;
+  double average_POS_Atlas = 0;
+  double average_NEG_Atlas = 0;
+  double max_POS_Atlas=0;
+  double max_NEG_Atlas=0;
 
   for (int i = 0; i < probPOSAtlas.size(); i++)
-  {
     sumPOS = sumPOS + probPOSAtlas[i];
+
+  for (int i = 0; i < probNEGAtlas.size(); i++)
     sumNEG = sumNEG + probNEGAtlas[i];
+
+  if (probPOSAtlas.size() > 0)
+  {
+    average_POS_Atlas = sumPOS / probPOSAtlas.size();
+    max_POS_Atlas = *std::max_element(std::begin(probPOSAtlas), std::end(probPOSAtlas));
   }
-  double average_POS_Atlas = sumPOS / probPOSAtlas.size();
-  double average_NEG_Atlas = sumNEG / probNEGAtlas.size();
+  if (probNEGAtlas.size() > 0)
+  {
+    average_NEG_Atlas = sumNEG / probNEGAtlas.size();
+    max_NEG_Atlas = *std::max_element(std::begin(probNEGAtlas), std::end(probNEGAtlas));
+  }
+
+  //std::vector<double> SpatialFeatures;
+  //SpatialFeatures.push_back(average_NEG_Atlas-average_POS_Atlas);
+  //SpatialFeatures.push_back(max_NEG_Atlas- max_POS_Atlas);
+  //SpatialFeatures.push_back(average_NEG_Atlas/average_POS_Atlas);
+  //SpatialFeatures.push_back(max_NEG_Atlas/max_POS_Atlas);
 
   std::vector<double> SpatialFeatures;
-  SpatialFeatures.push_back(average_NEG_Atlas-average_POS_Atlas);
-  SpatialFeatures.push_back(max_NEG_Atlas- max_POS_Atlas);
-  SpatialFeatures.push_back(average_NEG_Atlas/average_POS_Atlas);
-  SpatialFeatures.push_back(max_NEG_Atlas/max_POS_Atlas);
+  SpatialFeatures.push_back(average_POS_Atlas - average_NEG_Atlas);
+  SpatialFeatures.push_back(max_POS_Atlas - max_NEG_Atlas);
+  SpatialFeatures.push_back(average_POS_Atlas / average_NEG_Atlas);
+  SpatialFeatures.push_back(max_POS_Atlas / max_NEG_Atlas);
+
+  std::cout << SpatialFeatures[0] << " " << SpatialFeatures[1] << " " << SpatialFeatures[2] << " " << SpatialFeatures[3] << std::endl;
 
   return SpatialFeatures;
 }
+
+
+  template<class ImageType>
+  std::vector<double> EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForEGFRTrainingWithLOO(typename ImageType::Pointer labelImagePointer,
+    typename ImageType::Pointer EGFRvIII_Neg_Atlas,
+    typename ImageType::Pointer EGFRvIII_Pos_Atlas,int label)
+  {
+    typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
+
+    //make new tumor with one ony;
+    typename ImageType::Pointer tumorImage = ImageType::New();
+    tumorImage->CopyInformation(labelImagePointer);
+    tumorImage->SetRequestedRegion(labelImagePointer->GetLargestPossibleRegion());
+    tumorImage->SetBufferedRegion(labelImagePointer->GetBufferedRegion());
+    tumorImage->Allocate();
+    tumorImage->FillBuffer(0);
+
+    IteratorType tumorIt(tumorImage, tumorImage->GetLargestPossibleRegion());
+    IteratorType imIt(labelImagePointer, labelImagePointer->GetLargestPossibleRegion());
+    imIt.GoToBegin();
+    tumorIt.GoToBegin();
+
+    while (!tumorIt.IsAtEnd())
+    {
+      if (imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::TUMOR || imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
+        tumorIt.Set(CAPTK::VOXEL_STATUS::ON);
+      else
+        tumorIt.Set(CAPTK::VOXEL_STATUS::OFF);
+      ++tumorIt;
+      ++imIt;
+    }
+
+    //--------------------------------------------------
+    IteratorType negAtlasIt(EGFRvIII_Neg_Atlas, EGFRvIII_Neg_Atlas->GetLargestPossibleRegion());
+    IteratorType posAtlasIt(EGFRvIII_Pos_Atlas, EGFRvIII_Pos_Atlas->GetLargestPossibleRegion());
+    tumorIt.GoToBegin();
+    negAtlasIt.GoToBegin();
+    posAtlasIt.GoToBegin();
+    while (!tumorIt.IsAtEnd())
+    {
+      if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON && label==0)
+        negAtlasIt.Set(negAtlasIt.Get()-1);
+      else if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON && label == 1)
+        posAtlasIt.Set(posAtlasIt.Get()-1);
+      else
+      {
+      }
+      ++tumorIt;
+      ++negAtlasIt;
+      ++posAtlasIt;
+    }
+    //------------------------------------------------------   
+
+    //find max and min 
+    negAtlasIt.GoToBegin();
+    posAtlasIt.GoToBegin();
+    double maxposvalue = 0;
+    double maxnegvalue = 0;
+    while (!negAtlasIt.IsAtEnd())
+    {
+      if (negAtlasIt.Get() > maxnegvalue)
+        maxnegvalue = negAtlasIt.Get();
+      if (posAtlasIt.Get() > maxposvalue)
+        maxposvalue = posAtlasIt.Get();
+      ++negAtlasIt;
+      ++posAtlasIt;
+    }
+
+    //multiply with 100
+    negAtlasIt.GoToBegin();
+    posAtlasIt.GoToBegin();
+    while (!negAtlasIt.IsAtEnd())
+    {
+      negAtlasIt.Set(negAtlasIt.Get() * 100 / maxnegvalue);
+      posAtlasIt.Set(posAtlasIt.Get() * 100 / maxposvalue);
+      ++negAtlasIt;
+      ++posAtlasIt;
+    }
+
+
+    tumorIt.GoToBegin();
+    negAtlasIt.GoToBegin();
+    posAtlasIt.GoToBegin();
+    std::vector<double> probNEGAtlas;
+    std::vector<double> probPOSAtlas;
+
+    while (!tumorIt.IsAtEnd())
+    {
+      if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON)
+      {
+        probNEGAtlas.push_back(negAtlasIt.Get());
+        probPOSAtlas.push_back(posAtlasIt.Get());
+      }
+      ++tumorIt;
+      ++negAtlasIt;
+      ++posAtlasIt;
+    }
+    double max_POS_Atlas = *std::max_element(std::begin(probPOSAtlas), std::end(probPOSAtlas));
+    double max_NEG_Atlas = *std::max_element(std::begin(probNEGAtlas), std::end(probNEGAtlas));
+
+    double sumPOS = 0;
+    double sumNEG = 0;
+
+    for (int i = 0; i < probPOSAtlas.size(); i++)
+    {
+      sumPOS = sumPOS + probPOSAtlas[i];
+      sumNEG = sumNEG + probNEGAtlas[i];
+    }
+    double average_POS_Atlas = sumPOS / probPOSAtlas.size();
+    double average_NEG_Atlas = sumNEG / probNEGAtlas.size();
+
+    std::vector<double> SpatialFeatures;
+    SpatialFeatures.push_back(average_NEG_Atlas - average_POS_Atlas);
+    SpatialFeatures.push_back(max_NEG_Atlas - max_POS_Atlas);
+    SpatialFeatures.push_back(average_NEG_Atlas / average_POS_Atlas);
+    SpatialFeatures.push_back(max_NEG_Atlas / max_POS_Atlas);
+
+    return SpatialFeatures;
+  }
 
 
 

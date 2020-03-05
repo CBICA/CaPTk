@@ -8690,8 +8690,9 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds)
 {
+  int defaultfeatureselectiontype = 3;
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,modeldirectory))
+  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,defaultfeatureselectiontype, modeldirectory))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";

@@ -109,12 +109,12 @@ int main(int argc, char** argv)
         std::string argv_complete;
         for (size_t i = 2; i < argc; i++) // 2 because the argv[1] is always the "application"
         {
-          argv_complete += " " + std::string(argv[i]);
+          argv_complete += " \"" + std::string(argv[i]) + "\""; // add double quote for command tokenization
         }
         // Pass them in
         auto commandToRun = getApplicationPath(cwlFileBase_actual) + argv_complete;
         //std::cout << "[DEBUG] commandToRun: " << commandToRun << "\n";
-// #ifndef WIN32
+// #ifndef WIN32 
         return std::system(commandToRun.c_str());
 // #else
 //         auto returnCode = std::system(commandToRun.c_str());

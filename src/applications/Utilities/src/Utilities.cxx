@@ -14,6 +14,7 @@
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
 #include "itkLabelOverlapMeasuresImageFilter.h"
+#include "itkHausdorffDistanceImageFilter.h"
 
 #include "cbicaDCMQIWrapper.h"
 
@@ -46,7 +47,8 @@ enum AvailableAlgorithms
   World2Image,
   ImageStack2Join,
   JoinedImage2Stack,
-  LabelSimilarity
+  LabelSimilarity,
+  Hausdorff
 };
 
 int requestedAlgorithm = 0;
@@ -664,29 +666,49 @@ int algorithmsRunner()
     similarityFilter->SetTargetImage(referenceImage);
     similarityFilter->Update();
 
-    std::cout << "=== Entire Masked Area ===\n";
-    std::cout << "Total Overlap:   " << similarityFilter->GetTotalOverlap() << "\n";
-    std::cout << "Union (Jaccard): " << similarityFilter->GetUnionOverlap() << "\n";
-    std::cout << "Mean (DICE):     " << similarityFilter->GetMeanOverlap() << "\n";
-    std::cout << "Volume Sim.:     " << similarityFilter->GetVolumeSimilarity() << "\n";
-    std::cout << "False Neg. Err.: " << similarityFilter->GetFalseNegativeError() << "\n";
-    std::cout << "False Pos. Err.: " << similarityFilter->GetFalsePositiveError() << "\n";
+    //std::cout << "=== Entire Masked Area ===\n";
+    std::cout << "Property,Value\n";
+    std::cout << "TotalOverlap," << similarityFilter->GetTotalOverlap() << "\n";
+    std::cout << "Union(Jaccard)_Overall," << similarityFilter->GetUnionOverlap() << "\n";
+    std::cout << "Mean(DICE)_Overall," << similarityFilter->GetMeanOverlap() << "\n";
+    std::cout << "VolumeSimilarity_Overall," << similarityFilter->GetVolumeSimilarity() << "\n";
+    std::cout << "FalseNegativeError_Overall," << similarityFilter->GetFalseNegativeError() << "\n";
+    std::cout << "FalsePositiveError_Overall," << similarityFilter->GetFalsePositiveError() << "\n";
 
     if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
     {
-      std::cout << "=== Individual Labels ===\n";
+      //std::cout << "=== Individual Labels ===\n";
+      //std::cout << "Property,Value\n";
       for (size_t i = 0; i < uniqueLabels.size(); i++)
       {
-        std::cout << "Label Value:     " << uniqueLabels[i] << "\n";
-        std::cout << "Target Overlap:  " << similarityFilter->GetTargetOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Union (Jaccard): " << similarityFilter->GetUnionOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Mean (DICE):     " << similarityFilter->GetMeanOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Volume Sim.:     " << similarityFilter->GetVolumeSimilarity(uniqueLabels[i]) << "\n";
-        std::cout << "False Neg. Err.: " << similarityFilter->GetFalseNegativeError(uniqueLabels[i]) << "\n";
-        std::cout << "False Pos. Err.: " << similarityFilter->GetFalsePositiveError(uniqueLabels[i]) << "\n";
+        auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
+        std::cout << "LabelValue," << uniqueLabels_string << "\n";
+        std::cout << "TargetOverlap_Label" + uniqueLabels_string + "," << similarityFilter->GetTargetOverlap(uniqueLabels[i]) << "\n";
+        std::cout << "Union(Jaccard)_Label" + uniqueLabels_string + "," << similarityFilter->GetUnionOverlap(uniqueLabels[i]) << "\n";
+        std::cout << "Mean(DICE)_Label" + uniqueLabels_string + "," << similarityFilter->GetMeanOverlap(uniqueLabels[i]) << "\n";
+        std::cout << "VolumeSimilarity_Label" + uniqueLabels_string + "," << similarityFilter->GetVolumeSimilarity(uniqueLabels[i]) << "\n";
+        std::cout << "FalseNegativeError_Label" + uniqueLabels_string + "," << similarityFilter->GetFalseNegativeError(uniqueLabels[i]) << "\n";
+        std::cout << "FalsePositiveError_Label" + uniqueLabels_string + "," << similarityFilter->GetFalsePositiveError(uniqueLabels[i]) << "\n";
       }
     }
       return EXIT_SUCCESS;
+  }
+  else if (requestedAlgorithm == Hausdorff)
+  {
+    auto filter = itk::HausdorffDistanceImageFilter< TImageType, TImageType >::New();
+    filter->SetInput1(cbica::ReadImage< TImageType >(inputImageFile));
+    filter->SetInput2(cbica::ReadImage< TImageType >(referenceMaskForSimilarity));
+    try
+    {
+      filter->Update();
+    }
+    catch (const std::exception&e)
+    {
+      std::cerr << "Hausdorff calculation error: " << e.what() << "\n";
+      return EXIT_FAILURE;
+    }   
+
+    std::cout << "Hausdorff Distance: " << filter->GetHausdorffDistance() << "\n";
   }
 
   // if no other algorithm has been selected and mask & output files are present and in same space as input, apply it
@@ -821,6 +843,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
   parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
+  parser.addOptionalParameter("hd", "hausdorffDist", cbica::Parameter::FILE, "NIfTI Reference", "Calculate the Hausdorff Distance for the input image and", "the one passed after '-hd'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -1189,6 +1212,11 @@ int main(int argc, char** argv)
     requestedAlgorithm = LabelSimilarity;
     parser.getParameterValue("ls", referenceMaskForSimilarity);
   }
+  else if (parser.isPresent("hd"))
+  {
+    requestedAlgorithm = Hausdorff;
+    parser.getParameterValue("hd", referenceMaskForSimilarity);
+  }
 
   // this doesn't need any template initialization
   if (requestedAlgorithm == SanityCheck)
@@ -1208,9 +1236,39 @@ int main(int argc, char** argv)
 
   if (requestedAlgorithm == Information)
   {
+    std::cout << "ITK Image information:.\n";
+    auto dims = inputImageInfo.GetImageDimensions();
+    auto size = inputImageInfo.GetImageSize();
+    auto origin = inputImageInfo.GetImageOrigins();
+    auto spacing = inputImageInfo.GetImageSpacings();
+    auto directions = inputImageInfo.GetImageDirections();
+    auto size_string = std::to_string(size[0]);
+    auto origin_string = std::to_string(origin[0]);
+    auto spacing_string = std::to_string(spacing[0]);
+    auto directions_string = "[" + std::to_string(directions[0][0]) + "x" + std::to_string(directions[0][1]) + "x" + std::to_string(directions[0][2]);
+    size_t totalSize = size[0];
+    for (size_t i = 1; i < dims; i++)
+    {
+      size_string += "x" + std::to_string(size[i]);
+      origin_string += "x" + std::to_string(origin[i]);
+      spacing_string += "x" + std::to_string(spacing[i]);
+      directions_string += ";" + std::to_string(directions[i][0]) + "x" + std::to_string(directions[i][1]) + "x" + std::to_string(directions[i][2]);
+      totalSize *= size[i];
+    }
+    directions_string += "]";
+    std::cout << "Property,Value\n";
+    std::cout << "Dimensions," << dims << "\n";
+    std::cout << "Size," << size_string << "\n";
+    std::cout << "Total," << totalSize << "\n";
+    std::cout << "Origin," << origin_string << "\n";
+    std::cout << "Spacing," << spacing_string << "\n";
+    std::cout << "Component," << inputImageInfo.GetComponentTypeAsString() << "\n";
+    std::cout << "Pixel Type," << inputImageInfo.GetPixelTypeAsString() << "\n";
+    std::cout << "Directions," << directions_string << "\n";
+
     if (cbica::IsDicom(inputImageFile)) // if dicom file
     {
-      std::cout << "DICOM file detected, will print out all tags.\n";
+      std::cout << "DICOM file detected, will print out all tags from here.\n";
       DicomMetadataReader reader;
       reader.SetFilePath(inputImageFile);
       bool readStatus = reader.ReadMetaData();
@@ -1230,33 +1288,6 @@ int main(int argc, char** argv)
           << labelValuePair.first.c_str() << ","
           << labelValuePair.second.c_str() << "\n";
       }
-    }
-    else
-    {
-      std::cout << "Non-DICOM file detected, will print out ITK Image information.\n";
-      auto dims = inputImageInfo.GetImageDimensions();
-      auto size = inputImageInfo.GetImageSize();
-      auto origin = inputImageInfo.GetImageOrigins();
-      auto spacing = inputImageInfo.GetImageSpacings();
-      auto size_string = std::to_string(size[0]);
-      auto origin_string = std::to_string(origin[0]);
-      auto spacing_string = std::to_string(spacing[0]);
-      size_t totalSize = size[0];
-      for (size_t i = 1; i < dims; i++)
-      {
-        size_string += "x" + std::to_string(size[i]);
-        origin_string += "x" + std::to_string(origin[i]);
-        spacing_string += "x" + std::to_string(spacing[i]);
-        totalSize *= size[i];
-      }
-      std::cout << "Property,Value\n";
-      std::cout << "Dimensions," << dims << "\n";
-      std::cout << "Size," << size_string << "\n";
-      std::cout << "Total," << totalSize << "\n";
-      std::cout << "Origin," << origin_string << "\n";
-      std::cout << "Spacing," << spacing_string << "\n";
-      std::cout << "Component," << inputImageInfo.GetComponentTypeAsString() << "\n";
-      std::cout << "Pixel Type," << inputImageInfo.GetPixelTypeAsString() << "\n"; 
     }
     return EXIT_SUCCESS;
   }
