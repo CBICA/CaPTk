@@ -1760,8 +1760,23 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string & modality, co
     {
       if (m_outputVerticallyConcatenated)
       {
+        auto tempParams = parameters;
+        if ((featureFamily == "GLCM") || (featureFamily == "GLRLM"))
+        {
+          if ((f.first.find("Correlation") != std::string::npos) ||
+            (f.first.find("LongRunEmphasis") != std::string::npos) ||
+            (f.first.find("GreyLevelNonuniformity") != std::string::npos) ||
+            (f.first.find("RunLengthNonuniformity") != std::string::npos) ||
+            (f.first.find("LongRunLowGreyLevelEmphasis") != std::string::npos) ||
+            (f.first.find("LongRunHighGreyLevelEmphasis") != std::string::npos) ||
+            (f.first.find("TotalRuns") != std::string::npos) ||
+            (f.first.find("RunPercentage") != std::string::npos))
+          {
+            tempParams += ": IBSI non-compliant";
+          }
+        }
         m_finalOutputToWrite += m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
-          "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
+          "," + cbica::to_string_precision(f.second) + "," + tempParams + "\n";
       }
 
       // for training file, populate these 2 member variables
