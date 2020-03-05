@@ -101,7 +101,7 @@ enum Params
   LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, 
   LatticeFullImage, GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, 
   QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, 
-  ResamplingInterpolator_Mask, LBPStyle, MorphologicFeret, ParamMax
+  ResamplingInterpolator_Mask, SliceComputation, LBPStyle, MorphologicFeret, ParamMax
 };
 static const char ParamsString[ParamMax + 1][30] =
 {
@@ -109,7 +109,7 @@ static const char ParamsString[ParamMax + 1][30] =
   "Window", "Step", "Boundary", "PatchBoundary", "Weight", 
   "FullImage", "FMax", "Gamma", "Level", "ETA", "Epsilon", 
   "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", 
-  "ResamplingInterpolator_Mask", "LBPStyle", "Feret", "ParamMax"
+  "ResamplingInterpolator_Mask", "SliceComputation", "LBPStyle", "Feret", "ParamMax"
 };
 
 enum FeatureFamily
@@ -779,6 +779,7 @@ private:
   std::string m_resamplingInterpolator_Image = "Linear", //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
     m_resamplingInterpolator_Mask = "Nearest";
 
+  bool m_SliceComputation = false; //! Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only
   float m_gaborFMax = 0.25; //! TBD: what is the description of this?
   float m_gaborGamma = sqrtf(2); //! TBD: what is the description of this?
   int m_gaborLevel = 4; //! TBD: what is the description of this?
