@@ -19,9 +19,13 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 /**
 \page tr_FeatureExtraction Feature Extraction
 
-\section tr_fe_defaults Defaults
+\section tr_fe_defaults Pre-Existing Parameter Configurations
 
-The Feature Extraction module ships with a default set of parameters for 3D and 2D images (there are different extraction paradigms and compatible for both). See the subsequent sections for details.
+The Feature Extraction module ships with a set of pre-configured parameter files for 3D and 2D images (there are different extraction paradigms). The idea behind providing these configurations for users to have a template to start with and then customize the feature extraction based on their dataset(s). 
+
+During invocation from the CLI, the appropriate file should be passed after the ```-p``` parameter.
+
+See the subsequent sections for details.
 
 \subsection tr_fe_def_main Default 3D Image Feature Extraction Parameters
 
