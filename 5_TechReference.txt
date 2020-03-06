@@ -23,7 +23,7 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 
 The Feature Extraction module ships with a set of pre-configured parameter files for 3D and 2D images (there are different extraction paradigms). The idea behind providing these configurations for users to have a template to start with and then customize the feature extraction based on their dataset(s). 
 
-During invocation from the CLI, the appropriate file should be passed after the ```-p``` parameter.
+During invocation from the CLI, the appropriate file should be passed after the <b>-p</b> parameter.
 
 See the subsequent sections for details.
 
