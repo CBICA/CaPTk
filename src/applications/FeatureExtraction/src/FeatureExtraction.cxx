@@ -508,10 +508,16 @@ int main(int argc, char** argv)
           }
         }
 
+        auto maskImageInfo = cbica::ImageInfo(maskfilename);
+        if (maskImageInfo.GetImageDimensions() == 3)
         {
-          auto temp = cbica::GetExtractedImages< ImageType, ActualImageType >(cbica::ReadImage< ImageType >(maskfilename));
-          maskImage = temp[0];
-          maskImage->DisconnectPipeline();
+          if (maskImageInfo.GetImageSize()[2] == 1)
+          {
+            // this is actually a 2D image so re-process accordingly
+            auto temp = cbica::GetExtractedImages< ImageType, ActualImageType >(cbica::ReadImage< ImageType >(maskfilename));
+            maskImage = temp[0];
+            maskImage->DisconnectPipeline();
+          }
         }
 
         // sanity checks
