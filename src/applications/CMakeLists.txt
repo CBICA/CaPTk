@@ -384,6 +384,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       ENDIF()
       
       INSTALL(CODE "execute_process(COMMAND dos2unix ${SUBDIRPATH}/bin/libra)")
+      INSTALL(CODE "execute_process(COMMAND chmod 755 matlab_helper ${SUBDIRPATH}/MCR/v84/bin/glnxa64/matlab_helper)")
       INSTALL(FILES ${SUBDIRPATH}/bin/libra
         DESTINATION bin
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
@@ -395,7 +396,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
         DESTINATION libexec
         # PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
-        #USE_SOURCE_PERMISSIONS
+        USE_SOURCE_PERMISSIONS
       )
     ENDIF()
 

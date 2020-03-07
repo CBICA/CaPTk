@@ -88,6 +88,7 @@ namespace cbica
       m_spacings.push_back(m_itkImageIOBase->GetSpacing(i));
       m_origins.push_back(m_itkImageIOBase->GetOrigin(i));
       m_size.push_back(m_itkImageIOBase->GetDimensions(i));
+      m_directions.push_back(m_itkImageIOBase->GetDirection(i));
     }
   }
 
@@ -134,6 +135,11 @@ namespace cbica
   itk::ImageIOBase::IOPixelType ImageInfo::GetPixelType()
   {
     return m_pixelType;
+  }
+
+  std::vector< std::vector< double > > ImageInfo::GetImageDirections()
+  {
+    return m_directions;
   }
 
 }

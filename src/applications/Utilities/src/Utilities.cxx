@@ -14,6 +14,7 @@
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
 #include "itkLabelOverlapMeasuresImageFilter.h"
+#include "itkHausdorffDistanceImageFilter.h"
 
 #include "cbicaDCMQIWrapper.h"
 
@@ -46,7 +47,8 @@ enum AvailableAlgorithms
   World2Image,
   ImageStack2Join,
   JoinedImage2Stack,
-  LabelSimilarity
+  LabelSimilarity,
+  Hausdorff
 };
 
 int requestedAlgorithm = 0;
@@ -691,6 +693,23 @@ int algorithmsRunner()
     }
       return EXIT_SUCCESS;
   }
+  else if (requestedAlgorithm == Hausdorff)
+  {
+    auto filter = itk::HausdorffDistanceImageFilter< TImageType, TImageType >::New();
+    filter->SetInput1(cbica::ReadImage< TImageType >(inputImageFile));
+    filter->SetInput2(cbica::ReadImage< TImageType >(referenceMaskForSimilarity));
+    try
+    {
+      filter->Update();
+    }
+    catch (const std::exception&e)
+    {
+      std::cerr << "Hausdorff calculation error: " << e.what() << "\n";
+      return EXIT_FAILURE;
+    }   
+
+    std::cout << "Hausdorff Distance: " << filter->GetHausdorffDistance() << "\n";
+  }
 
   // if no other algorithm has been selected and mask & output files are present and in same space as input, apply it
   else if (cbica::isFile(inputMaskFile) && !outputImageFile.empty())
@@ -824,6 +843,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
   parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
+  parser.addOptionalParameter("hd", "hausdorffDist", cbica::Parameter::FILE, "NIfTI Reference", "Calculate the Hausdorff Distance for the input image and", "the one passed after '-hd'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -1192,6 +1212,11 @@ int main(int argc, char** argv)
     requestedAlgorithm = LabelSimilarity;
     parser.getParameterValue("ls", referenceMaskForSimilarity);
   }
+  else if (parser.isPresent("hd"))
+  {
+    requestedAlgorithm = Hausdorff;
+    parser.getParameterValue("hd", referenceMaskForSimilarity);
+  }
 
   // this doesn't need any template initialization
   if (requestedAlgorithm == SanityCheck)
@@ -1216,17 +1241,21 @@ int main(int argc, char** argv)
     auto size = inputImageInfo.GetImageSize();
     auto origin = inputImageInfo.GetImageOrigins();
     auto spacing = inputImageInfo.GetImageSpacings();
+    auto directions = inputImageInfo.GetImageDirections();
     auto size_string = std::to_string(size[0]);
     auto origin_string = std::to_string(origin[0]);
     auto spacing_string = std::to_string(spacing[0]);
+    auto directions_string = "[" + std::to_string(directions[0][0]) + "x" + std::to_string(directions[0][1]) + "x" + std::to_string(directions[0][2]);
     size_t totalSize = size[0];
     for (size_t i = 1; i < dims; i++)
     {
       size_string += "x" + std::to_string(size[i]);
       origin_string += "x" + std::to_string(origin[i]);
       spacing_string += "x" + std::to_string(spacing[i]);
+      directions_string += ";" + std::to_string(directions[i][0]) + "x" + std::to_string(directions[i][1]) + "x" + std::to_string(directions[i][2]);
       totalSize *= size[i];
     }
+    directions_string += "]";
     std::cout << "Property,Value\n";
     std::cout << "Dimensions," << dims << "\n";
     std::cout << "Size," << size_string << "\n";
@@ -1235,6 +1264,7 @@ int main(int argc, char** argv)
     std::cout << "Spacing," << spacing_string << "\n";
     std::cout << "Component," << inputImageInfo.GetComponentTypeAsString() << "\n";
     std::cout << "Pixel Type," << inputImageInfo.GetPixelTypeAsString() << "\n";
+    std::cout << "Directions," << directions_string << "\n";
 
     if (cbica::IsDicom(inputImageFile)) // if dicom file
     {
