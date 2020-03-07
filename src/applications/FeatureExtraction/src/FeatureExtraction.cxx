@@ -519,6 +519,11 @@ int main(int argc, char** argv)
             maskImage->DisconnectPipeline();
           }
         }
+        else
+        {
+          maskImage = cbica::ReadImage< ActualImageType >(maskfilename);
+          maskImage->DisconnectPipeline();
+        }
 
         // sanity checks
         if (!cbica::ImageSanityCheck< ActualImageType >(inputImages[0], maskImage))
