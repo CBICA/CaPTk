@@ -475,7 +475,52 @@ int main(int argc, char** argv)
     case 2:
     {
       using ImageType = itk::Image < float, 2 >;
-      algorithmRunner< ImageType >();
+      ImageType::Pointer maskImage;
+      auto maskImageInfo = cbica::ImageInfo(maskfilename);
+      if (maskImageInfo.GetImageDimensions() == 3)
+      {
+        if (maskImageInfo.GetImageSize()[2] == 1)
+        {
+          // this is actually a 2D image so re-process accordingly
+          using PresumedImageType = itk::Image< float, 3 >;
+          auto temp = cbica::GetExtractedImages< PresumedImageType, ImageType >(cbica::ReadImage< PresumedImageType >(maskfilename));
+          maskImage = temp[0];
+          maskImage->DisconnectPipeline();
+        }
+      }
+      else
+      {
+        maskImage = cbica::ReadImage< ImageType >(maskfilename);
+        maskImage->DisconnectPipeline();
+      }
+
+      // get the input images into a vector
+      std::vector< ImageType::Pointer > inputImages;
+      inputImages.resize(image_paths.size());
+      for (size_t i = 0; i < image_paths.size(); i++)
+      {
+        inputImages[i] = cbica::ReadImage< ImageType >(image_paths[i]);
+        inputImages[i]->DisconnectPipeline(); // ensure the new image exists as a separate memory block
+        // sanity check
+        if (i > 0)
+        {
+          if (!cbica::ImageSanityCheck< ImageType >(inputImages[i], inputImages[i - 1]))
+          {
+            std::cerr << "The images corresponding to the following paths do not have consistent physical dimensions:\t" << image_paths[i - 1] <<
+              "\n\t" << image_paths[i] << "\n";
+            exit(EXIT_FAILURE);
+          }
+        }
+      }
+
+      // sanity checks
+      if (!cbica::ImageSanityCheck< ImageType >(inputImages[0], maskImage))
+      {
+        std::cerr << "The input image(s) and mask do not have consistent physical dimensions. Please resample and re-try.\n";
+        exit(EXIT_FAILURE);
+      }
+
+      algorithmRunner< ImageType >(inputImages, maskImage);
       break;
     }
     case 3:
