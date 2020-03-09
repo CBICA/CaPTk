@@ -178,10 +178,11 @@ jobs:
     - bash: |
         str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
         ver=${str#*=}
+        echo "Version: $ver"
         cd bin
-        mv *_Installer.* CaPTk_$ver_Installer.exe
+        mv *_Installer.exe CaPTk_$ver_Installer.exe
         
-        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        mv CaPTk_$ver_Installer.exe $(Build.ArtifactStagingDirectory)
 
       displayName: 'Ensuring that the correct version ID is picked up'
 
