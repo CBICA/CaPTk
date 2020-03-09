@@ -159,13 +159,6 @@ jobs:
         rm -rf testing
       displayName: 'Performing the Tests'
 
-    - bash: |
-        str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
-        ver=${str#*=}
-        cd bin
-        mv *_Installer.* CaPTk_$ver_Installer.exe
-      displayName: 'Ensuring that the correct version ID is picked up'
-
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
@@ -180,7 +173,7 @@ jobs:
 
         cd ../
 
-      displayName: 'Build & Package CaPTk'
+      displayName: 'Package CaPTk'
 
     - bash: |
         str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
