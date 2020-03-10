@@ -177,10 +177,10 @@ jobs:
     - bash: |
         str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
         ver=${str#*=}
-        ver=${v::-1}
-        echo "Version: $ver"
+        ver2=${ver::-1}
+        echo "Version: $ver2"
         cd bin
-        mv *_Installer.exe ./CaPTk_$ver_Installer.exe
+        mv *_Installer.exe CaPTk_$ver\_Installer.exe
 
         ls -lt *.exe
 
