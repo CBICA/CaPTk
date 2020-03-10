@@ -181,6 +181,8 @@ jobs:
         echo "Version: $ver"
         cd bin
         mv *_Installer.exe CaPTk_$ver_Installer.exe
+
+        ls -l
         
         mv CaPTk_$ver_Installer.exe $(Build.ArtifactStagingDirectory)
 
