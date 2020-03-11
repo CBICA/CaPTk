@@ -825,15 +825,16 @@ jobs:
 
     #   displayName: 'Configure and compile Superbuild'
 
-    # - powershell: |
-    #     New-Item -ItemType Directory -Force -Path ./bin
-    #     cp -r E:/LibsCaPTk ./bin
-    #     cd bin
-    #     mv LibsCaPTk/* .
-    #     # cd bin
-    #     # cp -r ./ ../../../../superbuild
+    - powershell: |
+        Remove-Item -Recurse -Force -ErrorAction Ignore bin
+        mkdir bin
+        # cp -r E:/LibsCaPTk ./bin
+        # cd bin
+        # mv LibsCaPTk/* .
+        # cd bin
+        # cp -r ./ ../../../../superbuild
         
-    #   displayName: 'Move superbuild and qt and compiled apps'
+      displayName: 'Move superbuild and qt and compiled apps'
 
     - powershell: |
         git pull origin master
