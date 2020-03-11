@@ -199,6 +199,9 @@ fMainWindow::fMainWindow()
   actionAbout = new QAction(this);
   actionPreferences = new QAction(this);
 
+  // precompiled Apps download
+  // appsDownload = new QAction(this);
+
   //---------------setting menu and status bar for the main window---------------
   this->setStatusBar(statusbar);
 
@@ -212,6 +215,7 @@ fMainWindow::fMainWindow()
   menuFile->addMenu(menuLoadFile);
   menuFile->addMenu(menuSaveFile);
   menuApp = new QMenu("Applications");
+  menuAppDownload = new QMenu("Applications (Test Dwnld)");
   menuDeepLearning = new QMenu("Deep Learning");
   menuPreprocessing = new QMenu("Preprocessing");
   menuHelp = new QMenu("Help");
@@ -299,11 +303,14 @@ fMainWindow::fMainWindow()
   supportMenu->addAction(help_bugs);
   supportMenu->addAction(helpMenu_download);
 
+  // menuAppDownload->addAction(appDownload);
+
   menubar->addMenu(menuFile);
   menubar->addMenu(menuPreprocessing);
 #ifndef PACKAGE_VIEWER
   menubar->addMenu(menuApp);
 #endif
+  menubar->addMenu(menuAppDownload);
   menubar->addMenu(menuDeepLearning);
   menubar->addMenu(menuHelp);
   this->setMenuBar(menubar);
@@ -313,6 +320,7 @@ fMainWindow::fMainWindow()
 #ifndef PACKAGE_VIEWER
   menubar->addAction(menuApp->menuAction());
 #endif
+  menubar->addAction(menuAppDownload->menuAction());
   menubar->addAction(menuDeepLearning->menuAction());
   menubar->addAction(menuHelp->menuAction());
 
@@ -386,8 +394,9 @@ fMainWindow::fMainWindow()
 
   auto lungAppList = " LungField Nodule Analysis";
   //std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
-  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule";
+  
   std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
 #ifndef __APPLE__
   preProcessingAlgos += " breastNormalize";
@@ -396,15 +405,24 @@ fMainWindow::fMainWindow()
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
   menuApp->addSeparator();
+  vectorOfGBMAppsDownload = populateStringListInMenu(brainAppList, this, menuAppDownload, "Glioblastoma", false);
+  menuAppDownload->addSeparator();
   if (!breastAppList.empty())
   {
     vectorOfBreastApps = populateStringListInMenu(breastAppList, this, menuApp, "Breast Cancer", false);
     menuApp->addSeparator();
+    vectorOfBreastAppsDownload = populateStringListInMenu(breastAppList, this, menuAppDownload, "Breast Cancer", false);
+    menuAppDownload->addSeparator();
   }
   vectorOfLungApps = populateStringListInMenu(lungAppList, this, menuApp, "Lung Cancer", false);
   menuApp->addSeparator();
+  vectorOfLungAppsDownload = populateStringListInMenu(lungAppList, this, menuAppDownload, "Lung Cancer", false);
+  menuAppDownload->addSeparator();
   vectorOfSegmentationApps = populateStringListInMenu(segAppList, this, menuApp, "Segmentation", false);
+  vectorOfSegmentationAppsDownload = populateStringListInMenu(segAppList, this, menuAppDownload, "Segmentation", false);
   vectorOfMiscApps = populateStringListInMenu(miscAppList, this, menuApp, "Miscellaneous", false);
+  vectorOfMiscAppsDownload = populateStringListInMenu(miscAppList, this, menuAppDownload, "Miscellaneous", false);
+  
   vectorOfPreprocessingActionsAndNames = populateStringListInMenu(preProcessingAlgos, this, menuPreprocessing, "", false);
   vectorOfDeepLearningActionsAndNames = populateStringListInMenu(deepLearningAlgos, this, menuDeepLearning, "", false);
   auto temp = populateStringListInMenu(" ", this, menuDeepLearning, "Breast", false);
@@ -582,6 +600,8 @@ fMainWindow::fMainWindow()
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
+  connect(menuAppDownload, SIGNAL(triggered(QAction*)), this, SLOT(appDownload(QAction*)));
+
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
@@ -1150,6 +1170,29 @@ void fMainWindow::help_Download(QAction* action)
   else
   {
     ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
+    return;
+  }
+}
+
+void fMainWindow::appDownload(QAction* action)
+{
+  auto currentApp = action->text().toStdString();
+
+  
+
+  auto currentLink = m_downloadLinks["inputs"][currentApp]["Install"].as<std::string>();
+  if (!currentLink.empty() && (currentLink != "N.A."))
+  {
+    cbica::Logging(loggerFile, currentLink);
+    if (!openLink(currentLink))
+    {
+      ShowErrorMessage("CaPTk couldn't open the browser to download specified application.", this);
+      return;
+    }
+  }
+  else
+  {
+    ShowErrorMessage("CaPTk couldn't open the link to download specified application; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
 }
