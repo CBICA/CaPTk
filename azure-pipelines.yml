@@ -180,11 +180,12 @@ jobs:
         ver2=${ver::-1}
         echo "Version: $ver2"
         cd bin
-        mv *_Installer.exe CaPTk_$ver\_Installer.exe
+        ls -lt *.exe
+        mv *_Installer.exe CaPTk_$ver2\_Installer.exe
 
         ls -lt *.exe
 
-        mv CaPTk_$ver_Installer.exe $(Build.ArtifactStagingDirectory)
+        mv CaPTk_$ver2_Installer.exe $(Build.ArtifactStagingDirectory)
 
       displayName: 'Ensuring that the correct version ID is picked up'
 
