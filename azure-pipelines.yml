@@ -392,11 +392,11 @@ jobs:
 #         make -j2
 #       displayName: 'Configure and compile CaPTk with Testing enabled'
 
-    - script: |
-       cd bin
-       make test
-       rm -rf testing
-      displayName: 'Performing the Tests'
+    # - script: |
+    #    cd bin
+    #    make test
+    #    rm -rf testing
+    #   displayName: 'Performing the Tests'
 
     # Configure and build CaPTk
     - bash: |
