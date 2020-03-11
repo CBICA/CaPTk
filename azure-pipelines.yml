@@ -826,7 +826,7 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
     - powershell: |
-        mkdir -p bin
+        mkdir bin
         cp -r E:/LibsCaPTk ./bin
         # cd bin
         # cp -r ./ ../../../../superbuild
