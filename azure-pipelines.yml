@@ -35,7 +35,7 @@ jobs:
     #   displayName: 'Caching'
 
     - script: |
-        choco install doxygen.install nsis.install wget
+        choco install doxygen.install nsis.install wget cmake
       displayName: 'Install dependencies'
 
     # # Pull LFS
