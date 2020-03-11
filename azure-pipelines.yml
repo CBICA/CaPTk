@@ -860,10 +860,6 @@ jobs:
         setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/bin/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;%CMAKE_PREFIX_PATH%"
         cmake --build . --target PACKAGE --config Release
 
-        # ls -lt *_Installer.*
-
-        # cd ../
-
       displayName: 'Build & Package CaPTk'
 
     - powershell: |
