@@ -149,16 +149,16 @@ jobs:
         }
       displayName: 'Disk space check'
 
-    - script: |
-        cd bin
-        export GIT_LFS_SKIP_SMUDGE=1
-        git lfs pull --include "data/TestData.zip"
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        cmake --build . --target RUN_TESTS --config Release
-        rm -rf testing
-      displayName: 'Performing the Tests'
+    # - script: |
+    #     cd bin
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #     git lfs pull --include "data/TestData.zip"
+    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
+    #     setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+    #     cmake --build . --target RUN_TESTS --config Release
+    #     rm -rf testing
+    #   displayName: 'Performing the Tests'
 
     - script: |
         cd bin
@@ -384,13 +384,13 @@ jobs:
 #         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
 #       displayName: 'Testing git pull and version'
 
-#     # Configure and build CaPTk
-#     - bash: |
-#         cd bin
-#         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
-#         make -j2
-#       displayName: 'Configure and compile CaPTk with Testing enabled'
+# #     # Configure and build CaPTk
+# #     - bash: |
+# #         cd bin
+# #         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+# #         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
+# #         make -j2
+# #       displayName: 'Configure and compile CaPTk with Testing enabled'
 
 #     - script: |
 #        cd bin
