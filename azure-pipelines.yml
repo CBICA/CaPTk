@@ -867,8 +867,8 @@ jobs:
       displayName: 'Build & Package CaPTk'
 
     - powershell: |
-      mv *_Installer.* $(Build.ArtifactStagingDirectory)
-    displayName: 'Move installer to staging directory'
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+      displayName: 'Move installer to staging directory'
 
     - task: PublishBuildArtifacts@1
       inputs:
