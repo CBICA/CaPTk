@@ -825,15 +825,15 @@ jobs:
 
     #   displayName: 'Configure and compile Superbuild'
 
-    - powershell: |
-        New-Item -ItemType Directory -Force -Path ./bin
-        cp -r E:/LibsCaPTk ./bin
-        cd bin
-        mv LibsCaPTk/* .
-        # cd bin
-        # cp -r ./ ../../../../superbuild
+    # - powershell: |
+    #     New-Item -ItemType Directory -Force -Path ./bin
+    #     cp -r E:/LibsCaPTk ./bin
+    #     cd bin
+    #     mv LibsCaPTk/* .
+    #     # cd bin
+    #     # cp -r ./ ../../../../superbuild
         
-      displayName: 'Move superbuild and qt and compiled apps'
+    #   displayName: 'Move superbuild and qt and compiled apps'
 
     - powershell: |
         git pull origin master
@@ -843,20 +843,20 @@ jobs:
 
     - script: |
         cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DBUILD_TESTING=OFF ..
+        setx PATH "%PATH%;E:/LibsCaPTk/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;E:/LibsCaPTk/bin/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5"
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile CaPTk'
 
     - script: |
         cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        setx PATH "%PATH%;E:/LibsCaPTk/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5"
         cmake --build . --target PACKAGE --config Release
 
         ls -lt *_Installer.*
