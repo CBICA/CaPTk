@@ -801,7 +801,7 @@ jobs:
     - checkout: self  
 
     # submodule 
-    - bash: |
+    - powershell: |
         git submodule update --init --recursive
 
       displayName: 'Git Submodule Init and Update'
@@ -833,10 +833,10 @@ jobs:
         
       displayName: 'Move superbuild and qt and compiled apps'
 
-    - bash: |
+    - powershell: |
         git pull origin master
         git log -1
-        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+        # cat CMakeLists.txt | grep -i "PROJECT_VERSION"
       displayName: 'Testing git pull and version'
 
     - script: |
