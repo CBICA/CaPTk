@@ -826,9 +826,9 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
     - powershell: |
-        Remove-Item -Recurse -Force bin
-        mkdir bin
+        New-Item -ItemType Directory -Force -Path ./bin
         cp -r E:/LibsCaPTk ./bin
+        cd bin
         mv LibsCaPTk/* .
         # cd bin
         # cp -r ./ ../../../../superbuild
