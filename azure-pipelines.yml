@@ -828,6 +828,7 @@ jobs:
     - powershell: |
         mkdir bin
         cp -r E:/LibsCaPTk ./bin
+        mv LibsCaPTk/* .
         # cd bin
         # cp -r ./ ../../../../superbuild
         
