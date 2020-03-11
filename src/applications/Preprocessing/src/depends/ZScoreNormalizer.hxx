@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "ZScoreNormalizer.h"
 
 template< class TImageType >
@@ -257,35 +259,24 @@ template< class TImageType >
 std::map< std::string, double > ZScoreNormalizer< TImageType >::GetStatisticsForImage(const typename TImageType::Pointer m_inputImage, bool considerMask)
 {
   std::map< std::string, double > results;
-  std::vector< typename TImageType::PixelType > nonZeroPixels;
   // mean, stdDev, max
 
-  TConstIteratorType  imageIterator(m_inputImage, m_inputImage->GetLargestPossibleRegion());
-  imageIterator.GoToBegin();
-  while (!imageIterator.IsAtEnd())
+  auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+  statsCalculator->SetInput(m_inputImage);
+  try
   {
-    auto currentPixel = imageIterator.Get();
-    if (considerMask)
-    {
-      if (currentPixel > 0)
-      {
-        nonZeroPixels.push_back(currentPixel);
-      }
-    }
-    else
-    {
-      nonZeroPixels.push_back(currentPixel);
-    }
-
-    ++imageIterator;
+    statsCalculator->Update();
   }
-  cbica::Statistics< typename TImageType::PixelType > calculator;
-  calculator.SetInput(nonZeroPixels);
+  catch (const std::exception&e)
+  {
+    std::cerr << "Error caught during stats calculation: " << e.what() << "\n";
+    return results;
+  }
 
-  results["Max"] = calculator.GetMaximum();
-  results["Min"] = calculator.GetMinimum();
-  results["Std"] = calculator.GetStandardDeviation();
-  results["Mean"] = calculator.GetMean();
+  results["Max"] = statsCalculator->GetMaximum();
+  results["Min"] = statsCalculator->GetMinimum();
+  results["Std"] = sqrtf(statsCalculator->GetVariance());
+  results["Mean"] = statsCalculator->GetMean();
 
   return results;
 }

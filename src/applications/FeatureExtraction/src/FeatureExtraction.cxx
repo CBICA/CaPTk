@@ -645,16 +645,18 @@ int main(int argc, char** argv)
         }
       }
 
+      // sanity check
+      if (image_paths.size() != modality_names.size())
+      {
+        std::cerr << "Number of images and modalites do not match.\n";
+        exit(EXIT_FAILURE);
+      }
+
       if (debug)
       {
         std::cout << "[DEBUG] Patient ID: " << patient_id << "\n";
         std::cout << "[DEBUG] Images: " << image_paths[0];
         std::string temp = modality_names[0];
-        if (image_paths.size() != modality_names.size())
-        {
-          std::cerr << "Number of images and modalites do not match.\n";
-          exit(EXIT_FAILURE);
-        }
         for (size_t imageNum = 1; imageNum < image_paths.size(); imageNum++)
         {
           std::cout << "," + image_paths[imageNum];
