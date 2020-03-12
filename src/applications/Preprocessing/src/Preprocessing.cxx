@@ -379,7 +379,7 @@ int algorithmsRunner()
       }
 
       std::string commandToCall;
-      if (!cbica::fileExists(registrationAffineTransformInput))
+      if (!cbica::fileExists(intermediateFiles["Affine"]))
       {
         // we always do affine
         commandToCall = greedyPathAndDim + " -a" +
@@ -435,7 +435,7 @@ int algorithmsRunner()
       }
       default: // we shall always assume deformable
       {
-        if (!cbica::fileExists(registrationDeformableTransformInput))
+        if (!cbica::fileExists(intermediateFiles["Deform"]))
         {
           if (debugMode)
           {
