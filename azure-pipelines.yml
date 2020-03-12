@@ -189,7 +189,7 @@ jobs:
 
         ls -lt *.exe
 
-        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        mv -v *_Installer.* $(Build.ArtifactStagingDirectory)
 
       displayName: 'Ensuring that the correct version ID is picked up'
 
