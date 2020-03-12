@@ -177,7 +177,9 @@ jobs:
     - bash: |
         # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
         # ver=${str#*=}
-        # cd bin
+        
+        cd bin
+        
         # ls -lt *.exe
         # echo "Version: $ver"
         # if [[ $ver == *"nonRelease"* ]]; then
