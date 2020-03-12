@@ -63,6 +63,7 @@ $(document).ready(function(){initNavTree('ht_utilities.html',''); initResizable(
 <div class="contents">
 <div class="textblock"><p>This is a command line executable containing the following functionalities:</p><ul>
 <li>Resizing</li>
+<li>Resampling</li>
 <li>Image information</li>
 <li>Unique values in image</li>
 <li>Get smallest bounding box in mask (optional isotropic bounding box)</li>
@@ -70,7 +71,8 @@ $(document).ready(function(){initNavTree('ht_utilities.html',''); initResizable(
 <li>Create mask from threshold</li>
 <li>DICOM to NIfTI conversion</li>
 <li>NIfTI to DICOM &amp; DICOM-Seg conversion</li>
-<li>Orientation fix</li>
+<li>Re-orient image</li>
+<li>Cast image to another pixel type</li>
 <li>Thresholding:<ul>
 <li>Below</li>
 <li>Above</li>
@@ -81,6 +83,9 @@ $(document).ready(function(){initNavTree('ht_utilities.html',''); initResizable(
 </li>
 <li>Convert file formats</li>
 <li>Extract Image Series from Joined stack and vice-versa (4D &lt;-&gt; 3D)</li>
+<li>Transform coordinates from world to image and vice-versa</li>
+<li>Label similarity Metrics between 2 label images</li>
+<li>Hausdorff Distance between 2 label images</li>
 </ul>
 <p>For a full list of available applications and examples, please use the command: </p><pre class="fragment">${CaPTk_InstallDir}/bin/Utilities -h
 </pre> </div></div><!-- contents -->
