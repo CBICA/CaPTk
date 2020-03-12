@@ -174,26 +174,57 @@ jobs:
 
       displayName: 'Package CaPTk'
 
-    - bash: |
-        # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
-        # ver=${str#*=}
+    # - bash: |
+    #     # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
+    #     # ver=${str#*=}
         
-        cd bin
+    #     cd bin
         
-        # ls -lt *.exe
-        # echo "Version: $ver"
-        # if [[ $ver == *"nonRelease"* ]]; then
-        #   echo "Building non-release"
-        #   mv *_Installer.exe CaPTk_$ver\_Installer.exe
-        # fi
+    #     # ls -lt *.exe
+    #     # echo "Version: $ver"
+    #     # if [[ $ver == *"nonRelease"* ]]; then
+    #     #   echo "Building non-release"
+    #     #   mv *_Installer.exe CaPTk_$ver\_Installer.exe
+    #     # fi
 
-        ls -lt *.exe
+    #     ls -lt *.exe
 
-        mv -v *_Installer.* $(Build.ArtifactStagingDirectory)
+    #     mv -v *_Installer.* $(Build.ArtifactStagingDirectory)
 
-      displayName: 'Ensuring that the correct version ID is picked up'
+    #   displayName: 'Ensuring that the correct version ID is picked up'
+
+    # # - bash: |
+    # #     rm -rf src
+    # #     rm -rf docs*
+    # #     rm -rf data
+    # #     rm -rf binaries
+    # #     rm -rf scripts
+    # #     rm -rf bin_windows_20200212.tar.gz
+    # #     rm -rf install_manifest.txt
+    # #     rm -rf CMakeLists.txt
+
+    # #     cd bin
+    # #     rm -rf *proj*
+
+    # #     tar cvfz externalApps.tar.gz externalApps
+    # #     tar cvfz qt.tar.gz qt
+
+    # #     rm -rf qt
+    # #     rm -rf externalApps
+    # #     rm -rf _CPack*
+    # #     rm -rf CMakeCache.txt
+
+    # #     # cmake -UPROJECT_VERSION # delete the project version definition
+        
+    # #     cd ../
+
+    # #     mv bin bin_windows
+    # #     # tar cvfz bin_windows_20200212.tar.gz bin_windows
+    # #     rm -rf bin_windows
+    # #   displayName: 'Zipping bin'
 
     # - bash: |
+        
     #     rm -rf src
     #     rm -rf docs*
     #     rm -rf data
@@ -202,73 +233,42 @@ jobs:
     #     rm -rf bin_windows_20200212.tar.gz
     #     rm -rf install_manifest.txt
     #     rm -rf CMakeLists.txt
+    #     rm -rf bin
 
-    #     cd bin
-    #     rm -rf *proj*
+    #   displayName: 'Freeing Space'
 
-    #     tar cvfz externalApps.tar.gz externalApps
-    #     tar cvfz qt.tar.gz qt
+    # - powershell: |
+    #     get-psdrive | Where Free*
 
-    #     rm -rf qt
-    #     rm -rf externalApps
-    #     rm -rf _CPack*
-    #     rm -rf CMakeCache.txt
+    #     cd $(Build.ArtifactStagingDirectory)
+    #     pwd
 
-    #     # cmake -UPROJECT_VERSION # delete the project version definition
-        
-    #     cd ../
+    #   displayName: 'Disk space check'
 
-    #     mv bin bin_windows
-    #     # tar cvfz bin_windows_20200212.tar.gz bin_windows
-    #     rm -rf bin_windows
-    #   displayName: 'Zipping bin'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
 
-    - bash: |
-        
-        rm -rf src
-        rm -rf docs*
-        rm -rf data
-        rm -rf binaries
-        rm -rf scripts
-        rm -rf bin_windows_20200212.tar.gz
-        rm -rf install_manifest.txt
-        rm -rf CMakeLists.txt
-        rm -rf bin
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
+    #     continueOnError: true
+    #     downloadPath: '$(System.ArtifactsDirectory)'
 
-      displayName: 'Freeing Space'
-
-    - powershell: |
-        get-psdrive | Where Free*
-
-        cd $(Build.ArtifactStagingDirectory)
-        pwd
-
-      displayName: 'Disk space check'
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Windows'
-
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Windows'
-        continueOnError: true
-        downloadPath: '$(System.ArtifactsDirectory)'
-
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 
 # - job: 'XenialBuild'
