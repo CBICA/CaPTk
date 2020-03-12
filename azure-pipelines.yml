@@ -255,6 +255,7 @@ jobs:
         buildType: 'current'
         downloadType: 'single'
         artifactName: '$(Build.DefinitionName)_installer_Windows'
+        continueOnError: true
         downloadPath: '$(System.ArtifactsDirectory)'
 
     - task: CopyFilesOverSSH@0
