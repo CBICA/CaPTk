@@ -275,3 +275,69 @@ inline bool isSizeOfLoadedFilesTooBig(QStringList files, std::string loggerFile 
     return false;
   }
 }
+
+inline void WriteCSVFiles(VariableSizeMatrixType inputdata, std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  for (unsigned int index1 = 0; index1 < inputdata.Rows(); index1++)
+  {
+    for (unsigned int index2 = 0; index2 < inputdata.Cols(); index2++)
+    {
+      if (index2 == 0)
+        myfile << std::to_string(inputdata[index1][index2]);
+      else
+        myfile << "," << std::to_string(inputdata[index1][index2]);
+    }
+    myfile << "\n";
+  }
+  myfile.close();
+}
+inline void WriteCSVFiles(VectorVectorDouble inputdata, std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+  {
+    for (unsigned int index2 = 0; index2 < inputdata[0].size(); index2++)
+    {
+      if (index2 == 0)
+        myfile << std::to_string(inputdata[index1][index2]);
+      else
+        myfile << "," << std::to_string(inputdata[index1][index2]);
+    }
+    myfile << "\n";
+  }
+  myfile.close();
+}
+
+inline void WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  for (unsigned int index1 = 0; index1 < inputdata.Size(); index1++)
+    myfile << std::to_string(inputdata[index1]) << ",";
+
+  myfile << "\n";
+  myfile.close();
+}
+inline void WriteCSVFiles(std::vector<int> inputdata, std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+    myfile << std::to_string(inputdata[index1]) << ",";
+
+  myfile << "\n";
+  myfile.close();
+}
+inline void WriteCSVFiles(std::vector<double> inputdata, std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+    myfile << std::to_string(inputdata[index1]) << ",";
+
+  myfile << "\n";
+  myfile.close();
+}
