@@ -241,17 +241,17 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_Windows'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 
 - job: 'XenialBuild'
@@ -502,17 +502,17 @@ jobs:
         downloadPath: '$(System.ArtifactsDirectory)'
         continueOnError: true
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC 
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC 
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
      
 
 - job: 'MacOSBuild'
@@ -778,17 +778,17 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 - job: 'WINDOWS_SelfHost'
   displayName: "Self-hosted agent on Windows"
@@ -1119,17 +1119,17 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_macOS_selfhost'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 # - job: 'DockerBuild'
 #   displayName: "End-to-end Docker_CentOS image build and push"
