@@ -827,12 +827,8 @@ jobs:
 
     - powershell: |
         Remove-Item -Recurse -Force -ErrorAction Ignore bin
+
         mkdir bin
-        # cp -r E:/LibsCaPTk ./bin
-        # cd bin
-        # mv LibsCaPTk/* .
-        # cd bin
-        # cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 

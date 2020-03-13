@@ -72,6 +72,9 @@
 
 #include <QFile>
 
+#include <thread>         // std::this_thread::sleep_for
+#include <chrono>         // std::chrono::seconds
+
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
@@ -601,12 +604,8 @@ fMainWindow::fMainWindow()
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
-<<<<<<< HEAD
-=======
-  connect(menuAppDownload, SIGNAL(triggered(QAction*)), this, SLOT(appDownload(QAction*)));
 
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
->>>>>>> 340c1299cc7476570687a0d04c0a352b87f87fe3
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
@@ -1188,13 +1187,13 @@ void fMainWindow::appDownload(std::string currentApp)
   appDownloadDialog.SetDownloadLink(downloadLink);
   appDownloadDialog.exec();
 
-  QTimer timer;
-  timer.setSingleShot(true);
-  QEventLoop loop;
-  connect( &appDownloadDialog, SIGNAL(doneDownload()), &loop, &QEventLoop::quit );
-  connect( &timer, &QTimer::timeout, &loop, &QEventLoop::quit );
-  timer.start(10000);
-  loop.exec();
+  // QTimer timer;
+  // timer.setSingleShot(true);
+  // QEventLoop loop;
+  // connect( &appDownloadDialog, SIGNAL(doneDownload()), &loop, &QEventLoop::quit );
+  // connect( &timer, &QTimer::timeout, &loop, &QEventLoop::quit );
+  // timer.start(10000);
+  // loop.exec();
 
   // if(timer.isActive())
   //     // qDebug("encrypted");
@@ -5815,6 +5814,7 @@ void fMainWindow::ApplicationLIBRABatch()
     appDownload("libra");
 
     // thread sleep / lock and check file
+    // std::this_thread::sleep_for (std::chrono::seconds(5));
 
     scriptToCall = getApplicationDownloadPath("libra");
   }
@@ -5829,10 +5829,10 @@ void fMainWindow::ApplicationLIBRABatch()
 
     return;
   }
-  else
-  {
-    ShowErrorMessage("Cannot find :" + scriptToCall, this);
-  }
+  // else
+  // {
+  //   ShowErrorMessage("Cannot find :" + scriptToCall, this);
+  // }
 
 }
 
@@ -6012,10 +6012,10 @@ void fMainWindow::ApplicationLIBRASingle()
 
     readMaskFile(m_tempFolderLocation + "/" + casename + "/Result_Images/totalmask/totalmask.dcm");
   }
-  else
-  {
-    ShowErrorMessage("Cannot find :" + scriptToCall, this);
-  }
+  // else
+  // {
+  //   ShowErrorMessage("Cannot find :" + scriptToCall, this);
+  // }
 }
 
 void fMainWindow::ApplicationConfetti()

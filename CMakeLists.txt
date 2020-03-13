@@ -264,6 +264,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   # find and include all third party libraries
   SUBDIRLIST(SUBDIRECTORIES ${THIRDPARTY_LIB_PATH})
 
+  FIND_PACKAGE(LIBZIP)
+  INCLUDE_DIRECTORIES(${LIBZIP_INCLUDE_DIRS})
+
   FIND_PACKAGE( ITK REQUIRED )
   #FIND_PACKAGE( ITK REQUIRED )
   INCLUDE("${ITK_USE_FILE}")
@@ -314,9 +317,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore WebEngineWidgets Concurrent Test Sql Network REQUIRED)
 
-  FIND_PACKAGE(LibZip )
-  INCLUDE_DIRECTORIES(${LIBZIP_INCLUDE_DIRS})
-
   # For some reason IF(LINUX) doesn't work properly on linux
   # This is necessary for the whole project to compile on linux
   IF(WIN32)
@@ -350,10 +350,12 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     Qt5::Concurrent
     Qt5::Test
     Qt5::Sql
+    Qt5::Network
     ${ITK_LIBRARIES}
     ${VTK_LIBRARIES}
     ${OpenCV_LIBRARIES}
     ${OpenMP_LIBRARIES}
+    ${LIBZIP_LIBRARIES}
   )
 
   IF(UNIX AND NOT APPLE)
