@@ -263,7 +263,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ### third party library processing
   # find and include all third party libraries
   SUBDIRLIST(SUBDIRECTORIES ${THIRDPARTY_LIB_PATH})
-  
+
   FIND_PACKAGE( ITK REQUIRED )
   #FIND_PACKAGE( ITK REQUIRED )
   INCLUDE("${ITK_USE_FILE}")
@@ -312,7 +312,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF(VTK_VERSION VERSION_LESS 5.6.0)
 
 
-  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore WebEngineWidgets Concurrent Test Sql REQUIRED)
+  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore WebEngineWidgets Concurrent Test Sql Network REQUIRED)
+
+  FIND_PACKAGE(LibZip )
+  INCLUDE_DIRECTORIES(${LIBZIP_INCLUDE_DIRS})
 
   # For some reason IF(LINUX) doesn't work properly on linux
   # This is necessary for the whole project to compile on linux
@@ -777,12 +780,16 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB DOWNLOAD_LINKS "${DATA_DIR}/links.yaml")
     SET_SOURCE_FILES_PROPERTIES(${DOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
 
+    FILE(GLOB DOWNLOAD_LINKS "${DATA_DIR}/appsDownloadConfigs.yaml")
+    SET_SOURCE_FILES_PROPERTIES(${DOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
+
     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FLAIR_FILE} ${FLAIR_TESTTUMOR_FILE} ${survival_FILES} ${egfrv3_FILES} ${sri24_FILES} ${DOWNLOAD_LINKS})
 
   ELSE ()
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/links.yaml" DESTINATION data)
+    INSTALL(FILES "${DATA_DIR}/appsDownloadConfigs.yaml" DESTINATION data)
     INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/molecular" DESTINATION data PATTERN ".svn" EXCLUDE)
