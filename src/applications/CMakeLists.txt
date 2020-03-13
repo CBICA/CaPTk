@@ -218,170 +218,170 @@ SET( CAPTK_APP_LIST_PY_GUI "" )
     #  message(FATAL_ERROR "Failed to unpack LIBRA from ${SUBDIRPATH}/libra.zip to ${SUBDIRPATH}/LIBRA with error ${RESULT_CODE}")
     #ENDIF()
 
-# SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/externalApps )
-# SET( SOURCE_APPLICATIONS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/individualApps )
-# SET( PLATFORM_STRING "" )
+SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/externalApps )
+SET( SOURCE_APPLICATIONS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/individualApps )
+SET( PLATFORM_STRING "" )
 
-# IF(WIN32)
-#   SET( PLATFORM_STRING "windows" )
-# ELSEIF(APPLE)
-#   SET( PLATFORM_STRING "macos" )
-# ELSE()
-#   SET( PLATFORM_STRING "linux" )
-# ENDIF()
+IF(WIN32)
+  SET( PLATFORM_STRING "windows" )
+ELSEIF(APPLE)
+  SET( PLATFORM_STRING "macos" )
+ELSE()
+  SET( PLATFORM_STRING "linux" )
+ENDIF()
 
 # SET( FILENAME_TO_EXTRACT "binaries_${PLATFORM_STRING}")
 # # SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps/${PLATFORM_STRING}.zip" )
-# SET( DOWNLOAD_LINK "https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
-# SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
+# # SET( DOWNLOAD_LINK "https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
+# # SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
 
-# SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
+SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
 
-# # putting this condition so that the extraction doesn't happen every single time
-# IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
+# putting this condition so that the extraction doesn't happen every single time
+IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
 
-#   IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
+#   # IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
   
-#     # copy from LFS folder
-#     IF( EXISTS ${LFS_FILE_TO_CHECK} )
-#       CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
-#     ENDIF()
+#   #   # copy from LFS folder
+#   #   IF( EXISTS ${LFS_FILE_TO_CHECK} )
+#   #     CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
+#   #   ENDIF()
 
-#     # do not re-download if the LFS fetch worked
-#     IF(NOT EXISTS ${FILE_TO_EXTRACT})
-#       # download exe from url
-#       MESSAGE( STATUS "Downloading pre-compiled external applications" )
-#       FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
-#       IF(NOT STATUS_CODE EQUAL 0)
-#         MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
-#       ENDIF()
-#     ENDIF()
-#   ENDIF()
+#   #   # do not re-download if the LFS fetch worked
+#   #   IF(NOT EXISTS ${FILE_TO_EXTRACT})
+#   #     # download exe from url
+#   #     MESSAGE( STATUS "Downloading pre-compiled external applications" )
+#   #     FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+#   #     IF(NOT STATUS_CODE EQUAL 0)
+#   #       MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
+#   #     ENDIF()
+#   #   ENDIF()
+#   # ENDIF()
 
-#   FILE(MAKE_DIRECTORY ${DOWNLOADED_APPS_DIR})
+  FILE(MAKE_DIRECTORY ${DOWNLOADED_APPS_DIR})
 
-#   MESSAGE( STATUS "Extracting pre-compiled external applications" )
-#   IF( EXISTS "${FILE_TO_EXTRACT}" )
+  MESSAGE( STATUS "Extracting pre-compiled external applications" )
+  IF( EXISTS "${FILE_TO_EXTRACT}" )
 
-#     EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${FILE_TO_EXTRACT}
-#       WORKING_DIRECTORY ${DOWNLOADED_APPS_DIR}
-#       RESULT_VARIABLE RESULT_CODE
-#     )
+    EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${FILE_TO_EXTRACT}
+      WORKING_DIRECTORY ${DOWNLOADED_APPS_DIR}
+      RESULT_VARIABLE RESULT_CODE
+    )
 
-#     IF(NOT RESULT_CODE EQUAL 0)
-#       MESSAGE( WARNING "Extracting the pre-compiled applications failed" )
-#     ENDIF()
+    IF(NOT RESULT_CODE EQUAL 0)
+      MESSAGE( WARNING "Extracting the pre-compiled applications failed" )
+    ENDIF()
 
-#   ENDIF()
-# ENDIF()
+  ENDIF()
+ENDIF()
 
-# SUBDIRLIST(EXTERNAL_APPS ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT}/)
+SUBDIRLIST(EXTERNAL_APPS ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT}/)
 
-# # copy the prepared app into the appropriate folder
-# FOREACH(external_app ${EXTERNAL_APPS})
+# copy the prepared app into the appropriate folder
+FOREACH(external_app ${EXTERNAL_APPS})
 
-#   IF( NOT EXISTS "${SOURCE_APPLICATIONS_PATH}/${external_app}" )
+  IF( NOT EXISTS "${SOURCE_APPLICATIONS_PATH}/${external_app}" )
 
-#     FILE(MAKE_DIRECTORY ${SOURCE_APPLICATIONS_PATH}/${external_app})
+    FILE(MAKE_DIRECTORY ${SOURCE_APPLICATIONS_PATH}/${external_app})
     
-#     EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy_directory
-#       ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT}/${external_app} ${SOURCE_APPLICATIONS_PATH}/${external_app}
-#     )
+    EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy_directory
+      ${DOWNLOADED_APPS_DIR}/${FILENAME_TO_EXTRACT}/${external_app} ${SOURCE_APPLICATIONS_PATH}/${external_app}
+    )
   
-#   ENDIF()
+  ENDIF()
 
-# ENDFOREACH()
+ENDFOREACH()
 
 # SUBDIRLIST(SUBDIRECTORIES ${SOURCE_APPLICATIONS_PATH})
-INCLUDE(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+# INCLUDE(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
-# FOREACH(subdir ${SUBDIRECTORIES})
+FOREACH(subdir ${SUBDIRECTORIES})
 
-#   SET(SUBDIRPATH "${SOURCE_APPLICATIONS_PATH}/${subdir}")
+  SET(SUBDIRPATH "${SOURCE_APPLICATIONS_PATH}/${subdir}")
   
-#   IF (BUILD_DEEPMEDIC AND (${subdir} STREQUAL "deepmedic"))
+  IF (BUILD_DEEPMEDIC AND (${subdir} STREQUAL "deepmedic"))
 
-#     SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} deepmedic" CACHE STRING "Available stand-alone apps" FORCE)
+    SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} deepmedic" CACHE STRING "Available stand-alone apps" FORCE)
 
-#     #IF (APPLE)
-#     #  FILE(GLOB_RECURSE DEEPMEDIC_CONFIGFILES "${SUBDIRPATH}/configFiles/*")
-#     #  FILE(GLOB_RECURSE DEEPMEDIC_SAVEDMODELS "${SUBDIRPATH}/saved_models/*")
-#     #
-#     #  SET(CAPTK_MACOSX_BUNDLE_FILES ${CAPTK_MACOSX_BUNDLE_FILES} ${DEEPMEDIC_CONFIGFILES} ${DEEPMEDIC_SAVEDMODELS})
-#     #ELSE()
-#     #  INSTALL(DIRECTORY "${SUBDIRPATH}/configFiles" DESTINATION data/deepMedic)
-#     #  INSTALL(DIRECTORY "${SUBDIRPATH}/saved_models" DESTINATION data/deepMedic)
-#     #ENDIF()
+    #IF (APPLE)
+    #  FILE(GLOB_RECURSE DEEPMEDIC_CONFIGFILES "${SUBDIRPATH}/configFiles/*")
+    #  FILE(GLOB_RECURSE DEEPMEDIC_SAVEDMODELS "${SUBDIRPATH}/saved_models/*")
+    #
+    #  SET(CAPTK_MACOSX_BUNDLE_FILES ${CAPTK_MACOSX_BUNDLE_FILES} ${DEEPMEDIC_CONFIGFILES} ${DEEPMEDIC_SAVEDMODELS})
+    #ELSE()
+    #  INSTALL(DIRECTORY "${SUBDIRPATH}/configFiles" DESTINATION data/deepMedic)
+    #  INSTALL(DIRECTORY "${SUBDIRPATH}/saved_models" DESTINATION data/deepMedic)
+    #ENDIF()
 
-#     IF(WIN32)
-#       INSTALL(FILES ${SUBDIRPATH}/deepMedicRun.exe
-#         DESTINATION bin
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#     ELSEIF(APPLE)
-#       INSTALL(FILES ${SUBDIRPATH}/deepMedicRun
-#         DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#     ELSE()
-#       INSTALL(FILES ${SUBDIRPATH}/deepMedicRun
-#         DESTINATION bin
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#     ENDIF()
+    IF(WIN32)
+      INSTALL(FILES ${SUBDIRPATH}/deepMedicRun.exe
+        DESTINATION bin
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+    ELSEIF(APPLE)
+      INSTALL(FILES ${SUBDIRPATH}/deepMedicRun
+        DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+    ELSE()
+      INSTALL(FILES ${SUBDIRPATH}/deepMedicRun
+        DESTINATION bin
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+    ENDIF()
 
-#   ENDIF()
+  ENDIF()
 
-#   IF (BUILD_LIBRASINGLE AND (${subdir} STREQUAL "libra"))
+  IF (BUILD_LIBRASINGLE AND (${subdir} STREQUAL "libra"))
   
-#     SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} librasingle librabatch" CACHE STRING "Available stand-alone apps" FORCE)
-#     # ALSO add this to CAPTK_BRREAST_APPS
+    SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} librasingle librabatch" CACHE STRING "Available stand-alone apps" FORCE)
+    # ALSO add this to CAPTK_BRREAST_APPS
 
-#     IF(WIN32)
-#       INSTALL(FILES ${SUBDIRPATH}/libra.exe
-#         DESTINATION bin
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#       INSTALL(FILES ${SUBDIRPATH}/libra.bat
-#         DESTINATION bin
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#       INSTALL(DIRECTORY "${SUBDIRPATH}/Mathworks" DESTINATION bin)
+    IF(WIN32)
+      INSTALL(FILES ${SUBDIRPATH}/libra.exe
+        DESTINATION bin
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+      INSTALL(FILES ${SUBDIRPATH}/libra.bat
+        DESTINATION bin
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+      INSTALL(DIRECTORY "${SUBDIRPATH}/Mathworks" DESTINATION bin)
 
-#     ELSEIF( UNIX AND NOT APPLE )
+    ELSEIF( UNIX AND NOT APPLE )
       
-#       IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
-#         IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
+      IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
+        IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
         
-#           EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-#             WORKING_DIRECTORY ${SUBDIRPATH}
-#             RESULT_VARIABLE RESULT_CODE
-#           )
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            WORKING_DIRECTORY ${SUBDIRPATH}
+            RESULT_VARIABLE RESULT_CODE
+          )
           
-#           IF( RESULT_CODE EQUAL 0 )
-#             #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-#             #  WORKING_DIRECTORY ${SUBDIRPATH}
-#             #  RESULT_VARIABLE RESULT_CODE
-#             #)
+          IF( RESULT_CODE EQUAL 0 )
+            #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            #  WORKING_DIRECTORY ${SUBDIRPATH}
+            #  RESULT_VARIABLE RESULT_CODE
+            #)
             
-#           ENDIF()
-#         ELSE()
-#           FILE(DOWNLOAD "ftp://www.nitrc.org/home/groups/captk/downloads/MCR.zip" "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+          ENDIF()
+        ELSE()
+          FILE(DOWNLOAD "ftp://www.nitrc.org/home/groups/captk/downloads/MCR.zip" "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
           
-#           EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E unzip ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-#             WORKING_DIRECTORY ${SUBDIRPATH}
-#             RESULT_VARIABLE RESULT_CODE
-#           )
+          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E unzip ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            WORKING_DIRECTORY ${SUBDIRPATH}
+            RESULT_VARIABLE RESULT_CODE
+          )
           
-#           IF( RESULT_CODE EQUAL 0 )
-#             #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-#             #  WORKING_DIRECTORY ${SUBDIRPATH}
-#             #  RESULT_VARIABLE RESULT_CODE
-#             #)
+          IF( RESULT_CODE EQUAL 0 )
+            #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+            #  WORKING_DIRECTORY ${SUBDIRPATH}
+            #  RESULT_VARIABLE RESULT_CODE
+            #)
             
-#           ENDIF()
-#         ENDIF()
-#       ENDIF()
+          ENDIF()
+        ENDIF()
+      ENDIF()
       
 #       INSTALL(CODE "execute_process(COMMAND dos2unix ${SUBDIRPATH}/bin/libra)")
 #       INSTALL(FILES ${SUBDIRPATH}/bin/libra
@@ -430,135 +430,157 @@ INCLUDE(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 #       SUBDIRLIST(SUBDIRECTORIES ${SUBDIRPATH}/lib)
 #       # MESSAGE("[DEBUG] ItkSnap subdirs:${SUBDIRECTORIES}")
 #       FOREACH(itkSnapLib ${SUBDIRECTORIES})
-#         INSTALL(DIRECTORY ${SUBDIRPATH}/lib/${itkSnapLib}
-#           DESTINATION lib
+
+#         SUBDIRLIST(SUBDIRECTORIES_SNAP ${SUBDIRPATH}/lib/${itkSnapLib})
+
+#         # install all directories inside
+#         FOREACH(itkSnapLib_subDirs ${SUBDIRECTORIES_SNAP})
+#           INSTALL(DIRECTORY ${SUBDIRPATH}/lib/${itkSnapLib}/${itkSnapLib_subDirs}
+#            DESTINATION lib/${itkSnapLib}
+#            DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+#           )
+#         ENDFOREACH()
+        
+#         # find stand-alone files and install them separately
+#         FILE( GLOB FILES_SNAP
+#           LIST_DIRECTORIES FALSE
+#           "${SUBDIRPATH}/lib/${itkSnapLib}/*"
 #         )
+
+#         FOREACH(itkSnapLib_files ${FILES_SNAP})
+#           INSTALL(
+#             FILES ${itkSnapLib_files}
+#             DESTINATION lib/${itkSnapLib}
+#             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+#           )
+#         ENDFOREACH()
+
 #       ENDFOREACH()
 #     ENDIF()
 
 #   ENDIF()
   
-#   IF (${subdir} STREQUAL "theia")
-#     IF(WIN32)
-#       INSTALL(FILES ${SUBDIRPATH}/Theia.exe
-#         DESTINATION bin
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#     ENDIF()
-#   ENDIF()
+  IF (${subdir} STREQUAL "theia")
+    IF(WIN32)
+      INSTALL(FILES ${SUBDIRPATH}/Theia.exe
+        DESTINATION bin
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+    ENDIF()
+  ENDIF()
 
-#   #IF (${subdir} STREQUAL "theia_source")
-#   #  IF(APPLE)
-#   #    INSTALL(FILES ${SUBDIRPATH}/Theia.py
-#   #      DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-#   #      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#   #    )
-#   #    INSTALL(DIRECTORY ${SUBDIRPATH}/visualizer
-#   #      DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-#   #      #PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#   #    )
-#   #  ELSEIF (NOT WIN32)
-#   #    INSTALL(FILES ${SUBDIRPATH}/Theia.py
-#   #      DESTINATION bin
-#   #      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#   #    )
-#   #    INSTALL(DIRECTORY ${SUBDIRPATH}/visualizer
-#   #      DESTINATION bin
-#   #      #PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#   #    )
-#   #  ENDIF()
-#   #ENDIF()
+  #IF (${subdir} STREQUAL "theia_source")
+  #  IF(APPLE)
+  #    INSTALL(FILES ${SUBDIRPATH}/Theia.py
+  #      DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+  #      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #    )
+  #    INSTALL(DIRECTORY ${SUBDIRPATH}/visualizer
+  #      DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+  #      #PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #    )
+  #  ELSEIF (NOT WIN32)
+  #    INSTALL(FILES ${SUBDIRPATH}/Theia.py
+  #      DESTINATION bin
+  #      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #    )
+  #    INSTALL(DIRECTORY ${SUBDIRPATH}/visualizer
+  #      DESTINATION bin
+  #      #PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #    )
+  #  ENDIF()
+  #ENDIF()
 
-#   IF (BUILD_CONFETTI AND (${subdir} STREQUAL "confetti")) # this will only be present for WIN32
+  IF (BUILD_CONFETTI AND (${subdir} STREQUAL "confetti")) # this will only be present for WIN32
 
-#     SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} confetti" CACHE STRING "Available stand-alone apps" FORCE)
-#     # ALSO add this to CAPTK_BRAIN_APPS
-#     IF (${subdir} STREQUAL "confetti") # this is only valid for WIN32 since Confetti is distributed as a compiled EXE for it
+    SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} confetti" CACHE STRING "Available stand-alone apps" FORCE)
+    # ALSO add this to CAPTK_BRAIN_APPS
+    IF (${subdir} STREQUAL "confetti") # this is only valid for WIN32 since Confetti is distributed as a compiled EXE for it
 
-#       IF (APPLE)
+      IF (APPLE)
         
-#         FILE(GLOB allFiles ${SUBDIRPATH}/*.*)
-#         INSTALL(FILES ${allFiles}
-#           DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-#           #FILES_MATCHING
-#           #PATTERN "*.*"
-#           #PATTERN ".svn" EXCLUDE
-#         )
-#         INSTALL(DIRECTORY ${SUBDIRPATH}/ConfettiBundleAtlas
-#           DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
-#           #FILES_MATCHING
-#           #PATTERN "*.*"
-#           #PATTERN ".svn" EXCLUDE
-#         )
-#       ELSE()
-#         FILE(GLOB allFiles ${SUBDIRPATH}/*.*)
-#         INSTALL(FILES ${allFiles}
-#           DESTINATION bin
-#           #FILES_MATCHING
-#           #PATTERN "*.*"
-#           #PATTERN ".svn" EXCLUDE
-#         )
-#         INSTALL(DIRECTORY ${SUBDIRPATH}/ConfettiBundleAtlas
-#           DESTINATION bin
-#           #FILES_MATCHING
-#           #PATTERN "*.*"
-#           #PATTERN ".svn" EXCLUDE
-#         )
-#       ENDIF()
+        FILE(GLOB allFiles ${SUBDIRPATH}/*.*)
+        INSTALL(FILES ${allFiles}
+          DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+          #FILES_MATCHING
+          #PATTERN "*.*"
+          #PATTERN ".svn" EXCLUDE
+        )
+        INSTALL(DIRECTORY ${SUBDIRPATH}/ConfettiBundleAtlas
+          DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+          #FILES_MATCHING
+          #PATTERN "*.*"
+          #PATTERN ".svn" EXCLUDE
+        )
+      ELSE()
+        FILE(GLOB allFiles ${SUBDIRPATH}/*.*)
+        INSTALL(FILES ${allFiles}
+          DESTINATION bin
+          #FILES_MATCHING
+          #PATTERN "*.*"
+          #PATTERN ".svn" EXCLUDE
+        )
+        INSTALL(DIRECTORY ${SUBDIRPATH}/ConfettiBundleAtlas
+          DESTINATION bin
+          #FILES_MATCHING
+          #PATTERN "*.*"
+          #PATTERN ".svn" EXCLUDE
+        )
+      ENDIF()
 
-#     ENDIF()
+    ENDIF()
 
-#   ENDIF()
+  ENDIF()
 
-#   IF (BUILD_SBRT AND (${subdir} STREQUAL "sbrt_source"))
+  IF (BUILD_SBRT AND (${subdir} STREQUAL "sbrt_source"))
 
-#     #ADD_SUBDIRECTORY(${SUBDIRPATH})
-#     #MESSAGE( "External project - SBRT" )
-#     #ExternalProject_Add( ${subdir}
-#     #  DOWNLOAD_COMMAND ""
-#     #  PATCH_COMMAND ""
-#     #  SOURCE_DIR ${SUBDIRPATH}
-#     #  #DEPENDS ${ITK_DIR}${OpenCV_DIR}
-#     #  #PREFIX ${PROJECT_BINARY_DIR}/${subdir}
-#     #  BINARY_DIR ${PROJECT_BINARY_DIR}/${subdir}
-#     #  UPDATE_COMMAND ""
-#     #  PATCH_COMMAND ""
-#     #  CMAKE_GENERATOR ${gen}
-#     #  INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-#     #  CMAKE_ARGS
-#     #    ${ep_common_args}
-#     #    -DITK_DIR=${ITK_DIR}
-#     #    -DOpenCV_DIR=${OpenCV_DIR}
-#     #    -DBUILD_TESTING:BOOL=OFF # testing the ITK build is not required
-#     #    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE} # toggle for type of build if something different that
-#     #)
+    #ADD_SUBDIRECTORY(${SUBDIRPATH})
+    #MESSAGE( "External project - SBRT" )
+    #ExternalProject_Add( ${subdir}
+    #  DOWNLOAD_COMMAND ""
+    #  PATCH_COMMAND ""
+    #  SOURCE_DIR ${SUBDIRPATH}
+    #  #DEPENDS ${ITK_DIR}${OpenCV_DIR}
+    #  #PREFIX ${PROJECT_BINARY_DIR}/${subdir}
+    #  BINARY_DIR ${PROJECT_BINARY_DIR}/${subdir}
+    #  UPDATE_COMMAND ""
+    #  PATCH_COMMAND ""
+    #  CMAKE_GENERATOR ${gen}
+    #  INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    #  CMAKE_ARGS
+    #    ${ep_common_args}
+    #    -DITK_DIR=${ITK_DIR}
+    #    -DOpenCV_DIR=${OpenCV_DIR}
+    #    -DBUILD_TESTING:BOOL=OFF # testing the ITK build is not required
+    #    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE} # toggle for type of build if something different that
+    #)
 
-#     SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} SBRT_Segment SBRT_Analyze" CACHE STRING "Available stand-alone apps" FORCE)
-#     # ALSO add this to CAPTK_LUNG_APPS
+    SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} SBRT_Segment SBRT_Analyze" CACHE STRING "Available stand-alone apps" FORCE)
+    # ALSO add this to CAPTK_LUNG_APPS
 
-#   ENDIF()
+  ENDIF()
 
-#   IF (${subdir} STREQUAL "dcm2nii") # this is a pre-processing algorithm and should be present as a pre-compiled binary package
+  IF (${subdir} STREQUAL "dcm2nii") # this is a pre-processing algorithm and should be present as a pre-compiled binary package
 
-#     SET( DCM2NII_EXE "" )
-#     IF (WIN32)
-#       SET( DCM2NII_EXE "${SUBDIRPATH}/dcm2nii.exe" )
-#     ELSE ()
-#       SET( DCM2NII_EXE "${SUBDIRPATH}/dcm2nii" )
-#     ENDIF()
+    SET( DCM2NII_EXE "" )
+    IF (WIN32)
+      SET( DCM2NII_EXE "${SUBDIRPATH}/dcm2nii.exe" )
+    ELSE ()
+      SET( DCM2NII_EXE "${SUBDIRPATH}/dcm2nii" )
+    ENDIF()
 
-#     IF (APPLE)
-#       SET(CAPTK_MACOSX_BUNDLE_FILES ${CAPTK_MACOSX_BUNDLE_FILES} ${DCM2NII_EXE})
-#     ELSE()
-#       INSTALL(FILES ${DCM2NII_EXE}
-#         DESTINATION bin
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#      ENDIF()
+    IF (APPLE)
+      SET(CAPTK_MACOSX_BUNDLE_FILES ${CAPTK_MACOSX_BUNDLE_FILES} ${DCM2NII_EXE})
+    ELSE()
+      INSTALL(FILES ${DCM2NII_EXE}
+        DESTINATION bin
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+     ENDIF()
 
-#   ENDIF()
+  ENDIF()
 
-# ENDFOREACH()
+ENDFOREACH()
 
 
 SET( CAPTK_APP_LIST ${CAPTK_APP_LIST} CACHE STRING "Available Code-level Applications" FORCE)

@@ -397,7 +397,7 @@ namespace cbica
       {
         auto percentageDifference = std::abs(spacing_1[i] - spacing_2[i]) * 100;
         percentageDifference /= spacing_1[i];
-        if (percentageDifference > 0.000001)
+        if (percentageDifference > 0.0001)
         {
           std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
           return false;
@@ -461,7 +461,7 @@ namespace cbica
       {
         auto percentageDifference = std::abs(imageSpacing1[d] - imageSpacing2[d]) * 100;
         percentageDifference /= imageSpacing1[d];
-        if (percentageDifference > 0.000001)
+        if (percentageDifference > 0.0001)
         {
           std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
           return false;

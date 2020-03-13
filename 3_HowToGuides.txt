@@ -45,11 +45,11 @@ Informatics Technology Initiative (NIfTI) file format.
 	
 <b>USAGE:</b>
 	-# Launch the tool using the 'Preprocessing' -> 'DICOM to NIfTI' menu option.
-	-# Specify the first DICOM image in series, and the output filename.
+	-# Specify the directory containing the DICOM images in the series, and the output filename.
 	-# Click on "Confirm".
   -# This can also be used from the command line:
 \verbatim
-${CaPTk_InstallDir}/bin/Utlities.exe -i C:/test/dicomFolderWithSingleSubject -d2n 
+${CaPTk_InstallDir}/bin/Utlities.exe -i C:/test/dicomFolderWithSingleSubject -o C:/PathToOutputFolder/result.nii.gz -d2n 
 \endverbatim
 
 --------
@@ -293,12 +293,12 @@ The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are 
 <b> USAGE:</b>
 	-# Load the images that you want to segment in CaPTk.
   -# [OPTIONAL] Load the brain mask - this is used for normalization.
-  -# [OPTIONAL] Select the appropriate pre-trained model folder (either brain tumor segmentation or skull stripping is available): for custom models, select appropriate option and browse to the model directory.
+  -# Select the appropriate pre-trained model folder (either brain tumor segmentation or skull stripping is available): for custom models, select appropriate option and browse to the model directory.
   -# Select the output folder.
   -# Click on 'Applications' -> 'Brain Tumor Segmentation' or 'Skull Stripping'
   -# This can also be used from the command line:
 \verbatim
-${CaPTk_InstallDir}/bin/DeepMedic.exe -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -o C:/data/output/ -m C:/data/optionalMask.nii.gz -md C:/data/pretrainedModelFolder/
+${CaPTk_InstallDir}/bin/DeepMedic.exe -md ${CaPTk_InstallDir}/data/deepMedic/saved_models/brainTumorSegmentation -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -m C:/data/optionalMask.nii.gz -o C:/data/outputSegmentation.nii.gz
 \endverbatim
 <br>
 

@@ -1,0 +1,27 @@
+version: v1.0
+class: DownloadConfigs
+apps:
+  confetti:
+    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/confetti.zip
+    Downloaded: 0
+  dcm2nii:
+    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/dcm2nii.zip
+    Downloaded: 0
+  libra:
+    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/libra.zip
+    Downloaded: 0
+  deepmedic:
+    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/deepmedic.zip
+    Downloaded: 0
+  itksnap:
+    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/itksnap.zip
+    Downloaded: 0
+  theia:
+    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/theia.zip
+    Downloaded: 0
+hints:
+  SoftwareRequirement:
+    packages:
+      CaPTk:
+        version:
+          - 1.7.7

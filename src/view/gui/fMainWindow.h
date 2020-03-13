@@ -62,12 +62,15 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fFetalBrain.h"
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
+#include "fAppDownloadDialog.h"
 
 #include <atomic>
 
 #include "GeodesicTrainingCaPTkApp.h"
 
 #include <QMessageBox>
+#include <QTimer>
+#include <QEventLoop>
 
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
@@ -269,6 +272,8 @@ private:
   fBottomImageInfoTip *infoPanel;
   fTumorPanel *tumorPanel;
 
+  fAppDownloadDialog appDownloadDialog;
+
   //-------------menu-----------
   QMenuBar *menubar;
   QMenu* menuFile;
@@ -285,7 +290,7 @@ private:
   QMenu* menuHelp;
 
   QAction *help_discussion;
-  QAction *help_download;
+  QAction *helpMenu_download;
   QAction *help_forum;
   QAction *help_bugs;
   QAction *help_features;
@@ -339,6 +344,7 @@ private:
   QHBoxLayout* bottomLayout;
     
   YAML::Node m_downloadLinks; //! structure to save download links
+  YAML::Node m_appDownloadConfigs; //! structure to for app decoupling
 
   /**
   \struct ActionAndName
@@ -939,7 +945,7 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
-  void appDownload(QAction* action);
+  void appDownload(std::string currentApp);
 
   //! Open the github issue tracker
   void help_BugTracker();

@@ -168,6 +168,7 @@ fMainWindow::fMainWindow()
   setupUi(this);
 
   m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+  m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/appsDownloadConfigs.yaml");
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -181,8 +182,7 @@ fMainWindow::fMainWindow()
   help_discussion = new QAction(this);
   help_forum = new QAction(this);
   help_bugs = new QAction(this);
-  help_features = new QAction(this);
-  help_download = new QAction(this);
+  helpMenu_download = new QAction(this);
   actionLoad_Recurrence_Images = new QAction(this);
   actionLoad_Nifti_Images = new QAction(this);
   actionLoad_Dicom_Images = new QAction(this);
@@ -216,7 +216,7 @@ fMainWindow::fMainWindow()
   menuFile->addMenu(menuLoadFile);
   menuFile->addMenu(menuSaveFile);
   menuApp = new QMenu("Applications");
-  menuAppDownload = new QMenu("Applications (Test Dwnld)");
+  // menuAppDownload = new QMenu("Applications (Test Dwnld)");
   menuDeepLearning = new QMenu("Deep Learning");
   menuPreprocessing = new QMenu("Preprocessing");
   menuHelp = new QMenu("Help");
@@ -302,7 +302,7 @@ fMainWindow::fMainWindow()
   menuHelp->addAction(actionAbout);
 
   supportMenu->addAction(help_bugs);
-  supportMenu->addAction(help_download);
+  supportMenu->addAction(helpMenu_download);
 
   // menuAppDownload->addAction(appDownload);
 
@@ -311,7 +311,7 @@ fMainWindow::fMainWindow()
 #ifndef PACKAGE_VIEWER
   menubar->addMenu(menuApp);
 #endif
-  menubar->addMenu(menuAppDownload);
+  // menubar->addMenu(menuAppDownload);
   menubar->addMenu(menuDeepLearning);
   menubar->addMenu(menuHelp);
   this->setMenuBar(menubar);
@@ -321,7 +321,7 @@ fMainWindow::fMainWindow()
 #ifndef PACKAGE_VIEWER
   menubar->addAction(menuApp->menuAction());
 #endif
-  menubar->addAction(menuAppDownload->menuAction());
+  // menubar->addAction(menuAppDownload->menuAction());
   menubar->addAction(menuDeepLearning->menuAction());
   menubar->addAction(menuHelp->menuAction());
 
@@ -406,23 +406,23 @@ fMainWindow::fMainWindow()
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
   menuApp->addSeparator();
-  vectorOfGBMAppsDownload = populateStringListInMenu(brainAppList, this, menuAppDownload, "Glioblastoma", false);
-  menuAppDownload->addSeparator();
+  // vectorOfGBMAppsDownload = populateStringListInMenu(brainAppList, this, menuAppDownload, "Glioblastoma", false);
+  // menuAppDownload->addSeparator();
   if (!breastAppList.empty())
   {
     vectorOfBreastApps = populateStringListInMenu(breastAppList, this, menuApp, "Breast Cancer", false);
     menuApp->addSeparator();
-    vectorOfBreastAppsDownload = populateStringListInMenu(breastAppList, this, menuAppDownload, "Breast Cancer", false);
-    menuAppDownload->addSeparator();
+    // vectorOfBreastAppsDownload = populateStringListInMenu(breastAppList, this, menuAppDownload, "Breast Cancer", false);
+    // menuAppDownload->addSeparator();
   }
   vectorOfLungApps = populateStringListInMenu(lungAppList, this, menuApp, "Lung Cancer", false);
   menuApp->addSeparator();
-  vectorOfLungAppsDownload = populateStringListInMenu(lungAppList, this, menuAppDownload, "Lung Cancer", false);
-  menuAppDownload->addSeparator();
+  // vectorOfLungAppsDownload = populateStringListInMenu(lungAppList, this, menuAppDownload, "Lung Cancer", false);
+  // menuAppDownload->addSeparator();
   vectorOfSegmentationApps = populateStringListInMenu(segAppList, this, menuApp, "Segmentation", false);
-  vectorOfSegmentationAppsDownload = populateStringListInMenu(segAppList, this, menuAppDownload, "Segmentation", false);
+  // vectorOfSegmentationAppsDownload = populateStringListInMenu(segAppList, this, menuAppDownload, "Segmentation", false);
   vectorOfMiscApps = populateStringListInMenu(miscAppList, this, menuApp, "Miscellaneous", false);
-  vectorOfMiscAppsDownload = populateStringListInMenu(miscAppList, this, menuAppDownload, "Miscellaneous", false);
+  // vectorOfMiscAppsDownload = populateStringListInMenu(miscAppList, this, menuAppDownload, "Miscellaneous", false);
   
   vectorOfPreprocessingActionsAndNames = populateStringListInMenu(preProcessingAlgos, this, menuPreprocessing, "", false);
   vectorOfDeepLearningActionsAndNames = populateStringListInMenu(deepLearningAlgos, this, menuDeepLearning, "", false);
@@ -601,8 +601,12 @@ fMainWindow::fMainWindow()
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
+<<<<<<< HEAD
+=======
   connect(menuAppDownload, SIGNAL(triggered(QAction*)), this, SLOT(appDownload(QAction*)));
 
+  connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
+>>>>>>> 340c1299cc7476570687a0d04c0a352b87f87fe3
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
@@ -793,7 +797,10 @@ fMainWindow::fMainWindow()
     {
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageHistogramMatching()));
     }
-    else if (vectorOfPreprocessingActionsAndNames[i].name.find("DeepMedicNormalizer") != std::string::npos)
+    else if ((vectorOfPreprocessingActionsAndNames[i].name.find("DeepMedicNormalizer") != std::string::npos)
+             || (vectorOfPreprocessingActionsAndNames[i].name.find("ZScoringNormalizer") != std::string::npos))
+            // TBD: Pick one of these and stick with it if we are going to use this approach.
+            // Currently this action is inconsistently referred to as one or the other.
     {
       vectorOfPreprocessingActionsAndNames[i].action->setText("Z-Scoring Normalizer"); // TBD set at source
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageDeepMedicNormalizer()));
@@ -974,8 +981,7 @@ fMainWindow::fMainWindow()
   help_discussion->setText(QApplication::translate("fMainWindow", "Discussion Forum", 0));
   help_forum->setText(QApplication::translate("fMainWindow", "Help Forum", 0));
   help_bugs->setText(QApplication::translate("fMainWindow", "Bugs and Feature", 0));
-  help_features->setText(QApplication::translate("fMainWindow", "Feature Requests", 0));
-  help_download->setText(QApplication::translate("fMainWindow", "Latest Downloads", 0));
+  helpMenu_download->setText(QApplication::translate("fMainWindow", "Latest Downloads", 0));
   actionAbout->setText(QApplication::translate("fMainWindow", "About", 0));
   actionExit->setText(QApplication::translate("fMainWindow", "Exit", 0));
   actionAppGeodesic->setText(QApplication::translate("fMainWindow", "Geodesic segmentation", 0));
@@ -1172,27 +1178,30 @@ void fMainWindow::help_Download(QAction* action)
   }
 }
 
-void fMainWindow::appDownload(QAction* action)
+void fMainWindow::appDownload(std::string currentApp)
 {
-  auto currentApp = action->text().toStdString();
+  const std::string downloadFolder = cbica::getUserHomeDirectory() + "/." + std::string(PROJECT_NAME) + "/" + std::string(PROJECT_VERSION) + "_apps/";
 
-  
+  std::string downloadLink = m_appDownloadConfigs["apps"][currentApp]["Link"].as<std::string>();
 
-  auto currentLink = m_downloadLinks["inputs"][currentApp]["Install"].as<std::string>();
-  if (!currentLink.empty() && (currentLink != "N.A."))
-  {
-    cbica::Logging(loggerFile, currentLink);
-    if (!openLink(currentLink))
-    {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified application.", this);
-      return;
-    }
-  }
-  else
-  {
-    ShowErrorMessage("CaPTk couldn't open the link to download specified application; please contact software@cbica.upenn.edu for details.", this);
-    return;
-  }
+  appDownloadDialog.SetDownloadPath(downloadFolder);
+  appDownloadDialog.SetDownloadLink(downloadLink);
+  appDownloadDialog.exec();
+
+  QTimer timer;
+  timer.setSingleShot(true);
+  QEventLoop loop;
+  connect( &appDownloadDialog, SIGNAL(doneDownload()), &loop, &QEventLoop::quit );
+  connect( &timer, &QTimer::timeout, &loop, &QEventLoop::quit );
+  timer.start(10000);
+  loop.exec();
+
+  // if(timer.isActive())
+  //     // qDebug("encrypted");
+      
+  // else
+  //     // qDebug("timeout");
+    
 }
 
 void fMainWindow::help_BugTracker()
@@ -5798,7 +5807,17 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  std::string scriptToCall = m_allNonNativeApps["libra"];
+  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  // ShowErrorMessage("libra: " + scriptToCall);
+
+  if (scriptToCall.compare("") == 0) {
+
+    appDownload("libra");
+
+    // thread sleep / lock and check file
+
+    scriptToCall = getApplicationDownloadPath("libra");
+  }
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -5899,7 +5918,17 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  // ShowErrorMessage("libra: " + scriptToCall);
+
+  if (scriptToCall.compare("") == 0) {
+
+    appDownload("libra");
+
+    // thread sleep / lock and check file
+
+    scriptToCall = getApplicationDownloadPath("libra");
+  }
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -5954,7 +5983,17 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  // ShowErrorMessage("libra: " + scriptToCall);
+
+  if (scriptToCall.compare("") == 0) {
+
+    appDownload("libra");
+
+    // thread sleep / lock and check file
+
+    scriptToCall = getApplicationDownloadPath("libra");
+  }
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -7266,10 +7305,6 @@ void fMainWindow::ImageHistogramMatching()
 
 void fMainWindow::ImageDeepMedicNormalizer()
 {
-#ifndef WIN32
-  ShowErrorMessage("DeepMedic is currently not available for your platform but will be soon.", this);
-  return;
-#endif
   // open a simple dialog box with reference image, input and output
   deepMedicNormPanel.exec();
 }
@@ -7564,6 +7599,15 @@ void fMainWindow::ApplicationDeepMedicSegmentation(int type)
 
 void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, const std::string outputDirectory)
 {
+  std::string dmExe = "";
+
+  dmExe = getApplicationDownloadPath("deepmedic");
+
+  if (dmExe.compare("") != 0) {
+            ShowErrorMessage("DM empty");
+
+  }
+
   std::string file_t1ce, file_t1, file_flair, file_t2;
 
   cbica::createDir(outputDirectory);
@@ -7657,7 +7701,12 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
   }
   updateProgress(5, "Starting DeepMedic Segmentation");
 
-  auto dmExe = getApplicationPath("DeepMedic");
+  if (dmExe == "") {
+    ShowErrorMessage("DeepMedic not in download path", this);
+
+    dmExe = getApplicationPath("DeepMedic");
+  }
+  
   if (!cbica::exists(dmExe))
   {
     //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
@@ -8735,8 +8784,9 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds)
 {
+  int defaultfeatureselectiontype = 3;
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,modeldirectory))
+  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,defaultfeatureselectiontype, modeldirectory))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";

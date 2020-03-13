@@ -521,11 +521,6 @@ namespace cbica
 
   bool IsCompatible(const std::string inputVersionFile)
   {
-    if (!cbica::isFile(inputVersionFile))
-    {
-      std::cerr << "File '" << inputVersionFile << "' does not exist.\n";
-      return false;
-    }
     auto config = YAML::LoadFile(inputVersionFile);
 
     auto currentCollectionVersion = std::stoi(cbica::replaceString(config["Version"].as< std::string >().c_str(), ".", "").c_str());
@@ -1299,7 +1294,7 @@ namespace cbica
           }
           if (recursiveSearch)
           {
-            std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true);
+            std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true, returnFullPath);
             allDirectories.insert(allDirectories.end(), tempVector.begin(), tempVector.end());
           }
         }
@@ -1318,7 +1313,7 @@ namespace cbica
     {
       if (recursiveSearch && (dirp->d_type == DT_DIR) && (dirp->d_name[0] != '.') && (dirp->d_name != std::string(".svn").c_str()))
       {
-        std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + dirp->d_name, true);
+        std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + dirp->d_name, true, returnFullPath);
         allDirectories.insert(allDirectories.end(), tempVector.begin(), tempVector.end());
       }
 
