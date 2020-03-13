@@ -268,7 +268,7 @@ jobs:
     #     overwrite: true
     #     continueOnError: true
     #   displayName: Uploading to NITRC
-    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk') 
 
 
 # - job: 'XenialBuild'
