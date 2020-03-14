@@ -71,6 +71,9 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <QMessageBox>
 // #include <QTimer>
 // #include <QEventLoop>
+// #include <thread>         // std::this_thread::sleep_for
+// #include <chrono>         // std::chrono::seconds
+#include <zip.h>
 
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
@@ -945,10 +948,15 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
-  void appDownload(std::string currentApp);
 
   //! Open the github issue tracker
   void help_BugTracker();
+
+  /**
+  \brief For apps decoupling
+  */
+  void appDownload(std::string currentApp);
+  void unzipArchive(std::string fullPath);
 
   /**
   \brief Get contextual help 
