@@ -1,12 +1,13 @@
 trigger:
-  pr:
-    branches:
-      include: ['*']  # must quote since "*" is a YAML reserved character; we want a string
   batch: true
   branches:
     include:
     - master
 
+  pr:
+    branches:
+      include: ['*']  # must quote since "*" is a YAML reserved character; we want a string
+      
 jobs:
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
