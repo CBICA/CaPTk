@@ -521,11 +521,6 @@ namespace cbica
 
   bool IsCompatible(const std::string inputVersionFile)
   {
-    if (!cbica::isFile(inputVersionFile))
-    {
-      std::cerr << "File '" << inputVersionFile << "' does not exist.\n";
-      return false;
-    }
     auto config = YAML::LoadFile(inputVersionFile);
 
     auto currentCollectionVersion = std::stoi(cbica::replaceString(config["Version"].as< std::string >().c_str(), ".", "").c_str());
@@ -726,12 +721,14 @@ namespace cbica
   {
     std::string path, base, ext;
     splitFileName(getFullPath(), path, base, ext);
+  // #ifdef __APPLE__
+  //   return "/Applications/CaPTk_1.6.2.Beta.app/Contents/MacOS/";
+  // #endif
     return cbica::normPath(path) + "/";
   }
 
   std::string getFullPath()
   {
-    std::string return_string;
 #if defined(_WIN32)
     //! Initialize pointers to file and user names
     char path[FILENAME_MAX];
@@ -749,16 +746,13 @@ namespace cbica
     }
 #else
     //! Initialize pointers to file and user names
-     char path[PATH_MAX];
-     ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
-     if (count == -1)
-       std::cerr << "[getFullPath()] Error during getting full path..";
-    std::string appPath = std::string( path, (count > 0) ? count : 0 );
-    path[0] = '\0';
-    return appPath;
+    char path[PATH_MAX];
+    if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
+      //path = dirname(path);
+      std::cerr << "[getFullPath()] Error during getting full path..";
 #endif
 
-    return_string = std::string(path);
+    std::string return_string = std::string(path);
     path[0] = '\0';
 
     return return_string;
@@ -1300,7 +1294,7 @@ namespace cbica
           }
           if (recursiveSearch)
           {
-            std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true);
+            std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true, returnFullPath);
             allDirectories.insert(allDirectories.end(), tempVector.begin(), tempVector.end());
           }
         }
@@ -1319,7 +1313,7 @@ namespace cbica
     {
       if (recursiveSearch && (dirp->d_type == DT_DIR) && (dirp->d_name[0] != '.') && (dirp->d_name != std::string(".svn").c_str()))
       {
-        std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + dirp->d_name, true);
+        std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + dirp->d_name, true, returnFullPath);
         allDirectories.insert(allDirectories.end(), tempVector.begin(), tempVector.end());
       }
 
