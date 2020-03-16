@@ -855,19 +855,19 @@ jobs:
         cd bin
 
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5" -DBUILD_TESTING=OFF ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/Projects/CaPTk_decoupleApps/bin/ITK-build" -DDCMTK_DIR="E:/Projects/CaPTk_decoupleApps/bin/DCMTK-build" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;E:/LibsCaPTk/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/bin/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;%CMAKE_PREFIX_PATH%"
+        setx CMAKE_PREFIX_PATH "E:/Projects/CaPTk_decoupleApps/bin/ITK-build;E:/Projects/CaPTk_decoupleApps/bin/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;%CMAKE_PREFIX_PATH%"
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile CaPTk'
 
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5" -DBUILD_TESTING=OFF ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/Projects/CaPTk_decoupleApps/bin/ITK-build" -DDCMTK_DIR="E:/Projects/CaPTk_decoupleApps/bin/DCMTK-build" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=OFF ..
         
         setx PATH "%PATH%;E:/LibsCaPTk/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/bin/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;%CMAKE_PREFIX_PATH%"
+        setx CMAKE_PREFIX_PATH "E:/Projects/CaPTk_decoupleApps/bin/ITK-build;E:/Projects/CaPTk_decoupleApps/bin/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;%CMAKE_PREFIX_PATH%"
         cmake --build . --target PACKAGE --config Release
 
       displayName: 'Build & Package CaPTk'

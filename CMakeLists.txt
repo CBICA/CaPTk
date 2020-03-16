@@ -478,6 +478,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
   SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
   
+  MESSAGE (STATUS " ----- LIB ZIP ${LIBZIP_INCLUDE_DIR} ${LIBZIP_LIBRARIES}")
+
   # include dependencies
   # add source code include directories
   INCLUDE_DIRECTORIES(
