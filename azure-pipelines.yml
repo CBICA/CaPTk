@@ -101,9 +101,7 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
         rm -rf installLibs
         rm -rf qt.zip
-        rm -rf binaries_*.zip
         
-        rm -rf externalApps/binaries*/libra
       displayName: 'Configure and compile Superbuild'
       # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
@@ -123,6 +121,11 @@ jobs:
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        
+        rm -rf binaries_*.zip
+        
+        rm -rf externalApps/binaries*/libra
+
         cmake --build . --target ALL_BUILD --config Release
         rm -rf externalApps
       displayName: 'Configure and compile CaPTk'
@@ -348,9 +351,6 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
 
-        rm -rf binaries_*.zip
-        
-        rm -rf externalApps/binaries*/libra
       displayName: 'Configure and compile Superbuild'
       # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
@@ -393,6 +393,11 @@ jobs:
         cd bin
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
+        
+        rm -rf binaries_*.zip
+        
+        rm -rf externalApps/binaries*/libra
+
         make -j2
       displayName: 'Configure and compile CaPTk with Testing enabled'
 
@@ -606,8 +611,6 @@ jobs:
         cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
         make -j 2
-
-        rm -rf binaries_*.zip
         
       displayName: 'Configure and compile Superbuild'
       # condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
@@ -641,6 +644,8 @@ jobs:
 
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
+
+        rm -rf binaries_*.zip
 
         make -j 2
       displayName: 'Configure and compile CaPTk'
