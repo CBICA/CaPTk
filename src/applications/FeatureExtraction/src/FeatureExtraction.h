@@ -395,6 +395,14 @@ private:
   void SetFeatureParam(std::string featureFamily);
 
   /**
+  \brief GetRadiusInImageCoordinates function gets the radius in image coordinates
+
+  \param radiusInWorldCoordinates Input radius in world coordinates
+  \return Corresponding radius in image coordinates
+  */
+  int GetRadiusInImageCoordinates(float radiusInWorldCoordinates);
+
+  /**
   \brief Calculates the OffsetVectorPointer based on the provided radius in mm and directions
   */
   std::vector< OffsetVectorPointer > GetOffsetVector(float inputRadius, int inputDirections)
@@ -769,7 +777,8 @@ private:
 
   // the parameters that keep changing on a per-feature basis
   int m_Radius = 0, m_Bins = 0, m_Dimension = 0, m_Direction = 0, m_neighborhood = 0, m_LBPStyle = 0;
-  std::vector< int > m_Bins_range; //! range of bins to calculate features on
+  std::vector< int > m_Bins_range, //! range of bins to calculate features on
+    m_Radius_range; //! range of radii to calculate features on
   float m_Radius_float = 0.0, m_Range = 0, 
     m_Bins_min = std::numeric_limits<float>::max(); //! the starting index of the histogram binning
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
