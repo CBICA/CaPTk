@@ -101,7 +101,8 @@ enum Params
   LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, 
   LatticeFullImage, GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, 
   QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, 
-  ResamplingInterpolator_Mask, SliceComputation, NaNHandling, LBPStyle, MorphologicFeret, ParamMax
+  ResamplingInterpolator_Mask, SliceComputation, NaNHandling, WholeImageBinning, 
+  LBPStyle, MorphologicFeret, ParamMax
 };
 static const char ParamsString[ParamMax + 1][30] =
 {
@@ -109,7 +110,8 @@ static const char ParamsString[ParamMax + 1][30] =
   "Window", "Step", "Boundary", "PatchBoundary", "Weight", 
   "FullImage", "FMax", "Gamma", "Level", "ETA", "Epsilon", 
   "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", 
-  "ResamplingInterpolator_Mask", "SliceComputation", "NaNHandling", "LBPStyle", "Feret", "ParamMax"
+  "ResamplingInterpolator_Mask", "SliceComputation", "NaNHandling", "WholeImageBinning", 
+  "LBPStyle", "Feret", "ParamMax"
 };
 
 enum FeatureFamily
@@ -791,6 +793,8 @@ private:
     m_resamplingInterpolator_Mask = "Nearest";
 
   bool m_SliceComputation = false; //! Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only
+  bool m_wholeImageBinning = true; //! binning happens on entire image or on just the defined region of interest
+
   float m_gaborFMax = 0.25; //! TBD: what is the description of this?
   float m_gaborGamma = sqrtf(2); //! TBD: what is the description of this?
   int m_gaborLevel = 4; //! TBD: what is the description of this?
