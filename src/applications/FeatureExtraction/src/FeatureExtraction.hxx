@@ -1264,6 +1264,36 @@ typename TImage::Pointer FeatureExtraction< TImage >::GetPatchedImage(const type
   return extractor->GetOutput();
 }
 
+
+template< class TImage >
+int FeatureExtraction< TImage >::GetRadiusInImageCoordinates(float radiusInWorldCoordinates)
+{
+  auto spacing = m_Mask->GetSpacing();
+  int minRad = 0;
+  for (size_t d = 0; d < TImage::ImageDimension; d++)
+  {
+    auto temp = radiusInWorldCoordinates / spacing[d];
+    auto tempRad = minRad;
+    // this is a contingency in cases where the radius has been initialized to be less than the pixel spacing
+    // or if it has been initialized as a negative number
+    if (temp < 1)
+    {
+      tempRad = 1;
+    }
+    else
+    {
+      tempRad = std::round(temp);
+    }
+
+    // we shall keep minimum calculated radius
+    if (minRad < tempRad)
+    {
+      minRad = tempRad;
+    }
+  }
+  return minRad;
+ }
+
 template< class TImage >
 void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
 {
@@ -1296,15 +1326,70 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         }
         else if (outer_key == ParamsString[Radius])
         {
-          if (currentValue.find(".") != std::string::npos) // this means that the distance is float
+          auto temp = cbica::stringSplit(currentValue, ":");
+          if (temp.size() == 1) // single value calculation
           {
-            m_Radius_float = std::atof(currentValue.c_str());
-            m_Radius = -1;
+            if (currentValue.find(".") != std::string::npos) // this means that the distance is float
+            {
+              m_Radius_range.push_back(
+                GetRadiusInImageCoordinates(
+                  std::atof(currentValue.c_str())));
+            }
+            else
+            {
+              m_Radius_range.push_back(std::atoi(currentValue.c_str()));
+            }
           }
           else
           {
-            m_Radius = std::atoi(currentValue.c_str());
-            m_Radius_float = -1;
+            // sanity check
+            if (temp.size() != 3)
+            {
+              std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
+              exit(EXIT_FAILURE);
+            }
+
+            std::vector< int > tempRange;
+
+            // check for world coordinates in full set
+            bool worldRadDetected = false;
+            for (size_t i = 0; i < temp.size(); i++)
+            {
+              if (temp[i].find(".") != std::string::npos) // this means that the distance is float
+              {
+                worldRadDetected = true;
+                break;
+              }
+            }
+
+            // if a single value is detected in world coordinates, process the entire set the same way
+            for (size_t i = 0; i < temp.size(); i++)
+            {
+              if (worldRadDetected)
+              {
+                tempRange.push_back(
+                  GetRadiusInImageCoordinates(
+                    std::atof(temp[i].c_str())));
+              }
+              else
+              {
+                tempRange.push_back(std::atoi(temp[i].c_str()));
+              }
+            }
+
+            int min = tempRange[0],
+              max = tempRange[2],
+              range = tempRange[1];
+
+            if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
+            {
+              std::swap(min, max);
+            }
+            // populate the full range
+            for (int rad = min; rad <= max; rad += range)
+            {
+              m_Radius_range.push_back(rad);
+            }
           }
         }
         else if (outer_key == ParamsString[Neighborhood])
@@ -1335,7 +1420,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
               std::swap(min, max);
             }
             // populate the full range
-            for (int bin = min; bin < max; bin += range)
+            for (int bin = min; bin <= max; bin += range)
             {
               m_Bins_range.push_back(bin);
             }
