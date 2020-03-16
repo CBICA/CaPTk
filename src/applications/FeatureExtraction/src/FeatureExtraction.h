@@ -101,7 +101,7 @@ enum Params
   LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, 
   LatticeFullImage, GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, 
   QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, 
-  ResamplingInterpolator_Mask, SliceComputation, LBPStyle, MorphologicFeret, ParamMax
+  ResamplingInterpolator_Mask, SliceComputation, NaNHandling, LBPStyle, MorphologicFeret, ParamMax
 };
 static const char ParamsString[ParamMax + 1][30] =
 {
@@ -109,7 +109,7 @@ static const char ParamsString[ParamMax + 1][30] =
   "Window", "Step", "Boundary", "PatchBoundary", "Weight", 
   "FullImage", "FMax", "Gamma", "Level", "ETA", "Epsilon", 
   "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", 
-  "ResamplingInterpolator_Mask", "SliceComputation", "LBPStyle", "Feret", "ParamMax"
+  "ResamplingInterpolator_Mask", "SliceComputation", "NaNHandling", "LBPStyle", "Feret", "ParamMax"
 };
 
 enum FeatureFamily
@@ -760,6 +760,7 @@ private:
     m_currentLatticeStart; //! this is the starting index of the current lattice patch
   bool m_LatticeComputation = false; //! flag to check if lattice-based computation has been enabled or not
   bool m_writeFeatureMaps = false; //! flag to check to write feature maps or not
+  bool m_keepNaNs = true; //! whether to keep the nan values or not
   float m_latticeWindow = 0, m_latticeStep = 0; //! these are defined in mm
   typename TImageType::IndexType m_latticeStepImage; //! lattice step as defined in the image coordinates
   typename TImageType::SizeType m_latticeSizeImage; //! lattice size in image space

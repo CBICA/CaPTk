@@ -1556,6 +1556,13 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             m_SliceComputation = true;
           }
         }
+        else if (outer_key == ParamsString[NaNHandling])
+        {
+          if (currentValue == "Remove")
+          {
+            m_keepNaNs = false;
+          }
+        }
         else if (outer_key == ParamsString[LBPStyle])
         {
           m_LBPStyle = std::atoi(currentValue.c_str());
@@ -1806,12 +1813,14 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string & modality, co
   for (auto const& f : featureList)
   {
     auto roiLabelFeatureFamilyFeature = modality + "_" + label + "_" + featureFamily + "_" + f.first;
+    bool nanDetected = false;
     if (std::isnan(f.second) || (f.second != f.second))
     {
       if (m_debug)
       {
         m_logger.Write("NAN DETECTED: " + m_patientID + "_" + roiLabelFeatureFamilyFeature);
       }
+      nanDetected = true;
       //std::cerr << "NAN DETECTED: " << m_patientID + "_" + roiLabelFeatureFamilyFeature + "_" + "CenterIdx_" + m_centerIndexString << "\n";
     }
     if ((std::isinf(f.second)))
@@ -1869,30 +1878,35 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string & modality, co
     }
     else
     {
-      if (m_outputVerticallyConcatenated)
+      // if NaN has been detec and the user has asked to keep them, write the feature
+      // or if the feature has non-NaN value
+      if ((nanDetected && m_keepNaNs) || !nanDetected)
       {
-        auto tempParams = parameters;
-        if ((featureFamily == "GLCM") || (featureFamily == "GLRLM"))
+        if (m_outputVerticallyConcatenated)
         {
-          if ((f.first.find("Correlation") != std::string::npos) ||
-            (f.first.find("LongRunEmphasis") != std::string::npos) ||
-            (f.first.find("GreyLevelNonuniformity") != std::string::npos) ||
-            (f.first.find("RunLengthNonuniformity") != std::string::npos) ||
-            (f.first.find("LongRunLowGreyLevelEmphasis") != std::string::npos) ||
-            (f.first.find("LongRunHighGreyLevelEmphasis") != std::string::npos) ||
-            (f.first.find("TotalRuns") != std::string::npos) ||
-            (f.first.find("RunPercentage") != std::string::npos))
+          auto tempParams = parameters;
+          if ((featureFamily == "GLCM") || (featureFamily == "GLRLM"))
           {
-            tempParams += ": IBSI non-compliant";
+            if ((f.first.find("Correlation") != std::string::npos) ||
+              (f.first.find("LongRunEmphasis") != std::string::npos) ||
+              (f.first.find("GreyLevelNonuniformity") != std::string::npos) ||
+              (f.first.find("RunLengthNonuniformity") != std::string::npos) ||
+              (f.first.find("LongRunLowGreyLevelEmphasis") != std::string::npos) ||
+              (f.first.find("LongRunHighGreyLevelEmphasis") != std::string::npos) ||
+              (f.first.find("TotalRuns") != std::string::npos) ||
+              (f.first.find("RunPercentage") != std::string::npos))
+            {
+              tempParams += ": IBSI non-compliant";
+            }
           }
+          m_finalOutputToWrite += m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
+            "," + cbica::to_string_precision(f.second) + "," + tempParams + "\n";
         }
-        m_finalOutputToWrite += m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
-          "," + cbica::to_string_precision(f.second) + "," + tempParams + "\n";
-      }
 
-      // for training file, populate these 2 member variables
-      m_trainingFile_featureNames += roiLabelFeatureFamilyFeature + ",";
-      m_trainingFile_features += cbica::to_string_precision(f.second) + ",";
+        // for training file, populate these 2 member variables
+        m_trainingFile_featureNames += roiLabelFeatureFamilyFeature + ",";
+        m_trainingFile_features += cbica::to_string_precision(f.second) + ",";
+      }
     }
   }
 
