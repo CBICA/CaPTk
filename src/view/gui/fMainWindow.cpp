@@ -7591,6 +7591,8 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     }
   }
 
+  ShowErrorMessage("Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive.", this, "Long Running Application");
+
   // TBD: this requires cleanup
   int type;
   if (modelDirectory.find("tumor") != std::string::npos)
