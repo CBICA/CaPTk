@@ -1314,27 +1314,32 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         else if (outer_key == ParamsString[Bins])
         {
           auto temp = cbica::stringSplit(currentValue, ":");
-          
-          // sanity check
-          if (temp.size() != 3)
+          if (temp.size() == 1) // single value calculation
           {
-            std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
-            exit(EXIT_FAILURE);
+            m_Bins_range.push_back(std::atoi(currentValue.c_str()));
           }
-          int min = std::atoi(temp[0].c_str()), 
-            max = std::atoi(temp[2].c_str()), 
-            range = std::atoi(temp[1].c_str());
-          
-          if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
+          else
           {
-            std::swap(min, max);
+            // sanity check
+            if (temp.size() != 3)
+            {
+              std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
+              exit(EXIT_FAILURE);
+            }
+            int min = std::atoi(temp[0].c_str()),
+              max = std::atoi(temp[2].c_str()),
+              range = std::atoi(temp[1].c_str());
+
+            if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
+            {
+              std::swap(min, max);
+            }
+            // populate the full range
+            for (int bin = min; bin < max; bin += range)
+            {
+              m_Bins_range.push_back(bin);
+            }
           }
-          // populate the full range
-          for (int bin = min; bin < max; bin += range)
-          {
-            m_Bins_range.push_back(bin);
-          }
-          //m_Bins = std::atoi(currentValue.c_str());
         }
         else if (outer_key == ParamsString[Bins_Min])
         {
