@@ -7593,61 +7593,62 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
 
   ShowErrorMessage("Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive.", this, "Long Running Application");
 
-  // TBD: this requires cleanup
-  int type;
-  if (modelDirectory.find("tumor") != std::string::npos)
+  QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application", 
+    "Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive; press OK to continue...", 
+    QMessageBox::Ok | QMessageBox::Cancel);
+  box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
+  box->setWindowModality(Qt::NonModal);
+  QCoreApplication::processEvents();
+  if (box->exec() == QMessageBox::Ok)
   {
-    type = 0;
-  }
-  else if (modelDirectory.find("skull") != std::string::npos)
-  {
-    type = 1;
-  }
+    // TBD: this requires cleanup
+    int type;
+    if (modelDirectory.find("tumor") != std::string::npos)
+    {
+      type = 0;
+    }
+    else if (modelDirectory.find("skull") != std::string::npos)
+    {
+      type = 1;
+    }
 
-  QStringList args;
-  args << "-md" << modelDirectory.c_str()
-    << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
+    QStringList args;
+    args << "-md" << modelDirectory.c_str()
+      << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
 
-  if (!file_mask.empty())
-  {
-    args << "-m" << file_mask.c_str();
-  }
-  updateProgress(5, "Starting DeepMedic Segmentation");
+    if (!file_mask.empty())
+    {
+      args << "-m" << file_mask.c_str();
+    }
+    updateProgress(5, "Starting DeepMedic Segmentation");
 
-  auto dmExe = getApplicationPath("DeepMedic");
-  if (!cbica::exists(dmExe))
-  {
-    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
-    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
-    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
-
-    ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
-    updateProgress(0, "");
-    return;
-  }
+    auto dmExe = getApplicationPath("DeepMedic");
+    if (!cbica::exists(dmExe))
+    {
+      ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
+      updateProgress(0, "");
+      return;
+    }
 
 
-  if (startExternalProcess(dmExe.c_str(), args) != 0)
-  {
-    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
-    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
-    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
+    if (startExternalProcess(dmExe.c_str(), args) != 0)
+    {
+      ShowErrorMessage("DeepMedic returned with exit code != 0");
+      updateProgress(0, "");
+      return;
+    }
 
-    ShowErrorMessage("DeepMedic returned with exit code != 0");
-    updateProgress(0, "");
-    return;
-  }
-
-  auto output = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
-  if (cbica::exists(output))
-  {
-    readMaskFile(output);
-    updateProgress(100, "Completed.");
-  }
-  else
-  {
-    ShowErrorMessage("DeepMedic failed to generate results");
-    updateProgress(0, "");
+    auto output = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
+    if (cbica::exists(output))
+    {
+      readMaskFile(output);
+      updateProgress(100, "Completed.");
+    }
+    else
+    {
+      ShowErrorMessage("DeepMedic failed to generate results");
+      updateProgress(0, "");
+    }
   }
 
   return;
