@@ -2970,7 +2970,7 @@ void FeatureExtraction< TImage >::Update()
 
                         CalculateGaborWavelets(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
 
-                        WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f] + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
+                        WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
                           "Radius=" + std::to_string(m_Radius) + ";FMax=" + std::to_string(m_gaborFMax) + ";Gamma=" + std::to_string(m_gaborGamma) +
                           ";Directions=" + m_Radius_string + ";Level=" + std::to_string(m_gaborLevel), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
                       } // end radius-loop
@@ -3043,7 +3043,7 @@ void FeatureExtraction< TImage >::Update()
 
                         CalculateEdgeEnhancement(currentInputImage_patch, std::get<4>(temp->second));
 
-                        WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f] + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
+                        WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
                           "ETA=" + std::to_string(m_edgesETA) + ";Epsilon=" + std::to_string(m_edgesEpsilon) + ";Radius=" + m_Radius_string,
                           m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
                       } // end radius-loop
@@ -3111,7 +3111,7 @@ void FeatureExtraction< TImage >::Update()
 
                     CalculateLBP(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
 
-                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f] + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
+                    WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
                       "Neighborhood=" + std::to_string(m_neighborhood) + ";Radius=" + m_Radius_string + ";Style=" + std::to_string(m_LBPStyle), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
                   } // end radius-loop
 
