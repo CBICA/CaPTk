@@ -70,7 +70,7 @@ jobs:
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
       displayName: 'Downloading via wget'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # Moving LFS Files
     - bash: |
@@ -87,7 +87,7 @@ jobs:
         rm -rf ../.git
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - script: |
         cd bin
@@ -101,9 +101,11 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
         rm -rf installLibs
         rm -rf qt.zip
-        rm -rf binaries_windows.zip
+        rm -rf binaries_*.zip
+        
+        rm -rf externalApps/binaries*/libra
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - bash: |
         git pull origin master
@@ -163,7 +165,7 @@ jobs:
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
-        rm -rf binaries_windows.zip
+
         rm -rf install_manifest.txt
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
@@ -338,15 +340,19 @@ jobs:
         # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
         cd bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
+
+        rm -rf binaries_*.zip
+        
+        rm -rf externalApps/binaries*/libra
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # - bash: |
     #     tar cvfz bin_linux_20200212.tar.gz bin
@@ -589,7 +595,7 @@ jobs:
         # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
+      # condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
     - bash: |
         cd bin
@@ -601,8 +607,10 @@ jobs:
 
         make -j 2
 
+        rm -rf binaries_*.zip
+        
       displayName: 'Configure and compile Superbuild'
-      condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
+      # condition: ne(variables['CACHE_RESTORED_MAC'], 'true')
 
      # Check qt
     - bash: |
@@ -840,6 +848,7 @@ jobs:
 
     - script: |
         cd bin
+
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5" -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;E:/LibsCaPTk/qt/5.12.1/bin"
