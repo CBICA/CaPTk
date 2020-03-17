@@ -852,6 +852,8 @@ jobs:
       displayName: 'Testing git pull and version'
 
     - script: |
+        Remove-Item -Force -ErrorAction Ignore CMakeCache.txt
+
         cd bin
 
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
