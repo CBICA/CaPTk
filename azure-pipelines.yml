@@ -831,6 +831,8 @@ jobs:
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -OutFile binaries_windows.zip
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -OutFile qt.zip
+
+        ls
       displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
 
     - script: |
@@ -863,8 +865,8 @@ jobs:
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        setx PATH "$(Build.SourcesDirectory)/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5;%CMAKE_PREFIX_PATH%"
 
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile CaPTk'
@@ -875,7 +877,9 @@ jobs:
         git lfs pull --include "data/TestData.zip"
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        setx PATH "$(Build.SourcesDirectory)/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5;%CMAKE_PREFIX_PATH%"
+
         cmake --build . --target RUN_TESTS --config Release
       displayName: 'Performing the Tests'
 
@@ -884,8 +888,8 @@ jobs:
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
 
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        setx PATH "$(Build.SourcesDirectory)/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5;%CMAKE_PREFIX_PATH%"
         cmake --build . --target PACKAGE --config Release
 
       displayName: 'Build & Package CaPTk'
@@ -1047,6 +1051,8 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
+        rm -rf bin
+
         mkdir -p bin
         cp -r ../../../superbuild/ ./bin
         cd bin
@@ -1073,7 +1079,9 @@ jobs:
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DCMAKE_INSTALL_PREFIX="./install" ../
+        
+        echo $CMAKE_PREFIX_PATH
+        cmake -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" ../
 
         make -j 2
       displayName: 'Configure and compile CaPTk'
@@ -1092,7 +1100,8 @@ jobs:
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build ../
+        
+        cmake -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" ../
 
         make -j 2
 
