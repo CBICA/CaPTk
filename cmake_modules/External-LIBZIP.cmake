@@ -2,12 +2,50 @@
 
 SET( LIBZIP_DEPENDENCIES )
 
+INCLUDE( ExternalProject )
+
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED YES) 
 
 SET( EXTRA_NON_WINDOWS_OPTIONS "")
 IF(NOT WIN32)
 SET( EXTRA_NON_WINDOWS_OPTIONS -DCMAKE_BUILD_TYPE=Release)
+ENDIF()
+
+function(functionInstallExternalCMakeProject ep_name)
+  ExternalProject_Get_Property(${ep_name} binary_dir)
+  install(SCRIPT ${binary_dir}/cmake_install.cmake)
+endfunction()
+
+ExternalProject_Add( 
+  ZLIB
+  DEPENDS ""
+  GIT_REPOSITORY https://github.com/madler/zlib.git
+  GIT_TAG v1.2.11
+  SOURCE_DIR ZLIB-source
+  BINARY_DIR ZLIB-build
+  UPDATE_COMMAND ""
+  PATCH_COMMAND ""
+  # INSTALL_COMMAND ""
+  CMAKE_GENERATOR ${gen}
+  CMAKE_ARGS
+    -DCMAKE_INSTALL_PREFIX:STRING=${PROJECT_BINARY_DIR}/ep
+    -DINSTALL_BIN_DIR:STRING=${PROJECT_BINARY_DIR}/ep/bin
+    -DINSTALL_INC_DIR:STRING=${PROJECT_BINARY_DIR}/ep/include
+    -DINSTALL_LIB_DIR:STRING=${PROJECT_BINARY_DIR}/ep/lib
+    -DINSTALL_MAN_DIR:STRING=${PROJECT_BINARY_DIR}/ep/share/man
+    -DINSTALL_PKGCONFIG_DIR:STRING=${PROJECT_BINARY_DIR}/ep/share/pkgconfig
+    -DCMAKE_BUILD_TYPE:STRING=Release
+)
+functionInstallExternalCMakeProject(ZLIB)
+
+# set the expected zlib libraries
+IF( WIN32 )
+  SET( ZLIB_LIB_DEBUG ${PROJECT_BINARY_DIR}/ep/lib/zlibstaticd.lib )
+  SET( ZLIB_LIB_RELEASE ${PROJECT_BINARY_DIR}/ep/lib/zlibstatic.lib )
+ELSE()
+  SET( ZLIB_LIB_DEBUG ${PROJECT_BINARY_DIR}/ep/lib/libz.a )
+  SET( ZLIB_LIB_RELEASE ${PROJECT_BINARY_DIR}/ep/lib/libz.a )
 ENDIF()
 
 MESSAGE( STATUS "Adding LIBZIP-1.5.2a ...")
@@ -31,7 +69,10 @@ ExternalProject_Add(
     -DZLIB_LIBRARY_RELEASE:STRING=${ZLIB_LIB_RELEASE}
     -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS} 
     -DCMAKE_BUILD_TYPE:STRING=Release
+    # -DCMAKE_DEBUG_POSTFIX:STRING=d
+    -DBUILD_EXAMPLES:BOOL=OFF
 )
+functionInstallExternalCMakeProject(LIBZIP)
 
 SET ( LIBZIP_INCLUDE_DIR ${PROJECT_BINARY_DIR}/ep/include CACHE STRING "LIBZIP Include Dir") 
 IF( WIN32 )
