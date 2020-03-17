@@ -3186,7 +3186,7 @@ void FeatureExtraction< TImage >::Update()
         // write the above features into m_output
         if (m_outputVerticallyConcatenated)
         {
-          cbica::stringReplace(currentPatientModalityROIFeatureFamilyFeature, "_", ",");
+          currentPatientModalityROIFeatureFamilyFeature = cbica::stringReplace(currentPatientModalityROIFeatureFamilyFeature, "_", ",");
 
           m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Max," + currentMax + ",\n";
           m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Min," + currentMin + ",\n";
@@ -3221,7 +3221,7 @@ void FeatureExtraction< TImage >::Update()
       // write the features for training
       if (m_outputVerticallyConcatenated)
       {
-        if (!cbica::isFile(m_outputFile) && m_LatticeFeatures.empty()) // if file is not present & no lattice features are extracted, write the CSV headers 
+        if (!cbica::isFile(m_outputFile)) // if file is not present & no lattice features are extracted, write the CSV headers 
         {
           m_finalOutputToWrite = "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n" + m_finalOutputToWrite;
         }
