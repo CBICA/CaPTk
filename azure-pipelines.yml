@@ -856,9 +856,9 @@ jobs:
 
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
         setx PATH "%PATH%;E:/LibsCaPTk/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk_LibZip/ITK-build;E:/LibsCaPTk_LibZip/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;%CMAKE_PREFIX_PATH%"
+        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk_LibZip/ITK-build;E:/LibsCaPTk_LibZip/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;%CMAKE_PREFIX_PATH%"
 
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk_LibZip/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk_LibZip/DCMTK-build" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=OFF ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk_LibZip/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk_LibZip/DCMTK-build" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DQt5WebView_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView" -DBUILD_TESTING=OFF ..
         
         cmake --build . --target ALL_BUILD --config Release
       displayName: 'Configure and compile CaPTk'
@@ -867,9 +867,9 @@ jobs:
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
         setx PATH "%PATH%;E:/LibsCaPTk/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk_LibZip/ITK-build;E:/LibsCaPTk_LibZip/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;%CMAKE_PREFIX_PATH%"
+        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk_LibZip/ITK-build;E:/LibsCaPTk_LibZip/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;%CMAKE_PREFIX_PATH%"
         
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk_LibZip/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk_LibZip/DCMTK-build" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=OFF ..
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk_LibZip/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk_LibZip/DCMTK-build" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DQt5WebView_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView" -DBUILD_TESTING=OFF ..
         
         cmake --build . --target PACKAGE --config Release
 
