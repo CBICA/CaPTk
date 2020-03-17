@@ -1033,7 +1033,7 @@ jobs:
 
     - bash: |
         mkdir -p bin
-        cp -r ../../../superbuild/ ./bin
+        cp -r ../../../../superbuild/ ./bin
         # cd bin
         # cp -r ./ ../../../../superbuild
         
