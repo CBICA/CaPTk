@@ -1053,10 +1053,13 @@ jobs:
     - bash: |
         rm -rf bin
 
-        mkdir -p bin
-        cp -r ../../../superbuild/ ./bin
+        mkdir bin
+        cd bin
+        cp -r ../../../superbuild/ ./
         cd bin
         ls
+        ls ITK-build
+        pwd
         # cd bin
         # cp -r ./ ../../../../superbuild
         
