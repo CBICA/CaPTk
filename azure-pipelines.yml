@@ -1033,7 +1033,9 @@ jobs:
 
     - bash: |
         mkdir -p bin
-        cp -r ../../../../superbuild/ ./bin
+        cp -r ../../../superbuild/ ./bin
+        cd bin
+        ls
         # cd bin
         # cp -r ./ ../../../../superbuild
         
@@ -1055,7 +1057,7 @@ jobs:
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/ITK-build:$(Build.SourcesDirectory)/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DITK_DIR=../ITK-build -DDCMTK_DIR=/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install" ../
 
         make -j 2
@@ -1074,7 +1076,7 @@ jobs:
         rm CMakeCache.txt
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/ITK-build:$(Build.SourcesDirectory)/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         cmake -DITK_DIR=/ITK-build -DDCMTK_DIR=/DCMTK-build ../
 
         make -j 2
