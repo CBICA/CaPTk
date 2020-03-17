@@ -1007,32 +1007,32 @@ jobs:
 
       displayName: 'Git Submodule Init and Update'
 
-    # Moving LFS Files
+    # # Moving LFS Files
+    # - bash: |
+    #     mkdir -p bin
+    #     cd bin
+    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
+    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+    #     # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+    #     # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+    #     ls -lt
+    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+
+    # - bash: |
+    #     cd bin
+
+    #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+    #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+
+    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+
+    #   displayName: 'Configure and compile Superbuild'
+
     - bash: |
         mkdir -p bin
-        cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
-        # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-        # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
-        ls -lt
-      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-
-    - bash: |
-        cd bin
-
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-
-        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-
-      displayName: 'Configure and compile Superbuild'
-
-    - bash: |
-        # mkdir -p bin
-        # cp -r ../../../superbuild/ ./bin
-        cd bin
-        cp -r ./ ../../../../superbuild
+        cp -r ../../../superbuild/ ./bin
+        # cd bin
+        # cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
