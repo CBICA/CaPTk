@@ -1055,7 +1055,7 @@ jobs:
 
         mkdir bin
         cd bin
-        cp -r ../../../superbuild/ ./
+        cp -r ../../../../superbuild/ ./
         cd bin
         ls
         ls ITK-build
