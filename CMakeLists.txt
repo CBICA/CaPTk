@@ -984,7 +984,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       ${LIBNAME_Applications}
       ${LIBNAME_FeatureExtractor}
       ${LIBNAME_CBICATK}
-      LIBZIP
+      
     )
 
     # set properties for the executable
