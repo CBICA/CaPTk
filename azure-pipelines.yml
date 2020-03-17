@@ -824,12 +824,11 @@ jobs:
       displayName: 'Reset bin'
 
     # Moving LFS Files
-    - bash: |
+    - powershell: |
         mkdir bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
-        ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
 
     - script: |
