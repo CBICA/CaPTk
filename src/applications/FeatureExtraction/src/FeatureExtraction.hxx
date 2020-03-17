@@ -2453,9 +2453,9 @@ void FeatureExtraction< TImage >::Update()
                   //auto local_map = std::get<1>(temp->second);
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
-                  for (size_t i = 0; i < m_Bins_range.size(); i++)
+                  for (size_t b = 0; b < m_Bins_range.size(); b++)
                   {
-                    m_Bins = m_Bins_range[i];
+                    m_Bins = m_Bins_range[b];
                     auto m_Bins_string = std::to_string(m_Bins);
                     CalculateHistogram(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
 
@@ -2599,9 +2599,9 @@ void FeatureExtraction< TImage >::Update()
                     auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
                     //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
 
-                    for (size_t i = 0; i < m_Bins_range.size(); i++)
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
                     {
-                      m_Bins = m_Bins_range[i];
+                      m_Bins = m_Bins_range[b];
                       auto m_Bins_string = std::to_string(m_Bins);
                       std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
                       if (TImage::ImageDimension == 3)
@@ -2668,9 +2668,9 @@ void FeatureExtraction< TImage >::Update()
                     auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
                     //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
 
-                    for (size_t i = 0; i < m_Bins_range.size(); i++)
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
                     {
-                      m_Bins = m_Bins_range[i];
+                      m_Bins = m_Bins_range[b];
                       auto m_Bins_string = std::to_string(m_Bins);
                       std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
                       if (TImage::ImageDimension == 3)
@@ -2737,9 +2737,9 @@ void FeatureExtraction< TImage >::Update()
                     auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
                     //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
 
-                    for (size_t i = 0; i < m_Bins_range.size(); i++)
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
                     {
-                      m_Bins = m_Bins_range[i];
+                      m_Bins = m_Bins_range[b];
                       auto m_Bins_string = std::to_string(m_Bins);
                       std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
                       if (TImage::ImageDimension == 3)
@@ -2770,7 +2770,7 @@ void FeatureExtraction< TImage >::Update()
                       else
                       {
                         CalculateGLSZM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
-                        WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                           "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
                           ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
                       }
@@ -2807,9 +2807,9 @@ void FeatureExtraction< TImage >::Update()
                     auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
                     //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
 
-                    for (size_t i = 0; i < m_Bins_range.size(); i++)
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
                     {
-                      m_Bins = m_Bins_range[i];
+                      m_Bins = m_Bins_range[b];
                       auto m_Bins_string = std::to_string(m_Bins);
                       std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
                       if (TImage::ImageDimension == 3)
@@ -2878,9 +2878,9 @@ void FeatureExtraction< TImage >::Update()
                     auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
                     //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
 
-                    for (size_t i = 0; i < m_Bins_range.size(); i++)
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
                     {
-                      m_Bins = m_Bins_range[i];
+                      m_Bins = m_Bins_range[b];
                       auto m_Bins_string = std::to_string(m_Bins);
                       std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
 
