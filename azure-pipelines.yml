@@ -1029,39 +1029,41 @@ jobs:
 
       displayName: 'Git Submodule Init and Update'
 
-    # # Moving LFS Files
-    # - bash: |
-    #     mkdir -p bin
-    #     cd bin
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
-    #     # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-    #     # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
-    #     ls -lt
-    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-
-    # - bash: |
-    #     cd bin
-
-    #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-    #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-
-    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-
-    #   displayName: 'Configure and compile Superbuild'
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+        # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+        # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
     - bash: |
-        rm -rf bin
+        cd bin
 
-        mkdir bin
-        cd bin
-        cp -r ../../../../superbuild/ ./
-        cd bin
-        ls
-        ls ITK-build
-        pwd
+        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+
+        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+
+        make -j 2
+
+      displayName: 'Configure and compile Superbuild'
+
+    - bash: |
+        # rm -rf bin
+
+        # mkdir bin
         # cd bin
-        # cp -r ./ ../../../../superbuild
+        # cp -r ../../../../superbuild/ ./
+        # cd bin
+        # ls
+        # ls ITK-build
+        # pwd
+        cd bin
+        cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
@@ -1082,6 +1084,8 @@ jobs:
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         
         echo $CMAKE_PREFIX_PATH
+        cmake ../
+        rm CMakeCache.txt
         cmake -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" ../
 
         make -j 2
