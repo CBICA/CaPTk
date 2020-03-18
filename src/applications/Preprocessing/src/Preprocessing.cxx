@@ -461,7 +461,7 @@ int algorithmsRunner()
             " -rf " + registrationFixedImageFile +
             " -rm " + inputImageFile +
             " " + outputImageFile +
-            " -ri NN -r " + intermediateFiles_deformable["Deform"] +
+            " -ri LINEAR -r " + intermediateFiles_deformable["Deform"] +
             " " + intermediateFiles_affine["Affine"];
         }
         else
