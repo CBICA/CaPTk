@@ -704,6 +704,10 @@ int main(int argc, char** argv)
         }
       }
     }
+    else
+    {
+      inputImageFiles.push_back(inputImageFile);
+    }
   }
   if (parser.isPresent("m"))
   {
