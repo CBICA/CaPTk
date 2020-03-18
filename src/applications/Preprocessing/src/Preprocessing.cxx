@@ -414,7 +414,7 @@ int algorithmsRunner()
             " -rf " + registrationFixedImageFile +
             " -rm " + inputImageFile +
             " " + outputImageFile +
-            " -ri NN -r " + intermediateFiles_affine["Affine"];
+            " -ri LABEL 0.2vox -r " + intermediateFiles_affine["Affine"];
         }
         else
         {
@@ -422,7 +422,7 @@ int algorithmsRunner()
             " -rf " + registrationFixedImageFile +
             " -rm " + inputImageFile +
             " " + outputImageFile +
-            " -ri LABEL 0.2vox -r " + intermediateFiles_affine["Affine"];
+            " -ri NN -r " + intermediateFiles_affine["Affine"];
         }
 
         if (std::system(commandToCall.c_str()) != 0)
