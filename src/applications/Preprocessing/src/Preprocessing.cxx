@@ -391,7 +391,7 @@ int algorithmsRunner()
         }
         else
         {
-          commandToCall = greedyPathAndDim + " " +
+          commandToCall = greedyPathAndDim + " -a" +
             commonCommands +
             metricsCommand +
             " -ia-image-centers -dof " + std::to_string(registrationRigidDof) + " -o " + interimFiles_affineTransform;
@@ -411,39 +411,7 @@ int algorithmsRunner()
 
       switch (registrationTypeInt)
       {
-      case RegistrationTypeEnum::Rigid:
-      {
-        // not going to be defined
-        break;
-      }
-      case RegistrationTypeEnum::Affine:
-      {
-        if (registrationSegmentationMoving)
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -ri LABEL 0.2vox -r " + interimFiles_affineTransform +
-            " -rm " + inputImageFile +
-            " " + outputImageFile;
-        }
-        else
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -ri LINEAR -r " + interimFiles_affineTransform +
-            " -rm " + inputImageFile +
-            " " + outputImageFile;
-        }
-
-        if (std::system(commandToCall.c_str()) != 0)
-        {
-          std::cerr << "Something went wrong when calling Greedy Reslice Affine.\n";
-          return EXIT_FAILURE;
-        }
-
-        break;
-      }
-      default: // we shall always assume deformable
+      case RegistrationTypeEnum::Deformable:
       {
         if (!cbica::fileExists(interimFiles_deformField) || cbica::fileExists(interimFiles_invDeformField))
         {
@@ -518,6 +486,32 @@ int algorithmsRunner()
         if (std::system(commandToCall.c_str()) != 0)
         {
           std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
+          return EXIT_FAILURE;
+        }
+        break;
+      }
+      default: // we shall always assume affine/rigid
+      {
+        if (registrationSegmentationMoving)
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -ri LABEL 0.2vox -r " + interimFiles_affineTransform +
+            " -rm " + inputImageFile +
+            " " + outputImageFile;
+        }
+        else
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -ri LINEAR -r " + interimFiles_affineTransform +
+            " -rm " + inputImageFile +
+            " " + outputImageFile;
+        }
+
+        if (std::system(commandToCall.c_str()) != 0)
+        {
+          std::cerr << "Something went wrong when calling Greedy Reslice Affine.\n";
           return EXIT_FAILURE;
         }
 
