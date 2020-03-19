@@ -8943,7 +8943,7 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
   m_IsGeodesicTrainingRunning = false;
 }
 
-void fMainWindow::Registration(std::string fixedfilename, std::vector<std::string> inputFileNames,
+void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
   std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames,
   std::string metrics, bool rigidMode, bool affineMode, bool deformMode,
   std::string radii, std::string iterations)
@@ -8977,16 +8977,7 @@ void fMainWindow::Registration(std::string fixedfilename, std::vector<std::strin
     }
     updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
 
-    std::string fixedFileCommand = "-f " + fixedFileName;
-    std::string movingFileCommand = " -i " + inputFileNames[i];
-    std::string affineMatrixCommand = " -t " + matrixFileNames[i];
-    std::string outputCommand = " -o " + outputFileNames[i];
-    std::string metricsCommand = " -m " + metrics;
-    std::string iterationsCommand = " -n " + iterations;
     QStringList args;
-    args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
-      << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
-      << "-m" << metrics.c_str() << "-n" << iterations.c_str();
 
     args << "-i" << inputFileNames[i].c_str();
     args << "-o" << outputFileNames[i].c_str();
@@ -8999,13 +8990,18 @@ void fMainWindow::Registration(std::string fixedfilename, std::vector<std::strin
     else
       args << "-rME " << metrics.c_str();
 
-    if (affineMode)
+    args << "-reg";
+    if (rigidMode)
     {
-      args << "-reg" << "Affine";
+      args << "Rigid";
+    }
+    else if (affineMode)
+    {
+      args << "Afine";
     }
     else
     {
-      args << "-r";
+      args << "Deformable";
     }
     std::string fullCommandToRun = getApplicationPath("Preprocessing");
 
@@ -9044,8 +9040,10 @@ void fMainWindow::Registration(std::string fixedfilename, std::vector<std::strin
 
     if (affineMode)
       mode = "Affine";
-    else
+    else if (rigidMode)
       mode = "Rigid";
+    else
+      mode = "Deformable";
 
     if (file.is_open())
     {

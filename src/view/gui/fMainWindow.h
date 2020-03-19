@@ -1444,7 +1444,7 @@ public slots:
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
   //! Performs the registration
-  void Registration(std::string fixedfilename, std::vector<std::string> inputFileNames, 
+  void Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
     std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, 
     std::string metrics, bool rigidMode, bool affineMode, bool deformMode, 
     std::string radii, std::string iterations);
