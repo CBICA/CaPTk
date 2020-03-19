@@ -41,11 +41,11 @@ int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, outputDir, targetImageFile;
 std::vector< std::string > inputImageFiles; // store multiple image files
-std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "SSD", registrationIterations = "100,50,5",
+std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "NMI", registrationIterations = "100,50,5",
 registrationAffineTransformInput, registrationDeformableTransformInput;
 
 int histoMatchQuantiles = 40, histoMatchBins = 100,
-registrationTypeInt;
+registrationTypeInt, registrationRigidDof = 10;
 bool registrationIntermediate = false, registrationSegmentationMoving = false;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
 ssSigma = 0.5, ssIntensityThreshold = 80, n3Bias_filterNoise = 0.01;
@@ -665,7 +665,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
-  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable", "The kind of registration to perform", "Defaults to " + registrationType, "Can use Mask File with '-m' and multiple moving images with '-i'");
+  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable | Rigid-DOF", "The kind of registration to perform", "Defaults to " + registrationType, "Can use Mask File with '-m' and multiple moving images with '-i'", "For Rigid, the second number defines the degrees of freedom, eg: '-ref Rigid-10'");
   parser.addOptionalParameter("rFI", "regFixedImg", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration", "Needed for registration");
   parser.addOptionalParameter("rME", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metrics to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
   parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The number of iterations per level of multi-res", "Defaults to " + registrationIterations);
@@ -832,8 +832,25 @@ int main(int argc, char** argv)
 
     parser.getParameterValue("reg", registrationType);
     std::transform(registrationType.begin(), registrationType.end(), registrationType.begin(), ::toupper);
-    if ((registrationType.find("RIGID") != std::string::npos) || 
-      (registrationType.find("AFFINE") != std::string::npos))
+    if (registrationType.find("RIGID") != std::string::npos)
+    {
+      registrationTypeInt = RegistrationTypeEnum::Rigid;
+      auto temp = cbica::stringSplit(registrationType, "-"); // registrationRigidDof
+      // check for different delimiters
+      if (temp.size() == 1)
+      {
+        temp = cbica::stringSplit(registrationType, "x");
+        if (temp.size() == 1)
+        {
+          temp = cbica::stringSplit(registrationType, ":");
+        }
+      }
+      if (temp.size() == 2)
+      {
+        registrationRigidDof = std::atoi(temp[1].c_str());
+      }
+    }
+    if (registrationType.find("AFFINE") != std::string::npos)
     {
       registrationTypeInt = RegistrationTypeEnum::Affine;
     }
