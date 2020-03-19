@@ -14,6 +14,12 @@ namespace cbica
   */
   inline bool IsDicom(const std::string fileNameToCheck)
   {
+    auto fileExt = cbica::getFilenameExtension(fileNameToCheck);
+    // add a manual check for HDR/IMG images, which mistakenly get detected as DICOM
+    if ((fileExt == ".hdr") || (fileExt == ".img"))
+    {
+      return false;
+    }
     gdcm::Reader reader;
     reader.SetFileName(fileNameToCheck.c_str());
     return reader.CanRead();
