@@ -73,7 +73,13 @@ public:
     void getIterations(const QString iterations);
  
 signals:
-    void Registrationsignal(std::string fixedfilename, std::vector<std::string> inputfilenames, std::vector<std::string> outputfilenames, std::vector<std::string> matrixfilenames, bool registrationMode, std::string metrics, bool affineMode, bool deformMode, std::string radii, std::string iterations);
+    void RegistrationSignal(std::string fixedfilename, 
+      std::vector<std::string> inputfilenames, 
+      std::vector<std::string> outputfilenames, 
+      std::vector<std::string> matrixfilenames, 
+      bool registrationMode, std::string metrics, 
+      bool affineMode, bool deformMode, 
+      std::string radii, std::string iterations);
 };
 
 #endif

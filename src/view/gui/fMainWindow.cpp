@@ -518,7 +518,10 @@ fMainWindow::fMainWindow()
   mProjectVariant = std::string(PROJECT_VARIANT);
 
   connect(featurePanel, SIGNAL(helpClicked_FeaUsage(std::string)), this, SLOT(help_contextual(std::string)));
-  connect(&registrationPanel, SIGNAL(Registrationsignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)), this, SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)));
+  connect(&registrationPanel, 
+    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, bool, std::string, std::string)), 
+    this, 
+    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, bool, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
@@ -8941,7 +8944,7 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 }
 
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames,
-  std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
+  std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, bool deformMode, std::string radii, std::string iterations)
 {
   std::string configPathName;
   std::string configFileName;
@@ -9028,7 +9031,7 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
 
     std::string mode;
 
-    if (affineMode == true)
+    if (affineMode)
       mode = "Affine";
     else
       mode = "Rigid";

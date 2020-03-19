@@ -869,7 +869,7 @@ void fRegistrationDialog::ConfirmButtonPressed()
 
   else 
   {
-    emit Registrationsignal(fixedFileName->text().toStdString(), inputfilenames, 
+    emit RegistrationSignal(fixedFileName->text().toStdString(), inputfilenames, 
       outputfilenames, matrixfilenames, registrationMode, 
       metric, affineMode, deformMode, radius, m_iterations);
     this->close();
