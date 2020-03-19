@@ -381,15 +381,25 @@ int algorithmsRunner()
       std::string commandToCall;
       if (!cbica::fileExists(interimFiles_affineTransform))
       {
-        // we always do affine
-        commandToCall = greedyPathAndDim + " -a" +
-          commonCommands +
-          metricsCommand +
-          " -ia-image-centers -o " + interimFiles_affineTransform;
-        ;
+        if (registrationTypeInt == RegistrationTypeEnum::Affine)
+        {
+          commandToCall = greedyPathAndDim + " -a" +
+            commonCommands +
+            metricsCommand +
+            " -ia-image-centers -o " + interimFiles_affineTransform;
+          ;
+        }
+        else
+        {
+          commandToCall = greedyPathAndDim + " " +
+            commonCommands +
+            metricsCommand +
+            " -ia-image-centers -dof " + std::to_string(registrationRigidDof) + " -o " + interimFiles_affineTransform;
+          ;
+        }
         if (debugMode)
         {
-          std::cout << "Starting Affine registration.\n";
+          std::cout << "Starting Affine/Rigid registration.\n";
           std::cout << "commandToCall: \n" << commandToCall << "\n";
         }
         if (std::system(commandToCall.c_str()) != 0)
@@ -671,7 +681,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The number of iterations per level of multi-res", "Defaults to " + registrationIterations);
   parser.addOptionalParameter("rIS", "regInterSave", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the intermediate files are to be saved or not", "Defaults to " + std::to_string(registrationIntermediate));
   parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image(s) is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
-  parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped");
+  parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped", "Also used for rigid transformation");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
   parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed (comma-separated), the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
 
@@ -835,7 +845,7 @@ int main(int argc, char** argv)
     if (registrationType.find("RIGID") != std::string::npos)
     {
       registrationTypeInt = RegistrationTypeEnum::Rigid;
-      auto temp = cbica::stringSplit(registrationType, "-"); // registrationRigidDof
+      auto temp = cbica::stringSplit(registrationType, "-");
       // check for different delimiters
       if (temp.size() == 1)
       {
@@ -850,7 +860,7 @@ int main(int argc, char** argv)
         registrationRigidDof = std::atoi(temp[1].c_str());
       }
     }
-    if (registrationType.find("AFFINE") != std::string::npos)
+    else if (registrationType.find("AFFINE") != std::string::npos)
     {
       registrationTypeInt = RegistrationTypeEnum::Affine;
     }
