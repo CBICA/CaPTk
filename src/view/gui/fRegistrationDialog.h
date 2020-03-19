@@ -32,7 +32,7 @@ class fRegistrationDialog : public QDialog, private Ui::fRegistrationDialog
 public:
     fRegistrationDialog();
     ~fRegistrationDialog();
-    bool affineMode = true, registrationMode = true, deformMode = false;
+    bool affineMode = true, rigidMode = true, deformMode = false;
     std::string metric = "NMI";
     std::string radius = "5x5x5";
     std::string m_iterations = "100x50x5";
@@ -77,8 +77,8 @@ signals:
       std::vector<std::string> inputfilenames, 
       std::vector<std::string> outputfilenames, 
       std::vector<std::string> matrixfilenames, 
-      bool registrationMode, std::string metrics, 
-      bool affineMode, bool deformMode, 
+      std::string metrics, 
+      bool rigidMode, bool affineMode, bool deformMode, 
       std::string radii, std::string iterations);
 };
 

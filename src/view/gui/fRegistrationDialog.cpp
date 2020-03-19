@@ -603,6 +603,8 @@ void fRegistrationDialog::SelectedAffineMode()
   options_RIGID_selected->setChecked(false);
   options_DEFORMABLE_selected->setChecked(false);
   affineMode = true;
+  rigidMode = false;
+  deformMode = false;
 }
 
 void fRegistrationDialog::SelectedRigidMode()
@@ -610,13 +612,16 @@ void fRegistrationDialog::SelectedRigidMode()
   options_AFFINE_selected->setChecked(false);
   options_DEFORMABLE_selected->setChecked(false);
   affineMode = false;
+  rigidMode = true;
+  deformMode = false;
 }
 
 void fRegistrationDialog::SelectedDeformMode()
 {
   options_AFFINE_selected->setChecked(false);
   options_RIGID_selected->setChecked(false);
-  affineMode = true;
+  affineMode = false;
+  rigidMode = false;
   deformMode = true;
 }
 
@@ -870,8 +875,8 @@ void fRegistrationDialog::ConfirmButtonPressed()
   else 
   {
     emit RegistrationSignal(fixedFileName->text().toStdString(), inputfilenames, 
-      outputfilenames, matrixfilenames, registrationMode, 
-      metric, affineMode, deformMode, radius, m_iterations);
+      outputfilenames, matrixfilenames, 
+      metric, rigidMode, affineMode, deformMode, radius, m_iterations);
     this->close();
   }
 }
