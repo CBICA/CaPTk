@@ -32,7 +32,7 @@ class fRegistrationDialog : public QDialog, private Ui::fRegistrationDialog
 public:
     fRegistrationDialog();
     ~fRegistrationDialog();
-    bool affineMode = true, registrationMode = true;
+    bool affineMode = true, registrationMode = true, deformMode = false;
     std::string metric = "NMI";
     std::string radius = "5x5x5";
     std::string m_iterations = "100x50x5";
@@ -64,6 +64,7 @@ public:
     void SelectMatrixFile5();
     void SelectedAffineMode();
     void SelectedRigidMode();
+    void SelectedDeformMode();
     void SelectedMetric(int index);
     void addMoreImages();
     void SelectGenerateMatrix(bool checked);
