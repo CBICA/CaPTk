@@ -8997,7 +8997,7 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     }
     else if (affineMode)
     {
-      args << "Afine";
+      args << "Affine";
     }
     else
     {
