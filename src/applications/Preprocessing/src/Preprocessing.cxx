@@ -347,7 +347,7 @@ int algorithmsRunner()
       }
       auto inputFile_base = cbica::getFilenameBase(inputImageFile);
       auto fixedFile_base = cbica::getFilenameBase(registrationFixedImageFile);
-      std::map< std::string, std::string > intermediateFiles_affine, intermediateFiles_deformable;
+      std::string interimFiles_affineTransform, interimFiles_deformField, interimFiles_invDeformField;
       auto const _registrationMetrics = "_" + registrationMetrics;
       auto const _registrationMetricsNII = _registrationMetrics + ".nii.gz";
       auto const _fixedFileTOInputFileBase = fixedFile_base + "TO" + inputFile_base;
@@ -357,35 +357,35 @@ int algorithmsRunner()
       // populate default names for intermediate files
       if (registrationAffineTransformInput.empty())
       {
-        intermediateFiles_affine["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
+        interimFiles_affineTransform = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
         affine_defaultNamedUsed = true;
       }
       else
       {
-        intermediateFiles_affine["Affine"] = registrationAffineTransformInput;
+        interimFiles_affineTransform = registrationAffineTransformInput;
       }
       if (registrationDeformableTransformInput.empty())
       {
-        intermediateFiles_deformable["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-        intermediateFiles_deformable["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+        interimFiles_deformField = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
+        interimFiles_invDeformField = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
         deformable_defaultNamedUsed = true;
       }
       else
       {
-        intermediateFiles_deformable["Deform"] = registrationDeformableTransformInput;
+        interimFiles_deformField = registrationDeformableTransformInput;
         std::string path, base, ext;
         cbica::splitFileName(registrationDeformableTransformInput, path, base, ext);
-        intermediateFiles_deformable["DeformInv"] = path + "/" + base + "-Inv.nii.gz";
+        interimFiles_invDeformField = path + "/" + base + "-Inv.nii.gz";
       }
 
       std::string commandToCall;
-      if (!cbica::fileExists(intermediateFiles_affine["Affine"]))
+      if (!cbica::fileExists(interimFiles_affineTransform))
       {
         // we always do affine
         commandToCall = greedyPathAndDim + " -a" +
           commonCommands +
           metricsCommand +
-          " -ia-image-centers -o " + intermediateFiles_affine["Affine"];
+          " -ia-image-centers -o " + interimFiles_affineTransform;
         ;
         if (debugMode)
         {
@@ -412,7 +412,7 @@ int algorithmsRunner()
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
-            " -ri LABEL 0.2vox -r " + intermediateFiles_affine["Affine"] +
+            " -ri LABEL 0.2vox -r " + interimFiles_affineTransform +
             " -rm " + inputImageFile +
             " " + outputImageFile;
         }
@@ -420,7 +420,7 @@ int algorithmsRunner()
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
-            " -ri LINEAR -r " + intermediateFiles_affine["Affine"] +
+            " -ri LINEAR -r " + interimFiles_affineTransform +
             " -rm " + inputImageFile +
             " " + outputImageFile;
         }
@@ -435,7 +435,7 @@ int algorithmsRunner()
       }
       default: // we shall always assume deformable
       {
-        if (!cbica::fileExists(intermediateFiles_deformable["Deform"]) || cbica::fileExists(intermediateFiles_deformable["DeformInv"]))
+        if (!cbica::fileExists(interimFiles_deformField) || cbica::fileExists(interimFiles_invDeformField))
         {
           if (debugMode)
           {
@@ -444,9 +444,9 @@ int algorithmsRunner()
           commandToCall = greedyPathAndDim +
             commonCommands +
             metricsCommand +
-            " -it " + intermediateFiles_affine["Affine"] +
-            " -o " + intermediateFiles_deformable["Deform"] +
-            " -oinv " + intermediateFiles_deformable["DeformInv"];
+            " -it " + interimFiles_affineTransform +
+            " -o " + interimFiles_deformField +
+            " -oinv " + interimFiles_invDeformField;
 
           if (std::system(commandToCall.c_str()) != 0)
           {
@@ -459,8 +459,8 @@ int algorithmsRunner()
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
-            " -ri LABEL 0.2vox -r " + intermediateFiles_deformable["Deform"] +
-            " " + intermediateFiles_affine["Affine"] +
+            " -ri LABEL 0.2vox -r " + interimFiles_deformField +
+            " " + interimFiles_affineTransform +
             " -rm " + inputImageFile +
             " " + outputImageFile;
         }
@@ -468,8 +468,8 @@ int algorithmsRunner()
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
-            " -ri LINEAR -r " + intermediateFiles_deformable["Deform"] +
-            " " + intermediateFiles_affine["Affine"] +
+            " -ri LINEAR -r " + interimFiles_deformField +
+            " " + interimFiles_affineTransform +
             " -rm " + inputImageFile +
             " " + outputImageFile;
         }
@@ -492,8 +492,8 @@ int algorithmsRunner()
             " -rf " + registrationFixedImageFile +
             " -rm " + inputImageFile +
             " " + outputImageFileInv +
-            " -ri NN -r " + intermediateFiles_deformable["DeformInv"] +
-            " " + intermediateFiles_affine["Affine"] + ",-1";
+            " -ri NN -r " + interimFiles_invDeformField +
+            " " + interimFiles_affineTransform + ",-1";
         }
         else
         {
@@ -501,8 +501,8 @@ int algorithmsRunner()
             " -rf " + registrationFixedImageFile +
             " -rm " + inputImageFile +
             " " + outputImageFileInv +
-            " -ri LABEL 0.2vox -r " + intermediateFiles_deformable["DeformInv"] +
-            " " + intermediateFiles_affine["Affine"] + ",-1";
+            " -ri LABEL 0.2vox -r " + interimFiles_invDeformField +
+            " " + interimFiles_affineTransform + ",-1";
         }
 
         if (std::system(commandToCall.c_str()) != 0)
@@ -521,17 +521,12 @@ int algorithmsRunner()
         // only do the deletion if default names are used
         if (affine_defaultNamedUsed)
         {
-          for (const auto& it : intermediateFiles_affine)
-          {
-            std::remove(it.second.c_str());
-          }
+          std::remove(interimFiles_affineTransform.c_str());
         }
         if (deformable_defaultNamedUsed)
         {
-          for (const auto& it : intermediateFiles_deformable)
-          {
-            std::remove(it.second.c_str());
-          }
+          std::remove(interimFiles_deformField.c_str());
+          std::remove(interimFiles_invDeformField.c_str());
         }
       }
     }
