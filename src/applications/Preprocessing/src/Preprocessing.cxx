@@ -858,7 +858,7 @@ int main(int argc, char** argv)
       if (temp.size() == 2)
       {
         registrationRigidDof = std::atoi(temp[1].c_str());
-        if ((registrationRigidDof != 12) || (registrationRigidDof != 6))
+        if ((registrationRigidDof != 12) && (registrationRigidDof != 6))
         {
           std::cerr << "Greedy only accepts 6 or 12 as the rigid DOF.\n";
           return EXIT_FAILURE;
