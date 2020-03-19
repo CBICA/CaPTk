@@ -867,8 +867,11 @@ void fRegistrationDialog::ConfirmButtonPressed()
     ShowErrorMessage("Number of input, output and matrix file names do not match. Please check the fields.");
   }
 
-  else {
-    emit Registrationsignal(fixedFileName->text().toStdString(), inputfilenames, outputfilenames, matrixfilenames, registrationMode, metric, affineMode, radius, m_iterations);
+  else 
+  {
+    emit Registrationsignal(fixedFileName->text().toStdString(), inputfilenames, 
+      outputfilenames, matrixfilenames, registrationMode, 
+      metric, affineMode, deformMode, radius, m_iterations);
     this->close();
   }
 }
