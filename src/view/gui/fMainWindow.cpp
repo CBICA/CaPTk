@@ -1201,8 +1201,8 @@ void fMainWindow::appDownload(std::string currentApp)
     
 }
 
-// void fMainWindow::unzipArchive(std::string fullPath) 
-// {
+void fMainWindow::unzipArchive(std::string fullPath) 
+{
 //   // //Open the ZIP archive
 //   // int err = 0;
 //   // zip *z = zip_open("fullPath", 0, &err);
@@ -1227,7 +1227,7 @@ void fMainWindow::appDownload(std::string currentApp)
 //   // //Do something with the contents
 //   // //delete allocated memory
 //   // delete[] contents;
-// }
+}
 
 void fMainWindow::help_BugTracker()
 {

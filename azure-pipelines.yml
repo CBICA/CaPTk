@@ -1053,16 +1053,19 @@ jobs:
       displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        # rm -rf bin
+        rm -rf bin
 
-        # mkdir bin
+        mkdir -p bin
+
         # cd bin
         # cp -r ../../../../superbuild/ ./
         # cd bin
         # ls
         # ls ITK-build
         # pwd
+        
         cd bin
+        rm -rf ../../../../superbuild
         cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
