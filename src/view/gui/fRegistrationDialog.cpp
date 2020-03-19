@@ -96,6 +96,7 @@ fRegistrationDialog::fRegistrationDialog()
 
   connect(options_AFFINE_selected, SIGNAL(toggled(bool)), this, SLOT(SelectedAffineMode()));
   connect(options_RIGID_selected, SIGNAL(toggled(bool)), this, SLOT(SelectedRigidMode()));
+  connect(options_DEFORMABLE_selected, SIGNAL(toggled(bool)), this, SLOT(SelectedDeformMode()));
 
   connect(options_MetricSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(SelectedMetric(int)));
   connect(nccRadii, SIGNAL(textChanged(QString)), this, SLOT(setRadii(QString)));
@@ -600,42 +601,65 @@ void fRegistrationDialog::SelectMovingOutputFile5()
 void fRegistrationDialog::SelectedAffineMode()
 {
   options_RIGID_selected->setChecked(false);
+  options_DEFORMABLE_selected->setChecked(false);
   affineMode = true;
 }
 
 void fRegistrationDialog::SelectedRigidMode()
 {
   options_AFFINE_selected->setChecked(false);
+  options_DEFORMABLE_selected->setChecked(false);
   affineMode = false;
+}
+
+void fRegistrationDialog::SelectedDeformMode()
+{
+  options_AFFINE_selected->setChecked(false);
+  options_RIGID_selected->setChecked(false);
+  affineMode = true;
+  deformMode = true;
 }
 
 void fRegistrationDialog::SelectedMetric(int index)
 {
-  if (options_MetricSelector->currentIndex() == 0) {
+  switch (options_MetricSelector->currentIndex())
+  {
+  case 0:
+  {
     metric = "NMI";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
   }
-  else if (options_MetricSelector->currentIndex() == 1) {
+  case 1:
+  {
     metric = "MI";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
   }
-  else if (options_MetricSelector->currentIndex() == 2) {
+  case 2:
+  {
     metric = "NCC";
     radii = true;
     options_NCC_radii->setDisabled(false);
     nccRadii->setDisabled(false);
+    break;
   }
-  else if (options_MetricSelector->currentIndex() == 3) {
+  case 3:
+  {
     metric = "SSD";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
   }
-  else {
+  default:
+  {
     metric = "NMI";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
+  }
   }
 }
 
