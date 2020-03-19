@@ -45,7 +45,7 @@ std::string registrationFixedImageFile, registrationType = "Affine", registratio
 registrationAffineTransformInput, registrationDeformableTransformInput;
 
 int histoMatchQuantiles = 40, histoMatchBins = 100,
-registrationTypeInt, registrationRigidDof = 10;
+registrationTypeInt, registrationRigidDof = 12;
 bool registrationIntermediate = false, registrationSegmentationMoving = false;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
 ssSigma = 0.5, ssIntensityThreshold = 80, n3Bias_filterNoise = 0.01;
@@ -858,6 +858,11 @@ int main(int argc, char** argv)
       if (temp.size() == 2)
       {
         registrationRigidDof = std::atoi(temp[1].c_str());
+        if ((registrationRigidDof != 12) || (registrationRigidDof != 6))
+        {
+          std::cerr << "Greedy only accepts 6 or 12 as the rigid DOF.\n";
+          return EXIT_FAILURE;
+        }
       }
     }
     else if (registrationType.find("AFFINE") != std::string::npos)
