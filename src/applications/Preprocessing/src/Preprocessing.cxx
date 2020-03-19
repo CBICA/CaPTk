@@ -311,6 +311,10 @@ int algorithmsRunner()
       std::string iterations;
       {
         auto temp = cbica::stringSplit(registrationIterations, ",");
+        if (temp.size() == 1)
+        {
+          temp = cbica::stringSplit(registrationIterations, "x");
+        }
         iterations += temp[0];
         for (size_t i = 1; i < temp.size(); i++)
         {
