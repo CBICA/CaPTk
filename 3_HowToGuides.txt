@@ -1177,6 +1177,7 @@ ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.c
 
 This is a command line executable containing the following functionalities:
 - Resizing
+- Resampling
 - Image information
 - Unique values in image
 - Get smallest bounding box in mask (optional isotropic bounding box)
@@ -1184,7 +1185,8 @@ This is a command line executable containing the following functionalities:
 - Create mask from threshold
 - DICOM to NIfTI conversion
 - NIfTI to DICOM & DICOM-Seg conversion
-- Orientation fix
+- Re-orient image
+- Cast image to another pixel type
 - Thresholding:
   - Below
   - Above
@@ -1193,6 +1195,9 @@ This is a command line executable containing the following functionalities:
   - Binary
 - Convert file formats
 - Extract Image Series from Joined stack and vice-versa (4D <-> 3D)
+- Transform coordinates from world to image and vice-versa
+- Label similarity Metrics between 2 label images
+- Hausdorff Distance between 2 label images
 
 For a full list of available applications and examples, please use the command: 
 \verbatim
