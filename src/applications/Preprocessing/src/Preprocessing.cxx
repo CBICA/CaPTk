@@ -412,17 +412,17 @@ int algorithmsRunner()
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
+            " -ri LABEL 0.2vox -r " + intermediateFiles_affine["Affine"] +
             " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri LABEL 0.2vox -r " + intermediateFiles_affine["Affine"];
+            " " + outputImageFile;
         }
         else
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
+            " -ri LINEAR -r " + intermediateFiles_affine["Affine"] +
             " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri NN -r " + intermediateFiles_affine["Affine"];
+            " " + outputImageFile;
         }
 
         if (std::system(commandToCall.c_str()) != 0)
@@ -459,19 +459,19 @@ int algorithmsRunner()
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
+            " -ri LABEL 0.2vox -r " + intermediateFiles_deformable["Deform"] +
+            " " + intermediateFiles_affine["Affine"] +
             " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri LINEAR -r " + intermediateFiles_deformable["Deform"] +
-            " " + intermediateFiles_affine["Affine"];
+            " " + outputImageFile;
         }
         else
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
+            " -ri LINEAR -r " + intermediateFiles_deformable["Deform"] +
+            " " + intermediateFiles_affine["Affine"] +
             " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri LABEL 0.2vox -r " + intermediateFiles_deformable["Deform"] +
-            " " + intermediateFiles_affine["Affine"];
+            " " + outputImageFile;
         }
 
         if (std::system(commandToCall.c_str()) != 0)
@@ -865,7 +865,7 @@ int main(int argc, char** argv)
     if (parser.isPresent("rME"))
     {
       parser.getParameterValue("rME", registrationMetrics);
-      std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
+      //std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
     }
     if (parser.isPresent("rNI"))
     {
