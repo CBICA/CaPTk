@@ -435,7 +435,7 @@ int algorithmsRunner()
       }
       default: // we shall always assume deformable
       {
-        if (!cbica::fileExists(intermediateFiles_deformable["Deform"]))
+        if (!cbica::fileExists(intermediateFiles_deformable["Deform"]) || cbica::fileExists(intermediateFiles_deformable["DeformInv"]))
         {
           if (debugMode)
           {
