@@ -8983,17 +8983,26 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
       << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
       << "-m" << metrics.c_str() << "-n" << iterations.c_str();
 
+    args << "-i" << inputFileNames[i].c_str();
+    args << "-o" << outputFileNames[i].c_str();
+    args << "-rIA" << matrixFileNames[i].c_str();
+    args << "-rFI" << fixedFileName.c_str();
+    args << "-rNI" << iterations.c_str();
+
     if (metrics == "NCC")
-      args << "-ri" << radii.c_str();
+      args << ("-rME NCC-" + radii).c_str();
+    else
+      args << "-rME " << metrics.c_str();
+
     if (affineMode)
     {
-      args << "-a";
+      args << "-reg" << "Affine";
     }
     else
     {
       args << "-r";
     }
-    std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
+    std::string fullCommandToRun = getApplicationPath("Preprocessing");
 
     if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
     {
