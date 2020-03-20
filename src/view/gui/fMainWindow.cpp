@@ -1187,28 +1187,13 @@ void fMainWindow::appDownload(std::string currentApp)
   appDownloadDialog.SetDownloadLink(downloadLink);
   appDownloadDialog.exec();
 
-  connect( &appDownloadDialog, SIGNAL(doneDownload(std::string)), this, SLOT(unzipArchive(std::string)));
-  // QTimer timer;
-  // timer.setSingleShot(true);
-  // QEventLoop loop;
-  // connect( &appDownloadDialog, SIGNAL(doneDownload()), &loop, &QEventLoop::quit );
-  // connect( &timer, &QTimer::timeout, &loop, &QEventLoop::quit );
-  // timer.start(10000);
-  // loop.exec();
-
-  // if(timer.isActive())
-  //     // qDebug("encrypted");
-      
-  // else
-  //     // qDebug("timeout");
-    
+  connect( &appDownloadDialog, SIGNAL(doneDownload(std::string)), this, SLOT(unzipArchive(std::string)));    
 }
 
 void fMainWindow::unzipArchive(std::string fullPath) 
 {
   ShowErrorMessage(fullPath);
   elz::extractZip(fullPath, downloadFolder);
-
 }
 
 void fMainWindow::help_BugTracker()
