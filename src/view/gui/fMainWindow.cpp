@@ -1179,8 +1179,6 @@ void fMainWindow::help_Download(QAction* action)
 
 void fMainWindow::appDownload(std::string currentApp)
 {
-  // const std::string downloadFolder = cbica::getUserHomeDirectory() + "/." + std::string(PROJECT_NAME) + "/" + std::string(PROJECT_VERSION) + "_apps/";
-
   std::string downloadLink = m_appDownloadConfigs["apps"][currentApp]["Link"].as<std::string>();
 
   appDownloadDialog.SetDownloadPath(downloadFolder);
@@ -5803,13 +5801,7 @@ void fMainWindow::ApplicationLIBRABatch()
   // ShowErrorMessage("libra: " + scriptToCall);
 
   if (scriptToCall.empty()) {
-
     appDownload("libra");
-
-    // thread sleep / lock and check file
-    // std::this_thread::sleep_for (std::chrono::seconds(5));
-
-    scriptToCall = getApplicationDownloadPath("libra");
   }
 
   if (cbica::fileExists(scriptToCall))
@@ -5914,13 +5906,8 @@ void fMainWindow::ApplicationBreastSegmentation()
   std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
   // ShowErrorMessage("libra: " + scriptToCall);
 
-  if (scriptToCall.compare("") == 0) {
-
+  if (scriptToCall.empty()) {
     appDownload("libra");
-
-    // thread sleep / lock and check file
-
-    scriptToCall = getApplicationDownloadPath("libra");
   }
 
   if (cbica::fileExists(scriptToCall))
@@ -5979,13 +5966,8 @@ void fMainWindow::ApplicationLIBRASingle()
   std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
   // ShowErrorMessage("libra: " + scriptToCall);
 
-  if (scriptToCall.compare("") == 0) {
-
+  if (scriptToCall.empty()) {
     appDownload("libra");
-
-    // thread sleep / lock and check file
-
-    scriptToCall = getApplicationDownloadPath("libra");
   }
 
   if (cbica::fileExists(scriptToCall))
