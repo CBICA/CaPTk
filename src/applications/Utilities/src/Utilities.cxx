@@ -1313,7 +1313,7 @@ int main(int argc, char** argv)
       cbica::splitFileName(outputImageFile, path, base, ext);
       if (ext.find(".nii") != std::string::npos)
       {
-        std::cerr << "WARNING: NIfTI files do support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
+        std::cerr << "WARNING: NIfTI files do NOT support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
       }
       if (ext != ".mha")
       {
