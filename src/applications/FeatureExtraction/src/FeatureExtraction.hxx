@@ -1351,16 +1351,28 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
 
           //  std::vector< int > tempRange;
 
-          //  // check for world coordinates in full set
-          //  bool worldRadDetected = false;
-          //  for (size_t i = 0; i < temp.size(); i++)
-          //  {
-          //    if (temp[i].find(".") != std::string::npos) // this means that the distance is float
-          //    {
-          //      worldRadDetected = true;
-          //      break;
-          //    }
-          //  }
+            // check for world coordinates in full set
+            bool worldRadDetected = false;
+            for (size_t i = 0; i < temp.size(); i++)
+            {
+              // sanity checks
+              if (temp[i].empty())
+              {
+                std::cerr << "Cannot pass an empty argument to the radius range.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[i].find("-") != std::string::npos)
+              {
+                std::cerr << "Radius cannot be negative.\n";
+                exit(EXIT_FAILURE);
+              }
+
+              if (temp[i].find(".") != std::string::npos) // this means that the distance is float
+              {
+                worldRadDetected = true;
+                break;
+              }
+            }
 
           //  // if a single value is detected in world coordinates, process the entire set the same way
           //  for (size_t i = 0; i < temp.size(); i++)
@@ -1403,17 +1415,36 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
           {
             m_Bins_range.push_back(std::atoi(currentValue.c_str()));
           }
-          //else
-          //{
-          //  // sanity check
-          //  if (temp.size() != 3)
-          //  {
-          //    std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
-          //    exit(EXIT_FAILURE);
-          //  }
-          //  int min = std::atoi(temp[0].c_str()),
-          //    max = std::atoi(temp[2].c_str()),
-          //    range = std::atoi(temp[1].c_str());
+          else
+          {
+            // sanity check
+            if (temp.size() != 3)
+            {
+              std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
+              exit(EXIT_FAILURE);
+            }
+            for (size_t bin = 0; bin < temp.size(); bin++)
+            {
+              // sanity checks
+              if (temp[bin].empty())
+              {
+                std::cerr << "Cannot pass an empty argument to the bin range.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[bin].find("-") != std::string::npos)
+              {
+                std::cerr << "Bins cannot be negative.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[bin].find(".") != std::string::npos)
+              {
+                std::cerr << "Bins need to be integer values.\n";
+                exit(EXIT_FAILURE);
+              }
+            }
+            int min = std::atoi(temp[0].c_str()),
+              max = std::atoi(temp[2].c_str()),
+              range = std::atoi(temp[1].c_str());
 
           //  if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
           //  {
