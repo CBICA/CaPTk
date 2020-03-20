@@ -1591,15 +1591,8 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         {
           if (currentValue == "0")
           {
-            m_wholeImageBinning = false;
+            m_keepNaNs = false;
           }
-        }
-        else if (outer_key == ParamsString[WholeImageBinning])
-        {
-        if (currentValue == "Remove")
-        {
-          m_keepNaNs = false;
-        }
         }
         else if (outer_key == ParamsString[LBPStyle])
         {
