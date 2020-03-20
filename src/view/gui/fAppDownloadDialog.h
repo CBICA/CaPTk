@@ -75,7 +75,7 @@ public slots:
   void cancelDownload();
 
 signals:
-  void doneDownload();
+  void doneDownload(std::string fullPath);
 };
 
 

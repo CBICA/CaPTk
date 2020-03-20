@@ -77,7 +77,7 @@ std::string findRelativeApplicationPath(const std::string appName)
 
   if (!cbica::isFile(appName_path))
   {
-    std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
+    std::cerr << "Please run CaPTk through the GUI. LIBRA is not available through the command-line interface yet.\n";
     exit(EXIT_FAILURE);
   }
   return appName_path;

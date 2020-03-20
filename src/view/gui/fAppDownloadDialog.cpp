@@ -89,7 +89,7 @@ void fAppDownloadDialog::ConfirmButtonPressed()
 
     startRequest(url);
 
-    emit doneDownload();
+    emit doneDownload(fullPath.toStdString());
 
     this->close();
 }
@@ -145,54 +145,54 @@ void fAppDownloadDialog::updateDownloadProgress(qint64 bytesRead, qint64 totalBy
 void fAppDownloadDialog::httpDownloadFinished()
 {
   // when canceled
-  if (httpRequestAborted) {
-      if (file) {
-          file->close();
-          file->remove();
-          delete file;
-          file = 0;
-      }
-      reply->deleteLater();
-      progressDialog->hide();
-      return;
-  }
+    if (httpRequestAborted) {
+        if (file) {
+            file->close();
+            file->remove();
+            delete file;
+            file = 0;
+        }
+        reply->deleteLater();
+        progressDialog->hide();
+        return;
+    }
 
-  // download finished normally
-  progressDialog->hide();
-  file->flush();
-  file->close();
+    // download finished normally
+    progressDialog->hide();
+    file->flush();
+    file->close();
 
-  // get redirection url
-  QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
-  if (reply->error()) {
-      file->remove();
-      QMessageBox::information(this, tr("HTTP"),
+    // get redirection url
+    QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    if (reply->error()) {
+        file->remove();
+        QMessageBox::information(this, tr("HTTP"),
                                 tr("Download failed: %1.")
                                 .arg(reply->errorString()));
-      // ui->downloadButton->setEnabled(true  );
-  } else if (!redirectionTarget.isNull()) {
-      QUrl newUrl = url.resolved(redirectionTarget.toUrl());
-      if (QMessageBox::question(this, tr("HTTP"),
+        // ui->downloadButton->setEnabled(true  );
+    } else if (!redirectionTarget.isNull()) {
+        QUrl newUrl = url.resolved(redirectionTarget.toUrl());
+        if (QMessageBox::question(this, tr("HTTP"),
                                 tr("Redirect to %1 ?").arg(newUrl.toString()),
                                 QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
-          url = newUrl;
-          reply->deleteLater();
-          file->open(QIODevice::WriteOnly);
-          file->resize(0);
-          startRequest(url);
-          return;
-      }
-  } else {
-      QString fileName = QFileInfo(QUrl(qInputLink).path()).fileName();
-      // ui->statusLabel->setText(tr("Downloaded %1 to %2.").arg(fileName).arg(QDir::currentPath()));
-      // ui->downloadButton->setEnabled(true);
-  }
+            url = newUrl;
+            reply->deleteLater();
+            file->open(QIODevice::WriteOnly);
+            file->resize(0);
+            startRequest(url);
+            return;
+        }
+    } else {
+        QString fileName = QFileInfo(QUrl(qInputLink).path()).fileName();
+        // ui->statusLabel->setText(tr("Downloaded %1 to %2.").arg(fileName).arg(QDir::currentPath()));
+        // ui->downloadButton->setEnabled(true);
+    }
 
-  reply->deleteLater();
-  reply = 0;
-  delete file;
-  file = 0;
-  manager = 0;
+    reply->deleteLater();
+    reply = 0;
+    delete file;
+    file = 0;
+    manager = 0;
 }
 
 // During the download progress, it can be canceled

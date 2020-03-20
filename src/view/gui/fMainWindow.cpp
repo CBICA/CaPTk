@@ -601,12 +601,8 @@ fMainWindow::fMainWindow()
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
-<<<<<<< HEAD
-=======
-  connect(menuAppDownload, SIGNAL(triggered(QAction*)), this, SLOT(appDownload(QAction*)));
 
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
->>>>>>> 340c1299cc7476570687a0d04c0a352b87f87fe3
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
@@ -1188,13 +1184,14 @@ void fMainWindow::appDownload(std::string currentApp)
   appDownloadDialog.SetDownloadLink(downloadLink);
   appDownloadDialog.exec();
 
-  QTimer timer;
-  timer.setSingleShot(true);
-  QEventLoop loop;
-  connect( &appDownloadDialog, SIGNAL(doneDownload()), &loop, &QEventLoop::quit );
-  connect( &timer, &QTimer::timeout, &loop, &QEventLoop::quit );
-  timer.start(10000);
-  loop.exec();
+  connect( &appDownloadDialog, SIGNAL(doneDownload(std::string)), this, SLOT(unzipArchive(std::string)));
+  // QTimer timer;
+  // timer.setSingleShot(true);
+  // QEventLoop loop;
+  // connect( &appDownloadDialog, SIGNAL(doneDownload()), &loop, &QEventLoop::quit );
+  // connect( &timer, &QTimer::timeout, &loop, &QEventLoop::quit );
+  // timer.start(10000);
+  // loop.exec();
 
   // if(timer.isActive())
   //     // qDebug("encrypted");
@@ -1202,6 +1199,34 @@ void fMainWindow::appDownload(std::string currentApp)
   // else
   //     // qDebug("timeout");
     
+}
+
+void fMainWindow::unzipArchive(std::string fullPath) 
+{
+//   // //Open the ZIP archive
+//   // int err = 0;
+//   // zip *z = zip_open("fullPath", 0, &err);
+
+//   // //Search for the file of given name
+//   // const char *name = "file.txt";
+//   // struct zip_stat st;
+//   // zip_stat_init(&st);
+//   // zip_stat(z, name, 0, &st);
+
+//   // //Alloc memory for its uncompressed contents
+//   // char *contents = new char[st.size];
+
+//   // //Read the compressed file
+//   // zip_file *f = zip_fopen(z, name, 0);
+//   // zip_fread(f, contents, st.size);
+//   // zip_fclose(f);
+
+//   // //And close the archive
+//   // zip_close(z);
+
+//   // //Do something with the contents
+//   // //delete allocated memory
+//   // delete[] contents;
 }
 
 void fMainWindow::help_BugTracker()
@@ -5815,6 +5840,7 @@ void fMainWindow::ApplicationLIBRABatch()
     appDownload("libra");
 
     // thread sleep / lock and check file
+    // std::this_thread::sleep_for (std::chrono::seconds(5));
 
     scriptToCall = getApplicationDownloadPath("libra");
   }
@@ -5829,10 +5855,10 @@ void fMainWindow::ApplicationLIBRABatch()
 
     return;
   }
-  else
-  {
-    ShowErrorMessage("Cannot find :" + scriptToCall, this);
-  }
+  // else
+  // {
+  //   ShowErrorMessage("Cannot find :" + scriptToCall, this);
+  // }
 
 }
 
@@ -6012,10 +6038,10 @@ void fMainWindow::ApplicationLIBRASingle()
 
     readMaskFile(m_tempFolderLocation + "/" + casename + "/Result_Images/totalmask/totalmask.dcm");
   }
-  else
-  {
-    ShowErrorMessage("Cannot find :" + scriptToCall, this);
-  }
+  // else
+  // {
+  //   ShowErrorMessage("Cannot find :" + scriptToCall, this);
+  // }
 }
 
 void fMainWindow::ApplicationConfetti()
