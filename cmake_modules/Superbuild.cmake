@@ -31,7 +31,7 @@ ENDIF()
 
 # INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ZLIBDepend.cmake )
 # INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-BZIP2.cmake )
-INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-LIBZIP.cmake )
+# INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-LIBZIP.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-DCMTK.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Qt.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-VTK.cmake )

@@ -72,6 +72,8 @@
 
 #include <QFile>
 
+#include "elzip.hpp"
+
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
@@ -540,6 +542,7 @@ fMainWindow::fMainWindow()
   connect(&registrationPanel, SIGNAL(Registrationsignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)), this, SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
+  cbica::createDir(downloadFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
   if (cbica::directoryExists(m_tempFolderLocation))
   {
@@ -1176,7 +1179,7 @@ void fMainWindow::help_Download(QAction* action)
 
 void fMainWindow::appDownload(std::string currentApp)
 {
-  const std::string downloadFolder = cbica::getUserHomeDirectory() + "/." + std::string(PROJECT_NAME) + "/" + std::string(PROJECT_VERSION) + "_apps/";
+  // const std::string downloadFolder = cbica::getUserHomeDirectory() + "/." + std::string(PROJECT_NAME) + "/" + std::string(PROJECT_VERSION) + "_apps/";
 
   std::string downloadLink = m_appDownloadConfigs["apps"][currentApp]["Link"].as<std::string>();
 
@@ -1201,33 +1204,12 @@ void fMainWindow::appDownload(std::string currentApp)
     
 }
 
-// void fMainWindow::unzipArchive(std::string fullPath) 
-// {
-//   // //Open the ZIP archive
-//   // int err = 0;
-//   // zip *z = zip_open("fullPath", 0, &err);
+void fMainWindow::unzipArchive(std::string fullPath) 
+{
+  ShowErrorMessage(fullPath);
+  elz::extractZip(fullPath, downloadFolder);
 
-//   // //Search for the file of given name
-//   // const char *name = "file.txt";
-//   // struct zip_stat st;
-//   // zip_stat_init(&st);
-//   // zip_stat(z, name, 0, &st);
-
-//   // //Alloc memory for its uncompressed contents
-//   // char *contents = new char[st.size];
-
-//   // //Read the compressed file
-//   // zip_file *f = zip_fopen(z, name, 0);
-//   // zip_fread(f, contents, st.size);
-//   // zip_fclose(f);
-
-//   // //And close the archive
-//   // zip_close(z);
-
-//   // //Do something with the contents
-//   // //delete allocated memory
-//   // delete[] contents;
-// }
+}
 
 void fMainWindow::help_BugTracker()
 {
@@ -5835,7 +5817,7 @@ void fMainWindow::ApplicationLIBRABatch()
   std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
   // ShowErrorMessage("libra: " + scriptToCall);
 
-  if (scriptToCall.compare("") == 0) {
+  if (scriptToCall.empty()) {
 
     appDownload("libra");
 

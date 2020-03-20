@@ -69,11 +69,6 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "GeodesicTrainingCaPTkApp.h"
 
 #include <QMessageBox>
-// #include <QTimer>
-// #include <QEventLoop>
-// #include <thread>         // std::this_thread::sleep_for
-// #include <chrono>         // std::chrono::seconds
-#include <zip.h>
 
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
