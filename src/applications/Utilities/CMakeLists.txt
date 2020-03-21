@@ -17,10 +17,8 @@ FIND_PACKAGE( DCMTK REQUIRED )
 
 # update submodule
 IF( NOT EXISTS "${PROJECT_SOURCE_DIR}/dcmqi/CMakeLists.txt" )
-  SET(git_cmd "git")
-  SET(git_arg "submodule update --init --recursive")
-  EXECUTE_PROCESS(COMMAND ${git_cmd} ${git_arg}
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  EXECUTE_PROCESS(COMMAND git submodule update --init ${PROJECT_SOURCE_DIR}/dcmqi
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   RESULT_VARIABLE git_result
   OUTPUT_VARIABLE git_ver)
 ENDIF()

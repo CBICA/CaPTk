@@ -29,7 +29,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 // stuff used in the program
 std::string loggerFile, multipatient_file, patient_id = "DEFAULT", image_path_string, modalities_string, maskfilename, 
-selected_roi_string, roi_labels_string, param_file, outputDir, offset_String, outputFilename;
+selected_roi_string = "all", roi_labels_string = "all", param_file, outputDir, offset_String, outputFilename;
 
 bool debug = false, debugWrite = false, verticalConc = false, featureMaps = false;
 
@@ -93,12 +93,12 @@ void algorithmRunner(std::vector<typename TImageType::Pointer> inputImages, type
   if (selected_roi.empty())
   {
     std::cout << "No ROI values have been selected for patient_id '" << patient_id << "', computation shall be done on all ROIs present in mask.\n";
-    //selected_roi = "all";
+    //selected_roi_string = "all";
   }
   if (roi_labels.empty())
   {
     std::cout << "No ROI labels have been provided for patient_id '" << patient_id << "', the ROI values will be used as labels instead.\n";
-    //roi_labels = "all";
+    //roi_labels_string = "all";
   }
   //param_file = cbica::dos2unix(param_file, outputDir);
   std::vector< std::string > imageNames = image_paths;
@@ -157,7 +157,14 @@ void algorithmRunner(std::vector<typename TImageType::Pointer> inputImages, type
 
   features.SetPatientID(patient_id);
   features.SetInputImages(inputImages, modality_names);
-  features.SetSelectedROIsAndLabels(selected_roi, roi_labels);
+  if (selected_roi.empty() || roi_labels.empty())
+  {
+    features.SetSelectedROIsAndLabels(selected_roi_string, roi_labels_string);
+  }
+  else
+  {
+    features.SetSelectedROIsAndLabels(selected_roi, roi_labels);
+  }
 
   // check if the provided labels are present mask image. if not exit the program 
   typename TImageType::Pointer mask = cbica::ReadImage< TImageType >(maskfilename);
@@ -432,12 +439,6 @@ int main(int argc, char** argv)
       "Please provide a patient id or path to csv file containing patient details";
     return EXIT_FAILURE;
   }
-  if (!multipatient_file.empty() && !patient_id.empty())
-  {
-    std::cerr << "MULTIPLE INPUT PROVIDED" << "\n" <<
-      "Please provide either a patient id or path to csv file containing patient details";
-    return EXIT_FAILURE;
-  }
   if (parser.isPresent("of"))
   {
     parser.getParameterValue("of", offset_String);
@@ -451,7 +452,7 @@ int main(int argc, char** argv)
     parser.getParameterValue("ut", unitTestReferenceFile);
   }
 
-  if (!patient_id.empty())
+  if (multipatient_file.empty())
   {
     std::cout << "Single subject computation selected.\n";
 
@@ -474,7 +475,52 @@ int main(int argc, char** argv)
     case 2:
     {
       using ImageType = itk::Image < float, 2 >;
-      algorithmRunner< ImageType >();
+      ImageType::Pointer maskImage;
+      auto maskImageInfo = cbica::ImageInfo(maskfilename);
+      if (maskImageInfo.GetImageDimensions() == 3)
+      {
+        if (maskImageInfo.GetImageSize()[2] == 1)
+        {
+          // this is actually a 2D image so re-process accordingly
+          using PresumedImageType = itk::Image< float, 3 >;
+          auto temp = cbica::GetExtractedImages< PresumedImageType, ImageType >(cbica::ReadImage< PresumedImageType >(maskfilename));
+          maskImage = temp[0];
+          maskImage->DisconnectPipeline();
+        }
+      }
+      else
+      {
+        maskImage = cbica::ReadImage< ImageType >(maskfilename);
+        maskImage->DisconnectPipeline();
+      }
+
+      // get the input images into a vector
+      std::vector< ImageType::Pointer > inputImages;
+      inputImages.resize(image_paths.size());
+      for (size_t i = 0; i < image_paths.size(); i++)
+      {
+        inputImages[i] = cbica::ReadImage< ImageType >(image_paths[i]);
+        inputImages[i]->DisconnectPipeline(); // ensure the new image exists as a separate memory block
+        // sanity check
+        if (i > 0)
+        {
+          if (!cbica::ImageSanityCheck< ImageType >(inputImages[i], inputImages[i - 1]))
+          {
+            std::cerr << "The images corresponding to the following paths do not have consistent physical dimensions:\t" << image_paths[i - 1] <<
+              "\n\t" << image_paths[i] << "\n";
+            exit(EXIT_FAILURE);
+          }
+        }
+      }
+
+      // sanity checks
+      if (!cbica::ImageSanityCheck< ImageType >(inputImages[0], maskImage))
+      {
+        std::cerr << "The input image(s) and mask do not have consistent physical dimensions. Please resample and re-try.\n";
+        exit(EXIT_FAILURE);
+      }
+
+      algorithmRunner< ImageType >(inputImages, maskImage);
       break;
     }
     case 3:
@@ -484,55 +530,55 @@ int main(int argc, char** argv)
       {
         // this is actually a 2D image so re-process accordingly
 
-        //auto m_tempFolderLocation = cbica::getUserHomeDirectory() + "/.CaPTk/tmp_" + cbica::getCurrentProcessID() + "/";
-        //cbica::createDir(m_tempFolderLocation);
-
-        ImageType::IndexType regionIndex;
-        ImageType::SizeType regionSize;
-
-        auto currentSize = genericImageInfo.GetImageSize();
-        auto currentOrigin = genericImageInfo.GetImageOrigins();
-        regionSize[0] = currentSize[0];
-        regionSize[1] = currentSize[1];
-        regionSize[2] = 0;
-        for (size_t d = 0; d < 3; d++)
-        {
-          regionIndex[d] = /*currentOrigin[d]*/0;
-        }
-
         using ActualImageType = itk::Image< float, 2 >;
-        std::vector< ActualImageType::Pointer > inputImages;
+        std::vector< ActualImageType::Pointer > inputImages; // vector of input image pointers - these are used so that I/O operations can be reduced
         inputImages.resize(image_paths.size());
         ActualImageType::Pointer maskImage;
 
-        ImageType::RegionType desiredRegion(regionIndex, regionSize);
         for (size_t i = 0; i < image_paths.size(); i++)
         {
-          auto imageFilter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
-          imageFilter->SetExtractionRegion(desiredRegion);
-          imageFilter->SetInput(cbica::ReadImage< ImageType >(image_paths[i]));
-          imageFilter->SetDirectionCollapseToIdentity(); // This is required.
-          imageFilter->Update();
+          auto temp = cbica::GetExtractedImages< ImageType, ActualImageType >(cbica::ReadImage< ImageType >(image_paths[i]));
+          inputImages[i] = temp[0];
+          inputImages[i]->DisconnectPipeline(); // ensure the new image exists as a separate memory block
 
-          inputImages[i] = imageFilter->GetOutput();
-          inputImages[i]->DisconnectPipeline();
-
-          //auto currentFileBase = cbica::getFilenameBase(image_paths[i]);
-          //image_paths[i] = m_tempFolderLocation + "image_" + modality_names[i] + "_2D.nii.gz";
-          //cbica::WriteImage< ActualImageType >(filter->GetOutput(), image_paths[i]);
+          // sanity check
+          if (i > 0)
+          {
+            if (!cbica::ImageSanityCheck< ActualImageType >(inputImages[i], inputImages[i - 1]))
+            {
+              std::cerr << "The images corresponding to the following paths do not have consistent physical dimensions:\t" << image_paths[i - 1] <<
+                "\n\t" << image_paths[i] << "\n";
+              exit(EXIT_FAILURE);
+            }
+          }
         }
-        auto maskFilter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
-        maskFilter->SetExtractionRegion(desiredRegion);
-        maskFilter->SetInput(cbica::ReadImage< ImageType >(maskfilename));
-        maskFilter->SetDirectionCollapseToIdentity(); // This is required.
-        maskFilter->Update();
-        maskImage = maskFilter->GetOutput();
 
-        //auto currentFileBase = cbica::getFilenameBase(maskfilename);
-        //maskfilename = m_tempFolderLocation + "mask_" + currentFileBase + "_2D.nii.gz";
-        //cbica::WriteImage< ActualImageType >(filter->GetOutput(), maskfilename);
+        auto maskImageInfo = cbica::ImageInfo(maskfilename);
+        if (maskImageInfo.GetImageDimensions() == 3)
+        {
+          if (maskImageInfo.GetImageSize()[2] == 1)
+          {
+            // this is actually a 2D image so re-process accordingly
+            auto temp = cbica::GetExtractedImages< ImageType, ActualImageType >(cbica::ReadImage< ImageType >(maskfilename));
+            maskImage = temp[0];
+            maskImage->DisconnectPipeline();
+          }
+        }
+        else
+        {
+          maskImage = cbica::ReadImage< ActualImageType >(maskfilename);
+          maskImage->DisconnectPipeline();
+        }
+
+        // sanity checks
+        if (!cbica::ImageSanityCheck< ActualImageType >(inputImages[0], maskImage))
+        {
+          std::cerr << "The input image(s) and mask do not have consistent physical dimensions. Please resample and re-try.\n";
+          exit(EXIT_FAILURE);
+        }
+
+        // run the algorithm with new images
         algorithmRunner< ActualImageType >(inputImages, maskImage);
-        //cbica::deleteDir(m_tempFolderLocation);
       }
       else
       {
@@ -655,16 +701,18 @@ int main(int argc, char** argv)
         }
       }
 
+      // sanity check
+      if (image_paths.size() != modality_names.size())
+      {
+        std::cerr << "Number of images and modalites do not match.\n";
+        exit(EXIT_FAILURE);
+      }
+
       if (debug)
       {
         std::cout << "[DEBUG] Patient ID: " << patient_id << "\n";
         std::cout << "[DEBUG] Images: " << image_paths[0];
         std::string temp = modality_names[0];
-        if (image_paths.size() != modality_names.size())
-        {
-          std::cerr << "Number of images and modalites do not match.\n";
-          exit(EXIT_FAILURE);
-        }
         for (size_t imageNum = 1; imageNum < image_paths.size(); imageNum++)
         {
           std::cout << "," + image_paths[imageNum];

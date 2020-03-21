@@ -1190,6 +1190,44 @@ namespace cbica
     return cbica::setEnvironmentVariable(variable_name, "");
   }
 
+  std::vector< std::string > filesInDirectory(const std::string &dirName,
+    std::string filePattern, std::string fileExtension,
+    bool returnFullPath, bool recurse)
+  {
+    std::vector< std::string > returnVector;
+    // set up required folders
+    std::vector< std::string > subDirsInInput = { dirName };
+    if (recurse)
+    {
+      auto temp = subdirectoriesInDirectory(dirName, recurse, true);
+      subDirsInInput.insert(subDirsInInput.end(), temp.begin(), temp.end());
+    }
+
+    // loop through all requested directories
+    for (size_t i = 0; i < subDirsInInput.size(); i++)
+    {
+      auto allFilesInCurrentDir = cbica::filesInDirectory(cbica::normPath(subDirsInInput[i]));
+
+      // loop through all files
+      for (size_t j = 0; j < allFilesInCurrentDir.size(); j++)
+      {
+        auto currentExt = cbica::getFilenameExtension(allFilesInCurrentDir[j]);
+        if ( // if file patter is not empty, search for it in the filename
+          (!filePattern.empty() && (allFilesInCurrentDir[j].find(filePattern) != std::string::npos)) ||
+          filePattern.empty() // otherwise, pass it as-is
+          )
+        {
+          if (fileExtension == currentExt)
+          {
+            returnVector.push_back(allFilesInCurrentDir[j]);
+          } // end extension check
+        } // end file-pattern check
+      } // end files-loop
+    } // end dirs-loop
+
+    return returnVector;
+  }
+
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath)
   {
     if (!cbica::directoryExists(dirName))
@@ -1294,7 +1332,7 @@ namespace cbica
           }
           if (recursiveSearch)
           {
-            std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true);
+            std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true, returnFullPath);
             allDirectories.insert(allDirectories.end(), tempVector.begin(), tempVector.end());
           }
         }
@@ -1313,7 +1351,7 @@ namespace cbica
     {
       if (recursiveSearch && (dirp->d_type == DT_DIR) && (dirp->d_name[0] != '.') && (dirp->d_name != std::string(".svn").c_str()))
       {
-        std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + dirp->d_name, true);
+        std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + dirp->d_name, true, returnFullPath);
         allDirectories.insert(allDirectories.end(), tempVector.begin(), tempVector.end());
       }
 

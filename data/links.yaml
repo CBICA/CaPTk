@@ -1,0 +1,61 @@
+version: v1.0
+class: DownloadLinks
+inputs:
+  Latest Downloads:
+    Data: https://github.com/CBICA/CaPTk#downloads
+  Bugs and Feature:
+    Data: https://github.com/CBICA/CaPTk/issues/new/choose
+  All:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/All.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/All.zip
+  EGFRvIIISVMIndex:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIISVMIndex.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/EGFRvIIIIndexPredictor.zip
+  EGFRvIIISurrogateIndex:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIISurrogateIndex.zip
+    Model: N.A.
+  DirectionalityEstimate:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/DirectionalityEstimate.zip
+    Model: N.A.
+  DiffusionDerivatives:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/DiffusionDerivatives.zip
+    Model: N.A.
+  TrainingModule:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/TrainingModule.zip
+    Model: N.A.
+  RecurrenceEstimator:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/RecurrenceEstimator.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator.zip
+  PseudoProgressionEstimator:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PseudoProgressionEstimator.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/PseudoProgressionEstimator.zip
+  SurvivalPredictor:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/SurvivalPredictor.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/SurvivalPredictor.zip
+  MolecularSubtypePredictor:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/MolecularSubtypePredictor.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/MolecularSubtypePredictor.zip
+  PopulationAtlases:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PopulationAtlases.zip
+    Model: N.A.
+  DeepMedic:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/DeepMedic.zip
+    Model: N.A.
+  LungCancer:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/LungCancer.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/SBRT.zip
+  LIBRA:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/LIBRA.zip
+    Model: N.A.
+  Confetti:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/Confetti.zip
+    Model: N.A.
+  WhiteStripe:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/WhiteStripe.zip
+    Model: N.A.
+hints:
+  SoftwareRequirement:
+    packages:
+      CaPTk:
+        version:
+          - 1.7.7

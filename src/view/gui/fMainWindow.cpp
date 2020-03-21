@@ -68,7 +68,7 @@
 
 #include "CaPTkDockWidget.h"
 
-//#include "DicomSeriesReader.h"
+#include "yaml-cpp/yaml.h"
 
 #include <QFile>
 
@@ -165,8 +165,9 @@ inline std::string correctExtension(const std::string &inputFileName)
 
 fMainWindow::fMainWindow()
 {
-
   setupUi(this);
+
+  m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -180,8 +181,7 @@ fMainWindow::fMainWindow()
   help_discussion = new QAction(this);
   help_forum = new QAction(this);
   help_bugs = new QAction(this);
-  help_features = new QAction(this);
-  help_download = new QAction(this);
+  helpMenu_download = new QAction(this);
   actionLoad_Recurrence_Images = new QAction(this);
   actionLoad_Nifti_Images = new QAction(this);
   actionLoad_Dicom_Images = new QAction(this);
@@ -240,7 +240,10 @@ fMainWindow::fMainWindow()
   sizePolicy5.setHorizontalStretch(0);
   sizePolicy5.setVerticalStretch(0);
 
-  preferenceDialog = new PreferencesDialog(nullptr);
+  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
+  m_toolTabdock->setWindowFlags(Qt::SubWindow); // SubWindow allows it to be shown while MainWindow is also visible
+
+  m_tabWidget = new QTabWidget(m_toolTabdock);
   infoPanel = new fBottomImageInfoTip(centralwidget);
   imagesPanel = new fImagesPanel(m_tabWidget); // New Images Panel
   m_tabWidget->addTab(imagesPanel, QString());
@@ -254,18 +257,14 @@ fMainWindow::fMainWindow()
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
-  m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
-  m_toolTabdock->setWindowFlags(Qt::SubWindow); // setting this as "Qt::Window" causes it to be hidden, at least on Linux.
-  // since the above window flag's effect is platform dependent, this may look strange on other platforms -- needs a test.
-
-  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
-  connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
-  connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
-
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
   this->m_toolTabdock->setWindowTitle("Double click to undock");
+
+  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
+  connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
+  connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
 
   //! automatic undock on low resolution
   //! to be tested thoroughly
@@ -298,7 +297,7 @@ fMainWindow::fMainWindow()
   menuHelp->addAction(actionAbout);
 
   supportMenu->addAction(help_bugs);
-  supportMenu->addAction(help_download);
+  supportMenu->addAction(helpMenu_download);
 
   menubar->addMenu(menuFile);
   menubar->addMenu(menuPreprocessing);
@@ -327,7 +326,6 @@ fMainWindow::fMainWindow()
   menuFile->addAction(actionPreferences);
   menuFile->addAction(actionExit);
 
-  menuDownload->addAction("GreedyRegistration");
   m_tabWidget->setCurrentIndex(0);
 
   bottomLayout->addWidget(infoPanel);
@@ -584,6 +582,7 @@ fMainWindow::fMainWindow()
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
+  connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
@@ -774,7 +773,10 @@ fMainWindow::fMainWindow()
     {
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageHistogramMatching()));
     }
-    else if (vectorOfPreprocessingActionsAndNames[i].name.find("DeepMedicNormalizer") != std::string::npos)
+    else if ((vectorOfPreprocessingActionsAndNames[i].name.find("DeepMedicNormalizer") != std::string::npos)
+             || (vectorOfPreprocessingActionsAndNames[i].name.find("ZScoringNormalizer") != std::string::npos))
+            // TBD: Pick one of these and stick with it if we are going to use this approach.
+            // Currently this action is inconsistently referred to as one or the other.
     {
       vectorOfPreprocessingActionsAndNames[i].action->setText("Z-Scoring Normalizer"); // TBD set at source
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageDeepMedicNormalizer()));
@@ -955,8 +957,7 @@ fMainWindow::fMainWindow()
   help_discussion->setText(QApplication::translate("fMainWindow", "Discussion Forum", 0));
   help_forum->setText(QApplication::translate("fMainWindow", "Help Forum", 0));
   help_bugs->setText(QApplication::translate("fMainWindow", "Bugs and Feature", 0));
-  help_features->setText(QApplication::translate("fMainWindow", "Feature Requests", 0));
-  help_download->setText(QApplication::translate("fMainWindow", "Latest Downloads", 0));
+  helpMenu_download->setText(QApplication::translate("fMainWindow", "Latest Downloads", 0));
   actionAbout->setText(QApplication::translate("fMainWindow", "About", 0));
   actionExit->setText(QApplication::translate("fMainWindow", "Exit", 0));
   actionAppGeodesic->setText(QApplication::translate("fMainWindow", "Geodesic segmentation", 0));
@@ -964,6 +965,10 @@ fMainWindow::fMainWindow()
   m_tabWidget->setTabText(m_tabWidget->indexOf(tumorPanel), QApplication::translate("fMainWindow", "Seed Points", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(drawingPanel), QApplication::translate("fMainWindow", "Drawing", 0));
   m_tabWidget->setTabText(m_tabWidget->indexOf(imagesPanel), QApplication::translate("fMainWindow", "Images", 0));
+
+  // Instantiate this last -- when instantiated, this restores appearance settings from saved preferences.
+  // Doing this after the UI elements are set up ensures that the restored style is applied to everything.
+  preferenceDialog = new PreferencesDialog(nullptr);
 }
 
 fMainWindow::~fMainWindow()
@@ -1132,12 +1137,19 @@ void fMainWindow::help_Interactions()
 void fMainWindow::help_Download(QAction* action)
 {
   auto currentApp = action->text().toStdString();
-  std::string path = getCaPTkDataDir();
-  auto currentLink = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/" + currentApp + ".zip";
-  cbica::Logging(loggerFile, currentLink);
-  if (!openLink(currentLink))
+  auto currentLink = m_downloadLinks["inputs"][currentApp]["Data"].as<std::string>();
+  if (!currentLink.empty() && (currentLink != "N.A."))
   {
+    cbica::Logging(loggerFile, currentLink);
+    if (!openLink(currentLink))
+    {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
+      return;
+    }
+  }
+  else
+  {
+    ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
 }
@@ -6135,6 +6147,7 @@ void fMainWindow::ApplicationSBRTAnalysis()
     return;
   }
 
+  analysisPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["LungCancer"]["Model"].as<std::string>());
   analysisPanel.exec();
 
   std::string inputFileName;
@@ -6436,6 +6449,7 @@ void fMainWindow::ApplicationRecurrence()
 {
   {
     recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+    recurrencePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["RecurrenceEstimator"]["Model"].as<std::string>());
     recurrencePanel.exec();
   }
 }
@@ -6447,6 +6461,7 @@ void fMainWindow::ApplicationPseudoProgression()
 {
   {
     pseudoPanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+    pseudoPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PseudoProgressionEstimator"]["Model"].as<std::string>());
     pseudoPanel.exec();
   }
 }
@@ -6622,6 +6637,7 @@ void fMainWindow::ApplicationImagingSubtype()
 void fMainWindow::ApplicationMolecularSubtype()
 {
   msubtypePanel.SetCurrentImagePath(mInputPathName);
+  msubtypePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["MolecularSubtypePredictor"]["Model"].as<std::string>());
   msubtypePanel.exec();
 }
 #endif
@@ -6631,6 +6647,7 @@ void fMainWindow::ApplicationMolecularSubtype()
 void fMainWindow::ApplicationSurvival()
 {
   survivalPanel.SetCurrentImagePath(mInputPathName);
+  survivalPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["SurvivalPredictor"]["Model"].as<std::string>());
   survivalPanel.setModal(false);
   survivalPanel.exec();
 }
@@ -6640,6 +6657,7 @@ void fMainWindow::ApplicationSurvival()
 void fMainWindow::ApplicationEGFRvIIISVM()
 {
   egfrv3Panel.SetCurrentImagePath(mInputPathName);
+  egfrv3Panel.SetTrainedModelLink(m_downloadLinks["inputs"]["EGFRvIIISVMIndex"]["Model"].as<std::string>());
   egfrv3Panel.setModal(false);
   egfrv3Panel.exec();
 }
@@ -7207,10 +7225,6 @@ void fMainWindow::ImageHistogramMatching()
 
 void fMainWindow::ImageDeepMedicNormalizer()
 {
-#ifndef WIN32
-  ShowErrorMessage("DeepMedic is currently not available for your platform but will be soon.", this);
-  return;
-#endif
   // open a simple dialog box with reference image, input and output
   deepMedicNormPanel.exec();
 }
@@ -7577,61 +7591,64 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     }
   }
 
-  // TBD: this requires cleanup
-  int type;
-  if (modelDirectory.find("tumor") != std::string::npos)
+  ShowErrorMessage("Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive.", this, "Long Running Application");
+
+  QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application", 
+    "Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive; press OK to continue...", 
+    QMessageBox::Ok | QMessageBox::Cancel);
+  box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
+  box->setWindowModality(Qt::NonModal);
+  QCoreApplication::processEvents();
+  if (box->exec() == QMessageBox::Ok)
   {
-    type = 0;
-  }
-  else if (modelDirectory.find("skull") != std::string::npos)
-  {
-    type = 1;
-  }
+    // TBD: this requires cleanup
+    int type;
+    if (modelDirectory.find("tumor") != std::string::npos)
+    {
+      type = 0;
+    }
+    else if (modelDirectory.find("skull") != std::string::npos)
+    {
+      type = 1;
+    }
 
-  QStringList args;
-  args << "-md" << modelDirectory.c_str()
-    << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
+    QStringList args;
+    args << "-md" << modelDirectory.c_str()
+      << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
 
-  if (!file_mask.empty())
-  {
-    args << "-m" << file_mask.c_str();
-  }
-  updateProgress(5, "Starting DeepMedic Segmentation");
+    if (!file_mask.empty())
+    {
+      args << "-m" << file_mask.c_str();
+    }
+    updateProgress(5, "Starting DeepMedic Segmentation");
 
-  auto dmExe = getApplicationPath("DeepMedic");
-  if (!cbica::exists(dmExe))
-  {
-    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
-    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
-    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
-
-    ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
-    updateProgress(0, "");
-    return;
-  }
+    auto dmExe = getApplicationPath("DeepMedic");
+    if (!cbica::exists(dmExe))
+    {
+      ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
+      updateProgress(0, "");
+      return;
+    }
 
 
-  if (startExternalProcess(dmExe.c_str(), args) != 0)
-  {
-    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
-    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
-    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
+    if (startExternalProcess(dmExe.c_str(), args) != 0)
+    {
+      ShowErrorMessage("DeepMedic returned with exit code != 0");
+      updateProgress(0, "");
+      return;
+    }
 
-    ShowErrorMessage("DeepMedic returned with exit code != 0");
-    updateProgress(0, "");
-    return;
-  }
-
-  auto output = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
-  if (cbica::exists(output))
-  {
-    readMaskFile(output);
-    updateProgress(100, "Completed.");
-  }
-  else
-  {
-    ShowErrorMessage("DeepMedic failed to generate results");
-    updateProgress(0, "");
+    auto output = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
+    if (cbica::exists(output))
+    {
+      readMaskFile(output);
+      updateProgress(100, "Completed.");
+    }
+    else
+    {
+      ShowErrorMessage("DeepMedic failed to generate results");
+      updateProgress(0, "");
+    }
   }
 
   return;
@@ -8676,8 +8693,9 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds)
 {
+  int defaultfeatureselectiontype = 3;
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,modeldirectory))
+  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,defaultfeatureselectiontype, modeldirectory))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
@@ -9240,14 +9258,15 @@ void fMainWindow::closeEvent(QCloseEvent* event)
 
   if (!cbica::fileExists(closeConfirmation))
   {
-    auto msgBox = new QMessageBox();
+
+    auto msgBox = new QMessageBox(this);
     msgBox->setWindowTitle("Close Confirmation!");
     msgBox->setText("Are you certain you would like to exit?");
     msgBox->addButton(QMessageBox::Yes);
     msgBox->addButton(QMessageBox::No);
     msgBox->setDefaultButton(QMessageBox::No);
 
-    QCheckBox closeConfirmationBox("Never ask again");
+    QCheckBox closeConfirmationBox("Never ask again", msgBox);
     closeConfirmationBox.blockSignals(true);
     msgBox->addButton(&closeConfirmationBox, QMessageBox::ResetRole);
     if (msgBox->exec() == QMessageBox::Yes)

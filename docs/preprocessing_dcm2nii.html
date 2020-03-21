@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.5</span>
+   &#160;<span id="projectnumber">1.7.6</span>
    </div>
   </td>
  </tr>
@@ -67,9 +67,9 @@ $(document).ready(function(){initNavTree('preprocessing_dcm2nii.html',''); initR
 </ol>
 <p><b>USAGE:</b></p><ol type="1">
 <li>Launch the tool using the 'Preprocessing' -&gt; 'DICOM to NIfTI' menu option.</li>
-<li>Specify the first DICOM image in series, and the output filename.</li>
+<li>Specify the directory containing the DICOM images in the series, and the output filename.</li>
 <li>Click on "Confirm".</li>
-<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/Utlities.exe -i C:/test/dicomFolderWithSingleSubject -d2n 
+<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/Utlities.exe -i C:/test/dicomFolderWithSingleSubject -o C:/PathToOutputFolder/result.nii.gz -d2n 
 </pre></li>
 </ol>
 <hr  />

@@ -13,8 +13,36 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 6 )
+SET( PROJECT_VERSION_PATCH 7.nonRelease )
 SET( PROJECT_VERSION_TWEAK )
+
+# check for the string "nonRelease" in the PROJECT_VERSION_PATCH variable
+# if it is found, add timestamp and git hash of commit to the version
+STRING(FIND ${PROJECT_VERSION_PATCH} "nonRelease" NONRELEASE_FOUND)
+IF( ${NONRELEASE_FOUND} GREATER 0 )
+  # get the timestamp
+  STRING(TIMESTAMP TODAY "%Y%m%d")
+
+  # get git hash
+  IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+    FIND_PACKAGE(Git)
+    IF(GIT_FOUND)
+      EXECUTE_PROCESS(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT_VARIABLE "GIT_HASH"
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+      #MESSAGE( STATUS "Git version: ${GIT_HASH}" )
+    ELSE(GIT_FOUND)
+      SET(GIT_HASH 0)
+    ENDIF(GIT_FOUND)
+  ENDIF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+  
+  SET( PROJECT_VERSION_PATCH "${PROJECT_VERSION_PATCH}.${TODAY}.${GIT_HASH}" )
+  #MESSAGE( STATUS "PROJECT_VERSION_PATCH: ${PROJECT_VERSION_PATCH}")
+
+ENDIF()
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -114,6 +142,8 @@ ELSE()
 ENDIF()
 
 SET( PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" CACHE STRING "The project version" FORCE )
+
+MESSAGE( AUTHOR_WARNING "Building CaPTk version ${PROJECT_VERSION}")
 
 IF (APPLE)
   SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
@@ -742,11 +772,15 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB sri24_FILES "${DATA_DIR}/sri24/*.*")
     SET_SOURCE_FILES_PROPERTIES(${sri24_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
 
-    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FLAIR_FILE} ${FLAIR_TESTTUMOR_FILE} ${survival_FILES} ${egfrv3_FILES} ${sri24_FILES})
+    FILE(GLOB DOWNLOAD_LINKS "${DATA_DIR}/links.yaml")
+    SET_SOURCE_FILES_PROPERTIES(${DOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
+
+    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FLAIR_FILE} ${FLAIR_TESTTUMOR_FILE} ${survival_FILES} ${egfrv3_FILES} ${sri24_FILES} ${DOWNLOAD_LINKS})
 
   ELSE ()
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz" DESTINATION data)
+    INSTALL(FILES "${DATA_DIR}/links.yaml" DESTINATION data)
     INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/molecular" DESTINATION data PATTERN ".svn" EXCLUDE)
@@ -1134,20 +1168,22 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   # Execute a post install step. Make sure this is the last install command ran!
   IF( CMAKE_HOST_UNIX )
     INSTALL(CODE "EXECUTE_PROCESS(COMMAND ln -sf CaPTk captk WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)")
-  ENDIF()
+    # INSTALL(CODE "EXECUTE_PROCESS(COMMAND chmod 755 matlab_helper WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/libexec/MCR/v84/bin/glnxa64/)")
 
-  IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
-    INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
-    INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
-      DESTINATION libexec/MCR/v84/bin/glnxa64/
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    )
-  ELSEIF(EXISTS ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper)
-  INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
-  INSTALL(FILES ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper
-    DESTINATION libexec/MCR/v84/bin/glnxa64/
-    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-  )
+    # IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
+    #   INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+    #   INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
+    #     DESTINATION libexec/MCR/v84/bin/glnxa64/
+    #     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    #   )
+    # ELSEIF(EXISTS ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper)
+    #   INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+    #   INSTALL(FILES ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper
+    #     DESTINATION libexec/MCR/v84/bin/glnxa64/
+    #     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    #   )
+    # ENDIF()
+
   ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )
