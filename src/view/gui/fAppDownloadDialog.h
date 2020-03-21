@@ -78,5 +78,4 @@ signals:
   void doneDownload(std::string fullPath);
 };
 
-
 #endif

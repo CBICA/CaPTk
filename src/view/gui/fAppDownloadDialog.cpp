@@ -73,8 +73,6 @@ void fAppDownloadDialog::ConfirmButtonPressed()
 
     startRequest(url);
 
-    emit doneDownload(fullPath.toStdString());
-
     this->close();
 }
 
@@ -176,6 +174,8 @@ void fAppDownloadDialog::httpDownloadFinished()
     delete file;
     file = 0;
     manager = 0;
+
+    emit doneDownload(fullPath.toStdString());
 }
 
 // During the download progress, it can be canceled
