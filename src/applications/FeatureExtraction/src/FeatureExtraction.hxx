@@ -2341,7 +2341,7 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
-      cbica::ProgressBar progressBar(allROIs.size() + m_inputImages.size());
+      cbica::ProgressBar progressBar(allROIs.size() * m_inputImages.size());
       if (!m_debug)
       {
         std::cout << "Starting computation of selected features.\n";
