@@ -1337,6 +1337,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             }
             else
             {
+              m_Radius_range.clear();
               m_Radius_range.push_back(std::atoi(currentValue.c_str()));
             }
           }
@@ -1397,6 +1398,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             {
               std::swap(min, max);
             }
+            m_Radius_range.clear();
             // populate the full range
             for (int rad = min; rad <= max; rad += range)
             {
@@ -1413,6 +1415,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
           auto temp = cbica::stringSplit(currentValue, ":");
           if (temp.size() == 1) // single value calculation
           {
+            m_Bins_range.clear();
             m_Bins_range.push_back(std::atoi(currentValue.c_str()));
           }
           else
@@ -1450,6 +1453,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             {
               std::swap(min, max);
             }
+            m_Bins_range.clear();
             // populate the full range
             for (int bin = min; bin <= max; bin += range)
             {
