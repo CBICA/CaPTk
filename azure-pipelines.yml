@@ -855,8 +855,6 @@ jobs:
     #     Copy-Item -Recurse ./ ../../../../superbuild
         
     #   displayName: 'Move superbuild and qt and compiled apps'
-    # setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
-    # setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
     
     - powershell: |
         git pull origin master
@@ -867,8 +865,13 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        
+        setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
+    
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DQt5_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=OFF ..
+        setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
+    
         cmake --build . --target ALL_BUILD --config Release
         
       displayName: 'Configure and compile CaPTk'
@@ -878,17 +881,26 @@ jobs:
         export GIT_LFS_SKIP_SMUDGE=1
         git lfs pull --include "data/TestData.zip"
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        
+        setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
+    
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DQt5_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=ON ..
-        
+        setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
+    
         cmake --build . --target RUN_TESTS --config Release
       displayName: 'Performing the Tests'
 
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        
+        setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
+    
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DQt5_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=OFF ..
+        setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
+        
         cmake --build . --target PACKAGE --config Release
 
       displayName: 'Build & Package CaPTk'
