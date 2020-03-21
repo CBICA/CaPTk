@@ -37,6 +37,7 @@ public:
   // std::string m_baseModelDir;
 
   QString downloadPath;
+  QString fullPath;
   std::string downloadLink;
 
   QUrl url;

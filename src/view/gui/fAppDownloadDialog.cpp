@@ -41,8 +41,8 @@ void fAppDownloadDialog::ConfirmButtonPressed()
     if (fileName.isEmpty())
         fileName = "index.html";
 
-    auto fullPath = downloadPath + fileName;
-    //   ShowErrorMessage(fullPath.toStdString(), this);
+    fullPath = downloadPath + fileName;
+    //   
 
     if (QFile::exists(fullPath)) {
         if (QMessageBox::question(this, tr("HTTP"),
@@ -175,6 +175,7 @@ void fAppDownloadDialog::httpDownloadFinished()
     file = 0;
     manager = 0;
 
+    ShowErrorMessage(fullPath.toStdString(), this);
     emit doneDownload(fullPath.toStdString());
 }
 
