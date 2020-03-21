@@ -12,23 +12,9 @@ fAppDownloadDialog::fAppDownloadDialog()
   this->setModal(true); // this is a pre-processing routine and therefore should be modal
   this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-  // progressDialog = new QProgressDialog(this);
-
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
-  // connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputDirectory()));
-  // connect(modelImageButton, SIGNAL(clicked()), this, SLOT(SelectModelDirectory()));
-  // connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
-  // connect(skullStrippingButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
-  // connect(customButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
-  // //connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, [this] { SetDefaultModel(fAppDownloadDialog::Tumor); });
 
-  // outputDirName->setText(mInputPathName);
-  // m_baseModelDir = cbica::normPath(getCaPTkDataDir() + "/deepMedic/saved_models/");
-
-  // m_exe = getApplicationPath("DeepMedic").c_str();
-
-  // m_dataDir = getCaPTkDataDir().c_str();
 }
 fAppDownloadDialog::~fAppDownloadDialog()
 {
@@ -84,8 +70,6 @@ void fAppDownloadDialog::ConfirmButtonPressed()
     progressDialog->setWindowTitle(tr("HTTP"));
     progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
 
-    // download button disabled after requesting download
-    // ui->downloadButton->setEnabled(false);
 
     startRequest(url);
 
@@ -184,8 +168,7 @@ void fAppDownloadDialog::httpDownloadFinished()
         }
     } else {
         QString fileName = QFileInfo(QUrl(qInputLink).path()).fileName();
-        // ui->statusLabel->setText(tr("Downloaded %1 to %2.").arg(fileName).arg(QDir::currentPath()));
-        // ui->downloadButton->setEnabled(true);
+
     }
 
     reply->deleteLater();
@@ -198,9 +181,7 @@ void fAppDownloadDialog::httpDownloadFinished()
 // During the download progress, it can be canceled
 void fAppDownloadDialog::cancelDownload()
 {
-    // ui->statusLabel->setText(tr("Download canceled."));
     httpRequestAborted = true;
     reply->abort();
-    // ui->downloadButton->setEnabled(true);
     this->close();
 }
