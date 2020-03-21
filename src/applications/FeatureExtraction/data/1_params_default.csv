@@ -21,6 +21,7 @@ GLRLM,Radius,Int,(1:9),1,Radius around the center voxel which can be in mm as we
 GLRLM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averaged
 GLSZM,Bins,Int,,20,The number of bins (FBN) or size of each bin (FBS) to calculate for the Histogram
 GLSZM,Radius,Int,(1:9),1,Radius around the center voxel
+GLSZM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averaged
 NGTDM,Bins,Int,,20,The number of bins (FBN) or size of each bin (FBS) to calculate for the Histogram
 NGTDM,Radius,Int,(1:9),1,Radius around the center voxel
 NGTDM,Offset,String,[Individual:Average],Average,Either individual offset values or averaged
