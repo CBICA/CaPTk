@@ -260,8 +260,8 @@ public:
             this->m_features["ShortRunLowGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
             this->m_features["ShortRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
 
-            // TBD: this features are not IBSI-compliant, hence in debugMode
-            if (this->m_debugMode)
+            // TBD: this features are not IBSI-compliant, hence in debugMode; re-enabling to extract NatSci features
+            //if (this->m_debugMode)
             {
               this->m_features["ShortRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetShortRunEmphasis();
               this->m_features["LongRunEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunEmphasis();
@@ -271,6 +271,7 @@ public:
               this->m_features["LongRunHighGreyLevelEmphasis_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
               this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetTotalNumberOfRuns();
               this->m_features["RunPercentage_Offset_" + std::to_string(offsetNum)] = this->m_features["TotalRuns_Offset_" + std::to_string(offsetNum)] / static_cast<double>(this->m_nonZeroIndeces.size());
+              //// part of the "enhanced" set coming from MITK
               //this->m_features["GreyLevelNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelNonuniformityNormalized();
               //this->m_features["RunLengthNonuniformityNormalized_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetRunLengthNonuniformityNormalized();
               //this->m_features["GreyLevelVariance_Offset_" + std::to_string(offsetNum)] = runLengthFeaturesCalculator->GetGreyLevelVariance();
@@ -309,8 +310,8 @@ public:
           this->m_features["ShortRunLowGreyLevelEmphasis"] = srlgle;
           this->m_features["ShortRunHighGreyLevelEmphasis"] = srhgle;
 
-          // TBD: this features are not IBSI-compliant, hence in debugMode
-          if (this->m_debugMode)
+          // TBD: this features are not IBSI-compliant, hence in debugMode; re-enabling to extract NatSci features
+          //if (this->m_debugMode)
           {
              this->m_features["ShortRunEmphasis"] = sre;
              this->m_features["LongRunEmphasis"] = lre;
@@ -320,6 +321,7 @@ public:
              this->m_features["LongRunLowGreyLevelEmphasis"] = lrlgle;
              this->m_features["LongRunHighGreyLevelEmphasis"] = lrhgle;
              this->m_features["TotalRuns"] = runs;
+             /// advanced set from MITK
              //this->m_features["RunLengthNonuniformityNormalized"] = rlnn;
              //this->m_features["GreyLevelNonuniformityNormalized"] = glnn;
              //this->m_features["GreyLevelVariance_Offset"] = glv;
@@ -422,8 +424,9 @@ public:
         this->m_features["ShortRunLowGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
         this->m_features["ShortRunHighGreyLevelEmphasis"] = runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
 
-        // TBD: this features are not IBSI-compliant, hence in debugMode
-        if (this->m_debugMode)
+
+        // TBD: this features are not IBSI-compliant, hence in debugMode; re-enabling to extract NatSci features
+        //if (this->m_debugMode)
         {
            this->m_features["ShortRunEmphasis"] = runLengthFeaturesCalculator->GetShortRunEmphasis();
            this->m_features["LongRunEmphasis"] = runLengthFeaturesCalculator->GetLongRunEmphasis();

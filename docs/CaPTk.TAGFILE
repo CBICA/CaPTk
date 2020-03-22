@@ -4,38 +4,38 @@
     <name>Getting_Started</name>
     <title>Getting Started</title>
     <filename>Getting_Started</filename>
-    <docanchor file="Getting_Started" title="Frequently Asked Questions">gs_FAQ</docanchor>
-    <docanchor file="Getting_Started" title="Supported Images">gs_supportedImages</docanchor>
-    <docanchor file="Getting_Started" title="Image &amp; Mask Loading">gs_imageLoading</docanchor>
-    <docanchor file="Getting_Started" title="Image Visualization">gs_imageVisualization</docanchor>
-    <docanchor file="Getting_Started" title="Tab Docking">gs_tabDocking</docanchor>
-    <docanchor file="Getting_Started" title="Coordinate definition (Seed-point initialization)">gs_seedpoints</docanchor>
-    <docanchor file="Getting_Started" title="Tumor Points">gs_seedpoints_tumor</docanchor>
-    <docanchor file="Getting_Started" title="Tissue Points">gs_seedpoints_tissue</docanchor>
-    <docanchor file="Getting_Started" title="Label Annotation/Drawing Panel">gs_drawing</docanchor>
-    <docanchor file="Getting_Started" title="Keyboard Shortcuts">gs_keyboard</docanchor>
-    <docanchor file="Getting_Started" title="Utilities (Command-line only)">gs_utilities</docanchor>
-    <docanchor file="Getting_Started" title="Pre-processing">gs_preprocessing</docanchor>
-    <docanchor file="Getting_Started" title="Segmentation">gs_segmentation</docanchor>
-    <docanchor file="Getting_Started" title="Feature Extraction">gs_features</docanchor>
-    <docanchor file="Getting_Started" title="Specialized Applications">gs_specializedApps</docanchor>
-    <docanchor file="Getting_Started" title="Command Line Usage">gs_commandLineUsage</docanchor>
+    <docanchor file="Getting_Started.html" title="Frequently Asked Questions">gs_FAQ</docanchor>
+    <docanchor file="Getting_Started.html" title="Supported Images">gs_supportedImages</docanchor>
+    <docanchor file="Getting_Started.html" title="Image &amp; Mask Loading">gs_imageLoading</docanchor>
+    <docanchor file="Getting_Started.html" title="Image Visualization">gs_imageVisualization</docanchor>
+    <docanchor file="Getting_Started.html" title="Tab Docking">gs_tabDocking</docanchor>
+    <docanchor file="Getting_Started.html" title="Coordinate definition (Seed-point initialization)">gs_seedpoints</docanchor>
+    <docanchor file="Getting_Started.html" title="Tumor Points">gs_seedpoints_tumor</docanchor>
+    <docanchor file="Getting_Started.html" title="Tissue Points">gs_seedpoints_tissue</docanchor>
+    <docanchor file="Getting_Started.html" title="Label Annotation/Drawing Panel">gs_drawing</docanchor>
+    <docanchor file="Getting_Started.html" title="Keyboard Shortcuts">gs_keyboard</docanchor>
+    <docanchor file="Getting_Started.html" title="Utilities (Command-line only)">gs_utilities</docanchor>
+    <docanchor file="Getting_Started.html" title="Pre-processing">gs_preprocessing</docanchor>
+    <docanchor file="Getting_Started.html" title="Segmentation">gs_segmentation</docanchor>
+    <docanchor file="Getting_Started.html" title="Feature Extraction">gs_features</docanchor>
+    <docanchor file="Getting_Started.html" title="Specialized Applications">gs_specializedApps</docanchor>
+    <docanchor file="Getting_Started.html" title="Command Line Usage">gs_commandLineUsage</docanchor>
   </compound>
   <compound kind="page">
     <name>FAQ</name>
     <title>Frequently Asked Questions</title>
     <filename>FAQ</filename>
-    <docanchor file="FAQ" title="Which platforms are supported by CaPTk installers?">gs_FAQ_1</docanchor>
-    <docanchor file="FAQ" title="What DICOM images are currently supported by CaPTk?">gs_FAQ_2</docanchor>
-    <docanchor file="FAQ" title="How do I run CaPTk Applications from the Command Line?">gs_FAQ_3</docanchor>
-    <docanchor file="FAQ" title="What are the OpenGL requirements to run CaPTk?">gs_FAQ_4</docanchor>
-    <docanchor file="FAQ" title="What if I am having issues with the Linux Installer?">gs_FAQ_5</docanchor>
-    <docanchor file="FAQ" title="FUSE Issues">gs_FAQ_5_1</docanchor>
-    <docanchor file="FAQ" title="GLIBCXX or GLIBC Issues">gs_FAQ_5_2</docanchor>
-    <docanchor file="FAQ" title="Is there a minimum recommended screen resolution for running CaPTk?">gs_FAQ_6</docanchor>
-    <docanchor file="FAQ" title="Where can I find the CaPTk Docker Image?">gs_FAQ_7</docanchor>
-    <docanchor file="FAQ" title="How do I run the CaPTk Docker Image to show the interface?">gs_FAQ_8</docanchor>
-    <docanchor file="FAQ" title="What if I am having an issue not listed here?">gs_FAQ_9</docanchor>
+    <docanchor file="FAQ.html" title="Which platforms are supported by CaPTk installers?">gs_FAQ_1</docanchor>
+    <docanchor file="FAQ.html" title="What DICOM images are currently supported by CaPTk?">gs_FAQ_2</docanchor>
+    <docanchor file="FAQ.html" title="How do I run CaPTk Applications from the Command Line?">gs_FAQ_3</docanchor>
+    <docanchor file="FAQ.html" title="What are the OpenGL requirements to run CaPTk?">gs_FAQ_4</docanchor>
+    <docanchor file="FAQ.html" title="What if I am having issues with the Linux Installer?">gs_FAQ_5</docanchor>
+    <docanchor file="FAQ.html" title="FUSE Issues">gs_FAQ_5_1</docanchor>
+    <docanchor file="FAQ.html" title="GLIBCXX or GLIBC Issues">gs_FAQ_5_2</docanchor>
+    <docanchor file="FAQ.html" title="Is there a minimum recommended screen resolution for running CaPTk?">gs_FAQ_6</docanchor>
+    <docanchor file="FAQ.html" title="Where can I find the CaPTk Docker Image?">gs_FAQ_7</docanchor>
+    <docanchor file="FAQ.html" title="How do I run the CaPTk Docker Image to show the interface?">gs_FAQ_8</docanchor>
+    <docanchor file="FAQ.html" title="What if I am having an issue not listed here?">gs_FAQ_9</docanchor>
   </compound>
   <compound kind="page">
     <name>How_To_Guides</name>
@@ -201,10 +201,10 @@
     <name>Science</name>
     <title>Scientific Findings using CaPTk</title>
     <filename>Science</filename>
-    <docanchor file="Science" title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients">phiEstimator</docanchor>
-    <docanchor file="Science" title="Prediction of Overall Survival in Glioblastoma Patients">survivalPredictor</docanchor>
-    <docanchor file="Science" title="Probability Maps of Potential Recurrence of Glioblastoma Tumors">recurrencePredictor</docanchor>
-    <docanchor file="Science" title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer">libraPapers</docanchor>
+    <docanchor file="Science.html" title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients">phiEstimator</docanchor>
+    <docanchor file="Science.html" title="Prediction of Overall Survival in Glioblastoma Patients">survivalPredictor</docanchor>
+    <docanchor file="Science.html" title="Probability Maps of Potential Recurrence of Glioblastoma Tumors">recurrencePredictor</docanchor>
+    <docanchor file="Science.html" title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer">libraPapers</docanchor>
   </compound>
   <compound kind="page">
     <name>Technical_Reference</name>
@@ -215,22 +215,22 @@
     <name>tr_FeatureExtraction</name>
     <title>Feature Extraction</title>
     <filename>tr_FeatureExtraction</filename>
-    <docanchor file="tr_FeatureExtraction" title="Defaults">tr_fe_defaults</docanchor>
-    <docanchor file="tr_FeatureExtraction" title="Default 3D Image Feature Extraction Parameters">tr_fe_def_main</docanchor>
-    <docanchor file="tr_FeatureExtraction" title="Default 2D Image Feature Extraction Parameters">tr_fe_def_lattice</docanchor>
-    <docanchor file="tr_FeatureExtraction" title="Customizing Parameters">tr_fe_customization</docanchor>
-    <docanchor file="tr_FeatureExtraction" title="Batch Mode">tr_fe_batch</docanchor>
-    <docanchor file="tr_FeatureExtraction" title="Extracted Features">tr_fe_math</docanchor>
+    <docanchor file="tr_FeatureExtraction.html" title="Pre-Existing Parameter Configurations">tr_fe_defaults</docanchor>
+    <docanchor file="tr_FeatureExtraction.html" title="Default 3D Image Feature Extraction Parameters">tr_fe_def_main</docanchor>
+    <docanchor file="tr_FeatureExtraction.html" title="Default 2D Image Feature Extraction Parameters">tr_fe_def_lattice</docanchor>
+    <docanchor file="tr_FeatureExtraction.html" title="Customizing Parameters">tr_fe_customization</docanchor>
+    <docanchor file="tr_FeatureExtraction.html" title="Batch Mode">tr_fe_batch</docanchor>
+    <docanchor file="tr_FeatureExtraction.html" title="Extracted Features">tr_fe_math</docanchor>
   </compound>
   <compound kind="page">
     <name>tr_integration</name>
     <title>Integrating your Application in CaPTk</title>
     <filename>tr_integration</filename>
-    <docanchor file="tr_integration" title="Building CaPTk from Sources">tr_sourceBuid</docanchor>
-    <docanchor file="tr_integration" title="Prerequisites">tr_sb_prerequisites</docanchor>
-    <docanchor file="tr_integration" title="Build">tr_sb_actualBuild</docanchor>
-    <docanchor file="tr_integration" title="Integrating your C++ application into CaPTk">tr_cppIntegration</docanchor>
-    <docanchor file="tr_integration" title="Integrating your Python application into CaPTk">tr_pyIntegration</docanchor>
+    <docanchor file="tr_integration.html" title="Building CaPTk from Sources">tr_sourceBuid</docanchor>
+    <docanchor file="tr_integration.html" title="Prerequisites">tr_sb_prerequisites</docanchor>
+    <docanchor file="tr_integration.html" title="Build">tr_sb_actualBuild</docanchor>
+    <docanchor file="tr_integration.html" title="Integrating your C++ application into CaPTk">tr_cppIntegration</docanchor>
+    <docanchor file="tr_integration.html" title="Integrating your Python application into CaPTk">tr_pyIntegration</docanchor>
   </compound>
   <compound kind="page">
     <name>Download</name>
