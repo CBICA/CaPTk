@@ -89,6 +89,15 @@ public:
   template<class ImageType>
 typename ImageType::Pointer Run(typename ImageType::Pointer inputimage);
 
+  // Overload run to accept more parameters
+  template<class ImageType, class MaskImageType>
+typename ImageType::Pointer Run(typename ImageType::Pointer inputimage,
+                                  /* set default values */
+                                  typename MaskImageType::Pointer maskimage = NULL,
+                                  int splineOrder = 3, int otsuBins = 10,
+                                  int maxIterations = 100, int fittingLevels = 50,
+                                  float filterNoise = 0.01, float fwhm = 0.15);
+
 private:
 
 };
@@ -96,7 +105,7 @@ private:
 template<class ImageType>
 typename ImageType::Pointer N3BiasCorrection::Run(typename ImageType::Pointer inputimage)
 {
-  messageUpdate("N4 Bias Correction");
+  messageUpdate("N3 Bias Correction");
   progressUpdate(0);
   //typedef signed short RealType;
   //typedef itk::Image<RealType, 3> RealImageType;
@@ -219,4 +228,125 @@ typename ImageType::Pointer N3BiasCorrection::Run(typename ImageType::Pointer in
   return outputImage;
 }
 
+template<class ImageType, class MaskImageType>
+typename ImageType::Pointer N3BiasCorrection::Run(typename ImageType::Pointer inputImage,
+                                                 typename MaskImageType::Pointer maskImage,
+                                                 int splineOrder, int otsuBins,
+                                                  int maxIterations, int fittingLevels,
+                                                  float filterNoise, float fwhm)
+{
+    // Downsample image for fast bias correction as recommended by ANTs developers
+    typedef itk::ShrinkImageFilter<ImageType, ImageType> ShrinkerType;
+    typename ShrinkerType::Pointer shrinker = ShrinkerType::New();
+    shrinker->SetInput(inputImage);
+    shrinker->SetShrinkFactors(4); // 4 is an arbitrary, but good, value
 
+    // Generate a mask using Otsu's thresholding if one isn't provided by the user
+    if (!maskImage)
+    {
+      typedef itk::OtsuThresholdImageFilter<ImageType, MaskImageType> ThresholderType;
+      typename ThresholderType::Pointer otsu = ThresholderType::New();
+      otsu->SetInput(inputImage);
+      otsu->SetNumberOfHistogramBins(otsuBins);
+      otsu->SetInsideValue(0);
+      otsu->SetOutsideValue(1);
+      otsu->Update();
+      maskImage = otsu->GetOutput();
+    }
+
+    // Downsample the mask to match the downsampled image
+    typedef itk::ShrinkImageFilter<MaskImageType, MaskImageType> MaskShrinkerType;
+    typename MaskShrinkerType::Pointer maskshrinker = MaskShrinkerType::New();
+    maskshrinker->SetInput(maskImage);
+    maskshrinker->SetShrinkFactors(4);
+    shrinker->Update();
+    maskshrinker->Update();
+
+    // Run bias-correction filter on the downsampled image
+    typedef itk::N3MRIBiasFieldCorrectionImageFilter<ImageType, MaskImageType, ImageType> CorrecterType;
+    typename CorrecterType::Pointer correcter = CorrecterType::New();
+    correcter->SetInput(shrinker->GetOutput());
+    correcter->SetMaskImage(maskshrinker->GetOutput());
+    correcter->SetSplineOrder(splineOrder);
+    correcter->SetWeinerFilterNoise(filterNoise);
+    correcter->SetBiasFieldFullWidthAtHalfMaximum(fwhm);
+    correcter->SetMaximumNumberOfIterations(maxIterations);
+    correcter->SetConvergenceThreshold(0.0000001);
+    correcter->SetNumberOfFittingLevels(fittingLevels);
+    try
+    {
+      correcter->Update();
+    }
+    catch (std::exception &e)
+    {
+      cbica::Logging(loggerFile, "Error caught: " + std::string(e.what()));
+    }
+
+    // Map the B-spline lattice from the bias correction back into the original input image's space
+    typedef itk::BSplineControlPointImageFilter<typename CorrecterType::BiasFieldControlPointLatticeType, typename CorrecterType::ScalarImageType> BSplinerType;
+    typename BSplinerType::Pointer bspliner = BSplinerType::New();
+    bspliner->SetInput(correcter->GetLogBiasFieldControlPointLattice());
+    bspliner->SetSplineOrder(correcter->GetSplineOrder());
+    bspliner->SetSize(inputImage->GetLargestPossibleRegion().GetSize());
+    bspliner->SetOrigin(inputImage->GetOrigin());
+    bspliner->SetDirection(inputImage->GetDirection());
+    bspliner->SetSpacing(inputImage->GetSpacing());
+    bspliner->Update();
+
+    // logField is the log of the bias field
+    typename ImageType::Pointer logField = ImageType::New();
+    logField->SetOrigin(bspliner->GetOutput()->GetOrigin());
+    logField->SetSpacing(bspliner->GetOutput()->GetSpacing());
+    logField->SetRegions(bspliner->GetOutput()->GetLargestPossibleRegion().GetSize());
+    logField->SetDirection(bspliner->GetOutput()->GetDirection());
+    logField->Allocate();
+
+    // Copy the bspliner output into logField
+    itk::ImageRegionIterator<typename CorrecterType::ScalarImageType> ItB(bspliner->GetOutput(), bspliner->GetOutput()->GetLargestPossibleRegion());
+    itk::ImageRegionIterator<ImageType> ItF(logField, logField->GetLargestPossibleRegion());
+    for (ItB.GoToBegin(), ItF.GoToBegin(); !ItB.IsAtEnd(); ++ItB, ++ItF)
+    {
+      ItF.Set(ItB.Get()[0]);
+    }
+
+    // reconstruct original bias field from its log
+    typedef itk::ExpImageFilter<ImageType, ImageType> ExpFilterType;
+    typename ExpFilterType::Pointer expFilter = ExpFilterType::New();
+    expFilter->SetInput(logField);
+    expFilter->Update();
+
+    // Divide the input image by the reconstructed bias field
+    typedef itk::DivideImageFilter<ImageType, ImageType, ImageType> DividerType;
+    typename DividerType::Pointer divider = DividerType::New();
+    divider->SetInput1(inputImage);
+    divider->SetInput2(expFilter->GetOutput());
+    divider->Update();
+
+    // Ensure output has the same properties as the input
+    const typename ImageType::SpacingType spacing = inputImage->GetSpacing();
+    const typename ImageType::PointType origin = inputImage->GetOrigin();
+    const typename ImageType::DirectionType direction = inputImage->GetDirection();
+    const typename ImageType::RegionType region = inputImage->GetLargestPossibleRegion();
+    typename ImageType::Pointer outputImage = ImageType::New();
+
+    outputImage->SetSpacing(spacing);
+    outputImage->SetLargestPossibleRegion(region);
+    outputImage->SetBufferedRegion(region);
+    outputImage->Allocate();
+    outputImage->SetOrigin(origin);
+    outputImage->SetDirection(direction);
+
+    itk::ImageRegionIterator<ImageType> outputIterator(outputImage, outputImage->GetLargestPossibleRegion());
+    itk::ImageRegionIterator<ImageType> dividerIterator(divider->GetOutput(), divider->GetOutput()->GetLargestPossibleRegion());
+    // copy to the output
+    for (outputIterator.GoToBegin(), dividerIterator.GoToBegin(); !dividerIterator.IsAtEnd(); ++dividerIterator, ++outputIterator)
+    {
+      outputIterator.Set(dividerIterator.Get());
+    }
+
+    return outputImage;
+
+
+
+
+}

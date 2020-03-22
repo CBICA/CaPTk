@@ -6,7 +6,8 @@
 
 #include "ZScoreNormalizer.h"
 #include "P1P2Normalizer.h"
-#include "itkN3MRIBiasFieldCorrectionImageFilter.h"
+//#include "itkN3MRIBiasFieldCorrectionImageFilter.h"
+#include "BiasCorrection.hpp"
 #include "itkN4BiasFieldCorrectionImageFilter.h"
 #include "SusanDenoising.h"
 
@@ -47,9 +48,10 @@ registrationAffineTransformInput, registrationDeformableTransformInput;
 int histoMatchQuantiles = 40, histoMatchBins = 100,
 registrationTypeInt;
 bool registrationIntermediate = false, registrationSegmentationMoving = false;
-float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
-ssSigma = 0.5, ssIntensityThreshold = 80, n3Bias_filterNoise = 0.01;
-int n3Bias_splineOrder = 3, n3Bias_otsuBins = 10, ssRadius = 1;
+float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
+ssSigma = 0.5, ssIntensityThreshold = 80, bias_filterNoise = 0.01;
+int bias_splineOrder = 3, bias_otsuBins = 10, ssRadius = 1, bias_maxIterations = 100, bias_fittingLevels = 4;
+// Note: increases to bias_fittingLevels cause exponential increases in execution time, be warned
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true, debugMode = false;
 
@@ -203,70 +205,64 @@ int algorithmsRunner()
     }
     else
     {
-      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-      auto corrector = itk::N3MRIBiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
-      corrector->SetInput(inputImage);
-      corrector->SetSplineOrder(n3Bias_splineOrder);
-      corrector->SetWeinerFilterNoise(n3Bias_filterNoise);
-      corrector->SetBiasFieldFullWidthAtHalfMaximum(n3Bias_fwhm);
-      corrector->SetConvergenceThreshold(0.0000001);
+      auto inputImage = cbica::ReadImage<TImageType>(inputImageFile);
+      typedef itk::Image<unsigned char, TImageType::ImageDimension> TMaskImageType;
+      typename TMaskImageType::Pointer maskImage; // mask inits to null
       if (!inputMaskFile.empty())
       {
-        corrector->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+          maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
       }
-      else
-      {
-        auto otsu = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
-        otsu->SetInput(inputImage);
-        otsu->SetNumberOfHistogramBins(n3Bias_otsuBins);
-        otsu->SetInsideValue(0);
-        otsu->SetOutsideValue(1);
-        otsu->Update();
-        corrector->SetMaskImage(otsu->GetOutput());
-      }
-      corrector->Update();
 
-      cbica::WriteImage< TImageType >(corrector->GetOutput(), outputImageFile);
+      BiasCorrection biasCorrector;
+      auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n3",
+                                                                       inputImage,
+                                                                       maskImage,
+                                                                       bias_splineOrder,
+                                                                       bias_maxIterations,
+                                                                       bias_fittingLevels,
+                                                                       bias_filterNoise,
+                                                                       bias_fwhm,
+                                                                       bias_otsuBins);
+
+
+      cbica::WriteImage< TImageType >(outputImage, outputImageFile);
       return EXIT_SUCCESS;
     }
   }
 
   else if (requestedAlgorithm == BiasCorrectionN4)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
-    {
-      std::cerr << "This operation cannot currently be performed with multiple images.\n";
-      return EXIT_FAILURE;
-    }
-    else
-    {
-      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-      using TBiasCorrectorType = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >;
-      auto corrector = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
-      corrector->SetInput(inputImage);
-      corrector->SetSplineOrder(n3Bias_splineOrder);
-      corrector->SetWienerFilterNoise(n3Bias_filterNoise);
-      corrector->SetBiasFieldFullWidthAtHalfMaximum(n3Bias_fwhm);
-      corrector->SetConvergenceThreshold(0.0000001);
-      if (!inputMaskFile.empty())
+      if (!inputImageFiles.empty()) // multiple images passed
       {
-        corrector->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+        std::cerr << "This operation cannot currently be performed with multiple images.\n";
+        return EXIT_FAILURE;
       }
       else
       {
-        auto otsu = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
-        otsu->SetInput(inputImage);
-        otsu->SetNumberOfHistogramBins(n3Bias_otsuBins);
-        otsu->SetInsideValue(0);
-        otsu->SetOutsideValue(1);
-        otsu->Update();
-        corrector->SetMaskImage(otsu->GetOutput());
-      }
-      corrector->Update();
-      auto tempOutput = corrector->GetOutput();
+        auto inputImage = cbica::ReadImage<TImageType>(inputImageFile);
+        typedef itk::Image<unsigned char, TImageType::ImageDimension> TMaskImageType;
+        typename TMaskImageType::Pointer maskImage; // mask inits to null
+        if (!inputMaskFile.empty())
+        {
+            maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
+        }
 
-      cbica::WriteImage< TImageType >(tempOutput, outputImageFile);
-    }
+        BiasCorrection biasCorrector;
+        auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n4",
+                                                                         inputImage,
+                                                                         maskImage,
+                                                                         bias_splineOrder,
+                                                                         bias_maxIterations,
+                                                                         bias_fittingLevels,
+                                                                         bias_filterNoise,
+                                                                         bias_fwhm,
+                                                                         bias_otsuBins);
+
+
+        cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+        return EXIT_SUCCESS;
+      }
+
   }
 
   else if (requestedAlgorithm == SusanDenoisingAlgo)
@@ -669,11 +665,16 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization");
   parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: 5,95");
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
-  parser.addOptionalParameter("n3", "n3BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N3 bias correction", "Optional parameters: mask or bins, spline order, filter noise level");
-  parser.addOptionalParameter("n4", "n4BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N4 bias correction", "Optional parameters: mask or bins, spline order, filter noise level");
-  parser.addOptionalParameter("nS", "nSplieOrder", cbica::Parameter::INTEGER, "N.A.", "The spline order for the bias correction", "Defaults to " + std::to_string(n3Bias_splineOrder));
-  parser.addOptionalParameter("nF", "nFilterNoise", cbica::Parameter::FLOAT, "N.A.", "The filter noise level for the bias correction", "Defaults to " + std::to_string(n3Bias_filterNoise));
-  parser.addOptionalParameter("nB", "nBiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3/N4 bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(n3Bias_otsuBins));
+  parser.addOptionalParameter("n3", "n3BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N3 bias correction",
+                              "Optional parameters: mask or bins, spline order, filter noise level, fitting levels, max iterations, full-width-at-half-maximum");
+  parser.addOptionalParameter("n4", "n4BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N4 bias correction",
+                              "Optional parameters: mask or bins, spline order, filter noise level, fitting levels, full-width-at-half-maximum");
+  parser.addOptionalParameter("nS", "nSplineOrder", cbica::Parameter::INTEGER, "N.A.", "The spline order for the bias correction", "Defaults to " + std::to_string(bias_splineOrder));
+  parser.addOptionalParameter("nF", "nFilterNoise", cbica::Parameter::FLOAT, "N.A.", "The filter noise level for the bias correction", "Defaults to " + std::to_string(bias_filterNoise));
+  parser.addOptionalParameter("nB", "nBiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3/N4 bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(bias_otsuBins));
+  parser.addOptionalParameter("nFL", "nFittingLevels", cbica::Parameter::INTEGER, "N.A.", "The number of fitting levels to use for bias correction", "Defaults to " + std::to_string(bias_fittingLevels));
+  parser.addOptionalParameter("nMI", "nMaxIterations", cbica::Parameter::INTEGER, "N.A.", "The maximum number of iterations for bias correction (only works for N3)", "Defaults to " + std::to_string(bias_maxIterations));
+  parser.addOptionalParameter("nFWHM", "nFullWidthHalfMaximum", cbica::Parameter::INTEGER, "N.A.", "Set the full-width-at-half-maximum value for bias correction", "Defaults to " + std::to_string(bias_fwhm));
   parser.addOptionalParameter("ss", "susanSmooth", cbica::Parameter::STRING, "N.A.", "Susan smoothing of an image");
   parser.addOptionalParameter("ssS", "susanSigma", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Sigma", "Defaults to " + std::to_string(ssSigma));
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
@@ -774,15 +775,27 @@ int main(int argc, char** argv)
   {
     if (parser.isPresent("nS"))
     {
-      parser.getParameterValue("nS", n3Bias_splineOrder);
+      parser.getParameterValue("nS", bias_splineOrder);
     }
     if (parser.isPresent("nF"))
     {
-      parser.getParameterValue("nF", n3Bias_filterNoise);
+      parser.getParameterValue("nF", bias_filterNoise);
     }
     if (parser.isPresent("nB"))
     {
-      parser.getParameterValue("nB", n3Bias_otsuBins);
+      parser.getParameterValue("nB", bias_otsuBins);
+    }
+    if (parser.isPresent("nFL"))
+    {
+      parser.getParameterValue("nFL", bias_fittingLevels);
+    }
+    if (parser.isPresent("nMI"))
+    {
+      parser.getParameterValue("nMI", bias_maxIterations);
+    }
+    if (parser.isPresent("nFWHM"))
+    {
+      parser.getParameterValue("nFWHM", bias_fwhm);
     }
 
     requestedAlgorithm = BiasCorrectionN3;
@@ -791,15 +804,27 @@ int main(int argc, char** argv)
   {
     if (parser.isPresent("nS"))
     {
-      parser.getParameterValue("nS", n3Bias_splineOrder);
+      parser.getParameterValue("nS", bias_splineOrder);
     }
     if (parser.isPresent("nF"))
     {
-      parser.getParameterValue("n3F", n3Bias_filterNoise);
+      parser.getParameterValue("nF", bias_filterNoise);
     }
     if (parser.isPresent("nB"))
     {
-      parser.getParameterValue("nB", n3Bias_otsuBins);
+      parser.getParameterValue("nB", bias_otsuBins);
+    }
+    if (parser.isPresent("nFL"))
+    {
+      parser.getParameterValue("nFL", bias_fittingLevels);
+    }
+    //if (parser.isPresent("nMI")) // This doesn't work for N4 (currently).
+    //{
+    //  parser.getParameterValue("nMI", bias_maxIterations);
+    //}
+    if (parser.isPresent("nFWHM"))
+    {
+      parser.getParameterValue("nFWHM", bias_fwhm);
     }
 
     requestedAlgorithm = BiasCorrectionN4;

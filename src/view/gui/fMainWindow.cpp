@@ -17,7 +17,7 @@
 #include "EGFRvIIISurrogateIndex.h"
 #include "TrainingModule.h"
 #include "GeodesicSegmentation.h"
-#include "N3BiasCorrection.h"
+#include "BiasCorrection.hpp"
 #include "SusanDenoising.h"
 #include "WhiteStripe.h"
 #include "PerfusionDerivatives.h"
@@ -7191,8 +7191,21 @@ void fMainWindow::ImageBiasCorrection()
     duplicator->Update();
     ImageType::Pointer inputImage = duplicator->GetOutput();
     updateProgress(5, "Bias correction in process");
-    N3BiasCorrection biasCorrecter /*= N3BiasCorrection()*/;
-    ImageType::Pointer outputImage = biasCorrecter.Run<ImageTypeFloat3D>(inputImage);
+    BiasCorrection biasCorrector;
+    // Use default values for bias correction for now -- until we add the appropriate GUI elements
+    // TODO: Either allow the GUI to change the below values or otherwise reorganize (cleanup)
+    // Incorporating options into the GUI dialog should also address switching between N3/N4
+    int bias_splineOrder = 3, bias_otsuBins = 10, bias_maxIterations = 100, bias_fittingLevels = 4;
+    float bias_filterNoise = 0.01, bias_fwhm = 0.15;
+    ImageType::Pointer outputImage = biasCorrector.Run<ImageType>("n3",
+                                                                  inputImage,
+                                                                  bias_splineOrder,
+                                                                  bias_maxIterations,
+                                                                  bias_fittingLevels,
+                                                                  bias_filterNoise,
+                                                                  bias_fwhm,
+                                                                  bias_otsuBins);
+
     if (outputImage.IsNotNull())
     {
       updateProgress(80, "Saving file");
