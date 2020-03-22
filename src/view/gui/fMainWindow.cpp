@@ -5801,6 +5801,7 @@ void fMainWindow::ApplicationLIBRABatch()
 
   if (scriptToCall.empty()) {
     appDownload("libra");
+    return;
   }
 
   if (cbica::fileExists(scriptToCall))
@@ -5907,6 +5908,7 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   if (scriptToCall.empty()) {
     appDownload("libra");
+    return;
   }
 
   if (cbica::fileExists(scriptToCall))
@@ -5967,6 +5969,7 @@ void fMainWindow::ApplicationLIBRASingle()
 
   if (scriptToCall.empty()) {
     appDownload("libra");
+    return;
   }
 
   if (cbica::fileExists(scriptToCall))
