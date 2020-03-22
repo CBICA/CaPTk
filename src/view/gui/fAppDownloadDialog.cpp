@@ -175,7 +175,6 @@ void fAppDownloadDialog::httpDownloadFinished()
     file = 0;
     manager = 0;
 
-    ShowErrorMessage(fullPath.toStdString(), this);
     emit doneDownload(fullPath.toStdString());
 }
 

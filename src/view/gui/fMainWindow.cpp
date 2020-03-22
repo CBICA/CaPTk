@@ -1190,7 +1190,6 @@ void fMainWindow::appDownload(std::string currentApp)
 
 void fMainWindow::unzipArchive(std::string fullPath) 
 {
-  ShowErrorMessage(fullPath);
   elz::extractZip(fullPath, downloadFolder);
 }
 
