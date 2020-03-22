@@ -518,7 +518,10 @@ fMainWindow::fMainWindow()
   mProjectVariant = std::string(PROJECT_VARIANT);
 
   connect(featurePanel, SIGNAL(helpClicked_FeaUsage(std::string)), this, SLOT(help_contextual(std::string)));
-  connect(&registrationPanel, SIGNAL(Registrationsignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)), this, SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)));
+  connect(&registrationPanel, 
+    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)),
+    this, 
+    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
@@ -8940,8 +8943,10 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
   m_IsGeodesicTrainingRunning = false;
 }
 
-void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames,
-  std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
+void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
+  std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames,
+  std::string metrics, bool rigidMode, bool affineMode, bool deformMode,
+  std::string radii, std::string iterations)
 {
   std::string configPathName;
   std::string configFileName;
@@ -8972,28 +8977,33 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     }
     updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
 
-    std::string fixedFileCommand = "-f " + fixedFileName;
-    std::string movingFileCommand = " -i " + inputFileNames[i];
-    std::string affineMatrixCommand = " -t " + matrixFileNames[i];
-    std::string outputCommand = " -o " + outputFileNames[i];
-    std::string metricsCommand = " -m " + metrics;
-    std::string iterationsCommand = " -n " + iterations;
     QStringList args;
-    args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
-      << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
-      << "-m" << metrics.c_str() << "-n" << iterations.c_str();
+
+    args << "-i" << inputFileNames[i].c_str();
+    args << "-o" << outputFileNames[i].c_str();
+    args << "-rIA" << matrixFileNames[i].c_str();
+    args << "-rFI" << fixedFileName.c_str();
+    args << "-rNI" << iterations.c_str();
 
     if (metrics == "NCC")
-      args << "-ri" << radii.c_str();
-    if (affineMode)
+      args << ("-rME NCC-" + radii).c_str();
+    else
+      args << "-rME " << metrics.c_str();
+
+    args << "-reg";
+    if (rigidMode)
     {
-      args << "-a";
+      args << "Rigid";
+    }
+    else if (affineMode)
+    {
+      args << "Affine";
     }
     else
     {
-      args << "-r";
+      args << "Deformable";
     }
-    std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
+    std::string fullCommandToRun = getApplicationPath("Preprocessing");
 
     if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
     {
@@ -9028,10 +9038,12 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
 
     std::string mode;
 
-    if (affineMode == true)
+    if (affineMode)
       mode = "Affine";
-    else
+    else if (rigidMode)
       mode = "Rigid";
+    else
+      mode = "Deformable";
 
     if (file.is_open())
     {

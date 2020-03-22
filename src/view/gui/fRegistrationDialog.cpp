@@ -96,6 +96,7 @@ fRegistrationDialog::fRegistrationDialog()
 
   connect(options_AFFINE_selected, SIGNAL(toggled(bool)), this, SLOT(SelectedAffineMode()));
   connect(options_RIGID_selected, SIGNAL(toggled(bool)), this, SLOT(SelectedRigidMode()));
+  connect(options_DEFORMABLE_selected, SIGNAL(toggled(bool)), this, SLOT(SelectedDeformMode()));
 
   connect(options_MetricSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(SelectedMetric(int)));
   connect(nccRadii, SIGNAL(textChanged(QString)), this, SLOT(setRadii(QString)));
@@ -600,42 +601,70 @@ void fRegistrationDialog::SelectMovingOutputFile5()
 void fRegistrationDialog::SelectedAffineMode()
 {
   options_RIGID_selected->setChecked(false);
+  options_DEFORMABLE_selected->setChecked(false);
   affineMode = true;
+  rigidMode = false;
+  deformMode = false;
 }
 
 void fRegistrationDialog::SelectedRigidMode()
 {
   options_AFFINE_selected->setChecked(false);
+  options_DEFORMABLE_selected->setChecked(false);
   affineMode = false;
+  rigidMode = true;
+  deformMode = false;
+}
+
+void fRegistrationDialog::SelectedDeformMode()
+{
+  options_AFFINE_selected->setChecked(false);
+  options_RIGID_selected->setChecked(false);
+  affineMode = false;
+  rigidMode = false;
+  deformMode = true;
 }
 
 void fRegistrationDialog::SelectedMetric(int index)
 {
-  if (options_MetricSelector->currentIndex() == 0) {
+  switch (options_MetricSelector->currentIndex())
+  {
+  case 0:
+  {
     metric = "NMI";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
   }
-  else if (options_MetricSelector->currentIndex() == 1) {
+  case 1:
+  {
     metric = "MI";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
   }
-  else if (options_MetricSelector->currentIndex() == 2) {
+  case 2:
+  {
     metric = "NCC";
     radii = true;
     options_NCC_radii->setDisabled(false);
     nccRadii->setDisabled(false);
+    break;
   }
-  else if (options_MetricSelector->currentIndex() == 3) {
+  case 3:
+  {
     metric = "SSD";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
   }
-  else {
+  default:
+  {
     metric = "NMI";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
+  }
   }
 }
 
@@ -843,8 +872,11 @@ void fRegistrationDialog::ConfirmButtonPressed()
     ShowErrorMessage("Number of input, output and matrix file names do not match. Please check the fields.");
   }
 
-  else {
-    emit Registrationsignal(fixedFileName->text().toStdString(), inputfilenames, outputfilenames, matrixfilenames, registrationMode, metric, affineMode, radius, m_iterations);
+  else 
+  {
+    emit RegistrationSignal(fixedFileName->text().toStdString(), inputfilenames, 
+      outputfilenames, matrixfilenames, 
+      metric, rigidMode, affineMode, deformMode, radius, m_iterations);
     this->close();
   }
 }

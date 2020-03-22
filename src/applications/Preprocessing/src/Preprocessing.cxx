@@ -41,11 +41,11 @@ int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, outputDir, targetImageFile;
 std::vector< std::string > inputImageFiles; // store multiple image files
-std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "SSD", registrationIterations = "100,50,5",
+std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "NMI", registrationIterations = "100,50,5",
 registrationAffineTransformInput, registrationDeformableTransformInput;
 
 int histoMatchQuantiles = 40, histoMatchBins = 100,
-registrationTypeInt;
+registrationTypeInt, registrationRigidDof = 12;
 bool registrationIntermediate = false, registrationSegmentationMoving = false;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
 ssSigma = 0.5, ssIntensityThreshold = 80, n3Bias_filterNoise = 0.01;
@@ -290,7 +290,7 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == Registration)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
+    if (inputImageFiles.empty()) // multiple images passed
     {
       inputImageFiles.push_back(inputImageFile);
     }
@@ -311,6 +311,10 @@ int algorithmsRunner()
       std::string iterations;
       {
         auto temp = cbica::stringSplit(registrationIterations, ",");
+        if (temp.size() == 1)
+        {
+          temp = cbica::stringSplit(registrationIterations, "x");
+        }
         iterations += temp[0];
         for (size_t i = 1; i < temp.size(); i++)
         {
@@ -347,49 +351,59 @@ int algorithmsRunner()
       }
       auto inputFile_base = cbica::getFilenameBase(inputImageFile);
       auto fixedFile_base = cbica::getFilenameBase(registrationFixedImageFile);
-      std::map< std::string, std::string > intermediateFiles;
+      std::string interimFiles_affineTransform, interimFiles_deformField, interimFiles_invDeformField;
       auto const _registrationMetrics = "_" + registrationMetrics;
       auto const _registrationMetricsNII = _registrationMetrics + ".nii.gz";
       auto const _fixedFileTOInputFileBase = fixedFile_base + "TO" + inputFile_base;
       auto const _inputFileTOFixedFileBase = inputFile_base + "TO" + fixedFile_base;
 
-      bool defaultNamedUsed = false;
+      bool affine_defaultNamedUsed = false, deformable_defaultNamedUsed = false;
       // populate default names for intermediate files
       if (registrationAffineTransformInput.empty())
       {
-        intermediateFiles["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
-        defaultNamedUsed = true;
+        interimFiles_affineTransform = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
+        affine_defaultNamedUsed = true;
       }
       else
       {
-        intermediateFiles["Affine"] = registrationAffineTransformInput;
+        interimFiles_affineTransform = registrationAffineTransformInput;
       }
       if (registrationDeformableTransformInput.empty())
       {
-        intermediateFiles["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-        intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
-        defaultNamedUsed = true;
+        interimFiles_deformField = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
+        interimFiles_invDeformField = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+        deformable_defaultNamedUsed = true;
       }
       else
       {
-        intermediateFiles["Deform"] = registrationDeformableTransformInput;
+        interimFiles_deformField = registrationDeformableTransformInput;
         std::string path, base, ext;
         cbica::splitFileName(registrationDeformableTransformInput, path, base, ext);
-        intermediateFiles["DeformInv"] = path + "/" + base + "-Inv.nii.gz";
+        interimFiles_invDeformField = path + "/" + base + "-Inv.nii.gz";
       }
 
       std::string commandToCall;
-      if (!cbica::fileExists(intermediateFiles["Affine"]))
+      if (!cbica::fileExists(interimFiles_affineTransform))
       {
-        // we always do affine
-        commandToCall = greedyPathAndDim + " -a" +
-          commonCommands +
-          metricsCommand +
-          " -ia-image-centers -o " + intermediateFiles["Affine"];
-        ;
+        if (registrationTypeInt == RegistrationTypeEnum::Affine)
+        {
+          commandToCall = greedyPathAndDim + " -a" +
+            commonCommands +
+            metricsCommand +
+            " -ia-image-centers -o " + interimFiles_affineTransform;
+          ;
+        }
+        else
+        {
+          commandToCall = greedyPathAndDim + " -a" +
+            commonCommands +
+            metricsCommand +
+            " -ia-image-centers -dof " + std::to_string(registrationRigidDof) + " -o " + interimFiles_affineTransform;
+          ;
+        }
         if (debugMode)
         {
-          std::cout << "Starting Affine registration.\n";
+          std::cout << "Starting Affine/Rigid registration.\n";
           std::cout << "commandToCall: \n" << commandToCall << "\n";
         }
         if (std::system(commandToCall.c_str()) != 0)
@@ -401,41 +415,9 @@ int algorithmsRunner()
 
       switch (registrationTypeInt)
       {
-      case RegistrationTypeEnum::Rigid:
+      case RegistrationTypeEnum::Deformable:
       {
-        // not going to be defined
-        break;
-      }
-      case RegistrationTypeEnum::Affine:
-      {
-        if (registrationSegmentationMoving)
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri NN -r " + intermediateFiles["Affine"];
-        }
-        else
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri LABEL 0.2vox -r " + intermediateFiles["Affine"];
-        }
-
-        if (std::system(commandToCall.c_str()) != 0)
-        {
-          std::cerr << "Something went wrong when calling Greedy Reslice Affine.\n";
-          return EXIT_FAILURE;
-        }
-
-        break;
-      }
-      default: // we shall always assume deformable
-      {
-        if (!cbica::fileExists(intermediateFiles["Deform"]))
+        if (!cbica::fileExists(interimFiles_deformField) || cbica::fileExists(interimFiles_invDeformField))
         {
           if (debugMode)
           {
@@ -444,9 +426,9 @@ int algorithmsRunner()
           commandToCall = greedyPathAndDim +
             commonCommands +
             metricsCommand +
-            " -it " + intermediateFiles["Affine"] +
-            " -o " + intermediateFiles["Deform"] +
-            " -oinv " + intermediateFiles["DeformInv"];
+            " -it " + interimFiles_affineTransform +
+            " -o " + interimFiles_deformField +
+            " -oinv " + interimFiles_invDeformField;
 
           if (std::system(commandToCall.c_str()) != 0)
           {
@@ -459,19 +441,19 @@ int algorithmsRunner()
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
+            " -ri LABEL 0.2vox -r " + interimFiles_deformField +
+            " " + interimFiles_affineTransform +
             " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri NN -r " + intermediateFiles["Deform"] +
-            " " + intermediateFiles["Affine"];
+            " " + outputImageFile;
         }
         else
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
+            " -ri LINEAR -r " + interimFiles_deformField +
+            " " + interimFiles_affineTransform +
             " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri LABEL 0.2vox -r " + intermediateFiles["Deform"] +
-            " " + intermediateFiles["Affine"];
+            " " + outputImageFile;
         }
 
         if (std::system(commandToCall.c_str()) != 0)
@@ -492,8 +474,8 @@ int algorithmsRunner()
             " -rf " + registrationFixedImageFile +
             " -rm " + inputImageFile +
             " " + outputImageFileInv +
-            " -ri NN -r " + intermediateFiles["DeformInv"] +
-            " " + intermediateFiles["Affine"] + ",-1";
+            " -ri NN -r " + interimFiles_invDeformField +
+            " " + interimFiles_affineTransform + ",-1";
         }
         else
         {
@@ -501,13 +483,39 @@ int algorithmsRunner()
             " -rf " + registrationFixedImageFile +
             " -rm " + inputImageFile +
             " " + outputImageFileInv +
-            " -ri LABEL 0.2vox -r " + intermediateFiles["DeformInv"] +
-            " " + intermediateFiles["Affine"] + ",-1";
+            " -ri LABEL 0.2vox -r " + interimFiles_invDeformField +
+            " " + interimFiles_affineTransform + ",-1";
         }
 
         if (std::system(commandToCall.c_str()) != 0)
         {
           std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
+          return EXIT_FAILURE;
+        }
+        break;
+      }
+      default: // we shall always assume affine/rigid
+      {
+        if (registrationSegmentationMoving)
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -ri LABEL 0.2vox -r " + interimFiles_affineTransform +
+            " -rm " + inputImageFile +
+            " " + outputImageFile;
+        }
+        else
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -ri LINEAR -r " + interimFiles_affineTransform +
+            " -rm " + inputImageFile +
+            " " + outputImageFile;
+        }
+
+        if (std::system(commandToCall.c_str()) != 0)
+        {
+          std::cerr << "Something went wrong when calling Greedy Reslice Affine.\n";
           return EXIT_FAILURE;
         }
 
@@ -519,12 +527,14 @@ int algorithmsRunner()
       if (!registrationIntermediate)
       {
         // only do the deletion if default names are used
-        if (defaultNamedUsed)
+        if (affine_defaultNamedUsed)
         {
-          for (const auto& it : intermediateFiles)
-          {
-            std::remove(it.second.c_str());
-          }
+          std::remove(interimFiles_affineTransform.c_str());
+        }
+        if (deformable_defaultNamedUsed)
+        {
+          std::remove(interimFiles_deformField.c_str());
+          std::remove(interimFiles_invDeformField.c_str());
         }
       }
     }
@@ -663,13 +673,13 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
-  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable", "The kind of registration to perform", "Defaults to " + registrationType, "Can use Mask File with '-m' and multiple moving images with '-i'");
+  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable | Rigid-DOF", "The kind of registration to perform", "Defaults to " + registrationType, "Can use Mask File with '-m' and multiple moving images with '-i'", "For Rigid, the second number defines the degrees of freedom, eg: '-ref Rigid-10'");
   parser.addOptionalParameter("rFI", "regFixedImg", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration", "Needed for registration");
   parser.addOptionalParameter("rME", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metrics to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
   parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The number of iterations per level of multi-res", "Defaults to " + registrationIterations);
   parser.addOptionalParameter("rIS", "regInterSave", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the intermediate files are to be saved or not", "Defaults to " + std::to_string(registrationIntermediate));
   parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image(s) is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
-  parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped");
+  parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped", "Also used for rigid transformation");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
   parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed (comma-separated), the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
 
@@ -703,6 +713,10 @@ int main(int argc, char** argv)
           return EXIT_FAILURE;
         }
       }
+    }
+    else
+    {
+      inputImageFiles.push_back(inputImageFile);
     }
   }
   if (parser.isPresent("m"))
@@ -826,8 +840,30 @@ int main(int argc, char** argv)
 
     parser.getParameterValue("reg", registrationType);
     std::transform(registrationType.begin(), registrationType.end(), registrationType.begin(), ::toupper);
-    if ((registrationType.find("RIGID") != std::string::npos) || 
-      (registrationType.find("AFFINE") != std::string::npos))
+    if (registrationType.find("RIGID") != std::string::npos)
+    {
+      registrationTypeInt = RegistrationTypeEnum::Rigid;
+      auto temp = cbica::stringSplit(registrationType, "-");
+      // check for different delimiters
+      if (temp.size() == 1)
+      {
+        temp = cbica::stringSplit(registrationType, "x");
+        if (temp.size() == 1)
+        {
+          temp = cbica::stringSplit(registrationType, ":");
+        }
+      }
+      if (temp.size() == 2)
+      {
+        registrationRigidDof = std::atoi(temp[1].c_str());
+        if ((registrationRigidDof != 12) && (registrationRigidDof != 6))
+        {
+          std::cerr << "Greedy only accepts 6 or 12 as the rigid DOF.\n";
+          return EXIT_FAILURE;
+        }
+      }
+    }
+    else if (registrationType.find("AFFINE") != std::string::npos)
     {
       registrationTypeInt = RegistrationTypeEnum::Affine;
     }
@@ -854,7 +890,7 @@ int main(int argc, char** argv)
     if (parser.isPresent("rME"))
     {
       parser.getParameterValue("rME", registrationMetrics);
-      std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
+      //std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
     }
     if (parser.isPresent("rNI"))
     {

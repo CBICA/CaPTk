@@ -312,7 +312,7 @@ int algorithmsRunner()
       using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
       cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
     }
-    if (targetImageFile == "ushort")
+    else if (targetImageFile == "ushort")
     {
       using DefaultPixelType = unsigned short;
       using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
@@ -1313,7 +1313,7 @@ int main(int argc, char** argv)
       cbica::splitFileName(outputImageFile, path, base, ext);
       if (ext.find(".nii") != std::string::npos)
       {
-        std::cerr << "WARNING: NIfTI files do support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
+        std::cerr << "WARNING: NIfTI files do NOT support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
       }
       if (ext != ".mha")
       {
