@@ -52,7 +52,7 @@ Controls which features to calculate its respective parameters.
 ### Making your own parameter file
 
 1. Copy the sample parameter file
-2. Remove the rows of features that you don't need (Except intensity in row 2, which is always calculated)
+2. Remove the rows of features that you don't need (except intensity features, which are always calculated)
 3. ```Column C```: Type, denotes what type of value it expects for the parameter
 4. ```Column D```: Range, lists of possible values for the parameter
 5. ```Column E```: Value of the specified parameter
