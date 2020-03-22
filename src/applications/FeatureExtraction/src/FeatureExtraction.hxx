@@ -1337,60 +1337,74 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             }
             else
             {
+              m_Radius_range.clear();
               m_Radius_range.push_back(std::atoi(currentValue.c_str()));
             }
           }
-          //else
-          //{
-          //  // sanity check
-          //  if (temp.size() != 3)
-          //  {
-          //    std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
-          //    exit(EXIT_FAILURE);
-          //  }
+          else
+          {
+            // sanity check
+            if (temp.size() != 3)
+            {
+              std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
+              exit(EXIT_FAILURE);
+            }
 
-          //  std::vector< int > tempRange;
+            std::vector< int > tempRange;
 
-          //  // check for world coordinates in full set
-          //  bool worldRadDetected = false;
-          //  for (size_t i = 0; i < temp.size(); i++)
-          //  {
-          //    if (temp[i].find(".") != std::string::npos) // this means that the distance is float
-          //    {
-          //      worldRadDetected = true;
-          //      break;
-          //    }
-          //  }
+            // check for world coordinates in full set
+            bool worldRadDetected = false;
+            for (size_t i = 0; i < temp.size(); i++)
+            {
+              // sanity checks
+              if (temp[i].empty())
+              {
+                std::cerr << "Cannot pass an empty argument to the radius range.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[i].find("-") != std::string::npos)
+              {
+                std::cerr << "Radius cannot be negative.\n";
+                exit(EXIT_FAILURE);
+              }
 
-          //  // if a single value is detected in world coordinates, process the entire set the same way
-          //  for (size_t i = 0; i < temp.size(); i++)
-          //  {
-          //    if (worldRadDetected)
-          //    {
-          //      tempRange.push_back(
-          //        GetRadiusInImageCoordinates(
-          //          std::atof(temp[i].c_str())));
-          //    }
-          //    else
-          //    {
-          //      tempRange.push_back(std::atoi(temp[i].c_str()));
-          //    }
-          //  }
+              if (temp[i].find(".") != std::string::npos) // this means that the distance is float
+              {
+                worldRadDetected = true;
+                break;
+              }
+            }
 
-          //  int min = tempRange[0],
-          //    max = tempRange[2],
-          //    range = tempRange[1];
+            // if a single value is detected in world coordinates, process the entire set the same way
+            for (size_t i = 0; i < temp.size(); i++)
+            {
+              if (worldRadDetected)
+              {
+                tempRange.push_back(
+                  GetRadiusInImageCoordinates(
+                    std::atof(temp[i].c_str())));
+              }
+              else
+              {
+                tempRange.push_back(std::atoi(temp[i].c_str()));
+              }
+            }
 
-          //  if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
-          //  {
-          //    std::swap(min, max);
-          //  }
-          //  // populate the full range
-          //  for (int rad = min; rad <= max; rad += range)
-          //  {
-          //    m_Radius_range.push_back(rad);
-          //  }
-          //} // else-loop end
+            int min = tempRange[0],
+              max = tempRange[2],
+              range = tempRange[1];
+
+            if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
+            {
+              std::swap(min, max);
+            }
+            m_Radius_range.clear();
+            // populate the full range
+            for (int rad = min; rad <= max; rad += range)
+            {
+              m_Radius_range.push_back(rad);
+            }
+          } // else-loop end
         }
         else if (outer_key == ParamsString[Neighborhood])
         {
@@ -1401,30 +1415,51 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
           auto temp = cbica::stringSplit(currentValue, ":");
           if (temp.size() == 1) // single value calculation
           {
+            m_Bins_range.clear();
             m_Bins_range.push_back(std::atoi(currentValue.c_str()));
           }
-          //else
-          //{
-          //  // sanity check
-          //  if (temp.size() != 3)
-          //  {
-          //    std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
-          //    exit(EXIT_FAILURE);
-          //  }
-          //  int min = std::atoi(temp[0].c_str()),
-          //    max = std::atoi(temp[2].c_str()),
-          //    range = std::atoi(temp[1].c_str());
+          else
+          {
+            // sanity check
+            if (temp.size() != 3)
+            {
+              std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
+              exit(EXIT_FAILURE);
+            }
+            for (size_t bin = 0; bin < temp.size(); bin++)
+            {
+              // sanity checks
+              if (temp[bin].empty())
+              {
+                std::cerr << "Cannot pass an empty argument to the bin range.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[bin].find("-") != std::string::npos)
+              {
+                std::cerr << "Bins cannot be negative.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[bin].find(".") != std::string::npos)
+              {
+                std::cerr << "Bins need to be integer values.\n";
+                exit(EXIT_FAILURE);
+              }
+            }
+            int min = std::atoi(temp[0].c_str()),
+              max = std::atoi(temp[2].c_str()),
+              range = std::atoi(temp[1].c_str());
 
-          //  if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
-          //  {
-          //    std::swap(min, max);
-          //  }
-          //  // populate the full range
-          //  for (int bin = min; bin <= max; bin += range)
-          //  {
-          //    m_Bins_range.push_back(bin);
-          //  }
-          //} // else-loop end
+            if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
+            {
+              std::swap(min, max);
+            }
+            m_Bins_range.clear();
+            // populate the full range
+            for (int bin = min; bin <= max; bin += range)
+            {
+              m_Bins_range.push_back(bin);
+            }
+          } // else-loop end
         }
         else if (outer_key == ParamsString[Bins_Min])
         {
@@ -1560,15 +1595,8 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         {
           if (currentValue == "0")
           {
-            m_wholeImageBinning = false;
+            m_keepNaNs = false;
           }
-        }
-        else if (outer_key == ParamsString[WholeImageBinning])
-        {
-        if (currentValue == "Remove")
-        {
-          m_keepNaNs = false;
-        }
         }
         else if (outer_key == ParamsString[LBPStyle])
         {
@@ -2313,7 +2341,7 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
-      cbica::ProgressBar progressBar(allROIs.size() + m_inputImages.size());
+      cbica::ProgressBar progressBar(allROIs.size() * m_inputImages.size());
       if (!m_debug)
       {
         std::cout << "Starting computation of selected features.\n";
@@ -3161,7 +3189,6 @@ void FeatureExtraction< TImage >::Update()
 
       if (!m_debug)
       {
-        ++progressBar; // gets it to 100%
         progressBar.display();
         progressBar.done();
         std::cout << "Finished calculating features, writing the output.\n";
