@@ -72,7 +72,9 @@
 
 #include <QFile>
 
-#include "elzip.hpp"
+#ifdef _WIN32
+  #include "elzip.hpp"
+#endif
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
@@ -5800,7 +5802,7 @@ void fMainWindow::ApplicationLIBRABatch()
   // ShowErrorMessage("libra: " + scriptToCall);
 
   if (scriptToCall.empty()) {
-    appDownload("libra");
+    appDownload("confetti");
     return;
   }
 
