@@ -1192,7 +1192,9 @@ void fMainWindow::appDownload(std::string currentApp)
 
 void fMainWindow::unzipArchive(std::string fullPath) 
 {
+#ifdef _WIN32
   elz::extractZip(fullPath, downloadFolder);
+#endif
 }
 
 void fMainWindow::help_BugTracker()
