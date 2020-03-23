@@ -1680,7 +1680,7 @@ namespace cbica
     returnStatistics["MR"] = returnStatistics["FNR"];
 
     // https://en.wikipedia.org/wiki/Sensitivity_and_specificity
-    returnStatistics["TNR"] = returnStatistics["TN"] / returnStatistics["RP"];
+    returnStatistics["TNR"] = returnStatistics["TN"] / (returnStatistics["TN"] + returnStatistics["FP"]);
     returnStatistics["Specificity"] = returnStatistics["TNR"];
 
     // https://en.wikipedia.org/wiki/Likelihood_ratios_in_diagnostic_testing#positive_likelihood_ratio
