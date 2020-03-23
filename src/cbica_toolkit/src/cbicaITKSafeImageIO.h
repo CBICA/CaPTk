@@ -779,7 +779,7 @@ namespace cbica
     if (!cbica::exists(fName))
     {
       std::cerr << "The file name '" << fName << "' was't found.\n";
-      nullptr;
+      return nullptr;
     }
     
     bool dicomDetected = false;
