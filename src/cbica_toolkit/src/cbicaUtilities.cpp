@@ -1647,10 +1647,10 @@ namespace cbica
     returnStatistics["PP"] = static_cast<float>(confusionMatrix["PP"]);
 
     // https://en.wikipedia.org/wiki/Accuracy_and_precision
-    returnStatistics["Accuracy"] = (returnStatistics["TP"] + returnStatistics["TN"]) / (2 * inputRealLabels.size());
+    returnStatistics["Accuracy"] = (returnStatistics["TP"] + returnStatistics["TN"]) / (returnStatistics["TP"] + returnStatistics["TN"] + returnStatistics["FP"] + returnStatistics["FN"]);
 
     // https://en.wikipedia.org/wiki/Positive_and_negative_predictive_values
-    returnStatistics["PPV"] = returnStatistics["TP"] / returnStatistics["PP"];
+    returnStatistics["PPV"] = returnStatistics["TP"] / (returnStatistics["TP"] + returnStatistics["FP"]);
     returnStatistics["Precision"] = returnStatistics["PPV"];
 
     // https://en.wikipedia.org/wiki/False_discovery_rate
