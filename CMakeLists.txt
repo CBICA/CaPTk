@@ -305,8 +305,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( 11Zip_Sources ${11Zip_Sources} CACHE STRING "11Zip sources" FORCE )
   SET( 11Zip_SourcesCpp ${11Zip_SourcesCpp} CACHE STRING "11Zip sources" FORCE )
 
-  ADD_LIBRARY(elzip ${11Zip_Headers} ${11Zip_HeadersCpp} ${11Zip_Sources} ${11Zip_SourcesCpp})
-
   SET( 11Zip_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include)
   ### third party library processing
 
@@ -376,6 +374,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   )
 
   IF (WIN32) 
+    ADD_LIBRARY(elzip ${11Zip_Headers} ${11Zip_HeadersCpp} ${11Zip_Sources} ${11Zip_SourcesCpp})
+
     SET( DEPENDENT_LIBS ${DEPENDENT_LIBS} elzip)
   ENDIF()
 
