@@ -151,6 +151,7 @@ INCLUDE_DIRECTORIES( ${CaPTk_SOURCE_DIR}/src
   ${CaPTk_SOURCE_DIR}/src/common/inc
   ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends
   ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
+  ${CaPTk_SOURCE_DIR}/src/applications/Preprocessing/src/depends
   #${CMAKE_CURRENT_SOURCE_DIR}/inc
   #${VTK_INCLUDE_DIRS} 
 )
