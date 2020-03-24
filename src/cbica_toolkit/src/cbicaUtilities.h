@@ -589,8 +589,22 @@ namespace cbica
   \brief Find all files inside a directory
 
   \param dirName The directory to do the search in
+  \param returnFullPath Return full path or not
   */
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath = true);
+
+  /**
+  \brief Find all files inside a directory
+
+  \param dirName The directory to do the search in
+  \param filePattern String pattern to look for in file
+  \param fileExtension String pattern to look for in file extension; for files with no extension, pass ""
+  \param recurse Do a recursive search or not
+  \param returnFullPath Return full path or not
+  */
+  std::vector< std::string > filesInDirectory(const std::string &dirName,
+    std::string filePattern, std::string fileExtension, bool recurse = true,
+    bool returnFullPath = true);
 
   /**
   \brief Find all sub-directories inside a directory

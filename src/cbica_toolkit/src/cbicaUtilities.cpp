@@ -1190,6 +1190,44 @@ namespace cbica
     return cbica::setEnvironmentVariable(variable_name, "");
   }
 
+  std::vector< std::string > filesInDirectory(const std::string &dirName,
+    std::string filePattern, std::string fileExtension,
+    bool returnFullPath, bool recurse)
+  {
+    std::vector< std::string > returnVector;
+    // set up required folders
+    std::vector< std::string > subDirsInInput = { dirName };
+    if (recurse)
+    {
+      auto temp = subdirectoriesInDirectory(dirName, recurse, true);
+      subDirsInInput.insert(subDirsInInput.end(), temp.begin(), temp.end());
+    }
+
+    // loop through all requested directories
+    for (size_t i = 0; i < subDirsInInput.size(); i++)
+    {
+      auto allFilesInCurrentDir = cbica::filesInDirectory(cbica::normPath(subDirsInInput[i]));
+
+      // loop through all files
+      for (size_t j = 0; j < allFilesInCurrentDir.size(); j++)
+      {
+        auto currentExt = cbica::getFilenameExtension(allFilesInCurrentDir[j]);
+        if ( // if file patter is not empty, search for it in the filename
+          (!filePattern.empty() && (allFilesInCurrentDir[j].find(filePattern) != std::string::npos)) ||
+          filePattern.empty() // otherwise, pass it as-is
+          )
+        {
+          if (fileExtension == currentExt)
+          {
+            returnVector.push_back(allFilesInCurrentDir[j]);
+          } // end extension check
+        } // end file-pattern check
+      } // end files-loop
+    } // end dirs-loop
+
+    return returnVector;
+  }
+
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath)
   {
     if (!cbica::directoryExists(dirName))
@@ -1609,10 +1647,10 @@ namespace cbica
     returnStatistics["PP"] = static_cast<float>(confusionMatrix["PP"]);
 
     // https://en.wikipedia.org/wiki/Accuracy_and_precision
-    returnStatistics["Accuracy"] = (returnStatistics["TP"] + returnStatistics["TN"]) / (2 * inputRealLabels.size());
+    returnStatistics["Accuracy"] = (returnStatistics["TP"] + returnStatistics["TN"]) / (returnStatistics["TP"] + returnStatistics["TN"] + returnStatistics["FP"] + returnStatistics["FN"]);
 
     // https://en.wikipedia.org/wiki/Positive_and_negative_predictive_values
-    returnStatistics["PPV"] = returnStatistics["TP"] / returnStatistics["PP"];
+    returnStatistics["PPV"] = returnStatistics["TP"] / (returnStatistics["TP"] + returnStatistics["FP"]);
     returnStatistics["Precision"] = returnStatistics["PPV"];
 
     // https://en.wikipedia.org/wiki/False_discovery_rate
@@ -1642,7 +1680,7 @@ namespace cbica
     returnStatistics["MR"] = returnStatistics["FNR"];
 
     // https://en.wikipedia.org/wiki/Sensitivity_and_specificity
-    returnStatistics["TNR"] = returnStatistics["TN"] / returnStatistics["RP"];
+    returnStatistics["TNR"] = returnStatistics["TN"] / (returnStatistics["TN"] + returnStatistics["FP"]);
     returnStatistics["Specificity"] = returnStatistics["TNR"];
 
     // https://en.wikipedia.org/wiki/Likelihood_ratios_in_diagnostic_testing#positive_likelihood_ratio

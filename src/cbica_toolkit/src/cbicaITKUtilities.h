@@ -380,6 +380,25 @@ namespace cbica
 
     auto spacing_1 = image1->GetSpacing();
     auto spacing_2 = image2->GetSpacing();
+    
+    auto directions_1 = image1->GetDirection();
+    auto directions_2 = image2->GetDirection();
+    
+    if (directions_1.ColumnDimensions != directions_2.ColumnDimensions)
+    {
+      std::cerr << "Column dimension mismatch for directions.\n";
+      return false;
+    }
+    if (directions_1.RowDimensions != directions_2.RowDimensions)
+    {
+      std::cerr << "Row dimension mismatch for directions.\n";
+      return false;
+    }
+    if (directions_1 != directions_2)
+    {
+      std::cerr << "Directions are not the same.\n";
+      return false;
+    }
 
     for (size_t i = 0; i < TImageType::ImageDimension; i++)
     {
@@ -450,6 +469,9 @@ namespace cbica
     auto imageOrigin1 = imageInfo1.GetImageOrigins();
     auto imageOrigin2 = imageInfo2.GetImageOrigins();
 
+    auto imageDirs1 = imageInfo1.GetImageDirections();
+    auto imageDirs2 = imageInfo1.GetImageDirections();
+
     for (size_t d = 0; d < dims; d++)
     {
       if (imageSize1[d] != imageSize2[d])
@@ -477,6 +499,23 @@ namespace cbica
       {
         std::cout << "The origin in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
         return false;
+      }
+
+      if (imageDirs1[d].size() != imageDirs2[d].size())
+      {
+        std::cout << "The direction in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+      else
+      {
+        for (size_t i = 0; i < imageDirs1[d].size(); i++)
+        {
+          if (imageDirs1[d][i] != imageDirs2[d][i])
+          {
+            std::cout << "The direction in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") at '" << i << "' doesn't match.\n";
+            return false;
+          }
+        }
       }
     }
 

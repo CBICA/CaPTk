@@ -5,8 +5,6 @@ Generic,Resampling,mm,0:10,1.0,Resamples all images and masks to this value of v
 Generic,ResamplingInterpolator_Image,mm,Nearest:Linear:BSpline,Linear,Type of interpolator to use if resampling is happening; ignored if m_resamplingResolution = 0
 Generic,ResamplingInterpolator_Mask,mm,Nearest:NearestLabel:Linear:BSpline,Nearest,Type of interpolator to use if resampling is happening; ignored if m_resamplingResolution = 0
 Generic,SliceComputation,Int,(0:1),0,Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only
-Generic,NaN-Handling,String,Keep:Remove,Keep,Specify how to handle features with NaN values 'Remove' removes the feature from output - keep in mind this might cause issues with output file in multi-subject (i.e. Training/Batch) mode
-Generic,WholeImageBinning,Int,(0:1),1,Controls whether the entire image binning happens or just the defined region
 Intensity,,,,,
 Morphologic,Range,Int,(0:25),0,0:largest connected component in ROI; N: all connected components larger than (N*10^-6) of total image size are taken into account
 Morphologic,Feret,Int,(0:1),0,Whether or not to calculate the Feret Diameter (substantially increases computation time)
@@ -21,15 +19,9 @@ GLRLM,Radius,Int,(1:9),1,Radius around the center voxel which can be in mm as we
 GLRLM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averaged
 GLSZM,Bins,Int,,20,The number of bins (FBN) or size of each bin (FBS) to calculate for the Histogram
 GLSZM,Radius,Int,(1:9),1,Radius around the center voxel
-GLSZM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averaged
 NGTDM,Bins,Int,,20,The number of bins (FBN) or size of each bin (FBS) to calculate for the Histogram
 NGTDM,Radius,Int,(1:9),1,Radius around the center voxel
 NGTDM,Offset,String,[Individual:Average],Average,Either individual offset values or averaged
 LBP,Radius,Int,(1:9),1,Radius around the center voxel/pixel (if defined as float it is assumed to be in world coordinates and if as Integer it is assumed to be in image coordinates)
 LBP,Neighborhood,Int,0:27,27,The total number of neighbors to consider for computation
 LBP,Type,Int,0:3,2,0: original LBP | 1: uniform LBP | 2: rotation invariant LBP | 3: uniform + rotation invariant LBP
-Lattice,FullImage,Int,0:1,0,Whether computations across the entire image need to happen in addition to lattice
-Lattice,Window,mm,0:ImageSize,6.3,Window of single lattice node (number based on experiments by CBIG) - should be same as Step for non-overlapping tiles
-Lattice,Step,mm,0:ImageSize,6.3,Step size to increase for consecutive lattice node (number based on experiments by CBIG) - should be same as Step for non-overlapping tiles
-Lattice,Boundary,String,[NoPadding:ZeroPadding:FluxNeumann],NoPadding,The boundary condition to use for lattice construction
-Lattice,PatchBoundary,String,[Full:ROI:None],Full,Full considers all non-zero pixels and adds weight whereas ROI considers only the indeces having same value as center pixel and None disregards the patch
