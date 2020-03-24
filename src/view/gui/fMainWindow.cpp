@@ -5809,7 +5809,7 @@ void fMainWindow::ApplicationLIBRABatch()
   // ShowErrorMessage("libra: " + scriptToCall);
 
   if (scriptToCall.empty()) {
-    appDownload("confetti");
+    appDownload("libra");
     return;
   }
 

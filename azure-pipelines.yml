@@ -960,29 +960,136 @@ jobs:
         ls /home/cbica-devs/Installs/Qt/5.12.1/gcc_64/lib/cmake/Qt5
       displayName: 'Git Submodule Init and Update'
 
-    # # Moving LFS Files
+    - bash: |
+        rm -rf bin
+
+        mkdir bin
+        cd bin
+        cp -r ../../../../superbuild/ ./
+        cd bin
+        ls
+        ls ITK-build
+        pwd
+        
+        # cd bin
+        # cp -r ./ ../../../../superbuild
+        
+      displayName: 'Move superbuild and qt and compiled apps'
+  steps:
+    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+      #fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
+
+    # submodule 
+    - bash: |
+        git submodule update --init --recursive
+        # ls -lt
+        # ls ./src/applications/Preprocessing/greedy
+      displayName: 'Git Submodule Init and Update'
+
+    - bash: |
+        df -k .
+      displayName: 'Disk space check'
+
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: '"bin_linux_20200212.tar.gz" | "$(Build.DefinitionName)"'
+    #     path: $(Build.SourcesDirectory)
+    #     cacheHitVar: CACHE_RESTORED_LINUX
+    #     continueOnError : true
+    #     restoreKeys: |
+    #       "bin_linux_20200212.tar.gz"
+    #   displayName: 'Caching'
+
+    # Dependency manager
+    - bash: |
+        #sudo apt-get update && sudo apt-get dist-upgrade -y
+        sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 
+        # echo "Installing MPI stuff"
+        # sudo apt-get install mpich libopenmpi-dev 
+        echo "Installing OpenGL stuff"
+        sudo apt-get install mesa-common-dev libglu1-mesa-dev libgl1-mesa-dev freeglut3-dev
+        sudo apt-get install doxygen 
+        export GIT_LFS_SKIP_SMUDGE=1
+      displayName: 'Install dependencies from Aptitude'
+
+    # # Pull LFS
     # - bash: |
-    #     mkdir -p bin
+    #     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+    #     sudo apt-get install git-lfs
+    #     git lfs install
+
+    #     export GIT_LFS_SKIP_SMUDGE=1
+    #     git lfs pull --include "binaries/precompiledApps/linux.zip"
+    #     git lfs pull --include "binaries/qt_5.12.1/linux.zip"
+    #     #echo "Not doing this until quota is improved on GitHub"
+    #   displayName: 'Pull LFS'
+    #   condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+
+    # - bash: |
+    #     tar xvfz bin_linux_20200212.tar.gz
+    #     rm -rf bin_linux_20200212.tar.gz
+    #     # ls
+    #     mv bin_linux bin
+    #     # ls
     #     cd bin
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-  
+    #     tar xvfz qt.tar.gz
+    #     tar xvfz externalApps.tar.gz
+    #     rm -rf *.tar.gz
+    #     mv binaries_linux externalApps
+    #     # rm CMakeCache.txt
     #     ls -lt
-    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+    #   displayName: 'Unzip bin if cached'
+    #   condition: eq(variables.CACHE_RESTORED_LINUX, 'true')
+
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        # mv ../binaries/precompiledApps/linux.zip ./binaries_linux.zip
+        # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
+
+    # Configure and build superbuild
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        make -j2
+        rm -rf install
+      displayName: 'Configure and compile Superbuild'
+      condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # - bash: |
-    #     git pull origin master
-    #     git log -1
-    #     cat CMakeLists.txt | grep -i "PROJECT_VERSION"
-    #   displayName: 'Testing git pull and version'
+    #     tar cvfz bin_linux_20200212.tar.gz bin
+    #   displayName: 'Zipping Superbuild'
 
-    # # Configure and build CaPTk
-    # - bash: |
-    #     cd bin
-    #     export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
-    #     make -j2
-    #     make install/strip
-    #   displayName: 'Configure and compile CaPTk'
+    - bash: |
+        df -k .
+      displayName: 'Disk space check'
+
+      # Check qt
+    - bash: |
+        cd bin
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
+
+    - bash: |
+        git pull origin master
+        git log -1
+        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      displayName: 'Testing git pull and version'
+
+#     # Configure and build CaPTk
+#     - bash: |
+#         cd bin
+#         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
+#         make -j2
+#       displayName: 'Configure and compile CaPTk with Testing enabled'
 
     # - script: |
     #    cd bin
@@ -990,58 +1097,132 @@ jobs:
     #    rm -rf testing
     #   displayName: 'Performing the Tests'
 
-    # # Configure and build CaPTk
+    # Configure and build CaPTk
+    - bash: |
+        cd bin
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        make -j2
+        make install/strip
+      displayName: 'Configure and compile CaPTk'
+
+    # Check libra
+    - bash: |
+        cd bin/install/appdir/usr/bin/
+        ls -l
+      displayName: 'Checking ${installDir}/bin'
+
+    - bash: |
+        wget http://files.directadmin.com/services/debian_7.0_64/libmysqlclient.so.18
+        sudo cp -fv libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/
+        cd /usr/lib/x86_64-linux-gnu
+        sudo chmod 755 libmysqlclient.so.18
+        sudo ldconfig
+      displayName: 'SQL lib fix for PKG_COPY_QT_LIBS'
+
+    - bash: |
+        rm -rf bin/qt.zip
+        rm -rf bin/5.12.1
+        rm -rf regression
+        rm -rf binaries
+        rm -rf bin_linux_20200212.tar.gz
+        df -k .
+      displayName: 'Disk space check'
+
+    # Build a package
+    - bash: |
+        export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        rm -rf regression
+        rm -rf binaries
+
+        export PKG_FAST_MODE=1
+        # export PKG_COPY_QT_LIBS=1
+        ./scripts/captk-pkg
+
+        rm -rf src
+        rm -rf docs*
+
+        rm -rf scripts
+
+        # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.bin
+        # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
+        # ver=${str#*=}
+        # echo "Version: $ver"
+        # if [[ $ver == *"nonRelease"* ]]; then
+        #   echo "Building non-release"
+        #   mv *_Installer.bin CaPTk_$ver\_Installer.bin
+        # fi
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+
+      displayName: 'Set up environment variables for packager and build a package'
+
     # - bash: |
+    #     rm -rf src
+    #     rm -rf docs*
+    #     rm -rf data
+    #     rm -rf binaries
+    #     rm -rf scripts
+    #     rm -rf CMakeLists.txt
+
     #     cd bin
-    #     export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
-    #     make -j2
-    #     make install/strip
-    #   displayName: 'Configure and compile CaPTk'
 
-    # # Check libra
-    # - bash: |
-    #     cd bin/install/appdir/usr/bin/
-    #     ls -l
-    #   displayName: 'Checking ${installDir}/bin'
+    #     tar cvfz qt.tar.gz qt
+    #     tar cvfz externalApps.tar.gz externalApps
 
-    # # Build a package
-    # - bash: |
-    #     export CMAKE_PREFIX_PATH="" && export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH && export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/libexec:$PATH
+    #     rm -rf qt
+    #     rm -rf externalApps
+    #     rm -rf _CPack*
+    #     rm -rf CMakeCache.txt
 
-    #     export PKG_FAST_MODE=1
-    #     ./scripts/captk-pkg
+    #     # cmake -UPROJECT_VERSION # delete the project version definition
+        
+    #     cd ../
 
-    #     mv *_Installer.* $(Build.ArtifactStagingDirectory)
+    #     mv bin bin_linux
+    #     tar cvfz bin_linux_20200212.tar.gz bin_linux
+    #     rm -rf bin_linux
+    #   displayName: 'Zipping bin'
 
-    #   displayName: 'Set up environment variables for packager and build a package'
+    - bash: |
+        
+        rm -rf src
+        rm -rf docs*
+        rm -rf data
+        rm -rf binaries
+        rm -rf scripts
+        rm -rf bin_windows_20200212.tar.gz
+        rm -rf install_manifest.txt
+        rm -rf CMakeLists.txt
+        rm -rf bin
 
-    # - task: PublishBuildArtifacts@1
-    #   inputs:
-    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #     artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
-    #     continueOnError: true
+      displayName: 'Freeing Space'
 
-    # - task: DownloadBuildArtifacts@0
-    #   inputs:
-    #     buildType: 'current'
-    #     downloadType: 'single'
-    #     artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
-    #     downloadPath: '$(System.ArtifactsDirectory)'
-    #     continueOnError: true
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        continueOnError: true
 
-    # # - task: CopyFilesOverSSH@0
-    # #   inputs:
-    # #     sshEndpoint: cbicaNITRC
-    # #     sourceFolder: $(Build.ArtifactStagingDirectory)
-    # #     contents: '*_Installer.*'
-    # #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-    # #     cleanTargetFolder: false
-    # #     overwrite: true
-    # #     continueOnError: true
-    # #   displayName: Uploading to NITRC 
-    # #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        downloadPath: '$(System.ArtifactsDirectory)'
+        continueOnError: true
 
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC 
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 - job: 'CBICA_OSX_SelfHost'
   displayName: "Self-hosted agent on cbica-osx"
@@ -1059,42 +1240,42 @@ jobs:
 
       displayName: 'Git Submodule Init and Update'
 
-    # # Moving LFS Files
-    # - bash: |
-    #     mkdir -p bin
-    #     cd bin
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
-    #     wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
-    #     # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-    #     # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
-    #     ls -lt
-    #   displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-
-    # - bash: |
-    #     cd bin
-
-    #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-    #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-
-    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-
-    #     make -j 2
-
-    #   displayName: 'Configure and compile Superbuild'
+    # Moving LFS Files
+    - bash: |
+        mkdir -p bin
+        cd bin
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+        # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+        # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+        ls -lt
+      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
     - bash: |
-        rm -rf bin
+        cd bin
 
-        mkdir bin
-        cd bin
-        cp -r ../../../../superbuild/ ./
-        cd bin
-        ls
-        ls ITK-build
-        pwd
-        
+        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+
+        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+
+        make -j 2
+
+      displayName: 'Configure and compile Superbuild'
+
+    - bash: |
+        # rm -rf bin
+
+        # mkdir bin
         # cd bin
-        # cp -r ./ ../../../../superbuild
+        # cp -r ../../../../superbuild/ ./
+        # cd bin
+        # ls
+        # ls ITK-build
+        # pwd
+        
+        cd bin
+        cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
