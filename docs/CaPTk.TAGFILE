@@ -6,7 +6,7 @@
     <filename>Getting_Started</filename>
     <docanchor file="Getting_Started.html" title="Frequently Asked Questions">gs_FAQ</docanchor>
     <docanchor file="Getting_Started.html" title="Supported Images">gs_supportedImages</docanchor>
-    <docanchor file="Getting_Started.html" title="Image Loading">gs_imageLoading</docanchor>
+    <docanchor file="Getting_Started.html" title="Image &amp; Mask Loading">gs_imageLoading</docanchor>
     <docanchor file="Getting_Started.html" title="Image Visualization">gs_imageVisualization</docanchor>
     <docanchor file="Getting_Started.html" title="Tab Docking">gs_tabDocking</docanchor>
     <docanchor file="Getting_Started.html" title="Coordinate definition (Seed-point initialization)">gs_seedpoints</docanchor>
@@ -215,7 +215,7 @@
     <name>tr_FeatureExtraction</name>
     <title>Feature Extraction</title>
     <filename>tr_FeatureExtraction</filename>
-    <docanchor file="tr_FeatureExtraction.html" title="Defaults">tr_fe_defaults</docanchor>
+    <docanchor file="tr_FeatureExtraction.html" title="Pre-Existing Parameter Configurations">tr_fe_defaults</docanchor>
     <docanchor file="tr_FeatureExtraction.html" title="Default 3D Image Feature Extraction Parameters">tr_fe_def_main</docanchor>
     <docanchor file="tr_FeatureExtraction.html" title="Default 2D Image Feature Extraction Parameters">tr_fe_def_lattice</docanchor>
     <docanchor file="tr_FeatureExtraction.html" title="Customizing Parameters">tr_fe_customization</docanchor>

@@ -27,15 +27,15 @@ var NAVTREE =
     [ "Getting Started", "Getting_Started.html", [
       [ "Frequently Asked Questions", "Getting_Started.html#gs_FAQ", null ],
       [ "Supported Images", "Getting_Started.html#gs_supportedImages", null ],
-      [ "Image Loading", "Getting_Started.html#gs_imageLoading", null ],
+      [ "Image & Mask Loading", "Getting_Started.html#gs_imageLoading", null ],
       [ "Image Visualization", "Getting_Started.html#gs_imageVisualization", null ],
       [ "Tab Docking", "Getting_Started.html#gs_tabDocking", null ],
       [ "Coordinate definition (Seed-point initialization)", "Getting_Started.html#gs_seedpoints", [
-        [ "Bug Tracker and Feature Request", "index.html#autotoc_md113", null ],
-        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md114", null ],
-        [ "Supporting Grant", "index.html#autotoc_md115", null ],
-        [ "Disclaimer", "index.html#autotoc_md116", null ],
-        [ "Contact", "index.html#autotoc_md117", null ],
+        [ "Bug Tracker and Feature Request", "index.html#autotoc_md114", null ],
+        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md115", null ],
+        [ "Supporting Grant", "index.html#autotoc_md116", null ],
+        [ "Disclaimer", "index.html#autotoc_md117", null ],
+        [ "Contact", "index.html#autotoc_md118", null ],
         [ "Tumor Points", "Getting_Started.html#gs_seedpoints_tumor", null ],
         [ "Tissue Points", "Getting_Started.html#gs_seedpoints_tissue", null ]
       ] ],

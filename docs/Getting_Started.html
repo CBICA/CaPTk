@@ -64,7 +64,7 @@ $(document).ready(function(){initNavTree('Getting_Started.html',''); initResizab
 <div class="toc"><h3>Table of Contents</h3>
 <ul><li class="level1"><a href="#gs_FAQ">Frequently Asked Questions</a></li>
 <li class="level1"><a href="#gs_supportedImages">Supported Images</a></li>
-<li class="level1"><a href="#gs_imageLoading">Image Loading</a></li>
+<li class="level1"><a href="#gs_imageLoading">Image &amp; Mask Loading</a></li>
 <li class="level1"><a href="#gs_imageVisualization">Image Visualization</a></li>
 <li class="level1"><a href="#gs_tabDocking">Tab Docking</a></li>
 <li class="level1"><a href="#gs_seedpoints">Coordinate definition (Seed-point initialization)</a><ul><li class="level2"><a href="#gs_seedpoints_tumor">Tumor Points</a></li>
@@ -89,7 +89,7 @@ $(document).ready(function(){initNavTree('Getting_Started.html',''); initResizab
 <p>For Frequently Asked Questions, please see the dedicated <a href="FAQ.html">FAQ</a> section.</p>
 <p>CaPTk has been designed as a modular platform, currently incorporating components for:</p><ol type="1">
 <li>User interaction (e.g., coordinate definition, region annotation, and spherical approximation of abnormalities)<ul>
-<li><a class="el" href="Getting_Started.html#gs_imageLoading">Image Loading</a></li>
+<li><a class="el" href="Getting_Started.html#gs_imageLoading">Image &amp; Mask Loading</a></li>
 <li><a class="el" href="Getting_Started.html#gs_imageVisualization">Image Visualization</a></li>
 <li><a class="el" href="Getting_Started.html#gs_tabDocking">Tab Docking</a></li>
 <li><a class="el" href="Getting_Started.html#gs_seedpoints">Coordinate definition (Seed-point initialization)</a></li>
@@ -163,12 +163,13 @@ Supported Images</h1>
 </ol>
 <hr  />
 <h1><a class="anchor" id="gs_imageLoading"></a>
-Image Loading</h1>
-<p>The <b>File -&gt; Load</b> menu is used to load all image types. Images can also be loaded by dragging and dropping onto the application. In case of DICOM images, loading/dragging a single image loads the entire dicom series.</p>
+Image &amp; Mask Loading</h1>
+<p>The <b>File -&gt; Load -&gt; Images</b> menu is used to load all image types. Images can also be loaded by dragging and dropping onto the application. In case of DICOM images, loading/dragging a single image loads the entire dicom series. <br  />
+ Mask must be loaded via <b>File -&gt; Load -&gt; ROI</b> menu.</p>
 <div class="image">
 <img src="imageLoading_resize.png" alt=""/>
 <div class="caption">
-Loading images for visualization/processing</div></div>
+Loading images &amp; mask for visualization/processing</div></div>
  <hr  />
 <p> For every loaded NIfTI image, the modality is automatically assigned using information from the filename. To <b> assign modalities </b> for DICOM images, or in case of a discrepancy in the modality of a NIfTI image, the user can use the drop-down modality switcher (see below) to revise the modality accordingly. This is typically needed in the <a href="ht_SpecialApps.html">Specialized Applications</a>.</p>
 <div class="image">
@@ -180,9 +181,10 @@ Modality switching for individual images</div></div>
 Image Visualization</h1>
 <p>Sliders on each visualization panel (highlighted in green in the figure below) control the movement across respective axes. Note that in DSC-MRI, the single horizontal slider (highlighted in yellow) moves across the time of the acquired dynamic scan. <br  />
  Various adjustments are available to the user, including:</p><ol type="1">
-<li>contrast/brightness: right mouse button click + horizontal/vertical drag on any visualization panel, respectively.</li>
-<li>windowing of intensities and setting of different visualization type: bottom-right panel.</li>
-<li>zooming into the image via Ctrl + mouse wheel.</li>
+<li>Window/Level: right mouse button press + horizontal/vertical mouse move on any visualization panel, respectively.</li>
+<li>Manual Window/Level and setting of different visualization presets: bottom-right panel.</li>
+<li>Image zoom: Ctrl + mouse wheel.</li>
+<li>Image pan: Ctrl + left mouse button press + mouse move.</li>
 </ol>
 <p>The bottom-left panel of CaPTk (highlighted in red) shows basic information about the image and the position of the cross-hair. In the visualization panes, the "Z" axis is the center; and "Y" and "X" are to its left and right, respectively. "Z" represents the Axial view for RAI-to-LPS images.</p>
 <div class="image">
