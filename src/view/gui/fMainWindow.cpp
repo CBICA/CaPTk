@@ -72,9 +72,9 @@
 
 #include <QFile>
 
-#ifdef _WIN32
-  #include "elzip.hpp"
-#endif
+// #ifdef _WIN32
+//   #include "elzip.hpp"
+// #endif
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
@@ -5805,13 +5805,15 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
-  // ShowErrorMessage("libra: " + scriptToCall);
+  // std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  // // ShowErrorMessage("libra: " + scriptToCall);
 
-  if (scriptToCall.empty()) {
-    appDownload("libra");
-    return;
-  }
+  // if (scriptToCall.empty()) {
+  //   appDownload("libra");
+  //   return;
+  // }
+
+  std::string scriptToCall = m_allNonNativeApps["libra"];
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -5823,10 +5825,10 @@ void fMainWindow::ApplicationLIBRABatch()
 
     return;
   }
-  // else
-  // {
-  //   ShowErrorMessage("Cannot find :" + scriptToCall, this);
-  // }
+  else
+  {
+    ShowErrorMessage("Cannot find :" + scriptToCall, this);
+  }
 
 }
 
@@ -5912,13 +5914,14 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  // std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
   // ShowErrorMessage("libra: " + scriptToCall);
 
-  if (scriptToCall.empty()) {
-    appDownload("libra");
-    return;
-  }
+  // if (scriptToCall.empty()) {
+  //   appDownload("libra");
+  //   return;
+  // }
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -5973,13 +5976,14 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  // std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
   // ShowErrorMessage("libra: " + scriptToCall);
 
-  if (scriptToCall.empty()) {
-    appDownload("libra");
-    return;
-  }
+  // if (scriptToCall.empty()) {
+  //   appDownload("libra");
+  //   return;
+  // }
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -5998,10 +6002,10 @@ void fMainWindow::ApplicationLIBRASingle()
 
     readMaskFile(m_tempFolderLocation + "/" + casename + "/Result_Images/totalmask/totalmask.dcm");
   }
-  // else
-  // {
-  //   ShowErrorMessage("Cannot find :" + scriptToCall, this);
-  // }
+  else
+  {
+    ShowErrorMessage("Cannot find :" + scriptToCall, this);
+  }
 }
 
 void fMainWindow::ApplicationConfetti()

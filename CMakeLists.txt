@@ -264,21 +264,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   # find and include all third party libraries
   SUBDIRLIST(SUBDIRECTORIES ${THIRDPARTY_LIB_PATH})
 
-  # # FIND_PACKAGE(LIBZIP)
-  # # INCLUDE_DIRECTORIES(${LIBZIP_INCLUDE_DIRS})
-
   # FIND_PACKAGE( ITK REQUIRED )
   # #FIND_PACKAGE( ITK REQUIRED )
   # INCLUDE("${ITK_USE_FILE}")
-
-  # SET ( LIBZIP_INCLUDE_DIR ${ITK_DIR}/../ep/include ) 
-  # IF( WIN32 )
-  #   SET( LIBZIP_LIBRARIES ${ITK_DIR}/../ep/lib/zip.lib )
-  # ELSE()
-  #   SET( LIBZIP_LIBRARIES ${ITK_DIR}/../ep/lib/zip.a )
-  # ENDIF()
-
-  # INCLUDE_DIRECTORIES(${LIBZIP_INCLUDE_DIR})
 
   FIND_PACKAGE(OpenCV REQUIRED)
   INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
@@ -294,18 +282,18 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     #ENDFOREACH()
   ENDFOREACH()
 
-  # for YAML-CPP
-  FILE(GLOB_RECURSE 11Zip_Headers "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include/*.h")
-  FILE(GLOB_RECURSE 11Zip_HeadersCpp "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include/*.hpp")
-  FILE(GLOB_RECURSE 11Zip_Sources "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/src/*.c")
-  FILE(GLOB_RECURSE 11Zip_SourcesCpp "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/src/*.cpp")
+  # # for 11Zip
+  # FILE(GLOB_RECURSE 11Zip_Headers "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include/*.h")
+  # FILE(GLOB_RECURSE 11Zip_HeadersCpp "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include/*.hpp")
+  # FILE(GLOB_RECURSE 11Zip_Sources "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/src/*.c")
+  # FILE(GLOB_RECURSE 11Zip_SourcesCpp "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/src/*.cpp")
 
-  SET( 11Zip_Headers ${11Zip_Headers} CACHE STRING "11Zip headers" FORCE )
-  SET( 11Zip_HeadersCpp ${11Zip_HeadersCpp} CACHE STRING "11Zip headers" FORCE )
-  SET( 11Zip_Sources ${11Zip_Sources} CACHE STRING "11Zip sources" FORCE )
-  SET( 11Zip_SourcesCpp ${11Zip_SourcesCpp} CACHE STRING "11Zip sources" FORCE )
+  # SET( 11Zip_Headers ${11Zip_Headers} CACHE STRING "11Zip headers" FORCE )
+  # SET( 11Zip_HeadersCpp ${11Zip_HeadersCpp} CACHE STRING "11Zip headers" FORCE )
+  # SET( 11Zip_Sources ${11Zip_Sources} CACHE STRING "11Zip sources" FORCE )
+  # SET( 11Zip_SourcesCpp ${11Zip_SourcesCpp} CACHE STRING "11Zip sources" FORCE )
 
-  SET( 11Zip_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include)
+  # SET( 11Zip_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include)
   ### third party library processing
 
   FIND_PACKAGE(VTK REQUIRED)
@@ -373,11 +361,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${OpenMP_LIBRARIES}
   )
 
-  IF (WIN32) 
-    ADD_LIBRARY(elzip ${11Zip_Headers} ${11Zip_HeadersCpp} ${11Zip_Sources} ${11Zip_SourcesCpp})
+  # IF (WIN32) 
+  #   ADD_LIBRARY(elzip ${11Zip_Headers} ${11Zip_HeadersCpp} ${11Zip_Sources} ${11Zip_SourcesCpp})
 
-    SET( DEPENDENT_LIBS ${DEPENDENT_LIBS} elzip)
-  ENDIF()
+  #   SET( DEPENDENT_LIBS ${DEPENDENT_LIBS} elzip)
+  # ENDIF()
 
   IF(UNIX AND NOT APPLE)
     SET( DEPENDENT_LIBS 
@@ -499,8 +487,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/src)
   SET(INDIVIDUAL_APPLICATIONS_DIR ${PROJECT_SOURCE_DIR}/src/applications/individualApps)
   
-  # MESSAGE (STATUS " ----- LIB ZIP ${LIBZIP_INCLUDE_DIR} ${LIBZIP_LIBRARIES}")
-
   # include dependencies
   # add source code include directories
   INCLUDE_DIRECTORIES(
@@ -523,9 +509,9 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${OpenMP_INCLUDE_DIRS}
   )
 
-  IF (WIN32) 
-    INCLUDE_DIRECTORIES(${11Zip_INCLUDE_DIRS})
-  ENDIF()
+  # IF (WIN32) 
+  #   INCLUDE_DIRECTORIES(${11Zip_INCLUDE_DIRS})
+  # ENDIF()
   
   IF( BUILD_CONFETTI )
     IF (WIN32)
@@ -992,7 +978,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       ${LIBNAME_Applications}
       ${LIBNAME_FeatureExtractor}
       ${LIBNAME_CBICATK}
-      # ${LIBZIP_LIBRARIES}
     )
 
     ADD_DEPENDENCIES( ${EXE_NAME}
@@ -1001,7 +986,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       ${LIBNAME_Applications}
       ${LIBNAME_FeatureExtractor}
       ${LIBNAME_CBICATK}
-      
     )
 
     # set properties for the executable
