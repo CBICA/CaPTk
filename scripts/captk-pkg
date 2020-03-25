@@ -194,7 +194,8 @@ RUN_DEPLOYQT () {
   # The issue is that linuxdeployqt cannot for the life of it process globstars (**) for some reason, meaning we cannot simply exclude MCR/** and be done,
   # no, we need to manually come up with a glob for EVERY possible directory hierarchy for MCR, leaving us with this.
   # Using continuous release as of 3/5/18, please change to version 5 or 6 if you are having issues with this.
-  ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite 
+  ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.8.0/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
+  # ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite 
   # But now we aren't even done. Normally, you could run linuxdeployqt with the -appimage flag which gives us our amazing AppImage file that can be ran anywhere.
   # However, we have started to see a lot of issues revolving around the $LD_LIBRARY_PATH since we want to arbitrarily run applications from the main CaPTk binary.
   # The solution is to wrap the entry of the AppImage according to this guide made by the guy who made AppImages: https://github.com/probonopd/linuxdeployqt/wiki/Custom-wrapper-script-instead-of-AppRun
