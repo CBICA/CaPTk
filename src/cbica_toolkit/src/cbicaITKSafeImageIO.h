@@ -489,6 +489,21 @@ namespace cbica
     if (cbica::isDir(dicomImageReferenceDir))
     {
       using DicomImageType = itk::Image< int, ComputedImageType::ImageDimension >;
+
+      // sanity check for reference dicom and nifti
+      auto referenceDicom = ReadImage< DicomImageType >(dicomImageReferenceDir);
+
+      auto caster = itk::CastImageFilter< ComputedImageType, DicomImageType >::New();
+      caster->SetInput(imageToWrite);
+      caster->Update();
+      auto imageToWrite_casted = caster->GetOutput();
+      if (!cbica::ImageSanityCheck< DicomImageType >(referenceDicom, imageToWrite_casted))
+      {
+        std::cerr << "The reference DICOM image and image to write are not consistent.\n";
+        return;
+      }
+      // end sanity check
+
       auto inputImageReader = itk::ImageSeriesReader< DicomImageType >::New();
       auto dicomIO = itk::GDCMImageIO::New();
       auto nameGenerator = itk::GDCMSeriesFileNames::New();
@@ -523,7 +538,7 @@ namespace cbica
 
       //auto dicomIO = itk::GDCMImageIO::New();
       //auto dicomIO = MyGDCMImageIO::New();
-      dicomIO->SetComponentType(itk::ImageIOBase::IOComponentType::SHORT);
+      dicomIO->SetComponentType(itk::ImageIOBase::IOComponentType::INT);
 
       auto seriesWriter = itk::ImageSeriesWriter< ExpectedImageType, itk::Image<typename ExpectedImageType::PixelType, 2> >::New();
 
