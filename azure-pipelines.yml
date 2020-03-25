@@ -126,12 +126,9 @@ jobs:
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-        
-        rm -rf binaries_*.zip
-        
-        rm -rf externalApps/binaries*/libra
 
         cmake --build . --target ALL_BUILD --config Release
+        rm -rf externalApps
       displayName: 'Configure and compile CaPTk'
 
     - powershell: |
@@ -177,7 +174,7 @@ jobs:
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
         cmake --build . --target PACKAGE --config Release
-
+        rm -rf binaries_windows.zip
         ls -lt *_Installer.*
 
       displayName: 'Package CaPTk'
@@ -1176,37 +1173,37 @@ jobs:
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
         # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
         # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
+    # - bash: |
+    #     cd bin
+
+    #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+    #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+
+    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+
+    #     make -j 2
+
+    #   displayName: 'Configure and compile Superbuild'
+
     - bash: |
+        rm -rf bin
+
+        mkdir bin
         cd bin
-
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-
-        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-
-        make -j 2
-
-      displayName: 'Configure and compile Superbuild'
-
-    - bash: |
-        # rm -rf bin
-
-        # mkdir bin
-        # cd bin
-        # cp -r ../../../../superbuild/ ./
-        # cd bin
-        # ls
-        # ls ITK-build
-        # pwd
+        cp -r ../../../../superbuild/ ./
+        cd bin
+        ls
+        ls ITK-build
+        pwd
         
-        cd bin
-        cp -r ./ ../../../../superbuild
+        # cd bin
+        # cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
