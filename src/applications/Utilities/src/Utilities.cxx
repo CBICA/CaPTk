@@ -257,7 +257,10 @@ int algorithmsRunner()
   {
     auto referenceDicom = targetImageFile;
     cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
-    std::cout << "Finished writing the DICOM file.\n";
+    if (cbica::exists(outputImageFile))
+    {
+      std::cout << "Finished writing the DICOM file.\n";
+    }
   }
   else if (requestedAlgorithm == Nifti2DicomSeg)
   {
