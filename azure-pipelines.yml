@@ -1040,13 +1040,13 @@ jobs:
         ls -l
       displayName: 'Checking ${installDir}/bin'
 
-    - bash: |
-        wget http://files.directadmin.com/services/debian_7.0_64/libmysqlclient.so.18
-        sudo cp -fv libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/
-        cd /usr/lib/x86_64-linux-gnu
-        sudo chmod 755 libmysqlclient.so.18
-        sudo ldconfig
-      displayName: 'SQL lib fix for PKG_COPY_QT_LIBS'
+    # - bash: |
+    #     wget http://files.directadmin.com/services/debian_7.0_64/libmysqlclient.so.18
+    #     sudo cp -fv libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/
+    #     cd /usr/lib/x86_64-linux-gnu
+    #     sudo chmod 755 libmysqlclient.so.18
+    #     sudo ldconfig
+    #   displayName: 'SQL lib fix for PKG_COPY_QT_LIBS'
 
     - bash: |
         rm -rf bin/qt.zip
