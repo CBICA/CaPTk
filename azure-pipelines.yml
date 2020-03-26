@@ -122,10 +122,13 @@ jobs:
 
     - script: |
         cd bin
-        ls
-        ls OpenCV-build
+        # ls
+        # ls OpenCV-build
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
 
@@ -170,8 +173,11 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
 
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
+        
         rm -rf install_manifest.txt
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
@@ -983,29 +989,29 @@ jobs:
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    # # Configure and build superbuild
-    # - bash: |
-    #     cd bin
-    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-    #     make -j2
-    #     rm -rf install
-    #   displayName: 'Configure and compile Superbuild'
+    # Configure and build superbuild
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        make -j2
+        rm -rf install
+      displayName: 'Configure and compile Superbuild'
 
-    # - bash: |
-    #     rm -rf bin
+    - bash: |
+        # rm -rf bin
 
-    #     mkdir bin
-    #     cd bin
-    #     cp -r ../../../../superbuild/ ./
-    #     cd bin
-    #     ls
-    #     ls ITK-build
-    #     pwd
+        # mkdir bin
+        # cd bin
+        # cp -r ../../../../superbuild/ ./
+        # cd bin
+        # ls
+        # ls ITK-build
+        # pwd
         
-    #     # cd bin
-    #     # cp -r ./ ../../../../superbuild
+        cd bin
+        cp -r ./ ../../../../superbuild
         
-    #   displayName: 'Move superbuild and qt and compiled apps'
+      displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
         git pull origin master
