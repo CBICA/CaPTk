@@ -128,6 +128,7 @@ public:
 
     QRadioButton *options_AFFINE_selected;
     QRadioButton *options_RIGID_selected;
+    QRadioButton *options_DEFORMABLE_selected;
 
     QPushButton *confirmButton;
     QPushButton *cancelButton;
@@ -202,11 +203,15 @@ public:
 
         options_RIGID_selected = new QRadioButton(modeGroupBox);
         options_RIGID_selected->setText("Rigid");
+        
+        options_DEFORMABLE_selected = new QRadioButton(modeGroupBox);
+        options_DEFORMABLE_selected->setText("Deformable");
 
         gridRowCounter++;
         modeGridLayout->addWidget(options_registration_label, gridRowCounter, 0, 1, 1);
         modeGridLayout->addWidget(options_AFFINE_selected, gridRowCounter, 1, 1, 1);
         modeGridLayout->addWidget(options_RIGID_selected, gridRowCounter, 2, 1, 1);
+        modeGridLayout->addWidget(options_DEFORMABLE_selected, gridRowCounter, 3, 1, 1);
 
         /*---------------------Metrics---------------------*/
         options_MetricSelector_label = new QLabel(registrationGroupBox);

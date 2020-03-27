@@ -1337,6 +1337,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             }
             else
             {
+              m_Radius_range.clear();
               m_Radius_range.push_back(std::atoi(currentValue.c_str()));
             }
           }
@@ -1397,12 +1398,13 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             {
               std::swap(min, max);
             }
+            m_Radius_range.clear();
             // populate the full range
             for (int rad = min; rad <= max; rad += range)
             {
               m_Radius_range.push_back(rad);
             }
-          }
+          } // else-loop end
         }
         else if (outer_key == ParamsString[Neighborhood])
         {
@@ -1413,6 +1415,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
           auto temp = cbica::stringSplit(currentValue, ":");
           if (temp.size() == 1) // single value calculation
           {
+            m_Bins_range.clear();
             m_Bins_range.push_back(std::atoi(currentValue.c_str()));
           }
           else
@@ -1450,12 +1453,13 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             {
               std::swap(min, max);
             }
+            m_Bins_range.clear();
             // populate the full range
             for (int bin = min; bin <= max; bin += range)
             {
               m_Bins_range.push_back(bin);
             }
-          }
+          } // else-loop end
         }
         else if (outer_key == ParamsString[Bins_Min])
         {
@@ -1591,15 +1595,8 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         {
           if (currentValue == "0")
           {
-            m_wholeImageBinning = false;
+            m_keepNaNs = false;
           }
-        }
-        else if (outer_key == ParamsString[WholeImageBinning])
-        {
-        if (currentValue == "Remove")
-        {
-          m_keepNaNs = false;
-        }
         }
         else if (outer_key == ParamsString[LBPStyle])
         {
@@ -2344,7 +2341,7 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
-      cbica::ProgressBar progressBar(allROIs.size() + m_inputImages.size());
+      cbica::ProgressBar progressBar(allROIs.size() * m_inputImages.size());
       if (!m_debug)
       {
         std::cout << "Starting computation of selected features.\n";
@@ -3192,7 +3189,6 @@ void FeatureExtraction< TImage >::Update()
 
       if (!m_debug)
       {
-        ++progressBar; // gets it to 100%
         progressBar.display();
         progressBar.done();
         std::cout << "Finished calculating features, writing the output.\n";
