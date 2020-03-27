@@ -2435,7 +2435,7 @@ void FeatureExtraction< TImage >::Update()
             std::get<3>(temp->second) = allROIs[j].label;
             CalculateIntensity(m_currentNonZeroImageValues, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
 
-            std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" +
+            std::string currentFeatureFamily = std::string("Intensity_Bins-" +
               std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
 
             WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second), "N.A.", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
