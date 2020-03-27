@@ -2435,7 +2435,10 @@ void FeatureExtraction< TImage >::Update()
             std::get<3>(temp->second) = allROIs[j].label;
             CalculateIntensity(m_currentNonZeroImageValues, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
 
-            WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[Intensity], std::get<4>(temp->second), "N.A.", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+            std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" +
+              std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+
+            WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second), "N.A.", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
             if (m_debug)
             {
@@ -2478,6 +2481,9 @@ void FeatureExtraction< TImage >::Update()
                 {
                   auto tempT1 = std::chrono::high_resolution_clock::now();
 
+                  std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" +
+                    std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+
                   //auto local_map = std::get<1>(temp->second);
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
@@ -2487,7 +2493,7 @@ void FeatureExtraction< TImage >::Update()
                     auto m_Bins_string = std::to_string(m_Bins);
                     CalculateHistogram(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
 
-                    WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string, std::get<4>(temp->second),
+                    WriteFeatures(m_modality[i], allROIs[j].label, std::string(currentFeatureFamily) + "_Bins-" + m_Bins_string, std::get<4>(temp->second),
                       "Bins=" + m_Bins_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
                   }
                   if (m_debug)
@@ -2513,15 +2519,18 @@ void FeatureExtraction< TImage >::Update()
                     std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
 
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" +
+                      std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+
                     if (TImage::ImageDimension == 3)
                     {
                       CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                         "Axis=3D;Dimension=3D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
                       if (!writeFeatureMapsAndLattice && m_SliceComputation)
                       {
-                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        //std::string currentFeatureFamily = FeatureFamilyString[f];
                         CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[0], currentMask_patch, std::get<4>(temp->second));
                         WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
                           "Axis=X;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2566,16 +2575,19 @@ void FeatureExtraction< TImage >::Update()
 
                     std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
+                    
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" +
+                      std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
 
                     if (TImage::ImageDimension == 3)
                     {
                       CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                         "Axis=3D;Dimension=3D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
                       if (!writeFeatureMapsAndLattice && m_SliceComputation)
                       {
-                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        //std::string currentFeatureFamily = FeatureFamilyString[f];
                         CalculateVolumetric<TImage>(currentMask_patch_axisImages[0], std::get<4>(temp->second));
                         WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
                           "Axis=X;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
