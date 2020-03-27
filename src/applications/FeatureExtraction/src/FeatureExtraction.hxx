@@ -3172,7 +3172,7 @@ void FeatureExtraction< TImage >::Update()
 
                     CalculateLBP(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
 
-                    WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
+                    WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Bin-" + std::to_string(m_Bins_range[0]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
                       "Neighborhood=" + std::to_string(m_neighborhood) + ";Radius=" + m_Radius_string + ";Style=" + std::to_string(m_LBPStyle), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
                   } // end radius-loop
 
