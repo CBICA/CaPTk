@@ -958,9 +958,9 @@ jobs:
     - bash: |
         git submodule update --init --recursive
 
-        ls /home/cbica-devs/Workspace/captk/superbuild/Release
+        # ls /home/cbica-devs/Workspace/captk/superbuild/Release
 
-        ls /home/cbica-devs/Installs/Qt/5.12.1/gcc_64/lib/cmake/Qt5
+        # ls /home/cbica-devs/Installs/Qt/5.12.1/gcc_64/lib/cmake/Qt5
       displayName: 'Git Submodule Init and Update'
 
     # Moving LFS Files
