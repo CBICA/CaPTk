@@ -2431,7 +2431,7 @@ void FeatureExtraction< TImage >::Update()
             }
 
             auto temp = m_Features.find(FeatureFamilyString[Intensity]);
-            SetFeatureParam("Intensity")
+            SetFeatureParam("Intensity");
             std::get<2>(temp->second) = m_modality[i];
             std::get<3>(temp->second) = allROIs[j].label;
             CalculateIntensity(m_currentNonZeroImageValues, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
