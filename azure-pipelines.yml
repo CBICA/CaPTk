@@ -74,7 +74,7 @@ jobs:
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -O binaries_windows.zip
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/windows.zip -O qt.zip
       displayName: 'Downloading via wget'
-      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     # Moving LFS Files
     - bash: |
@@ -91,7 +91,7 @@ jobs:
         rm -rf ../.git
         ls -lt
       displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
-      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - script: |
         cd bin
@@ -108,7 +108,7 @@ jobs:
         rm -rf binaries_windows.zip
         rm -rf install
       displayName: 'Configure and compile Superbuild'
-      # condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
+      condition: ne(variables.CACHE_RESTORED_WINDOWS, 'true')
 
     - bash: |
         git pull origin master
@@ -122,16 +122,10 @@ jobs:
 
     - script: |
         cd bin
-        # ls
-        # ls OpenCV-build
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-
         cmake --build . --target ALL_BUILD --config Release
         rm -rf externalApps
       displayName: 'Configure and compile CaPTk'
@@ -173,16 +167,13 @@ jobs:
     - script: |
         cd bin
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
-        
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        rm -rf binaries_windows.zip
         rm -rf install_manifest.txt
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
         cmake --build . --target PACKAGE --config Release
-        rm -rf binaries_windows.zip
+
         ls -lt *_Installer.*
 
       displayName: 'Package CaPTk'
@@ -282,8 +273,7 @@ jobs:
     #     continueOnError: true
     #   displayName: Uploading to NITRC
     #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
-
-
+    
 # - job: 'XenialBuild'
 #   displayName: "End-to-end Linux (Xenial) build"
 #   timeoutInMinutes: 0
