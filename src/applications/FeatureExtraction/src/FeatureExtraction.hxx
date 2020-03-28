@@ -2439,7 +2439,7 @@ void FeatureExtraction< TImage >::Update()
             std::string currentFeatureFamily = "Intensity";
             if (!m_Bins_range.empty() && !m_Radius_range.empty())
             {
-              currentFeatureFamily += "_Bins - " +
+              currentFeatureFamily += "_Bins-" +
                 std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
             }
 
