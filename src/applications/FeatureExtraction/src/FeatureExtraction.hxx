@@ -2431,10 +2431,13 @@ void FeatureExtraction< TImage >::Update()
             }
 
             auto temp = m_Features.find(FeatureFamilyString[Intensity]);
+            SetFeatureParam("Intensity")
             std::get<2>(temp->second) = m_modality[i];
             std::get<3>(temp->second) = allROIs[j].label;
             CalculateIntensity(m_currentNonZeroImageValues, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
 
+            std::cout << "m_Bins_range[0]" << m_Bins_range[0] << "\n";
+            std::cout << "m_Radius_range[0]" << m_Radius_range[0] << "\n";
             std::string currentFeatureFamily = std::string("Intensity_Bins-" +
               std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]));
 
