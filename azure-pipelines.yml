@@ -273,7 +273,7 @@ jobs:
     #     continueOnError: true
     #   displayName: Uploading to NITRC
     #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
-    
+
 # - job: 'XenialBuild'
 #   displayName: "End-to-end Linux (Xenial) build"
 #   timeoutInMinutes: 0
@@ -938,7 +938,7 @@ jobs:
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool: 'Linux'
+  pool: 'Default'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
