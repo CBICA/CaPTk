@@ -963,28 +963,12 @@ jobs:
         ls /home/cbica-devs/Installs/Qt/5.12.1/gcc_64/lib/cmake/Qt5
       displayName: 'Git Submodule Init and Update'
 
-    - bash: |
-        df -k .
-      displayName: 'Disk space check'
-
-    # # Dependency manager
-    # - bash: |
-    #     #sudo apt-get update && sudo apt-get dist-upgrade -y
-    #     sudo apt-get update && sudo apt-get install -qq gcc-4.8 g++-4.8 make libgl-dev cmake python3-pip python-numpy dos2unix libxkbcommon-x11-0 libgstreamer-plugins-base0.10-0 libgstreamer-plugins-base1.0-dev libpulse-mainloop-glib0 libmysqlclient-dev libmysqlclient20 
-    #     # echo "Installing MPI stuff"
-    #     # sudo apt-get install mpich libopenmpi-dev 
-    #     echo "Installing OpenGL stuff"
-    #     sudo apt-get install mesa-common-dev libglu1-mesa-dev libgl1-mesa-dev freeglut3-dev
-    #     sudo apt-get install doxygen 
-    #     export GIT_LFS_SKIP_SMUDGE=1
-    #   displayName: 'Install dependencies from Aptitude'
-
     # Moving LFS Files
     - bash: |
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
     
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
@@ -994,24 +978,14 @@ jobs:
         cd bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
-        rm -rf install
       displayName: 'Configure and compile Superbuild'
 
+      # Check qt
     - bash: |
-        # rm -rf bin
-
-        # mkdir bin
-        # cd bin
-        # cp -r ../../../../superbuild/ ./
-        # cd bin
-        # ls
-        # ls ITK-build
-        # pwd
-        
         cd bin
-        cp -r ./ ../../../../superbuild
-        
-      displayName: 'Move superbuild and qt and compiled apps'
+        ls -a
+        ls ./qt/
+      displayName: 'Check qt'
 
     - bash: |
         git pull origin master
@@ -1022,7 +996,7 @@ jobs:
 #     # Configure and build CaPTk
 #     - bash: |
 #         cd bin
-#         export CMAKE_PREFIX_PATH=/home/cbica-devs/Workspace/captk/superbuild/Release/ITK-build:/home/cbica-devs/Workspace/captk/superbuild/Release/DCMTK-build:/home/cbica-devs/Installs/Qt/5.12.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+#         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 #         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
 #         make -j2
 #       displayName: 'Configure and compile CaPTk with Testing enabled'
@@ -1036,59 +1010,21 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        export CMAKE_PREFIX_PATH=/home/cbica-devs/Workspace/captk/superbuild/Release/ITK-build:/home/cbica-devs/Workspace/captk/superbuild/Release/DCMTK-build:/home/cbica-devs/Installs/Qt/5.12.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=""./ITK-build" -DDCMTK_DIR=""./DCMTK-build" -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
 
-    # Check libra
-    - bash: |
-        cd bin/install/appdir/usr/bin/
-        ls -l
-      displayName: 'Checking ${installDir}/bin'
-
-    # - bash: |
-    #     wget http://files.directadmin.com/services/debian_7.0_64/libmysqlclient.so.18
-    #     sudo cp -fv libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/
-    #     cd /usr/lib/x86_64-linux-gnu
-    #     sudo chmod 755 libmysqlclient.so.18
-    #     sudo ldconfig
-    #   displayName: 'SQL lib fix for PKG_COPY_QT_LIBS'
-
-    - bash: |
-        rm -rf bin/qt.zip
-        rm -rf bin/5.12.1
-        rm -rf regression
-        rm -rf binaries
-        rm -rf bin_linux_20200212.tar.gz
-        df -k .
-      displayName: 'Disk space check'
-
     # Build a package
     - bash: |
-        export PATH=/home/cbica-devs/Installs/Qt/5.12.1/gcc_64/bin:/home/cbica-devs/Installs/Qt/5.12.1/gcc_64/libexec:$PATH
-        export CMAKE_PREFIX_PATH=/home/cbica-devs/Workspace/captk/superbuild/Release/ITK-build:/home/cbica-devs/Workspace/captk/superbuild/Release/DCMTK-build:/home/cbica-devs/Installs/Qt/5.12.1/gcc_64/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        rm -rf regression
-        rm -rf binaries
+        export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
         export PKG_FAST_MODE=1
         # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
 
-        rm -rf src
-        rm -rf docs*
-
-        rm -rf scripts
-
-        # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.bin
-        # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
-        # ver=${str#*=}
-        # echo "Version: $ver"
-        # if [[ $ver == *"nonRelease"* ]]; then
-        #   echo "Building non-release"
-        #   mv *_Installer.bin CaPTk_$ver\_Installer.bin
-        # fi
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
       displayName: 'Set up environment variables for packager and build a package'
