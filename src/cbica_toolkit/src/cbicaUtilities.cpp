@@ -521,11 +521,6 @@ namespace cbica
 
   bool IsCompatible(const std::string inputVersionFile)
   {
-    if (!cbica::isFile(inputVersionFile))
-    {
-      std::cerr << "File '" << inputVersionFile << "' does not exist.\n";
-      return false;
-    }
     auto config = YAML::LoadFile(inputVersionFile);
 
     auto currentCollectionVersion = std::stoi(cbica::replaceString(config["Version"].as< std::string >().c_str(), ".", "").c_str());
@@ -726,12 +721,14 @@ namespace cbica
   {
     std::string path, base, ext;
     splitFileName(getFullPath(), path, base, ext);
+  // #ifdef __APPLE__
+  //   return "/Applications/CaPTk_1.6.2.Beta.app/Contents/MacOS/";
+  // #endif
     return cbica::normPath(path) + "/";
   }
 
   std::string getFullPath()
   {
-    std::string return_string;
 #if defined(_WIN32)
     //! Initialize pointers to file and user names
     char path[FILENAME_MAX];
@@ -749,16 +746,13 @@ namespace cbica
     }
 #else
     //! Initialize pointers to file and user names
-     char path[PATH_MAX];
-     ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
-     if (count == -1)
-       std::cerr << "[getFullPath()] Error during getting full path..";
-    std::string appPath = std::string( path, (count > 0) ? count : 0 );
-    path[0] = '\0';
-    return appPath;
+    char path[PATH_MAX];
+    if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
+      //path = dirname(path);
+      std::cerr << "[getFullPath()] Error during getting full path..";
 #endif
 
-    return_string = std::string(path);
+    std::string return_string = std::string(path);
     path[0] = '\0';
 
     return return_string;
@@ -1196,6 +1190,44 @@ namespace cbica
     return cbica::setEnvironmentVariable(variable_name, "");
   }
 
+  std::vector< std::string > filesInDirectory(const std::string &dirName,
+    std::string filePattern, std::string fileExtension,
+    bool returnFullPath, bool recurse)
+  {
+    std::vector< std::string > returnVector;
+    // set up required folders
+    std::vector< std::string > subDirsInInput = { dirName };
+    if (recurse)
+    {
+      auto temp = subdirectoriesInDirectory(dirName, recurse, true);
+      subDirsInInput.insert(subDirsInInput.end(), temp.begin(), temp.end());
+    }
+
+    // loop through all requested directories
+    for (size_t i = 0; i < subDirsInInput.size(); i++)
+    {
+      auto allFilesInCurrentDir = cbica::filesInDirectory(cbica::normPath(subDirsInInput[i]));
+
+      // loop through all files
+      for (size_t j = 0; j < allFilesInCurrentDir.size(); j++)
+      {
+        auto currentExt = cbica::getFilenameExtension(allFilesInCurrentDir[j]);
+        if ( // if file patter is not empty, search for it in the filename
+          (!filePattern.empty() && (allFilesInCurrentDir[j].find(filePattern) != std::string::npos)) ||
+          filePattern.empty() // otherwise, pass it as-is
+          )
+        {
+          if (fileExtension == currentExt)
+          {
+            returnVector.push_back(allFilesInCurrentDir[j]);
+          } // end extension check
+        } // end file-pattern check
+      } // end files-loop
+    } // end dirs-loop
+
+    return returnVector;
+  }
+
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath)
   {
     if (!cbica::directoryExists(dirName))
@@ -1300,7 +1332,7 @@ namespace cbica
           }
           if (recursiveSearch)
           {
-            std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true);
+            std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true, returnFullPath);
             allDirectories.insert(allDirectories.end(), tempVector.begin(), tempVector.end());
           }
         }
@@ -1319,7 +1351,7 @@ namespace cbica
     {
       if (recursiveSearch && (dirp->d_type == DT_DIR) && (dirp->d_name[0] != '.') && (dirp->d_name != std::string(".svn").c_str()))
       {
-        std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + dirp->d_name, true);
+        std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + dirp->d_name, true, returnFullPath);
         allDirectories.insert(allDirectories.end(), tempVector.begin(), tempVector.end());
       }
 
@@ -1615,10 +1647,10 @@ namespace cbica
     returnStatistics["PP"] = static_cast<float>(confusionMatrix["PP"]);
 
     // https://en.wikipedia.org/wiki/Accuracy_and_precision
-    returnStatistics["Accuracy"] = (returnStatistics["TP"] + returnStatistics["TN"]) / (2 * inputRealLabels.size());
+    returnStatistics["Accuracy"] = (returnStatistics["TP"] + returnStatistics["TN"]) / (returnStatistics["TP"] + returnStatistics["TN"] + returnStatistics["FP"] + returnStatistics["FN"]);
 
     // https://en.wikipedia.org/wiki/Positive_and_negative_predictive_values
-    returnStatistics["PPV"] = returnStatistics["TP"] / returnStatistics["PP"];
+    returnStatistics["PPV"] = returnStatistics["TP"] / (returnStatistics["TP"] + returnStatistics["FP"]);
     returnStatistics["Precision"] = returnStatistics["PPV"];
 
     // https://en.wikipedia.org/wiki/False_discovery_rate
@@ -1648,7 +1680,7 @@ namespace cbica
     returnStatistics["MR"] = returnStatistics["FNR"];
 
     // https://en.wikipedia.org/wiki/Sensitivity_and_specificity
-    returnStatistics["TNR"] = returnStatistics["TN"] / returnStatistics["RP"];
+    returnStatistics["TNR"] = returnStatistics["TN"] / (returnStatistics["TN"] + returnStatistics["FP"]);
     returnStatistics["Specificity"] = returnStatistics["TNR"];
 
     // https://en.wikipedia.org/wiki/Likelihood_ratios_in_diagnostic_testing#positive_likelihood_ratio

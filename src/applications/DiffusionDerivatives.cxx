@@ -11,17 +11,17 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DWI file.");
   parser.addRequiredParameter("m", "mask", cbica::Parameter::STRING, "", "The input mask file.");
   parser.addRequiredParameter("b", "Bval", cbica::Parameter::STRING, "", "The input bval file.");
-  parser.addRequiredParameter("v", "Bvec", cbica::Parameter::STRING, "", "The input bvec file.");
+  parser.addRequiredParameter("g", "Bvec", cbica::Parameter::STRING, "", "The input bvec file.");
 
-  parser.addRequiredParameter("a", "Axial Diffusivity", cbica::Parameter::STRING, "", "The Axial Diffusivity image (1=YES, 0=NO, 1 (Default))");
-  parser.addRequiredParameter("f", "Fractional Anisotropy", cbica::Parameter::STRING, "", "The Fractional Anisotropy image (1=YES, 0=NO, 1 (Default))");
-  parser.addRequiredParameter("r", "Radial Diffusivity", cbica::Parameter::STRING, "", "The Radial Diffusivity image (1=YES, 0=NO, 1 (Default))");
-  parser.addRequiredParameter("t", "Apparent Diffusion Coefficient", cbica::Parameter::STRING, "", "The Apparent Diffusion Coefficient (1=YES, 0=NO, 1 (Default))");
+  parser.addOptionalParameter("a", "axial", cbica::Parameter::BOOLEAN, "", "Generate the Axial Diffusivity image (1=YES, 0=NO, 1 (Default))");
+  parser.addOptionalParameter("f", "fractional", cbica::Parameter::BOOLEAN, "", "Generate the Fractional Anisotropy image (1=YES, 0=NO, 1 (Default))");
+  parser.addOptionalParameter("r", "radial", cbica::Parameter::BOOLEAN, "", "Generate the Radial Diffusivity image (1=YES, 0=NO, 1 (Default))");
+  parser.addOptionalParameter("t", "coefficient", cbica::Parameter::BOOLEAN, "", "Generate the Apparent Diffusion Coefficient (1=YES, 0=NO, 1 (Default))");
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("");
-  parser.addExampleUsage("-i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -v C:/input.bvec -a 1 -f 1 -r 1 -t 1 -o C:/output",
+  parser.addExampleUsage("-i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -g C:/input.bvec -a 1 -f 1 -r 1 -t 1 -o C:/output",
     "Calculates diffusion derivatives for the specified input image and parameters");
   parser.addApplicationDescription("Calculates Diffusion Derivatives for a DWI image for a defined mask, bvec and bval files");
 
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
   {
     inputBValName = argv[tempPosition + 1];
   }
-  if (parser.compareParameter("v", tempPosition))
+  if (parser.compareParameter("g", tempPosition))
   {
     inputBVecName = argv[tempPosition + 1];
   }

@@ -773,7 +773,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     SET_SOURCE_FILES_PROPERTIES(${sri24_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
 
     FILE(GLOB DOWNLOAD_LINKS "${DATA_DIR}/links.yaml")
-    SET_SOURCE_FILES_PROPERTIES(${DOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
+    SET_SOURCE_FILES_PROPERTIES(${DOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
 
     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FLAIR_FILE} ${FLAIR_TESTTUMOR_FILE} ${survival_FILES} ${egfrv3_FILES} ${sri24_FILES} ${DOWNLOAD_LINKS})
 
@@ -1168,20 +1168,22 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   # Execute a post install step. Make sure this is the last install command ran!
   IF( CMAKE_HOST_UNIX )
     INSTALL(CODE "EXECUTE_PROCESS(COMMAND ln -sf CaPTk captk WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)")
-  ENDIF()
+    # INSTALL(CODE "EXECUTE_PROCESS(COMMAND chmod 755 matlab_helper WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/libexec/MCR/v84/bin/glnxa64/)")
 
-  IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
-    INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
-    INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
-      DESTINATION libexec/MCR/v84/bin/glnxa64/
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    )
-  ELSEIF(EXISTS ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper)
-  INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
-  INSTALL(FILES ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper
-    DESTINATION libexec/MCR/v84/bin/glnxa64/
-    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-  )
+    # IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
+    #   INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+    #   INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
+    #     DESTINATION libexec/MCR/v84/bin/glnxa64/
+    #     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    #   )
+    # ELSEIF(EXISTS ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper)
+    #   INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+    #   INSTALL(FILES ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper
+    #     DESTINATION libexec/MCR/v84/bin/glnxa64/
+    #     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    #   )
+    # ENDIF()
+
   ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )

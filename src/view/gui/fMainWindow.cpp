@@ -17,7 +17,7 @@
 #include "EGFRvIIISurrogateIndex.h"
 #include "TrainingModule.h"
 #include "GeodesicSegmentation.h"
-#include "N3BiasCorrection.h"
+#include "BiasCorrection.hpp"
 #include "SusanDenoising.h"
 #include "WhiteStripe.h"
 #include "PerfusionDerivatives.h"
@@ -518,7 +518,10 @@ fMainWindow::fMainWindow()
   mProjectVariant = std::string(PROJECT_VARIANT);
 
   connect(featurePanel, SIGNAL(helpClicked_FeaUsage(std::string)), this, SLOT(help_contextual(std::string)));
-  connect(&registrationPanel, SIGNAL(Registrationsignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)), this, SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)));
+  connect(&registrationPanel, 
+    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)),
+    this, 
+    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
@@ -7248,8 +7251,21 @@ void fMainWindow::ImageBiasCorrection()
     duplicator->Update();
     ImageType::Pointer inputImage = duplicator->GetOutput();
     updateProgress(5, "Bias correction in process");
-    N3BiasCorrection biasCorrecter /*= N3BiasCorrection()*/;
-    ImageType::Pointer outputImage = biasCorrecter.Run<ImageTypeFloat3D>(inputImage);
+    BiasCorrection biasCorrector;
+    // Use default values for bias correction for now -- until we add the appropriate GUI elements
+    // TODO: Either allow the GUI to change the below values or otherwise reorganize (cleanup)
+    // Incorporating options into the GUI dialog should also address switching between N3/N4
+    int bias_splineOrder = 3, bias_otsuBins = 10, bias_maxIterations = 100, bias_fittingLevels = 4;
+    float bias_filterNoise = 0.01, bias_fwhm = 0.15;
+    ImageType::Pointer outputImage = biasCorrector.Run<ImageType>("n3",
+                                                                  inputImage,
+                                                                  bias_splineOrder,
+                                                                  bias_maxIterations,
+                                                                  bias_fittingLevels,
+                                                                  bias_filterNoise,
+                                                                  bias_fwhm,
+                                                                  bias_otsuBins);
+
     if (outputImage.IsNotNull())
     {
       updateProgress(80, "Saving file");
@@ -7648,61 +7664,64 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     }
   }
 
-  // TBD: this requires cleanup
-  int type;
-  if (modelDirectory.find("tumor") != std::string::npos)
+  ShowErrorMessage("Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive.", this, "Long Running Application");
+
+  QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application", 
+    "Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive; press OK to continue...", 
+    QMessageBox::Ok | QMessageBox::Cancel);
+  box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
+  box->setWindowModality(Qt::NonModal);
+  QCoreApplication::processEvents();
+  if (box->exec() == QMessageBox::Ok)
   {
-    type = 0;
-  }
-  else if (modelDirectory.find("skull") != std::string::npos)
-  {
-    type = 1;
-  }
+    // TBD: this requires cleanup
+    int type;
+    if (modelDirectory.find("tumor") != std::string::npos)
+    {
+      type = 0;
+    }
+    else if (modelDirectory.find("skull") != std::string::npos)
+    {
+      type = 1;
+    }
 
-  QStringList args;
-  args << "-md" << modelDirectory.c_str()
-    << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
+    QStringList args;
+    args << "-md" << modelDirectory.c_str()
+      << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
 
-  if (!file_mask.empty())
-  {
-    args << "-m" << file_mask.c_str();
-  }
-  updateProgress(5, "Starting DeepMedic Segmentation");
+    if (!file_mask.empty())
+    {
+      args << "-m" << file_mask.c_str();
+    }
+    updateProgress(5, "Starting DeepMedic Segmentation");
 
-  auto dmExe = getApplicationPath("DeepMedic");
-  if (!cbica::exists(dmExe))
-  {
-    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
-    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
-    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
-
-    ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
-    updateProgress(0, "");
-    return;
-  }
+    auto dmExe = getApplicationPath("DeepMedic");
+    if (!cbica::exists(dmExe))
+    {
+      ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
+      updateProgress(0, "");
+      return;
+    }
 
 
-  if (startExternalProcess(dmExe.c_str(), args) != 0)
-  {
-    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
-    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
-    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
+    if (startExternalProcess(dmExe.c_str(), args) != 0)
+    {
+      ShowErrorMessage("DeepMedic returned with exit code != 0");
+      updateProgress(0, "");
+      return;
+    }
 
-    ShowErrorMessage("DeepMedic returned with exit code != 0");
-    updateProgress(0, "");
-    return;
-  }
-
-  auto output = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
-  if (cbica::exists(output))
-  {
-    readMaskFile(output);
-    updateProgress(100, "Completed.");
-  }
-  else
-  {
-    ShowErrorMessage("DeepMedic failed to generate results");
-    updateProgress(0, "");
+    auto output = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
+    if (cbica::exists(output))
+    {
+      readMaskFile(output);
+      updateProgress(100, "Completed.");
+    }
+    else
+    {
+      ShowErrorMessage("DeepMedic failed to generate results");
+      updateProgress(0, "");
+    }
   }
 
   return;
@@ -8996,8 +9015,10 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
   m_IsGeodesicTrainingRunning = false;
 }
 
-void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames,
-  std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
+void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
+  std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames,
+  std::string metrics, bool rigidMode, bool affineMode, bool deformMode,
+  std::string radii, std::string iterations)
 {
   std::string configPathName;
   std::string configFileName;
@@ -9028,28 +9049,33 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     }
     updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
 
-    std::string fixedFileCommand = "-f " + fixedFileName;
-    std::string movingFileCommand = " -i " + inputFileNames[i];
-    std::string affineMatrixCommand = " -t " + matrixFileNames[i];
-    std::string outputCommand = " -o " + outputFileNames[i];
-    std::string metricsCommand = " -m " + metrics;
-    std::string iterationsCommand = " -n " + iterations;
     QStringList args;
-    args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
-      << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
-      << "-m" << metrics.c_str() << "-n" << iterations.c_str();
+
+    args << "-i" << inputFileNames[i].c_str();
+    args << "-o" << outputFileNames[i].c_str();
+    args << "-rIA" << matrixFileNames[i].c_str();
+    args << "-rFI" << fixedFileName.c_str();
+    args << "-rNI" << iterations.c_str();
 
     if (metrics == "NCC")
-      args << "-ri" << radii.c_str();
-    if (affineMode)
+      args << ("-rME NCC-" + radii).c_str();
+    else
+      args << "-rME " << metrics.c_str();
+
+    args << "-reg";
+    if (rigidMode)
     {
-      args << "-a";
+      args << "Rigid";
+    }
+    else if (affineMode)
+    {
+      args << "Affine";
     }
     else
     {
-      args << "-r";
+      args << "Deformable";
     }
-    std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
+    std::string fullCommandToRun = getApplicationPath("Preprocessing");
 
     if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
     {
@@ -9084,10 +9110,12 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
 
     std::string mode;
 
-    if (affineMode == true)
+    if (affineMode)
       mode = "Affine";
-    else
+    else if (rigidMode)
       mode = "Rigid";
+    else
+      mode = "Deformable";
 
     if (file.is_open())
     {

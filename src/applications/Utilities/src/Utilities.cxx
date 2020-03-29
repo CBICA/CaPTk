@@ -14,6 +14,7 @@
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
 #include "itkLabelOverlapMeasuresImageFilter.h"
+#include "itkHausdorffDistanceImageFilter.h"
 
 #include "cbicaDCMQIWrapper.h"
 
@@ -46,7 +47,8 @@ enum AvailableAlgorithms
   World2Image,
   ImageStack2Join,
   JoinedImage2Stack,
-  LabelSimilarity
+  LabelSimilarity,
+  Hausdorff
 };
 
 int requestedAlgorithm = 0;
@@ -255,7 +257,10 @@ int algorithmsRunner()
   {
     auto referenceDicom = targetImageFile;
     cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
-    std::cout << "Finished writing the DICOM file.\n";
+    if (cbica::exists(outputImageFile))
+    {
+      std::cout << "Finished writing the DICOM file.\n";
+    }
   }
   else if (requestedAlgorithm == Nifti2DicomSeg)
   {
@@ -310,7 +315,7 @@ int algorithmsRunner()
       using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
       cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
     }
-    if (targetImageFile == "ushort")
+    else if (targetImageFile == "ushort")
     {
       using DefaultPixelType = unsigned short;
       using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
@@ -691,6 +696,23 @@ int algorithmsRunner()
     }
       return EXIT_SUCCESS;
   }
+  else if (requestedAlgorithm == Hausdorff)
+  {
+    auto filter = itk::HausdorffDistanceImageFilter< TImageType, TImageType >::New();
+    filter->SetInput1(cbica::ReadImage< TImageType >(inputImageFile));
+    filter->SetInput2(cbica::ReadImage< TImageType >(referenceMaskForSimilarity));
+    try
+    {
+      filter->Update();
+    }
+    catch (const std::exception&e)
+    {
+      std::cerr << "Hausdorff calculation error: " << e.what() << "\n";
+      return EXIT_FAILURE;
+    }   
+
+    std::cout << "Hausdorff Distance: " << filter->GetHausdorffDistance() << "\n";
+  }
 
   // if no other algorithm has been selected and mask & output files are present and in same space as input, apply it
   else if (cbica::isFile(inputMaskFile) && !outputImageFile.empty())
@@ -818,12 +840,12 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("thO", "threshOtsu", cbica::Parameter::BOOLEAN, "0-1", "Whether to do Otsu threshold", "Generates a binary image which has been thresholded using Otsu", "Use '-tOI' to set Outside and Inside Values", "Optional mask to localize Otsu search area");
   parser.addOptionalParameter("tBn", "thrshBinary", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensity BELOW and ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Default for OUTSIDE_VALUE=0");
   parser.addOptionalParameter("tOI", "threshOutIn", cbica::Parameter::STRING, "Outside_Value,Inside_Value", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
-  parser.addOptionalParameter("cov", "convert", cbica::Parameter::BOOLEAN, "0-1", "The values that will go inside and outside the thresholded region", "Defaults to '1'");
   parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-i2w 10,20,30'");
   parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
   parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
   parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
+  parser.addOptionalParameter("hd", "hausdorffDist", cbica::Parameter::FILE, "NIfTI Reference", "Calculate the Hausdorff Distance for the input image and", "the one passed after '-hd'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -837,8 +859,9 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100 -tOI -100,10000", "Above & Below Threshold between 50 and 100 with outside value -100 and inside value 10000");
   parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output -j2e 1", "Extract the joined image into its series");
   parser.addExampleUsage("-i C:/test/ -o C:/output.nii.gz -e2j 1.5", "Join the extracted images into a single image with spacing in the new dimension as 1.5");
-  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -r 100 -rr 1.0,1.0,1.0 -ri LINEAR", "Calculates an isotropic image from the input with spacing '1.0' in all dimensions using linear interpolation");
-  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -r 100 -rf C:/reference.nii.gz -ri LINEAR", "Calculates an isotropic image from the input with spacing from the reference image using linear interpolation");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0 -ri LINEAR", "Calculates an isotropic image from the input with spacing '1.0' in all dimensions using linear interpolation");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR", "Calculates an anisotropic image from the input with spacing '1.0' in x, '2.0' in y and '3.0' in z using linear interpolation");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR", "Calculates an isotropic image from the input with spacing from the reference image using linear interpolation");
   parser.addExampleUsage("-i C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz", "Calculates Total/Union/Mean Overlap (different DICE coefficients), Volume Similarity, False Positive/Negative Error for all labels");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
@@ -1192,6 +1215,11 @@ int main(int argc, char** argv)
     requestedAlgorithm = LabelSimilarity;
     parser.getParameterValue("ls", referenceMaskForSimilarity);
   }
+  else if (parser.isPresent("hd"))
+  {
+    requestedAlgorithm = Hausdorff;
+    parser.getParameterValue("hd", referenceMaskForSimilarity);
+  }
 
   // this doesn't need any template initialization
   if (requestedAlgorithm == SanityCheck)
@@ -1216,17 +1244,21 @@ int main(int argc, char** argv)
     auto size = inputImageInfo.GetImageSize();
     auto origin = inputImageInfo.GetImageOrigins();
     auto spacing = inputImageInfo.GetImageSpacings();
+    auto directions = inputImageInfo.GetImageDirections();
     auto size_string = std::to_string(size[0]);
     auto origin_string = std::to_string(origin[0]);
     auto spacing_string = std::to_string(spacing[0]);
+    auto directions_string = "[" + std::to_string(directions[0][0]) + "x" + std::to_string(directions[0][1]) + "x" + std::to_string(directions[0][2]);
     size_t totalSize = size[0];
     for (size_t i = 1; i < dims; i++)
     {
       size_string += "x" + std::to_string(size[i]);
       origin_string += "x" + std::to_string(origin[i]);
       spacing_string += "x" + std::to_string(spacing[i]);
+      directions_string += ";" + std::to_string(directions[i][0]) + "x" + std::to_string(directions[i][1]) + "x" + std::to_string(directions[i][2]);
       totalSize *= size[i];
     }
+    directions_string += "]";
     std::cout << "Property,Value\n";
     std::cout << "Dimensions," << dims << "\n";
     std::cout << "Size," << size_string << "\n";
@@ -1235,6 +1267,7 @@ int main(int argc, char** argv)
     std::cout << "Spacing," << spacing_string << "\n";
     std::cout << "Component," << inputImageInfo.GetComponentTypeAsString() << "\n";
     std::cout << "Pixel Type," << inputImageInfo.GetPixelTypeAsString() << "\n";
+    std::cout << "Directions," << directions_string << "\n";
 
     if (cbica::IsDicom(inputImageFile)) // if dicom file
     {
@@ -1283,7 +1316,7 @@ int main(int argc, char** argv)
       cbica::splitFileName(outputImageFile, path, base, ext);
       if (ext.find(".nii") != std::string::npos)
       {
-        std::cerr << "WARNING: NIfTI files do support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
+        std::cerr << "WARNING: NIfTI files do NOT support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
       }
       if (ext != ".mha")
       {
