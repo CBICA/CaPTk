@@ -4580,7 +4580,7 @@ void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputFileName, c
   }
   else
   {
-    ShowErrorMessage("Error in creating statistical atlases for the given set of subjects.", this);
+    ShowErrorMessage("Error in calculating statistical atlases for the given set of subjects.", this);
     return;
   }
   //code to calculate spatial location features
