@@ -4585,7 +4585,7 @@ void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputFileName, c
   }
   //code to calculate spatial location features
   VariableSizeMatrixType LocationFeaturesAll;
-  if (mPopulationAtlas.CalculateSpatialLocationFeatures(image_paths, atlas_labels_numbers, inputatlas, numberofregions, LocationFeaturesAll, outputdirectory) == true)
+  if (mPopulationAtlas.CalculateSpatialLocationFeatures(image_paths, inputatlas, numberofregions, LocationFeaturesAll, outputdirectory) == true)
     WriteCSVFilesWithHorizontalAndVerticalHeaders(LocationFeaturesAll, patient_ids, region_names, outputdirectory+ "/locationfeatures.csv");
   else
   {
