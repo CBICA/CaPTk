@@ -13,13 +13,12 @@ std::vector<typename ImageType::Pointer> PopulationAtlases::GeneratePopualtionAt
 {
 	std::vector<typename ImageType::Pointer> PopulationAtlases;
 
-  
 	//read the template image
 	ImageType::Pointer AtlasImagePointer;
 	ImageType::Pointer InputImagePointer;
 	try
 	{
-		AtlasImagePointer = ReadNiftiImage<ImageType>(inputatlas);
+		AtlasImagePointer = cbica::ReadImage<ImageType>(inputatlas);
 	}
 	catch (const std::exception& e1)
 	{
@@ -72,7 +71,6 @@ std::vector<typename ImageType::Pointer> PopulationAtlases::GeneratePopualtionAt
 
 
 bool PopulationAtlases::CalculateSpatialLocationFeatures(const std::vector<std::string> image_paths,
-  const std::vector<int> atlas_labels, 
   const std::string inputatlas, 
   const int number_of_regions,
   VariableSizeMatrixType & AllLocationFeatures,

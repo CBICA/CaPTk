@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 
   //code to calculate spatial location features
   VariableSizeMatrixType LocationFeaturesAll;
-  if (objPopulationAtlases.CalculateSpatialLocationFeatures(image_paths, atlas_labels_numbers, inputAtlasName, numberofregions, LocationFeaturesAll, outputDirectoryName) == true)
+  if (objPopulationAtlases.CalculateSpatialLocationFeatures(image_paths, inputAtlasName, numberofregions, LocationFeaturesAll, outputDirectoryName) == true)
   {
     WriteCSVFilesWithHorizontalAndVerticalHeaders(LocationFeaturesAll, patient_ids,region_names, outputDirectoryName + "/locationfeatures.csv");
     std::cout << "Spatial location features written in the output directory.\n";
