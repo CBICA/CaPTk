@@ -810,23 +810,16 @@ This application facilitates the users to generate population atlases for patien
 
 <b>REQUIREMENTS:</b>
 -# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4)
--# Groups: A csv file having patient's label file name e.g. SegmentationLabel.nii.gz (in first column) and group (in second column). (Note that the CSV file should be in ASCII format)
--# Standard atlas: A standard atlas to map all the patients in a unified space. 
-
--# The data (segmentation label files) of multiple patients should reside under the same folder, e.g.:
-	- Data_of_multiple_patients
-		-# Subject_ID1.nii.gz
-		-# Subject_ID2.nii.gz
-		-# ...
-		-# Subject_IDn.nii.gz
-      
+-# Standard atlas: A standard atlas to map all the patients in a unified space. Atlas should have region numbers in the ascending order, such as 1,2,3,...,n.
+-# Batch File: A csv file having patients' IDs, group (atlas) number, and path to the actual segmented image. Atlas numbers should be in the ascending order, such as 1,2,3,...,n. Segmentation images should be in the same space as the standard atlas (Note that the CSV file should be in ASCII format, and the CSV file should have the following column headers in any sequence: PATIENT_IDS,IMAGES, ATLAS_LABELS).
 <b>USAGE:</b>
 	-# Launch the Population Atlases application using the 'Applications -> Population Atlas' menu option.
-	-# Specify the Input (e.g., Data_of_multiple_patients) and Output directories, groups and atlas files.
-	-# Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window. 	
+	-# Specify the Input batch file (e.g., Data_of_multiple_patients), Atlas file, and Output directories.
+	-# Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window. 
+    -# The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory. 	
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -l C:/GroupFile -a C:/AtlasFile -o C:/populationAtlasesOutput
+${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -a C:/AtlasFile -o C:/populationAtlasesOutput
 \endverbatim
 
 --------

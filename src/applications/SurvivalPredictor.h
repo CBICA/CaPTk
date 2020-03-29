@@ -232,7 +232,7 @@ public:
 		const typename ImageType::Pointer &atlasImagePointer);
 
 
-
+  VariableSizeMatrixType MatrixTranspose(const VariableSizeMatrixType &inputmatrix);
 
 
 	/**
@@ -262,13 +262,14 @@ public:
 
 
 
-	VariableSizeMatrixType SelectSixMonthsModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures);
-	VariableSizeMatrixType SelectEighteenMonthsModelFeatures(const VariableSizeMatrixType &EighteenModelFeatures);
+	VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures, const VariableLengthVectorType selectedfeatures);
+	VariableSizeMatrixType SelectEighteenMonthsModelFeatures(const VariableSizeMatrixType &EighteenModelFeatures, const VariableLengthVectorType selectedfeatures);
 
 	template<class ImageType>
 	typename ImageType::Pointer RemoveSmallerComponentsFromTumor(const typename ImageType::Pointer &etumorImage, const typename ImageType::Pointer &ncrImage);
+  VariableLengthVectorType DistanceFunctionLinear(const VariableSizeMatrixType &testData, const std::string &filename);
 
-	VariableLengthVectorType DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename, const double &rho, const double &bestg);
+	VariableLengthVectorType DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename);
 	VectorDouble CombineEstimates(const VariableLengthVectorType &estimates1, const VariableLengthVectorType &estimates2);
 	VectorDouble CombineEstimates(const VectorDouble &estimates1, const VectorDouble &estimates2);
 
@@ -657,7 +658,9 @@ VectorDouble  SurvivalPredictor::LoadTestData(const typename ImageType::Pointer 
 		++tumorIt;
 	}
 	VectorDouble VolumetricFeatures = GetVolumetricFeatures(edemaIndices.size(), etumorIndices.size(), necoreIndices.size(), brainIndices.size());
-	VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(atlasImagePointer, templateImagePointer);
+  VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(labelImagePointer, atlasImagePointer);
+  //VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(atlasImagePointer,templateImagePointer);
+  //, templateImagePointer);
 
 	//--------------------------------Alternate function for distance features----------------------------------------------  
 	typename ImageType::Pointer  edemaDistanceMap = GetDistanceMapWithLabel<ImageType>(labelImagePointer, CAPTK::GLISTR_OUTPUT_LABELS::EDEMA);

@@ -16,7 +16,6 @@ fPopulationAtlasDialog::fPopulationAtlasDialog()
   //this->setFixedHeight(300);
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
-  connect(inputdirectoryButton, SIGNAL(clicked()), this, SLOT(OpenInputDirectory()));
   connect(inputlabelButton, SIGNAL(clicked()), this, SLOT(OpenInputLabelFile()));
   connect(inputAtlasButton, SIGNAL(clicked()), this, SLOT(OpenInputAtlasFile()));
   connect(outputdirectoryButton, SIGNAL(clicked()), this, SLOT(OpenOutputDirectory()));
@@ -30,18 +29,7 @@ void fPopulationAtlasDialog::CancelButtonPressed()
 }
 void fPopulationAtlasDialog::ConfirmButtonPressed()
 {
-  if (inputdirectoryName->text().isEmpty())
-  {
-    ShowErrorMessage("Please specify the input directory.");
-    return;
-  }
-  if (cbica::directoryExists(inputdirectoryName->text().toStdString()) == false)
-  {
-    ShowErrorMessage("Input directory does not exist.");
-    return;
-  }
-  //--------------------------------------------------------------------------
-  if (outputdirectoryName->text().isEmpty())
+ if (outputdirectoryName->text().isEmpty())
   {
     ShowErrorMessage("Please specify the output directory.");
     return;
@@ -78,7 +66,7 @@ void fPopulationAtlasDialog::ConfirmButtonPressed()
     return;
   }
   //--------------------------------------------------------------------------
-  emit GeneratePopualtionAtlas(inputdirectoryName->text().toStdString(), inputlabelName->text().toStdString(), inputAtlasName->text().toStdString(), outputdirectoryName->text().toStdString());
+  emit GeneratePopualtionAtlas(inputlabelName->text().toStdString(), inputAtlasName->text().toStdString(), outputdirectoryName->text().toStdString());
   //ShowErrorMessage("Atlases saved at the specified location.");
   this->close();
 }
@@ -91,16 +79,6 @@ void fPopulationAtlasDialog::OpenOutputDirectory()
   else
     outputdirectoryName->setText(directory);
 }
-
-void fPopulationAtlasDialog::OpenInputDirectory()
-{
-  QString directory = getExistingDirectory(this, mInputPathName);
-  if (directory.isNull() || directory.isEmpty())
-    return;
-  else
-    inputdirectoryName->setText(directory);
-}
-
 
 void fPopulationAtlasDialog::OpenInputLabelFile()
 {
