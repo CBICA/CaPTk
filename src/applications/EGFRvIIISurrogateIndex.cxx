@@ -1,5 +1,4 @@
 #include "EGFRvIIISurrogateIndex.h"
-//#include "CAPTk.h"
 #include "cbicaCmdParser.h"
 #include "cbicaUtilities.h"
 #include "cbicaITKSafeImageIO.h"
