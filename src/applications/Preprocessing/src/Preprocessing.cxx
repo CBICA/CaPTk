@@ -6,7 +6,8 @@
 
 #include "ZScoreNormalizer.h"
 #include "P1P2Normalizer.h"
-#include "itkN3MRIBiasFieldCorrectionImageFilter.h"
+//#include "itkN3MRIBiasFieldCorrectionImageFilter.h"
+#include "BiasCorrection.hpp"
 #include "itkN4BiasFieldCorrectionImageFilter.h"
 #include "SusanDenoising.h"
 
@@ -39,17 +40,18 @@ enum RegistrationTypeEnum
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile;
+std::string inputImageFile, inputMaskFile, outputImageFile, outputDir, targetImageFile;
 std::vector< std::string > inputImageFiles; // store multiple image files
-std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "SSD", registrationIterations = "100,50,5",
+std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "NMI", registrationIterations = "100,50,5",
 registrationAffineTransformInput, registrationDeformableTransformInput;
 
 int histoMatchQuantiles = 40, histoMatchBins = 100,
-registrationTypeInt;
+registrationTypeInt, registrationRigidDof = 12;
 bool registrationIntermediate = false, registrationSegmentationMoving = false;
-float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, n3Bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
-ssSigma = 0.5, ssIntensityThreshold = 80, n3Bias_filterNoise = 0.01;
-int n3Bias_splineOrder = 3, n3Bias_otsuBins = 10, ssRadius = 1;
+float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
+ssSigma = 0.5, ssIntensityThreshold = 80, bias_filterNoise = 0.01;
+int bias_splineOrder = 3, bias_otsuBins = 10, ssRadius = 1, bias_maxIterations = 100, bias_fittingLevels = 4;
+// Note: increases to bias_fittingLevels cause exponential increases in execution time, be warned
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true, debugMode = false;
 
@@ -122,8 +124,6 @@ int algorithmsRunner()
       auto combinedOutput = normalizer.GetOutput();
       auto extractedOutputs = cbica::GetExtractedImages< NewImageType, TImageType >(combinedOutput);
 
-      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
-
       for (size_t i = 0; i < extractedOutputs.size(); i++)
       {
         cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + "_zscored.nii.gz");
@@ -177,8 +177,6 @@ int algorithmsRunner()
       auto combinedOutput = normalizer.GetOutput();
       auto extractedOutputs = cbica::GetExtractedImages< NewImageType, TImageType >(combinedOutput);
 
-      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
-
       for (size_t i = 0; i < extractedOutputs.size(); i++)
       {
         cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + ".nii.gz");
@@ -203,70 +201,64 @@ int algorithmsRunner()
     }
     else
     {
-      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-      auto corrector = itk::N3MRIBiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
-      corrector->SetInput(inputImage);
-      corrector->SetSplineOrder(n3Bias_splineOrder);
-      corrector->SetWeinerFilterNoise(n3Bias_filterNoise);
-      corrector->SetBiasFieldFullWidthAtHalfMaximum(n3Bias_fwhm);
-      corrector->SetConvergenceThreshold(0.0000001);
+      auto inputImage = cbica::ReadImage<TImageType>(inputImageFile);
+      typedef itk::Image<unsigned char, TImageType::ImageDimension> TMaskImageType;
+      typename TMaskImageType::Pointer maskImage; // mask inits to null
       if (!inputMaskFile.empty())
       {
-        corrector->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+          maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
       }
-      else
-      {
-        auto otsu = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
-        otsu->SetInput(inputImage);
-        otsu->SetNumberOfHistogramBins(n3Bias_otsuBins);
-        otsu->SetInsideValue(0);
-        otsu->SetOutsideValue(1);
-        otsu->Update();
-        corrector->SetMaskImage(otsu->GetOutput());
-      }
-      corrector->Update();
 
-      cbica::WriteImage< TImageType >(corrector->GetOutput(), outputImageFile);
+      BiasCorrection biasCorrector;
+      auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n3",
+                                                                       inputImage,
+                                                                       maskImage,
+                                                                       bias_splineOrder,
+                                                                       bias_maxIterations,
+                                                                       bias_fittingLevels,
+                                                                       bias_filterNoise,
+                                                                       bias_fwhm,
+                                                                       bias_otsuBins);
+
+
+      cbica::WriteImage< TImageType >(outputImage, outputImageFile);
       return EXIT_SUCCESS;
     }
   }
 
   else if (requestedAlgorithm == BiasCorrectionN4)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
-    {
-      std::cerr << "This operation cannot currently be performed with multiple images.\n";
-      return EXIT_FAILURE;
-    }
-    else
-    {
-      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-      using TBiasCorrectorType = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >;
-      auto corrector = itk::N4BiasFieldCorrectionImageFilter< TImageType, TImageType, TImageType >::New();
-      corrector->SetInput(inputImage);
-      corrector->SetSplineOrder(n3Bias_splineOrder);
-      corrector->SetWienerFilterNoise(n3Bias_filterNoise);
-      corrector->SetBiasFieldFullWidthAtHalfMaximum(n3Bias_fwhm);
-      corrector->SetConvergenceThreshold(0.0000001);
-      if (!inputMaskFile.empty())
+      if (!inputImageFiles.empty()) // multiple images passed
       {
-        corrector->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+        std::cerr << "This operation cannot currently be performed with multiple images.\n";
+        return EXIT_FAILURE;
       }
       else
       {
-        auto otsu = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
-        otsu->SetInput(inputImage);
-        otsu->SetNumberOfHistogramBins(n3Bias_otsuBins);
-        otsu->SetInsideValue(0);
-        otsu->SetOutsideValue(1);
-        otsu->Update();
-        corrector->SetMaskImage(otsu->GetOutput());
-      }
-      corrector->Update();
-      auto tempOutput = corrector->GetOutput();
+        auto inputImage = cbica::ReadImage<TImageType>(inputImageFile);
+        typedef itk::Image<unsigned char, TImageType::ImageDimension> TMaskImageType;
+        typename TMaskImageType::Pointer maskImage; // mask inits to null
+        if (!inputMaskFile.empty())
+        {
+            maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
+        }
 
-      cbica::WriteImage< TImageType >(tempOutput, outputImageFile);
-    }
+        BiasCorrection biasCorrector;
+        auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n4",
+                                                                         inputImage,
+                                                                         maskImage,
+                                                                         bias_splineOrder,
+                                                                         bias_maxIterations,
+                                                                         bias_fittingLevels,
+                                                                         bias_filterNoise,
+                                                                         bias_fwhm,
+                                                                         bias_otsuBins);
+
+
+        cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+        return EXIT_SUCCESS;
+      }
+
   }
 
   else if (requestedAlgorithm == SusanDenoisingAlgo)
@@ -294,12 +286,12 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == Registration)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
+    if (inputImageFiles.empty()) // multiple images passed
     {
-      std::cerr << "This operation cannot currently be performed with multiple images.\n";
-      return EXIT_FAILURE;
+      inputImageFiles.push_back(inputImageFile);
     }
-    else
+
+    for (size_t i = 0; i < inputImageFiles.size(); i++)
     {
       // call the greedy executable here with the proper API. 
       // see TumorGrowthModelling regarding how it is done there
@@ -315,6 +307,10 @@ int algorithmsRunner()
       std::string iterations;
       {
         auto temp = cbica::stringSplit(registrationIterations, ",");
+        if (temp.size() == 1)
+        {
+          temp = cbica::stringSplit(registrationIterations, "x");
+        }
         iterations += temp[0];
         for (size_t i = 1; i < temp.size(); i++)
         {
@@ -331,7 +327,7 @@ int algorithmsRunner()
       }
 
       // add the fixed and moving files
-      commonCommands += " -i " + cbica::normPath(registrationFixedImageFile) + " " + cbica::normPath(inputImageFile);
+      commonCommands += " -i " + cbica::normPath(registrationFixedImageFile) + " " + cbica::normPath(inputImageFiles[i]);
 
       std::string metricsCommand = " -m ";
       if (registrationMetrics.find("NCC") != std::string::npos)
@@ -349,52 +345,61 @@ int algorithmsRunner()
         std::cerr << "WARNING: Output filename is not defined; will try to save in input directory.\n";
         outputImageFile = cbica::getFilenamePath(inputImageFile) + "/registrationOutput.nii.gz";
       }
-      auto outputDir = cbica::getFilenamePath(outputImageFile, false);
       auto inputFile_base = cbica::getFilenameBase(inputImageFile);
       auto fixedFile_base = cbica::getFilenameBase(registrationFixedImageFile);
-      std::map< std::string, std::string > intermediateFiles;
+      std::string interimFiles_affineTransform, interimFiles_deformField, interimFiles_invDeformField;
       auto const _registrationMetrics = "_" + registrationMetrics;
       auto const _registrationMetricsNII = _registrationMetrics + ".nii.gz";
       auto const _fixedFileTOInputFileBase = fixedFile_base + "TO" + inputFile_base;
       auto const _inputFileTOFixedFileBase = inputFile_base + "TO" + fixedFile_base;
 
-      bool defaultNamedUsed = false;
+      bool affine_defaultNamedUsed = false, deformable_defaultNamedUsed = false;
       // populate default names for intermediate files
       if (registrationAffineTransformInput.empty())
       {
-        intermediateFiles["Affine"] = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
-        defaultNamedUsed = true;
+        interimFiles_affineTransform = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
+        affine_defaultNamedUsed = true;
       }
       else
       {
-        intermediateFiles["Affine"] = registrationAffineTransformInput;
+        interimFiles_affineTransform = registrationAffineTransformInput;
       }
       if (registrationDeformableTransformInput.empty())
       {
-        intermediateFiles["Deform"] = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-        intermediateFiles["DeformInv"] = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
-        defaultNamedUsed = true;
+        interimFiles_deformField = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
+        interimFiles_invDeformField = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+        deformable_defaultNamedUsed = true;
       }
       else
       {
-        intermediateFiles["Deform"] = registrationDeformableTransformInput;
+        interimFiles_deformField = registrationDeformableTransformInput;
         std::string path, base, ext;
         cbica::splitFileName(registrationDeformableTransformInput, path, base, ext);
-        intermediateFiles["DeformInv"] = path + "/" + base + "-Inv.nii.gz";
+        interimFiles_invDeformField = path + "/" + base + "-Inv.nii.gz";
       }
 
       std::string commandToCall;
-      if (!cbica::fileExists(registrationAffineTransformInput))
+      if (!cbica::fileExists(interimFiles_affineTransform))
       {
-        // we always do affine
-        commandToCall = greedyPathAndDim + " -a" +
-          commonCommands +
-          metricsCommand +
-          " -ia-image-centers -o " + intermediateFiles["Affine"];
-        ;
+        if (registrationTypeInt == RegistrationTypeEnum::Affine)
+        {
+          commandToCall = greedyPathAndDim + " -a" +
+            commonCommands +
+            metricsCommand +
+            " -ia-image-centers -o " + interimFiles_affineTransform;
+          ;
+        }
+        else
+        {
+          commandToCall = greedyPathAndDim + " -a" +
+            commonCommands +
+            metricsCommand +
+            " -ia-image-centers -dof " + std::to_string(registrationRigidDof) + " -o " + interimFiles_affineTransform;
+          ;
+        }
         if (debugMode)
         {
-          std::cout << "Starting Affine registration.\n";
+          std::cout << "Starting Affine/Rigid registration.\n";
           std::cout << "commandToCall: \n" << commandToCall << "\n";
         }
         if (std::system(commandToCall.c_str()) != 0)
@@ -406,41 +411,9 @@ int algorithmsRunner()
 
       switch (registrationTypeInt)
       {
-      case RegistrationTypeEnum::Rigid:
+      case RegistrationTypeEnum::Deformable:
       {
-        // not going to be defined
-        break;
-      }
-      case RegistrationTypeEnum::Affine:
-      {
-        if (registrationSegmentationMoving)
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri NN -r " + intermediateFiles["Affine"];
-        }
-        else
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri LABEL 0.2vox -r " + intermediateFiles["Affine"];
-        }
-
-        if (std::system(commandToCall.c_str()) != 0)
-        {
-          std::cerr << "Something went wrong when calling Greedy Reslice Affine.\n";
-          return EXIT_FAILURE;
-        }
-
-        break;
-      }
-      default: // we shall always assume deformable
-      {
-        if (!cbica::fileExists(registrationDeformableTransformInput))
+        if (!cbica::fileExists(interimFiles_deformField) || cbica::fileExists(interimFiles_invDeformField))
         {
           if (debugMode)
           {
@@ -449,9 +422,9 @@ int algorithmsRunner()
           commandToCall = greedyPathAndDim +
             commonCommands +
             metricsCommand +
-            " -it " + intermediateFiles["Affine"] +
-            " -o " + intermediateFiles["Deform"] +
-            " -oinv " + intermediateFiles["DeformInv"];
+            " -it " + interimFiles_affineTransform +
+            " -o " + interimFiles_deformField +
+            " -oinv " + interimFiles_invDeformField;
 
           if (std::system(commandToCall.c_str()) != 0)
           {
@@ -464,19 +437,19 @@ int algorithmsRunner()
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
+            " -ri LABEL 0.2vox -r " + interimFiles_deformField +
+            " " + interimFiles_affineTransform +
             " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri NN -r " + intermediateFiles["Deform"] +
-            " " + intermediateFiles["Affine"];
+            " " + outputImageFile;
         }
         else
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
+            " -ri LINEAR -r " + interimFiles_deformField +
+            " " + interimFiles_affineTransform +
             " -rm " + inputImageFile +
-            " " + outputImageFile +
-            " -ri LABEL 0.2vox -r " + intermediateFiles["Deform"] +
-            " " + intermediateFiles["Affine"];
+            " " + outputImageFile;
         }
 
         if (std::system(commandToCall.c_str()) != 0)
@@ -497,8 +470,8 @@ int algorithmsRunner()
             " -rf " + registrationFixedImageFile +
             " -rm " + inputImageFile +
             " " + outputImageFileInv +
-            " -ri NN -r " + intermediateFiles["DeformInv"] +
-            " " + intermediateFiles["Affine"] + ",-1";
+            " -ri NN -r " + interimFiles_invDeformField +
+            " " + interimFiles_affineTransform + ",-1";
         }
         else
         {
@@ -506,13 +479,39 @@ int algorithmsRunner()
             " -rf " + registrationFixedImageFile +
             " -rm " + inputImageFile +
             " " + outputImageFileInv +
-            " -ri LABEL 0.2vox -r " + intermediateFiles["DeformInv"] +
-            " " + intermediateFiles["Affine"] + ",-1";
+            " -ri LABEL 0.2vox -r " + interimFiles_invDeformField +
+            " " + interimFiles_affineTransform + ",-1";
         }
 
         if (std::system(commandToCall.c_str()) != 0)
         {
           std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
+          return EXIT_FAILURE;
+        }
+        break;
+      }
+      default: // we shall always assume affine/rigid
+      {
+        if (registrationSegmentationMoving)
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -ri LABEL 0.2vox -r " + interimFiles_affineTransform +
+            " -rm " + inputImageFile +
+            " " + outputImageFile;
+        }
+        else
+        {
+          commandToCall = greedyPathAndDim +
+            " -rf " + registrationFixedImageFile +
+            " -ri LINEAR -r " + interimFiles_affineTransform +
+            " -rm " + inputImageFile +
+            " " + outputImageFile;
+        }
+
+        if (std::system(commandToCall.c_str()) != 0)
+        {
+          std::cerr << "Something went wrong when calling Greedy Reslice Affine.\n";
           return EXIT_FAILURE;
         }
 
@@ -524,12 +523,14 @@ int algorithmsRunner()
       if (!registrationIntermediate)
       {
         // only do the deletion if default names are used
-        if (defaultNamedUsed)
+        if (affine_defaultNamedUsed)
         {
-          for (const auto& it : intermediateFiles)
-          {
-            std::remove(it.second.c_str());
-          }
+          std::remove(interimFiles_affineTransform.c_str());
+        }
+        if (deformable_defaultNamedUsed)
+        {
+          std::remove(interimFiles_deformField.c_str());
+          std::remove(interimFiles_invDeformField.c_str());
         }
       }
     }
@@ -537,67 +538,56 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == Rescaling)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
+    typename TImageType::PixelType minimum = std::numeric_limits< typename TImageType::PixelType >::min(),
+      maximum = std::numeric_limits< typename TImageType::PixelType >::max();
+
+    if (inputImageFiles.size() > 1) // multiple input images passed
     {
-      std::cerr << "This operation cannot currently be performed with multiple images.\n";
-      return EXIT_FAILURE;
+      std::vector< typename TImageType::Pointer > inputImages;
+      for (size_t i = 0; i < inputImageFiles.size(); i++)
+      {
+        auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+        inputImages.push_back(currentImage);
+      }
+
+      using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
+      auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
+
+      auto rescaler = itk::RescaleIntensityImageFilter< NewImageType >::New();
+      rescaler->SetInput(combinedImage);
+      rescaler->SetOutputMaximum(rescaleUpper);
+      rescaler->SetOutputMinimum(rescaleLower);
+      try
+      {
+        rescaler->Update();
+      }
+      catch (const std::exception&e)
+      {
+        std::cerr << "Error caught during rescaling: " << e.what() << "\n";
+        return EXIT_FAILURE;
+      }
+
+      auto outputImages = cbica::GetExtractedImages< NewImageType, TImageType >(rescaler->GetOutput());
+
+      // at this point, we have found the global minimum and maximum
+      auto fileEnding = "_rescaled-" + std::to_string(rescaleLower) + "-" + std::to_string(rescaleUpper) + ".nii.gz";
+      for (size_t i = 0; i < outputImages.size(); i++)
+      {
+        cbica::WriteImage< TImageType >(outputImages[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + fileEnding);
+      }
     }
     else
     {
-      typename TImageType::PixelType minimum = std::numeric_limits< typename TImageType::PixelType >::min(),
-        maximum = std::numeric_limits< typename TImageType::PixelType >::max();
+      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+      auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+      statsCalculator->SetInput(inputImage);
 
-      if (inputImageFile.find(",") != std::string::npos)
-      {
-        auto outputDir = cbica::getFilenamePath(outputImageFile, false);
+      auto rescaler = itk::RescaleIntensityImageFilter< TImageType >::New();
+      rescaler->SetInput(inputImage);
+      rescaler->SetOutputMaximum(rescaleUpper);
+      rescaler->SetOutputMinimum(rescaleLower);
 
-        auto inputImageFiles = cbica::stringSplit(inputImageFile, ",");
-        std::vector< typename TImageType::Pointer > inputImages;
-        for (size_t i = 0; i < inputImageFiles.size(); i++)
-        {
-          auto currentImage = cbica::ReadImage< TImageType >(inputImageFiles[i]);
-          inputImages.push_back(currentImage);
-        }
-
-        using NewImageType = itk::Image< typename TImageType::PixelType, TImageType::ImageDimension + 1 >;
-        auto combinedImage = cbica::GetJoinedImage< TImageType, NewImageType >(inputImages);
-
-        auto rescaler = itk::RescaleIntensityImageFilter< NewImageType >::New();
-        rescaler->SetInput(combinedImage);
-        rescaler->SetOutputMaximum(rescaleUpper);
-        rescaler->SetOutputMinimum(rescaleLower);
-        try
-        {
-          rescaler->Update();
-        }
-        catch (const std::exception&e)
-        {
-          std::cerr << "Error caught during rescaling: " << e.what() << "\n";
-          return EXIT_FAILURE;
-        }
-
-        auto outputImages = cbica::GetExtractedImages< NewImageType, TImageType >(rescaler->GetOutput());
-
-        // at this point, we have found the global minimum and maximum
-        auto fileEnding = "_rescaled-" + std::to_string(rescaleLower) + "-" + std::to_string(rescaleUpper) + ".nii.gz";
-        for (size_t i = 0; i < outputImages.size(); i++)
-        {
-          cbica::WriteImage< TImageType >(outputImages[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + fileEnding);
-        }
-      }
-      else
-      {
-        auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-        auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
-        statsCalculator->SetInput(inputImage);
-
-        auto rescaler = itk::RescaleIntensityImageFilter< TImageType >::New();
-        rescaler->SetInput(inputImage);
-        rescaler->SetOutputMaximum(rescaleUpper);
-        rescaler->SetOutputMinimum(rescaleLower);
-
-        cbica::WriteImage< TImageType >(rescaler->GetOutput(), outputImageFile);
-      }
+      cbica::WriteImage< TImageType >(rescaler->GetOutput(), outputImageFile);
     }
   }
 
@@ -669,23 +659,28 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization");
   parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: 5,95");
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
-  parser.addOptionalParameter("n3", "n3BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N3 bias correction", "Optional parameters: mask or bins, spline order, filter noise level");
-  parser.addOptionalParameter("n4", "n4BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N4 bias correction", "Optional parameters: mask or bins, spline order, filter noise level");
-  parser.addOptionalParameter("nS", "nSplieOrder", cbica::Parameter::INTEGER, "N.A.", "The spline order for the bias correction", "Defaults to " + std::to_string(n3Bias_splineOrder));
-  parser.addOptionalParameter("nF", "nFilterNoise", cbica::Parameter::FLOAT, "N.A.", "The filter noise level for the bias correction", "Defaults to " + std::to_string(n3Bias_filterNoise));
-  parser.addOptionalParameter("nB", "nBiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3/N4 bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(n3Bias_otsuBins));
+  parser.addOptionalParameter("n3", "n3BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N3 bias correction",
+                              "Optional parameters: mask or bins, spline order, filter noise level, fitting levels, max iterations, full-width-at-half-maximum");
+  parser.addOptionalParameter("n4", "n4BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N4 bias correction",
+                              "Optional parameters: mask or bins, spline order, filter noise level, fitting levels, full-width-at-half-maximum");
+  parser.addOptionalParameter("nS", "nSplineOrder", cbica::Parameter::INTEGER, "N.A.", "The spline order for the bias correction", "Defaults to " + std::to_string(bias_splineOrder));
+  parser.addOptionalParameter("nF", "nFilterNoise", cbica::Parameter::FLOAT, "N.A.", "The filter noise level for the bias correction", "Defaults to " + std::to_string(bias_filterNoise));
+  parser.addOptionalParameter("nB", "nBiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3/N4 bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(bias_otsuBins));
+  parser.addOptionalParameter("nFL", "nFittingLevels", cbica::Parameter::INTEGER, "N.A.", "The number of fitting levels to use for bias correction", "Defaults to " + std::to_string(bias_fittingLevels));
+  parser.addOptionalParameter("nMI", "nMaxIterations", cbica::Parameter::INTEGER, "N.A.", "The maximum number of iterations for bias correction (only works for N3)", "Defaults to " + std::to_string(bias_maxIterations));
+  parser.addOptionalParameter("nFWHM", "nFullWidthHalfMaximum", cbica::Parameter::INTEGER, "N.A.", "Set the full-width-at-half-maximum value for bias correction", "Defaults to " + std::to_string(bias_fwhm));
   parser.addOptionalParameter("ss", "susanSmooth", cbica::Parameter::STRING, "N.A.", "Susan smoothing of an image");
   parser.addOptionalParameter("ssS", "susanSigma", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Sigma", "Defaults to " + std::to_string(ssSigma));
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
-  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable", "The kind of registration to perform", "Defaults to '" + registrationType, "Can use Mask File");
+  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable | Rigid-DOF", "The kind of registration to perform", "Defaults to " + registrationType, "Can use Mask File with '-m' and multiple moving images with '-i'", "For Rigid, the second number defines the degrees of freedom, eg: '-ref Rigid-10'");
   parser.addOptionalParameter("rFI", "regFixedImg", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration", "Needed for registration");
-  parser.addOptionalParameter("rME", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metris to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
-  parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The umber of iterations per level of multi-res", "Defaults to " + registrationIterations);
+  parser.addOptionalParameter("rME", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metrics to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
+  parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The number of iterations per level of multi-res", "Defaults to " + registrationIterations);
   parser.addOptionalParameter("rIS", "regInterSave", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the intermediate files are to be saved or not", "Defaults to " + std::to_string(registrationIntermediate));
-  parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
-  parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped");
+  parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image(s) is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
+  parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped", "Also used for rigid transformation");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
   parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed (comma-separated), the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
 
@@ -720,6 +715,10 @@ int main(int argc, char** argv)
         }
       }
     }
+    else
+    {
+      inputImageFiles.push_back(inputImageFile);
+    }
   }
   if (parser.isPresent("m"))
   {
@@ -728,6 +727,8 @@ int main(int argc, char** argv)
   if (parser.isPresent("o"))
   {
     parser.getParameterValue("o", outputImageFile);
+    outputDir = cbica::getFilenamePath(outputImageFile, false);
+    cbica::createDir(outputDir);
   }
 
   // parse all options from here
@@ -774,15 +775,27 @@ int main(int argc, char** argv)
   {
     if (parser.isPresent("nS"))
     {
-      parser.getParameterValue("nS", n3Bias_splineOrder);
+      parser.getParameterValue("nS", bias_splineOrder);
     }
     if (parser.isPresent("nF"))
     {
-      parser.getParameterValue("nF", n3Bias_filterNoise);
+      parser.getParameterValue("nF", bias_filterNoise);
     }
     if (parser.isPresent("nB"))
     {
-      parser.getParameterValue("nB", n3Bias_otsuBins);
+      parser.getParameterValue("nB", bias_otsuBins);
+    }
+    if (parser.isPresent("nFL"))
+    {
+      parser.getParameterValue("nFL", bias_fittingLevels);
+    }
+    if (parser.isPresent("nMI"))
+    {
+      parser.getParameterValue("nMI", bias_maxIterations);
+    }
+    if (parser.isPresent("nFWHM"))
+    {
+      parser.getParameterValue("nFWHM", bias_fwhm);
     }
 
     requestedAlgorithm = BiasCorrectionN3;
@@ -791,15 +804,27 @@ int main(int argc, char** argv)
   {
     if (parser.isPresent("nS"))
     {
-      parser.getParameterValue("nS", n3Bias_splineOrder);
+      parser.getParameterValue("nS", bias_splineOrder);
     }
     if (parser.isPresent("nF"))
     {
-      parser.getParameterValue("n3F", n3Bias_filterNoise);
+      parser.getParameterValue("nF", bias_filterNoise);
     }
     if (parser.isPresent("nB"))
     {
-      parser.getParameterValue("nB", n3Bias_otsuBins);
+      parser.getParameterValue("nB", bias_otsuBins);
+    }
+    if (parser.isPresent("nFL"))
+    {
+      parser.getParameterValue("nFL", bias_fittingLevels);
+    }
+    //if (parser.isPresent("nMI")) // This doesn't work for N4 (currently).
+    //{
+    //  parser.getParameterValue("nMI", bias_maxIterations);
+    //}
+    if (parser.isPresent("nFWHM"))
+    {
+      parser.getParameterValue("nFWHM", bias_fwhm);
     }
 
     requestedAlgorithm = BiasCorrectionN4;
@@ -840,8 +865,30 @@ int main(int argc, char** argv)
 
     parser.getParameterValue("reg", registrationType);
     std::transform(registrationType.begin(), registrationType.end(), registrationType.begin(), ::toupper);
-    if ((registrationType.find("RIGID") != std::string::npos) || 
-      (registrationType.find("AFFINE") != std::string::npos))
+    if (registrationType.find("RIGID") != std::string::npos)
+    {
+      registrationTypeInt = RegistrationTypeEnum::Rigid;
+      auto temp = cbica::stringSplit(registrationType, "-");
+      // check for different delimiters
+      if (temp.size() == 1)
+      {
+        temp = cbica::stringSplit(registrationType, "x");
+        if (temp.size() == 1)
+        {
+          temp = cbica::stringSplit(registrationType, ":");
+        }
+      }
+      if (temp.size() == 2)
+      {
+        registrationRigidDof = std::atoi(temp[1].c_str());
+        if ((registrationRigidDof != 12) && (registrationRigidDof != 6))
+        {
+          std::cerr << "Greedy only accepts 6 or 12 as the rigid DOF.\n";
+          return EXIT_FAILURE;
+        }
+      }
+    }
+    else if (registrationType.find("AFFINE") != std::string::npos)
     {
       registrationTypeInt = RegistrationTypeEnum::Affine;
     }
@@ -868,7 +915,7 @@ int main(int argc, char** argv)
     if (parser.isPresent("rME"))
     {
       parser.getParameterValue("rME", registrationMetrics);
-      std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
+      //std::transform(registrationMetrics.begin(), registrationMetrics.end(), registrationMetrics.begin(), ::toupper);
     }
     if (parser.isPresent("rNI"))
     {

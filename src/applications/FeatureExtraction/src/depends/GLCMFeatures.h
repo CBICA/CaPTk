@@ -100,15 +100,16 @@ public:
         autocorr = autocorr / this->m_offsets->size();
 
         //2019-05-09 - For Future Reference : correlation and autocorrelation values were not matching with IBSI, and are not being outputted to the users for now
+        // 2020-03-05: these features have been re-enalbed for the NatSci paper
 
         this->m_features["Energy"] = ener;
         this->m_features["Entropy"] = entro;
-        // this->m_features["Correlation"] = correl;
         this->m_features["Homogeneity"] = homo; // also called "inverse difference moment"
         this->m_features["Contrast"] = contrast; // also called "inertia"
         this->m_features["ClusterShade"] = clustershade;
         this->m_features["ClusterProminence"] = clusterprominance;
-        // this->m_features["AutoCorrelation"] = autocorr; // called "haralick"
+        this->m_features["Correlation"] = correl;
+        this->m_features["AutoCorrelation"] = autocorr; // called "haralick"
       }
       else if ((m_offsetSelector == "ITKDefault") || (m_offsetSelector == "Combined"))
       {
@@ -131,12 +132,12 @@ public:
 
         this->m_features["Energy"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Energy));
         this->m_features["Entropy"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Entropy));
-        // this->m_features["Correlation"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Correlation));
         this->m_features["Homogeneity"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::InverseDifferenceMoment)); // also called "difference moment"
         this->m_features["Contrast"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Inertia)); // also called "inertia"
         this->m_features["ClusterShade"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::ClusterShade));
         this->m_features["ClusterProminence"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::ClusterProminence));
-        // this->m_features["AutoCorrelation"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::HaralickCorrelation)); // called "haralick"
+        this->m_features["Correlation"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::Correlation));
+        this->m_features["AutoCorrelation"] = static_cast<double>(featureCalc->GetFeature(Hist2FeaturesType::HaralickCorrelation)); // called "haralick"
       }
       else
       {
@@ -162,12 +163,12 @@ public:
           auto tempStr = "_Offset_" + std::to_string(i);
           this->m_features[std::string("Energy") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Energy);
           this->m_features[std::string("Entropy") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Entropy);
-          // this->m_features[std::string("Correlation") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Correlation);
           this->m_features[std::string("Homogeneity") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::InverseDifferenceMoment); // also called "difference moment"
           this->m_features[std::string("Contrast") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Inertia); // also called "inertia"
           this->m_features[std::string("ClusterShade") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::ClusterShade);
           this->m_features[std::string("ClusterProminence") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::ClusterProminence);
-          // this->m_features[std::string("AutoCorrelation") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::HaralickCorrelation); // called "haralick"
+          this->m_features[std::string("Correlation") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::Correlation);
+          this->m_features[std::string("AutoCorrelation") + tempStr] = featureCalc->GetFeature(Hist2FeaturesType::HaralickCorrelation); // called "haralick"
         }
       }
 
