@@ -958,40 +958,33 @@ jobs:
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
     
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    # # Configure and build superbuild
-    # - bash: |
-    #     cd bin
-    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-    #     make -j2
-    #   displayName: 'Configure and compile Superbuild'
+    # Configure and build superbuild
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        make -j2
+      displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        rm -rf bin
+        # rm -rf bin
 
-        mkdir bin
-        cd bin
-        cp -r ../../../../superbuild/ ./
-        cd bin
-        ls
-        ls ITK-build
-        pwd
-        
+        # mkdir bin
         # cd bin
-        # cp -r ./ ../../../../superbuild
+        # cp -r ../../../../superbuild/ ./
+        # cd bin
+        # ls
+        # ls ITK-build
+        # pwd
+        
+        cd bin
+        cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
-
-      # Check qt
-    - bash: |
-        cd bin
-        ls -a
-        ls ./qt/
-      displayName: 'Check qt'
 
     - bash: |
         git pull origin master
