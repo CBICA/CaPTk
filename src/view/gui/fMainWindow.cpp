@@ -262,11 +262,11 @@ fMainWindow::fMainWindow()
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
   this->m_toolTabdock->setWindowTitle("Double click to undock");
 
-   Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
+//   Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
   connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
   connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
 
-  ! automatic undock on low resolution
+//  ! automatic undock on low resolution
   //! to be tested thoroughly
   QScreen *scr = QGuiApplication::primaryScreen();
   //!if primary screen resolution is lower than 1200x1024(any of x,y values)
