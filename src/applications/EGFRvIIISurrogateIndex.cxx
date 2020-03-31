@@ -58,8 +58,7 @@ int main(int argc, char **argv)
   EGFRStatusPredictor egfrEstimator;
   auto extension = cbica::getFilenameExtension(inputFile);
   std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-  int imageType = CAPTK::ImageExtension::NIfTI; // default 
-  auto EGFRStatusParams = egfrEstimator.PredictEGFRStatus< ImageType, ImageTypePerfusion >(perfusionImage, nearIndices, farIndices, imageType);
+  auto EGFRStatusParams = egfrEstimator.PredictEGFRStatus< ImageType, ImageTypePerfusion >(perfusionImage, nearIndices, farIndices);
 
   std::cout << "Printing results...\n\n";
   std::cout << "PHI Value = " << EGFRStatusParams[0] << "\n";

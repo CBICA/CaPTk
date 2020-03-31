@@ -189,6 +189,8 @@ double EGFRStatusPredictor::CalculateBhattacharyaCoefficient(const VectorVectorD
       meanDifference[0][i] = nMeanVector[i] - fMeanVector[i];
 
     //-------------vnl matrices------------------------
+    //this segment of code is applying cholesky factorization.
+    //EGFR_PCS is the number of principal components that code uses to calculate covariance matrices and bhattacharyya distance afterwards
     vnl_matrix<double> covarianceMatrix;
     covarianceMatrix.set_size(EGFR_PCS, EGFR_PCS);
     for (int i = 0; i < EGFR_PCS; i++)

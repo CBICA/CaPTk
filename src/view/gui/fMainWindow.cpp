@@ -6456,7 +6456,6 @@ void fMainWindow::ApplicationEGFR()
   }
   updateProgress(5);
 
-
   typedef ImageTypeFloat4D PerfusionImageType;
   ImageTypeFloat3D::Pointer T1CEImagePointer;
   ImageTypeFloat3D::Pointer T2FlairImagePointer;
@@ -6491,7 +6490,7 @@ void fMainWindow::ApplicationEGFR()
   }
   VectorDouble EGFRStatusParams;
   EGFRStatusPredictor EGFRPredictor;
-  EGFRStatusParams = EGFRPredictor.PredictEGFRStatus<ImageTypeFloat3D, PerfusionImageType>(perfusionImage, nearIndices, farIndices, CAPTK::ImageExtension::NIfTI);
+  EGFRStatusParams = EGFRPredictor.PredictEGFRStatus<ImageTypeFloat3D, PerfusionImageType>(perfusionImage, nearIndices, farIndices);
   QString msg;
   msg = "PHI = " + QString::number(EGFRStatusParams[0]) + "\n\n----------\n\n(Near:Far) Peak Height ratio = " +
     QString::number(EGFRStatusParams[1] / EGFRStatusParams[2]) + "\n\nNear ROI voxels used = " +
