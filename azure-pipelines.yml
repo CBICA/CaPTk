@@ -979,15 +979,14 @@ jobs:
 
         # mkdir bin
         # cd bin
-        # cp -r ../../../../superbuild/ ./
+        # cp -r $(Build.SourcesDirectory)/../superbuild/ ./
         # cd bin
         # ls
         # ls ITK-build
         # pwd
         
-        rm -rf ../../../../superbuild
-        cd bin
-        cp -r ./ ../../../../superbuild
+        rm -rf $(Build.SourcesDirectory)/../superbuild
+        cp -r ./ $(Build.SourcesDirectory)/../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
