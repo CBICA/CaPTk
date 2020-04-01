@@ -985,7 +985,7 @@ jobs:
         # ls ITK-build
         # pwd
         
-        # rm -rf ../../../../superbuild
+        rm -rf ../../../../superbuild
         # cd bin
         # cp -r ./ ../../../../superbuild
         
@@ -1031,7 +1031,7 @@ jobs:
 
     # Build a package
     - bash: |
-        export PATH=(Build.SourcesDirectory)/bin/qt/5.12.1/bin:(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
+        export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
         rm -rf regression
