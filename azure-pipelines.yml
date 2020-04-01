@@ -974,26 +974,33 @@ jobs:
 
     #   displayName: 'Configure and compile Superbuild'
 
-    - bash: |
-        rm -rf bin
+    # - bash: |
+    #     rm -rf bin
 
-        mkdir bin
+    #     mkdir bin
+    #     cd bin
+    #     cp -r $(Build.SourcesDirectory)/../superbuild ./
+
+    #     ls
+    #     ls ITK-build
+    #     pwd
+        
+    #     # cd bin
+    #     # rm -rf ../../../../superbuild
+        
+    #     # rm -rf $(Build.SourcesDirectory)/../superbuild
+    #     # cp -r ./ $(Build.SourcesDirectory)/../superbuild
+        
+      # displayName: 'Move superbuild and qt and compiled apps'
+
+    - bash: |
+        
+        ls $(Build.SourcesDirectory)/../superbuild
+        echo "test 1"
+        ls ../../../../superbuild
         cd bin
-        cp -r $(Build.SourcesDirectory)/../superbuild ./
-
-        ls
-        ls ITK-build
-        pwd
-        
-        # cd bin
-        # rm -rf ../../../../superbuild
-        
-        # rm -rf $(Build.SourcesDirectory)/../superbuild
-        # cp -r ./ $(Build.SourcesDirectory)/../superbuild
-        
-      displayName: 'Move superbuild and qt and compiled apps'
-
-    - bash: |
+        echo "test 2"
+        ls ../../../../superbuild
         git pull origin master
         git log -1
         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
@@ -1149,8 +1156,7 @@ jobs:
 
         mkdir bin
         cd bin
-        cp -r ../../../../superbuild ./
-        cd bin
+        cp -r ../../../../superbuild/ ./
         ls
         ls ITK-build
         pwd
