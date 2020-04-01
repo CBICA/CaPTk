@@ -975,21 +975,21 @@ jobs:
       displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        # rm -rf bin
+        rm -rf bin
 
-        # mkdir bin
-        # cd bin
-        # cp -r $(Build.SourcesDirectory)/../superbuild/ ./
-        # cd bin
-        # ls
-        # ls ITK-build
-        # pwd
-        
+        mkdir bin
         cd bin
-        rm -rf ../../../../superbuild
+        cp -r $(Build.SourcesDirectory)/../superbuild/ ./
+        cd bin
+        ls
+        ls ITK-build
+        pwd
         
-        rm -rf $(Build.SourcesDirectory)/../superbuild
-        cp -r ./ $(Build.SourcesDirectory)/../superbuild
+        # cd bin
+        # rm -rf ../../../../superbuild
+        
+        # rm -rf $(Build.SourcesDirectory)/../superbuild
+        # cp -r ./ $(Build.SourcesDirectory)/../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
