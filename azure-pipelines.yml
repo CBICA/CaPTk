@@ -974,33 +974,27 @@ jobs:
 
     #   displayName: 'Configure and compile Superbuild'
 
-    # - bash: |
-    #     rm -rf bin
+    - bash: |
+        rm -rf bin
 
-    #     mkdir bin
-    #     cd bin
-    #     cp -r $(Build.SourcesDirectory)/../superbuild ./
+        mkdir bin
+        cd bin
+        cp -r $(Build.SourcesDirectory)/../superbuild/* ./
 
-    #     ls
-    #     ls ITK-build
-    #     pwd
+        ls
+        ls ITK-build
         
-    #     # cd bin
-    #     # rm -rf ../../../../superbuild
+        # cd bin
+        # rm -rf ../../../../superbuild
         
-    #     # rm -rf $(Build.SourcesDirectory)/../superbuild
-    #     # cp -r ./ $(Build.SourcesDirectory)/../superbuild
+        # rm -rf $(Build.SourcesDirectory)/../superbuild
+        # cp -r ./ $(Build.SourcesDirectory)/../superbuild
         
-      # displayName: 'Move superbuild and qt and compiled apps'
+      displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
-        
-        ls $(Build.SourcesDirectory)/../superbuild
-        echo "test 1"
-        ls ../../../../superbuild
-        cd bin
-        echo "test 2"
-        ls ../../../../superbuild
+        # ls $(Build.SourcesDirectory)/../superbuild
+     
         git pull origin master
         git log -1
         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
