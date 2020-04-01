@@ -985,6 +985,9 @@ jobs:
         # ls ITK-build
         # pwd
         
+        cd bin
+        rm -rf ../../../../superbuild
+        
         rm -rf $(Build.SourcesDirectory)/../superbuild
         cp -r ./ $(Build.SourcesDirectory)/../superbuild
         
