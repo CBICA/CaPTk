@@ -986,8 +986,8 @@ jobs:
         # pwd
         
         rm -rf ../../../../superbuild
-        # cd bin
-        # cp -r ./ ../../../../superbuild
+        cd bin
+        cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
