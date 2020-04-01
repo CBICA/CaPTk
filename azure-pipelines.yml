@@ -970,6 +970,8 @@ jobs:
         cd bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
+        rm -rf install
+
       displayName: 'Configure and compile Superbuild'
 
     - bash: |
@@ -983,9 +985,9 @@ jobs:
         # ls ITK-build
         # pwd
         
-        rm -rf ../../../../superbuild
-        cd bin
-        cp -r ./ ../../../../superbuild
+        # rm -rf ../../../../superbuild
+        # cd bin
+        # cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
@@ -1018,14 +1020,31 @@ jobs:
         make install/strip
       displayName: 'Configure and compile CaPTk'
 
+    - bash: |
+        rm -rf bin/qt.zip
+        rm -rf bin/5.12.1
+        rm -rf regression
+        rm -rf binaries
+        rm -rf bin_linux_20200212.tar.gz
+        df -k .
+      displayName: 'Disk space check'
+
     # Build a package
     - bash: |
-        export PATH=`pwd`/bin/qt/5.12.1/bin:`pwd`/bin/qt/5.12.1/libexec:$PATH
+        export PATH=(Build.SourcesDirectory)/bin/qt/5.12.1/bin:(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
-        export PKG_FAST_MODE=1
+        rm -rf regression
+        rm -rf binaries
+
+        # export PKG_FAST_MODE=1
         # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
+
+        rm -rf src
+        rm -rf docs*
+
+        rm -rf scripts
 
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
@@ -1057,20 +1076,6 @@ jobs:
     #     tar cvfz bin_linux_20200212.tar.gz bin_linux
     #     rm -rf bin_linux
     #   displayName: 'Zipping bin'
-
-    - bash: |
-        
-        rm -rf src
-        rm -rf docs*
-        rm -rf data
-        rm -rf binaries
-        rm -rf scripts
-        rm -rf bin_windows_20200212.tar.gz
-        rm -rf install_manifest.txt
-        rm -rf CMakeLists.txt
-        rm -rf bin
-
-      displayName: 'Freeing Space'
 
     - task: PublishBuildArtifacts@1
       inputs:
