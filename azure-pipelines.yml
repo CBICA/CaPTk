@@ -979,8 +979,8 @@ jobs:
 
         mkdir bin
         cd bin
-        cp -r $(Build.SourcesDirectory)/../superbuild/ ./
-        cd bin
+        cp -r $(Build.SourcesDirectory)/../superbuild ./
+
         ls
         ls ITK-build
         pwd
@@ -1149,7 +1149,7 @@ jobs:
 
         mkdir bin
         cd bin
-        cp -r ../../../../superbuild/ ./
+        cp -r ../../../../superbuild ./
         cd bin
         ls
         ls ITK-build
