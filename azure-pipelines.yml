@@ -965,27 +965,27 @@ jobs:
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    # Configure and build superbuild
+    # # Configure and build superbuild
+    # - bash: |
+    #     cd bin
+    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+    #     make -j2
+    #     rm -rf install
+
+    #   displayName: 'Configure and compile Superbuild'
+
     - bash: |
+        rm -rf bin
+
+        mkdir bin
         cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-        make -j2
-        rm -rf install
+        cp -r $(Build.SourcesDirectory)/../superbuild/* ./
 
-      displayName: 'Configure and compile Superbuild'
-
-    - bash: |
-        # rm -rf bin
-
-        # mkdir bin
-        # cd bin
-        # cp -r $(Build.SourcesDirectory)/../superbuild/* ./
-
-        # ls
-        # ls ITK-build
+        ls
+        ls ITK-build
                 
-        rm -rf $(Build.SourcesDirectory)/../superbuild
-        cp -r ./ $(Build.SourcesDirectory)/../superbuild
+        # rm -rf $(Build.SourcesDirectory)/../superbuild
+        # cp -r ./ $(Build.SourcesDirectory)/../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
@@ -1036,6 +1036,10 @@ jobs:
         # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
 
+        ls
+        echo "Test 1"
+        ls bin
+        echo "TEST 2"
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
       displayName: 'Set up environment variables for packager and build a package'

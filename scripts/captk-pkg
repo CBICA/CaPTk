@@ -342,6 +342,8 @@ rm makeself-2.4.0.run
 
 # Step 2: Create a package directory for makeself to package
 mkdir pkg
+echo "DONE STEP 2"
+ls
 # We package the AppImage, the license, and a script to display the agreement and install the AppImage
 mv CaPTk.bin ./pkg/
 # Move cwl in
