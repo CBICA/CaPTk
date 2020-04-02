@@ -1016,10 +1016,6 @@ jobs:
         git submodule update --init --recursive
 
         rm -rf bin
-
-        # ls /home/cbica-devs/Workspace/captk/superbuild/Release
-
-        # ls /home/cbica-devs/Installs/Qt/5.12.1/gcc_64/lib/cmake/Qt5
       displayName: 'Git Submodule Init and Update'
 
     # Moving LFS Files
@@ -1027,37 +1023,38 @@ jobs:
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
     
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    # # Configure and build superbuild
-    # - bash: |
-    #     cd bin
-    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-    #     make -j2
-    #     rm -rf install
+    # Configure and build superbuild
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        make -j2
+        rm -rf install
 
-    #   displayName: 'Configure and compile Superbuild'
+      displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        ls $(Build.SourcesDirectory)/../superbuild
-        echo "Test 1"
-        rm -rf bin
+        # ls $(Build.SourcesDirectory)/../superbuild
+        # echo "Test 1"
+        # rm -rf bin
 
-        mkdir bin
-        cd bin
-        cp -r $(Build.SourcesDirectory)/../superbuild/* ./
-
-        ls
-        ls ITK-build
-        
+        # mkdir bin
         # cd bin
-        # rm -rf ../../../../superbuild
+        # cp -r $(Build.SourcesDirectory)/../superbuild/* ./
+
+        # ls
+        # ls ITK-build
         
-        # rm -rf $(Build.SourcesDirectory)/../superbuild
-        # cp -r ./ $(Build.SourcesDirectory)/../superbuild
+        cd bin
+        
+        rm -rf $(Build.SourcesDirectory)/../superbuild
+        cp -r ./ $(Build.SourcesDirectory)/../superbuild
+
+        ls $(Build.SourcesDirectory)/../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
@@ -1093,9 +1090,7 @@ jobs:
     - bash: |
         rm -rf bin/qt.zip
         rm -rf bin/5.12.1
-        rm -rf regression
-        rm -rf binaries
-        rm -rf bin_linux_20200212.tar.gz
+   
         df -k .
       displayName: 'Disk space check'
 
@@ -1104,17 +1099,9 @@ jobs:
         export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
-        rm -rf regression
-        rm -rf binaries
-
-        # export PKG_FAST_MODE=1
+        export PKG_FAST_MODE=1
         # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
-
-        rm -rf src
-        rm -rf docs*
-
-        rm -rf scripts
 
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
