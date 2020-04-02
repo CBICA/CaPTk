@@ -8846,16 +8846,19 @@ void fMainWindow::ChangeMaskOpacity() // multiLabel uncomment this function
 
 void fMainWindow::ChangeMaskOpacity(const float newOpacity)
 {
-  for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
-  {
-    for (size_t j = 0; j < 3; j++)
-    {
-        this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = newOpacity;
-        this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(newOpacity);
-        this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
-    }
-  }
-  UpdateRenderWindows(); // reflect the new value
+	if (!m_ComparisonMode)
+	{
+		for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
+		{
+			for (size_t j = 0; j < 3; j++)
+			{
+				this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = newOpacity;
+				this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(newOpacity);
+				this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
+			}
+		}
+		UpdateRenderWindows(); // reflect the new value
+	}
 }
 
 void fMainWindow::ChangeDrawingLabel(int drawingLabel) // multiLabel uncomment this function
