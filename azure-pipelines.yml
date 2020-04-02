@@ -1044,33 +1044,6 @@ jobs:
 
       displayName: 'Set up environment variables for packager and build a package'
 
-    # - bash: |
-    #     rm -rf src
-    #     rm -rf docs*
-    #     rm -rf data
-    #     rm -rf binaries
-    #     rm -rf scripts
-    #     rm -rf CMakeLists.txt
-
-    #     cd bin
-
-    #     tar cvfz qt.tar.gz qt
-    #     tar cvfz externalApps.tar.gz externalApps
-
-    #     rm -rf qt
-    #     rm -rf externalApps
-    #     rm -rf _CPack*
-    #     rm -rf CMakeCache.txt
-
-    #     # cmake -UPROJECT_VERSION # delete the project version definition
-        
-    #     cd ../
-
-    #     mv bin bin_linux
-    #     tar cvfz bin_linux_20200212.tar.gz bin_linux
-    #     rm -rf bin_linux
-    #   displayName: 'Zipping bin'
-
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -1202,33 +1175,6 @@ jobs:
 #         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
 #       displayName: 'Set up environment variables for packager and build a package'
-
-#     # - bash: |
-#     #     rm -rf src
-#     #     rm -rf docs*
-#     #     rm -rf data
-#     #     rm -rf binaries
-#     #     rm -rf scripts
-#     #     rm -rf CMakeLists.txt
-
-#     #     cd bin
-
-#     #     tar cvfz qt.tar.gz qt
-#     #     tar cvfz externalApps.tar.gz externalApps
-
-#     #     rm -rf qt
-#     #     rm -rf externalApps
-#     #     rm -rf _CPack*
-#     #     rm -rf CMakeCache.txt
-
-#     #     # cmake -UPROJECT_VERSION # delete the project version definition
-        
-#     #     cd ../
-
-#     #     mv bin bin_linux
-#     #     tar cvfz bin_linux_20200212.tar.gz bin_linux
-#     #     rm -rf bin_linux
-#     #   displayName: 'Zipping bin'
 
 #     # - task: PublishBuildArtifacts@1
 #     #   inputs:
