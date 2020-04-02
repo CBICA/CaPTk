@@ -72,11 +72,11 @@ int main(int argc, char **argv)
       auto check_wrap = allRows[0][k];
       std::transform(check_wrap.begin(), check_wrap.end(), check_wrap.begin(), ::tolower);
 
-      if (check_wrap == "patient_id")
+      if (check_wrap == "patient_ids")
         patient_ids.push_back(allRows[j][k]);
       else if (check_wrap == "images")
         image_paths.push_back(allRows[j][k]);
-      else if (check_wrap == "atlas_label")
+      else if (check_wrap == "atlas_labels")
         atlas_labels.push_back(allRows[j][k]);
     }
   }
@@ -88,8 +88,8 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
-  for (int j = 0; j < patient_ids.size(); j++)
-    std::cout << patient_ids[j] << image_paths[j] << atlas_labels[j] << std::endl;
+  //for (int j = 0; j < patient_ids.size(); j++)
+  //  std::cout << patient_ids[j] << image_paths[j] << atlas_labels[j] << std::endl;
 
   //convert atlas labels from string to numbers
   std::vector<int> atlas_labels_numbers;
