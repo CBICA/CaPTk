@@ -2487,7 +2487,11 @@ void FeatureExtraction< TImage >::Update()
                   auto tempT1 = std::chrono::high_resolution_clock::now();
 
                   std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" +
-                    std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+                    std::to_string(m_Bins_range[0]);
+                  if (!m_Radius_range.empty())
+                  {
+                    currentFeatureFamily += "_Radius-" + std::to_string(m_Radius_range[0]);
+                  }
 
                   //auto local_map = std::get<1>(temp->second);
                   std::get<2>(temp->second) = m_modality[i];
@@ -2524,8 +2528,13 @@ void FeatureExtraction< TImage >::Update()
                     std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
 
-                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" +
-                      std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]);
+
+                    if (!m_Bins_range.empty() && !m_Radius_range.empty())
+                    {
+                      currentFeatureFamily += "_Bins-" +
+                        std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+                    }
 
                     if (TImage::ImageDimension == 3)
                     {
@@ -2581,8 +2590,13 @@ void FeatureExtraction< TImage >::Update()
                     std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
                     
-                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" +
-                      std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]);
+
+                    if (!m_Bins_range.empty() && !m_Radius_range.empty())
+                    {
+                      currentFeatureFamily += "_Bins-" +
+                        std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+                    }
 
                     if (TImage::ImageDimension == 3)
                     {
@@ -3175,9 +3189,18 @@ void FeatureExtraction< TImage >::Update()
                     m_Radius = m_Radius_range[r];
                     auto m_Radius_string = std::to_string(m_Radius);
 
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Radius-" 
+                      + std::to_string(m_Radius_range[r]);
+
+                    if (!m_Bins_range.empty())
+                    {
+                      currentFeatureFamily += "_Bins-" +
+                        std::to_string(m_Bins_range[0]);
+                    }
+
                     CalculateLBP(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
 
-                    WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Bin-" + std::to_string(m_Bins_range[0]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
+                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                       "Neighborhood=" + std::to_string(m_neighborhood) + ";Radius=" + m_Radius_string + ";Style=" + std::to_string(m_LBPStyle), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
                   } // end radius-loop
 
