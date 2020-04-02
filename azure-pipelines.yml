@@ -1023,38 +1023,37 @@ jobs:
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
     
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    # Configure and build superbuild
+    # # Configure and build superbuild
+    # - bash: |
+    #     cd bin
+    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+    #     make -j2
+    #     rm -rf install
+
+    #   displayName: 'Configure and compile Superbuild'
+
     - bash: |
-        cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-        make -j2
-        rm -rf install
-
-      displayName: 'Configure and compile Superbuild'
-
-    - bash: |
-        # ls $(Build.SourcesDirectory)/../superbuild
-        # echo "Test 1"
-        # rm -rf bin
-
-        # mkdir bin
-        # cd bin
-        # cp -r $(Build.SourcesDirectory)/../superbuild/* ./
-
-        # ls
-        # ls ITK-build
-        
-        cd bin
-        
-        rm -rf $(Build.SourcesDirectory)/../superbuild
-        cp -r ./ $(Build.SourcesDirectory)/../superbuild
-
         ls $(Build.SourcesDirectory)/../superbuild
+        rm -rf bin
+
+        mkdir bin
+        cd bin
+        cp -r $(Build.SourcesDirectory)/../superbuild/* ./
+
+        ls
+        ls ITK-build
+        
+        # cd bin
+        
+        # rm -rf $(Build.SourcesDirectory)/../superbuild
+        # cp -r ./ $(Build.SourcesDirectory)/../superbuild
+
+        # ls $(Build.SourcesDirectory)/../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
