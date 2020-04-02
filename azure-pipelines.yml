@@ -965,14 +965,14 @@ jobs:
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    # # Configure and build superbuild
-    # - bash: |
-    #     cd bin
-    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-    #     make -j2
-    #     rm -rf install
+    # Configure and build superbuild
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        make -j2
+        rm -rf install
 
-    #   displayName: 'Configure and compile Superbuild'
+      displayName: 'Configure and compile Superbuild'
 
     - bash: |
         # rm -rf bin
