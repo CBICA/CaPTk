@@ -1000,6 +1000,102 @@ jobs:
         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
       displayName: 'Testing git pull and version'
 
+#     # Configure and build CaPTk
+#     - bash: |
+#         cd bin
+#         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+#         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
+#         make -j2
+#       displayName: 'Configure and compile CaPTk with Testing enabled'
+
+    # - script: |
+    #    cd bin
+    #    make test
+    #    rm -rf testing
+    #   displayName: 'Performing the Tests'
+
+    # Configure and build CaPTk
+    - bash: |
+        cd bin
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=""./ITK-build" -DDCMTK_DIR=""./DCMTK-build" -DBUILD_TESTING=OFF ..
+        make -j2
+        make install/strip
+      displayName: 'Configure and compile CaPTk'
+
+    - bash: |
+        rm -rf bin/qt.zip
+        rm -rf bin/5.12.1
+   
+        df -k .
+      displayName: 'Disk space check'
+
+    # Build a package
+    - bash: |
+        export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+
+        export PKG_FAST_MODE=1
+        # export PKG_COPY_QT_LIBS=1
+        ./scripts/captk-pkg
+
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+
+      displayName: 'Set up environment variables for packager and build a package'
+
+    # - bash: |
+    #     rm -rf src
+    #     rm -rf docs*
+    #     rm -rf data
+    #     rm -rf binaries
+    #     rm -rf scripts
+    #     rm -rf CMakeLists.txt
+
+    #     cd bin
+
+    #     tar cvfz qt.tar.gz qt
+    #     tar cvfz externalApps.tar.gz externalApps
+
+    #     rm -rf qt
+    #     rm -rf externalApps
+    #     rm -rf _CPack*
+    #     rm -rf CMakeCache.txt
+
+    #     # cmake -UPROJECT_VERSION # delete the project version definition
+        
+    #     cd ../
+
+    #     mv bin bin_linux
+    #     tar cvfz bin_linux_20200212.tar.gz bin_linux
+    #     rm -rf bin_linux
+    #   displayName: 'Zipping bin'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
+        continueOnError: true
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
+        downloadPath: '$(System.ArtifactsDirectory)'
+        continueOnError: true
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC 
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+
 - job: 'Linux_SelfHost2'
   displayName: "Self-hosted agent on Linux 2"
   timeoutInMinutes: 0
@@ -1133,31 +1229,31 @@ jobs:
     #     rm -rf bin_linux
     #   displayName: 'Zipping bin'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
-        continueOnError: true
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
+    #     continueOnError: true
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
-        downloadPath: '$(System.ArtifactsDirectory)'
-        continueOnError: true
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
+    #     continueOnError: true
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC 
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC 
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 - job: 'CBICA_OSX_SelfHost'
   displayName: "Self-hosted agent on cbica-osx"
