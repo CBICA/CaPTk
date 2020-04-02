@@ -231,7 +231,7 @@ RUN_DEPLOYQT () {
   chmod +x appimagetool-x86_64.AppImage
 
   # Build the AppImage
-  ./appimagetool-x86_64.AppImage ./appdir
+  ./appimagetool-x86_64.AppImage -v ./appdir
 
   # Move the appimage up to the root
   mv ./CaPTk*.AppImage ../../CaPTk.bin
