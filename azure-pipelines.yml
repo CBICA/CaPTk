@@ -1102,25 +1102,25 @@ jobs:
 
     #   displayName: 'Configure and compile Superbuild'
 
-    # - bash: |
-    #     ls $(Build.SourcesDirectory)/../superbuild
-    #     rm -rf bin
+    - bash: |
+        ls $(Build.SourcesDirectory)/../superbuild
+        rm -rf bin
 
-    #     mkdir bin
-    #     cd bin
-    #     cp -r $(Build.SourcesDirectory)/../superbuild/* ./
+        mkdir bin
+        cd bin
+        cp -r $(Build.SourcesDirectory)/../superbuild/* ./
 
-    #     ls
-    #     ls ITK-build
+        ls
+        ls ITK-build
         
-    #     # cd bin
+        # cd bin
         
-    #     # rm -rf $(Build.SourcesDirectory)/../superbuild
-    #     # cp -r ./ $(Build.SourcesDirectory)/../superbuild
+        # rm -rf $(Build.SourcesDirectory)/../superbuild
+        # cp -r ./ $(Build.SourcesDirectory)/../superbuild
 
-    #     # ls $(Build.SourcesDirectory)/../superbuild
+        # ls $(Build.SourcesDirectory)/../superbuild
         
-    #   displayName: 'Move superbuild and qt and compiled apps'
+      displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
         git pull origin master
@@ -1152,8 +1152,9 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../superbuild/ITK-build:$(Build.SourcesDirectory)/../superbuild/DCMTK-build:$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR="$(Build.SourcesDirectory)/../superbuild/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../superbuild/DCMTK-build" -DBUILD_TESTING=OFF ..
+        export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
@@ -1167,8 +1168,8 @@ jobs:
 
     # Build a package
     - bash: |
-        export PATH=$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/bin:$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../superbuild/ITK-build:$(Build.SourcesDirectory)/../superbuild/DCMTK-build:$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
         export PKG_FAST_MODE=1
         # export PKG_COPY_QT_LIBS=1
