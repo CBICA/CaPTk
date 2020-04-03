@@ -167,7 +167,7 @@ RUN_FIXES () {
   cd ../libexec
   dos2unix ConfettiCore.py
   chmod +x ConfettiCore.py
-  chmod +x libra
+  # chmod +x libra
 
   # Go back up to install root, we're done with our fixes.
   cd ${INSTALL_DIR}
