@@ -366,7 +366,6 @@ jobs:
         rm -rf binaries_*.zip
 
         rm -rf install
-        rm -rf externalApps/libra
       displayName: 'Configure and compile Superbuild'
       # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
@@ -412,6 +411,9 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
+        
+        rm -rf externalApps
+
       displayName: 'Configure and compile CaPTk'
 
     # Check libra
