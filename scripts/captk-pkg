@@ -231,7 +231,7 @@ RUN_DEPLOYQT () {
   chmod +x appimagetool-x86_64.AppImage
 
   # Build the AppImage
-  ./appimagetool-x86_64.AppImage ./appdir
+  ./appimagetool-x86_64.AppImage -v ./appdir
 
   # Move the appimage up to the root
   mv ./CaPTk*.AppImage ../../CaPTk.bin
@@ -321,59 +321,59 @@ cp -r ../docs install/appdir/usr/
 # We need to fix the project first
 RUN_FIXES
 
-# if toolversion ldd '>=' 2.24; then
-#   echo "Too high a version of LDD detected; AppImage will potentially be unsupported, skipping packaging."
-# else
+if toolversion ldd '>=' 2.24; then
+  echo "Too high a version of LDD detected; AppImage will potentially be unsupported, skipping packaging."
+else
   # Install and deploy
   RUN_DEPLOYQT
-# fi
 
-echo "[:] Building Installer..."
+  echo "[:] Building Installer..."
 
-# Now that we have a custom AppImage, we need to package around it an installer with makeself.
-# You can read more about it but it basically creates a temporary filesystem/disk that you can read and move files from, kind of like an AppImage but it creates 
-# a zipfile attached to a shell script as output.
+  # Now that we have a custom AppImage, we need to package around it an installer with makeself.
+  # You can read more about it but it basically creates a temporary filesystem/disk that you can read and move files from, kind of like an AppImage but it creates 
+  # a zipfile attached to a shell script as output.
 
-# Step 1: Get makeself, and extract it
-wget -nc https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
-chmod +x ./makeself-2.4.0.run
-./makeself-2.4.0.run
-rm makeself-2.4.0.run
+  # Step 1: Get makeself, and extract it
+  wget -nc https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
+  chmod +x ./makeself-2.4.0.run
+  ./makeself-2.4.0.run
+  rm makeself-2.4.0.run
 
-# Step 2: Create a package directory for makeself to package
-mkdir pkg
-echo "DONE STEP 2"
-ls
-# We package the AppImage, the license, and a script to display the agreement and install the AppImage
-mv CaPTk.bin ./pkg/
-# Move cwl in
-cp ./data/cwlFiles/*.cwl ./pkg/
-# Move license in
-cp ./LICENSE ./pkg/
-# Move installer in
-cp ./scripts/linux-makeself ./pkg/
-chmod +x ./pkg/linux-makeself
+  # Step 2: Create a package directory for makeself to package
+  mkdir pkg
+  echo "DONE STEP 2"
+  ls
+  # We package the AppImage, the license, and a script to display the agreement and install the AppImage
+  mv CaPTk.bin ./pkg/
+  # Move cwl in
+  cp ./data/cwlFiles/*.cwl ./pkg/
+  # Move license in
+  cp ./LICENSE ./pkg/
+  # Move installer in
+  cp ./scripts/linux-makeself ./pkg/
+  chmod +x ./pkg/linux-makeself
 
-# Create version file
-# This should always create a file because the installer script needs the version number and won't have access to the cmake
-# Save version as variable
+  # Create version file
+  # This should always create a file because the installer script needs the version number and won't have access to the cmake
+  # Save version as variable
 
-# picking up the version from the CMakeCache, because what is where the real version gets populated
-str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
-ver=${str#*=}
-echo "Creating installer for CaPTk version ${ver}"
+  # picking up the version from the CMakeCache, because what is where the real version gets populated
+  str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
+  ver=${str#*=}
+  echo "Creating installer for CaPTk version ${ver}"
 
-# Should not be an issue to write to this file considering that pkg is created and destroyed in this script
-echo ${ver} >> ./pkg/version
+  # Should not be an issue to write to this file considering that pkg is created and destroyed in this script
+  echo ${ver} >> ./pkg/version
 
-# Step 3: Wrap it all upp
+  # Step 3: Wrap it all upp
 
-# Create the installer
-./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./linux-makeself
+  # Create the installer
+  ./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./linux-makeself
 
-# Cleanup
-rm -rf ./pkg
-rm -rf ./makeself-2.4.0*
+  # Cleanup
+  rm -rf ./pkg
+  rm -rf ./makeself-2.4.0*
 
-# Done
-echo "[:] Done. Created installer"
+  # Done
+  echo "[:] Done. Created installer"
+fi
