@@ -1015,7 +1015,7 @@ jobs:
     - bash: |
         cd bin
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=""./ITK-build" -DDCMTK_DIR=""./DCMTK-build" -DBUILD_TESTING=OFF ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR="./ITK-build" -DDCMTK_DIR="./DCMTK-build" -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
@@ -1082,13 +1082,6 @@ jobs:
         rm -rf bin
         ls
       displayName: 'Git Submodule Init and Update'
-      
-    - bash: |
-        rm -rf bin/qt.zip
-        rm -rf bin/5.12.1
-   
-        df -k .
-      displayName: 'Disk space check'
 
     # Moving LFS Files
     - bash: |
@@ -1134,6 +1127,13 @@ jobs:
         git log -1
         cat CMakeLists.txt | grep -i "PROJECT_VERSION"
       displayName: 'Testing git pull and version'
+          
+    - bash: |
+        rm -rf bin/qt.zip
+        rm -rf bin/5.12.1
+   
+        df -k .
+      displayName: 'Disk space check'
 
     # # Configure and build CaPTk
     # - bash: |
@@ -1153,7 +1153,7 @@ jobs:
     - bash: |
         cd bin
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../superbuild/ITK-build:$(Build.SourcesDirectory)/../superbuild/DCMTK-build:$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=""./ITK-build" -DDCMTK_DIR=""./DCMTK-build" -DBUILD_TESTING=OFF ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR="$(Build.SourcesDirectory)/../superbuild/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../superbuild/DCMTK-build" -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
