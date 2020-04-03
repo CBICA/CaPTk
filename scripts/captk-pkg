@@ -231,7 +231,7 @@ RUN_DEPLOYQT () {
   chmod +x appimagetool-x86_64.AppImage
 
   # Build the AppImage
-  ./appimagetool-x86_64.AppImage -v ./appdir
+  ./appimagetool-x86_64.AppImage ./appdir
 
   # Move the appimage up to the root
   mv ./CaPTk*.AppImage ../../CaPTk.bin
@@ -321,12 +321,12 @@ cp -r ../docs install/appdir/usr/
 # We need to fix the project first
 RUN_FIXES
 
-if toolversion ldd '>=' 2.24; then
-  echo "Too high a version of LDD detected; AppImage will potentially be unsupported, skipping packaging."
-else
+# if toolversion ldd '>=' 2.24; then
+#   echo "Too high a version of LDD detected; AppImage will potentially be unsupported, skipping packaging."
+# else
   # Install and deploy
   RUN_DEPLOYQT
-fi
+# fi
 
 echo "[:] Building Installer..."
 
