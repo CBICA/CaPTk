@@ -132,6 +132,7 @@ VectorDouble PopulationAtlases::GetSpatialLocationFeaturesForFixedNumberOfRegion
   const typename ImageType::Pointer &jacobtemplateImagePointer, 
   const int numberofregions)
 {
+  //remove the connected components smaller than an area threshold (100 voxels) and revise the different sub-regions of the tumor
   std::vector<typename ImageType::Pointer> RevisedImages = RevisedTumorArea<ImageType>(labelImagePointer, 100);
   typename ImageType::Pointer tumorImage = RevisedImages[0];
   typename ImageType::Pointer etumorImage = RevisedImages[1];
@@ -144,7 +145,7 @@ VectorDouble PopulationAtlases::GetSpatialLocationFeaturesForFixedNumberOfRegion
   localizeImage->Allocate();
   localizeImage->FillBuffer(0);
 
-  //mulitply revised tumor image with the atlas ROI image
+  //mulitply revised tumor image with the atlas ROI image.
   typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
   IteratorType tumorIt(tumorImage, tumorImage->GetLargestPossibleRegion());
   IteratorType localizeIt(localizeImage, localizeImage->GetLargestPossibleRegion());
@@ -165,8 +166,9 @@ VectorDouble PopulationAtlases::GetSpatialLocationFeaturesForFixedNumberOfRegion
     ++atlasIt;
     
   }
+
+  //find number of voxels in pre-defined number of ROIs in the following loop
   std::cout << "Number of tumor voxels=" << counter << std::endl;
-  //find number of voxels in pre-defined number of ROIs
   VectorDouble location;
   int tumorSize = 0;
   for (int i = 0; i < numberofregions; i++)
@@ -184,9 +186,11 @@ VectorDouble PopulationAtlases::GetSpatialLocationFeaturesForFixedNumberOfRegion
     }
     location.push_back(counter);
   }
+  //this loop prints the raw number of voxels in each ROI
   for (int i = 0; i < numberofregions; i++)
     std::cout << "Raw voxels in region # " << i+1 << " = " << location[i] << std::endl;
-    //find percentages in predefined number of ROIs
+
+  //this loop calculates the percentage of voxels in each ROI by dividing raw number of voxels with the tumor size
   for (int i = 0; i < numberofregions; i++)
     location[i] = (location[i] * 100) / tumorSize;
 

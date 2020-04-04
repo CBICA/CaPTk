@@ -92,7 +92,10 @@ bool PopulationAtlases::CalculateSpatialLocationFeatures(const std::vector<std::
     logger.WriteError("Cannot read the atlas file " + inputatlas + ".Error code : " + std::string(e1.what()));
     return false;
   }
-
+  /*This segment of code reads input atlas space images and passes those to 
+  GetSpatialLocationFeaturesForFixedNumberOfRegions function for calculation of location features
+  Final results are stored in AllLocationFeatures
+  */
   AllLocationFeatures.SetSize(image_paths.size(), number_of_regions);
   for (int index1 = 0; index1 < image_paths.size(); index1++)
   {
