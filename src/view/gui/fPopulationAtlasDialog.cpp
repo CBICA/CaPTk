@@ -1,6 +1,4 @@
 #include "fPopulationAtlasDialog.h"
-//#include "fProgressDialog.h"
-//#include "CAPTk.h"
 #include "CaPTkGUIUtils.h"
 
 fPopulationAtlasDialog::fPopulationAtlasDialog()
@@ -16,7 +14,7 @@ fPopulationAtlasDialog::fPopulationAtlasDialog()
   //this->setFixedHeight(300);
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
-  connect(inputlabelButton, SIGNAL(clicked()), this, SLOT(OpenInputLabelFile()));
+  connect(inputfileButton, SIGNAL(clicked()), this, SLOT(OpeninputfileFile()));
   connect(inputAtlasButton, SIGNAL(clicked()), this, SLOT(OpenInputAtlasFile()));
   connect(outputdirectoryButton, SIGNAL(clicked()), this, SLOT(OpenOutputDirectory()));
 }
@@ -44,12 +42,12 @@ void fPopulationAtlasDialog::ConfirmButtonPressed()
     }
   }
   //--------------------------------------------------------------------------
-  if (inputlabelName->text().isEmpty())
+  if (inputfileName->text().isEmpty())
   {
     ShowErrorMessage("Please specify the label file (.csv).");
     return;
   }
-  if (cbica::fileExists(inputlabelName->text().toStdString()) == false)
+  if (cbica::fileExists(inputfileName->text().toStdString()) == false)
   {
     ShowErrorMessage("Label file (.csv) does not exist.");
     return;
@@ -66,7 +64,7 @@ void fPopulationAtlasDialog::ConfirmButtonPressed()
     return;
   }
   //--------------------------------------------------------------------------
-  emit GeneratePopualtionAtlas(inputlabelName->text().toStdString(), inputAtlasName->text().toStdString(), outputdirectoryName->text().toStdString());
+  emit GeneratePopualtionAtlas(inputfileName->text().toStdString(), inputAtlasName->text().toStdString(), outputdirectoryName->text().toStdString());
   //ShowErrorMessage("Atlases saved at the specified location.");
   this->close();
 }
@@ -80,7 +78,7 @@ void fPopulationAtlasDialog::OpenOutputDirectory()
     outputdirectoryName->setText(directory);
 }
 
-void fPopulationAtlasDialog::OpenInputLabelFile()
+void fPopulationAtlasDialog::OpeninputFile()
 {
   auto file = getExistingFile(this, mInputPathName, "Labels (*.csv)");
 
@@ -90,15 +88,8 @@ void fPopulationAtlasDialog::OpenInputLabelFile()
   }
   else
   {
-    inputlabelName->setText(file);
+    inputfileName->setText(file);
   }
-
-  //QString extensions = /*CSV_EXT*/".csv";
-  //QString inputImage = QFileDialog::getOpenFileName(this, tr("Select File"), mInputPathName, extensions, 0, QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
-  //if (inputImage.isNull())
-  //	return;
-  //else
-  //	inputlabelName->setText(inputImage);
 }
 void fPopulationAtlasDialog::OpenInputAtlasFile()
 {

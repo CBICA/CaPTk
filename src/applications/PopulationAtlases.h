@@ -186,11 +186,11 @@ VectorDouble PopulationAtlases::GetSpatialLocationFeaturesForFixedNumberOfRegion
     }
     location.push_back(counter);
   }
-  //this loop prints the raw number of voxels in each ROI
+  //print the raw number of voxels in each ROI
   for (int i = 0; i < numberofregions; i++)
     std::cout << "Raw voxels in region # " << i+1 << " = " << location[i] << std::endl;
 
-  //this loop calculates the percentage of voxels in each ROI by dividing raw number of voxels with the tumor size
+  //calculate the percentage of voxels in each ROI by dividing raw number of voxels with the tumor size
   for (int i = 0; i < numberofregions; i++)
     location[i] = (location[i] * 100) / tumorSize;
 
@@ -234,6 +234,7 @@ std::vector<typename ImageType::Pointer> PopulationAtlases::RevisedTumorArea(con
   etIt.GoToBegin();
   ncrIt.GoToBegin();
 
+  //iterate through all the voxels of the image and populate tumorImage, etumorImage, and ncrImage accordingly
   while (!tumorIt.IsAtEnd())
   {
     if (imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::TUMOR || imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
@@ -257,8 +258,8 @@ std::vector<typename ImageType::Pointer> PopulationAtlases::RevisedTumorArea(con
     ++ncrIt;
   }
 
+  //generate connected components
   typedef itk::Image< unsigned short, 3 > OutputImageType;
-
   typedef itk::ConnectedComponentImageFilter <ImageType, OutputImageType> ConnectedComponentImageFilterType;
   typename ConnectedComponentImageFilterType::Pointer connected = ConnectedComponentImageFilterType::New();
   connected->FullyConnectedOn();
@@ -283,6 +284,7 @@ std::vector<typename ImageType::Pointer> PopulationAtlases::RevisedTumorArea(con
     }
     sizes.push_back(counter);
   }
+  //remove connected components smaller than a certain area threshold
   for (unsigned int i = 0; i < connected->GetObjectCount(); i++)
   {
     if (sizes[i] <= areathreshold)

@@ -73,13 +73,15 @@ VectorDouble SurvivalPredictor::GetHistogramFeatures(const VectorDouble &intensi
 
 VectorDouble SurvivalPredictor::GetVolumetricFeatures(const double &edemaSize,const double &tuSize, const double &neSize, const double &totalSize)
 {
+  //calculate volume of enhancing tumor, non-enhancing tumor, edema, whole tumor, and tumor core
   VectorDouble VolumetricFeatures;
   VolumetricFeatures.push_back(tuSize);
   VolumetricFeatures.push_back(neSize);
   VolumetricFeatures.push_back(edemaSize);
   VolumetricFeatures.push_back(totalSize);
-
   VolumetricFeatures.push_back(tuSize + neSize);
+  
+  //calculate ratios of different tumor sub-regions
   VolumetricFeatures.push_back( (tuSize + neSize)*100 / totalSize);
   VolumetricFeatures.push_back(edemaSize*100 / totalSize);
   VolumetricFeatures.push_back(tuSize*100 / (tuSize + neSize));
@@ -311,6 +313,7 @@ VariableLengthVectorType SurvivalPredictor::DistanceFunction(const VariableSizeM
 	Coefficients.SetSize(dataMatrix.rows(), 1);
 	Distances.SetSize(testData.Rows(), 1);
 
+  //copy the support vectors, coefficients, rho, and bestg values from the model file
   for (unsigned int i = 0; i < dataMatrix.rows(); i++)
   {
     unsigned int j = 0;
@@ -323,6 +326,7 @@ VariableLengthVectorType SurvivalPredictor::DistanceFunction(const VariableSizeM
       bestg= dataMatrix(i, j + 1);
   }
 
+  //calculate distance value for each given sample in the test data
 	for (unsigned int patID = 0; patID < testData.Rows(); patID++)
 	{
 		double distance = 0;
@@ -500,7 +504,8 @@ VariableLengthVectorType SurvivalPredictor::DistanceFunctionLinear(const Variabl
   SupportVectors.SetSize(dataMatrix.rows(), dataMatrix.cols() - 2);
   Coefficients.SetSize(dataMatrix.rows(), 1);
   Distances.SetSize(testData.Rows(), 1);
-
+  
+  //copy the support vectors, coefficients, rho, and bestg values from the model file
   for (unsigned int i = 0; i < dataMatrix.rows(); i++)
   {
     unsigned int j = 0;
@@ -522,7 +527,7 @@ VariableLengthVectorType SurvivalPredictor::DistanceFunctionLinear(const Variabl
   }
   VariableSizeMatrixType wTranspose = MatrixTranspose(w);  //1x7   1x7
 
-
+  //calculate distance value for each given sample in the test data
   for (unsigned int patID = 0; patID < testData.Rows(); patID++)
   {
     double distance = 0;
@@ -536,6 +541,7 @@ VariableLengthVectorType SurvivalPredictor::DistanceFunctionLinear(const Variabl
 
 VariableSizeMatrixType SurvivalPredictor::MatrixTranspose(const VariableSizeMatrixType &inputmatrix)
 {
+  //calculate transpose of a matrix
   VariableSizeMatrixType output;
   output.SetSize(inputmatrix.Cols(), inputmatrix.Rows());
 
@@ -617,6 +623,7 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 		logger.WriteError("Error in reading the file: " + modeldirectory + "/Survival_ZScore_Std.csv. Error code : " + std::string(e1.what()));
 		return results;
 	}
+  //read selected features of 6-months model from .csv file
   MatrixType features6Matrix;
   try
   {
@@ -635,6 +642,7 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
     logger.WriteError("Error in reading the file: " + modeldirectory + "/Survival_SelectedFeatures_6Months.csv. Error code : " + std::string(e1.what()));
     return results;
   }
+  //read selected features of 18-months model from .csv file
   MatrixType features18Matrix;
   try
   {
@@ -775,11 +783,6 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 
 VariableSizeMatrixType SurvivalPredictor::SelectModelFeatures(const VariableSizeMatrixType &SixModelFeatures,const VariableLengthVectorType selectedfeatures)
 {
-   //int selectedFeatures[20] = { 1,    5,    9,    10,    20,    23,    24,    37,    38,    43,    44,    48,    49,    50,    51,    56,    57,    61,    62,    63};
-//   int selectedFeatures[20] = { 1, 5, 9, 10, 13, 26, 33, 35, 38, 41, 43, 44, 48, 50, 51, 56, 57, 63, 64, 69 };
-   //for (unsigned int i = 0; i <20; i++)
-   // selectedFeatures[i] = selectedFeatures[i] - 1;
-
   VariableSizeMatrixType SixModelSelectedFeatures; 
   SixModelSelectedFeatures.SetSize(SixModelFeatures.Rows(),selectedfeatures.Size()+1);
   int counter = 0;

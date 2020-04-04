@@ -4488,8 +4488,6 @@ void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputFileName, c
     }
   }
   inFile.close();
-  std::cout << "input file parsed. Number of entries: " << allRows.size() << std::endl;
-
   // sanity check to make sure that the file is not empty
   if (allRows.size() == 0)
   {

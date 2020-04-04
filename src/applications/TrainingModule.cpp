@@ -2157,8 +2157,6 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
         currentFeatureSet(j, k) = inputdata(j, indices[k]);
 
     //check crossvalidated performance after adding the current feature
- 
-    //check crossvalidated performance after adding the current feature
     double bestCV = 0;
     double bestC = 1;
     double bestG = 1 / currentFeatureSet.Cols();
@@ -2166,6 +2164,8 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
     {
       if (classifiertype == 2)
       {
+        //for now, we have constant ranges to search optimal values of C and Gamma parameters
+        //should be changed in future to get these ranges from users
         for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
           for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
           {

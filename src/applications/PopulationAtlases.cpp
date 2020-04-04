@@ -40,7 +40,9 @@ std::vector<typename ImageType::Pointer> PopulationAtlases::GeneratePopualtionAt
 		atlasimage->SetBufferedRegion(AtlasImagePointer->GetBufferedRegion());
 		atlasimage->Allocate();
 		atlasimage->FillBuffer(0);
-
+    /* This loop iterates through all the ATLAS_LABELS given in the input .csv file and calculates 
+    atlas for each atlas label 
+    */
 		for (int j = 0; j < atlas_labels.size(); j++)
 		{
 			if (atlas_labels[j] == atlas_no)

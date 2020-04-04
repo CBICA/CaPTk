@@ -26,11 +26,11 @@ class ui_fPopulationAtlasDialog
 {
 public:
   QGridLayout *gridLayout_3;
-  QLineEdit * inputlabelName;
+  QLineEdit * inputfileName;
   QLineEdit * inputAtlasName;
   QLineEdit * outputdirectoryName;
 
-  QPushButton * inputlabelButton;
+  QPushButton * inputfileButton;
   QPushButton * inputAtlasButton;
   QPushButton * outputdirectoryButton;
 
@@ -39,7 +39,7 @@ public:
   QPushButton * cancelButton;
 
   QLabel	*outputDirectoryLabel;
-  QLabel	*inputlabelLabel;
+  QLabel	*inputfileLabel;
   QLabel	*inputAtlasLabel;
 
 
@@ -73,11 +73,11 @@ public:
     outputdirectoryName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
 
-    inputlabelName = new QLineEdit(fPopulationAtlasDialog);
-    inputlabelName->setObjectName(QString::fromUtf8("inputlabelName"));
-    sizePolicy13.setHeightForWidth(inputlabelName->sizePolicy().hasHeightForWidth());
-    inputlabelName->setSizePolicy(sizePolicy13);
-    inputlabelName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputfileName = new QLineEdit(fPopulationAtlasDialog);
+    inputfileName->setObjectName(QString::fromUtf8("inputfileName"));
+    sizePolicy13.setHeightForWidth(inputfileName->sizePolicy().hasHeightForWidth());
+    inputfileName->setSizePolicy(sizePolicy13);
+    inputfileName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
 
     inputAtlasName = new QLineEdit(fPopulationAtlasDialog);
@@ -103,17 +103,17 @@ public:
     sizePolicy13.setHeightForWidth(outputDirectoryLabel->sizePolicy().hasHeightForWidth());
     outputDirectoryLabel->setSizePolicy(sizePolicy13);
 
-    inputlabelLabel = new QLabel(fPopulationAtlasDialog);
-    sizePolicy13.setHeightForWidth(inputlabelLabel->sizePolicy().hasHeightForWidth());
-    inputlabelLabel->setSizePolicy(sizePolicy13);
+    inputfileLabel = new QLabel(fPopulationAtlasDialog);
+    sizePolicy13.setHeightForWidth(inputfileLabel->sizePolicy().hasHeightForWidth());
+    inputfileLabel->setSizePolicy(sizePolicy13);
 
     inputAtlasLabel = new QLabel(fPopulationAtlasDialog);
     sizePolicy13.setHeightForWidth(inputAtlasLabel->sizePolicy().hasHeightForWidth());
     inputAtlasLabel->setSizePolicy(sizePolicy13);
 
-    inputlabelButton = new QPushButton(fPopulationAtlasDialog);
-    inputlabelButton->setObjectName(QString::fromUtf8("Confirm"));
-    inputlabelButton->setText(QString("Browse"));
+    inputfileButton = new QPushButton(fPopulationAtlasDialog);
+    inputfileButton->setObjectName(QString::fromUtf8("Confirm"));
+    inputfileButton->setText(QString("Browse"));
 
     inputAtlasButton = new QPushButton(fPopulationAtlasDialog);
     inputAtlasButton->setObjectName(QString::fromUtf8("Cancel"));
@@ -127,9 +127,9 @@ public:
     cancelButton->setObjectName(QString::fromUtf8("Cancel"));
     cancelButton->setText(QString("cancel"));
 
-    gridLayout_3->addWidget(inputlabelLabel, 2, 0, 1, 1);
-    gridLayout_3->addWidget(inputlabelName, 2, 1, 1, 4);
-    gridLayout_3->addWidget(inputlabelButton, 2, 5, 1, 1);
+    gridLayout_3->addWidget(inputfileLabel, 2, 0, 1, 1);
+    gridLayout_3->addWidget(inputfileName, 2, 1, 1, 4);
+    gridLayout_3->addWidget(inputfileButton, 2, 5, 1, 1);
 
     gridLayout_3->addWidget(inputAtlasLabel, 3, 0, 1, 1);
     gridLayout_3->addWidget(inputAtlasName, 3, 1, 1, 4);
@@ -149,13 +149,8 @@ public:
 
   void retranslateUi(QDialog *fPopulationAtlasDialog)
   {
-    //  outputDirectoryLabel->setText(QApplication::translate("fPopulationAtlasDialog", "Output Directory:", 0, QApplication::UnicodeUTF8));
-    //  inputDirectoryLabel->setText(QApplication::translate("fPopulationAtlasDialog", "Input Directory:", 0, QApplication::UnicodeUTF8));
-   // inputlabelLabel->setText(QApplication::translate("fPopulationAtlasDialog", "Label file:", 0, QApplication::UnicodeUTF8));
-   // inputAtlasLabel->setText(QApplication::translate("fPopulationAtlasDialog", "Atlas file:", 0, QApplication::UnicodeUTF8));
-    // NEW CHANGES
     outputDirectoryLabel->setText(QApplication::translate("fPopulationAtlasDialog", "Output Directory:", 0));
-    inputlabelLabel->setText(QApplication::translate("fPopulationAtlasDialog", "Input File:", 0));
+    inputfileLabel->setText(QApplication::translate("fPopulationAtlasDialog", "Input File:", 0));
     inputAtlasLabel->setText(QApplication::translate("fPopulationAtlasDialog", "Atlas File:", 0));
   } // retranslateUi
 
