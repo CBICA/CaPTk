@@ -195,7 +195,6 @@ RUN_DEPLOYQT () {
   # no, we need to manually come up with a glob for EVERY possible directory hierarchy for MCR, leaving us with this.
   # Using continuous release as of 3/5/18, please change to version 5 or 6 if you are having issues with this.
   ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite -ignore-glob=usr/{libexec/MCR/**,lib/snap-3.8.0/**,libexec/MCR/*/*,libexec/MCR/*/*/*,libexec/MCR/*/*/*/*,libexec/MCR/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*,libexec/MCR/*/*/*/*/*/*/*/*/*/*}
-  # ./${LDQT} ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs -always-overwrite 
   # But now we aren't even done. Normally, you could run linuxdeployqt with the -appimage flag which gives us our amazing AppImage file that can be ran anywhere.
   # However, we have started to see a lot of issues revolving around the $LD_LIBRARY_PATH since we want to arbitrarily run applications from the main CaPTk binary.
   # The solution is to wrap the entry of the AppImage according to this guide made by the guy who made AppImages: https://github.com/probonopd/linuxdeployqt/wiki/Custom-wrapper-script-instead-of-AppRun
@@ -227,11 +226,10 @@ RUN_DEPLOYQT () {
 
   # Download and mark executable appimagetool. Using release 11 as of 3/5/18
   wget -nc https://github.com/AppImage/AppImageKit/releases/download/11/appimagetool-x86_64.AppImage
-  ls
   chmod +x appimagetool-x86_64.AppImage
 
   # Build the AppImage
-  ./appimagetool-x86_64.AppImage -v ./appdir
+  ./appimagetool-x86_64.AppImage ./appdir
 
   # Move the appimage up to the root
   mv ./CaPTk*.AppImage ../../CaPTk.bin
@@ -327,6 +325,7 @@ else
   # Install and deploy
   RUN_DEPLOYQT
 
+
   echo "[:] Building Installer..."
 
   # Now that we have a custom AppImage, we need to package around it an installer with makeself.
@@ -341,8 +340,6 @@ else
 
   # Step 2: Create a package directory for makeself to package
   mkdir pkg
-  echo "DONE STEP 2"
-  ls
   # We package the AppImage, the license, and a script to display the agreement and install the AppImage
   mv CaPTk.bin ./pkg/
   # Move cwl in

@@ -355,19 +355,14 @@ jobs:
         # mv ../binaries/qt_5.12.1/linux.zip ./qt.zip
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
-      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # Configure and build superbuild
     - bash: |
         cd bin
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
         make -j2
-        
-        rm -rf binaries_*.zip
-
         rm -rf install
       displayName: 'Configure and compile Superbuild'
-      # condition: ne(variables.CACHE_RESTORED_LINUX, 'true')
 
     # - bash: |
     #     tar cvfz bin_linux_20200212.tar.gz bin
@@ -411,16 +406,11 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=OFF ..
         make -j2
         make install/strip
-
-        rm -rf externalApps
-
       displayName: 'Configure and compile CaPTk'
 
     # Check libra
     - bash: |
         cd bin/install/appdir/usr/bin/
-        cd bin/install/appdir/usr/libexec
-
         ls -l
       displayName: 'Checking ${installDir}/bin'
 
