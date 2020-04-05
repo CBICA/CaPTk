@@ -1170,10 +1170,10 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        export PATH=$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/bin:$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../superbuild/ITK-build:$(Build.SourcesDirectory)/../superbuild/DCMTK-build:$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR="$(Build.SourcesDirectory)/../superbuild/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../superbuild/DCMTK-build" -DBUILD_TESTING=OFF ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
         
         rm -rf binaries_linux.zip
         rm -rf qt.zip
@@ -1194,8 +1194,8 @@ jobs:
 
     # Build a package
     - bash: |
-        export PATH=$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/bin:$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../superbuild/ITK-build:$(Build.SourcesDirectory)/../superbuild/DCMTK-build:$(Build.SourcesDirectory)/../superbuild/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
         rm -rf regression
         rm -rf binaries
