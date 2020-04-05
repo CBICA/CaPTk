@@ -412,7 +412,6 @@ jobs:
         make -j2
         make install/strip
 
-        
       displayName: 'Configure and compile CaPTk'
 
     # Check libra
@@ -434,7 +433,7 @@ jobs:
         rm -rf bin/5.12.1
         rm -rf regression
         rm -rf binaries
-        rm -rf bin_linux_20200212.tar.gz
+        rm -rf bin_linux_*.tar.gz
         df -k .
       displayName: 'Disk space check'
 
@@ -1159,6 +1158,12 @@ jobs:
         export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
+        
+        rm -rf binaries_linux.zip
+        rm -rf qt.zip
+        rm -rf 5.12.1
+
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
@@ -1166,7 +1171,9 @@ jobs:
     - bash: |
         rm -rf bin/qt.zip
         rm -rf bin/5.12.1
-   
+        rm -rf regression
+        rm -rf binaries
+        rm -rf bin_linux_*.tar.gz
         df -k .
       displayName: 'Disk space check'
 
@@ -1175,9 +1182,17 @@ jobs:
         export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
+        rm -rf regression
+        rm -rf binaries
+
         export PKG_FAST_MODE=1
         # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
+
+        rm -rf src
+        rm -rf docs*
+
+        rm -rf scripts
 
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
