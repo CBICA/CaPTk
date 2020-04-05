@@ -358,7 +358,7 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
   }
   catch (const std::exception& e1)
   {
-    logger.WriteError("Cannot find the file 'EGFRvIII_HMFeatures_Configuration.csv' in the ../data/egfrv3 directory. Error code : " + std::string(e1.what()));
+    logger.WriteError("Cannot find the file 'EGFRvIII_HMFeatures_Configuration.csv' in the ../data/egfr directory. Error code : " + std::string(e1.what()));
     return results;
   }
 
