@@ -154,18 +154,25 @@ int EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory,
 	std::cout << "Module loaded: EGFRvIII Prediction on Existing Model:" << std::endl;
 	std::vector<double> finalresult;
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
-	std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() <<std::endl;
-	EGFRvIIIIndexPredictor objEGFRvIIIPredictor;
-	VectorDouble result = objEGFRvIIIPredictor.EGFRvIIIPredictionOnExistingModel(modeldirectory, inputdirectory, QualifiedSubjects, outputdirectory);
-	std::cout << std::endl<<"EGFRvIII prediction:"<<std::endl;
-	for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
-	{
-		std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
-    if(result[subjectID]>0)
-      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) <<" Mutant." << std::endl;
-    else
-      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Wildtype." << std::endl;
-	}
+  if (QualifiedSubjects.size() == 0)
+  {
+    std::cout << "No subject found with required input. Exiting...." << std::endl;
+    return EXIT_FAILURE;
+  }
+  else
+  {
+    std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
+    EGFRvIIIIndexPredictor objEGFRvIIIPredictor;
+    VectorDouble result = objEGFRvIIIPredictor.EGFRvIIIPredictionOnExistingModel(modeldirectory, inputdirectory, QualifiedSubjects, outputdirectory);
+    for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
+    {
+      std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
+      if (result[subjectID] > 0)
+        std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Mutant." << std::endl;
+      else
+        std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Wildtype." << std::endl;
+    }
+  }
 	return EXIT_SUCCESS;
 }
 
