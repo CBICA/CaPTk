@@ -260,10 +260,7 @@ public:
 	  const std::vector< std::map< CAPTK::ImageModalityType, std::string > > &qualifiedsubjects, 
 	  const std::string &outputdirectory);
 
-
-
-	VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures, const VariableLengthVectorType selectedfeatures);
-	VariableSizeMatrixType SelectEighteenMonthsModelFeatures(const VariableSizeMatrixType &EighteenModelFeatures, const VariableLengthVectorType selectedfeatures);
+ VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures, const VariableLengthVectorType selectedfeatures);
 
 	template<class ImageType>
 	typename ImageType::Pointer RemoveSmallerComponentsFromTumor(const typename ImageType::Pointer &etumorImage, const typename ImageType::Pointer &ncrImage);
@@ -1078,6 +1075,47 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 			logger.WriteError("Cannot find the file 'std.csv' in the model directory. Error code : " + std::string(e1.what()));
 			exit(EXIT_FAILURE);
 		}
+    //read selected features of 6-months model from .csv file
+    VariableLengthVectorType selectedfeatures_6months;
+    VariableLengthVectorType selectedfeatures_18months;
+    MatrixType features6Matrix;
+    try
+    {
+      reader->SetFileName(modeldirectory + "/Survival_SelectedFeatures_6Months.csv");
+      reader->SetFieldDelimiterCharacter(',');
+      reader->HasColumnHeadersOff();
+      reader->HasRowHeadersOff();
+      reader->Parse();
+      features6Matrix = reader->GetArray2DDataObject()->GetMatrix();
+      selectedfeatures_6months.SetSize(features6Matrix.size());
+      for (unsigned int i = 0; i < features6Matrix.size(); i++)
+        selectedfeatures_6months[i] = features6Matrix(i, 0);
+    }
+    catch (const std::exception& e1)
+    {
+      logger.WriteError("Error in reading the file: " + modeldirectory + "/Survival_SelectedFeatures_6Months.csv. Error code : " + std::string(e1.what()));
+      return results;
+    }
+    //read selected features of 18-months model from .csv file
+    MatrixType features18Matrix;
+    try
+    {
+      reader->SetFileName(modeldirectory + "/Survival_SelectedFeatures_18Months.csv");
+      reader->SetFieldDelimiterCharacter(',');
+      reader->HasColumnHeadersOff();
+      reader->HasRowHeadersOff();
+      reader->Parse();
+      features18Matrix = reader->GetArray2DDataObject()->GetMatrix();
+      selectedfeatures_18months.SetSize(features18Matrix.size());
+      for (unsigned int i = 0; i < features18Matrix.size(); i++)
+        selectedfeatures_18months[i] = features18Matrix(i, 0);
+    }
+    catch (const std::exception& e1)
+    {
+      logger.WriteError("Error in reading the file: " + modeldirectory + "/Survival_SelectedFeatures_18Months.csv. Error code : " + std::string(e1.what()));
+      return results;
+    }
+
 		//----------------------------------------------------
 		VariableSizeMatrixType FeaturesOfAllSubjects;
 		FeaturesOfAllSubjects.SetSize(1, 161);
@@ -1098,8 +1136,8 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 				ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
 			ScaledFeatureSetAfterAddingLabel(i, j) = 0;
 		}
-		VariableSizeMatrixType SixModelSelectedFeatures = SelectSixMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
-		VariableSizeMatrixType EighteenModelSelectedFeatures = SelectEighteenMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
+		VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures_6months);
+		VariableSizeMatrixType EighteenModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures_18months);
 		VectorDouble results;
 		try
 		{

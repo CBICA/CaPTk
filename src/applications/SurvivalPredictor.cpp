@@ -797,25 +797,3 @@ VariableSizeMatrixType SurvivalPredictor::SelectModelFeatures(const VariableSize
 
   return SixModelSelectedFeatures;
 }
-
-VariableSizeMatrixType SurvivalPredictor::SelectEighteenMonthsModelFeatures(const VariableSizeMatrixType &EighteenModelFeatures, const VariableLengthVectorType selectedfeatures)
-{
-	int selectedFeatures[20] = { 1, 5, 10, 15, 24, 27, 37, 38, 50, 51, 53, 62, 63, 64, 67, 70, 71, 85, 158, 159 };
-
-//   int selectedFeatures[20] = { 1, 2, 3, 5, 6, 7, 9, 10, 16, 18, 33, 35, 38, 42, 47, 48, 49, 50, 51, 56 };
-   for(unsigned int i=0;i<20;i++)
-    selectedFeatures[i] = selectedFeatures[i] - 1;
-
-  VariableSizeMatrixType EighteenModelSelectedFeatures;
-  EighteenModelSelectedFeatures.SetSize(EighteenModelFeatures.Rows(), 21);
-  int counter = 0;
-  for (unsigned int i = 0; i < 20; i++)
-  {
-    for (unsigned int j = 0; j < EighteenModelFeatures.Rows(); j++)
-      EighteenModelSelectedFeatures(j, counter) = EighteenModelFeatures(j, selectedFeatures[i]);
-    counter++;
-  }
-  for (unsigned int j = 0; j < EighteenModelFeatures.Rows(); j++)
-    EighteenModelSelectedFeatures(j, 20) = EighteenModelFeatures(j, 161);
-  return EighteenModelSelectedFeatures;
-}
