@@ -1094,7 +1094,7 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
     catch (const std::exception& e1)
     {
       logger.WriteError("Error in reading the file: " + modeldirectory + "/Survival_SelectedFeatures_6Months.csv. Error code : " + std::string(e1.what()));
-      return results;
+      exit(EXIT_FAILURE);
     }
     //read selected features of 18-months model from .csv file
     MatrixType features18Matrix;
@@ -1113,7 +1113,7 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
     catch (const std::exception& e1)
     {
       logger.WriteError("Error in reading the file: " + modeldirectory + "/Survival_SelectedFeatures_18Months.csv. Error code : " + std::string(e1.what()));
-      return results;
+      exit(EXIT_FAILURE);
     }
 
 		//----------------------------------------------------
@@ -1145,14 +1145,8 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 			VariableLengthVectorType result_18;
 			if (cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.csv") == true && cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.csv") == true)
 			{
-				result_6 = DistanceFunction(SixModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model6.csv", 
-          SURVIVAL_MODEL6_RHO // value calculated to be -1.0927 
-          , SURVIVAL_MODEL6_G // value calculated to be 0.0313
-          );
-				result_18 = DistanceFunction(EighteenModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model18.csv", 
-          SURVIVAL_MODEL18_RHO // value calculated to be -0.2854
-          , SURVIVAL_MODEL18_G // value calculated to be 0.5
-          );
+				result_6 = DistanceFunction(SixModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model6.csv");
+				result_18 = DistanceFunction(EighteenModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model18.csv");
 			}
 			else if (cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.xml") == true && cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.xml") == true)
 			{
