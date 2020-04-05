@@ -121,7 +121,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 			featureFilePath = subjectPath + "/features.csv";
 			
 			if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() 
-        || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
+        || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty() || featureFilePath.empty())
 			continue;
 
 		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
