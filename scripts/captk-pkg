@@ -224,12 +224,12 @@ RUN_DEPLOYQT () {
 
   fi
 
-  # Download and mark executable appimagetool. Using release 11 as of 3/5/18
-  wget -nc https://github.com/AppImage/AppImageKit/releases/download/11/appimagetool-x86_64.AppImage
+  # Download and mark executable appimagetool.
+  wget -nc https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage
   chmod +x appimagetool-x86_64.AppImage
 
   # Build the AppImage
-  ./appimagetool-x86_64.AppImage -v ./appdir
+  ./appimagetool-x86_64.AppImage ./appdir -v --exclude-file ./usr/libexec/MCR/**
 
   # Move the appimage up to the root
   mv ./CaPTk*.AppImage ../../CaPTk.bin
