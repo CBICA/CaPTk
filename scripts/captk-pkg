@@ -149,7 +149,10 @@ RUN_FIXES () {
   cd ./libexec/MCR/v84/bin/glnxa64
   chmod +x matlab_helper
   cd ${USR_DIR}/libexec/MCR/v84/etc/glnxa64
+  chmod +x MLM
+  chmod +x lmgrd
   chmod +x lmutil
+
 
   # Go back up to /bin
   cd ${USR_DIR}/bin
