@@ -225,7 +225,7 @@ RUN_DEPLOYQT () {
   fi
 
   # Download and mark executable appimagetool.
-  wget -nc https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage
+  wget -nc https://github.com/AppImage/AppImageKit/releases/download/11/appimagetool-x86_64.AppImage
   chmod +x appimagetool-x86_64.AppImage
   
   echo "APPIMG"
