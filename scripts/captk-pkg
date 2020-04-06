@@ -146,9 +146,10 @@ RUN_FIXES () {
   echo "[:] Marking MATLAB binaries as executable..."
 
   # # The magic file that we need to be executable from earlier
-  # cd ./libexec/MCR/v84/bin/glnxa64
-  chmod +x ./libexec/MCR/v84/bin/glnxa64/matlab_helper
-  chmod +x ./libexec/MCR/v84/etc/glnxa64/lmutil
+  cd ./libexec/MCR/v84/bin/glnxa64
+  chmod +x matlab_helper
+  cd ${USR_DIR}/libexec/MCR/v84/etc/glnxa64
+  chmod +x lmutil
 
   # Go back up to /bin
   cd ${USR_DIR}/bin
