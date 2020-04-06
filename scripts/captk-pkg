@@ -227,9 +227,15 @@ RUN_DEPLOYQT () {
   # Download and mark executable appimagetool.
   wget -nc https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage
   chmod +x appimagetool-x86_64.AppImage
+  
+  echo "APPIMG"
+  ls
 
   # Build the AppImage
-  ./appimagetool-x86_64.AppImage ./appdir -v --exclude-file ./usr/libexec/MCR/**
+  ./appimagetool-x86_64.AppImage ./appdir -v
+
+  echo "DONE APPIMG"
+  ls
 
   # Move the appimage up to the root
   mv ./CaPTk*.AppImage ../../CaPTk.bin
@@ -324,7 +330,6 @@ if toolversion ldd '>=' 2.24; then
 else
   # Install and deploy
   RUN_DEPLOYQT
-
 
   echo "[:] Building Installer..."
 
