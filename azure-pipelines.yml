@@ -656,9 +656,7 @@ jobs:
         make -j 2
       displayName: 'Configure and compile CaPTk'
 
-    - inputs:    
-        continueOnError: false
-      script: |
+    - script: |
         cd bin
 
         sudo rm -rf CaPTk_*
