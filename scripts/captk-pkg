@@ -148,10 +148,10 @@ RUN_FIXES () {
   # # The magic file that we need to be executable from earlier
   cd ./libexec/MCR/v84/bin/glnxa64
   chmod +x matlab_helper
-  cd ${USR_DIR}/libexec/MCR/v84/etc/glnxa64
-  chmod +x MLM
-  chmod +x lmgrd
-  chmod +x lmutil
+  # cd ${USR_DIR}/libexec/MCR/v84/etc/glnxa64
+  # chmod +x MLM
+  # chmod +x lmgrd
+  # chmod +x lmutil
 
 
   # Go back up to /bin
@@ -237,7 +237,10 @@ RUN_DEPLOYQT () {
   ls
 
   # Build the AppImage
-  ./appimagetool-x86_64.AppImage ./appdir -v
+  echo "./appdir/usr/libexec/MCR/**" >> .appimageignore
+  echo "./appdir/usr/lib/snap*/**" >> .appimageignore
+
+  ./appimagetool-x86_64.AppImage ./appdir -v 
 
   echo "DONE APPIMG"
   ls
