@@ -1506,7 +1506,8 @@ namespace cbica
   \param sortResult Whether the output should be sorted in ascending order or not, defaults to true
   */
   template< class TImageType = ImageTypeFloat3D >
-  std::vector< typename TImageType::PixelType > GetUniqueValuesInImage(typename TImageType::Pointer inputImage, bool sortResult = true)
+  std::vector< typename TImageType::PixelType > GetUniqueValuesInImage(typename TImageType::Pointer inputImage, 
+    bool sortResult = true)
   {
     itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
 
@@ -1527,6 +1528,37 @@ namespace cbica
     }
 
     return uniqueValues;
+  }
+
+  /**
+  \brief Get the unique value labels in an image
+
+  \param inputImage The input image
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  std::map< int, typename TImageType::Pointer > GetUniqueLabelImagessFromImage(typename TImageType::Pointer inputImage)
+  {
+    /// fix this up
+    itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
+
+    std::vector< typename TImageType::PixelType > uniqueValues;
+    std::map< int, typename TImageType::Pointer > returnImages;
+
+    for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator)
+    {
+      auto currentValue = iterator.Get();
+
+      // if a new value has been found, initialize a new image
+      if (std::find(uniqueValues.begin(), uniqueValues.end(), currentValue) == uniqueValues.end())
+      {
+        uniqueValues.push_back(currentValue);
+        returnImages[currentValue] = CreateImage< TImageType >(inputImage);
+      }
+
+      returnImages[currentValue]->SetPixel(iterator.GetIndex(), 1);
+    }
+
+    return returnImages;
   }
 
   /**
@@ -1588,7 +1620,7 @@ namespace cbica
     similarityFilter->SetTargetImage(inputLabel_2);
     similarityFilter->Update();
 
-    returnMap["TotalOverlap"] = similarityFilter->GetTotalOverlap();
+    returnMap["Overlap_Overall"] = similarityFilter->GetTotalOverlap();
     //std::cout << "=== Entire Masked Area ===\n";
     returnMap["Union(Jaccard)_Overall"] = similarityFilter->GetUnionOverlap();
     returnMap["Mean(DICE)_Overall"] = similarityFilter->GetMeanOverlap();
@@ -1603,7 +1635,7 @@ namespace cbica
       for (size_t i = 0; i < uniqueLabels.size(); i++)
       {
         auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
-        returnMap["TargetOverlap_Label" + uniqueLabels_string] = similarityFilter->GetTargetOverlap(uniqueLabels[i]);
+        returnMap["Overlap_Label" + uniqueLabels_string] = similarityFilter->GetTargetOverlap(uniqueLabels[i]);
         returnMap["Union(Jaccard)_Label" + uniqueLabels_string] = similarityFilter->GetUnionOverlap(uniqueLabels[i]);
         returnMap["Mean(DICE)_Label" + uniqueLabels_string] = similarityFilter->GetMeanOverlap(uniqueLabels[i]);
         returnMap["VolumeSimilarity_Label" + uniqueLabels_string] = similarityFilter->GetVolumeSimilarity(uniqueLabels[i]);
@@ -1612,34 +1644,77 @@ namespace cbica
       }
     }
 
-    // more stats
-    itk::ImageRegionConstIterator< TImageType > inputIterator(inputLabel_1, inputLabel_1->GetBufferedRegion());
-    itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabel_2, inputLabel_2->GetBufferedRegion());
-
-    std::vector< float > inputVector_1, inputVector_2;
-    // iterate through the entire input image and if the label value matches the input value,
-    // put '1' in the corresponding location of the output
-    for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
+    // overall stats
     {
-      outputIterator.SetIndex(inputIterator.GetIndex());
-      inputVector_1.push_back(inputIterator.Get());
-      inputVector_2.push_back(outputIterator.Get());
+      // more stats
+      itk::ImageRegionConstIterator< TImageType > inputIterator(inputLabel_1, inputLabel_1->GetBufferedRegion());
+      itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabel_2, inputLabel_2->GetBufferedRegion());
+
+      std::vector< float > inputVector_1, inputVector_2;
+      // iterate through the entire input image and if the label value matches the input value,
+      // put '1' in the corresponding location of the output
+      for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
+      {
+        outputIterator.SetIndex(inputIterator.GetIndex());
+        inputVector_1.push_back(inputIterator.Get());
+        inputVector_2.push_back(outputIterator.Get());
+      }
+
+      auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
+
+      returnMap["Sensitivity_Overall"] = temp_roc["Sensitivity"];
+      returnMap["Specificity_Overall"] = temp_roc["Specificity"];
+      returnMap["Accuracy_Overall"] = temp_roc["Accuracy"];
+      returnMap["Precision_Overall"] = temp_roc["Precision"];
+
+      // hausdorff
+      auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
+      filter->SetFixedImage(inputLabel_1);
+      filter->SetMovingImage(inputLabel_2);
+      filter->SetPercentile(0.95);
+
+      returnMap["Hausdorff95_Overall"] = filter->GetValue();
     }
 
-    auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
+    auto inputLabelsImages_1 = cbica::GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
+    auto inputLabelsImages_2 = cbica::GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
+    
+    for (const auto &label : inputLabelsImages_1)
+    {
+      if (label.first != 0) // we don't care about the background value
+      {
+        auto valueString = std::to_string(label.first);
 
-    returnMap["Sensitivity"] = temp_roc["Sensitivity"];
-    returnMap["Specificity"] = temp_roc["Specificity"];
-    returnMap["Accuracy"] = temp_roc["Accuracy"];
-    returnMap["Precision"] = temp_roc["Precision"];
+        itk::ImageRegionConstIterator< TImageType > inputIterator(label.second, label.second->GetBufferedRegion());
+        itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabelsImages_2[label.first], inputLabelsImages_2[label.first]->GetBufferedRegion());
 
-    // hausdorff
-    auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
-    filter->SetFixedImage(inputLabel_1);
-    filter->SetMovingImage(inputLabel_2);
-    filter->SetPercentile(0.95);
+        std::vector< float > inputVector_1, inputVector_2;
+        // iterate through the entire input image and if the label value matches the input value,
+        // put '1' in the corresponding location of the output
+        for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
+        {
+          outputIterator.SetIndex(inputIterator.GetIndex());
+          inputVector_1.push_back(inputIterator.Get());
+          inputVector_2.push_back(outputIterator.Get());
+        }
 
-    returnMap["Hausdorff95"] = filter->GetValue();
+        auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
+
+        returnMap["Sensitivity_" + valueString] = temp_roc["Sensitivity"];
+        returnMap["Specificity_" + valueString] = temp_roc["Specificity"];
+        returnMap["Accuracy_" + valueString] = temp_roc["Accuracy"];
+        returnMap["Precision_" + valueString] = temp_roc["Precision"];
+
+        // hausdorff
+        auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
+        filter->SetFixedImage(label.second);
+        filter->SetMovingImage(inputLabelsImages_2[label.first]);
+        filter->SetPercentile(0.95);
+
+        returnMap["Hausdorff95_" + valueString] = filter->GetValue();
+      }
+
+    }    
 
     return returnMap;
 
