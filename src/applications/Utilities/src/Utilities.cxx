@@ -647,9 +647,10 @@ int algorithmsRunner()
 
     auto stats = cbica::GetLabelStatistics< DefaultImageType >(inputImage, referenceImage);
 
+    std::cout << "Metric,Value\n";
     for (const auto &stat : stats)
     {
-      std::cout << stat.first << "\t = " << stat.second << "\n";
+      std::cout << stat.first << "," << stat.second << "\n";
     }
 
     return EXIT_SUCCESS;
