@@ -61,6 +61,13 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "DicomIOManager.h"
 
+#include "itkNaryFunctorImageFilter.h"
+#include "itkSmoothingRecursiveGaussianImageFilter.h"
+#include "itkBinaryThresholdImageFilter.h"
+
+#include "itkJoinSeriesImageFilter.h"
+#include "itkExtractImageFilter.h"
+
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 //unsigned int RmsCounter = 0;
 //double MaxRmsE[4] = { 0.8, 0.75, 0.4, 0.2 };
@@ -75,12 +82,190 @@ enum InterpolatorType
   Linear, NearestNeighbor, BSpline
 };
 
+//! Helper class for computation
+template <class TInputImage, class TOutputImage>
+class NaryLabelVotingFunctor
+{
+public:
+  typedef NaryLabelVotingFunctor<TInputImage, TOutputImage> Self;
+  typedef typename TInputImage::PixelType InputPixelType;
+  typedef typename TOutputImage::PixelType OutputPixelType;
+  typedef std::vector<OutputPixelType> LabelArray;
+
+  NaryLabelVotingFunctor(const LabelArray &labels)
+    : m_LabelArray(labels), m_Size(labels.size()) {}
+
+  NaryLabelVotingFunctor() : m_Size(0) {}
+
+
+  OutputPixelType operator() (const std::vector<InputPixelType> &pix)
+  {
+    InputPixelType best_val = pix[0];
+    int best_index = 0;
+    for (int i = 1; i < m_Size; i++)
+      if (pix[i] > best_val)
+      {
+        best_val = pix[i];
+        best_index = i;
+      }
+
+    return m_LabelArray[best_index];
+  }
+
+  bool operator != (const Self &other)
+  {
+    return other.m_LabelArray != m_LabelArray;
+  }
+
+protected:
+  LabelArray m_LabelArray;
+  int m_Size;
+};
+
 /*
 \namespace cbica
 \brief Namespace for differentiating functions written for internal use
 */
 namespace cbica
 {
+  //! The image type
+  enum ImageModalityType
+  {
+    IMAGE_TYPE_UNDEFINED = 0, IMAGE_TYPE_T1, IMAGE_TYPE_T1CE, IMAGE_TYPE_T2,
+    IMAGE_TYPE_T2FLAIR, IMAGE_TYPE_AX, IMAGE_TYPE_FA, IMAGE_TYPE_RAD, IMAGE_TYPE_TR,
+    IMAGE_TYPE_PERFUSION, IMAGE_TYPE_DTI, IMAGE_TYPE_RECURRENCE_OUTPUT, IMAGE_TYPE_PP, IMAGE_TYPE_CT,
+    IMAGE_TYPE_PET, IMAGE_TYPE_PSR, IMAGE_TYPE_PH, IMAGE_TYPE_RCBV, IMAGE_TYPE_SEG,
+    IMAGE_TYPE_ATLAS, IMAGE_TYPE_PARAMS, IMAGE_TYPE_SUDOID, IMAGE_TYPE_NEAR, IMAGE_TYPE_FAR,
+    IMAGE_MAMMOGRAM, IMAGE_TYPE_FEATURES
+  };
+
+  //! The modality strings that are used in the GUI 
+  static const char ImageModalityString[ImageModalityType::IMAGE_TYPE_FEATURES + 1][15] =
+  {
+    "DEF", "T1", "T1Gd", "T2",
+    "FLAIR", "DTI_AX", "DTI_FA", "DTI_RAD", "DTI_TR",
+    "PERFUSION", "DTI", "REC", "PP", "CT",
+    "PET", "pSR", "PH", "RCBV", "SEG",
+    "ATLAS", "PARAMS", "SUDOID", "NEAR", "FAR",
+    "FFDM", "FEAT"
+  };
+
+  /**
+  \brief Guess Image Type
+
+  \param str String to guess
+  \return deduced type
+  */
+  inline int guessImageType(const std::string &fileName)
+  {
+    int ImageSubType = ImageModalityType::IMAGE_TYPE_UNDEFINED;
+    std::string fileName_wrap = fileName;
+    std::transform(fileName_wrap.begin(), fileName_wrap.end(), fileName_wrap.begin(), ::tolower);
+    auto ext = cbica::getFilenameExtension(fileName_wrap, false);
+
+    // lambda function to check the different string combinations in a file for modality check
+    auto modalityCheckerFunction = [&](std::string baseModalityStringToCheck)
+    {
+      if (
+        (fileName_wrap.find(baseModalityStringToCheck + ext) != std::string::npos) ||
+        (fileName_wrap.find("_" + baseModalityStringToCheck) != std::string::npos) ||
+        (fileName_wrap.find(baseModalityStringToCheck + "_") != std::string::npos) ||
+        (fileName_wrap.find("." + baseModalityStringToCheck + ".") != std::string::npos) ||
+        (fileName_wrap.find(baseModalityStringToCheck) != std::string::npos)
+        )
+      {
+        return true;
+      }
+    };
+
+    // using the lambda to figure out the modality
+    if (
+      modalityCheckerFunction("t1ce") ||
+      modalityCheckerFunction("t1gd") ||
+      modalityCheckerFunction("t1gad") ||
+      modalityCheckerFunction("t1-ce") ||
+      modalityCheckerFunction("t1-gd") ||
+      modalityCheckerFunction("t1-gad")
+      )
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_T1CE;
+    }
+    else if (modalityCheckerFunction("t1"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_T1;
+    }
+    else if (modalityCheckerFunction("t2"))
+    {
+      if ((fileName_wrap.find("flair") != std::string::npos)) // if there is "flair" present in this case, simply return flair
+      {
+        ImageSubType = ImageModalityType::IMAGE_TYPE_T2FLAIR;
+      }
+      else
+      {
+        ImageSubType = ImageModalityType::IMAGE_TYPE_T2;
+      }
+    }
+    else if (modalityCheckerFunction("flair"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_T2FLAIR;
+    }
+    else if (modalityCheckerFunction("dti") || modalityCheckerFunction("b0"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_DTI;
+    }
+    else if (modalityCheckerFunction("radial") || modalityCheckerFunction("rad"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_RAD;
+    }
+    else if (modalityCheckerFunction("axial") || modalityCheckerFunction("ax"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_AX;
+    }
+    else if (modalityCheckerFunction("fractional") || modalityCheckerFunction("fa"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_FA;
+    }
+    else if (modalityCheckerFunction("trace") || modalityCheckerFunction("tr"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_TR;
+    }
+    else if (modalityCheckerFunction("rcbv"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_RCBV;
+    }
+    else if (modalityCheckerFunction("psr"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PSR;
+    }
+    else if (modalityCheckerFunction("ph"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PH;
+    }
+    else if (modalityCheckerFunction("perf") || modalityCheckerFunction("dsc"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PERFUSION;
+    }
+    else if (modalityCheckerFunction("ct2pet") || modalityCheckerFunction("ct"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_CT;
+    }
+    else if (modalityCheckerFunction("pet"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_PET;
+    }
+    else if (
+      modalityCheckerFunction("labelmap") ||
+      modalityCheckerFunction("label-map") ||
+      modalityCheckerFunction("segmentation") ||
+      modalityCheckerFunction("annotation") ||
+      modalityCheckerFunction("label") ||
+      modalityCheckerFunction("roi"))
+    {
+      ImageSubType = ImageModalityType::IMAGE_TYPE_SEG;
+    }
+    return ImageSubType;
+  }
+
   /**
   \brief Calculate and preserve the mask indeces
 
@@ -182,6 +367,263 @@ namespace cbica
   std::vector< typename TImageType::PixelType > ExtractPixelValuesFromIndeces(const typename TImageType::Pointer inputImage, const std::vector< typename TImageType::IndexType > &indeces)
   {
     return GetPixelValuesFromIndeces< TImageType >(inputImage, indeces);
+  }
+
+  /**
+  \brief Check properties of 2 images to see if they are defined in the same space.
+  */
+  template< typename TImageType >
+  inline bool ImageSanityCheck(const typename TImageType::Pointer image1, const typename TImageType::Pointer image2)
+  {
+    auto size_1 = image1->GetLargestPossibleRegion().GetSize();
+    auto size_2 = image2->GetLargestPossibleRegion().GetSize();
+
+    auto origin_1 = image1->GetOrigin();
+    auto origin_2 = image2->GetOrigin();
+
+    auto spacing_1 = image1->GetSpacing();
+    auto spacing_2 = image2->GetSpacing();
+
+    auto directions_1 = image1->GetDirection();
+    auto directions_2 = image2->GetDirection();
+
+    if (directions_1.ColumnDimensions != directions_2.ColumnDimensions)
+    {
+      std::cerr << "Column dimension mismatch for directions.\n";
+      return false;
+    }
+    if (directions_1.RowDimensions != directions_2.RowDimensions)
+    {
+      std::cerr << "Row dimension mismatch for directions.\n";
+      return false;
+    }
+    if (directions_1 != directions_2)
+    {
+      std::cerr << "Directions are not the same.\n";
+      return false;
+    }
+
+    for (size_t i = 0; i < TImageType::ImageDimension; i++)
+    {
+      if (size_1[i] != size_2[i])
+      {
+        std::cerr << "Size mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+      if (origin_1[i] != origin_2[i])
+      {
+        std::cerr << "Origin mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+      if (spacing_1[i] != spacing_2[i])
+      {
+        auto percentageDifference = std::abs(spacing_1[i] - spacing_2[i]) * 100;
+        percentageDifference /= spacing_1[i];
+        if (percentageDifference > 0.0001)
+        {
+          std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
+          return false;
+        }
+        else
+        {
+          std::cout << "Ignoring spacing difference of '" <<
+            percentageDifference << "%' in dimension '" <<
+            i << "'\n";
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+  \brief Check properties of 2 images to see if they are defined in the same space.
+
+  Checks are done based on cbica::ImageInfo class
+  */
+  inline bool ImageSanityCheck(const std::string &image1, const std::string &image2, bool FourDImageCheck = false)
+  {
+    auto imageInfo1 = cbica::ImageInfo(image1);
+    auto imageInfo2 = cbica::ImageInfo(image2);
+
+    auto dims = imageInfo1.GetImageDimensions();
+
+    if (FourDImageCheck)
+    {
+      dims = 3; // this is for 4D images only
+    }
+    else // do the check when FourDImageCheck is disabled
+    {
+      if (imageInfo1.GetImageDimensions() != imageInfo2.GetImageDimensions())
+      {
+        std::cout << "The dimensions of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+    }
+
+    // check size, spacing and origin information as well
+
+    auto imageSize1 = imageInfo1.GetImageSize();
+    auto imageSize2 = imageInfo2.GetImageSize();
+
+    auto imageSpacing1 = imageInfo1.GetImageSpacings();
+    auto imageSpacing2 = imageInfo2.GetImageSpacings();
+
+    auto imageOrigin1 = imageInfo1.GetImageOrigins();
+    auto imageOrigin2 = imageInfo2.GetImageOrigins();
+
+    auto imageDirs1 = imageInfo1.GetImageDirections();
+    auto imageDirs2 = imageInfo1.GetImageDirections();
+
+    for (size_t d = 0; d < dims; d++)
+    {
+      if (imageSize1[d] != imageSize2[d])
+      {
+        std::cout << "The size in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+      if (imageSpacing1[d] != imageSpacing2[d])
+      {
+        auto percentageDifference = std::abs(imageSpacing1[d] - imageSpacing2[d]) * 100;
+        percentageDifference /= imageSpacing1[d];
+        if (percentageDifference > 0.0001)
+        {
+          std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
+          return false;
+        }
+        else
+        {
+          std::cout << "Ignoring spacing difference of '" <<
+            percentageDifference << "%' in dimension '" <<
+            d << "'\n";
+        }
+      }
+      if (imageOrigin1[d] != imageOrigin2[d])
+      {
+        std::cout << "The origin in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+
+      if (imageDirs1[d].size() != imageDirs2[d].size())
+      {
+        std::cout << "The direction in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+      else
+      {
+        for (size_t i = 0; i < imageDirs1[d].size(); i++)
+        {
+          if (imageDirs1[d][i] != imageDirs2[d][i])
+          {
+            std::cout << "The direction in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") at '" << i << "' doesn't match.\n";
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+  \brief This function returns a joined N-D image with an input of a vector of (N-1)-D images
+
+  Uses the itk::JoinSeriesImageFilter to accomplish this
+
+  \param inputImage The vector of images from which the larger image is to be extracted
+  \param newSpacing The spacing in the new dimension
+  */
+  template< class TInputImageType, class TOutputImageType >
+  typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages, double newSpacing = 1.0)
+  {
+    if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
+    {
+      std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
+      //return typename TOutputImageType::New();
+      exit(EXIT_FAILURE);
+    }
+    auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
+    joinFilter->SetSpacing(newSpacing);
+
+    for (size_t N = 0; N < inputImages.size(); N++)
+    {
+      if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
+      {
+        std::cerr << "Image Sanity check failed in index '" << N << "'\n";
+        //return typename TOutputImageType::New();
+        exit(EXIT_FAILURE);
+      }
+      joinFilter->SetInput(N, inputImages[N]);
+    }
+    try
+    {
+      joinFilter->Update();
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << "Joining failed: " << e.what() << "\n";
+    }
+    return joinFilter->GetOutput();
+  }
+
+  /**
+  \brief This function returns a vector of (N-1)-D images with an input of an N-D image
+
+  Uses the itk::ExtractImageFilter to accomplish this
+
+  \param inputImage The larger image series from which the sub-images in the specified axis are extracted
+  \param axisToExtract The axis along with the images are to be extracted from; defaults to TInputImageType::ImageDimension - for extraction along Z, use '3'
+  \param directionsCollapseIdentity Whether direction cosines are to be normalized to identity or not; defaults to not
+  */
+  template< class TInputImageType, class TOutputImageType >
+  std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage,
+    int axisToExtract = TInputImageType::ImageDimension - 1, bool directionsCollapseIdentity = false)
+  {
+    std::vector<typename TOutputImageType::Pointer> returnImages;
+
+    if (TOutputImageType::ImageDimension != TInputImageType::ImageDimension - 1)
+    {
+      std::cerr << "Only works when input and output image dimensions are N and (N-1), respectively.\n";
+      return returnImages;
+    }
+    // set the sub-image properties
+    auto imageSize = inputImage->GetLargestPossibleRegion().GetSize();
+    auto regionSize = imageSize;
+    regionSize[axisToExtract] = 0;
+    returnImages.resize(imageSize[axisToExtract]);
+
+    typename TInputImageType::IndexType regionIndex;
+    regionIndex.Fill(0);
+
+    // loop through time points
+    for (size_t i = 0; i < imageSize[axisToExtract]; i++)
+    {
+      regionIndex[axisToExtract] = i;
+      typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
+      auto extractor = /*typename*/ itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->SetInput(inputImage);
+      if (directionsCollapseIdentity)
+      {
+        extractor->SetDirectionCollapseToIdentity();
+      }
+      else
+      {
+        extractor->SetDirectionCollapseToSubmatrix();
+      }
+      try
+      {
+        extractor->Update();
+      }
+      catch (const std::exception& e)
+      {
+        std::cerr << "Extracting failed: " << e.what() << "\n";
+      }
+      auto temp = extractor->GetOutput();
+      //temp->DisconnectPipeline(); // ensure a hard copy is done 
+      returnImages[i] = temp;
+    }
+    return returnImages;
   }
 
   ///**
