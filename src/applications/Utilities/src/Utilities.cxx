@@ -644,59 +644,15 @@ int algorithmsRunner()
     using DefaultImageType = itk::Image< unsigned int, TImageType::ImageDimension >;
     auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
     auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
-    auto uniqueLabels = cbica::GetUniqueValuesInImage< DefaultImageType >(inputImage);
-    auto uniqueLabelsRef = cbica::GetUniqueValuesInImage< DefaultImageType >(referenceImage);
 
-    // sanity check
-    if (uniqueLabels.size() != uniqueLabelsRef.size())
+    auto stats = cbica::GetLabelStatistics< DefaultImageType >(inputImage, referenceImage);
+
+    for (const auto &stat : stats)
     {
-      std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
-      return EXIT_FAILURE;
-    }
-    else
-    {
-      for (size_t i = 0; i < uniqueLabels.size(); i++)
-      {
-        if (uniqueLabels[i] != uniqueLabelsRef[i])
-        {
-          std::cerr << "The label values in input and reference image are not consistent.\n";
-          return EXIT_FAILURE;
-        }
-      }
+      std::cout << stat.first << "\t = " << stat.second << "\n";
     }
 
-    auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< DefaultImageType >::New();
-
-    similarityFilter->SetSourceImage(inputImage);
-    similarityFilter->SetTargetImage(referenceImage);
-    similarityFilter->Update();
-
-    //std::cout << "=== Entire Masked Area ===\n";
-    std::cout << "Property,Value\n";
-    std::cout << "TotalOverlap," << similarityFilter->GetTotalOverlap() << "\n";
-    std::cout << "Union(Jaccard)_Overall," << similarityFilter->GetUnionOverlap() << "\n";
-    std::cout << "Mean(DICE)_Overall," << similarityFilter->GetMeanOverlap() << "\n";
-    std::cout << "VolumeSimilarity_Overall," << similarityFilter->GetVolumeSimilarity() << "\n";
-    std::cout << "FalseNegativeError_Overall," << similarityFilter->GetFalseNegativeError() << "\n";
-    std::cout << "FalsePositiveError_Overall," << similarityFilter->GetFalsePositiveError() << "\n";
-
-    if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
-    {
-      //std::cout << "=== Individual Labels ===\n";
-      //std::cout << "Property,Value\n";
-      for (size_t i = 0; i < uniqueLabels.size(); i++)
-      {
-        auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
-        std::cout << "LabelValue," << uniqueLabels_string << "\n";
-        std::cout << "TargetOverlap_Label" + uniqueLabels_string + "," << similarityFilter->GetTargetOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Union(Jaccard)_Label" + uniqueLabels_string + "," << similarityFilter->GetUnionOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Mean(DICE)_Label" + uniqueLabels_string + "," << similarityFilter->GetMeanOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "VolumeSimilarity_Label" + uniqueLabels_string + "," << similarityFilter->GetVolumeSimilarity(uniqueLabels[i]) << "\n";
-        std::cout << "FalseNegativeError_Label" + uniqueLabels_string + "," << similarityFilter->GetFalseNegativeError(uniqueLabels[i]) << "\n";
-        std::cout << "FalsePositiveError_Label" + uniqueLabels_string + "," << similarityFilter->GetFalsePositiveError(uniqueLabels[i]) << "\n";
-      }
-    }
-      return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
   }
   else if (requestedAlgorithm == Hausdorff)
   {
