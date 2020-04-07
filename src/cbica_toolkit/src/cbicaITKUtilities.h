@@ -1238,40 +1238,6 @@ namespace cbica
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > &outputSpacing, const std::string interpolator = "Linear")
-  {
-    auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
-    auto outputSpacingVector = outputSpacing;
-    auto inputSpacing = inputImage->GetSpacing();
-    if (TImageType::ImageDimension != 4)
-    {
-      for (size_t i = 0; i < TImageType::ImageDimension; i++)
-      {
-        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
-      }
-    }
-    else // preserve all time points of a time series image
-    {
-      for (size_t i = 0; i < 3; i++)
-      {
-        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
-      }
-    }
-
-    return ResampleImage< TImageType >(inputImage, outputSpacingVector, outputSize, interpolator);
-
-  }
-
-  /**
-  \brief Resample an image to an isotropic resolution using the specified output spacing vector
-
-  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
-  \param inputImage The input image to process
-  \param outputSpacing The output spacing, always isotropic
-  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
-  \return The resized image
-  */
-  template< class TImageType = ImageTypeFloat3D >
   typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const typename TImageType::SpacingType outputSpacing,
     typename TImageType::SizeType outputSize, const std::string interpolator = "Linear")
   {
@@ -1602,7 +1568,7 @@ namespace cbica
     if (uniqueLabels.size() != uniqueLabelsRef.size())
     {
       std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
-      return EXIT_FAILURE;
+      return returnMap;
     }
     else
     {
@@ -1611,7 +1577,7 @@ namespace cbica
         if (uniqueLabels[i] != uniqueLabelsRef[i])
         {
           std::cerr << "The label values in input and reference image are not consistent.\n";
-          return EXIT_FAILURE;
+          return returnMap;
         }
       }
     }
