@@ -230,8 +230,9 @@ RUN_DEPLOYQT () {
   fi
 
   # Download and mark executable appimagetool.
-  wget -nc https://github.com/AppImage/AppImageKit/releases/download/11/appimagetool-x86_64.AppImage
-  chmod +x appimagetool-x86_64.AppImage
+  wget -nc https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-aarch64.AppImage
+
+  chmod +x appimagetool-aarch64.AppImage
   
   echo "APPIMG"
   ls
@@ -240,7 +241,7 @@ RUN_DEPLOYQT () {
   # echo "./appdir/usr/libexec/MCR/**" >> .appimageignore
   # echo "./appdir/usr/lib/snap*/**" >> .appimageignore
 
-  ./appimagetool-x86_64.AppImage ./appdir -v --exclude-file "./appdir/usr/libexec/MCR/**"
+  ./appimagetool-aarch64.AppImage ./appdir -v 
 
   echo "DONE APPIMG"
   ls
