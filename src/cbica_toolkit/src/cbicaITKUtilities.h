@@ -541,264 +541,99 @@ namespace cbica
   \brief Get the image orientation
 
   \param inputImage The input image
+  \param desiredOrientation The desired orientation to conver the image to
   \return A pair of string (which represents the orientation) and an itk::Image which represents the inputImage in RAI form
   */
   template< class TImageType = ImageTypeFloat3D >
-  std::pair< std::string, typename TImageType::Pointer > GetImageOrientation(const typename TImageType::Pointer inputImage)
+  std::pair< std::string, typename TImageType::Pointer > GetImageOrientation(const typename TImageType::Pointer inputImage, const std::string &desiredOrientation = "RAI")
   {
-    using namespace itk::SpatialOrientation;
+    if (TImageType::ImageDimension != 3)
+    {
+      std::cerr << "This function is only defined for 3D and 4D images.\n";
+      exit(EXIT_FAILURE);
+    }
     auto orientFilter = itk::OrientImageFilter< TImageType, TImageType >::New();
     orientFilter->SetInput(inputImage);
-    orientFilter->SetDesiredCoordinateOrientation(ITK_COORDINATE_ORIENTATION_RAI);
+    orientFilter->UseImageDirectionOn();
+    orientFilter->SetDirectionTolerance(0);
+    orientFilter->SetCoordinateTolerance(0);
+
+    auto desiredOrientation_wrap = desiredOrientation;
+    std::transform(desiredOrientation_wrap.begin(), desiredOrientation_wrap.end(), desiredOrientation_wrap.begin(), ::toupper);
+
+    std::map< std::string, itk::SpatialOrientation::ValidCoordinateOrientationFlags > orientationMap;
+    orientationMap["Axial"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI;
+    orientationMap["Coronal"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSA;
+    orientationMap["Sagittal"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASL;
+    orientationMap["RIP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP;
+    orientationMap["LIP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LIP;
+    orientationMap["RSP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSP;
+    orientationMap["LSP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LSP;
+    orientationMap["RIA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIA;
+    orientationMap["LIA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LIA;
+    orientationMap["RSA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSA;
+    orientationMap["LSA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LSA;
+    orientationMap["IRP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IRP;
+    orientationMap["ILP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ILP;
+    orientationMap["SRP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SRP;
+    orientationMap["SLP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SLP;
+    orientationMap["IRA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IRA;
+    orientationMap["ILA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ILA;
+    orientationMap["SRA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SRA;
+    orientationMap["SLA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SLA;
+    orientationMap["RPI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RPI;
+    orientationMap["LPI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LPI;
+    orientationMap["RAI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI;
+    orientationMap["LAI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LAI;
+    orientationMap["RPS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RPS;
+    orientationMap["LPS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LPS;
+    orientationMap["RAS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAS;
+    orientationMap["LAS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LAS;
+    orientationMap["PRI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PRI;
+    orientationMap["PLI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PLI;
+    orientationMap["ARI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ARI;
+    orientationMap["ALI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ALI;
+    orientationMap["PRS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PRS;
+    orientationMap["PLS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PLS;
+    orientationMap["ARS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ARS;
+    orientationMap["ALS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ALS;
+    orientationMap["IPR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IPR;
+    orientationMap["SPR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SPR;
+    orientationMap["IAR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IAR;
+    orientationMap["SAR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SAR;
+    orientationMap["IPL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IPL;
+    orientationMap["SPL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SPL;
+    orientationMap["IAL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IAL;
+    orientationMap["SAL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SAL;
+    orientationMap["PIR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PIR;
+    orientationMap["PSR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PSR;
+    orientationMap["AIR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_AIR;
+    orientationMap["ASR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASR;
+    orientationMap["PIL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PIL;
+    orientationMap["PSL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PSL;
+    orientationMap["AIL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_AIL;
+    orientationMap["ASL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASL;
+
+    // set the desired orientation and update
+    orientFilter->SetDesiredCoordinateOrientation(orientationMap[desiredOrientation_wrap]);
     orientFilter->Update();
+    auto outputImage = orientFilter->GetOutput();
 
     std::string returnString;
 
-    switch (orientFilter->GetGivenCoordinateOrientation())
+    for (auto it = orientationMap.begin(); it != orientationMap.end(); ++it)
     {
-    case ITK_COORDINATE_ORIENTATION_RIP:
-    {
-      returnString = "RIP";
-      break;
+      if (it->second == orientFilter->GetGivenCoordinateOrientation())
+      {
+        returnString = it->first;
+      }
     }
-    case ITK_COORDINATE_ORIENTATION_LIP:
+    if (returnString.empty())
     {
-      returnString = "LIP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RSP:
-    {
-      returnString = "RSP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LSP:
-    {
-      returnString = "LSP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RIA:
-    {
-      returnString = "RIA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LIA:
-    {
-      returnString = "LIA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LSA:
-    {
-      returnString = "LSA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IRP:
-    {
-      returnString = "IRP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ILP:
-    {
-      returnString = "ILP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SRP:
-    {
-      returnString = "SRP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SLP:
-    {
-      returnString = "SLP";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IRA:
-    {
-      returnString = "IRA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ILA:
-    {
-      returnString = "ILA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SRA:
-    {
-      returnString = "SRA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SLA:
-    {
-      returnString = "SLA";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RPI:
-    {
-      returnString = "RPI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LPI:
-    {
-      returnString = "LPI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RAI:
-    {
-      returnString = "RAI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LAI:
-    {
-      returnString = "LAI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RPS:
-    {
-      returnString = "RPS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LPS:
-    {
-      returnString = "LPS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_RAS:
-    {
-      returnString = "RAS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_LAS:
-    {
-      returnString = "LAS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PRI:
-    {
-      returnString = "PRI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PLI:
-    {
-      returnString = "PLI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ARI:
-    {
-      returnString = "ARI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ALI:
-    {
-      returnString = "ALI";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PRS:
-    {
-      returnString = "PRS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PLS:
-    {
-      returnString = "PLS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ARS:
-    {
-      returnString = "ARS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ALS:
-    {
-      returnString = "ALS";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IPR:
-    {
-      returnString = "IPR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SPR:
-    {
-      returnString = "SPR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IAR:
-    {
-      returnString = "IAR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SAR:
-    {
-      returnString = "SAR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IPL:
-    {
-      returnString = "IPL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SPL:
-    {
-      returnString = "SPL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_IAL:
-    {
-      returnString = "IAL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_SAL:
-    {
-      returnString = "SAL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PIR:
-    {
-      returnString = "PIR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PSR:
-    {
-      returnString = "PSR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_AIR:
-    {
-      returnString = "AIR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ASR:
-    {
-      returnString = "ASR";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PIL:
-    {
-      returnString = "PIL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_PSL:
-    {
-      returnString = "PSL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_AIL:
-    {
-      returnString = "AIL";
-      break;
-    }
-    case ITK_COORDINATE_ORIENTATION_ASL:
-    {
-      returnString = "ASL";
-      break;
-    }
-    default:
-    {
-      returnString = "UNKNOWN";
-      break;
-    }
+      returnString = "Unknown";
     }
 
-    return std::make_pair(returnString, orientFilter->GetOutput());
+    return std::make_pair(returnString, outputImage);
   }
 
   /**
@@ -1109,8 +944,110 @@ namespace cbica
     }
     else if (interpolator_wrap.find("nearest") != std::string::npos)
     {
-      auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
-      resampler->SetInterpolator(interpolatorFunc);
+      // if nearest label is found, do something special
+      if (interpolator_wrap.find("nearestlabel") != std::string::npos)
+      {
+        ///
+        // this situation can only happen in case of a mask image
+        // The label image assumed to be an image of shortsC
+        typedef itk::Image<short, TImageType::ImageDimension> LabelImageType;
+        /// histogram calculation from ITK -- for texture feature pipeline
+        auto caster = itk::CastImageFilter< TImageType, LabelImageType >::New();
+        caster->SetInput(inputImage); //original input binary mask, not the masked image
+        caster->Update();
+
+        auto moving = caster->GetOutput();
+
+        // Scan the unique labels in the image
+        std::set<short> label_set;
+        short *labels = moving->GetBufferPointer();
+        int n_pixels = moving->GetPixelContainer()->Size();
+
+        // Get the list of unique pixels
+        short last_pixel = 0;
+        for (int j = 0; j < n_pixels; j++)
+        {
+          short pixel = labels[j];
+          if (last_pixel != pixel)
+          {
+            label_set.insert(pixel);
+            last_pixel = pixel;
+            //if (label_set.size() > 1000)
+            //  throw GreedyException("Label wise interpolation not supported for image %s "
+            //    "which has over 1000 distinct labels", filename);
+          }
+        }
+
+        // Turn this set into an array
+        std::vector<short> label_array(label_set.begin(), label_set.end());
+
+        // Create a N-way voting filter
+        typedef NaryLabelVotingFunctor<TImageType, LabelImageType> VotingFunctor;
+        VotingFunctor vf(label_array);
+
+        typedef itk::NaryFunctorImageFilter<TImageType, LabelImageType, VotingFunctor> VotingFilter;
+        typename VotingFilter::Pointer fltVoting = VotingFilter::New();
+        fltVoting->SetFunctor(vf);
+
+        // Create a mini-pipeline of streaming filters
+        for (size_t j = 0; j < label_array.size(); j++)
+        {
+          // Set up a threshold filter for this label
+          typedef itk::BinaryThresholdImageFilter<LabelImageType, TImageType> ThresholdFilterType;
+          typename ThresholdFilterType::Pointer fltThreshold = ThresholdFilterType::New();
+          fltThreshold->SetInput(moving);
+          fltThreshold->SetLowerThreshold(label_array[j]);
+          fltThreshold->SetUpperThreshold(label_array[j]);
+          fltThreshold->SetInsideValue(1.0);
+          fltThreshold->SetOutsideValue(0.0);
+
+          // Set up a smoothing filter for this label
+          typedef itk::SmoothingRecursiveGaussianImageFilter<TImageType, TImageType> SmootherType;
+          typename SmootherType::Pointer fltSmooth = SmootherType::New();
+          fltSmooth->SetInput(fltThreshold->GetOutput());
+
+          // Work out the sigmas for the filter
+          //if (r_param.images[i].interp.sigma.physical_units)
+          //{
+          //  fltSmooth->SetSigma(r_param.images[i].interp.sigma.sigma);
+          //}
+          //else
+          {
+            typename SmootherType::SigmaArrayType sigma_array;
+            auto default_sigma = std::sqrt(3);
+            for (unsigned int d = 0; d < TImageType::ImageDimension; d++)
+              sigma_array[d] = /*r_param.images[i].interp.sigma.sigma*/default_sigma * moving->GetSpacing()[d];
+            fltSmooth->SetSigmaArray(sigma_array);
+          }
+
+          //// TODO: we should really be coercing the output into a vector image to speed up interpolation!
+          //typedef FastWarpCompositeImageFilter<TImageType, TImageType, VectorImageType> InterpFilter;
+          //typename InterpFilter::Pointer fltInterp = InterpFilter::New();
+          //fltInterp->SetMovingImage(fltSmooth->GetOutput());
+          //fltInterp->SetDeformationField(warp);
+          //fltInterp->SetUsePhysicalSpace(true);
+
+          //fltInterp->Update();
+
+          // Add to the voting filter
+          fltVoting->SetInput(j, fltSmooth->GetOutput());
+        }
+
+        // TODO: test out streaming!
+        // Run this big pipeline
+        fltVoting->Update();
+
+        auto caster_back = itk::CastImageFilter< LabelImageType, TImageType >::New();
+        caster_back->SetInput(fltVoting->GetOutput()); //original input binary mask, not the masked image
+        caster_back->Update();
+        return caster_back->GetOutput();
+        ///
+      }
+      else
+      {
+        auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
+        resampler->SetInterpolator(interpolatorFunc);
+      }
     }
     //else if (interpolator_wrap.find("window") != std::string::npos)
     //{
@@ -1133,6 +1070,41 @@ namespace cbica
   }
 
   /**
+  \brief Resample an image to an isotropic resolution using the specified output spacing vector
+
+  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
+  \param inputImage The input image to process
+  \param outputSpacing The desired output spacing
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \return The resized image
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage,
+    const itk::Vector< double, TImageType::ImageDimension > outputSpacing,
+    const std::string interpolator = "Linear")
+  {
+    auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
+    auto inputSpacing = inputImage->GetSpacing();
+    if (TImageType::ImageDimension != 4)
+    {
+      for (size_t i = 0; i < TImageType::ImageDimension; i++)
+      {
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
+      }
+    }
+    else // preserve all time points of a time series image
+    {
+      for (size_t i = 0; i < 3; i++)
+      {
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
+      }
+    }
+
+    return ResampleImage< TImageType >(inputImage, outputSpacing, outputSize, interpolator);
+
+  }
+
+  /**
   \brief Resample an image to an isotropic resolution using the specified output spacing
 
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
@@ -1142,7 +1114,8 @@ namespace cbica
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const float outputSpacing = 1.0, const std::string interpolator = "Linear")
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage,
+    const float outputSpacing = 1.0, const std::string interpolator = "Linear")
   {
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
     auto inputSpacing = inputImage->GetSpacing();
