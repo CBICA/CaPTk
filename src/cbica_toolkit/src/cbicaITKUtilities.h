@@ -17,7 +17,6 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include <algorithm>
 #include <functional>
 #include <cmath>
-#include <unordered_map>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -44,6 +43,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkLinearInterpolateImageFunction.h"
 #include "itkBSplineInterpolateImageFunction.h"
 #include "itkNearestNeighborInterpolateImageFunction.h"
+#include "itkLabelOverlapMeasuresImageFilter.h"
 //#include "itkWindowedSincInterpolateImageFunction.h"
 
 #include "itkTestingComparisonImageFilter.h"
@@ -54,17 +54,12 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "cbicaUtilities.h"
 #include "cbicaITKImageInfo.h"
 
+#include "HausdorffDistance.h"
+
 #include "gdcmMD5.h"
 #include "gdcmReader.h"
 
 #include "DicomIOManager.h"
-
-#include "itkNaryFunctorImageFilter.h"
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
-#include "itkBinaryThresholdImageFilter.h"
-
-#include "itkJoinSeriesImageFilter.h"
-#include "itkExtractImageFilter.h"
 
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 //unsigned int RmsCounter = 0;
@@ -80,189 +75,12 @@ enum InterpolatorType
   Linear, NearestNeighbor, BSpline
 };
 
-//! Helper class for computation
-template <class TInputImage, class TOutputImage>
-class NaryLabelVotingFunctor
-{
-public:
-  typedef NaryLabelVotingFunctor<TInputImage, TOutputImage> Self;
-  typedef typename TInputImage::PixelType InputPixelType;
-  typedef typename TOutputImage::PixelType OutputPixelType;
-  typedef std::vector<OutputPixelType> LabelArray;
-
-  NaryLabelVotingFunctor(const LabelArray &labels)
-    : m_LabelArray(labels), m_Size(labels.size()) {}
-
-  NaryLabelVotingFunctor() : m_Size(0) {}
-
-
-  OutputPixelType operator() (const std::vector<InputPixelType> &pix)
-  {
-    InputPixelType best_val = pix[0];
-    int best_index = 0;
-    for (int i = 1; i < m_Size; i++)
-      if (pix[i] > best_val)
-      {
-        best_val = pix[i];
-        best_index = i;
-      }
-
-    return m_LabelArray[best_index];
-  }
-
-  bool operator != (const Self &other)
-  {
-    return other.m_LabelArray != m_LabelArray;
-  }
-
-protected:
-  LabelArray m_LabelArray;
-  int m_Size;
-};
-
 /*
 \namespace cbica
 \brief Namespace for differentiating functions written for internal use
 */
 namespace cbica
 {
-  //! The image type
-  enum ImageModalityType
-  {
-    IMAGE_TYPE_UNDEFINED = 0, IMAGE_TYPE_T1, IMAGE_TYPE_T1CE, IMAGE_TYPE_T2,
-    IMAGE_TYPE_T2FLAIR, IMAGE_TYPE_AX, IMAGE_TYPE_FA, IMAGE_TYPE_RAD, IMAGE_TYPE_TR,
-    IMAGE_TYPE_PERFUSION, IMAGE_TYPE_DTI, IMAGE_TYPE_RECURRENCE_OUTPUT, IMAGE_TYPE_PP, IMAGE_TYPE_CT,
-    IMAGE_TYPE_PET, IMAGE_TYPE_PSR, IMAGE_TYPE_PH, IMAGE_TYPE_RCBV, IMAGE_TYPE_SEG,
-    IMAGE_TYPE_ATLAS, IMAGE_TYPE_PARAMS, IMAGE_TYPE_SUDOID, IMAGE_TYPE_NEAR, IMAGE_TYPE_FAR,
-    IMAGE_MAMMOGRAM, IMAGE_TYPE_FEATURES
-  };
-
-  //! The modality strings that are used in the GUI 
-  static const char ImageModalityString[ImageModalityType::IMAGE_TYPE_FEATURES + 1][15] =
-  {
-    "DEF", "T1", "T1Gd", "T2",
-    "FLAIR", "DTI_AX", "DTI_FA", "DTI_RAD", "DTI_TR",
-    "PERFUSION", "DTI", "REC", "PP", "CT",
-    "PET", "pSR", "PH", "RCBV", "SEG",
-    "ATLAS", "PARAMS", "SUDOID", "NEAR", "FAR",
-    "FFDM", "FEAT"
-  };
-
-  /**
-  \brief Guess Image Type
-
-  \param str String to guess
-  \return deduced type
-  */
-  inline int guessImageType(const std::string &fileName)
-  {
-    int ImageSubType = ImageModalityType::IMAGE_TYPE_UNDEFINED;
-    std::string fileName_wrap = fileName;
-    std::transform(fileName_wrap.begin(), fileName_wrap.end(), fileName_wrap.begin(), ::tolower);
-    auto ext = cbica::getFilenameExtension(fileName_wrap, false);
-
-    // lambda function to check the different string combinations in a file for modality check
-    auto modalityCheckerFunction = [&](std::string baseModalityStringToCheck)
-    {
-      if (
-        (fileName_wrap.find(baseModalityStringToCheck + ext) != std::string::npos) ||
-        (fileName_wrap.find("_" + baseModalityStringToCheck) != std::string::npos) ||
-        (fileName_wrap.find(baseModalityStringToCheck + "_") != std::string::npos) ||
-        (fileName_wrap.find("." + baseModalityStringToCheck + ".") != std::string::npos) ||
-        (fileName_wrap.find(baseModalityStringToCheck) != std::string::npos)
-        )
-      {
-        return true;
-      }
-    };
-
-    // using the lambda to figure out the modality
-    if (
-      modalityCheckerFunction("t1ce") ||
-      modalityCheckerFunction("t1gd") ||
-      modalityCheckerFunction("t1gad") ||
-      modalityCheckerFunction("t1-ce") ||
-      modalityCheckerFunction("t1-gd") ||
-      modalityCheckerFunction("t1-gad")
-      )
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_T1CE;
-    }
-    else if (modalityCheckerFunction("t1"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_T1;
-    }
-    else if (modalityCheckerFunction("t2"))
-    {
-      if ((fileName_wrap.find("flair") != std::string::npos)) // if there is "flair" present in this case, simply return flair
-      {
-        ImageSubType = ImageModalityType::IMAGE_TYPE_T2FLAIR;
-      }
-      else
-      {
-        ImageSubType = ImageModalityType::IMAGE_TYPE_T2;
-      }
-    }
-    else if (modalityCheckerFunction("flair"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_T2FLAIR;
-    }
-    else if (modalityCheckerFunction("dti") || modalityCheckerFunction("b0"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_DTI;
-    }
-    else if (modalityCheckerFunction("radial") || modalityCheckerFunction("rad"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_RAD;
-    }
-    else if (modalityCheckerFunction("axial") || modalityCheckerFunction("ax"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_AX;
-    }
-    else if (modalityCheckerFunction("fractional") || modalityCheckerFunction("fa"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_FA;
-    }
-    else if (modalityCheckerFunction("trace") || modalityCheckerFunction("tr"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_TR;
-    }
-    else if (modalityCheckerFunction("rcbv"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_RCBV;
-    }
-    else if (modalityCheckerFunction("psr"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_PSR;
-    }
-    else if (modalityCheckerFunction("ph"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_PH;
-    }
-    else if (modalityCheckerFunction("perf") || modalityCheckerFunction("dsc"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_PERFUSION;
-    }
-    else if (modalityCheckerFunction("ct2pet") || modalityCheckerFunction("ct"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_CT;
-    }
-    else if (modalityCheckerFunction("pet"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_PET;
-    }
-    else if (
-      modalityCheckerFunction("labelmap") || 
-      modalityCheckerFunction("label-map") || 
-      modalityCheckerFunction("segmentation") ||
-      modalityCheckerFunction("annotation") ||
-      modalityCheckerFunction("label") ||
-      modalityCheckerFunction("roi"))
-    {
-      ImageSubType = ImageModalityType::IMAGE_TYPE_SEG;
-    }
-    return ImageSubType;
-  }
   /**
   \brief Calculate and preserve the mask indeces
 
@@ -364,263 +182,6 @@ namespace cbica
   std::vector< typename TImageType::PixelType > ExtractPixelValuesFromIndeces(const typename TImageType::Pointer inputImage, const std::vector< typename TImageType::IndexType > &indeces)
   {
     return GetPixelValuesFromIndeces< TImageType >(inputImage, indeces);
-  }
-
-  /**
-  \brief Check properties of 2 images to see if they are defined in the same space.
-  */
-  template< typename TImageType >
-  inline bool ImageSanityCheck(const typename TImageType::Pointer image1, const typename TImageType::Pointer image2)
-  {
-    auto size_1 = image1->GetLargestPossibleRegion().GetSize();
-    auto size_2 = image2->GetLargestPossibleRegion().GetSize();
-
-    auto origin_1 = image1->GetOrigin();
-    auto origin_2 = image2->GetOrigin();
-
-    auto spacing_1 = image1->GetSpacing();
-    auto spacing_2 = image2->GetSpacing();
-    
-    auto directions_1 = image1->GetDirection();
-    auto directions_2 = image2->GetDirection();
-    
-    if (directions_1.ColumnDimensions != directions_2.ColumnDimensions)
-    {
-      std::cerr << "Column dimension mismatch for directions.\n";
-      return false;
-    }
-    if (directions_1.RowDimensions != directions_2.RowDimensions)
-    {
-      std::cerr << "Row dimension mismatch for directions.\n";
-      return false;
-    }
-    if (directions_1 != directions_2)
-    {
-      std::cerr << "Directions are not the same.\n";
-      return false;
-    }
-
-    for (size_t i = 0; i < TImageType::ImageDimension; i++)
-    {
-      if (size_1[i] != size_2[i])
-      {
-        std::cerr << "Size mismatch at dimension '" << i << "'\n";
-        return false;
-      }
-      if (origin_1[i] != origin_2[i])
-      {
-        std::cerr << "Origin mismatch at dimension '" << i << "'\n";
-        return false;
-      }
-      if (spacing_1[i] != spacing_2[i])
-      {
-        auto percentageDifference = std::abs(spacing_1[i] - spacing_2[i]) * 100;
-        percentageDifference /= spacing_1[i];
-        if (percentageDifference > 0.0001)
-        {
-          std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
-          return false;
-        }
-        else
-        {
-          std::cout << "Ignoring spacing difference of '" <<
-            percentageDifference << "%' in dimension '" <<
-            i << "'\n";
-        }
-      }
-    }
-
-    return true;
-  }
-
-  /**
-  \brief Check properties of 2 images to see if they are defined in the same space.
-
-  Checks are done based on cbica::ImageInfo class
-  */
-  inline bool ImageSanityCheck(const std::string &image1, const std::string &image2, bool FourDImageCheck = false)
-  {
-    auto imageInfo1 = cbica::ImageInfo(image1);
-    auto imageInfo2 = cbica::ImageInfo(image2);
-
-    auto dims = imageInfo1.GetImageDimensions();
-
-    if (FourDImageCheck)
-    {
-      dims = 3; // this is for 4D images only
-    }
-    else // do the check when FourDImageCheck is disabled
-    {
-      if (imageInfo1.GetImageDimensions() != imageInfo2.GetImageDimensions())
-      {
-        std::cout << "The dimensions of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
-        return false;
-      }
-    }
-
-    // check size, spacing and origin information as well
-
-    auto imageSize1 = imageInfo1.GetImageSize();
-    auto imageSize2 = imageInfo2.GetImageSize();
-
-    auto imageSpacing1 = imageInfo1.GetImageSpacings();
-    auto imageSpacing2 = imageInfo2.GetImageSpacings();
-
-    auto imageOrigin1 = imageInfo1.GetImageOrigins();
-    auto imageOrigin2 = imageInfo2.GetImageOrigins();
-
-    auto imageDirs1 = imageInfo1.GetImageDirections();
-    auto imageDirs2 = imageInfo1.GetImageDirections();
-
-    for (size_t d = 0; d < dims; d++)
-    {
-      if (imageSize1[d] != imageSize2[d])
-      {
-        std::cout << "The size in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
-        return false;
-      }
-      if (imageSpacing1[d] != imageSpacing2[d])
-      {
-        auto percentageDifference = std::abs(imageSpacing1[d] - imageSpacing2[d]) * 100;
-        percentageDifference /= imageSpacing1[d];
-        if (percentageDifference > 0.0001)
-        {
-          std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
-          return false;
-        }
-        else
-        {
-          std::cout << "Ignoring spacing difference of '" <<
-            percentageDifference << "%' in dimension '" <<
-            d << "'\n";
-        }
-      }
-      if (imageOrigin1[d] != imageOrigin2[d])
-      {
-        std::cout << "The origin in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
-        return false;
-      }
-
-      if (imageDirs1[d].size() != imageDirs2[d].size())
-      {
-        std::cout << "The direction in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
-        return false;
-      }
-      else
-      {
-        for (size_t i = 0; i < imageDirs1[d].size(); i++)
-        {
-          if (imageDirs1[d][i] != imageDirs2[d][i])
-          {
-            std::cout << "The direction in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") at '" << i << "' doesn't match.\n";
-            return false;
-          }
-        }
-      }
-    }
-
-    return true;
-  }
-
-  /**
-  \brief This function returns a joined N-D image with an input of a vector of (N-1)-D images
-
-  Uses the itk::JoinSeriesImageFilter to accomplish this
-
-  \param inputImage The vector of images from which the larger image is to be extracted
-  \param newSpacing The spacing in the new dimension
-  */
-  template< class TInputImageType, class TOutputImageType >
-  typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages, double newSpacing = 1.0)
-  {
-    if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
-    {
-      std::cerr << "Only works when input and output image dimensions are N and (N+1), respectively.\n";
-      //return typename TOutputImageType::New();
-      exit(EXIT_FAILURE);
-    }
-    auto joinFilter = /*typename*/ itk::JoinSeriesImageFilter< TInputImageType, TOutputImageType >::New();
-    joinFilter->SetSpacing(newSpacing);
-
-    for (size_t N = 0; N < inputImages.size(); N++)
-    {
-      if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
-      {
-        std::cerr << "Image Sanity check failed in index '" << N << "'\n";
-        //return typename TOutputImageType::New();
-        exit(EXIT_FAILURE);
-      }
-      joinFilter->SetInput(N, inputImages[N]);
-    }
-    try
-    {
-      joinFilter->Update();
-    }
-    catch (const std::exception& e)
-    {
-      std::cerr << "Joining failed: " << e.what() << "\n";
-    }
-    return joinFilter->GetOutput();
-  }
-
-  /**
-  \brief This function returns a vector of (N-1)-D images with an input of an N-D image
-
-  Uses the itk::ExtractImageFilter to accomplish this
-
-  \param inputImage The larger image series from which the sub-images in the specified axis are extracted
-  \param axisToExtract The axis along with the images are to be extracted from; defaults to TInputImageType::ImageDimension - for extraction along Z, use '3'
-  \param directionsCollapseIdentity Whether direction cosines are to be normalized to identity or not; defaults to not
-  */
-  template< class TInputImageType, class TOutputImageType >
-  std::vector< typename TOutputImageType::Pointer > GetExtractedImages(typename TInputImageType::Pointer inputImage,
-    int axisToExtract = TInputImageType::ImageDimension - 1, bool directionsCollapseIdentity = false)
-  {
-    std::vector<typename TOutputImageType::Pointer> returnImages;
-
-    if (TOutputImageType::ImageDimension != TInputImageType::ImageDimension - 1)
-    {
-      std::cerr << "Only works when input and output image dimensions are N and (N-1), respectively.\n";
-      return returnImages;
-    }
-    // set the sub-image properties
-    auto imageSize = inputImage->GetLargestPossibleRegion().GetSize();
-    auto regionSize = imageSize;
-    regionSize[axisToExtract] = 0;
-    returnImages.resize(imageSize[axisToExtract]);
-
-    typename TInputImageType::IndexType regionIndex;
-    regionIndex.Fill(0);
-
-    // loop through time points
-    for (size_t i = 0; i < imageSize[axisToExtract]; i++)
-    {
-      regionIndex[axisToExtract] = i;
-      typename TInputImageType::RegionType desiredRegion(regionIndex, regionSize);
-      auto extractor = /*typename*/ itk::ExtractImageFilter< TInputImageType, TOutputImageType >::New();
-      extractor->SetExtractionRegion(desiredRegion);
-      extractor->SetInput(inputImage);
-      if (directionsCollapseIdentity)
-      {
-        extractor->SetDirectionCollapseToIdentity();
-      }
-      else
-      {
-        extractor->SetDirectionCollapseToSubmatrix();
-      }
-      try
-      {
-        extractor->Update();
-      }
-      catch (const std::exception& e)
-      {
-        std::cerr << "Extracting failed: " << e.what() << "\n";
-      }
-      auto temp = extractor->GetOutput();
-      //temp->DisconnectPipeline(); // ensure a hard copy is done 
-      returnImages[i] = temp;
-    }
-    return returnImages;
   }
 
   ///**
@@ -739,7 +300,7 @@ namespace cbica
     }
 
     // initialize the comparator
-    auto diff = typename itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
+    auto diff = itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
     diff->SetValidInput(referenceImage);
     diff->SetTestInput(checkImage);
     diff->SetDifferenceThreshold(differenceThreshold);
@@ -752,6 +313,93 @@ namespace cbica
       // if there is an appreciable intensity difference between the images, check the number of difference pixels
       if (diff->GetNumberOfPixelsWithDifferences() > numberOfPixelsTolerance)
       {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+  \brief Check properties of 2 images to see if they are defined in the same space.
+  */
+  template< typename TImageType >
+  inline bool ImageSanityCheck(const typename TImageType::Pointer image1, const typename TImageType::Pointer image2)
+  {
+    auto size_1 = image1->GetLargestPossibleRegion().GetSize();
+    auto size_2 = image2->GetLargestPossibleRegion().GetSize();
+
+    auto origin_1 = image1->GetOrigin();
+    auto origin_2 = image2->GetOrigin();
+
+    auto spacing_1 = image1->GetSpacing();
+    auto spacing_2 = image2->GetSpacing();
+
+    for (size_t i = 0; i < TImageType::ImageDimension; i++)
+    {
+      if (size_1[i] != size_2[i])
+      {
+        std::cerr << "Size mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+      if (origin_1[i] != origin_2[i])
+      {
+        std::cerr << "Origin mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+      if (spacing_1[i] != spacing_2[i])
+      {
+        std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+  \brief Check properties of 2 images to see if they are defined in the same space.
+
+  Checks are done based on cbica::ImageInfo class
+  */
+  inline bool ImageSanityCheck(const std::string &image1, const std::string &image2)
+  {
+    auto imageInfo1 = cbica::ImageInfo(image1);
+    auto imageInfo2 = cbica::ImageInfo(image2);
+
+    if (imageInfo1.GetImageDimensions() != imageInfo2.GetImageDimensions())
+    {
+      std::cout << "The dimensions of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+      return false;
+    }
+
+    // check size, spacing and origin information as well
+    auto dims = imageInfo1.GetImageDimensions();
+
+    auto imageSize1 = imageInfo1.GetImageSize();
+    auto imageSize2 = imageInfo2.GetImageSize();
+
+    auto imageSpacing1 = imageInfo1.GetImageSpacings();
+    auto imageSpacing2 = imageInfo2.GetImageSpacings();
+
+    auto imageOrigin1 = imageInfo1.GetImageOrigins();
+    auto imageOrigin2 = imageInfo2.GetImageOrigins();
+
+    for (size_t d = 0; d < dims; d++)
+    {
+      if (imageSize1[d] != imageSize2[d])
+      {
+        std::cout << "The size in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+      if (imageSpacing1[d] != imageSpacing2[d])
+      {
+        std::cout << "The spacing in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+      if (imageOrigin1[d] != imageOrigin2[d])
+      {
+        std::cout << "The origin in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
         return false;
       }
     }
@@ -893,99 +541,264 @@ namespace cbica
   \brief Get the image orientation
 
   \param inputImage The input image
-  \param desiredOrientation The desired orientation to conver the image to
   \return A pair of string (which represents the orientation) and an itk::Image which represents the inputImage in RAI form
   */
   template< class TImageType = ImageTypeFloat3D >
-  std::pair< std::string, typename TImageType::Pointer > GetImageOrientation(const typename TImageType::Pointer inputImage, const std::string &desiredOrientation = "RAI")
+  std::pair< std::string, typename TImageType::Pointer > GetImageOrientation(const typename TImageType::Pointer inputImage)
   {
-    if (TImageType::ImageDimension != 3)
-    {
-      std::cerr << "This function is only defined for 3D and 4D images.\n";
-      exit(EXIT_FAILURE);
-    }
+    using namespace itk::SpatialOrientation;
     auto orientFilter = itk::OrientImageFilter< TImageType, TImageType >::New();
     orientFilter->SetInput(inputImage);
-    orientFilter->UseImageDirectionOn();
-    orientFilter->SetDirectionTolerance(0);
-    orientFilter->SetCoordinateTolerance(0);
-
-    auto desiredOrientation_wrap = desiredOrientation;
-    std::transform(desiredOrientation_wrap.begin(), desiredOrientation_wrap.end(), desiredOrientation_wrap.begin(), ::toupper);
-
-    std::map< std::string, itk::SpatialOrientation::ValidCoordinateOrientationFlags > orientationMap;
-    orientationMap["Axial"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI;
-    orientationMap["Coronal"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSA;
-    orientationMap["Sagittal"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASL;
-    orientationMap["RIP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP;
-    orientationMap["LIP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LIP;
-    orientationMap["RSP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSP;
-    orientationMap["LSP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LSP;
-    orientationMap["RIA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIA;
-    orientationMap["LIA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LIA;
-    orientationMap["RSA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSA;
-    orientationMap["LSA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LSA;
-    orientationMap["IRP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IRP;
-    orientationMap["ILP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ILP;
-    orientationMap["SRP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SRP;
-    orientationMap["SLP"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SLP;
-    orientationMap["IRA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IRA;
-    orientationMap["ILA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ILA;
-    orientationMap["SRA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SRA;
-    orientationMap["SLA"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SLA;
-    orientationMap["RPI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RPI;
-    orientationMap["LPI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LPI;
-    orientationMap["RAI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI;
-    orientationMap["LAI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LAI;
-    orientationMap["RPS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RPS;
-    orientationMap["LPS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LPS;
-    orientationMap["RAS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAS;
-    orientationMap["LAS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_LAS;
-    orientationMap["PRI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PRI;
-    orientationMap["PLI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PLI;
-    orientationMap["ARI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ARI;
-    orientationMap["ALI"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ALI;
-    orientationMap["PRS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PRS;
-    orientationMap["PLS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PLS;
-    orientationMap["ARS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ARS;
-    orientationMap["ALS"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ALS;
-    orientationMap["IPR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IPR;
-    orientationMap["SPR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SPR;
-    orientationMap["IAR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IAR;
-    orientationMap["SAR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SAR;
-    orientationMap["IPL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IPL;
-    orientationMap["SPL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SPL;
-    orientationMap["IAL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_IAL;
-    orientationMap["SAL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_SAL;
-    orientationMap["PIR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PIR;
-    orientationMap["PSR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PSR;
-    orientationMap["AIR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_AIR;
-    orientationMap["ASR"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASR;
-    orientationMap["PIL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PIL;
-    orientationMap["PSL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PSL;
-    orientationMap["AIL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_AIL;
-    orientationMap["ASL"] = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASL;
-
-    // set the desired orientation and update
-    orientFilter->SetDesiredCoordinateOrientation(orientationMap[desiredOrientation_wrap]);
+    orientFilter->SetDesiredCoordinateOrientation(ITK_COORDINATE_ORIENTATION_RAI);
     orientFilter->Update();
-    auto outputImage = orientFilter->GetOutput();
 
     std::string returnString;
 
-    for (auto it = orientationMap.begin(); it != orientationMap.end(); ++it)
+    switch (orientFilter->GetGivenCoordinateOrientation())
     {
-      if (it->second == orientFilter->GetGivenCoordinateOrientation())
-      {
-        returnString = it->first;
-      }
+    case ITK_COORDINATE_ORIENTATION_RIP:
+    {
+      returnString = "RIP";
+      break;
     }
-    if (returnString.empty())
+    case ITK_COORDINATE_ORIENTATION_LIP:
     {
-      returnString = "Unknown";
+      returnString = "LIP";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_RSP:
+    {
+      returnString = "RSP";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_LSP:
+    {
+      returnString = "LSP";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_RIA:
+    {
+      returnString = "RIA";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_LIA:
+    {
+      returnString = "LIA";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_LSA:
+    {
+      returnString = "LSA";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_IRP:
+    {
+      returnString = "IRP";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_ILP:
+    {
+      returnString = "ILP";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_SRP:
+    {
+      returnString = "SRP";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_SLP:
+    {
+      returnString = "SLP";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_IRA:
+    {
+      returnString = "IRA";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_ILA:
+    {
+      returnString = "ILA";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_SRA:
+    {
+      returnString = "SRA";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_SLA:
+    {
+      returnString = "SLA";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_RPI:
+    {
+      returnString = "RPI";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_LPI:
+    {
+      returnString = "LPI";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_RAI:
+    {
+      returnString = "RAI";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_LAI:
+    {
+      returnString = "LAI";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_RPS:
+    {
+      returnString = "RPS";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_LPS:
+    {
+      returnString = "LPS";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_RAS:
+    {
+      returnString = "RAS";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_LAS:
+    {
+      returnString = "LAS";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_PRI:
+    {
+      returnString = "PRI";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_PLI:
+    {
+      returnString = "PLI";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_ARI:
+    {
+      returnString = "ARI";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_ALI:
+    {
+      returnString = "ALI";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_PRS:
+    {
+      returnString = "PRS";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_PLS:
+    {
+      returnString = "PLS";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_ARS:
+    {
+      returnString = "ARS";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_ALS:
+    {
+      returnString = "ALS";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_IPR:
+    {
+      returnString = "IPR";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_SPR:
+    {
+      returnString = "SPR";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_IAR:
+    {
+      returnString = "IAR";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_SAR:
+    {
+      returnString = "SAR";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_IPL:
+    {
+      returnString = "IPL";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_SPL:
+    {
+      returnString = "SPL";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_IAL:
+    {
+      returnString = "IAL";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_SAL:
+    {
+      returnString = "SAL";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_PIR:
+    {
+      returnString = "PIR";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_PSR:
+    {
+      returnString = "PSR";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_AIR:
+    {
+      returnString = "AIR";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_ASR:
+    {
+      returnString = "ASR";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_PIL:
+    {
+      returnString = "PIL";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_PSL:
+    {
+      returnString = "PSL";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_AIL:
+    {
+      returnString = "AIL";
+      break;
+    }
+    case ITK_COORDINATE_ORIENTATION_ASL:
+    {
+      returnString = "ASL";
+      break;
+    }
+    default:
+    {
+      returnString = "UNKNOWN";
+      break;
+    }
     }
 
-    return std::make_pair(returnString, outputImage);
+    return std::make_pair(returnString, orientFilter->GetOutput());
   }
 
   /**
@@ -1230,13 +1043,46 @@ namespace cbica
 
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
-  \param outputSpacing The desired output spacing
-  \param outputSize The desired output size
+  \param outputSpacing The output spacing, always isotropic
   \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > outputSpacing,
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > &outputSpacing, const std::string interpolator = "Linear")
+  {
+    auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
+    auto outputSpacingVector = outputSpacing;
+    auto inputSpacing = inputImage->GetSpacing();
+    if (TImageType::ImageDimension != 4)
+    {
+      for (size_t i = 0; i < TImageType::ImageDimension; i++)
+      {
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
+      }
+    }
+    else // preserve all time points of a time series image
+    {
+      for (size_t i = 0; i < 3; i++)
+      {
+        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
+      }
+    }
+
+    return ResampleImage< TImageType >(inputImage, outputSpacingVector, outputSize, interpolator);
+
+  }
+
+  /**
+  \brief Resample an image to an isotropic resolution using the specified output spacing vector
+
+  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
+  \param inputImage The input image to process
+  \param outputSpacing The output spacing, always isotropic
+  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \return The resized image
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const typename TImageType::SpacingType outputSpacing,
     typename TImageType::SizeType outputSize, const std::string interpolator = "Linear")
   {
     std::string interpolator_wrap = interpolator;
@@ -1263,110 +1109,8 @@ namespace cbica
     }
     else if (interpolator_wrap.find("nearest") != std::string::npos)
     {
-      // if nearest label is found, do something special
-      if (interpolator_wrap.find("nearestlabel") != std::string::npos)
-      {
-        ///
-        // this situation can only happen in case of a mask image
-        // The label image assumed to be an image of shortsC
-        typedef itk::Image<short, TImageType::ImageDimension> LabelImageType;
-        /// histogram calculation from ITK -- for texture feature pipeline
-        auto caster = itk::CastImageFilter< TImageType, LabelImageType >::New();
-        caster->SetInput(inputImage); //original input binary mask, not the masked image
-        caster->Update();
-
-        auto moving = caster->GetOutput();
-
-        // Scan the unique labels in the image
-        std::set<short> label_set;
-        short *labels = moving->GetBufferPointer();
-        int n_pixels = moving->GetPixelContainer()->Size();
-
-        // Get the list of unique pixels
-        short last_pixel = 0;
-        for (int j = 0; j < n_pixels; j++)
-        {
-          short pixel = labels[j];
-          if (last_pixel != pixel)
-          {
-            label_set.insert(pixel);
-            last_pixel = pixel;
-            //if (label_set.size() > 1000)
-            //  throw GreedyException("Label wise interpolation not supported for image %s "
-            //    "which has over 1000 distinct labels", filename);
-          }
-        }
-
-        // Turn this set into an array
-        std::vector<short> label_array(label_set.begin(), label_set.end());
-
-        // Create a N-way voting filter
-        typedef NaryLabelVotingFunctor<TImageType, LabelImageType> VotingFunctor;
-        VotingFunctor vf(label_array);
-
-        typedef itk::NaryFunctorImageFilter<TImageType, LabelImageType, VotingFunctor> VotingFilter;
-        typename VotingFilter::Pointer fltVoting = VotingFilter::New();
-        fltVoting->SetFunctor(vf);
-
-        // Create a mini-pipeline of streaming filters
-        for (size_t j = 0; j < label_array.size(); j++)
-        {
-          // Set up a threshold filter for this label
-          typedef itk::BinaryThresholdImageFilter<LabelImageType, TImageType> ThresholdFilterType;
-          typename ThresholdFilterType::Pointer fltThreshold = ThresholdFilterType::New();
-          fltThreshold->SetInput(moving);
-          fltThreshold->SetLowerThreshold(label_array[j]);
-          fltThreshold->SetUpperThreshold(label_array[j]);
-          fltThreshold->SetInsideValue(1.0);
-          fltThreshold->SetOutsideValue(0.0);
-
-          // Set up a smoothing filter for this label
-          typedef itk::SmoothingRecursiveGaussianImageFilter<TImageType, TImageType> SmootherType;
-          typename SmootherType::Pointer fltSmooth = SmootherType::New();
-          fltSmooth->SetInput(fltThreshold->GetOutput());
-
-          // Work out the sigmas for the filter
-          //if (r_param.images[i].interp.sigma.physical_units)
-          //{
-          //  fltSmooth->SetSigma(r_param.images[i].interp.sigma.sigma);
-          //}
-          //else
-          {
-            typename SmootherType::SigmaArrayType sigma_array;
-            auto default_sigma = std::sqrt(3);
-            for (unsigned int d = 0; d < TImageType::ImageDimension; d++)
-              sigma_array[d] = /*r_param.images[i].interp.sigma.sigma*/default_sigma * moving->GetSpacing()[d];
-            fltSmooth->SetSigmaArray(sigma_array);
-          }
-
-          //// TODO: we should really be coercing the output into a vector image to speed up interpolation!
-          //typedef FastWarpCompositeImageFilter<TImageType, TImageType, VectorImageType> InterpFilter;
-          //typename InterpFilter::Pointer fltInterp = InterpFilter::New();
-          //fltInterp->SetMovingImage(fltSmooth->GetOutput());
-          //fltInterp->SetDeformationField(warp);
-          //fltInterp->SetUsePhysicalSpace(true);
-
-          //fltInterp->Update();
-
-          // Add to the voting filter
-          fltVoting->SetInput(j, fltSmooth->GetOutput());
-        }
-
-        // TODO: test out streaming!
-        // Run this big pipeline
-        fltVoting->Update();
-
-        auto caster_back = itk::CastImageFilter< LabelImageType, TImageType >::New();
-        caster_back->SetInput(fltVoting->GetOutput()); //original input binary mask, not the masked image
-        caster_back->Update();
-        return caster_back->GetOutput();
-        ///
-      }
-      else
-      {
-        auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
-        resampler->SetInterpolator(interpolatorFunc);
-      }
+      auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
+      resampler->SetInterpolator(interpolatorFunc);
     }
     //else if (interpolator_wrap.find("window") != std::string::npos)
     //{
@@ -1386,39 +1130,6 @@ namespace cbica
     resampler->UpdateLargestPossibleRegion();
 
     return resampler->GetOutput();
-  }
-
-  /**
-  \brief Resample an image to an isotropic resolution using the specified output spacing vector
-
-  This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
-  \param inputImage The input image to process
-  \param outputSpacing The desired output spacing
-  \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
-  \return The resized image
-  */
-  template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > outputSpacing, const std::string interpolator = "Linear")
-  {
-    auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
-    auto inputSpacing = inputImage->GetSpacing();
-    if (TImageType::ImageDimension != 4)
-    {
-      for (size_t i = 0; i < TImageType::ImageDimension; i++)
-      {
-        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
-      }
-    }
-    else // preserve all time points of a time series image
-    {
-      for (size_t i = 0; i < 3; i++)
-      {
-        outputSize[i] = std::round(outputSize[i] * inputSpacing[i] / outputSpacing[i]);
-      }
-    }
-
-    return ResampleImage< TImageType >(inputImage, outputSpacing, outputSize, interpolator);
-
   }
 
   /**
@@ -1490,7 +1201,7 @@ namespace cbica
       }
     }
 
-    return ResampleImage< TImageType >(inputImage, outputSpacing, outputSize, interpolator);
+    return ResampleImage < TImageType >(inputImage, outputSpacing, outputSize, interpolator);
 
   }
 
@@ -1541,6 +1252,103 @@ namespace cbica
       }
     }
     return outputIndeces;
+  }
+
+  /**
+  \brief Get the statistics between 2 labels
+
+  \param inputLabel_1 The first label file
+  \param inputLabel_2 The second label file
+  \return Map of various statistics and corresponding values
+  */
+  template < typename TImageType = ImageTypeFloat3D >
+  std::map< std::string, double > GetLabelStatistics(const typename TImageType::Pointer inputLabel_1,
+    const typename TImageType::Pointer inputLabel_2)
+  {
+    std::map< std::string, double > returnMap;
+
+    auto uniqueLabels = GetUniqueValuesInImage< TImageType >(inputLabel_1);
+    auto uniqueLabelsRef = GetUniqueValuesInImage< TImageType >(inputLabel_2);
+
+    // sanity check
+    if (uniqueLabels.size() != uniqueLabelsRef.size())
+    {
+      std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
+      return EXIT_FAILURE;
+    }
+    else
+    {
+      for (size_t i = 0; i < uniqueLabels.size(); i++)
+      {
+        if (uniqueLabels[i] != uniqueLabelsRef[i])
+        {
+          std::cerr << "The label values in input and reference image are not consistent.\n";
+          return EXIT_FAILURE;
+        }
+      }
+    }
+
+    auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
+
+    similarityFilter->SetSourceImage(inputLabel_1);
+    similarityFilter->SetTargetImage(inputLabel_2);
+    similarityFilter->Update();
+
+    returnMap["TotalOverlap"] = similarityFilter->GetTotalOverlap();
+    //std::cout << "=== Entire Masked Area ===\n";
+    returnMap["Union(Jaccard)_Overall"] = similarityFilter->GetUnionOverlap();
+    returnMap["Mean(DICE)_Overall"] = similarityFilter->GetMeanOverlap();
+    returnMap["VolumeSimilarity_Overall"] = similarityFilter->GetVolumeSimilarity();
+    returnMap["FalseNegativeError_Overall"] = similarityFilter->GetFalseNegativeError();
+    returnMap["FalsePositiveError_Overall"] = similarityFilter->GetFalsePositiveError();
+
+    if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
+    {
+      //std::cout << "=== Individual Labels ===\n";
+      //std::cout << "Property,Value\n";
+      for (size_t i = 0; i < uniqueLabels.size(); i++)
+      {
+        auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
+        returnMap["TargetOverlap_Label" + uniqueLabels_string] = similarityFilter->GetTargetOverlap(uniqueLabels[i]);
+        returnMap["Union(Jaccard)_Label" + uniqueLabels_string] = similarityFilter->GetUnionOverlap(uniqueLabels[i]);
+        returnMap["Mean(DICE)_Label" + uniqueLabels_string] = similarityFilter->GetMeanOverlap(uniqueLabels[i]);
+        returnMap["VolumeSimilarity_Label" + uniqueLabels_string] = similarityFilter->GetVolumeSimilarity(uniqueLabels[i]);
+        returnMap["FalseNegativeError_Label" + uniqueLabels_string] = similarityFilter->GetFalseNegativeError(uniqueLabels[i]);
+        returnMap["FalsePositiveError_Label" + uniqueLabels_string] = similarityFilter->GetFalsePositiveError(uniqueLabels[i]);
+      }
+    }
+
+    // more stats
+    itk::ImageRegionConstIterator< TImageType > inputIterator(inputLabel_1, inputLabel_1->GetBufferedRegion());
+    itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabel_2, inputLabel_2->GetBufferedRegion());
+
+    std::vector< float > inputVector_1, inputVector_2;
+    // iterate through the entire input image and if the label value matches the input value,
+    // put '1' in the corresponding location of the output
+    for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
+    {
+      outputIterator.SetIndex(inputIterator.GetIndex());
+      inputVector_1.push_back(inputIterator.Get());
+      inputVector_2.push_back(outputIterator.Get());
+    }
+
+    auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
+
+    returnMap["Sensitivity"] = temp_roc["Sensitivity"];
+    returnMap["Specificity"] = temp_roc["Specificity"];
+    returnMap["Accuracy"] = temp_roc["Accuracy"];
+    returnMap["Precision"] = temp_roc["Precision"];
+
+    // hausdorff
+    auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
+    filter->SetFixedImage(inputLabel_1);
+    filter->SetMovingImage(inputLabel_2);
+    filter->SetPercentile(0.95);
+
+    returnMap["Hausdorff95"] = filter->GetValue();
+
+    return returnMap;
+
   }
 
 }
