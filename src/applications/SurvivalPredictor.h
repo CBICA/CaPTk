@@ -232,7 +232,7 @@ public:
 		const typename ImageType::Pointer &atlasImagePointer);
 
 
-
+  VariableSizeMatrixType MatrixTranspose(const VariableSizeMatrixType &inputmatrix);
 
 
 	/**
@@ -260,15 +260,13 @@ public:
 	  const std::vector< std::map< CAPTK::ImageModalityType, std::string > > &qualifiedsubjects, 
 	  const std::string &outputdirectory);
 
-
-
-	VariableSizeMatrixType SelectSixMonthsModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures);
-	VariableSizeMatrixType SelectEighteenMonthsModelFeatures(const VariableSizeMatrixType &EighteenModelFeatures);
+ VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures, const VariableLengthVectorType selectedfeatures);
 
 	template<class ImageType>
 	typename ImageType::Pointer RemoveSmallerComponentsFromTumor(const typename ImageType::Pointer &etumorImage, const typename ImageType::Pointer &ncrImage);
+  VariableLengthVectorType DistanceFunctionLinear(const VariableSizeMatrixType &testData, const std::string &filename);
 
-	VariableLengthVectorType DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename, const double &rho, const double &bestg);
+	VariableLengthVectorType DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename);
 	VectorDouble CombineEstimates(const VariableLengthVectorType &estimates1, const VariableLengthVectorType &estimates2);
 	VectorDouble CombineEstimates(const VectorDouble &estimates1, const VectorDouble &estimates2);
 
@@ -657,7 +655,9 @@ VectorDouble  SurvivalPredictor::LoadTestData(const typename ImageType::Pointer 
 		++tumorIt;
 	}
 	VectorDouble VolumetricFeatures = GetVolumetricFeatures(edemaIndices.size(), etumorIndices.size(), necoreIndices.size(), brainIndices.size());
-	VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(atlasImagePointer, templateImagePointer);
+  VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(labelImagePointer, atlasImagePointer);
+  //VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(atlasImagePointer,templateImagePointer);
+  //, templateImagePointer);
 
 	//--------------------------------Alternate function for distance features----------------------------------------------  
 	typename ImageType::Pointer  edemaDistanceMap = GetDistanceMapWithLabel<ImageType>(labelImagePointer, CAPTK::GLISTR_OUTPUT_LABELS::EDEMA);
@@ -1075,6 +1075,47 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 			logger.WriteError("Cannot find the file 'std.csv' in the model directory. Error code : " + std::string(e1.what()));
 			exit(EXIT_FAILURE);
 		}
+    //read selected features of 6-months model from .csv file
+    VariableLengthVectorType selectedfeatures_6months;
+    VariableLengthVectorType selectedfeatures_18months;
+    MatrixType features6Matrix;
+    try
+    {
+      reader->SetFileName(modeldirectory + "/Survival_SelectedFeatures_6Months.csv");
+      reader->SetFieldDelimiterCharacter(',');
+      reader->HasColumnHeadersOff();
+      reader->HasRowHeadersOff();
+      reader->Parse();
+      features6Matrix = reader->GetArray2DDataObject()->GetMatrix();
+      selectedfeatures_6months.SetSize(features6Matrix.size());
+      for (unsigned int i = 0; i < features6Matrix.size(); i++)
+        selectedfeatures_6months[i] = features6Matrix(i, 0);
+    }
+    catch (const std::exception& e1)
+    {
+      logger.WriteError("Error in reading the file: " + modeldirectory + "/Survival_SelectedFeatures_6Months.csv. Error code : " + std::string(e1.what()));
+      exit(EXIT_FAILURE);
+    }
+    //read selected features of 18-months model from .csv file
+    MatrixType features18Matrix;
+    try
+    {
+      reader->SetFileName(modeldirectory + "/Survival_SelectedFeatures_18Months.csv");
+      reader->SetFieldDelimiterCharacter(',');
+      reader->HasColumnHeadersOff();
+      reader->HasRowHeadersOff();
+      reader->Parse();
+      features18Matrix = reader->GetArray2DDataObject()->GetMatrix();
+      selectedfeatures_18months.SetSize(features18Matrix.size());
+      for (unsigned int i = 0; i < features18Matrix.size(); i++)
+        selectedfeatures_18months[i] = features18Matrix(i, 0);
+    }
+    catch (const std::exception& e1)
+    {
+      logger.WriteError("Error in reading the file: " + modeldirectory + "/Survival_SelectedFeatures_18Months.csv. Error code : " + std::string(e1.what()));
+      exit(EXIT_FAILURE);
+    }
+
 		//----------------------------------------------------
 		VariableSizeMatrixType FeaturesOfAllSubjects;
 		FeaturesOfAllSubjects.SetSize(1, 161);
@@ -1095,8 +1136,8 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 				ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
 			ScaledFeatureSetAfterAddingLabel(i, j) = 0;
 		}
-		VariableSizeMatrixType SixModelSelectedFeatures = SelectSixMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
-		VariableSizeMatrixType EighteenModelSelectedFeatures = SelectEighteenMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
+		VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures_6months);
+		VariableSizeMatrixType EighteenModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures_18months);
 		VectorDouble results;
 		try
 		{
@@ -1104,14 +1145,8 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 			VariableLengthVectorType result_18;
 			if (cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.csv") == true && cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.csv") == true)
 			{
-				result_6 = DistanceFunction(SixModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model6.csv", 
-          SURVIVAL_MODEL6_RHO // value calculated to be -1.0927 
-          , SURVIVAL_MODEL6_G // value calculated to be 0.0313
-          );
-				result_18 = DistanceFunction(EighteenModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model18.csv", 
-          SURVIVAL_MODEL18_RHO // value calculated to be -0.2854
-          , SURVIVAL_MODEL18_G // value calculated to be 0.5
-          );
+				result_6 = DistanceFunction(SixModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model6.csv");
+				result_18 = DistanceFunction(EighteenModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model18.csv");
 			}
 			else if (cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.xml") == true && cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.xml") == true)
 			{

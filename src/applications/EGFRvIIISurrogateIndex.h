@@ -16,21 +16,14 @@ see SBIA_noncommercial_license.txt file.
 #ifndef _EGFRvIIISurrogateIndex_h_
 #define _EGFRvIIISurrogateIndex_h_
 
-//#include "CAPTk.h"
 #include "CaPTkEnums.h"
 #include "CaPTkDefines.h"
 #include "FeatureReductionClass.h"
-//#include "itkImage.h"
 #include "vtkVariant.h"
 #include "vtkTable.h"
 #ifdef APP_BASE_CAPTK_H
 #include "ApplicationBase.h"
 #endif
-
-//using VectorDouble = std::vector < double >;
-//using ImageTypeFloat3D = itk::Image< float, 3 >;
-//using ImageTypeFloat4D = itk::Image< float, 4 >;
-//using ImageTypeShort3D = itk::Image< short, 3 >;
 
 #define EGFR_PCS 3 // number of principal components defined for PHI Estimation
 
@@ -38,18 +31,18 @@ see SBIA_noncommercial_license.txt file.
 \class EGFRStatusPredictor
 
 \brief A small description of the application
+This application evaluates the Epidermal Growth Factor Receptor splice variant III (EGFRvIII) 
+status in primary glioblastoma, by quantitative pattern analysis of the spatial heterogeneity 
+of peritumoral perfusion dynamics from Dynamic Susceptibility Contrast (DSC) MRI scans, 
+through the Peritumoral Heterogeneity Index.
 
-A detailed description along with the correct reference paper.
-
-Reference: -- needs to be updated
-
-@inproceedings{,
-title={},
-author={},
-booktitle={},
-pages={},
-year={},
-organization={}
+Reference:
+@article{Bakas.2017,
+title={In vivo detection of EGFRvIII in glioblastoma via perfusion magnetic resonance imaging signature consistent with deep peritumoral infiltration: the phi-index},
+author={S.Bakas, H.Akbari, J.Pisapia, M.Martinez-Lage, M.Rozycki, S.Rathore, N.Dahmane, D.M.O'Rourke, C.Davatzikos},
+journal={Clinical Cancer Research},
+pages={4724-4734},
+year={2017}
 }
 */
 class EGFRStatusPredictor
@@ -67,45 +60,45 @@ public:
   /**
   \brief Calculates the EGFR status based on given input image and near/far points
 
-  \param perfImagePointerNifti Perfusion image in NIfTI format
-  \param perfImagePointerDicom Perfusion image in DICOM format
+  \param perfImagePointer Perfusion image in NIfTI format
   \param nearIndices Indices of the near region
   \param farIndices Indices of the far region
   \param imagetype Image type whether NIfTI or DICOM
   */
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  VectorDouble PredictEGFRStatus(typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector<typename ImageType::Pointer> &perfImagePointerDicom,
-    std::vector<typename ImageType::IndexType> &nearIndices, std::vector<typename ImageType::IndexType> &farIndices, const int &imagetype);
+  VectorDouble PredictEGFRStatus(typename PerfusionImageType::Pointer perfImagePointer, 
+    std::vector<typename ImageType::IndexType> &nearIndices, 
+    std::vector<typename ImageType::IndexType> &farIndices);
 
   /**
   \brief Loads perfusion data for the near and far indices from given NIfTI/DICOM image
 
-  \param perfImagePointerNifti Perfusion image in NIfTI format
-  \param perfImagePointerDicom Perfusion image in DICOM format
+  \param perfImagePointer Perfusion image in NIfTI format
   \param nearIndices Indices of the near region
   \param farIndices Indices of the far region
-  \param A vector of perfusion data of near indices
-  \param A vector of perfusion data of far indices
+  \param pNearIntensities A vector of perfusion data of near indices
+  \param pFarIntensities A vector of perfusion data of far indices
   \param imagetype Image type whether NIfTI or DICOM
   */
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  void LoadPerfusionData(typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector<typename ImageType::Pointer> &perfImagePointerDicom,
-    std::vector<typename ImageType::IndexType> &nearIndices, std::vector<typename ImageType::IndexType> &farIndices,
-    VectorVectorDouble & pNearIntensities, VectorVectorDouble & pFarIntensities, int imagetype);
+  void LoadPerfusionData(typename PerfusionImageType::Pointer perfImagePointer, 
+    std::vector<typename ImageType::IndexType> &nearIndices, 
+    std::vector<typename ImageType::IndexType> &farIndices,
+    VectorVectorDouble & pNearIntensities, 
+    VectorVectorDouble & pFarIntensities);
 
   /**
   \brief Removes the indices (near and far) from EGFR calculation if they do not have corresponding perfusion data
-
   \param rpNearIntensities A vector of perfusion data of near indices
   \param rpFarIntensities A vector of perfusion data of far indices
   \param percentageNear Percentage of near indices which have corresponding perfusion data
   \param percentageFar  Percentage of far indices which have corresponding perfusion data
   */
-  void CalculateQualifiedIndices(VectorVectorDouble &rpNearIntensities, VectorVectorDouble &rpFarIntensities, double & percentageNear, double & percentageFar);
+  void CalculateQualifiedIndices(VectorVectorDouble &rpNearIntensities, VectorVectorDouble &rpFarIntensities, 
+    double & percentageNear, double & percentageFar);
 
   /**
   \brief Calculates an average perfusion signal
-
   \param PerfusionIntensities A vector of perfusion data
   \param avgSignal Average perfusion signal
   */
@@ -151,10 +144,9 @@ public:
   VariableSizeMatrixType GetSumOfTwoMatrice(const VariableSizeMatrixType &matrix1, const VariableSizeMatrixType &matrix2);
 };
 
-
-
 template<class ImageType, class PerfusionImageType>
-VectorDouble EGFRStatusPredictor::PredictEGFRStatus(typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector<typename ImageType::Pointer> &perfImagePointerDicom, std::vector<typename ImageType::IndexType> &nearIndices, std::vector<typename ImageType::IndexType> &farIndices, const int &imagetype)
+VectorDouble EGFRStatusPredictor::PredictEGFRStatus(typename PerfusionImageType::Pointer perfImagePointer, 
+  std::vector<typename ImageType::IndexType> &nearIndices, std::vector<typename ImageType::IndexType> &farIndices)
 {
   VectorDouble EGFRStatusParams;
   EGFRStatusParams.push_back(0);
@@ -173,7 +165,7 @@ VectorDouble EGFRStatusPredictor::PredictEGFRStatus(typename PerfusionImageType:
   progressUpdate(0);
 #endif
 
-  LoadPerfusionData<ImageType, PerfusionImageType>(perfImagePointerNifti, perfImagePointerDicom, nearIndices, farIndices, pNearIntensities, pFarIntensities, imagetype);
+  LoadPerfusionData<ImageType, PerfusionImageType>(perfImagePointer, nearIndices, farIndices, pNearIntensities, pFarIntensities);
   double nearPercentage = 0;
   double farPercentage = 0;
   CalculateQualifiedIndices(pNearIntensities, pFarIntensities, nearPercentage, farPercentage);
@@ -191,9 +183,6 @@ VectorDouble EGFRStatusPredictor::PredictEGFRStatus(typename PerfusionImageType:
   progressUpdate(30);
 #endif
   FeatureReductionClass obj;
-  //vtkSmartPointer<vtkTable> rpNear = obj.GetDiscerningPerfusionTimePoints(pNearIntensities);
-  //vtkSmartPointer<vtkTable> rpFar = obj.GetDiscerningPerfusionTimePoints(pFarIntensities);
-
   vtkSmartPointer<vtkTable> rpNear = obj.GetDiscerningPerfusionTimePointsDynamic(pNearIntensities);
   vtkSmartPointer<vtkTable> rpFar = obj.GetDiscerningPerfusionTimePointsDynamic(pFarIntensities);
 
@@ -242,43 +231,30 @@ VectorDouble EGFRStatusPredictor::PredictEGFRStatus(typename PerfusionImageType:
   return EGFRStatusParams;
 }
 
-
 template<class ImageType, class PerfusionImageType>
-void EGFRStatusPredictor::LoadPerfusionData(typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector<typename ImageType::Pointer> &perfImagePointerDicom,
+void EGFRStatusPredictor::LoadPerfusionData(typename PerfusionImageType::Pointer perfImagePointer, 
   std::vector<typename ImageType::IndexType> &nearIndices, std::vector<typename ImageType::IndexType> &farIndices,
-  VectorVectorDouble & pNearIntensities, VectorVectorDouble & pFarIntensities, int imagetype)
+  VectorVectorDouble & pNearIntensities, VectorVectorDouble & pFarIntensities)
 {
-  auto timeStamps = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3];
+  auto timeStamps = perfImagePointer->GetLargestPossibleRegion().GetSize()[3];
 
   for (unsigned int i = 0; i < nearIndices.size(); i++)
   {
     VectorDouble perfusionIntensitiesPerVoxel;
-
-    if (imagetype == CAPTK::ImageExtension::NIfTI)
-    {
-      typename PerfusionImageType::IndexType perfVoxelIndex;
+   typename PerfusionImageType::IndexType perfVoxelIndex;
       perfVoxelIndex[0] = nearIndices[i][0];
       perfVoxelIndex[1] = nearIndices[i][1];
       perfVoxelIndex[2] = nearIndices[i][2];
       for (unsigned int j = 0; j < timeStamps; j++)
       {
         perfVoxelIndex[3] = j;
-        perfusionIntensitiesPerVoxel.push_back(std::round(static_cast<double>(perfImagePointerNifti.GetPointer()->GetPixel(perfVoxelIndex))));
+        perfusionIntensitiesPerVoxel.push_back(std::round(static_cast<double>(perfImagePointer.GetPointer()->GetPixel(perfVoxelIndex))));
       }
-    }
-    else
-    {
-      for (unsigned int j = 0; j < timeStamps; j++)
-        perfusionIntensitiesPerVoxel.push_back(std::round(static_cast<double>(perfImagePointerDicom[j].GetPointer()->GetPixel(nearIndices[i]))));
-    }
     pNearIntensities.push_back(perfusionIntensitiesPerVoxel);
   }
   for (unsigned int i = 0; i < farIndices.size(); i++)
   {
     VectorDouble perfusionIntensitiesPerVoxel;
-
-    if (imagetype == CAPTK::ImageExtension::NIfTI)
-    {
       typename PerfusionImageType::IndexType perfVoxelIndex;
       perfVoxelIndex[0] = farIndices[i][0];
       perfVoxelIndex[1] = farIndices[i][1];
@@ -287,14 +263,8 @@ void EGFRStatusPredictor::LoadPerfusionData(typename PerfusionImageType::Pointer
       for (unsigned int j = 0; j < timeStamps; j++)
       {
         perfVoxelIndex[3] = j;
-        perfusionIntensitiesPerVoxel.push_back(std::round(static_cast<double>(perfImagePointerNifti.GetPointer()->GetPixel(perfVoxelIndex))));
+        perfusionIntensitiesPerVoxel.push_back(std::round(static_cast<double>(perfImagePointer.GetPointer()->GetPixel(perfVoxelIndex))));
       }
-    }
-    else
-    {
-      for (unsigned int j = 0; j < timeStamps; j++)
-        perfusionIntensitiesPerVoxel.push_back(std::round(static_cast<double>(perfImagePointerDicom[j].GetPointer()->GetPixel(farIndices[i]))));
-    }
     pFarIntensities.push_back(perfusionIntensitiesPerVoxel);
   }
 }
