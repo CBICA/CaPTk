@@ -236,6 +236,7 @@ RUN_DEPLOYQT () {
   
   echo "APPIMG"
   ls
+  ls ./appdir
 
   # # Build the AppImage
   # echo "${USR_DIR}/libexec/MCR/**" >> .appimageignore
