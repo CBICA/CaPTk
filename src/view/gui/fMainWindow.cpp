@@ -8904,6 +8904,7 @@ void fMainWindow::ChangeMaskOpacity(const float newOpacity)
 {
 	if (!m_ComparisonMode)
 	{
+		// regular mode
 		for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
 		{
 			for (size_t j = 0; j < 3; j++)
@@ -8914,6 +8915,16 @@ void fMainWindow::ChangeMaskOpacity(const float newOpacity)
 			}
 		}
 		UpdateRenderWindows(); // reflect the new value
+	}
+	else
+	{
+		//comparison mode
+		std::vector<vtkSmartPointer<Slicer>> comparisonViewers = this->GetComparisonViewers();
+		for (int i = 0; i < comparisonViewers.size(); i++)
+		{
+			//update mask opacity on comparison viewers
+			comparisonViewers[i]->SetMaskOpacity(newOpacity);
+		}
 	}
 }
 
