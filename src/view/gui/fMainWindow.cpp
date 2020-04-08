@@ -8904,7 +8904,7 @@ void fMainWindow::ChangeMaskOpacity(const float newOpacity)
 {
 	if (!m_ComparisonMode)
 	{
-		// regular mode
+		//regular mode
 		for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
 		{
 			for (size_t j = 0; j < 3; j++)
