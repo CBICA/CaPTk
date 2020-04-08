@@ -1201,6 +1201,8 @@ jobs:
         rm -rf binaries
 
         export PKG_FAST_MODE=1
+        export ARCH=x86_64 appimagetool
+
         # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
 
