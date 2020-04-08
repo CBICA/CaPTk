@@ -136,7 +136,12 @@ VariableSizeMatrixType FeatureScalingClass::ScaleGivenTestingFeatures(const Vari
   for (int featureNo = 0; featureNo < NumberOfFeatures; featureNo++)
   {
     for (int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
-      scaledFeatureSet(sampleNo, featureNo) = GetZScore(meandata[featureNo], stddata[featureNo], inputdata(sampleNo, featureNo));
+    {
+      if (stddata[featureNo] == 0)
+        scaledFeatureSet(sampleNo, featureNo) = 0;
+      else
+        scaledFeatureSet(sampleNo, featureNo) = GetZScore(meandata[featureNo], stddata[featureNo], inputdata(sampleNo, featureNo));
+    }
   }
 
   //typedef itk::CSVNumericObjectFileWriter<double, 1, 453> WriterTypeMatrixMean;

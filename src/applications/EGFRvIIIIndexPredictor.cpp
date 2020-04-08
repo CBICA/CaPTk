@@ -6,9 +6,6 @@
 #include "cbicaUtilities.h"
 #include "cbicaITKSafeImageIO.h"
 typedef itk::Image< float, 3 > ImageType;
-//EGFRvIIIIndexPredictor::~EGFRvIIIIndexPredictor()
-//{
-//}
 
 VectorDouble EGFRvIIIIndexPredictor::GetStatisticalFeatures(const VectorDouble &intensities)
 {
@@ -126,10 +123,10 @@ int EGFRvIIIIndexPredictor::PrepareNewEGFRvIIIPredictionModel(const std::string 
     std::map< CAPTK::ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
     try
     {
-      AtlasSegmentationsAllPatients.push_back(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS])));
+      AtlasSegmentationsAllPatients.push_back(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS])));
     }
     catch (const std::exception& e1)
-    {
+    { 
       logger.WriteError("Error in calculating the features for patient ID = " + static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "Error code : " + std::string(e1.what()));
       return false;
     }
@@ -149,8 +146,8 @@ int EGFRvIIIIndexPredictor::PrepareNewEGFRvIIIPredictionModel(const std::string 
   cbica::WriteImage<ImageType>(NEGAtlasImagePointer,outputdirectory+ "/EGFRneg.nii.gz");
   cbica::WriteImage<ImageType>(POSAtlasImagePointer, outputdirectory + "/EGFRpos.nii.gz");
 
-  //ImageType::Pointer NEGAtlasImagePointer = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "/egfrv3/EGFRneg.nii.gz");
-  //ImageType::Pointer POSAtlasImagePointer = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "/egfrv3/EGFRpos.nii.gz");
+  //ImageType::Pointer NEGAtlasImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/egfrv3/EGFRneg.nii.gz");
+  //ImageType::Pointer POSAtlasImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/egfrv3/EGFRpos.nii.gz");
     
   FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 448);
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
@@ -159,25 +156,25 @@ int EGFRvIIIIndexPredictor::PrepareNewEGFRvIIIPredictionModel(const std::string 
     std::map< CAPTK::ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
     try
     {
-      ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-      ImageType::Pointer AtlasImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
-      ImageType::Pointer TemplateImagePointer9Regions = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "/egfrv3/template9regions.nii.gz");
-      ImageType::Pointer TemplateImagePointer21Regions = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "/egfrv3/template21regions.nii.gz");
-      ImageType::Pointer TemplateImagePointerAllRegions = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "/egfrv3/templateallregions.nii.gz");
+      ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+      ImageType::Pointer AtlasImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
+      ImageType::Pointer TemplateImagePointer9Regions = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/egfrv3/template9regions.nii.gz");
+      ImageType::Pointer TemplateImagePointer21Regions = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/egfrv3/template21regions.nii.gz");
+      ImageType::Pointer TemplateImagePointerAllRegions = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/egfrv3/templateallregions.nii.gz");
 
-      ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
-      ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
-      ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
+      ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
+      ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
+      ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
 
-      ImageType::Pointer T1CEImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE])));
-      ImageType::Pointer T2FlairImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR])));
-      ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1])));
-      ImageType::Pointer T2ImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2])));
+      ImageType::Pointer T1CEImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE])));
+      ImageType::Pointer T2FlairImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR])));
+      ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1])));
+      ImageType::Pointer T2ImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2])));
 
-      ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
-      ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
-      ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
-      ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
+      ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
+      ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
+      ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
+      ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
 
       VectorDouble ages;
       VectorDouble label;
@@ -324,8 +321,6 @@ VariableLengthVectorType EGFRvIIIIndexPredictor::DistanceFunctionLinear(const Va
     w(svID,0) = currentSum;
   }
   VariableSizeMatrixType wTranspose = MatrixTranspose(w);  //1x7   1x7
-
-
   for (unsigned int patID = 0; patID < testData.Rows(); patID++)
   {
     double distance = 0;
@@ -337,153 +332,9 @@ VariableLengthVectorType EGFRvIIIIndexPredictor::DistanceFunctionLinear(const Va
   return Distances;
 }
 
-VectorDouble EGFRvIIIIndexPredictor::CombineEstimates(const VariableLengthVectorType &estimates1, const VariableLengthVectorType &estimates2)
-{
-  VectorDouble returnVec;
-  returnVec.resize(estimates1.Size());
-  for (size_t i = 0; i < estimates1.Size(); i++)
-  {
-    float temp_abs, temp_pos1, temp_neg1, temp_1, temp_2;
-    // estimate for 1st vector
-    if (std::abs(estimates1[i]) < 2)
-    {
-      temp_abs = estimates1[i];
-    }
-    else
-    {
-      temp_abs = 0;
-    }
-
-    if (estimates1[i] > 1)
-    {
-      temp_pos1 = 1;
-    }
-    else
-    {
-      temp_pos1 = 0;
-    }
-
-    if (estimates1[i] < -1)
-    {
-      temp_neg1 = 1;
-    }
-    else
-    {
-      temp_neg1 = 0;
-    }
-    temp_1 = temp_abs + (temp_pos1 - temp_neg1);
-
-    // estimate for 2nd vector, all temp values are getting overwritten
-    if (std::abs(estimates2[i]) < 2)
-    {
-      temp_abs = estimates2[i];
-    }
-    else
-    {
-      temp_abs = 0;
-    }
-
-    if (estimates2[i] > 1)
-    {
-      temp_pos1 = 1;
-    }
-    else
-    {
-      temp_pos1 = 0;
-    }
-
-    if (estimates2[i] < -1)
-    {
-      temp_neg1 = 1;
-    }
-    else
-    {
-      temp_neg1 = 0;
-    }
-    temp_2 = temp_abs + (temp_pos1 - temp_neg1);
-
-    // combine the two
-    returnVec[i] = temp_1 + temp_2;
-  }
-  return returnVec;
-}
-
-
-VectorDouble EGFRvIIIIndexPredictor::CombineEstimates(const VectorDouble &estimates1, const VectorDouble &estimates2)
-{
-  VectorDouble returnVec;
-  returnVec.resize(estimates1.size());
-  for (size_t i = 0; i < estimates1.size(); i++)
-  {
-    float temp_abs, temp_pos1, temp_neg1, temp_1, temp_2;
-    // estimate for 1st vector
-    if (std::abs(estimates1[i]) < 2)
-    {
-      temp_abs = estimates1[i];
-    }
-    else
-    {
-      temp_abs = 0;
-    }
-
-    if (estimates1[i] > 1)
-    {
-      temp_pos1 = 1;
-    }
-    else
-    {
-      temp_pos1 = 0;
-    }
-
-    if (estimates1[i] < -1)
-    {
-      temp_neg1 = 1;
-    }
-    else
-    {
-      temp_neg1 = 0;
-    }
-    temp_1 = temp_abs + (temp_pos1 - temp_neg1);
-
-    // estimate for 2nd vector, all temp values are getting overwritten
-    if (std::abs(estimates2[i]) < 2)
-    {
-      temp_abs = estimates2[i];
-    }
-    else
-    {
-      temp_abs = 0;
-    }
-
-    if (estimates2[i] > 1)
-    {
-      temp_pos1 = 1;
-    }
-    else
-    {
-      temp_pos1 = 0;
-    }
-
-    if (estimates2[i] < -1)
-    {
-      temp_neg1 = 1;
-    }
-    else
-    {
-      temp_neg1 = 0;
-    }
-    temp_2 = temp_abs + (temp_pos1 - temp_neg1);
-
-    // combine the two
-    returnVec[i] = temp_1 + temp_2;
-  }
-  return returnVec;
-}
-
 VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::vector < std::map < CAPTK::ImageModalityType, std::string>> &qualifiedsubjects, const std::string &outputdirectory)
 {
   std::cout << "Started reading model parameters" << std::endl;
-  //std::string local_captk_dataDir = "E:/SoftwareDevelopmentProjects/CaPTk-August2018/data";
   typedef itk::CSVArray2DFileReader<double> ReaderType;
   VariableSizeMatrixType HistogramFeaturesConfigurations;
   HistogramFeaturesConfigurations.SetSize(33, 3); //11 modalities*3 regions = 33 configurations*3 histogram features for each configuration
@@ -507,7 +358,7 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
   }
   catch (const std::exception& e1)
   {
-    logger.WriteError("Cannot find the file 'EGFRvIII_HMFeatures_Configuration.csv' in the ../data/egfrv3 directory. Error code : " + std::string(e1.what()));
+    logger.WriteError("Cannot find the file 'EGFRvIII_HMFeatures_Configuration.csv' in the ../data/egfr directory. Error code : " + std::string(e1.what()));
     return results;
   }
 
@@ -515,6 +366,8 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
   VariableLengthVectorType mean;
   VariableLengthVectorType stddevition;
   VariableLengthVectorType selectedfeatures;
+
+  //read z-score mean values from the model directory
   try
   {
     reader->SetFileName(modeldirectory + "/EGFRvIII_ZScore_Mean.csv");
@@ -533,6 +386,7 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
     logger.WriteError("Error in reading the file: " + modeldirectory + "/EGFRvIII_ZScore_Mean.csv. Error code : " + std::string(e1.what()));
     return results;
   }
+  //read z-score std. deviation values from the model directory
   MatrixType stdMatrix;
   try
   {
@@ -552,6 +406,8 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
     logger.WriteError("Error in reading the file: " + modeldirectory + "/EGFRvIII_ZScore_Std.csv. Error code : " + std::string(e1.what()));
     return results;
   }
+
+  //read selected feature indices from the model directory
   try
   {
     reader->SetFileName(modeldirectory + "/EGFRvIII_SelectedFeatures.csv");
@@ -570,68 +426,32 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
     logger.WriteError("Error in reading the file: " + modeldirectory + "/EGFRvIII_SelectedFeatures.csv. Error code : " + std::string(e1.what()));
     return results;
   }
-/*
-  std::vector<int> grroundtruth;
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(1);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-  grroundtruth.push_back(0);
-*/
-  //----------------------------------------------------
-  ImageType::Pointer NEGAtlasImagePointer = ReadNiftiImage<ImageType>(modeldirectory+ "/EGFRneg.nii.gz");
-  ImageType::Pointer POSAtlasImagePointer = ReadNiftiImage<ImageType>(modeldirectory + "/EGFRpos.nii.gz");
+  
+  //read EGFRneg and EGFRpos atlases from the model directory
+  ImageType::Pointer POSAtlasImagePointer;
+  ImageType::Pointer NEGAtlasImagePointer;
+  try
+  {
+    NEGAtlasImagePointer = cbica::ReadImage<ImageType>(modeldirectory+ "/EGFRneg.nii.gz");
+  }
+  catch (const std::exception& e1)
+  {
+    logger.WriteError("Error in reading atlas files: " + modeldirectory + "/EGFRneg.csv. Error code : " + std::string(e1.what()));
+    return results;
+  }
 
+  try
+  {
+    POSAtlasImagePointer = cbica::ReadImage<ImageType>(modeldirectory + "/EGFRpos.nii.gz");
+  }
+  catch (const std::exception& e1)
+  {
+    logger.WriteError("Error in reading atlas files: " + modeldirectory + "/EGFRpos.csv. Error code : " + std::string(e1.what()));
+    return results;
+  }
   std::cout << "Finished readig model parameters" << std::endl;
+
+  //extract features from the given dataset
   VariableSizeMatrixType FeaturesOfAllSubjects;
   FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 448);
 
@@ -641,22 +461,22 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[sid];
     try
     {
-      ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-      ImageType::Pointer AtlasImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
-      ImageType::Pointer TemplateImagePointer9Regions = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "egfrv3/template9regions.nii.gz");
-      ImageType::Pointer TemplateImagePointer21Regions = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "egfrv3/template21regions.nii.gz");
-      ImageType::Pointer TemplateImagePointerAllRegions = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "egfrv3/templateallregions.nii.gz");
-      ImageType::Pointer T1CEImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]))));
-      ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV]))));
-      ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH]))));
-      ImageType::Pointer T2FlairImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]))));
-      ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]))));
-      ImageType::Pointer T2ImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]))));
-      ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX]))));
-      ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD]))));
-      ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA]))));
-      ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR]))));
-      ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR]))));
+      ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+      ImageType::Pointer AtlasImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
+      ImageType::Pointer TemplateImagePointer9Regions = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "egfrv3/template9regions.nii.gz");
+      ImageType::Pointer TemplateImagePointer21Regions = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "egfrv3/template21regions.nii.gz");
+      ImageType::Pointer TemplateImagePointerAllRegions = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "egfrv3/templateallregions.nii.gz");
+      ImageType::Pointer T1CEImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]))));
+      ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV]))));
+      ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH]))));
+      ImageType::Pointer T2FlairImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]))));
+      ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]))));
+      ImageType::Pointer T2ImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]))));
+      ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX]))));
+      ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD]))));
+      ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA]))));
+      ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR]))));
+      ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(CapImageIntensityWithPercentile<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR]))));
 
       VectorDouble TestFeatures = LoadTestData<ImageType>(T1CEImagePointer, T2FlairImagePointer, T1ImagePointer, T2ImagePointer,
         RCBVImagePointer, PSRImagePointer, PHImagePointer, AXImagePointer, FAImagePointer, RADImagePointer, TRImagePointer, LabelImagePointer, AtlasImagePointer, TemplateImagePointer9Regions, TemplateImagePointer21Regions, TemplateImagePointerAllRegions,POSAtlasImagePointer, NEGAtlasImagePointer, HistogramFeaturesConfigurations);
@@ -685,20 +505,12 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
     }
   }
   std::cout << "Feature writing started:" << std::endl;
+  //write raw extracted features in a .csv file
   WriteCSVFiles(FeaturesOfAllSubjects, outputdirectory + "/RawFeatures.csv");
-  //typedef itk::CSVNumericObjectFileWriter<double, 144, 448> WriterTypeMatrix;
-  //WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();
-  //MatrixType data;
-  //data.set_size(144,448);
-  //for (int i = 0; i < 144; i++)
-  //	for (int j = 0; j < 448; j++)
-  //		data(i, j) = FeaturesOfAllSubjects(i, j);
-  //writermatrix->SetFileName(outputdirectory+ "/plain_test_features.csv");
-  //writermatrix->SetInput(&data);
-  //writermatrix->Write();
-  
 
+  //scale raw features based on the z-score values
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
+  
   VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
   ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
   for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
@@ -708,40 +520,24 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
       ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
     ScaledFeatureSetAfterAddingLabel(i, j) = 0;
   }
+  //write scaled features in a .csv file
   WriteCSVFiles(ScaledFeatureSetAfterAddingLabel, outputdirectory + "/ScaledFeatures.csv");
-  //typedef itk::CSVNumericObjectFileWriter<double, 144, 449> WriterTypeMatrix1;
-  //WriterTypeMatrix1::Pointer writermatrix1 = WriterTypeMatrix1::New();
-  //data.set_size(144, 449);
-  //for (int i = 0; i < 144; i++)
-  //  for (int j = 0; j < 449; j++)
-  //    data(i, j) = ScaledFeatureSetAfterAddingLabel(i, j);
-  //writermatrix->SetFileName(outputdirectory + "/scaled_test_features.csv");
-  //writermatrix->SetInput(&data);
-  //writermatrix->Write();
 
+  //select model features
   VariableSizeMatrixType ModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures);
   WriteCSVFiles(ModelSelectedFeatures, outputdirectory + "/ScaledSelectedFeatures.csv");
-  //typedef itk::CSVNumericObjectFileWriter<double, 144, 8> WriterTypeMatrix2;
-  //WriterTypeMatrix2::Pointer writermatrix2 = WriterTypeMatrix2::New();
-  //data.set_size(144, 8);
-  //for (int i = 0; i < 144; i++)
-  //  for (int j = 0; j < 8; j++)
-  //    data(i, j) = ModelSelectedFeatures(i, j);
-  //writermatrix2->SetFileName(outputdirectory + "/selected_test_features.csv");
-  //writermatrix2->SetInput(&data);
-  //writermatrix2->Write();
 
-  //---------------------------------------------------------------------------------------------------------------	
+  //apply SVM model on the test data
   try
   {
     std::ofstream myfile;
     myfile.open(outputdirectory + "/results.csv");
     myfile << "SubjectName,Score, Result \n";
+    //existing model in the .csv file
     if (cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.csv") == true)
     {
       VariableLengthVectorType result;
       result = DistanceFunctionLinear(ModelSelectedFeatures, modeldirectory + "/EGFRvIII_SVM_Model.csv");
-//      result = DistanceFunctionLinear(ModelSelectedFeatures, modeldirectory + "/EGFRvIII_SVM_Model.csv", -0.9092, 2);
       for (size_t i = 0; i < result.Size(); i++)
       {
         std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[i];
@@ -754,6 +550,7 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
     }
     else if (cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.xml") == true)
     {
+      //new models trained by the users using CaPTk
       VectorDouble result;
       result = testOpenCVSVM(ModelSelectedFeatures, modeldirectory + "/EGFRvIII_SVM_Model.xml");
       results = result;
@@ -1076,8 +873,6 @@ bool EGFRvIIIIndexPredictor::SelectModelFeaturesForTrainingFromStudy(const Varia
   return true;
 }
 
-
-//----------------------------------------------------------------------------------------------------------
 std::vector<int> EGFRvIIIIndexPredictor::UpdateUnselectedFeatures(std::vector<int> SelectedFeatures, int featuresize)
 {
   std::vector<int> UnselectedFeatures;
@@ -1097,7 +892,6 @@ std::vector<int> EGFRvIIIIndexPredictor::UpdateUnselectedFeatures(std::vector<in
   }
   return UnselectedFeatures;
 }
-//-------------------------------------------------------------------------------------------------------------
 
 VectorDouble EGFRvIIIIndexPredictor::InternalCrossValidationResubstitution(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue, int kerneltype)
 {
@@ -1162,7 +956,6 @@ VectorDouble EGFRvIIIIndexPredictor::InternalCrossValidationResubstitution(Varia
 
   return results;
 }
-//-----------------------------
 
 VectorDouble EGFRvIIIIndexPredictor::CalculatePerformanceMeasures(VariableLengthVectorType predictedLabels, VectorDouble GivenLabels)
 {

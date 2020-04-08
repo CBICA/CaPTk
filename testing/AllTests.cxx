@@ -132,7 +132,7 @@ int main(int argc, char** argv)
       }
 
       EGFRStatusPredictor egfrEstimator;
-      auto EGFRStatusParams = egfrEstimator.PredictEGFRStatus< ImageType, ImageTypePerfusion >(perfusionImage, Perfusion_Registered, nearIndices, farIndices, CAPTK::ImageExtension::NIfTI);
+      auto EGFRStatusParams = egfrEstimator.PredictEGFRStatus< ImageType, ImageTypePerfusion >(perfusionImage, nearIndices, farIndices);
 
       if ((EGFRStatusParams[0] < 0.02) || (EGFRStatusParams[0] > 0.03)) // check for PHI
       {
