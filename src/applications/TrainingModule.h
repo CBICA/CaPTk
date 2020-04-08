@@ -29,7 +29,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #endif
 
 typedef itk::Image< float, 3 > ImageType;
-typedef std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble> FoldTupleType;
+typedef std::tuple<VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble, VectorDouble, VariableSizeMatrixType, VectorDouble,VectorDouble> FoldTupleType;
 typedef std::map<int, FoldTupleType> MapType;
 
 
@@ -62,11 +62,14 @@ public:
     const std::string outputfolder, const int classifiertype);
 
   bool TrainData2(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
-    const std::string outputfolder, const int classifiertype,const int featureselectiontype);
+    const std::string outputfolder, const int classifiertype,const int featureselectiontype,
+     const int optimizationType, const int crossvalidationType);
 
   std::vector<int> UpdateUnselectedFeatures(std::vector<int> SelectedFeatures, int size);
 
-  bool Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory,const int classifierType, const int foldtype, const int conftype, const int featureselectiontype,const std::string modeldirectory);
+  bool Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory,const int classifierType, const int foldtype, const int conftype, const int featureselectiontype,
+    const int optimizationType, const int crossvalidationType,
+    const std::string modeldirectory);
 
   std::string mEighteenTrainedFile, mSixTrainedFile;
 
@@ -96,8 +99,10 @@ public:
 
   VectorDouble InternalCrossValidationSplitTrainTest(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue, int kerneltype, int counter, std::string outputfolder);
   
-  std::vector<int> EffectSizeBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const int classifiertype,VectorDouble & crossvalidatedaccuracies);
-  std::vector<int> SVMFFSBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const int classifiertype);
+  std::vector<int> EffectSizeBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const int classifiertype, const int optimizationtype, const int cvtype, VectorDouble & crossvalidatedaccuracies);
+  std::vector<int> SVMFFSBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const int classifiertype, 
+    const int optimizationtype, const int cvtype, 
+    VectorDouble &crossvalidatedaccuracies);
 //  std::vector<int> CorrelationBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels);
 
 

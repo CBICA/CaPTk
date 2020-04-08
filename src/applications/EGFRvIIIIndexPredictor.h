@@ -16,9 +16,6 @@ See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 #ifndef _EGFRvIIIIndexPredictor_h_
 #define _EGFRvIIIIndexPredictor_h_
 
-//#include "CAPTk.h"
-//#include "NiftiDataManager.h"
-//#include "FeatureReductionClass.h"
 #include "FeatureScalingClass.h"
 #include "FeatureExtractionClass.h"
 #include "cbicaLogging.h"
@@ -38,30 +35,24 @@ typedef itk::Image< float, 3 > ImageType;
 typedef itk::CSVArray2DFileReader<double> CSVFileReaderType;
 typedef vnl_matrix<double> MatrixType;
 
-// pre-calculated values
-#define SURVIVAL_MODEL6_RHO		-1.0927
-#define SURVIVAL_MODEL6_G		0.0313
-#define SURVIVAL_MODEL18_RHO	-0.2854
-#define SURVIVAL_MODEL18_G		0.5
-
-#define SURVIVAL_SIZE_COMP 100
-#define SURVIVAL_NO_NEAR_DIST 100
+#define EGFR_SIZE_COMP 100
+#define EGFR_NO_NEAR_DIST 100
 
 /**
 \class EGFRvIIIIndexPredictor
 
-\brief Calculates Survival Prediction Index
+\brief Calculates EGFRvIII Status
 
 Reference:
 
-@article{macyszyn2015imaging,
-title={Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques},
-author={Macyszyn, Luke and Akbari, Hamed and Pisapia, Jared M and Da, Xiao and Attiah, Mark and Pigrish, Vadim and Bi, Yingtao and Pal, Sharmistha and Davuluri, Ramana V and Roccograndi, Laura and others},
+@article{akbari2018invivo,
+title={In vivo evaluation of EGFRvIII mutation in primary glioblastoma patients via complex multiparametric MRI signature},
+author={H.Akbari, S.Bakas, J.M.Pisapia, M.P.Nasrallah, M.Rozycki, M.Martinez-Lage, J.D.Morrissette, N.Dahmane, D.M.O’Rourke, C.Davatzikos},
 journal={Neuro-oncology},
-volume={18},
-number={3},
-pages={417--425},
-year={2015},
+volume={20},
+number={8},
+pages={1068-1079},
+year={2018},
 publisher={Society for Neuro-Oncology}
 }
 
@@ -87,55 +78,29 @@ public:
   FeatureScalingClass mFeatureScalingLocalPtr;
   cbica::Logging logger;
 
-  //template<class ImageType>
-  //typename ImageType::Pointer CalculateSERFeature(const typename ImageType::Pointer &enhancement1, const typename ImageType::Pointer &enhancement2);
-
-  //template<class ImageType>
-  //typename ImageType::Pointer CalculatePEFeature(const typename ImageType::Pointer &enhancement1, const typename ImageType::Pointer &enhancement2);
-
-  //template<class ImageType>
-  //typename ImageType::Pointer CalculateWOSFeature(const typename ImageType::Pointer &enhancement1, const typename ImageType::Pointer &enhancement2, const double &timepoint1, , const double &timepoint2 );
-
-  //template<class ImageType>
-  //typename ImageType::Pointer CalculateWISFeature(const typename ImageType::Pointer &enhancement1, const typename ImageType::Pointer &enhancement2, const double &timepoint1, , const double &timepoint2);
-
-
   /**
   \brief Calculates the features for given images of one subject
 
-  \param t1ceImagePointer			Pointer to T1CE image
-  \param t2flairImagePointer		Pointer to T2-FLAIR image
-  \param t1ImagePointer			Pointer to T1-weighted image
-  \param t2ImagePointer			Pointer to T2 image
-  \param rcbvImagePointer			Pointer to RCBV image
-  \param psrImagePointer			Pointer to Percent Signal Recovery (PSR) image
-  \param phImagePointer			Pointer to Peak Height (PH) image
-  \param axImagePointer			Pointer to Axial Diffusivity image
-  \param faImagePointer			Pointer to Fractional Anisotropy image
-  \param radImagePointer			Pointer to Radial Diffusivity image
-  \param trImagePointer			Pointer to Trace image
-  \param labelImagePointer		Pointer to image having segmentation labels in patient space
-  \param atlasImagePointer		Pointer to image having segmentation labels in atla space
-  \param templateImagePointer		Pointer to atlas to calculate location features
-  \param configuration			Configurations for calculation of histogram features
+  \param t1ceImagePointer			          Pointer to T1CE image
+  \param t2flairImagePointer		        Pointer to T2-FLAIR image
+  \param t1ImagePointer			            Pointer to T1-weighted image
+  \param t2ImagePointer			            Pointer to T2 image
+  \param rcbvImagePointer			          Pointer to RCBV image
+  \param psrImagePointer			          Pointer to Percent Signal Recovery (PSR) image
+  \param phImagePointer			            Pointer to Peak Height (PH) image
+  \param axImagePointer			            Pointer to Axial Diffusivity image
+  \param faImagePointer			            Pointer to Fractional Anisotropy image
+  \param radImagePointer			          Pointer to Radial Diffusivity image
+  \param trImagePointer			            Pointer to Trace image
+  \param labelImagePointer		          Pointer to image having segmentation labels in patient space
+  \param atlasImagePointer		          Pointer to image having segmentation labels in atla space
+  \param templateImagePointer9regions		Pointer to atlas (having 9 regions) to calculate location features
+  \param templateImagePointer21regions	Pointer to atlas (having 21 regions) to calculate location features
+  \param templateImagePointerAllregions	Pointer to atlas (having all regions) to calculate location features
+  \param POSAtlasImagePointer       		Pointer to EGFR positive atlas
+  \param NEGAtlasImagePointer       		Pointer to EGFR negative atlas
+  \param configuration			            Configuration to calculate histogram features
   */
-
-  template<class ImageType>
-  double SurvivalEstimateOnGivenSubject(typename ImageType::Pointer LabelMap,
-    typename ImageType::Pointer AtlasMap,
-    typename ImageType::Pointer TemplateMap,
-    typename ImageType::Pointer FinalT1CEImagePointer,
-    typename ImageType::Pointer FinalT2FlairImagePointer,
-    typename ImageType::Pointer FinalT1ImagePointer,
-    typename ImageType::Pointer FinalT2ImagePointer,
-    typename ImageType::Pointer PHImagePointer,
-    typename ImageType::Pointer PSRImagePointer,
-    typename ImageType::Pointer RCBVImagePointer,
-    typename ImageType::Pointer AXImagePointer,
-    typename ImageType::Pointer FAImagePointer,
-    typename ImageType::Pointer RADImagePointer,
-    typename ImageType::Pointer TRImagePointer, int age, std::string modeldirectory);
-
 
   template<class ImageType>
   VectorDouble  LoadTestData(const typename ImageType::Pointer &t1ceImagePointer,
@@ -170,25 +135,31 @@ public:
   */
   VectorDouble GetStatisticalFeatures(const VectorDouble &intensities);
 
+  /**
+  \brief Normalizes the input histogram features
+
+  \param intensities			Input vector having intensities from a region of an image
+  \param size             Size of the region. Number of voxels in the histogram
+  */
   VectorDouble NormalizeHistogramFeatures(VectorDouble inputHistogramFeatures, const int size);
 
   /**
-  \brief Calculates the histogram binning based features for given vector
+  \brief Calculates the histogram binning based features for a given intensity vector
 
   \param intensities			Input vector having intensities from a region of an image
-  \param start				Start of the histogram bins
-  \param interval				Interval between the centers of two hsitogram bins
-  \param end					End of the histogram bins
+  \param start				    Start of the histogram bins
+  \param interval				  Interval between the centers of two hsitogram bins
+  \param end					    End of the histogram bins
   */
   VectorDouble GetHistogramFeatures(const VectorDouble &intensities, const double &start, const double &interval, const double &end);
 
   /**
-  \brief Calculates volumetric measures adn their ratios
+  \brief Calculates volumetric measures and their ratios
 
   \param edemaSize			Volume of edema in terms of number of voxels
-  \param tuSize				Volume of enhancing tumor in terms of number of voxels
-  \param neSize				Volume of non-enahancing tumro core in terms of number of voxels
-  \param totalSize			Volume of whoe brain in terms of number of voxels
+  \param tuSize				  Volume of enhancing tumor in terms of number of voxels
+  \param neSize				  Volume of non-enahancing tumro core in terms of number of voxels
+  \param totalSize			Volume of whole brain in terms of number of voxels
   */
   VectorDouble GetVolumetricFeatures(const double &edemaSize, const double &tuSize, const double &neSize, const double &totalSize);
 
@@ -196,112 +167,131 @@ public:
   \brief Removes the connected components smaller than an area threshold from the tumor
 
   \param labelImagePointer		Pointer to image having segmentation labels in patient space
+  \parm areathreshold         Area threshold to remove smaller regions
   */
   template<class ImageType>
   std::vector<typename ImageType::Pointer> RevisedTumorArea(const typename ImageType::Pointer &labelImagePointer, const int areathreshold);
 
   /**
-  \brief Calculates the distance features. 1. Distanc eof tumro from ventricles, 2. Distance of edema from ventricles
+  \brief Calculates distance features. 1. Distance of tumor from ventricles, 2. Distance of edema from ventricles
 
   \param edemaImage		Pointer to image having edema label
-  \param tumorImage		Pointer to image having (enhancing tumor + non-enahncign tumor) label
+  \param tumorImage		Pointer to image having (enhancing tumor + non-enhancing tumor) label
   \param ventImage		Pointer to image having ventricles label
   */
   template<class ImageType>
-  VectorDouble GetDistanceFeatures3(const typename ImageType::Pointer &edemaImage, const typename ImageType::Pointer &tumorImage, const typename ImageType::Pointer &ventImage);
+  VectorDouble GetDistanceFeatures3(const typename ImageType::Pointer &edemaImage, 
+    const typename ImageType::Pointer &tumorImage, 
+    const typename ImageType::Pointer &ventImage);
 
   /**
-  \brief Calculates the distance map of an image by keeping the given label as reference seed point
+  \brief Calculates the distance map of an image by using the given label as reference seed point
 
   \param labelImagePointer		Pointer to image having segmentation labels in patient space
-  \param label					Label to use as a reference seed point
+  \param label					      Label to use as a reference seed point
   */
-
   template<class ImageType>
-  typename ImageType::Pointer GetDistanceMapWithLabel(const typename ImageType::Pointer &labelImagePointer, const int &label1);
+  typename ImageType::Pointer GetDistanceMapWithLabel(const typename ImageType::Pointer &labelImagePointer, 
+    const int &label);
 
   /**
-  \brief Calculates the distance map of an image by keeping the non-zero voxels of image as reference seed point
+  \brief Calculates the distance map of an image by using non-zero voxels of the image as reference seed point
 
   \param image					Pointer to image having reference seed points
   */
   template<class ImageType>
   typename ImageType::Pointer GetDistanceMap(const typename ImageType::Pointer &image);
 
-
   /**
-  \brief Calculates the spatial location features for given tumor images
+  \brief Calculates spatial location features for given tumor images
 
-  \param labelImagePointer		Pointer to image having segmentation labels in patient space
-  \param atlasImagePointer		Pointer to image having segmentation labels in atlas space
+  \param labelImagePointer		Pointer to image having segmentation labels in atlas space
+  \param atlasImagePointer		Pointer to jakob atlas image
   */
   template<class ImageType>
   VectorDouble GetSpatialLocationFeaturesForFixedNumberOfRegions(const typename ImageType::Pointer &labelImagePointer,const typename ImageType::Pointer &atlasImagePointer,const int number);
   
-  template<class ImageType>
-  std::vector<double> GetSpatialLocationFeaturesForEGFRTrainingWithLOO(typename ImageType::Pointer labelImagePointer,
-    typename ImageType::Pointer EGFRvIII_Neg_Atlas,
-    typename ImageType::Pointer EGFRvIII_Pos_Atlas, int label);
-
-  /**
-  \brief Prepares a new survival prediction model
-
-  \param inputdirectory			Path to the directory having training data
-  \param qualifiedsubjects		List of qualifeid subjects having all the data avaialble to train a model
-  \param outputdirectory			Path to the output directory
-  */
-  int PrepareNewEGFRvIIIPredictionModel(
-    const std::string &inputdirectory,
-    const std::vector< std::map< CAPTK::ImageModalityType, std::string > > &qualifiedsubjects,
-    const std::string &outputdirectory);
-
   /**
   \brief Apply an exsiting model on new patients to predit survival
 
-  \param modeldirectory			Path to the directory where model fiels are stored
+  \param modeldirectory			Path to the directory where model files are stored
   \param inputdirectory			Path to the directory having test data
-  \param qualifiedsubjects		List of qualifeid subjects having all the data avaialble to apply a model
-  \param outputdirectory			Path to the output directory
+  \param qualifiedsubjects	List of qualifeid subjects having all the data available to apply a model
+  \param outputdirectory		Path to the output directory
   */
   VectorDouble EGFRvIIIPredictionOnExistingModel(const std::string &modeldirectory,
     const std::string &inputdirectory,
     const std::vector< std::map< CAPTK::ImageModalityType, std::string > > &qualifiedsubjects,
     const std::string &outputdirectory);
 
+  /**
+  \brief Extracts the selected features from input data 
 
+  \param inputFeatures			Input features matrix
+  \param SelectedFeatures		Indices of features to be extracted
+  */
+  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &InputFeatures,
+    const VariableLengthVectorType &SelectedFeatures);
 
-  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures,const VariableLengthVectorType &SelectedFeatures);
+  /**
+  \brief Calculates distance from the hyperplane of linear SVM classifier
 
-  template<class ImageType>
-  typename ImageType::Pointer RemoveSmallerComponentsFromTumor(const typename ImageType::Pointer &etumorImage, const typename ImageType::Pointer &ncrImage);
-
+  \param testData			Final features of the test patients
+  \param filename		  Path to the model file
+  */
   VariableLengthVectorType DistanceFunctionLinear(const VariableSizeMatrixType &testData, const std::string &filename);
-  VectorDouble CombineEstimates(const VariableLengthVectorType &estimates1, const VariableLengthVectorType &estimates2);
-  VectorDouble CombineEstimates(const VectorDouble &estimates1, const VectorDouble &estimates2);
 
   /**
   \brief Calculates transpose of given input matrix
+
   \param  inputmatrix Input data
   */
   VariableSizeMatrixType MatrixTranspose(const VariableSizeMatrixType &inputmatrix);
 
-  template <class ImageType>
-  typename ImageType::Pointer ReadNiftiImage(const std::string &filename);
-  
+  /**
+  \brief Rescales intensity of an image in the range of 0-255
+
+  \param  image     Input image
+  */
   template<class ImageType>
   typename ImageType::Pointer RescaleImageIntensity(const typename ImageType::Pointer &image);
 
+  /**
+  \brief Caps the intensity profile of an image 
+
+  \param  image     Input image
+  */
   template<class ImageType>
   typename ImageType::Pointer CapImageIntensityWithPercentile(const typename ImageType::Pointer &image);
 
+
+  //functions specific to the training process
   ImageType::Pointer MakeAtlases(const std::vector<ImageType::Pointer> &SegmentationaAllPatients, const std::vector<int> &LabelsAllPatientsconst, const int atlas_no);
-
-  bool SelectModelFeaturesForTrainingSVMFFSel(const VariableSizeMatrixType &scaledFeatureSet, const VectorDouble &AllLabels,const std::string outputdirectory);
+  
+  bool SelectModelFeaturesForTrainingSVMFFSel(const VariableSizeMatrixType &scaledFeatureSet, 
+    const VectorDouble &AllLabels,const std::string outputdirectory);
+  
   std::vector<int> UpdateUnselectedFeatures(std::vector<int> SelectedFeatures, int featuresize);
-  VectorDouble InternalCrossValidationResubstitution(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue, int kerneltype);
+  
+  VectorDouble InternalCrossValidationResubstitution(VariableSizeMatrixType inputFeatures, 
+    std::vector<double> inputLabels, 
+    double cValue, double gValue, int kerneltype);
+  
   VectorDouble CalculatePerformanceMeasures(VariableLengthVectorType predictedLabels, VectorDouble GivenLabels);
-  bool SelectModelFeaturesForTrainingFromStudy(const VariableSizeMatrixType &scaledFeatureSet, const VectorDouble &AllLabels, const std::string outputdirectory);
 
+  bool SelectModelFeaturesForTrainingFromStudy(const VariableSizeMatrixType &scaledFeatureSet, 
+    const VectorDouble &AllLabels,
+    const std::string outputdirectory);
+  template<class ImageType>
+
+  std::vector<double> GetSpatialLocationFeaturesForEGFRTrainingWithLOO(typename ImageType::Pointer labelImagePointer,
+    typename ImageType::Pointer EGFRvIII_Neg_Atlas,
+    typename ImageType::Pointer EGFRvIII_Pos_Atlas, int label);
+
+  int PrepareNewEGFRvIIIPredictionModel(
+    const std::string &inputdirectory,
+    const std::vector< std::map< CAPTK::ImageModalityType, std::string > > &qualifiedsubjects,
+    const std::string &outputdirectory);
 
   void Run()
   {}
@@ -364,41 +354,20 @@ typename ImageType::Pointer EGFRvIIIIndexPredictor::CapImageIntensityWithPercent
 }
 
 
-template <class ImageType>
-typename ImageType::Pointer EGFRvIIIIndexPredictor::ReadNiftiImage(const std::string &filename)
-{
-  typedef itk::ImageFileReader<ImageType> ImageReaderType;
-  typename ImageReaderType::Pointer reader = ImageReaderType::New();
-  reader->SetFileName(filename);
-
-  try
-  {
-    reader->Update();
-  }
-  catch (itk::ExceptionObject& e)
-  {
-    std::cerr << "Error caught: " << e.what() << "\n";
-    //cbica::Logging(loggerFile, "Error caught during testing: " + std::string(e.GetDescription()));
-    exit(EXIT_FAILURE);
-  }
-
-
-  return reader->GetOutput();
-}
-
 template<class ImageType>
 VectorDouble EGFRvIIIIndexPredictor::GetDistanceFeatures3(const typename ImageType::Pointer &edemaImage, const typename ImageType::Pointer &tumorImage, const typename ImageType::Pointer &ventImage)
 {
-  //-----------------------create distance image----------------------------
+  //create distance image
   VectorDouble VentEdemaSum;
   VectorDouble VentTumorSum;
-  //-------------------------get sum of images----------------------------------
+  
+  //get sum of images
   typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
   IteratorType tumorIt(tumorImage, tumorImage->GetLargestPossibleRegion());
   IteratorType ventIt(ventImage, ventImage->GetLargestPossibleRegion());
   IteratorType edemaIt(edemaImage, edemaImage->GetLargestPossibleRegion());
 
-  //-----------------------convert negative values to zeros--------------------
+  //convert negative values to zeros
   tumorIt.GoToBegin();
   ventIt.GoToBegin();
   edemaIt.GoToBegin();
@@ -416,8 +385,6 @@ VectorDouble EGFRvIIIIndexPredictor::GetDistanceFeatures3(const typename ImageTy
     ++ventIt;
     ++edemaIt;
   }
-
-
   tumorIt.GoToBegin();
   ventIt.GoToBegin();
   edemaIt.GoToBegin();
@@ -435,17 +402,17 @@ VectorDouble EGFRvIIIIndexPredictor::GetDistanceFeatures3(const typename ImageTy
 
   double sumVentEdema = 0;
   double sumVentTumor = 0;
-  for (int i = 0; i < SURVIVAL_NO_NEAR_DIST; i++)
+  for (int i = 0; i < EGFR_NO_NEAR_DIST; i++)
   {
     sumVentEdema = sumVentEdema + VentEdemaSum[i];
     sumVentTumor = sumVentTumor + VentTumorSum[i];
   }
   VectorDouble DistanceFeatures;
-  DistanceFeatures.push_back(sumVentTumor / SURVIVAL_NO_NEAR_DIST); 
-  DistanceFeatures.push_back(sumVentEdema / SURVIVAL_NO_NEAR_DIST);
+  DistanceFeatures.push_back(sumVentTumor / EGFR_NO_NEAR_DIST); 
+  DistanceFeatures.push_back(sumVentEdema / EGFR_NO_NEAR_DIST);
   return DistanceFeatures;
 }
-//--------------------------------------------------------------------------------------
+
 template<class ImageType>
 typename ImageType::Pointer EGFRvIIIIndexPredictor::GetDistanceMap(const typename ImageType::Pointer &labelImagePointer)
 {
@@ -563,9 +530,6 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   VectorDouble necoreIntensitiesPH;
 
 
-  //VectorDouble GlistrFeatures = GetGlistrFeatures(parametersNames);
-
-
   typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
   IteratorType imIt(labelImagePointer, labelImagePointer->GetLargestPossibleRegion());
   imIt.GoToBegin();
@@ -577,8 +541,6 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
       necoreIndices.push_back(imIt.GetIndex());
     else if (imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::EDEMA)
       edemaIndices.push_back(imIt.GetIndex());
-    //else if (imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::VENT)
-    //  ventIndices.push_back(imIt.GetIndex());
     else
     {
     }
@@ -706,17 +668,17 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   VectorDouble NCRStatisticsPSR = GetStatisticalFeatures(necoreIntensitiesPSR);
   VectorDouble NCRStatisticsPH = GetStatisticalFeatures(necoreIntensitiesPH);
 
-  //-------------------------------Find connected components and get volumetric features -----------------------------
+  //find connected components and remove components smaller than a certain area threshold
   std::vector<typename ImageType::Pointer> RevisedImages = RevisedTumorArea<ImageType>(labelImagePointer,20);
   typename ImageType::Pointer tumorImage = RevisedImages[0];
   typename ImageType::Pointer etumorImage = RevisedImages[1];
   typename ImageType::Pointer ncrImage = RevisedImages[2];
 
-  etumorIndices.clear();
+
+  //find indices of tumor sub-regions and calculate volumetric features in the patient space
   necoreIndices.clear();
   tumorIndices.clear();
-
-
+  
   IteratorType ncrIt(ncrImage, ncrImage->GetLargestPossibleRegion());
   ncrIt.GoToBegin();
   while (!ncrIt.IsAtEnd())
@@ -743,6 +705,7 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   }
   VectorDouble VolumetricFeatures_Segmentation = GetVolumetricFeatures(edemaIndices.size(), etumorIndices.size(), necoreIndices.size(), brainIndices.size());
 
+  //find indices of tumor sub-regions and calculate volumetric features in the atlas space
   etumorIndices.clear();
   necoreIndices.clear();
   tumorIndices.clear();
@@ -777,11 +740,6 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   etumorImage = RevisedImages[1];
   ncrImage = RevisedImages[2];
 
-  //etumorIndices.clear();
-  //necoreIndices.clear();
-  //tumorIndices.clear();
-  
-
   IteratorType ncrAtlasIt(ncrImage, ncrImage->GetLargestPossibleRegion());
   ncrAtlasIt.GoToBegin();
   while (!ncrAtlasIt.IsAtEnd())
@@ -808,9 +766,8 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   }
   VectorDouble VolumetricFeatures_Atlas = GetVolumetricFeatures(edemaIndices.size(), etumorIndices.size(), necoreIndices.size(), brainIndices.size());
 
-  //--------------------------------Alternate function for distance features----------------------------------------------  
+  //calculate distance maps and use these maps to calculate distance features
   typename ImageType::Pointer  edemaDistanceMap = GetDistanceMapWithLabel<ImageType>(atlasImagePointer, CAPTK::GLISTR_OUTPUT_LABELS::EDEMA);
-
   typename ImageType::Pointer ventImage = ImageType::New();
   ventImage->CopyInformation(atlasImagePointer);
   ventImage->SetRequestedRegion(atlasImagePointer->GetLargestPossibleRegion());
@@ -836,12 +793,10 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   }
   typename ImageType::Pointer  ventDistanceMap = GetDistanceMap<ImageType>(ventImage);
   typename ImageType::Pointer  tumorDistanceMap = GetDistanceMap<ImageType>(tumorImage);
-
   VectorDouble DistanceFeatures = GetDistanceFeatures3<ImageType>(edemaDistanceMap, tumorDistanceMap, ventDistanceMap);
 
-
+  //spatial location features
   std::vector<double> spatialLocationFeatures_4 = GetSpatialLocationFeaturesForEGFR<ImageType>(atlasImagePointer, NEGAtlasImagePointer, POSAtlasImagePointer);
-  //std::vector<double> spatialLocationFeatures_4 = GetSpatialLocationFeaturesForEGFRTrainingWithLOO<ImageType>(atlasImagePointer, NEGAtlasImagePointer, POSAtlasImagePointer, label);
   VectorDouble spatialLocationFeatures_9        = GetSpatialLocationFeaturesForFixedNumberOfRegions<ImageType>(atlasImagePointer, templateImagePointer9regions,9);
   VectorDouble spatialLocationFeatures_21       = GetSpatialLocationFeaturesForFixedNumberOfRegions<ImageType>(atlasImagePointer, templateImagePointer21regions,21);
 
@@ -870,8 +825,6 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   TestFeatures.insert(TestFeatures.end(), ETStatisticsRAD.begin(), ETStatisticsRAD.end());
   TestFeatures.insert(TestFeatures.end(), ETStatisticsTR.begin(), ETStatisticsTR.end());
 
-
-
   TestFeatures.insert(TestFeatures.end(), NCRStatisticsT1CE.begin(), NCRStatisticsT1CE.end());
   TestFeatures.insert(TestFeatures.end(), NCRStatisticsT1.begin(), NCRStatisticsT1.end());
   TestFeatures.insert(TestFeatures.end(), NCRStatisticsT2.begin(), NCRStatisticsT2.end());
@@ -896,7 +849,7 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   TestFeatures.insert(TestFeatures.end(), EDStatisticsRAD.begin(), EDStatisticsRAD.end());
   TestFeatures.insert(TestFeatures.end(), EDStatisticsTR.begin(), EDStatisticsTR.end());
 
-//copy histogram features
+  //copy histogram features
   TestFeatures.insert(TestFeatures.end(), ETBinsT1CE.begin(), ETBinsT1CE.end());
   TestFeatures.insert(TestFeatures.end(), EDBinsT1CE.begin(), EDBinsT1CE.end());
   
@@ -935,7 +888,7 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   TestFeatures.insert(TestFeatures.end(), EDBinsTR.begin(), EDBinsTR.end());
   TestFeatures.insert(TestFeatures.end(), NCRBinsTR.begin(), NCRBinsTR.end());
 
-  //copy spatia ocation features
+  //copy spatial location features
   TestFeatures.insert(TestFeatures.end(), spatialLocationFeatures_9.begin(), spatialLocationFeatures_9.end());
 
   //doing it differently for this feature type as ROI number 17 and 21 need to be excluded
@@ -948,6 +901,7 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
   }
   return TestFeatures;
 }
+
 template<class ImageType>
 std::vector<typename ImageType::Pointer> EGFRvIIIIndexPredictor::RevisedTumorArea(const typename ImageType::Pointer &labelImagePointer,const int areathreshold)
 {
@@ -1068,81 +1022,7 @@ std::vector<typename ImageType::Pointer> EGFRvIIIIndexPredictor::RevisedTumorAre
 
   return RevisedImages;
 }
-template<class ImageType>
-typename ImageType::Pointer EGFRvIIIIndexPredictor::RemoveSmallerComponentsFromTumor(const typename ImageType::Pointer &etumorImage, const typename ImageType::Pointer &ncrImage)
-{
-  typename ImageType::Pointer tumorImage = ImageType::New();
-  tumorImage->CopyInformation(etumorImage);
-  tumorImage->SetRequestedRegion(etumorImage->GetLargestPossibleRegion());
-  tumorImage->SetBufferedRegion(etumorImage->GetBufferedRegion());
-  tumorImage->Allocate();
-  tumorImage->FillBuffer(0);
 
-  typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-  IteratorType tumorIt(tumorImage, tumorImage->GetLargestPossibleRegion());
-  IteratorType ncrIt(ncrImage, ncrImage->GetLargestPossibleRegion());
-  IteratorType etIt(etumorImage, etumorImage->GetLargestPossibleRegion());
-
-  tumorIt.GoToBegin();
-  etIt.GoToBegin();
-  ncrIt.GoToBegin();
-
-  while (!tumorIt.IsAtEnd())
-  {
-    if (etIt.Get() == CAPTK::VOXEL_STATUS::ON || ncrIt.Get() == CAPTK::VOXEL_STATUS::ON)
-      tumorIt.Set(CAPTK::VOXEL_STATUS::ON);
-    else
-      tumorIt.Set(CAPTK::VOXEL_STATUS::OFF);
-
-    ++tumorIt;
-    ++etIt;
-    ++ncrIt;
-  }
-
-  typedef itk::Image< unsigned short, 3 > OutputImageType;
-
-  typedef itk::ConnectedComponentImageFilter <ImageType, OutputImageType> ConnectedComponentImageFilterType;
-  typename ConnectedComponentImageFilterType::Pointer connected = ConnectedComponentImageFilterType::New();
-  connected->FullyConnectedOn();
-  connected->SetInput(tumorImage);
-  connected->Update();
-  OutputImageType::Pointer labeledImage = connected->GetOutput();
-
-  connected->GetObjectCount();
-  std::vector<int> sizes;
-  typedef itk::ImageRegionIteratorWithIndex <OutputImageType> OutputIteratorType;
-  OutputIteratorType lbimIt(labeledImage, labeledImage->GetLargestPossibleRegion());
-
-  for (unsigned int i = 0; i < connected->GetObjectCount(); i++)
-  {
-    int counter = 0;
-    lbimIt.GoToBegin();
-    while (!lbimIt.IsAtEnd())
-    {
-      if (lbimIt.Get() == i + 1)
-        counter++;
-      ++lbimIt;
-    }
-    sizes.push_back(counter);
-  }
-  for (unsigned int i = 0; i < connected->GetObjectCount(); i++)
-  {
-    if (sizes[i] < SURVIVAL_SIZE_COMP)
-    {
-      lbimIt.GoToBegin();
-      tumorIt.GoToBegin();
-      while (!lbimIt.IsAtEnd())
-      {
-        if (lbimIt.Get() == i + 1)
-          tumorIt.Set(CAPTK::VOXEL_STATUS::OFF);
-
-        ++lbimIt;
-        ++tumorIt;
-      }
-    }
-  }
-  return tumorImage;
-}
 template<class ImageType>
 VectorDouble EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForFixedNumberOfRegions(const typename ImageType::Pointer &labelImagePointer, const typename ImageType::Pointer &jacobtemplateImagePointer,const int numberofregions)
 {
@@ -1235,8 +1115,6 @@ std::vector<double> EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForEGFR(ty
     ++negAtlasIt;
     ++posAtlasIt;
   }
-
-
   //make new tumor with one ony;
   typename ImageType::Pointer tumorImage = ImageType::New();
   tumorImage->CopyInformation(labelImagePointer);
@@ -1306,6 +1184,7 @@ std::vector<double> EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForEGFR(ty
     max_NEG_Atlas = *std::max_element(std::begin(probNEGAtlas), std::end(probNEGAtlas));
   }
 
+  //previous implementation of location features
   //std::vector<double> SpatialFeatures;
   //SpatialFeatures.push_back(average_NEG_Atlas-average_POS_Atlas);
   //SpatialFeatures.push_back(max_NEG_Atlas- max_POS_Atlas);
@@ -1323,422 +1202,123 @@ std::vector<double> EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForEGFR(ty
   return SpatialFeatures;
 }
 
-
-  template<class ImageType>
-  std::vector<double> EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForEGFRTrainingWithLOO(typename ImageType::Pointer labelImagePointer,
-    typename ImageType::Pointer EGFRvIII_Neg_Atlas,
-    typename ImageType::Pointer EGFRvIII_Pos_Atlas,int label)
-  {
-    typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-
-    //make new tumor with one ony;
-    typename ImageType::Pointer tumorImage = ImageType::New();
-    tumorImage->CopyInformation(labelImagePointer);
-    tumorImage->SetRequestedRegion(labelImagePointer->GetLargestPossibleRegion());
-    tumorImage->SetBufferedRegion(labelImagePointer->GetBufferedRegion());
-    tumorImage->Allocate();
-    tumorImage->FillBuffer(0);
-
-    IteratorType tumorIt(tumorImage, tumorImage->GetLargestPossibleRegion());
-    IteratorType imIt(labelImagePointer, labelImagePointer->GetLargestPossibleRegion());
-    imIt.GoToBegin();
-    tumorIt.GoToBegin();
-
-    while (!tumorIt.IsAtEnd())
-    {
-      if (imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::TUMOR || imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
-        tumorIt.Set(CAPTK::VOXEL_STATUS::ON);
-      else
-        tumorIt.Set(CAPTK::VOXEL_STATUS::OFF);
-      ++tumorIt;
-      ++imIt;
-    }
-
-    //--------------------------------------------------
-    IteratorType negAtlasIt(EGFRvIII_Neg_Atlas, EGFRvIII_Neg_Atlas->GetLargestPossibleRegion());
-    IteratorType posAtlasIt(EGFRvIII_Pos_Atlas, EGFRvIII_Pos_Atlas->GetLargestPossibleRegion());
-    tumorIt.GoToBegin();
-    negAtlasIt.GoToBegin();
-    posAtlasIt.GoToBegin();
-    while (!tumorIt.IsAtEnd())
-    {
-      if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON && label==0)
-        negAtlasIt.Set(negAtlasIt.Get()-1);
-      else if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON && label == 1)
-        posAtlasIt.Set(posAtlasIt.Get()-1);
-      else
-      {
-      }
-      ++tumorIt;
-      ++negAtlasIt;
-      ++posAtlasIt;
-    }
-    //------------------------------------------------------   
-
-    //find max and min 
-    negAtlasIt.GoToBegin();
-    posAtlasIt.GoToBegin();
-    double maxposvalue = 0;
-    double maxnegvalue = 0;
-    while (!negAtlasIt.IsAtEnd())
-    {
-      if (negAtlasIt.Get() > maxnegvalue)
-        maxnegvalue = negAtlasIt.Get();
-      if (posAtlasIt.Get() > maxposvalue)
-        maxposvalue = posAtlasIt.Get();
-      ++negAtlasIt;
-      ++posAtlasIt;
-    }
-
-    //multiply with 100
-    negAtlasIt.GoToBegin();
-    posAtlasIt.GoToBegin();
-    while (!negAtlasIt.IsAtEnd())
-    {
-      negAtlasIt.Set(negAtlasIt.Get() * 100 / maxnegvalue);
-      posAtlasIt.Set(posAtlasIt.Get() * 100 / maxposvalue);
-      ++negAtlasIt;
-      ++posAtlasIt;
-    }
-
-
-    tumorIt.GoToBegin();
-    negAtlasIt.GoToBegin();
-    posAtlasIt.GoToBegin();
-    std::vector<double> probNEGAtlas;
-    std::vector<double> probPOSAtlas;
-
-    while (!tumorIt.IsAtEnd())
-    {
-      if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON)
-      {
-        probNEGAtlas.push_back(negAtlasIt.Get());
-        probPOSAtlas.push_back(posAtlasIt.Get());
-      }
-      ++tumorIt;
-      ++negAtlasIt;
-      ++posAtlasIt;
-    }
-    double max_POS_Atlas = *std::max_element(std::begin(probPOSAtlas), std::end(probPOSAtlas));
-    double max_NEG_Atlas = *std::max_element(std::begin(probNEGAtlas), std::end(probNEGAtlas));
-
-    double sumPOS = 0;
-    double sumNEG = 0;
-
-    for (int i = 0; i < probPOSAtlas.size(); i++)
-    {
-      sumPOS = sumPOS + probPOSAtlas[i];
-      sumNEG = sumNEG + probNEGAtlas[i];
-    }
-    double average_POS_Atlas = sumPOS / probPOSAtlas.size();
-    double average_NEG_Atlas = sumNEG / probNEGAtlas.size();
-
-    std::vector<double> SpatialFeatures;
-    SpatialFeatures.push_back(average_NEG_Atlas - average_POS_Atlas);
-    SpatialFeatures.push_back(max_NEG_Atlas - max_POS_Atlas);
-    SpatialFeatures.push_back(average_NEG_Atlas / average_POS_Atlas);
-    SpatialFeatures.push_back(max_NEG_Atlas / max_POS_Atlas);
-
-    return SpatialFeatures;
-  }
-
-
-
 template<class ImageType>
-double EGFRvIIIIndexPredictor::SurvivalEstimateOnGivenSubject(typename ImageType::Pointer LabelImagePointer,
-  typename ImageType::Pointer AtlasImagePointer,
-  typename ImageType::Pointer TemplateImagePointer,
-  typename ImageType::Pointer T1CEImagePointer,
-  typename ImageType::Pointer T2FlairImagePointer,
-  typename ImageType::Pointer T1ImagePointer,
-  typename ImageType::Pointer T2ImagePointer,
-  typename ImageType::Pointer PHImagePointer,
-  typename ImageType::Pointer PSRImagePointer,
-  typename ImageType::Pointer RCBVImagePointer,
-  typename ImageType::Pointer AXImagePointer,
-  typename ImageType::Pointer FAImagePointer,
-  typename ImageType::Pointer RADImagePointer,
-  typename ImageType::Pointer TRImagePointer, int age, std::string modeldirectory)
+std::vector<double> EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForEGFRTrainingWithLOO(typename ImageType::Pointer labelImagePointer,
+  typename ImageType::Pointer EGFRvIII_Neg_Atlas,
+  typename ImageType::Pointer EGFRvIII_Pos_Atlas, int label)
 {
-  VariableSizeMatrixType HistogramFeaturesConfigurations;
-  HistogramFeaturesConfigurations.SetSize(33, 3); //11 modalities*3 regions = 33 configurations*3 histogram features for each configuration
+  typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
 
-  CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
-  VectorDouble ages;
-  MatrixType dataMatrix;
-  try
-  {
-    reader->SetFileName(modeldirectory + "/Survival_HMFeatures_Configuration.csv");
-    reader->SetFieldDelimiterCharacter(',');
-    reader->HasColumnHeadersOff();
-    reader->HasRowHeadersOff();
-    reader->Parse();
-    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+  //make new tumor with one ony;
+  typename ImageType::Pointer tumorImage = ImageType::New();
+  tumorImage->CopyInformation(labelImagePointer);
+  tumorImage->SetRequestedRegion(labelImagePointer->GetLargestPossibleRegion());
+  tumorImage->SetBufferedRegion(labelImagePointer->GetBufferedRegion());
+  tumorImage->Allocate();
+  tumorImage->FillBuffer(0);
 
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-        HistogramFeaturesConfigurations(i, j) = dataMatrix(i, j);
-  }
-  catch (const std::exception& e1)
-  {
-    logger.WriteError("Cannot find the file 'Survival_HMFeatures_Configuration.csv' in the input directory. Error code : " + std::string(e1.what()));
-    exit(EXIT_FAILURE);
-  }
-  MatrixType meanMatrix;
-  VariableLengthVectorType mean;
-  VariableLengthVectorType stddevition;
-  try
-  {
-    reader->SetFileName(modeldirectory + "/Survival_ZScore_Mean.csv");
-    reader->SetFieldDelimiterCharacter(',');
-    reader->HasColumnHeadersOff();
-    reader->HasRowHeadersOff();
-    reader->Parse();
-    meanMatrix = reader->GetArray2DDataObject()->GetMatrix();
+  IteratorType tumorIt(tumorImage, tumorImage->GetLargestPossibleRegion());
+  IteratorType imIt(labelImagePointer, labelImagePointer->GetLargestPossibleRegion());
+  imIt.GoToBegin();
+  tumorIt.GoToBegin();
 
-    mean.SetSize(meanMatrix.size());
-    for (unsigned int i = 0; i < meanMatrix.size(); i++)
-      mean[i] = meanMatrix(i, 0);
-  }
-  catch (const std::exception& e1)
+  while (!tumorIt.IsAtEnd())
   {
-    logger.WriteError("Cannot find the file 'mean.csv' in the model directory. Error code : " + std::string(e1.what()));
-    exit(EXIT_FAILURE);
+    if (imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::TUMOR || imIt.Get() == CAPTK::GLISTR_OUTPUT_LABELS::NONENHANCING)
+      tumorIt.Set(CAPTK::VOXEL_STATUS::ON);
+    else
+      tumorIt.Set(CAPTK::VOXEL_STATUS::OFF);
+    ++tumorIt;
+    ++imIt;
   }
-  MatrixType stdMatrix;
-  try
-  {
-    reader->SetFileName(modeldirectory + "/Survival_ZScore_Std.csv");
-    reader->SetFieldDelimiterCharacter(',');
-    reader->HasColumnHeadersOff();
-    reader->HasRowHeadersOff();
-    reader->Parse();
-    stdMatrix = reader->GetArray2DDataObject()->GetMatrix();
 
-    stddevition.SetSize(stdMatrix.size());
-    for (unsigned int i = 0; i < stdMatrix.size(); i++)
-      stddevition[i] = stdMatrix(i, 0);
-  }
-  catch (const std::exception& e1)
+  //--------------------------------------------------
+  IteratorType negAtlasIt(EGFRvIII_Neg_Atlas, EGFRvIII_Neg_Atlas->GetLargestPossibleRegion());
+  IteratorType posAtlasIt(EGFRvIII_Pos_Atlas, EGFRvIII_Pos_Atlas->GetLargestPossibleRegion());
+  tumorIt.GoToBegin();
+  negAtlasIt.GoToBegin();
+  posAtlasIt.GoToBegin();
+  while (!tumorIt.IsAtEnd())
   {
-    logger.WriteError("Cannot find the file 'std.csv' in the model directory. Error code : " + std::string(e1.what()));
-    exit(EXIT_FAILURE);
-  }
-  //----------------------------------------------------
-  VariableSizeMatrixType FeaturesOfAllSubjects;
-  FeaturesOfAllSubjects.SetSize(1, 161);
-
-  VectorDouble TestFeatures = LoadTestData<ImageType>(T1CEImagePointer, T2FlairImagePointer, T1ImagePointer, T2ImagePointer,
-    RCBVImagePointer, PSRImagePointer, PHImagePointer, AXImagePointer, FAImagePointer, RADImagePointer, TRImagePointer, LabelImagePointer, AtlasImagePointer, TemplateImagePointer, HistogramFeaturesConfigurations);
-  FeaturesOfAllSubjects(0, 0) = age;
-  for (unsigned int i = 1; i <= TestFeatures.size(); i++)
-    FeaturesOfAllSubjects(0, i) = TestFeatures[i - 1];
-
-  VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
-  VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
-  ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
-  for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < ScaledTestingData.Cols(); j++)
-      ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
-    ScaledFeatureSetAfterAddingLabel(i, j) = 0;
-  }
-  VariableSizeMatrixType SixModelSelectedFeatures;
-  //= SelectSixMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
-  VariableSizeMatrixType EighteenModelSelectedFeatures;
-  //= SelectEighteenMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
-  VectorDouble results;
-  try
-  {
-    VariableLengthVectorType result_6;
-    VariableLengthVectorType result_18;
-    if (cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.csv") == true && cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.csv") == true)
-    {
-      //result_6 = DistanceFunction(SixModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model6.csv",
-      //  SURVIVAL_MODEL6_RHO // value calculated to be -1.0927 
-      //  , SURVIVAL_MODEL6_G // value calculated to be 0.0313
-      //);
-      //result_18 = DistanceFunction(EighteenModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model18.csv",
-      //  SURVIVAL_MODEL18_RHO // value calculated to be -0.2854
-      //  , SURVIVAL_MODEL18_G // value calculated to be 0.5
-      //);
-    }
-    else if (cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.xml") == true && cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.xml") == true)
-    {
-    }
+    if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON && label == 0)
+      negAtlasIt.Set(negAtlasIt.Get() - 1);
+    else if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON && label == 1)
+      posAtlasIt.Set(posAtlasIt.Get() - 1);
     else
     {
-      logger.WriteError("Error caught during testing: There is no exisitg model file in the model directory: " + modeldirectory);
-      exit(EXIT_FAILURE);
     }
-
-    //Estimates=(abs(Estimates)<=1).*Estimates+(Estimates>1)-(Estimates<-1);
-    results = CombineEstimates(result_6, result_18);
-    //std::ofstream myfile;
-    //myfile.open(outputdirectory + "/results.csv");
-    //myfile << "SubjectName,Result\n";
-
-    //for (size_t i = 0; i < results.size(); i++)
-    //{
-    //	std::map< ImageModalityType, std::string > currentsubject = qualifiedsubjects[i];
-    //	myfile << static_cast<std::string>(currentsubject[IMAGE_TYPE_SUDOID]) + "," + std::to_string(result_6[i]) + "," + std::to_string(result_18[i]) + "," + std::to_string(results[i]) + "\n";
-    //}
-    //myfile.close();
+    ++tumorIt;
+    ++negAtlasIt;
+    ++posAtlasIt;
   }
-  catch (itk::ExceptionObject & excp)
+  //------------------------------------------------------   
+
+  //find max and min 
+  negAtlasIt.GoToBegin();
+  posAtlasIt.GoToBegin();
+  double maxposvalue = 0;
+  double maxnegvalue = 0;
+  while (!negAtlasIt.IsAtEnd())
   {
-    logger.WriteError("Error caught during testing: " + std::string(excp.GetDescription()));
-    exit(EXIT_FAILURE);
+    if (negAtlasIt.Get() > maxnegvalue)
+      maxnegvalue = negAtlasIt.Get();
+    if (posAtlasIt.Get() > maxposvalue)
+      maxposvalue = posAtlasIt.Get();
+    ++negAtlasIt;
+    ++posAtlasIt;
   }
-  return results[0];
+
+  //multiply with 100
+  negAtlasIt.GoToBegin();
+  posAtlasIt.GoToBegin();
+  while (!negAtlasIt.IsAtEnd())
+  {
+    negAtlasIt.Set(negAtlasIt.Get() * 100 / maxnegvalue);
+    posAtlasIt.Set(posAtlasIt.Get() * 100 / maxposvalue);
+    ++negAtlasIt;
+    ++posAtlasIt;
+  }
+
+
+  tumorIt.GoToBegin();
+  negAtlasIt.GoToBegin();
+  posAtlasIt.GoToBegin();
+  std::vector<double> probNEGAtlas;
+  std::vector<double> probPOSAtlas;
+
+  while (!tumorIt.IsAtEnd())
+  {
+    if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON)
+    {
+      probNEGAtlas.push_back(negAtlasIt.Get());
+      probPOSAtlas.push_back(posAtlasIt.Get());
+    }
+    ++tumorIt;
+    ++negAtlasIt;
+    ++posAtlasIt;
+  }
+  double max_POS_Atlas = *std::max_element(std::begin(probPOSAtlas), std::end(probPOSAtlas));
+  double max_NEG_Atlas = *std::max_element(std::begin(probNEGAtlas), std::end(probNEGAtlas));
+
+  double sumPOS = 0;
+  double sumNEG = 0;
+
+  for (int i = 0; i < probPOSAtlas.size(); i++)
+  {
+    sumPOS = sumPOS + probPOSAtlas[i];
+    sumNEG = sumNEG + probNEGAtlas[i];
+  }
+  double average_POS_Atlas = sumPOS / probPOSAtlas.size();
+  double average_NEG_Atlas = sumNEG / probNEGAtlas.size();
+
+  std::vector<double> SpatialFeatures;
+  SpatialFeatures.push_back(average_NEG_Atlas - average_POS_Atlas);
+  SpatialFeatures.push_back(max_NEG_Atlas - max_POS_Atlas);
+  SpatialFeatures.push_back(average_NEG_Atlas / average_POS_Atlas);
+  SpatialFeatures.push_back(max_NEG_Atlas / max_POS_Atlas);
+
+  return SpatialFeatures;
 }
-
-
-//template<class ImageType>
-//typename ImageType::Pointer EGFRvIIIIndexPredictor::CalculateSERFeature(const typename ImageType::Pointer &enhancement1, const typename ImageType::Pointer &enhancement2)
-//{
-//	typename ImageType::Pointer localizeImage = ImageType::New();
-//	localizeImage->CopyInformation(enhancement1);
-//	localizeImage->SetRequestedRegion(enhancement1->GetLargestPossibleRegion());
-//	localizeImage->SetBufferedRegion(enhancement1->GetBufferedRegion());
-//	localizeImage->Allocate();
-//	localizeImage->FillBuffer(0);
-
-//	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-//	IteratorType et1It(enhancement1, enhancement1->GetLargestPossibleRegion());
-//	IteratorType et2It(enhancement2, enhancement2->GetLargestPossibleRegion());
-//	IteratorType localizeIt(localizeImage, localizeImage->GetLargestPossibleRegion());
-
-//	et1It.GoToBegin();
-//	et2It.GoToBegin();
-//	localizeIt.GoToBegin();
-
-//	while (!et1It.IsAtEnd())
-//	{
-//		localizeIt.Set(et1It.Get() / et2It.Get());
-//		++localizeIt;
-//		++et1It;
-//		++et2It;
-//	}
-//	return localizeImage;
-//}
-
-//template<class ImageType>
-//typename ImageType::Pointer EGFRvIIIIndexPredictor::CalculatePEFeature(const typename ImageType::Pointer &enhancement1, const typename ImageType::Pointer &enhancement2)
-//{
-//	typename ImageType::Pointer localizeImage = ImageType::New();
-//	localizeImage->CopyInformation(enhancement1);
-//	localizeImage->SetRequestedRegion(enhancement1->GetLargestPossibleRegion());
-//	localizeImage->SetBufferedRegion(enhancement1->GetBufferedRegion());
-//	localizeImage->Allocate();
-//	localizeImage->FillBuffer(0);
-
-//	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-//	IteratorType et1It(enhancement1, enhancement1->GetLargestPossibleRegion());
-//	IteratorType et2It(enhancement2, enhancement2->GetLargestPossibleRegion());
-//	IteratorType localizeIt(localizeImage, localizeImage->GetLargestPossibleRegion());
-
-//	et1It.GoToBegin();
-//	et2It.GoToBegin();
-//	localizeIt.GoToBegin();
-
-//	while (!et1It.IsAtEnd())
-//	{
-//		if (et1It.Get() > et2It.Get())
-//			localizeIt.Set(et1It.Get());
-//		else
-//			localizeIt.Set(et2It.Get());
-//		++localizeIt;
-//		++et1It;
-//		++et2It;
-//	}
-//	return localizeImage;
-
-//}
-
-//template<class ImageType>
-//typename ImageType::Pointer EGFRvIIIIndexPredictor::CalculateWOSFeature(const typename ImageType::Pointer &enhancement1, const typename ImageType::Pointer &enhancement1, const double &timepoint1, , const double &timepoint2)
-//{
-//	typename ImageType::Pointer localizeImage = ImageType::New();
-//	localizeImage->CopyInformation(enhancement1);
-//	localizeImage->SetRequestedRegion(enhancement1->GetLargestPossibleRegion());
-//	localizeImage->SetBufferedRegion(enhancement1->GetBufferedRegion());
-//	localizeImage->Allocate();
-//	localizeImage->FillBuffer(0);
-
-//	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-//	IteratorType et1It(enhancement1, enhancement1->GetLargestPossibleRegion());
-//	IteratorType et2It(enhancement2, enhancement2->GetLargestPossibleRegion());
-//	IteratorType localizeIt(localizeImage, localizeImage->GetLargestPossibleRegion());
-
-//	et1It.GoToBegin();
-//	et2It.GoToBegin();
-//	localizeIt.GoToBegin();
-
-//	while (!et1It.IsAtEnd())
-//	{
-//		double val = (et1It.Get() - et2It.Get()) / (timepoint2-timepoint1);
-//			localizeIt.Set(val);
-//		++localizeIt;
-//		++et1It;
-//		++et2It;
-//	}
-//	return localizeImage;
-//}
-
-
-
-//template<class ImageType>
-//typename ImageType::Pointer EGFRvIIIIndexPredictor::CalculateKineticFeatures(const typename ImageType::Pointer &enhancement1, const typename ImageType::Pointer &enhancement2, const typename ImageType::Pointer &enhancement3, const double &timepoint1, , const double &timepoint2, const double &timepoint3)
-//{
-//	typename ImageType::Pointer enhancement1 = ImageType::New();
-//	enhancement1->CopyInformation(input1);
-//	enhancement1->SetRequestedRegion(input1->GetLargestPossibleRegion());
-//	enhancement1->SetBufferedRegion(input1->GetBufferedRegion());
-//	enhancement1->Allocate();
-//	enhancement1->FillBuffer(0);
-//	typename ImageType::Pointer enhancement2 = ImageType::New();
-//	enhancement2->CopyInformation(input1);
-//	enhancement2->SetRequestedRegion(input1->GetLargestPossibleRegion());
-//	enhancement2->SetBufferedRegion(input1->GetBufferedRegion());
-//	enhancement2->Allocate();
-//	enhancement2->FillBuffer(0);
-
-//	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-//	IteratorType et1It(enhancement1, enhancement1->GetLargestPossibleRegion());
-//	IteratorType et2It(enhancement2, enhancement2->GetLargestPossibleRegion());
-//	IteratorType in1It(input1, input1->GetLargestPossibleRegion());
-//	IteratorType in2It(input2, input2->GetLargestPossibleRegion());
-//	IteratorType in3It(input3, input3->GetLargestPossibleRegion());
-
-//	et1It.GoToBegin();
-//	et2It.GoToBegin();
-//	in1It.GoToBegin();
-//	in2It.GoToBegin();
-//	i3It.GoToBegin();
-
-//	while (!et1It.IsAtEnd())
-//	{
-//		et1It.Set(in2It.Get() - in1It.Get()) ;
-//		et3It.Set(in3It.Get() - in1It.Get());
-//		++in1It;
-//		++in2It;
-//		++in3It;
-
-//		++et1It;
-//		++et2It;
-//	}
-//	return enhancement1;
-//}
-//template<class ImageType>
-//typename ImageType::Pointer EGFRvIIIIndexPredictor::CalculateWISFeature(const typename ImageType::Pointer &enhancement1, const typename ImageType::Pointer &enhancement1, const double &timepoint1, , const double &timepoint2)
-//{
-//}
-
-
-
-
 #endif
 
 
