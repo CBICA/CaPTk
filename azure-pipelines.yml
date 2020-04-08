@@ -1211,35 +1211,35 @@ jobs:
 
         rm -rf scripts
 
-        # mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
       displayName: 'Set up environment variables for packager and build a package'
 
-    # - task: PublishBuildArtifacts@1
-    #   inputs:
-    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #     artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
-    #     continueOnError: true
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
+        continueOnError: true
 
-    # - task: DownloadBuildArtifacts@0
-    #   inputs:
-    #     buildType: 'current'
-    #     downloadType: 'single'
-    #     artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
-    #     downloadPath: '$(System.ArtifactsDirectory)'
-    #     continueOnError: true
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
+        downloadPath: '$(System.ArtifactsDirectory)'
+        continueOnError: true
 
-    # - task: CopyFilesOverSSH@0
-    #   inputs:
-    #     sshEndpoint: cbicaNITRC
-    #     sourceFolder: $(Build.ArtifactStagingDirectory)
-    #     contents: '*_Installer.*'
-    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-    #     cleanTargetFolder: false
-    #     overwrite: true
-    #     continueOnError: true
-    #   displayName: Uploading to NITRC 
-    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC 
+      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 - job: 'CBICA_OSX_SelfHost'
   displayName: "Self-hosted agent on cbica-osx"
