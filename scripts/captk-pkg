@@ -237,10 +237,10 @@ RUN_DEPLOYQT () {
   echo "APPIMG"
   ls
 
-  # Build the AppImage
-  echo "${USR_DIR}/libexec/MCR/**" >> .appimageignore
-  echo "${USR_DIR}/lib/snap*/**" >> .appimageignore
-
+  # # Build the AppImage
+  # echo "${USR_DIR}/libexec/MCR/**" >> .appimageignore
+  # echo "${USR_DIR}/lib/snap*/**" >> .appimageignore
+  export ARCH="x86_64 appimagetool"
   ./appimagetool-x86_64.AppImage ./appdir -v 
 
   echo "DONE APPIMG"
