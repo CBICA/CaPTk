@@ -1713,7 +1713,7 @@ namespace cbica
         returnMap[metric.first + "_Overall"] = metric.second;
       }
 
-      returnMap["Hausdorff95_Overall"] = GetHausdorffDistance(inputLabel_1, inputLabel_2, 0.95);
+      returnMap["Hausdorff95_Overall"] = GetHausdorffDistance< TImageType >(inputLabel_1, inputLabel_2, 0.95);
     }
 
     auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
@@ -1732,7 +1732,7 @@ namespace cbica
           returnMap[metric.first + "_" + valueString] = metric.second;
         }
 
-        returnMap["Hausdorff95_" + valueString] = GetHausdorffDistance(label.second, inputLabelsImages_2[label.first], 0.95);
+        returnMap["Hausdorff95_" + valueString] = GetHausdorffDistance< TImageType >(label.second, inputLabelsImages_2[label.first], 0.95);
       }
 
     }    
@@ -1891,7 +1891,7 @@ namespace cbica
         returnMap[metric.first + "_" + labelString] = metric.second;
       }
 
-      returnMap["Hausdorff95_" + labelString] = GetHausdorffDistance(imageToCompare_1, imageToCompare_2, 0.95);
+      returnMap["Hausdorff95_" + labelString] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
     }
 
     return returnMap;
