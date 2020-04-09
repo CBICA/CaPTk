@@ -1705,20 +1705,6 @@ namespace cbica
 
     // overall stats
     {
-      // more stats
-      itk::ImageRegionConstIterator< TImageType > inputIterator(inputLabel_1, inputLabel_1->GetBufferedRegion());
-      itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabel_2, inputLabel_2->GetBufferedRegion());
-
-      std::vector< float > inputVector_1, inputVector_2;
-      // iterate through the entire input image and if the label value matches the input value,
-      // put '1' in the corresponding location of the output
-      for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
-      {
-        outputIterator.SetIndex(inputIterator.GetIndex());
-        inputVector_1.push_back(inputIterator.Get());
-        inputVector_2.push_back(outputIterator.Get());
-      }
-
       auto temp_roc = GetSensitivityAndSpecificity< TImageType >(inputLabel_1, inputLabel_2);
 
       for (const auto &metric : temp_roc)
@@ -1726,18 +1712,7 @@ namespace cbica
         returnMap[metric.first + "_Overall"] = metric.second;
       }
 
-      returnMap["Sensitivity_Overall"] = temp_roc["Sensitivity"];
-      returnMap["Specificity_Overall"] = temp_roc["Specificity"];
-      returnMap["Accuracy_Overall"] = temp_roc["Accuracy"];
-      returnMap["Precision_Overall"] = temp_roc["Precision"];
-
-      // hausdorff
-      auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
-      filter->SetFixedImage(inputLabel_1);
-      filter->SetMovingImage(inputLabel_2);
-      filter->SetPercentile(0.95);
-
-      returnMap["Hausdorff95_Overall"] = filter->GetValue();
+      returnMap["Hausdorff95_Overall"] = GetHausdorffDistance(inputLabel_1, inputLabel_2, 0.95);
     }
 
     auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
@@ -1749,33 +1724,14 @@ namespace cbica
       {
         auto valueString = std::to_string(label.first);
 
-        itk::ImageRegionConstIterator< TImageType > inputIterator(label.second, label.second->GetBufferedRegion());
-        itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabelsImages_2[label.first], inputLabelsImages_2[label.first]->GetBufferedRegion());
+        auto temp_roc = GetSensitivityAndSpecificity< TImageType >(label.second, inputLabelsImages_2[label.first]);
 
-        std::vector< float > inputVector_1, inputVector_2;
-        // iterate through the entire input image and if the label value matches the input value,
-        // put '1' in the corresponding location of the output
-        for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
+        for (const auto &metric : temp_roc)
         {
-          outputIterator.SetIndex(inputIterator.GetIndex());
-          inputVector_1.push_back(inputIterator.Get());
-          inputVector_2.push_back(outputIterator.Get());
+          returnMap[metric.first + "_" + valueString] = metric.second;
         }
 
-        auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
-
-        returnMap["Sensitivity_" + valueString] = temp_roc["Sensitivity"];
-        returnMap["Specificity_" + valueString] = temp_roc["Specificity"];
-        returnMap["Accuracy_" + valueString] = temp_roc["Accuracy"];
-        returnMap["Precision_" + valueString] = temp_roc["Precision"];
-
-        // hausdorff
-        auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
-        filter->SetFixedImage(label.second);
-        filter->SetMovingImage(inputLabelsImages_2[label.first]);
-        filter->SetPercentile(0.95);
-
-        returnMap["Hausdorff95_" + valueString] = filter->GetValue();
+        returnMap["Hausdorff95_" + valueString] = GetHausdorffDistance(label.second, inputLabelsImages_2[label.first], 0.95);
       }
 
     }    
