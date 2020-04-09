@@ -1676,8 +1676,8 @@ namespace cbica
       returnMap["Hausdorff95_Overall"] = filter->GetValue();
     }
 
-    auto inputLabelsImages_1 = cbica::GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
-    auto inputLabelsImages_2 = cbica::GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
+    auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
+    auto inputLabelsImages_2 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
     
     for (const auto &label : inputLabelsImages_1)
     {
@@ -1761,7 +1761,7 @@ namespace cbica
 
     const std::vector< int > bratsValues = { 1,2,4 };
     const std::vector< std::string > bratsLabels = { "NET", "ED", "ET" }; // will add WT and TC afterwards
-    std::vector< int > missingLabels;
+    std::vector< int > missingLabels, missingLabelsRef;
 
     // check brats labels and populate missing labels to 
     for (size_t i = 0; i < uniqueLabels.size(); i++)
@@ -1770,6 +1770,11 @@ namespace cbica
       {
         std::cerr << "Missing BraTS label: " << bratsLabels[i] << "\n";
         missingLabels.push_back(bratsLabels[i]);
+      }
+      if (uniqueLabelsRef[i] != bratsLabels[i])
+      {
+        std::cerr << "Missing BraTS label: " << bratsLabels[i] << "\n";
+        missingLabelsRef.push_back(bratsLabels[i]);
       }
     }
 
@@ -1787,7 +1792,7 @@ namespace cbica
     returnMap["FalseNegativeError_WT"] = similarityFilter->GetFalseNegativeError();
     returnMap["FalsePositiveError_WT"] = similarityFilter->GetFalsePositiveError();
 
-    if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
+    if (uniqueLabels.size() > 1) // basically if there is something more than 1
     {
       //std::cout << "=== Individual Labels ===\n";
       //std::cout << "Property,Value\n";
@@ -1835,8 +1840,55 @@ namespace cbica
       returnMap["Hausdorff95_WT"] = filter->GetValue();
     }
 
-    auto inputLabelsImages_1 = cbica::GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
-    auto inputLabelsImages_2 = cbica::GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
+    auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
+    auto inputLabelsImages_2 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
+
+    // combine NET+ET, to get TC
+    {
+      // populate empty masks for the missing labels, in case one or more of them are part of TC
+      for (size_t i = 0; i < missingLabels.size(); i++)
+      {
+        inputLabelsImages_1[missingLabels[i]] = CreateImage< TImageType >(inputLabel_1);
+      }
+      for (size_t i = 0; i < missingLabelsRef.size(); i++)
+      {
+        inputLabelsImages_2[missingLabelsRef[i]] = CreateImage< TImageType >(inputLabel_2);
+      }
+      auto adder_1 = itk::AddImageFilter< DefaultImageType >::New();
+      adder_1->SetInput1(inputImage_labels_1[1]);
+      adder_1->SetInput2(inputImage_labels_1[3]);
+      adder_1->Update();
+
+      auto adder_2 = itk::AddImageFilter< DefaultImageType >::New();
+      adder_2->SetInput1(inputImage_labels_2[1]);
+      adder_2->SetInput2(inputImage_labels_2[3]);
+      adder_2->Update();
+
+      auto added_output_1 = adder_1->GetOutput();
+      auto added_output_2 = adder_2->GetOutput();
+
+      auto haus = GetHausdorffDistance(added_output_1, added_output_2);
+      auto sensAndSpec = GetSensitivityAndSpecificity(added_output_1, added_output_2);
+
+      auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< DefaultImageType >::New();
+      similarityFilter->SetSourceImage(added_output_1);
+      similarityFilter->SetTargetImage(added_output_2);
+      similarityFilter->Update();
+
+      // populate return string with values
+      returnString += "," + std::to_string(similarityFilter->GetTotalOverlap()) + "," +
+        std::to_string(similarityFilter->GetUnionOverlap()) + "," +
+        std::to_string(similarityFilter->GetMeanOverlap()) + "," +
+        std::to_string(similarityFilter->GetVolumeSimilarity()) + "," +
+        std::to_string(similarityFilter->GetFalseNegativeError()) + "," +
+        std::to_string(similarityFilter->GetFalsePositiveError()) + "," +
+        std::to_string(haus) + "," +
+        std::to_string(sensAndSpec["Sensitivity"]) + "," +
+        std::to_string(sensAndSpec["Specificity"]) + "," +
+        std::to_string(sensAndSpec["Accuracy"]) + "," +
+        std::to_string(sensAndSpec["Precision"]);
+    }
+
 
     for (const auto &label : inputLabelsImages_1)
     {
