@@ -1604,7 +1604,13 @@ namespace cbica
     return filter->GetValue();
   }
 
-  //! function to get sensitivity and specificity
+  /**
+  \brief Get sensitivity and specificity between 2 labels
+
+  \param inputLabel_1 The first label file
+  \param inputLabel_2 The second label file
+  \return Map of metrics
+  */
   template < typename TImageType = ImageTypeFloat3D >
   std::map< std::string, float > GetSensitivityAndSpecificity(const typename TImageType::Pointer input_1, const typename TImageType::Pointer input_2)
   {
