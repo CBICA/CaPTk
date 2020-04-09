@@ -869,7 +869,7 @@ public slots:
   /**
   \brief Generate population atlas
   */
-  void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputImageFile);
+  void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputatlas, const std::string outputImageFile);
 
   /**
   \brief Generete SBRT Nodule
