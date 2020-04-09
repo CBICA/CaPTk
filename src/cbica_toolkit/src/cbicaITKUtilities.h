@@ -33,6 +33,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkOrientImageFilter.h"
 #include "itkResampleImageFilter.h"
 #include "itkIdentityTransform.h"
+#include "itkAddImageFilter.h"
 
 //#include "itkMultiResolutionPDEDeformableRegistration.h"
 //#include "itkDemonsRegistrationFilter.h"
@@ -1801,6 +1802,80 @@ namespace cbica
       }
     }
 
+    auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
+    auto inputLabelsImages_2 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
+
+    // populate empty masks for the missing labels
+    for (size_t i = 0; i < missingLabels.size(); i++)
+    {
+      inputLabelsImages_1[missingLabels[i]] = CreateImage< TImageType >(inputLabel_1);
+    }
+    for (size_t i = 0; i < missingLabelsRef.size(); i++)
+    {
+      inputLabelsImages_2[missingLabelsRef[i]] = CreateImage< TImageType >(inputLabel_2);
+    }
+
+    // put individual labels in a single structure for easy processing
+    std::map< std::string, typename TImageType::Pointer > regionsToCompare_1, regionsToCompare_2;
+
+    for (const auto &label : inputLabelsImages_1)
+    {
+      regionsToCompare_1[bratsLabels[label.first]] = label.second;
+    }
+    for (const auto &label : inputLabelsImages_2)
+    {
+      regionsToCompare_2[bratsLabels[label.first]] = label.second;
+    }
+
+    // combine NET+ET, to get TC and TC+ED to get WT
+    {
+      auto adder_1 = itk::AddImageFilter< TImageType >::New();
+      adder_1->SetInput1(inputLabelsImages_1[1]);
+      adder_1->SetInput2(inputLabelsImages_1[3]);
+      adder_1->Update();
+
+      auto adder_2 = itk::AddImageFilter< TImageType >::New();
+      adder_2->SetInput1(inputLabelsImages_2[1]);
+      adder_2->SetInput2(inputLabelsImages_2[3]);
+      adder_2->Update();
+
+      regionsToCompare_1["TC"] = adder_1->GetOutput();
+      regionsToCompare_1["TC"]->DisconnectPipeline();
+
+      regionsToCompare_2["TC"] = adder_2->GetOutput();
+      regionsToCompare_2["TC"]->DisconnectPipeline();
+
+
+      auto adder_1_WT = itk::AddImageFilter< TImageType >::New();
+      adder_1_WT->SetInput1(inputLabelsImages_1[2]);
+      adder_1_WT->SetInput2(regionsToCompare_1["TC"]);
+      adder_1_WT->Update();
+
+      auto adder_2_WT = itk::AddImageFilter< TImageType >::New();
+      adder_2_WT->SetInput1(inputLabelsImages_2[2]);
+      adder_2_WT->SetInput2(regionsToCompare_2["TC"]);
+      adder_2_WT->Update();
+
+      regionsToCompare_1["WT"] = adder_1_WT->GetOutput();
+      regionsToCompare_1["WT"]->DisconnectPipeline();
+
+      regionsToCompare_2["WT"] = adder_2_WT->GetOutput();
+      regionsToCompare_2["WT"]->DisconnectPipeline();
+    }
+
+    // iterate over all regions (including missing brats regions in either image) and populate statistics
+    for (const auto &label : regionsToCompare_1)
+    {
+
+    }
+
+    /*
+    
+    itk::ImageRegionConstIterator< TImageType > inputIterator(input_1, input_1->GetBufferedRegion()),
+      outputIterator(input_2, input_2->GetBufferedRegion());
+
+    */
+
     auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
 
     similarityFilter->SetSourceImage(inputLabel_1);
@@ -1832,34 +1907,14 @@ namespace cbica
 
     // overall stats
     {
-      // more stats
-      itk::ImageRegionConstIterator< TImageType > inputIterator(inputLabel_1, inputLabel_1->GetBufferedRegion());
-      itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabel_2, inputLabel_2->GetBufferedRegion());
+      auto temp_roc = GetSensitivityAndSpecificity< TImageType >(inputLabel_1, inputLabel_2);
 
-      std::vector< float > inputVector_1, inputVector_2;
-      // iterate through the entire input image and if the label value matches the input value,
-      // put '1' in the corresponding location of the output
-      for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
+      for (const auto &metric : temp_roc)
       {
-        outputIterator.SetIndex(inputIterator.GetIndex());
-        inputVector_1.push_back(inputIterator.Get());
-        inputVector_2.push_back(outputIterator.Get());
+        returnMap[metric.first + "_WT"] = metric.second;
       }
 
-      auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
-
-      returnMap["Sensitivity_WT"] = temp_roc["Sensitivity"];
-      returnMap["Specificity_WT"] = temp_roc["Specificity"];
-      returnMap["Accuracy_WT"] = temp_roc["Accuracy"];
-      returnMap["Precision_WT"] = temp_roc["Precision"];
-
-      // hausdorff
-      auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
-      filter->SetFixedImage(inputLabel_1);
-      filter->SetMovingImage(inputLabel_2);
-      filter->SetPercentile(0.95);
-
-      returnMap["Hausdorff95_WT"] = filter->GetValue();
+      returnMap["Hausdorff95_WT"] = GetHausdorffDistance(inputLabel_1, inputLabel_2, 0.95);
     }
 
     auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
