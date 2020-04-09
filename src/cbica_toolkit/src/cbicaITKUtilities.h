@@ -1589,14 +1589,14 @@ namespace cbica
   \return Hausdorff distance
   */
   template < typename TImageType = ImageTypeFloat3D >
-  float GetHausdorffDistance(const typename TImageType::Pointer input_1, const typename TImageType::Pointer input_2, const float percentile = 0.95)
+  float GetHausdorffDistance(const typename TImageType::Pointer input_1, const typename TImageType::Pointer input_2, float percentile = 0.95)
   {
     // sanity check for percentile
     if (percentile > 1)
     {
       percentile = percentile / 100.0;
     }
-    auto filter = HausdorffDistanceImageToImageMetric< DefaultImageType, DefaultImageType >::New();
+    auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
     filter->SetFixedImage(input_1);
     filter->SetMovingImage(input_2);
     filter->SetPercentile(percentile);
@@ -1616,8 +1616,8 @@ namespace cbica
   {
     std::map< std::string, float > returnStruct;
 
-    itk::ImageRegionConstIterator< DefaultImageType > inputIterator(input_1, input_1->GetBufferedRegion());
-    itk::ImageRegionConstIterator< DefaultImageType > outputIterator(input_2, input_2->GetBufferedRegion());
+    itk::ImageRegionConstIterator< TImageType > inputIterator(input_1, input_1->GetBufferedRegion()),
+      outputIterator(input_2, input_2->GetBufferedRegion());
 
     std::vector< float > inputVector_1, inputVector_2;
     // iterate through the entire input image and if the label value matches the input value,
@@ -1719,7 +1719,12 @@ namespace cbica
         inputVector_2.push_back(outputIterator.Get());
       }
 
-      auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
+      auto temp_roc = GetSensitivityAndSpecificity< TImageType >(inputLabel_1, inputLabel_2);
+
+      for (const auto &metric : temp_roc)
+      {
+        returnMap[metric.first + "_Overall"] = metric.second;
+      }
 
       returnMap["Sensitivity_Overall"] = temp_roc["Sensitivity"];
       returnMap["Specificity_Overall"] = temp_roc["Specificity"];
