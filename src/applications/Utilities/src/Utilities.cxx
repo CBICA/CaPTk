@@ -1218,6 +1218,12 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
   }
+
+  if (!cbica::isFile(inputImageFile))
+  {
+    std::cerr << "Input file '" << inputImageFile << "' not found.\n";
+    return EXIT_FAILURE;
+  }
   auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
   if (requestedAlgorithm == Information)
