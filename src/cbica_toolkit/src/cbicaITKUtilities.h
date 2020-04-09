@@ -1845,6 +1845,16 @@ namespace cbica
     auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
     auto inputLabelsImages_2 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
 
+    // populate empty masks for the missing labels
+    for (size_t i = 0; i < missingLabels.size(); i++)
+    {
+      inputLabelsImages_1[missingLabels[i]] = CreateImage< TImageType >(inputLabel_1);
+    }
+    for (size_t i = 0; i < missingLabelsRef.size(); i++)
+    {
+      inputLabelsImages_2[missingLabelsRef[i]] = CreateImage< TImageType >(inputLabel_2);
+    }
+
     // individual labels
     for (const auto &label : inputLabelsImages_1)
     {
@@ -1884,15 +1894,6 @@ namespace cbica
 
     // combine NET+ET, to get TC
     {
-      // populate empty masks for the missing labels, in case one or more of them are part of TC
-      for (size_t i = 0; i < missingLabels.size(); i++)
-      {
-        inputLabelsImages_1[missingLabels[i]] = CreateImage< TImageType >(inputLabel_1);
-      }
-      for (size_t i = 0; i < missingLabelsRef.size(); i++)
-      {
-        inputLabelsImages_2[missingLabelsRef[i]] = CreateImage< TImageType >(inputLabel_2);
-      }
       auto adder_1 = itk::AddImageFilter< DefaultImageType >::New();
       adder_1->SetInput1(inputImage_labels_1[1]);
       adder_1->SetInput2(inputImage_labels_1[3]);
