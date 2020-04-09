@@ -1805,6 +1805,10 @@ namespace cbica
     auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
     auto inputLabelsImages_2 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
 
+    // erase background label
+    inputLabelsImages_1.erase(inputLabelsImages_1.find(0));
+    inputLabelsImages_2.erase(inputLabelsImages_2.find(0));
+
     // populate empty masks for the missing labels
     for (size_t i = 0; i < missingLabels.size(); i++)
     {
