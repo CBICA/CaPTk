@@ -1896,7 +1896,7 @@ namespace cbica
     {
       if (label.first != 0) // we don't care about the background value
       {
-        auto valueString = std::to_string(label.first);
+        auto valueString = bratsLabels[label.first];
 
         itk::ImageRegionConstIterator< TImageType > inputIterator(label.second, label.second->GetBufferedRegion());
         itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabelsImages_2[label.first], inputLabelsImages_2[label.first]->GetBufferedRegion());
