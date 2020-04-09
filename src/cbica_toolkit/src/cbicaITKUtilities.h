@@ -1873,7 +1873,7 @@ namespace cbica
       auto labelString = region.first; // the label for stats
       // get the images to compare up front
       auto imageToCompare_1 = region.second;
-      auto imageToCompare_2 = regionsToCompare_1[labelString];
+      auto imageToCompare_2 = regionsToCompare_2[labelString];
 
       auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
 
