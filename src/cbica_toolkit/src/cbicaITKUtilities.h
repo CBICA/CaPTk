@@ -1581,6 +1581,59 @@ namespace cbica
   }
 
   /**
+  \brief Get hausdorff distance between 2 labels
+
+  \param inputLabel_1 The first label file
+  \param inputLabel_2 The second label file
+  \param percentile The percentile value for hausdorff; defaults to 0.95
+  \return Hausdorff distance
+  */
+  template < typename TImageType = ImageTypeFloat3D >
+  float GetHausdorffDistance(const typename TImageType::Pointer input_1, const typename TImageType::Pointer input_2, const float percentile = 0.95)
+  {
+    // sanity check for percentile
+    if (percentile > 1)
+    {
+      percentile = percentile / 100.0;
+    }
+    auto filter = HausdorffDistanceImageToImageMetric< DefaultImageType, DefaultImageType >::New();
+    filter->SetFixedImage(input_1);
+    filter->SetMovingImage(input_2);
+    filter->SetPercentile(percentile);
+
+    return filter->GetValue();
+  }
+
+  //! function to get sensitivity and specificity
+  template < typename TImageType = ImageTypeFloat3D >
+  std::map< std::string, float > GetSensitivityAndSpecificity(const typename TImageType::Pointer input_1, const typename TImageType::Pointer input_2)
+  {
+    std::map< std::string, float > returnStruct;
+
+    itk::ImageRegionConstIterator< DefaultImageType > inputIterator(input_1, input_1->GetBufferedRegion());
+    itk::ImageRegionConstIterator< DefaultImageType > outputIterator(input_2, input_2->GetBufferedRegion());
+
+    std::vector< float > inputVector_1, inputVector_2;
+    // iterate through the entire input image and if the label value matches the input value,
+    // put '1' in the corresponding location of the output
+    for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
+    {
+      outputIterator.SetIndex(inputIterator.GetIndex());
+      inputVector_1.push_back(inputIterator.Get());
+      inputVector_2.push_back(outputIterator.Get());
+    }
+
+    auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
+
+    returnStruct["Sensitivity"] = temp_roc["Sensitivity"];
+    returnStruct["Specificity"] = temp_roc["Specificity"];
+    returnStruct["Accuracy"] = temp_roc["Accuracy"];
+    returnStruct["Precision"] = temp_roc["Precision"];
+
+    return returnStruct;
+  }
+
+  /**
   \brief Get the statistics between 2 labels
 
   \param inputLabel_1 The first label file
