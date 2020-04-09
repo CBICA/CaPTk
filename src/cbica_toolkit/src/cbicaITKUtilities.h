@@ -1771,12 +1771,12 @@ namespace cbica
     {
       if (uniqueLabels[i] != bratsValues[i])
       {
-        std::cerr << "Missing BraTS label: " << bratsValues[i] << "\n";
+        std::cerr << "Missing BraTS label in Label_1: " << bratsValues[i] << "\n";
         missingLabels.push_back(bratsValues[i]);
       }
       if (uniqueLabelsRef[i] != bratsValues[i])
       {
-        std::cerr << "Missing BraTS label: " << bratsValues[i] << "\n";
+        std::cerr << "Missing BraTS label in Label_2: " << bratsValues[i] << "\n";
         missingLabelsRef.push_back(bratsValues[i]);
       }
     }
@@ -1845,6 +1845,43 @@ namespace cbica
     auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
     auto inputLabelsImages_2 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
 
+    // individual labels
+    for (const auto &label : inputLabelsImages_1)
+    {
+      if (label.first != 0) // we don't care about the background value
+      {
+        auto valueString = bratsLabels[label.first];
+
+        itk::ImageRegionConstIterator< TImageType > inputIterator(label.second, label.second->GetBufferedRegion());
+        itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabelsImages_2[label.first], inputLabelsImages_2[label.first]->GetBufferedRegion());
+
+        std::vector< float > inputVector_1, inputVector_2;
+        // iterate through the entire input image and if the label value matches the input value,
+        // put '1' in the corresponding location of the output
+        for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
+        {
+          outputIterator.SetIndex(inputIterator.GetIndex());
+          inputVector_1.push_back(inputIterator.Get());
+          inputVector_2.push_back(outputIterator.Get());
+        }
+
+        auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
+
+        returnMap["Sensitivity_" + valueString] = temp_roc["Sensitivity"];
+        returnMap["Specificity_" + valueString] = temp_roc["Specificity"];
+        returnMap["Accuracy_" + valueString] = temp_roc["Accuracy"];
+        returnMap["Precision_" + valueString] = temp_roc["Precision"];
+
+        // hausdorff
+        auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
+        filter->SetFixedImage(label.second);
+        filter->SetMovingImage(inputLabelsImages_2[label.first]);
+        filter->SetPercentile(0.95);
+
+        returnMap["Hausdorff95_" + valueString] = filter->GetValue();
+      }
+    }
+
     // combine NET+ET, to get TC
     {
       // populate empty masks for the missing labels, in case one or more of them are part of TC
@@ -1891,43 +1928,6 @@ namespace cbica
         std::to_string(sensAndSpec["Precision"]);
     }
 
-
-    for (const auto &label : inputLabelsImages_1)
-    {
-      if (label.first != 0) // we don't care about the background value
-      {
-        auto valueString = bratsLabels[label.first];
-
-        itk::ImageRegionConstIterator< TImageType > inputIterator(label.second, label.second->GetBufferedRegion());
-        itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabelsImages_2[label.first], inputLabelsImages_2[label.first]->GetBufferedRegion());
-
-        std::vector< float > inputVector_1, inputVector_2;
-        // iterate through the entire input image and if the label value matches the input value,
-        // put '1' in the corresponding location of the output
-        for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
-        {
-          outputIterator.SetIndex(inputIterator.GetIndex());
-          inputVector_1.push_back(inputIterator.Get());
-          inputVector_2.push_back(outputIterator.Get());
-        }
-
-        auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
-
-        returnMap["Sensitivity_" + valueString] = temp_roc["Sensitivity"];
-        returnMap["Specificity_" + valueString] = temp_roc["Specificity"];
-        returnMap["Accuracy_" + valueString] = temp_roc["Accuracy"];
-        returnMap["Precision_" + valueString] = temp_roc["Precision"];
-
-        // hausdorff
-        auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
-        filter->SetFixedImage(label.second);
-        filter->SetMovingImage(inputLabelsImages_2[label.first]);
-        filter->SetPercentile(0.95);
-
-        returnMap["Hausdorff95_" + valueString] = filter->GetValue();
-      }
-
-    }
 
     return returnMap;
   }
