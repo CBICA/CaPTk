@@ -1622,7 +1622,7 @@ namespace cbica
 
     returnMap["Overlap_Overall"] = similarityFilter->GetTotalOverlap();
     //std::cout << "=== Entire Masked Area ===\n";
-    returnMap["Union(Jaccard)_Overall"] = similarityFilter->GetUnionOverlap();
+    returnMap["Jaccard_Overall"] = similarityFilter->GetUnionOverlap();
     returnMap["DICE_Overall"] = similarityFilter->GetMeanOverlap();
     returnMap["VolumeSimilarity_Overall"] = similarityFilter->GetVolumeSimilarity();
     returnMap["FalseNegativeError_Overall"] = similarityFilter->GetFalseNegativeError();
@@ -1636,7 +1636,7 @@ namespace cbica
       {
         auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
         returnMap["Overlap_Label" + uniqueLabels_string] = similarityFilter->GetTargetOverlap(uniqueLabels[i]);
-        returnMap["Union(Jaccard)_Label" + uniqueLabels_string] = similarityFilter->GetUnionOverlap(uniqueLabels[i]);
+        returnMap["Jaccard_Label" + uniqueLabels_string] = similarityFilter->GetUnionOverlap(uniqueLabels[i]);
         returnMap["DICE_Label" + uniqueLabels_string] = similarityFilter->GetMeanOverlap(uniqueLabels[i]);
         returnMap["VolumeSimilarity_Label" + uniqueLabels_string] = similarityFilter->GetVolumeSimilarity(uniqueLabels[i]);
         returnMap["FalseNegativeError_Label" + uniqueLabels_string] = similarityFilter->GetFalseNegativeError(uniqueLabels[i]);
@@ -1788,7 +1788,7 @@ namespace cbica
     similarityFilter->Update();
 
     returnMap["Overlap_WT"] = similarityFilter->GetTotalOverlap();
-    returnMap["Union(Jaccard)_WT"] = similarityFilter->GetUnionOverlap();
+    returnMap["Jaccard_WT"] = similarityFilter->GetUnionOverlap();
     returnMap["DICE_WT"] = similarityFilter->GetMeanOverlap();
     returnMap["VolumeSimilarity_WT"] = similarityFilter->GetVolumeSimilarity();
     returnMap["FalseNegativeError_WT"] = similarityFilter->GetFalseNegativeError();
@@ -1802,7 +1802,7 @@ namespace cbica
       {
         auto uniqueLabels_string = bratsLabels[uniqueLabels[i]];
         returnMap["Overlap_Label" + uniqueLabels_string] = similarityFilter->GetTargetOverlap(uniqueLabels[i]);
-        returnMap["Union(Jaccard)_Label" + uniqueLabels_string] = similarityFilter->GetUnionOverlap(uniqueLabels[i]);
+        returnMap["Jaccard_Label" + uniqueLabels_string] = similarityFilter->GetUnionOverlap(uniqueLabels[i]);
         returnMap["DICE_Label" + uniqueLabels_string] = similarityFilter->GetMeanOverlap(uniqueLabels[i]);
         returnMap["VolumeSimilarity_Label" + uniqueLabels_string] = similarityFilter->GetVolumeSimilarity(uniqueLabels[i]);
         returnMap["FalseNegativeError_Label" + uniqueLabels_string] = similarityFilter->GetFalseNegativeError(uniqueLabels[i]);
