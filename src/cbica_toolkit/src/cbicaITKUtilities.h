@@ -1827,16 +1827,16 @@ namespace cbica
       regionsToCompare_2[bratsLabels[label.first]] = label.second;
     }
 
-    // combine NET+ET, to get TC and TC+ED to get WT
+    // combine NET+ET to get TC and TC+ED to get WT
     {
       auto adder_1 = itk::AddImageFilter< TImageType >::New();
-      adder_1->SetInput1(inputLabelsImages_1[1]);
-      adder_1->SetInput2(inputLabelsImages_1[3]);
+      adder_1->SetInput1(regionsToCompare_1["NET"]);
+      adder_1->SetInput2(regionsToCompare_1["ET"]);
       adder_1->Update();
 
       auto adder_2 = itk::AddImageFilter< TImageType >::New();
-      adder_2->SetInput1(inputLabelsImages_2[1]);
-      adder_2->SetInput2(inputLabelsImages_2[3]);
+      adder_2->SetInput1(regionsToCompare_2["NET"]);
+      adder_2->SetInput2(regionsToCompare_2["ET"]);
       adder_2->Update();
 
       regionsToCompare_1["TC"] = adder_1->GetOutput();
@@ -1847,12 +1847,12 @@ namespace cbica
 
 
       auto adder_1_WT = itk::AddImageFilter< TImageType >::New();
-      adder_1_WT->SetInput1(inputLabelsImages_1[2]);
+      adder_1_WT->SetInput1(regionsToCompare_1["ED"]);
       adder_1_WT->SetInput2(regionsToCompare_1["TC"]);
       adder_1_WT->Update();
 
       auto adder_2_WT = itk::AddImageFilter< TImageType >::New();
-      adder_2_WT->SetInput1(inputLabelsImages_2[2]);
+      adder_2_WT->SetInput1(regionsToCompare_2["ED"]);
       adder_2_WT->SetInput2(regionsToCompare_2["TC"]);
       adder_2_WT->Update();
 
@@ -1864,146 +1864,35 @@ namespace cbica
     }
 
     // iterate over all regions (including missing brats regions in either image) and populate statistics
-    for (const auto &label : regionsToCompare_1)
+    for (const auto &region : regionsToCompare_1)
     {
+      auto labelString = region.first; // the label for stats
+      // get the images to compare up front
+      auto imageToCompare_1 = region.second;
+      auto imageToCompare_2 = regionsToCompare_1[labelString];
 
-    }
+      auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
 
-    /*
-    
-    itk::ImageRegionConstIterator< TImageType > inputIterator(input_1, input_1->GetBufferedRegion()),
-      outputIterator(input_2, input_2->GetBufferedRegion());
+      similarityFilter->SetSourceImage(imageToCompare_1);
+      similarityFilter->SetTargetImage(imageToCompare_2);
+      similarityFilter->Update();
 
-    */
+      returnMap["Overlap_" + labelString] = similarityFilter->GetTotalOverlap();
+      returnMap["Jaccard_" + labelString] = similarityFilter->GetUnionOverlap();
+      returnMap["DICE_" + labelString] = similarityFilter->GetMeanOverlap();
+      returnMap["VolumeSimilarity_" + labelString] = similarityFilter->GetVolumeSimilarity();
+      returnMap["FalseNegativeError_" + labelString] = similarityFilter->GetFalseNegativeError();
+      returnMap["FalsePositiveError_" + labelString] = similarityFilter->GetFalsePositiveError();
 
-    auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
-
-    similarityFilter->SetSourceImage(inputLabel_1);
-    similarityFilter->SetTargetImage(inputLabel_2);
-    similarityFilter->Update();
-
-    returnMap["Overlap_WT"] = similarityFilter->GetTotalOverlap();
-    returnMap["Jaccard_WT"] = similarityFilter->GetUnionOverlap();
-    returnMap["DICE_WT"] = similarityFilter->GetMeanOverlap();
-    returnMap["VolumeSimilarity_WT"] = similarityFilter->GetVolumeSimilarity();
-    returnMap["FalseNegativeError_WT"] = similarityFilter->GetFalseNegativeError();
-    returnMap["FalsePositiveError_WT"] = similarityFilter->GetFalsePositiveError();
-
-    if (uniqueLabels.size() > 1) // basically if there is something more than 1
-    {
-      //std::cout << "=== Individual Labels ===\n";
-      //std::cout << "Property,Value\n";
-      for (size_t i = 0; i < uniqueLabels.size(); i++)
-      {
-        auto uniqueLabels_string = bratsLabels[uniqueLabels[i]];
-        returnMap["Overlap_Label" + uniqueLabels_string] = similarityFilter->GetTargetOverlap(uniqueLabels[i]);
-        returnMap["Jaccard_Label" + uniqueLabels_string] = similarityFilter->GetUnionOverlap(uniqueLabels[i]);
-        returnMap["DICE_Label" + uniqueLabels_string] = similarityFilter->GetMeanOverlap(uniqueLabels[i]);
-        returnMap["VolumeSimilarity_Label" + uniqueLabels_string] = similarityFilter->GetVolumeSimilarity(uniqueLabels[i]);
-        returnMap["FalseNegativeError_Label" + uniqueLabels_string] = similarityFilter->GetFalseNegativeError(uniqueLabels[i]);
-        returnMap["FalsePositiveError_Label" + uniqueLabels_string] = similarityFilter->GetFalsePositiveError(uniqueLabels[i]);
-      }
-    }
-
-    // overall stats
-    {
-      auto temp_roc = GetSensitivityAndSpecificity< TImageType >(inputLabel_1, inputLabel_2);
+      auto temp_roc = GetSensitivityAndSpecificity< TImageType >(imageToCompare_1, imageToCompare_2);
 
       for (const auto &metric : temp_roc)
       {
-        returnMap[metric.first + "_WT"] = metric.second;
+        returnMap[metric.first + "_" + labelString] = metric.second;
       }
 
-      returnMap["Hausdorff95_WT"] = GetHausdorffDistance(inputLabel_1, inputLabel_2, 0.95);
+      returnMap["Hausdorff95_" + labelString] = GetHausdorffDistance(imageToCompare_1, imageToCompare_2, 0.95);
     }
-
-    auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
-    auto inputLabelsImages_2 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
-
-    // populate empty masks for the missing labels
-    for (size_t i = 0; i < missingLabels.size(); i++)
-    {
-      inputLabelsImages_1[missingLabels[i]] = CreateImage< TImageType >(inputLabel_1);
-    }
-    for (size_t i = 0; i < missingLabelsRef.size(); i++)
-    {
-      inputLabelsImages_2[missingLabelsRef[i]] = CreateImage< TImageType >(inputLabel_2);
-    }
-
-    // individual labels
-    for (const auto &label : inputLabelsImages_1)
-    {
-      if (label.first != 0) // we don't care about the background value
-      {
-        auto valueString = bratsLabels[label.first];
-
-        itk::ImageRegionConstIterator< TImageType > inputIterator(label.second, label.second->GetBufferedRegion());
-        itk::ImageRegionConstIterator< TImageType > outputIterator(inputLabelsImages_2[label.first], inputLabelsImages_2[label.first]->GetBufferedRegion());
-
-        std::vector< float > inputVector_1, inputVector_2;
-        // iterate through the entire input image and if the label value matches the input value,
-        // put '1' in the corresponding location of the output
-        for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
-        {
-          outputIterator.SetIndex(inputIterator.GetIndex());
-          inputVector_1.push_back(inputIterator.Get());
-          inputVector_2.push_back(outputIterator.Get());
-        }
-
-        auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
-
-        returnMap["Sensitivity_" + valueString] = temp_roc["Sensitivity"];
-        returnMap["Specificity_" + valueString] = temp_roc["Specificity"];
-        returnMap["Accuracy_" + valueString] = temp_roc["Accuracy"];
-        returnMap["Precision_" + valueString] = temp_roc["Precision"];
-
-        // hausdorff
-        auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
-        filter->SetFixedImage(label.second);
-        filter->SetMovingImage(inputLabelsImages_2[label.first]);
-        filter->SetPercentile(0.95);
-
-        returnMap["Hausdorff95_" + valueString] = filter->GetValue();
-      }
-    }
-
-    // combine NET+ET, to get TC
-    {
-      auto adder_1 = itk::AddImageFilter< DefaultImageType >::New();
-      adder_1->SetInput1(inputImage_labels_1[1]);
-      adder_1->SetInput2(inputImage_labels_1[3]);
-      adder_1->Update();
-
-      auto adder_2 = itk::AddImageFilter< DefaultImageType >::New();
-      adder_2->SetInput1(inputImage_labels_2[1]);
-      adder_2->SetInput2(inputImage_labels_2[3]);
-      adder_2->Update();
-
-      auto added_output_1 = adder_1->GetOutput();
-      auto added_output_2 = adder_2->GetOutput();
-
-      auto haus = GetHausdorffDistance(added_output_1, added_output_2);
-      auto sensAndSpec = GetSensitivityAndSpecificity(added_output_1, added_output_2);
-
-      auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< DefaultImageType >::New();
-      similarityFilter->SetSourceImage(added_output_1);
-      similarityFilter->SetTargetImage(added_output_2);
-      similarityFilter->Update();
-
-      // populate return string with values
-      returnString += "," + std::to_string(similarityFilter->GetTotalOverlap()) + "," +
-        std::to_string(similarityFilter->GetUnionOverlap()) + "," +
-        std::to_string(similarityFilter->GetMeanOverlap()) + "," +
-        std::to_string(similarityFilter->GetVolumeSimilarity()) + "," +
-        std::to_string(similarityFilter->GetFalseNegativeError()) + "," +
-        std::to_string(similarityFilter->GetFalsePositiveError()) + "," +
-        std::to_string(haus) + "," +
-        std::to_string(sensAndSpec["Sensitivity"]) + "," +
-        std::to_string(sensAndSpec["Specificity"]) + "," +
-        std::to_string(sensAndSpec["Accuracy"]) + "," +
-        std::to_string(sensAndSpec["Precision"]);
-    }
-
 
     return returnMap;
   }
