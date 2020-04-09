@@ -1759,9 +1759,11 @@ namespace cbica
     uniqueLabels.erase(uniqueLabels.begin());
     uniqueLabelsRef.erase(uniqueLabelsRef.begin());
 
-    const std::vector< int > bratsLabels = { 1,2,4 };
+    const std::vector< int > bratsValues = { 1,2,4 };
+    const std::vector< std::string > bratsLabels = { "NET", "ED", "ET" }; // will add WT and TC afterwards
     std::vector< int > missingLabels;
-    // check brats labels
+
+    // check brats labels and populate missing labels to 
     for (size_t i = 0; i < uniqueLabels.size(); i++)
     {
       if (uniqueLabels[i] != bratsLabels[i])
@@ -1777,13 +1779,13 @@ namespace cbica
     similarityFilter->SetTargetImage(inputLabel_2);
     similarityFilter->Update();
 
-    returnMap["Overlap_Overall"] = similarityFilter->GetTotalOverlap();
+    returnMap["Overlap_WT"] = similarityFilter->GetTotalOverlap();
     //std::cout << "=== Entire Masked Area ===\n";
-    returnMap["Union(Jaccard)_Overall"] = similarityFilter->GetUnionOverlap();
-    returnMap["Mean(DICE)_Overall"] = similarityFilter->GetMeanOverlap();
-    returnMap["VolumeSimilarity_Overall"] = similarityFilter->GetVolumeSimilarity();
-    returnMap["FalseNegativeError_Overall"] = similarityFilter->GetFalseNegativeError();
-    returnMap["FalsePositiveError_Overall"] = similarityFilter->GetFalsePositiveError();
+    returnMap["Union(Jaccard)_WT"] = similarityFilter->GetUnionOverlap();
+    returnMap["Mean(DICE)_WT"] = similarityFilter->GetMeanOverlap();
+    returnMap["VolumeSimilarity_WT"] = similarityFilter->GetVolumeSimilarity();
+    returnMap["FalseNegativeError_WT"] = similarityFilter->GetFalseNegativeError();
+    returnMap["FalsePositiveError_WT"] = similarityFilter->GetFalsePositiveError();
 
     if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
     {
@@ -1819,10 +1821,10 @@ namespace cbica
 
       auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
 
-      returnMap["Sensitivity_Overall"] = temp_roc["Sensitivity"];
-      returnMap["Specificity_Overall"] = temp_roc["Specificity"];
-      returnMap["Accuracy_Overall"] = temp_roc["Accuracy"];
-      returnMap["Precision_Overall"] = temp_roc["Precision"];
+      returnMap["Sensitivity_WT"] = temp_roc["Sensitivity"];
+      returnMap["Specificity_WT"] = temp_roc["Specificity"];
+      returnMap["Accuracy_WT"] = temp_roc["Accuracy"];
+      returnMap["Precision_WT"] = temp_roc["Precision"];
 
       // hausdorff
       auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
@@ -1830,7 +1832,7 @@ namespace cbica
       filter->SetMovingImage(inputLabel_2);
       filter->SetPercentile(0.95);
 
-      returnMap["Hausdorff95_Overall"] = filter->GetValue();
+      returnMap["Hausdorff95_WT"] = filter->GetValue();
     }
 
     auto inputLabelsImages_1 = cbica::GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
