@@ -48,6 +48,7 @@ enum AvailableAlgorithms
   ImageStack2Join,
   JoinedImage2Stack,
   LabelSimilarity,
+  LabelSimilarityBraTS,
   Hausdorff
 };
 
@@ -655,6 +656,23 @@ int algorithmsRunner()
 
     return EXIT_SUCCESS;
   }
+  else if (requestedAlgorithm == LabelSimilarityBraTS)
+  {
+    // this filter only works on unsigned int type
+    using DefaultImageType = itk::Image< unsigned int, TImageType::ImageDimension >;
+    auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
+    auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
+
+    auto stats = cbica::GetBraTSLabelStatistics< DefaultImageType >(inputImage, referenceImage);
+
+    std::cout << "Metric,Value\n";
+    for (const auto &stat : stats)
+    {
+      std::cout << stat.first << "," << stat.second << "\n";
+    }
+
+    return EXIT_SUCCESS;
+  }
   else if (requestedAlgorithm == Hausdorff)
   {
     auto filter = itk::HausdorffDistanceImageFilter< TImageType, TImageType >::New();
@@ -1174,6 +1192,11 @@ int main(int argc, char** argv)
   {
     requestedAlgorithm = LabelSimilarity;
     parser.getParameterValue("ls", referenceMaskForSimilarity);
+  }
+  else if (parser.isPresent("lsb"))
+  {
+  requestedAlgorithm = LabelSimilarityBraTS;
+  parser.getParameterValue("lsb", referenceMaskForSimilarity);
   }
   else if (parser.isPresent("hd"))
   {
