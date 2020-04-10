@@ -161,19 +161,19 @@ jobs:
     #     rm -rf testing
     #   displayName: 'Performing the Tests'
 
-    - script: |
-        cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
-        rm -rf binaries_windows.zip
-        rm -rf install_manifest.txt
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-        cmake --build . --target PACKAGE --config Release
+    # - script: |
+    #     cd bin
+    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
+    #     rm -rf binaries_windows.zip
+    #     rm -rf install_manifest.txt
+    #     setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+    #     setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+    #     cmake --build . --target PACKAGE --config Release
 
-        ls -lt *_Installer.*
+    #     ls -lt *_Installer.*
 
-      displayName: 'Package CaPTk'
+    #   displayName: 'Package CaPTk'
 
     # - bash: |
     #     # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
@@ -696,62 +696,62 @@ jobs:
       displayName: 'Ensure documentation is picked up properly'
 
 
-    - bash: |
-        cd bin
+    # - bash: |
+    #     cd bin
 
-        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-        pkgname="_Installer"
-        pkgname="$version$pkgname"
+    #     version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+    #     pkgname="_Installer"
+    #     pkgname="$version$pkgname"
 
-        rm -rf *.pkg
-        # rm -rf _CPack*
-        rm -rf install_manifest.txt
-        make package
+    #     rm -rf *.pkg
+    #     # rm -rf _CPack*
+    #     rm -rf install_manifest.txt
+    #     make package
 
-        # echo "Change deepmedic libomp dylib path"
-        # sudo install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib @executable_path/../../Frameworks/libomp.dylib ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/bin/DeepMedic
+    #     # echo "Change deepmedic libomp dylib path"
+    #     # sudo install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib @executable_path/../../Frameworks/libomp.dylib ./_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/Contents/Resources/bin/DeepMedic
 
-        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/  ./CaPTk_$version.pkg
+    #     pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
-        productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
+    #     productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
 
-        xml='<?xml version="1.0" encoding="utf-8"?>
-        <installer-gui-script minSpecVersion="1">
-            <title>CaPTk_'"$version"'</title>
-            <license file="Combined.txt"></license>
-            <pkg-ref id="com.cbica.captk"/>
-            <options customize="never" require-scripts="false"/>
-            <choices-outline>
-                <line choice="default">
-                    <line choice="com.cbica.captk"/>
-                </line>
-            </choices-outline>
-            <choice id="default"/>
-            <choice id="com.cbica.captk" visible="false">
-                <pkg-ref id="com.cbica.captk"/>
-            </choice>
-            <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
-        </installer-gui-script>'
+    #     xml='<?xml version="1.0" encoding="utf-8"?>
+    #     <installer-gui-script minSpecVersion="1">
+    #         <title>CaPTk_'"$version"'</title>
+    #         <license file="Combined.txt"></license>
+    #         <pkg-ref id="com.cbica.captk"/>
+    #         <options customize="never" require-scripts="false"/>
+    #         <choices-outline>
+    #             <line choice="default">
+    #                 <line choice="com.cbica.captk"/>
+    #             </line>
+    #         </choices-outline>
+    #         <choice id="default"/>
+    #         <choice id="com.cbica.captk" visible="false">
+    #             <pkg-ref id="com.cbica.captk"/>
+    #         </choice>
+    #         <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
+    #     </installer-gui-script>'
 
-        echo $xml > "./distribution.xml"
+    #     echo $xml > "./distribution.xml"
 
-        productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
+    #     productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
-        # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.pkg
+    #     # cp *_Installer.* $(Build.ArtifactStagingDirectory)/CaPTk_LATEST_Installer.pkg
 
-        # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
-        # ver=${str#*=}
-        # echo "Version: $ver"
-        # if [[ $ver == *"nonRelease"* ]]; then
-        #   echo "Building non-release"
-        #   mv *_Installer.pkg CaPTk_$ver\_Installer.pkg
-        # fi
-        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+    #     # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
+    #     # ver=${str#*=}
+    #     # echo "Version: $ver"
+    #     # if [[ $ver == *"nonRelease"* ]]; then
+    #     #   echo "Building non-release"
+    #     #   mv *_Installer.pkg CaPTk_$ver\_Installer.pkg
+    #     # fi
+    #     mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
-        sudo rm -rf _CPack*
+    #     sudo rm -rf _CPack*
 
-        # sudo rm -rf *
-      displayName: 'Package CaPTk (.dmg and .pkg)'
+    #     # sudo rm -rf *
+    #   displayName: 'Package CaPTk (.dmg and .pkg)'
 
     # - bash: |
     #     rm -rf src
@@ -781,43 +781,43 @@ jobs:
     #     # rm -rf bin_macos
     #   displayName: 'Zipping bin'
       
-    - bash: |
+    # - bash: |
         
-        rm -rf src
-        rm -rf docs*
-        rm -rf data
-        rm -rf binaries
-        rm -rf scripts
-        rm -rf bin_windows_20200212.tar.gz
-        rm -rf install_manifest.txt
-        rm -rf CMakeLists.txt
-        sudo rm -rf bin
+    #     rm -rf src
+    #     rm -rf docs*
+    #     rm -rf data
+    #     rm -rf binaries
+    #     rm -rf scripts
+    #     rm -rf bin_windows_20200212.tar.gz
+    #     rm -rf install_manifest.txt
+    #     rm -rf CMakeLists.txt
+    #     sudo rm -rf bin
 
-      displayName: 'Freeing Space'
+    #   displayName: 'Freeing Space'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_macOS'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+    # - task: CopyFilesOverSSH@0
+    #   inputs:
+    #     sshEndpoint: cbicaNITRC
+    #     sourceFolder: $(Build.ArtifactStagingDirectory)
+    #     contents: '*_Installer.*'
+    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+    #     cleanTargetFolder: false
+    #     overwrite: true
+    #     continueOnError: true
+    #   displayName: Uploading to NITRC
+    #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 - job: 'WINDOWS_SelfHost'
   displayName: "Self-hosted agent on Windows"
@@ -903,19 +903,19 @@ jobs:
     #     cmake --build . --target RUN_TESTS --config Release
     #   displayName: 'Performing the Tests'
 
-    # - script: |
-    #     cd bin
-    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-    #     setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
-    #     setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
+    - script: |
+        cd bin
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
     
-    #     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DQt5_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=OFF ..
-    #     setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
-    #     setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
+        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DQt5_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=OFF ..
+        setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
+        setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
         
-    #     cmake --build . --target PACKAGE --config Release
+        cmake --build . --target PACKAGE --config Release
 
-    #   displayName: 'Build & Package CaPTk'
+      displayName: 'Build & Package CaPTk'
 
     # - powershell: |
     #     cd bin
@@ -1205,48 +1205,48 @@ jobs:
       displayName: 'Ensure documentation is picked up properly'
 
 
-    # - bash: |
-    #     cd bin
+    - bash: |
+        cd bin
 
-    #     version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-    #     pkgname="_Installer"
-    #     pkgname="$version$pkgname"
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+        pkgname="_Installer"
+        pkgname="$version$pkgname"
 
-    #     rm -rf *.pkg
-    #     rm -rf install_manifest.txt
-    #     make package
+        rm -rf *.pkg
+        rm -rf install_manifest.txt
+        make package
 
-    #     pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/  ./CaPTk_$version.pkg
+        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/  ./CaPTk_$version.pkg
 
-    #     productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
+        productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
 
-    #     xml='<?xml version="1.0" encoding="utf-8"?>
-    #     <installer-gui-script minSpecVersion="1">
-    #         <title>CaPTk_'"$version"'</title>
-    #         <license file="Combined.txt"></license>
-    #         <pkg-ref id="com.cbica.captk"/>
-    #         <options customize="never" require-scripts="false"/>
-    #         <choices-outline>
-    #             <line choice="default">
-    #                 <line choice="com.cbica.captk"/>
-    #             </line>
-    #         </choices-outline>
-    #         <choice id="default"/>
-    #         <choice id="com.cbica.captk" visible="false">
-    #             <pkg-ref id="com.cbica.captk"/>
-    #         </choice>
-    #         <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
-    #     </installer-gui-script>'
+        xml='<?xml version="1.0" encoding="utf-8"?>
+        <installer-gui-script minSpecVersion="1">
+            <title>CaPTk_'"$version"'</title>
+            <license file="Combined.txt"></license>
+            <pkg-ref id="com.cbica.captk"/>
+            <options customize="never" require-scripts="false"/>
+            <choices-outline>
+                <line choice="default">
+                    <line choice="com.cbica.captk"/>
+                </line>
+            </choices-outline>
+            <choice id="default"/>
+            <choice id="com.cbica.captk" visible="false">
+                <pkg-ref id="com.cbica.captk"/>
+            </choice>
+            <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
+        </installer-gui-script>'
 
-    #     echo $xml > "./distribution.xml"
+        echo $xml > "./distribution.xml"
 
-    #     productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
+        productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
-    #     mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
-    #     rm -rf _CPack*
+        rm -rf _CPack*
 
-    #   displayName: 'Package CaPTk (.dmg and .pkg)'
+      displayName: 'Package CaPTk (.dmg and .pkg)'
 
     # - task: PublishBuildArtifacts@1
     #   inputs:
