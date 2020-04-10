@@ -973,7 +973,15 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        # ls $(Build.SourcesDirectory)/../superbuild
+        cd $(Build.SourcesDirectory)/..
+        ls
+        tar cvfz superbuild.tar.gz superbuild
+        ls
+        rm -rf superbuild
+        ls
+
+        cd $(Build.SourcesDirectory)
+
         rm -rf bin
 
         mkdir bin
@@ -990,13 +998,6 @@ jobs:
 
         mv superbuild/* ./
         ls
-
-        # cd $(Build.SourcesDirectory)/..
-        # ls
-        # tar cvfz superbuild.tar.gz superbuild
-        # ls
-        # rm -rf superbuild
-        # ls
         
         # cd bin
         
