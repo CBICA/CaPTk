@@ -814,6 +814,7 @@ This application facilitates the users to generate population atlases for patien
 -# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4)
 -# Standard atlas: A standard atlas to map all the patients in a unified space. Atlas should have region numbers in the ascending order, such as 1,2,3,...,n.
 -# Batch File: A csv file having patients' IDs, group (atlas) number, and path to the actual segmented image. Atlas numbers should be in the ascending order, such as 1,2,3,...,n. Segmentation images should be in the same space as the standard atlas (Note that the CSV file should be in ASCII format, and the CSV file should have the following column headers in any sequence: PATIENT_IDS,IMAGES, ATLAS_LABELS).
+
 <b>USAGE:</b>
 	-# Launch the Population Atlases application using the 'Applications -> Population Atlas' menu option.
 	-# Specify the Input batch file (e.g., Data_of_multiple_patients), Atlas file, and Output directories.
