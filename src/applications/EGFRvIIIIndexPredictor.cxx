@@ -121,7 +121,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 			featureFilePath = subjectPath + "/features.csv";
 			
 			if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() 
-        || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
+        || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty() || featureFilePath.empty())
 			continue;
 
 		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
@@ -154,18 +154,25 @@ int EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory,
 	std::cout << "Module loaded: EGFRvIII Prediction on Existing Model:" << std::endl;
 	std::vector<double> finalresult;
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
-	std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() <<std::endl;
-	EGFRvIIIIndexPredictor objEGFRvIIIPredictor;
-	VectorDouble result = objEGFRvIIIPredictor.EGFRvIIIPredictionOnExistingModel(modeldirectory, inputdirectory, QualifiedSubjects, outputdirectory);
-	std::cout << std::endl<<"EGFRvIII prediction:"<<std::endl;
-	for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
-	{
-		std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
-    if(result[subjectID]>0)
-      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) <<" Mutant." << std::endl;
-    else
-      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Wildtype." << std::endl;
-	}
+  if (QualifiedSubjects.size() == 0)
+  {
+    std::cout << "No subject found with required input. Exiting...." << std::endl;
+    return EXIT_FAILURE;
+  }
+  else
+  {
+    std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
+    EGFRvIIIIndexPredictor objEGFRvIIIPredictor;
+    VectorDouble result = objEGFRvIIIPredictor.EGFRvIIIPredictionOnExistingModel(modeldirectory, inputdirectory, QualifiedSubjects, outputdirectory);
+    for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
+    {
+      std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
+      if (result[subjectID] > 0)
+        std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Mutant." << std::endl;
+      else
+        std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Wildtype." << std::endl;
+    }
+  }
 	return EXIT_SUCCESS;
 }
 
@@ -250,16 +257,24 @@ int main(int argc, char **argv)
 			return EXIT_FAILURE;
 		}
 	}
-	if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
-	{
-		std::cout << "Model directory name:" << modelDirectoryName << std::endl;
-		if (!cbica::directoryExists(modelDirectoryName))
-		{
-			std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
-			return EXIT_FAILURE;
-		}
-		EGFRvIIIPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
-	}
+  if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
+  {
+    std::cout << "Model directory name:" << modelDirectoryName << std::endl;
+    if (!cbica::directoryExists(modelDirectoryName))
+    {
+      std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
+      return EXIT_FAILURE;
+    }
+    if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))
+    {
+      if (!cbica::IsCompatible(modelDirectoryName + "/VERSION.yaml"))
+      {
+        std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+        return EXIT_FAILURE;
+      }
+    }
+    EGFRvIIIPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
+  }
 	else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
 		PrepareNewEGFRvIIIPredictionModel(inputDirectoryName, outputDirectoryName);
 	else

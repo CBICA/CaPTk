@@ -271,11 +271,11 @@ fMainWindow::fMainWindow()
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
   this->m_toolTabdock->setWindowTitle("Double click to undock");
 
-  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
+//   Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
   connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
   connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
 
-  //! automatic undock on low resolution
+//  ! automatic undock on low resolution
   //! to be tested thoroughly
   QScreen *scr = QGuiApplication::primaryScreen();
   //!if primary screen resolution is lower than 1200x1024(any of x,y values)
@@ -920,7 +920,7 @@ fMainWindow::fMainWindow()
 
   connect(&whiteStripeNormalizer, SIGNAL(RunWhiteStripe(double, int, int, int, double, double, int, bool, const std::string)), this, SLOT(CallWhiteStripe(double, int, int, int, double, double, int, bool, const std::string)));
 
-  connect(&atlasPanel, SIGNAL(GeneratePopualtionAtlas(const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallGeneratePopualtionAtlas(const std::string, const std::string, const std::string, const std::string)));
+  connect(&atlasPanel, SIGNAL(GeneratePopualtionAtlas(const std::string, const std::string, const std::string)), this, SLOT(CallGeneratePopualtionAtlas(const std::string, const std::string, const std::string)));
 
   connect(&nodulePanel, SIGNAL(SBRTNoduleParamReady(const std::string, const int)), this, SLOT(CallSBRTNodule(const std::string, const int)));
 
@@ -4335,9 +4335,7 @@ bool fMainWindow::CheckCompletenessOfInputDataForEGFR(bool & t1ceDataPresent, bo
   if (t1ceDataPresent == false)
     msg = msg + "\n" + "T1-Gd data.";
   if (t2flairDataPresent == false)
-  {
     msg = msg + "\n" + "T2-FLAIR data.";
-  }
   if (perfusionDataPresent == false)
     msg = msg + "\n" + "DSC-MRI data.";
   if (mCurrentNearPoints == 0)
@@ -4507,16 +4505,11 @@ void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, 
 }
 
 
-void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputdirectory)
+void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputFileName, const std::string inputatlas, const std::string outputdirectory)
 {
-  if (!cbica::isDir(inputdirectory))
+  if (!cbica::isFile(inputFileName))
   {
-    ShowErrorMessage("Input directory passed is not a valid directory, please re-check", this);
-    return;
-  }
-  if (!cbica::isFile(inputlabel))
-  {
-    ShowErrorMessage("Input Label passed is not a valid file, please re-check", this);
+    ShowErrorMessage("Input Batch file passed is not a valid file, please re-check", this);
     return;
   }
   if (!cbica::isFile(inputatlas))
@@ -4524,7 +4517,99 @@ void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputdirectory, 
     ShowErrorMessage("Input Atlas passed is not a valid file, please re-check", this);
     return;
   }
-  std::vector<typename ImageTypeFloat3D::Pointer> atlases = mPopulationAtlas.GeneratePopualtionAtlas(inputdirectory, inputlabel, inputatlas, outputdirectory);
+  //read and store the entire data of csv file
+  std::vector< std::vector < std::string > > allRows; // store the entire data of the CSV file as a vector of columns and rows (vector< rows <cols> >)
+  std::string  inputFile = cbica::dos2unix(inputFileName, outputdirectory);
+  std::ifstream inFile(inputFile.c_str());
+  std::string csvPath = cbica::getFilenamePath(inputFile);
+  while (inFile.good())
+  {
+    std::string line;
+    std::getline(inFile, line);
+    line.erase(std::remove(line.begin(), line.end(), '"'), line.end());
+    if (!line.empty())
+    {
+      allRows.push_back(cbica::stringSplit(line, ","));
+    }
+  }
+  inFile.close();
+  // sanity check to make sure that the file is not empty
+  if (allRows.size() == 0)
+  {
+    ShowErrorMessage("There is no data in the given file: " +inputFileName +" please re-check", this);
+    return;
+  } 
+  //put the data in respective vectors
+  std::vector< std::string > patient_ids, image_paths, atlas_labels;
+  for (int j = 1; j < allRows.size(); j++)
+  {
+    for (size_t k = 0; k < allRows[0].size(); k++)
+    {
+      auto check_wrap = allRows[0][k];
+      std::transform(check_wrap.begin(), check_wrap.end(), check_wrap.begin(), ::tolower);
+
+      if (check_wrap == "patient_ids")
+        patient_ids.push_back(allRows[j][k]);
+      else if (check_wrap == "images")
+        image_paths.push_back(allRows[j][k]);
+      else if (check_wrap == "atlas_labels")
+        atlas_labels.push_back(allRows[j][k]);
+    }
+  }
+
+  // sanity check to make sure that all patient ids have corresponding atlas numbers and paths
+  if (image_paths.size() != patient_ids.size() || image_paths.size() != atlas_labels.size())
+  {
+    ShowErrorMessage("There is a mismatch in the number of patinet ids, images, and atlas identifiers.", this);
+    return;
+  }
+  for (int j = 0; j < patient_ids.size(); j++)
+    std::cout << patient_ids[j] << image_paths[j] << atlas_labels[j] << std::endl;
+
+  //convert atlas labels from string to numbers
+  std::vector<int> atlas_labels_numbers;
+  for (int i = 0; i < atlas_labels.size(); i++)
+    atlas_labels_numbers.push_back(std::stoi(atlas_labels[i]));
+
+
+  //find number of atlas in the input file. 
+  //atlas numbers should in ascending order like, 1,2,3,....,n
+  int no_of_atlases = 0;
+  for (int i = 0; i < atlas_labels.size(); i++)
+  {
+    if (atlas_labels_numbers[i] > no_of_atlases)
+      no_of_atlases = atlas_labels_numbers[i];
+  }
+  if (no_of_atlases == 0)
+  {
+    ShowErrorMessage("Please specify atleast one label for the atlases.", this);
+    return;
+  }
+  std::cout << "Number of identified atlases: " << no_of_atlases << std::endl;
+
+  //find unique number of regions in the template image
+  //region numbers should be in ascending order like, 1,2,3,...,n
+  ImageType::Pointer AtlasImagePointer = cbica::ReadImage<ImageType>(inputatlas);
+  typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
+  IteratorType atlasIt(AtlasImagePointer, AtlasImagePointer->GetLargestPossibleRegion());
+  atlasIt.GoToBegin();
+  int numberofregions = 0;
+  while (!atlasIt.IsAtEnd())
+  {
+    if (atlasIt.Get() > numberofregions)
+      numberofregions = atlasIt.Get();
+    ++atlasIt;
+  }
+  if (numberofregions < 2)
+  {
+    ShowErrorMessage("There should be atleast two regions in the atlas file.", this);
+    return;
+  }
+  std::vector < std::string> region_names;
+  for (int index = 0; index < numberofregions; index++)
+    region_names.push_back("Location_" + std::to_string(index + 1));
+
+  std::vector<typename ImageTypeFloat3D::Pointer> atlases= mPopulationAtlas.GeneratePopualtionAtlas(image_paths, atlas_labels_numbers, inputatlas, no_of_atlases, outputdirectory);
   if (mPopulationAtlas.mLastErrorMessage.empty() && atlases.size() > 0)
   {
     for (int i = 0; i < atlases.size(); i++)
@@ -4535,13 +4620,22 @@ void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputdirectory, 
 
     }
     LoadSlicerImages(inputatlas, CAPTK::ImageExtension::NIfTI);
-    ShowMessage("Statistical atlases have been saved at the specified location and loaded.", this);
   }
   else
   {
-    ShowErrorMessage("Error in creating statistical atlases for the given set of subjects.", this);
+    ShowErrorMessage("Error in calculating statistical atlases for the given set of subjects.", this);
     return;
   }
+  //code to calculate spatial location features
+  VariableSizeMatrixType LocationFeaturesAll;
+  if (mPopulationAtlas.CalculateSpatialLocationFeatures(image_paths, inputatlas, numberofregions, LocationFeaturesAll, outputdirectory) == true)
+    WriteCSVFilesWithHorizontalAndVerticalHeaders(LocationFeaturesAll, patient_ids, region_names, outputdirectory+ "/locationfeatures.csv");
+  else
+  {
+    ShowErrorMessage("Error in calculating location features for the given set of subjects.", this);
+    exit(EXIT_FAILURE);
+  }
+  ShowMessage("Statistical atlases and spatial location features have been saved at the specified location and loaded.", this);
   updateProgress(0, "Statistical atlases have been saved at the specified location and loaded.");
 }
 
@@ -6427,15 +6521,11 @@ void fMainWindow::ApplicationEGFR()
   }
   updateProgress(5);
 
-
   typedef ImageTypeFloat4D PerfusionImageType;
-
   ImageTypeFloat3D::Pointer T1CEImagePointer;
   ImageTypeFloat3D::Pointer T2FlairImagePointer;
   std::vector<ImageTypeFloat3D::Pointer>	PerfusionImagePointer;
 
-  itk::MultiResolutionImageRegistrationMethod<ImageTypeFloat3D, ImageTypeFloat3D>::Pointer Registrar;
-  std::vector<ImageTypeFloat3D::Pointer> Perfusion_Registered;
   PerfusionImageType::Pointer perfusionImage = PerfusionImageType::New();
 
   std::vector<ImageTypeFloat3D::IndexType> nearIndices;
@@ -6448,15 +6538,11 @@ void fMainWindow::ApplicationEGFR()
   while (!maskIt.IsAtEnd())
   {
     if (maskIt.Get() == 1)
-    {
       nearIndices.push_back(maskIt.GetIndex());
-    }
     else if (maskIt.Get() == 2)
       farIndices.push_back(maskIt.GetIndex());
     ++maskIt;
   }
-
-  std::string imagetype_string = "";
 
   for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
   {
@@ -6465,43 +6551,11 @@ void fMainWindow::ApplicationEGFR()
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR)
       T2FlairImagePointer = mSlicerManagers[index]->mITKImage;
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-    {
-      if (mSlicerManagers[index]->mImageType == CAPTK::ImageExtension::NIfTI)
-      {
-        perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
-        imagetype_string = "nifti";
-      }
-      else
-      {
-        for (unsigned int seriesindex = 0; seriesindex < mSlicerManagers[index]->mPerfusionImagePointerDicom.size(); seriesindex++)
-          PerfusionImagePointer.push_back(mSlicerManagers[index]->mPerfusionImagePointerDicom[seriesindex]);
-        imagetype_string = "dicom";
-      }
-    }
-  }
-
-  Perfusion_Registered.resize(PerfusionImagePointer.size());
-  if (imagetype_string == "dicom")
-  {
-    Registrar = mPreprocessingObj.Registration<ImageTypeFloat3D, ImageTypeFloat3D>(T1CEImagePointer, PerfusionImagePointer[0]);
-    updateProgress(10);
-
-    for (unsigned int index = 0; index < PerfusionImagePointer.size(); index++)
-    {
-      Perfusion_Registered[index] = mPreprocessingObj.ResampleTransform<ImageTypeFloat3D>(Registrar, T1CEImagePointer, PerfusionImagePointer[index]);
-      updateProgress((index + 1) * 2 + 10);
-    }
+      perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
   }
   VectorDouble EGFRStatusParams;
-
   EGFRStatusPredictor EGFRPredictor;
-
-  if (imagetype_string == "dicom")
-    EGFRStatusParams = EGFRPredictor.PredictEGFRStatus<ImageTypeFloat3D, PerfusionImageType>(perfusionImage, Perfusion_Registered, nearIndices, farIndices, CAPTK::ImageExtension::DICOM);
-  else
-    EGFRStatusParams = EGFRPredictor.PredictEGFRStatus<ImageTypeFloat3D, PerfusionImageType>(perfusionImage, Perfusion_Registered, nearIndices, farIndices, CAPTK::ImageExtension::NIfTI);
-
-
+  EGFRStatusParams = EGFRPredictor.PredictEGFRStatus<ImageTypeFloat3D, PerfusionImageType>(perfusionImage, nearIndices, farIndices);
   QString msg;
   msg = "PHI = " + QString::number(EGFRStatusParams[0]) + "\n\n----------\n\n(Near:Far) Peak Height ratio = " +
     QString::number(EGFRStatusParams[1] / EGFRStatusParams[2]) + "\n\nNear ROI voxels used = " +
@@ -8777,8 +8831,10 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds)
 {
   int defaultfeatureselectiontype = 3;
+  int defaultoptimizationtype = 0;
+  int defaultcvtype = 1;
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,defaultfeatureselectiontype, modeldirectory))
+  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype, modeldirectory))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
@@ -8913,16 +8969,30 @@ void fMainWindow::ChangeMaskOpacity() // multiLabel uncomment this function
 
 void fMainWindow::ChangeMaskOpacity(const float newOpacity)
 {
-  for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
-  {
-    for (size_t j = 0; j < 3; j++)
-    {
-        this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = newOpacity;
-        this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(newOpacity);
-        this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
-    }
-  }
-  UpdateRenderWindows(); // reflect the new value
+	if (!m_ComparisonMode)
+	{
+		//regular mode
+		for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
+		{
+			for (size_t j = 0; j < 3; j++)
+			{
+				this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = newOpacity;
+				this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(newOpacity);
+				this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
+			}
+		}
+		UpdateRenderWindows(); // reflect the new value
+	}
+	else
+	{
+		//comparison mode
+		std::vector<vtkSmartPointer<Slicer>> comparisonViewers = this->GetComparisonViewers();
+		for (int i = 0; i < comparisonViewers.size(); i++)
+		{
+			//update mask opacity on comparison viewers
+			comparisonViewers[i]->SetMaskOpacity(newOpacity);
+		}
+	}
 }
 
 void fMainWindow::ChangeDrawingLabel(int drawingLabel) // multiLabel uncomment this function

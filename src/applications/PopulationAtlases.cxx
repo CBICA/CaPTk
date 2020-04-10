@@ -2,196 +2,18 @@
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
 #include "CaPTkEnums.h"
+#include "CaPTkUtils.h"
 
-//------------------Survival Prediction on existing model-----------------------
-std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname)
-{
-  std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
-  std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
-  std::sort(subjectNames.begin(), subjectNames.end());
-
-  for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
-  {
-    std::string subjectPath = directoryname + "/" + subjectNames[sid];
-
-    std::string t1ceFilePath = "";
-    std::string t1FilePath = "";
-    std::string t2FilePath = "";
-    std::string t2FlairFilePath = "";
-    std::string axFilePath = "";
-    std::string faFilePath = "";
-    std::string radFilePath = "";
-    std::string trFilePath = "";
-    std::string rcbvFilePath = "";
-    std::string psrFilePath = "";
-    std::string phFilePath = "";
-    std::string labelPath = "";
-    std::string atlasPath = "";
-    std::string parametersPath = "";
-    std::string featureFilePath = "";
-
-    std::vector<std::string> files;
-
-    if (cbica::directoryExists(subjectPath + "/SEGMENTATION"))
-    {
-      files = cbica::filesInDirectory(subjectPath + "/SEGMENTATION", false);
-      if (files.size() == 1)
-      {
-        labelPath = subjectPath + "/SEGMENTATION" + "/" + files[0];
-      }
-      else
-      {
-        for (unsigned int i = 0; i < files.size(); i++)
-        {
-          std::string filePath = subjectPath + "/SEGMENTATION" + "/" + files[i], filePath_lower;
-          std::string extension = cbica::getFilenameExtension(filePath, false);
-          filePath_lower = filePath;
-          std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-          if ((filePath_lower.find("atlas") != std::string::npos || filePath_lower.find("jakob_label") != std::string::npos)
-            && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-            atlasPath = subjectPath + "/SEGMENTATION" + "/" + files[i];
-          else if ((filePath_lower.find("segmentation") != std::string::npos)
-            && (extension == HDR_EXT || extension
-            == NII_EXT || extension == NII_GZ_EXT))
-            labelPath = subjectPath + "/SEGMENTATION" + "/" + files[i];
-          else if ((filePath_lower.find("parameter") != std::string::npos)
-            && (extension == PARAM_EXT))
-            parametersPath = subjectPath + "/SEGMENTATION" + "/" + files[i];
-        }
-      }
-    }
-
-    if (cbica::directoryExists(subjectPath + "/CONVENTIONAL"))
-    {
-      files = cbica::filesInDirectory(subjectPath + "/CONVENTIONAL", false);
-      for (unsigned int i = 0; i < files.size(); i++)
-      {
-        std::string filePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        std::string extension = cbica::getFilenameExtension(filePath, false);
-
-        if ((files[i].find("t1ce") != std::string::npos || files[i].find("T1CE") != std::string::npos || files[i].find("T1ce") != std::string::npos || files[i].find("T1-gd") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          t1ceFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("t1") != std::string::npos || files[i].find("T1") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          t1FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("t2") != std::string::npos || files[i].find("T2") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          t2FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("flair") != std::string::npos || files[i].find("FLAIR") != std::string::npos || files[i].find("Flair") != std::string::npos || files[i].find("T2-Flair") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          t2FlairFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-      }
-    }
-
-    if (cbica::directoryExists(subjectPath + "/PERFUSION"))
-    {
-      files = cbica::filesInDirectory(subjectPath + "/PERFUSION", false);
-      for (unsigned int i = 0; i < files.size(); i++)
-      {
-        std::string filePath = subjectPath + "/PERFUSION" + "/" + files[i], filePath_lower;
-        std::string extension = cbica::getFilenameExtension(filePath, false);
-        filePath_lower = filePath;
-        std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-        if ((filePath_lower.find("rcbv") != std::string::npos)
-          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          rcbvFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("psr") != std::string::npos)
-          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          psrFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((filePath_lower.find("ph") != std::string::npos)
-          && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-      }
-    }
-
-    if (cbica::directoryExists(subjectPath + "/DTI"))
-    {
-      files = cbica::filesInDirectory(subjectPath + "/DTI", false);
-      for (unsigned int i = 0; i < files.size(); i++)
-      {
-        std::string filePath = subjectPath + "/DTI/" + files[i];
-        std::string extension = cbica::getFilenameExtension(filePath, false);
-
-        if ((files[i].find("Axial") != std::string::npos || files[i].find("axial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Fractional") != std::string::npos || files[i].find("fractional") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Radial") != std::string::npos || files[i].find("radial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Trace") != std::string::npos || files[i].find("trace") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
-          trFilePath = subjectPath + "/DTI/" + files[i];
-      }
-    }
-    if (cbica::fileExists(subjectPath + "/features.csv"))
-      featureFilePath = subjectPath + "/features.csv";
-
-    if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty()
-      || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty() || featureFilePath.empty())
-      continue;
-
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2] = t2FilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE] = t1ceFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR] = t2FlairFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX] = axFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA] = faFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD] = radFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR] = trFilePath;
-
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR] = psrFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH] = phFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV] = rcbvFilePath;
-
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG] = labelPath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS] = atlasPath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PARAMS] = parametersPath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES] = featureFilePath;
-    OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID] = subjectNames[sid];
-
-    QualifiedSubjects.push_back(OneQualifiedSubject);
-  }
-  return QualifiedSubjects;
-}
-int SurvivalPredictionOnExistingModel(const std::string modeldirectory,
-  const std::string inputdirectory,
-  const std::string outputdirectory)
-{
-  std::cout << "Module loaded: Survival Prediction on Existing Model:" << std::endl;
-  std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
-  std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
-  /*PopulationAtlases objPopulationAtlases;
-  for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
-  {
-  std::map<ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
-
-  std::vector<std::map<ImageModalityType, std::string>> OneQualifiedSubject;
-  OneQualifiedSubject.push_back(QualifiedSubjects[subjectID]);
-  VectorDouble result = objPopulationAtlases.SurvivalPredictionOnExistingModel(modeldirectory, inputdirectory, QualifiedSubjects, outputdirectory);
-  std::cout << static_cast<std::string>(onesubject[IMAGE_TYPE_SUDOID])<<" " <<result[0]<<std::endl;
-  }*/
-  return EXIT_SUCCESS;
-}
-int PrepareNewSurvivalPredictionModel(const std::string inputdirectory,
-  const std::string outputdirectory)
-{
-  //std::cout << "Module loaded: Prepare Survival Prediction Model." << std::endl;
-  //std::vector<double> finalresult;
-  //std::vector<std::map<ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
-  //PopulationAtlases objPopulationAtlases;
-  //std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
-  //objPopulationAtlases.PrepareNewSurvivalPredictionModel(inputdirectory, QualifiedSubjects, outputdirectory);
-  return EXIT_SUCCESS;
-}
 int main(int argc, char **argv)
 {
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PopulationAtlases");
-  parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory.");
-  parser.addRequiredParameter("l", "label", cbica::Parameter::STRING, "", "The input label file in .csv format.");
+  parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input batch file.");
   parser.addRequiredParameter("a", "atlas", cbica::Parameter::STRING, "", "The atlas template.");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("PopulationAtlases -i <input dir> -l atlaslabelfile.csv -a jakob_stripped_with_cere_lps_256256128.nii.gz -o <output dir>");
-  parser.addExampleUsage("-i C:/properly/formatted/inputDir -l atlaslabelfile.csv -a jakob_stripped_with_cere_lps_256256128.nii.gz -o C:/outputDir", 
-    "Calculates the population atlas based on the input files, atlas label file and the jakob");
+  parser.addExampleUsage("-i C:/properly/formatted/inputfile -a jakob_stripped_with_cere_lps_256256128.nii.gz -o C:/outputDir",
+    "Calculates the population atlas based on the input images, atlas labels and the jakob");
   parser.addApplicationDescription("Population Atlas calculator");
 
   // parameters to get from the command line
@@ -200,7 +22,7 @@ int main(int argc, char **argv)
   bool loggerRequested = false;
 
   int tempPosition;
-  std::string inputDirectoryName, inputLabelName, inputAtlasName, outputDirectoryName, toWrite;
+  std::string inputFileName, inputAtlasName, outputDirectoryName, toWrite;
   if (parser.compareParameter("L", tempPosition))
   {
     loggerFile = argv[tempPosition + 1];
@@ -208,61 +30,144 @@ int main(int argc, char **argv)
     logger.UseNewFile(loggerFile);
   }
   if (parser.compareParameter("i", tempPosition))
-  {
-    inputDirectoryName = argv[tempPosition + 1];
-  }
+    inputFileName = argv[tempPosition + 1];
 
   if (parser.compareParameter("a", tempPosition))
-  {
     inputAtlasName = argv[tempPosition + 1];
-  }
 
   if (parser.compareParameter("o", tempPosition))
-  {
     outputDirectoryName = argv[tempPosition + 1];
-  }
-  if (parser.compareParameter("l", tempPosition))
-  {
-    inputLabelName = argv[tempPosition + 1];
-  }
-  std::cout << "Input Directory:" << inputDirectoryName << std::endl;
-  std::cout << "Input Atlas File:" << inputAtlasName << std::endl;
-  std::cout << "Input Label File:" << inputLabelName << std::endl;
-  std::cout << "Output Directory:" << outputDirectoryName << std::endl;
 
-  if (!cbica::directoryExists(inputDirectoryName))
+  //read and store the entire data of csv file
+  std::vector< std::vector < std::string > > allRows; // store the entire data of the CSV file as a vector of columns and rows (vector< rows <cols> >)
+  inputFileName = cbica::dos2unix(inputFileName, outputDirectoryName);
+  std::ifstream inFile(inputFileName.c_str());
+  std::string csvPath = cbica::getFilenamePath(inputFileName);
+  while (inFile.good())
   {
-    std::cout << "The input directory does not exist:" << inputDirectoryName << std::endl;
-    return EXIT_FAILURE;
+    std::string line;
+    std::getline(inFile, line);
+    line.erase(std::remove(line.begin(), line.end(), '"'), line.end());
+    if (!line.empty())
+    {
+      allRows.push_back(cbica::stringSplit(line, ","));
+    }
   }
-  if (!cbica::directoryExists(outputDirectoryName))
+  inFile.close();
+  std::cout << "input file parsed. Number of entries: " << allRows.size()<< std::endl;
+
+  // sanity check to make sure that the file is not empty
+  if (allRows.size() ==0)
   {
-    if (!cbica::createDirectory(outputDirectoryName))
-      std::cout << "The output directory can not be created:" << outputDirectoryName << std::endl;
-    return EXIT_FAILURE;
+    std::cerr << "There is no data in the given file: " << inputFileName << std::endl;
+    exit(EXIT_FAILURE);
   }
-  if (!cbica::fileExists(inputLabelName))
+
+  //put the data in respective vectors
+  std::vector< std::string > patient_ids, image_paths, atlas_labels;
+  for (int j = 1; j < allRows.size(); j++)
   {
-    std::cout << "The input label file does not exist:" << inputLabelName << std::endl;
-    return EXIT_FAILURE;
+    for (size_t k = 0; k < allRows[0].size(); k++)
+    {
+      auto check_wrap = allRows[0][k];
+      std::transform(check_wrap.begin(), check_wrap.end(), check_wrap.begin(), ::tolower);
+
+      if (check_wrap == "patient_ids")
+        patient_ids.push_back(allRows[j][k]);
+      else if (check_wrap == "images")
+        image_paths.push_back(allRows[j][k]);
+      else if (check_wrap == "atlas_labels")
+        atlas_labels.push_back(allRows[j][k]);
+    }
   }
-  if (!cbica::fileExists(inputAtlasName))
+
+  // sanity check to make sure that all patient ids have corresponding atlas numbers and paths
+  if (image_paths.size() != patient_ids.size() || image_paths.size() != atlas_labels.size())
   {
-    std::cout << "The input atlas file does not exist:" << inputAtlasName << std::endl;
-    return EXIT_FAILURE;
+    std::cerr << "There is a mismatch in the number of patinet ids, images, and atlas identifiers.\n";
+    exit(EXIT_FAILURE);
   }
+
+  //for (int j = 0; j < patient_ids.size(); j++)
+  //  std::cout << patient_ids[j] << image_paths[j] << atlas_labels[j] << std::endl;
+
+  //convert atlas labels from string to numbers
+  std::vector<int> atlas_labels_numbers;
+  for (int i = 0; i < atlas_labels.size(); i++)
+    atlas_labels_numbers.push_back(std::stoi(atlas_labels[i]));
+
+
+  //find number of atlas in the input file. 
+  //atlas numbers should in ascending order like, 1,2,3,....,n
+  int no_of_atlases = 0;
+  for (int i = 0; i < atlas_labels.size(); i++)
+  {
+    if (atlas_labels_numbers[i] > no_of_atlases)
+      no_of_atlases = atlas_labels_numbers[i];
+  }
+  if (no_of_atlases == 0)
+  {
+    std::cerr << "Please specify atleast one label for the atlases.";
+    exit(EXIT_FAILURE);
+  }
+  std::cout << "Number of identified atlases: " << no_of_atlases << std::endl;
+
+  //find unique number of regions in the template image
+  //region numbers should be in ascending order like, 1,2,3,...,n
+  ImageType::Pointer AtlasImagePointer = cbica::ReadImage<ImageType>(inputAtlasName);
+  typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
+  IteratorType atlasIt(AtlasImagePointer, AtlasImagePointer->GetLargestPossibleRegion());
+  atlasIt.GoToBegin();
+  int numberofregions = 0;
+  while (!atlasIt.IsAtEnd())
+  {
+    if (atlasIt.Get() > numberofregions)
+      numberofregions = atlasIt.Get();
+    ++atlasIt;
+  }
+  if (numberofregions < 2)
+  {
+    std::cerr << "There should be atleast 2 regions in the atlas file.";
+    exit(EXIT_FAILURE);
+  }
+  std::vector < std::string> region_names;
+  for (int index = 0; index < numberofregions; index++)
+    region_names.push_back("Location_" + std::to_string(index+1));
+
+  //code to calculate atlases
   PopulationAtlases objPopulationAtlases;
-  std::vector<typename ImageType::Pointer> atlases = objPopulationAtlases.GeneratePopualtionAtlas(inputDirectoryName, inputLabelName, inputAtlasName, outputDirectoryName);
-  std::cout << "Writing atlases in the specified output directory.\n";
-  for (int i = 0; i < atlases.size(); i++)
+  std::vector<typename ImageType::Pointer> atlases = objPopulationAtlases.GeneratePopualtionAtlas(image_paths, atlas_labels_numbers, inputAtlasName, no_of_atlases, outputDirectoryName);
+  if (atlases.size() > 0)
   {
-    typedef itk::ImageFileWriter< ImageType > WriterType;
-    WriterType::Pointer writer1 = WriterType::New();
-    writer1->SetFileName(outputDirectoryName + "/Atlas_" + std::to_string(i + 1) + ".nii.gz");
-    writer1->SetInput(atlases[i]);
-    writer1->Update();
+    std::cout << "Writing atlases in the specified output directory.\n";
+    for (int i = 0; i < atlases.size(); i++)
+    {
+      typedef itk::ImageFileWriter< ImageType > WriterType;
+      WriterType::Pointer writer1 = WriterType::New();
+      writer1->SetFileName(outputDirectoryName + "/Atlas_" + std::to_string(i + 1) + ".nii.gz");
+      writer1->SetInput(atlases[i]);
+      writer1->Update();
+    }
+    std::cout << "Atlas writing finished.\n";
   }
-  std::cout << "Finished successfully.\n";
+  else
+  {
+    std::cerr << "System encountered an error in calculating atlases.\n";
+    exit(EXIT_FAILURE);
+  }
+
+  //code to calculate spatial location features
+  VariableSizeMatrixType LocationFeaturesAll;
+  if (objPopulationAtlases.CalculateSpatialLocationFeatures(image_paths, inputAtlasName, numberofregions, LocationFeaturesAll, outputDirectoryName) == true)
+  {
+    WriteCSVFilesWithHorizontalAndVerticalHeaders(LocationFeaturesAll, patient_ids,region_names, outputDirectoryName + "/locationfeatures.csv");
+    std::cout << "Spatial location features written in the output directory.\n";
+  }
+  else
+  {
+    std::cerr <<"System encountered an error in calculating location features.\n";
+    exit(EXIT_FAILURE);
+  }
 
   return EXIT_SUCCESS;
 }
