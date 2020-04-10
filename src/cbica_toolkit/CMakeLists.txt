@@ -11,11 +11,13 @@ PROJECT( CaPTk_CBICATK )
 
 FILE( GLOB_RECURSE sources_h "${PROJECT_SOURCE_DIR}/src/*.h" )
 FILE( GLOB_RECURSE sources_hxx "${PROJECT_SOURCE_DIR}/src/*.hxx" )
+FILE( GLOB_RECURSE sources_txx "${PROJECT_SOURCE_DIR}/src/*.txx" )
 FILE( GLOB_RECURSE sources_cpp "${PROJECT_SOURCE_DIR}/src/*.cpp" )
 
 SET( CBICA-TK_SOURCES
   ${sources_h}
   ${sources_hxx}
+  ${sources_txx}
   ${sources_cpp}
 )
 

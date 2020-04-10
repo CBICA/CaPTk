@@ -48,6 +48,7 @@ enum AvailableAlgorithms
   ImageStack2Join,
   JoinedImage2Stack,
   LabelSimilarity,
+  LabelSimilarityBraTS,
   Hausdorff
 };
 
@@ -644,59 +645,33 @@ int algorithmsRunner()
     using DefaultImageType = itk::Image< unsigned int, TImageType::ImageDimension >;
     auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
     auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
-    auto uniqueLabels = cbica::GetUniqueValuesInImage< DefaultImageType >(inputImage);
-    auto uniqueLabelsRef = cbica::GetUniqueValuesInImage< DefaultImageType >(referenceImage);
 
-    // sanity check
-    if (uniqueLabels.size() != uniqueLabelsRef.size())
+    auto stats = cbica::GetLabelStatistics< DefaultImageType >(inputImage, referenceImage);
+
+    std::cout << "Metric,Value\n";
+    for (const auto &stat : stats)
     {
-      std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
-      return EXIT_FAILURE;
-    }
-    else
-    {
-      for (size_t i = 0; i < uniqueLabels.size(); i++)
-      {
-        if (uniqueLabels[i] != uniqueLabelsRef[i])
-        {
-          std::cerr << "The label values in input and reference image are not consistent.\n";
-          return EXIT_FAILURE;
-        }
-      }
+      std::cout << stat.first << "," << stat.second << "\n";
     }
 
-    auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< DefaultImageType >::New();
+    return EXIT_SUCCESS;
+  }
+  else if (requestedAlgorithm == LabelSimilarityBraTS)
+  {
+    // this filter only works on unsigned int type
+    using DefaultImageType = itk::Image< unsigned int, TImageType::ImageDimension >;
+    auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
+    auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
 
-    similarityFilter->SetSourceImage(inputImage);
-    similarityFilter->SetTargetImage(referenceImage);
-    similarityFilter->Update();
+    auto stats = cbica::GetBraTSLabelStatistics< DefaultImageType >(inputImage, referenceImage);
 
-    //std::cout << "=== Entire Masked Area ===\n";
-    std::cout << "Property,Value\n";
-    std::cout << "TotalOverlap," << similarityFilter->GetTotalOverlap() << "\n";
-    std::cout << "Union(Jaccard)_Overall," << similarityFilter->GetUnionOverlap() << "\n";
-    std::cout << "Mean(DICE)_Overall," << similarityFilter->GetMeanOverlap() << "\n";
-    std::cout << "VolumeSimilarity_Overall," << similarityFilter->GetVolumeSimilarity() << "\n";
-    std::cout << "FalseNegativeError_Overall," << similarityFilter->GetFalseNegativeError() << "\n";
-    std::cout << "FalsePositiveError_Overall," << similarityFilter->GetFalsePositiveError() << "\n";
-
-    if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
+    std::cout << "Metric,Value\n";
+    for (const auto &stat : stats)
     {
-      //std::cout << "=== Individual Labels ===\n";
-      //std::cout << "Property,Value\n";
-      for (size_t i = 0; i < uniqueLabels.size(); i++)
-      {
-        auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
-        std::cout << "LabelValue," << uniqueLabels_string << "\n";
-        std::cout << "TargetOverlap_Label" + uniqueLabels_string + "," << similarityFilter->GetTargetOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Union(Jaccard)_Label" + uniqueLabels_string + "," << similarityFilter->GetUnionOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Mean(DICE)_Label" + uniqueLabels_string + "," << similarityFilter->GetMeanOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "VolumeSimilarity_Label" + uniqueLabels_string + "," << similarityFilter->GetVolumeSimilarity(uniqueLabels[i]) << "\n";
-        std::cout << "FalseNegativeError_Label" + uniqueLabels_string + "," << similarityFilter->GetFalseNegativeError(uniqueLabels[i]) << "\n";
-        std::cout << "FalsePositiveError_Label" + uniqueLabels_string + "," << similarityFilter->GetFalsePositiveError(uniqueLabels[i]) << "\n";
-      }
+      std::cout << stat.first << "," << stat.second << "\n";
     }
-      return EXIT_SUCCESS;
+
+    return EXIT_SUCCESS;
   }
   else if (requestedAlgorithm == Hausdorff)
   {
@@ -847,6 +822,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
   parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
+  parser.addOptionalParameter("lsb", "lSimilarityBrats", cbica::Parameter::FILE, "NIfTI Reference", "Calculate BraTS similarity measures for 2 brain labels", "Pass the reference map after '-lsb' and the comparison will be done with '-i'", "Assumed labels in image are '1,2,4' and missing labels will be populate with '0'");
   parser.addOptionalParameter("hd", "hausdorffDist", cbica::Parameter::FILE, "NIfTI Reference", "Calculate the Hausdorff Distance for the input image and", "the one passed after '-hd'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
@@ -1217,6 +1193,11 @@ int main(int argc, char** argv)
     requestedAlgorithm = LabelSimilarity;
     parser.getParameterValue("ls", referenceMaskForSimilarity);
   }
+  else if (parser.isPresent("lsb"))
+  {
+  requestedAlgorithm = LabelSimilarityBraTS;
+  parser.getParameterValue("lsb", referenceMaskForSimilarity);
+  }
   else if (parser.isPresent("hd"))
   {
     requestedAlgorithm = Hausdorff;
@@ -1236,6 +1217,12 @@ int main(int argc, char** argv)
       std::cerr << "Images are in different spaces.\n";
       return EXIT_FAILURE;
     }
+  }
+
+  if (!cbica::isFile(inputImageFile))
+  {
+    std::cerr << "Input file '" << inputImageFile << "' not found.\n";
+    return EXIT_FAILURE;
   }
   auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
