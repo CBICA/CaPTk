@@ -2221,9 +2221,12 @@ void FeatureExtraction< TImage >::Update()
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
           m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator_Image);
-          if (m_debug)
+          if (m_debug || m_writeIntermediateFiles)
           {
-            std::cout << "[DEBUG] Writing resampled image(s) to the output directory.\n";
+            if (m_debug)
+            {
+              std::cout << "[DEBUG] Writing resampled image(s) to the output directory.\n";
+            }
             cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/image_" + m_modality[i] +
               "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image +
               "_" + m_initializedTimestamp + ".nii.gz"));
@@ -2237,9 +2240,12 @@ void FeatureExtraction< TImage >::Update()
           roundingFilter->Update();
           m_Mask = roundingFilter->GetOutput();
         }
-        if (m_debug)
+        if (m_debug || m_writeIntermediateFiles)
         {
-          std::cout << "[DEBUG] Writing resampled mask to the output directory.\n";
+          if (m_debug)
+          {
+            std::cout << "[DEBUG] Writing resampled mask to the output directory.\n";
+          }
           cbica::WriteImage< TImage >(m_Mask, cbica::normPath(m_outputPath +
             "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + 
             "_" + m_initializedTimestamp + ".nii.gz"));
