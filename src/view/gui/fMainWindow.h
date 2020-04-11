@@ -69,8 +69,6 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "GeodesicTrainingCaPTkApp.h"
 
 #include <QMessageBox>
-#include <QTimer>
-#include <QEventLoop>
 
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
@@ -887,7 +885,7 @@ public slots:
   /**
   \brief Generate population atlas
   */
-  void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputImageFile);
+  void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputatlas, const std::string outputImageFile);
 
   /**
   \brief Generete SBRT Nodule
@@ -945,10 +943,15 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
-  void appDownload(std::string currentApp);
 
   //! Open the github issue tracker
   void help_BugTracker();
+
+  /**
+  \brief For apps decoupling
+  */
+  void appDownload(std::string currentApp);
+  void unzipArchive(std::string fullPath);
 
   /**
   \brief Get contextual help 
@@ -1464,7 +1467,10 @@ public slots:
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
   //! Performs the registration
-  void Registration(std::string fixedfilename, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
+  void Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
+    std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, 
+    std::string metrics, bool rigidMode, bool affineMode, bool deformMode, 
+    std::string radii, std::string iterations);
 
   //confirm before exit
   void closeEvent(QCloseEvent * event);

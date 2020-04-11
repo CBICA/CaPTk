@@ -17,7 +17,6 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include <algorithm>
 #include <functional>
 #include <cmath>
-#include <unordered_map>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -34,6 +33,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkOrientImageFilter.h"
 #include "itkResampleImageFilter.h"
 #include "itkIdentityTransform.h"
+#include "itkAddImageFilter.h"
 
 //#include "itkMultiResolutionPDEDeformableRegistration.h"
 //#include "itkDemonsRegistrationFilter.h"
@@ -44,6 +44,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkLinearInterpolateImageFunction.h"
 #include "itkBSplineInterpolateImageFunction.h"
 #include "itkNearestNeighborInterpolateImageFunction.h"
+#include "itkLabelOverlapMeasuresImageFilter.h"
 //#include "itkWindowedSincInterpolateImageFunction.h"
 
 #include "itkTestingComparisonImageFilter.h"
@@ -53,6 +54,8 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "cbicaUtilities.h"
 #include "cbicaITKImageInfo.h"
+
+#include "HausdorffDistance.h"
 
 #include "gdcmMD5.h"
 #include "gdcmReader.h"
@@ -252,8 +255,8 @@ namespace cbica
       ImageSubType = ImageModalityType::IMAGE_TYPE_PET;
     }
     else if (
-      modalityCheckerFunction("labelmap") || 
-      modalityCheckerFunction("label-map") || 
+      modalityCheckerFunction("labelmap") ||
+      modalityCheckerFunction("label-map") ||
       modalityCheckerFunction("segmentation") ||
       modalityCheckerFunction("annotation") ||
       modalityCheckerFunction("label") ||
@@ -263,6 +266,7 @@ namespace cbica
     }
     return ImageSubType;
   }
+
   /**
   \brief Calculate and preserve the mask indeces
 
@@ -381,6 +385,25 @@ namespace cbica
     auto spacing_1 = image1->GetSpacing();
     auto spacing_2 = image2->GetSpacing();
 
+    auto directions_1 = image1->GetDirection();
+    auto directions_2 = image2->GetDirection();
+
+    if (directions_1.ColumnDimensions != directions_2.ColumnDimensions)
+    {
+      std::cerr << "Column dimension mismatch for directions.\n";
+      return false;
+    }
+    if (directions_1.RowDimensions != directions_2.RowDimensions)
+    {
+      std::cerr << "Row dimension mismatch for directions.\n";
+      return false;
+    }
+    if (directions_1 != directions_2)
+    {
+      std::cerr << "Directions are not the same.\n";
+      return false;
+    }
+
     for (size_t i = 0; i < TImageType::ImageDimension; i++)
     {
       if (size_1[i] != size_2[i])
@@ -450,6 +473,9 @@ namespace cbica
     auto imageOrigin1 = imageInfo1.GetImageOrigins();
     auto imageOrigin2 = imageInfo2.GetImageOrigins();
 
+    auto imageDirs1 = imageInfo1.GetImageDirections();
+    auto imageDirs2 = imageInfo1.GetImageDirections();
+
     for (size_t d = 0; d < dims; d++)
     {
       if (imageSize1[d] != imageSize2[d])
@@ -477,6 +503,23 @@ namespace cbica
       {
         std::cout << "The origin in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
         return false;
+      }
+
+      if (imageDirs1[d].size() != imageDirs2[d].size())
+      {
+        std::cout << "The direction in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
+        return false;
+      }
+      else
+      {
+        for (size_t i = 0; i < imageDirs1[d].size(); i++)
+        {
+          if (imageDirs1[d][i] != imageDirs2[d][i])
+          {
+            std::cout << "The direction in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") at '" << i << "' doesn't match.\n";
+            return false;
+          }
+        }
       }
     }
 
@@ -700,7 +743,7 @@ namespace cbica
     }
 
     // initialize the comparator
-    auto diff = typename itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
+    auto diff = itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
     diff->SetValidInput(referenceImage);
     diff->SetTestInput(checkImage);
     diff->SetDifferenceThreshold(differenceThreshold);
@@ -1191,13 +1234,12 @@ namespace cbica
 
   This filter uses the example https://itk.org/Wiki/ITK/Examples/ImageProcessing/ResampleImageFilter as a base while processing time-stamped images as well
   \param inputImage The input image to process
-  \param outputSpacing The desired output spacing
-  \param outputSize The desired output size
+  \param outputSpacing The output spacing, always isotropic
   \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > outputSpacing,
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const typename TImageType::SpacingType outputSpacing,
     typename TImageType::SizeType outputSize, const std::string interpolator = "Linear")
   {
     std::string interpolator_wrap = interpolator;
@@ -1359,7 +1401,9 @@ namespace cbica
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const itk::Vector< double, TImageType::ImageDimension > outputSpacing, const std::string interpolator = "Linear")
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage,
+    const itk::Vector< double, TImageType::ImageDimension > outputSpacing,
+    const std::string interpolator = "Linear")
   {
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
     auto inputSpacing = inputImage->GetSpacing();
@@ -1392,7 +1436,8 @@ namespace cbica
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
-  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage, const float outputSpacing = 1.0, const std::string interpolator = "Linear")
+  typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage,
+    const float outputSpacing = 1.0, const std::string interpolator = "Linear")
   {
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
     auto inputSpacing = inputImage->GetSpacing();
@@ -1451,7 +1496,7 @@ namespace cbica
       }
     }
 
-    return ResampleImage< TImageType >(inputImage, outputSpacing, outputSize, interpolator);
+    return ResampleImage < TImageType >(inputImage, outputSpacing, outputSize, interpolator);
 
   }
 
@@ -1462,7 +1507,8 @@ namespace cbica
   \param sortResult Whether the output should be sorted in ascending order or not, defaults to true
   */
   template< class TImageType = ImageTypeFloat3D >
-  std::vector< typename TImageType::PixelType > GetUniqueValuesInImage(typename TImageType::Pointer inputImage, bool sortResult = true)
+  std::vector< typename TImageType::PixelType > GetUniqueValuesInImage(typename TImageType::Pointer inputImage, 
+    bool sortResult = true)
   {
     itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
 
@@ -1486,6 +1532,37 @@ namespace cbica
   }
 
   /**
+  \brief Get the unique value labels in an image
+
+  \param inputImage The input image
+  */
+  template< class TImageType = ImageTypeFloat3D >
+  std::map< int, typename TImageType::Pointer > GetUniqueLabelImagessFromImage(typename TImageType::Pointer inputImage)
+  {
+    /// fix this up
+    itk::ImageRegionConstIterator< TImageType > iterator(inputImage, inputImage->GetBufferedRegion());
+
+    std::vector< typename TImageType::PixelType > uniqueValues;
+    std::map< int, typename TImageType::Pointer > returnImages;
+
+    for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator)
+    {
+      auto currentValue = iterator.Get();
+
+      // if a new value has been found, initialize a new image
+      if (std::find(uniqueValues.begin(), uniqueValues.end(), currentValue) == uniqueValues.end())
+      {
+        uniqueValues.push_back(currentValue);
+        returnImages[currentValue] = CreateImage< TImageType >(inputImage);
+      }
+
+      returnImages[currentValue]->SetPixel(iterator.GetIndex(), 1);
+    }
+
+    return returnImages;
+  }
+
+  /**
   \brief Get Non-zero indeces of image
   */
   template< class TImageType = ImageTypeFloat3D >
@@ -1502,6 +1579,326 @@ namespace cbica
       }
     }
     return outputIndeces;
+  }
+
+  /**
+  \brief Get hausdorff distance between 2 labels
+
+  \param inputLabel_1 The first label file
+  \param inputLabel_2 The second label file
+  \param percentile The percentile value for hausdorff; defaults to 0.95
+  \return Hausdorff distance
+  */
+  template < typename TImageType = ImageTypeFloat3D >
+  float GetHausdorffDistance(const typename TImageType::Pointer input_1, const typename TImageType::Pointer input_2, float percentile = 0.95)
+  {
+    // sanity check for percentile
+    if (percentile > 1)
+    {
+      percentile = percentile / 100.0;
+    }
+    auto filter = HausdorffDistanceImageToImageMetric< TImageType, TImageType >::New();
+    filter->SetFixedImage(input_1);
+    filter->SetMovingImage(input_2);
+    filter->SetPercentile(percentile);
+
+    return filter->GetValue();
+  }
+
+  /**
+  \brief Get sensitivity and specificity between 2 labels
+
+  \param inputLabel_1 The first label file
+  \param inputLabel_2 The second label file
+  \return Map of metrics
+  */
+  template < typename TImageType = ImageTypeFloat3D >
+  std::map< std::string, float > GetSensitivityAndSpecificity(const typename TImageType::Pointer input_1, const typename TImageType::Pointer input_2)
+  {
+    std::map< std::string, float > returnStruct;
+
+    itk::ImageRegionConstIterator< TImageType > inputIterator(input_1, input_1->GetBufferedRegion()),
+      outputIterator(input_2, input_2->GetBufferedRegion());
+
+    std::vector< float > inputVector_1, inputVector_2;
+    // iterate through the entire input image and if the label value matches the input value,
+    // put '1' in the corresponding location of the output
+    for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator)
+    {
+      outputIterator.SetIndex(inputIterator.GetIndex());
+      inputVector_1.push_back(inputIterator.Get());
+      inputVector_2.push_back(outputIterator.Get());
+    }
+
+    auto temp_roc = cbica::ROC_Values(inputVector_1, inputVector_2);
+
+    returnStruct["Sensitivity"] = temp_roc["Sensitivity"];
+    returnStruct["Specificity"] = temp_roc["Specificity"];
+    returnStruct["Accuracy"] = temp_roc["Accuracy"];
+    returnStruct["Precision"] = temp_roc["Precision"];
+
+    return returnStruct;
+  }
+
+  /**
+  \brief Get the statistics between 2 labels
+
+  \param inputLabel_1 The first label file
+  \param inputLabel_2 The second label file
+  \return Map of various statistics and corresponding values
+  */
+  template < typename TImageType = ImageTypeFloat3D >
+  std::map< std::string, double > GetLabelStatistics(const typename TImageType::Pointer inputLabel_1,
+    const typename TImageType::Pointer inputLabel_2)
+  {
+    std::map< std::string, double > returnMap;
+
+    auto uniqueLabels = GetUniqueValuesInImage< TImageType >(inputLabel_1);
+    auto uniqueLabelsRef = GetUniqueValuesInImage< TImageType >(inputLabel_2);
+
+    // sanity check
+    if (uniqueLabels.size() != uniqueLabelsRef.size())
+    {
+      std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
+      return returnMap;
+    }
+    else
+    {
+      for (size_t i = 0; i < uniqueLabels.size(); i++)
+      {
+        if (uniqueLabels[i] != uniqueLabelsRef[i])
+        {
+          std::cerr << "The label values in input and reference image are not consistent.\n";
+          return returnMap;
+        }
+      }
+    }
+
+    auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
+
+    similarityFilter->SetSourceImage(inputLabel_1);
+    similarityFilter->SetTargetImage(inputLabel_2);
+    similarityFilter->Update();
+
+    returnMap["Overlap_Overall"] = similarityFilter->GetTotalOverlap();
+    //std::cout << "=== Entire Masked Area ===\n";
+    returnMap["Jaccard_Overall"] = similarityFilter->GetUnionOverlap();
+    returnMap["DICE_Overall"] = similarityFilter->GetMeanOverlap();
+    returnMap["VolumeSimilarity_Overall"] = similarityFilter->GetVolumeSimilarity();
+    returnMap["FalseNegativeError_Overall"] = similarityFilter->GetFalseNegativeError();
+    returnMap["FalsePositiveError_Overall"] = similarityFilter->GetFalsePositiveError();
+
+    if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
+    {
+      //std::cout << "=== Individual Labels ===\n";
+      //std::cout << "Property,Value\n";
+      for (size_t i = 0; i < uniqueLabels.size(); i++)
+      {
+        auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
+        returnMap["Overlap_Label" + uniqueLabels_string] = similarityFilter->GetTargetOverlap(uniqueLabels[i]);
+        returnMap["Jaccard_Label" + uniqueLabels_string] = similarityFilter->GetUnionOverlap(uniqueLabels[i]);
+        returnMap["DICE_Label" + uniqueLabels_string] = similarityFilter->GetMeanOverlap(uniqueLabels[i]);
+        returnMap["VolumeSimilarity_Label" + uniqueLabels_string] = similarityFilter->GetVolumeSimilarity(uniqueLabels[i]);
+        returnMap["FalseNegativeError_Label" + uniqueLabels_string] = similarityFilter->GetFalseNegativeError(uniqueLabels[i]);
+        returnMap["FalsePositiveError_Label" + uniqueLabels_string] = similarityFilter->GetFalsePositiveError(uniqueLabels[i]);
+      }
+    }
+
+    // overall stats
+    {
+      auto temp_roc = GetSensitivityAndSpecificity< TImageType >(inputLabel_1, inputLabel_2);
+
+      for (const auto &metric : temp_roc)
+      {
+        returnMap[metric.first + "_Overall"] = metric.second;
+      }
+
+      returnMap["Hausdorff95_Overall"] = GetHausdorffDistance< TImageType >(inputLabel_1, inputLabel_2, 0.95);
+    }
+
+    auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
+    auto inputLabelsImages_2 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
+    
+    for (const auto &label : inputLabelsImages_1)
+    {
+      if (label.first != 0) // we don't care about the background value
+      {
+        auto valueString = std::to_string(label.first);
+
+        auto temp_roc = GetSensitivityAndSpecificity< TImageType >(label.second, inputLabelsImages_2[label.first]);
+
+        for (const auto &metric : temp_roc)
+        {
+          returnMap[metric.first + "_" + valueString] = metric.second;
+        }
+
+        returnMap["Hausdorff95_" + valueString] = GetHausdorffDistance< TImageType >(label.second, inputLabelsImages_2[label.first], 0.95);
+      }
+
+    }    
+
+    return returnMap;
+  }
+
+  /**
+  \brief Get the BraTS statistics between 2 brain labels
+
+  Requires the following labesl to be initialized in both masks, otherwise the estimate is given as '0': 1,2,4
+
+  \param inputLabel_1 The first brain label file
+  \param inputLabel_2 The second brain label file
+  \return Map of various statistics and corresponding values
+  */
+  template < typename TImageType = ImageTypeFloat3D >
+  std::map< std::string, double > GetBraTSLabelStatistics(const typename TImageType::Pointer inputLabel_1,
+    const typename TImageType::Pointer inputLabel_2)
+  {
+    std::map< std::string, double > returnMap;
+
+    auto uniqueLabels = GetUniqueValuesInImage< TImageType >(inputLabel_1);
+    auto uniqueLabelsRef = GetUniqueValuesInImage< TImageType >(inputLabel_2);
+
+    // sanity check
+    if (uniqueLabels.size() != uniqueLabelsRef.size())
+    {
+      std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
+      return returnMap;
+    }
+    else
+    {
+      for (size_t i = 0; i < uniqueLabels.size(); i++)
+      {
+        if (uniqueLabels[i] != uniqueLabelsRef[i])
+        {
+          std::cerr << "The label values in input and reference image are not consistent.\n";
+          return returnMap;
+        }
+      }
+    }
+
+    // remove background
+    uniqueLabels.erase(uniqueLabels.begin());
+    uniqueLabelsRef.erase(uniqueLabelsRef.begin());
+
+    const std::vector< int > bratsValues = { 1,2,4 };
+    std::map< int, std::string > bratsLabels;
+    bratsLabels[1] = "NET";
+    bratsLabels[2] = "ED";
+    bratsLabels[4] = "ET";
+    std::vector< int > missingLabels, missingLabelsRef;
+
+    // check brats labels and populate missing labels to 
+    for (size_t i = 0; i < uniqueLabels.size(); i++)
+    {
+      if (uniqueLabels[i] != bratsValues[i])
+      {
+        std::cerr << "Missing BraTS label in Label_1: " << bratsValues[i] << "\n";
+        missingLabels.push_back(bratsValues[i]);
+      }
+      if (uniqueLabelsRef[i] != bratsValues[i])
+      {
+        std::cerr << "Missing BraTS label in Label_2: " << bratsValues[i] << "\n";
+        missingLabelsRef.push_back(bratsValues[i]);
+      }
+    }
+
+    auto inputLabelsImages_1 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_1);
+    auto inputLabelsImages_2 = GetUniqueLabelImagessFromImage< TImageType >(inputLabel_2);
+
+    // erase background label
+    inputLabelsImages_1.erase(inputLabelsImages_1.find(0));
+    inputLabelsImages_2.erase(inputLabelsImages_2.find(0));
+
+    // populate empty masks for the missing labels
+    for (size_t i = 0; i < missingLabels.size(); i++)
+    {
+      inputLabelsImages_1[missingLabels[i]] = CreateImage< TImageType >(inputLabel_1);
+    }
+    for (size_t i = 0; i < missingLabelsRef.size(); i++)
+    {
+      inputLabelsImages_2[missingLabelsRef[i]] = CreateImage< TImageType >(inputLabel_2);
+    }
+
+    // put individual labels in a single structure for easy processing
+    std::map< std::string, typename TImageType::Pointer > regionsToCompare_1, regionsToCompare_2;
+
+    for (const auto &label : inputLabelsImages_1)
+    {
+      regionsToCompare_1[bratsLabels[label.first]] = label.second;
+    }
+    for (const auto &label : inputLabelsImages_2)
+    {
+      regionsToCompare_2[bratsLabels[label.first]] = label.second;
+    }
+
+    // combine NET+ET to get TC and TC+ED to get WT
+    {
+      auto adder_1 = itk::AddImageFilter< TImageType >::New();
+      adder_1->SetInput1(regionsToCompare_1["NET"]);
+      adder_1->SetInput2(regionsToCompare_1["ET"]);
+      adder_1->Update();
+
+      auto adder_2 = itk::AddImageFilter< TImageType >::New();
+      adder_2->SetInput1(regionsToCompare_2["NET"]);
+      adder_2->SetInput2(regionsToCompare_2["ET"]);
+      adder_2->Update();
+
+      regionsToCompare_1["TC"] = adder_1->GetOutput();
+      regionsToCompare_1["TC"]->DisconnectPipeline();
+
+      regionsToCompare_2["TC"] = adder_2->GetOutput();
+      regionsToCompare_2["TC"]->DisconnectPipeline();
+
+
+      auto adder_1_WT = itk::AddImageFilter< TImageType >::New();
+      adder_1_WT->SetInput1(regionsToCompare_1["ED"]);
+      adder_1_WT->SetInput2(regionsToCompare_1["TC"]);
+      adder_1_WT->Update();
+
+      auto adder_2_WT = itk::AddImageFilter< TImageType >::New();
+      adder_2_WT->SetInput1(regionsToCompare_2["ED"]);
+      adder_2_WT->SetInput2(regionsToCompare_2["TC"]);
+      adder_2_WT->Update();
+
+      regionsToCompare_1["WT"] = adder_1_WT->GetOutput();
+      regionsToCompare_1["WT"]->DisconnectPipeline();
+
+      regionsToCompare_2["WT"] = adder_2_WT->GetOutput();
+      regionsToCompare_2["WT"]->DisconnectPipeline();
+    }
+
+    // iterate over all regions (including missing brats regions in either image) and populate statistics
+    for (const auto &region : regionsToCompare_1)
+    {
+      auto labelString = region.first; // the label for stats
+      // get the images to compare up front
+      auto imageToCompare_1 = region.second;
+      auto imageToCompare_2 = regionsToCompare_2[labelString];
+
+      auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
+
+      similarityFilter->SetSourceImage(imageToCompare_1);
+      similarityFilter->SetTargetImage(imageToCompare_2);
+      similarityFilter->Update();
+
+      returnMap["Overlap_" + labelString] = similarityFilter->GetTotalOverlap();
+      returnMap["Jaccard_" + labelString] = similarityFilter->GetUnionOverlap();
+      returnMap["DICE_" + labelString] = similarityFilter->GetMeanOverlap();
+      returnMap["VolumeSimilarity_" + labelString] = similarityFilter->GetVolumeSimilarity();
+      returnMap["FalseNegativeError_" + labelString] = similarityFilter->GetFalseNegativeError();
+      returnMap["FalsePositiveError_" + labelString] = similarityFilter->GetFalsePositiveError();
+
+      auto temp_roc = GetSensitivityAndSpecificity< TImageType >(imageToCompare_1, imageToCompare_2);
+
+      for (const auto &metric : temp_roc)
+      {
+        returnMap[metric.first + "_" + labelString] = metric.second;
+      }
+
+      returnMap["Hausdorff95_" + labelString] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
+    }
+
+    return returnMap;
   }
 
 }

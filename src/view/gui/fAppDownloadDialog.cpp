@@ -12,23 +12,9 @@ fAppDownloadDialog::fAppDownloadDialog()
   this->setModal(true); // this is a pre-processing routine and therefore should be modal
   this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-  // progressDialog = new QProgressDialog(this);
-
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
-  // connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputDirectory()));
-  // connect(modelImageButton, SIGNAL(clicked()), this, SLOT(SelectModelDirectory()));
-  // connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
-  // connect(skullStrippingButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
-  // connect(customButton, SIGNAL(toggled(bool)), this, SLOT(SetDefaultModel()));
-  // //connect(brainTumorSegmentationButton, SIGNAL(toggled(bool)), this, [this] { SetDefaultModel(fAppDownloadDialog::Tumor); });
 
-  // outputDirName->setText(mInputPathName);
-  // m_baseModelDir = cbica::normPath(getCaPTkDataDir() + "/deepMedic/saved_models/");
-
-  // m_exe = getApplicationPath("DeepMedic").c_str();
-
-  // m_dataDir = getCaPTkDataDir().c_str();
 }
 fAppDownloadDialog::~fAppDownloadDialog()
 {
@@ -55,8 +41,8 @@ void fAppDownloadDialog::ConfirmButtonPressed()
     if (fileName.isEmpty())
         fileName = "index.html";
 
-    auto fullPath = downloadPath + fileName;
-    //   ShowErrorMessage(fullPath.toStdString(), this);
+    fullPath = downloadPath + fileName;
+    //   
 
     if (QFile::exists(fullPath)) {
         if (QMessageBox::question(this, tr("HTTP"),
@@ -84,12 +70,8 @@ void fAppDownloadDialog::ConfirmButtonPressed()
     progressDialog->setWindowTitle(tr("HTTP"));
     progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
 
-    // download button disabled after requesting download
-    // ui->downloadButton->setEnabled(false);
 
     startRequest(url);
-
-    emit doneDownload();
 
     this->close();
 }
@@ -145,62 +127,61 @@ void fAppDownloadDialog::updateDownloadProgress(qint64 bytesRead, qint64 totalBy
 void fAppDownloadDialog::httpDownloadFinished()
 {
   // when canceled
-  if (httpRequestAborted) {
-      if (file) {
-          file->close();
-          file->remove();
-          delete file;
-          file = 0;
-      }
-      reply->deleteLater();
-      progressDialog->hide();
-      return;
-  }
+    if (httpRequestAborted) {
+        if (file) {
+            file->close();
+            file->remove();
+            delete file;
+            file = 0;
+        }
+        reply->deleteLater();
+        progressDialog->hide();
+        return;
+    }
 
-  // download finished normally
-  progressDialog->hide();
-  file->flush();
-  file->close();
+    // download finished normally
+    progressDialog->hide();
+    file->flush();
+    file->close();
 
-  // get redirection url
-  QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
-  if (reply->error()) {
-      file->remove();
-      QMessageBox::information(this, tr("HTTP"),
+    // get redirection url
+    QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    if (reply->error()) {
+        file->remove();
+        QMessageBox::information(this, tr("HTTP"),
                                 tr("Download failed: %1.")
                                 .arg(reply->errorString()));
-      // ui->downloadButton->setEnabled(true  );
-  } else if (!redirectionTarget.isNull()) {
-      QUrl newUrl = url.resolved(redirectionTarget.toUrl());
-      if (QMessageBox::question(this, tr("HTTP"),
+        // ui->downloadButton->setEnabled(true  );
+    } else if (!redirectionTarget.isNull()) {
+        QUrl newUrl = url.resolved(redirectionTarget.toUrl());
+        if (QMessageBox::question(this, tr("HTTP"),
                                 tr("Redirect to %1 ?").arg(newUrl.toString()),
                                 QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
-          url = newUrl;
-          reply->deleteLater();
-          file->open(QIODevice::WriteOnly);
-          file->resize(0);
-          startRequest(url);
-          return;
-      }
-  } else {
-      QString fileName = QFileInfo(QUrl(qInputLink).path()).fileName();
-      // ui->statusLabel->setText(tr("Downloaded %1 to %2.").arg(fileName).arg(QDir::currentPath()));
-      // ui->downloadButton->setEnabled(true);
-  }
+            url = newUrl;
+            reply->deleteLater();
+            file->open(QIODevice::WriteOnly);
+            file->resize(0);
+            startRequest(url);
+            return;
+        }
+    } else {
+        QString fileName = QFileInfo(QUrl(qInputLink).path()).fileName();
 
-  reply->deleteLater();
-  reply = 0;
-  delete file;
-  file = 0;
-  manager = 0;
+    }
+
+    reply->deleteLater();
+    reply = 0;
+    delete file;
+    file = 0;
+    manager = 0;
+
+    emit doneDownload(fullPath.toStdString());
 }
 
 // During the download progress, it can be canceled
 void fAppDownloadDialog::cancelDownload()
 {
-    // ui->statusLabel->setText(tr("Download canceled."));
     httpRequestAborted = true;
     reply->abort();
-    // ui->downloadButton->setEnabled(true);
     this->close();
 }

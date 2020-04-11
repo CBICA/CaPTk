@@ -212,12 +212,6 @@ inline QString getSaveFile(QWidget *parent, const std::string inputPath, const s
 
 inline std::string getApplicationDownloadPath(std::string appName)
 {
-  const std::string downloadFolder = cbica::getUserHomeDirectory() + "/." + std::string(PROJECT_NAME) + "/" + std::string(PROJECT_VERSION) + "_apps/";
-
-  if (!cbica::directoryExists(downloadFolder)) {
-    cbica::createDir(downloadFolder);
-  }
-
   std::string winExt
 #if WIN32
     = ".exe"

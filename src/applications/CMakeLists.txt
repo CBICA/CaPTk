@@ -230,33 +230,33 @@ ELSE()
   SET( PLATFORM_STRING "linux" )
 ENDIF()
 
-# SET( FILENAME_TO_EXTRACT "binaries_${PLATFORM_STRING}")
-# # SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps/${PLATFORM_STRING}.zip" )
-# # SET( DOWNLOAD_LINK "https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
-# # SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
+SET( FILENAME_TO_EXTRACT "binaries_${PLATFORM_STRING}")
+# SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps/${PLATFORM_STRING}.zip" )
+SET( DOWNLOAD_LINK "https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
+SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
 
 SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
 
 # putting this condition so that the extraction doesn't happen every single time
 IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
 
-#   # IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
+  IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
   
-#   #   # copy from LFS folder
-#   #   IF( EXISTS ${LFS_FILE_TO_CHECK} )
-#   #     CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
-#   #   ENDIF()
+    # copy from LFS folder
+    IF( EXISTS ${LFS_FILE_TO_CHECK} )
+      CONFIGURE_FILE( ${LFS_FILE_TO_CHECK} ${FILE_TO_EXTRACT} )
+    ENDIF()
 
-#   #   # do not re-download if the LFS fetch worked
-#   #   IF(NOT EXISTS ${FILE_TO_EXTRACT})
-#   #     # download exe from url
-#   #     MESSAGE( STATUS "Downloading pre-compiled external applications" )
-#   #     FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
-#   #     IF(NOT STATUS_CODE EQUAL 0)
-#   #       MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
-#   #     ENDIF()
-#   #   ENDIF()
-#   # ENDIF()
+    # do not re-download if the LFS fetch worked
+    IF(NOT EXISTS ${FILE_TO_EXTRACT})
+      # download exe from url
+      MESSAGE( STATUS "Downloading pre-compiled external applications" )
+      FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+      IF(NOT STATUS_CODE EQUAL 0)
+        MESSAGE(FATAL_ERROR "Failed to download Precompiled packages. Status=${STATUS_CODE}")
+      ENDIF()
+    ENDIF()
+  ENDIF()
 
   FILE(MAKE_DIRECTORY ${DOWNLOADED_APPS_DIR})
 
@@ -292,8 +292,8 @@ FOREACH(external_app ${EXTERNAL_APPS})
 
 ENDFOREACH()
 
-# SUBDIRLIST(SUBDIRECTORIES ${SOURCE_APPLICATIONS_PATH})
-# INCLUDE(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+SUBDIRLIST(SUBDIRECTORIES ${SOURCE_APPLICATIONS_PATH})
+INCLUDE(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 FOREACH(subdir ${SUBDIRECTORIES})
 
@@ -383,82 +383,83 @@ FOREACH(subdir ${SUBDIRECTORIES})
         ENDIF()
       ENDIF()
       
-#       INSTALL(CODE "execute_process(COMMAND dos2unix ${SUBDIRPATH}/bin/libra)")
-#       INSTALL(FILES ${SUBDIRPATH}/bin/libra
-#         DESTINATION bin
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#       INSTALL(FILES ${SUBDIRPATH}/libexec/libra
-#         DESTINATION libexec
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#       INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
-#         DESTINATION libexec
-#         # PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
-#         #USE_SOURCE_PERMISSIONS
-#       )
-#     ENDIF()
+      INSTALL(CODE "execute_process(COMMAND dos2unix ${SUBDIRPATH}/bin/libra)")
+      INSTALL(CODE "execute_process(COMMAND chmod 755 matlab_helper ${SUBDIRPATH}/MCR/v84/bin/glnxa64/matlab_helper)")
+      INSTALL(FILES ${SUBDIRPATH}/bin/libra
+        DESTINATION bin
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+      INSTALL(FILES ${SUBDIRPATH}/libexec/libra
+        DESTINATION libexec
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+      INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
+        DESTINATION libexec
+        # PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
+        USE_SOURCE_PERMISSIONS
+      )
+    ENDIF()
 
-#   ENDIF()
+  ENDIF()
 
-#   IF (BUILD_ITKSNAP AND (${subdir} STREQUAL "itksnap"))
+  IF (BUILD_ITKSNAP AND (${subdir} STREQUAL "itksnap"))
 
-#     SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} itksnap" CACHE STRING "Available stand-alone apps" FORCE )
-#     # ALSO add this to CAPTK_BRAIN_APPS
+    SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} itksnap" CACHE STRING "Available stand-alone apps" FORCE )
+    # ALSO add this to CAPTK_BRAIN_APPS
 
-#     IF (WIN32)
-#       FILE(GLOB allFiles ${SUBDIRPATH}/itksnap/*.*)
-#       INSTALL(FILES ${SUBDIRPATH}/itksnap.bat
-#         DESTINATION bin
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#       INSTALL(DIRECTORY ${SUBDIRPATH}/itksnap
-#         DESTINATION bin
-#       )
-#     ELSEIF (APPLE)
+    IF (WIN32)
+      FILE(GLOB allFiles ${SUBDIRPATH}/itksnap/*.*)
+      INSTALL(FILES ${SUBDIRPATH}/itksnap.bat
+        DESTINATION bin
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+      INSTALL(DIRECTORY ${SUBDIRPATH}/itksnap
+        DESTINATION bin
+      )
+    ELSEIF (APPLE)
 
-#       # SET(ITKSNAP_EXE "${SUBDIRPATH}/ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
-#       # SET(CAPTK_MACOSX_BUNDLE_FILES ${CAPTK_MACOSX_BUNDLE_FILES} ${ITKSNAP_EXE})
+      # SET(ITKSNAP_EXE "${SUBDIRPATH}/ITK-SNAP.app/Contents/MacOS/ITK-SNAP")
+      # SET(CAPTK_MACOSX_BUNDLE_FILES ${CAPTK_MACOSX_BUNDLE_FILES} ${ITKSNAP_EXE})
 
-#     ELSE()
-#       INSTALL( FILES ${SUBDIRPATH}/bin/itksnap
-#         DESTINATION bin
-#         #FILES_MATCHING
-#         #PATTERN "*.*"
-#         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#       )
-#       SUBDIRLIST(SUBDIRECTORIES ${SUBDIRPATH}/lib)
-#       # MESSAGE("[DEBUG] ItkSnap subdirs:${SUBDIRECTORIES}")
-#       FOREACH(itkSnapLib ${SUBDIRECTORIES})
+    ELSE()
+      INSTALL( FILES ${SUBDIRPATH}/bin/itksnap
+        DESTINATION bin
+        #FILES_MATCHING
+        #PATTERN "*.*"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+      SUBDIRLIST(SUBDIRECTORIES ${SUBDIRPATH}/lib)
+      # MESSAGE("[DEBUG] ItkSnap subdirs:${SUBDIRECTORIES}")
+      FOREACH(itkSnapLib ${SUBDIRECTORIES})
 
-#         SUBDIRLIST(SUBDIRECTORIES_SNAP ${SUBDIRPATH}/lib/${itkSnapLib})
+        SUBDIRLIST(SUBDIRECTORIES_SNAP ${SUBDIRPATH}/lib/${itkSnapLib})
 
-#         # install all directories inside
-#         FOREACH(itkSnapLib_subDirs ${SUBDIRECTORIES_SNAP})
-#           INSTALL(DIRECTORY ${SUBDIRPATH}/lib/${itkSnapLib}/${itkSnapLib_subDirs}
-#            DESTINATION lib/${itkSnapLib}
-#            DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#           )
-#         ENDFOREACH()
+        # install all directories inside
+        FOREACH(itkSnapLib_subDirs ${SUBDIRECTORIES_SNAP})
+          INSTALL(DIRECTORY ${SUBDIRPATH}/lib/${itkSnapLib}/${itkSnapLib_subDirs}
+           DESTINATION lib/${itkSnapLib}
+           DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+          )
+        ENDFOREACH()
         
-#         # find stand-alone files and install them separately
-#         FILE( GLOB FILES_SNAP
-#           LIST_DIRECTORIES FALSE
-#           "${SUBDIRPATH}/lib/${itkSnapLib}/*"
-#         )
+        # find stand-alone files and install them separately
+        FILE( GLOB FILES_SNAP
+          LIST_DIRECTORIES FALSE
+          "${SUBDIRPATH}/lib/${itkSnapLib}/*"
+        )
 
-#         FOREACH(itkSnapLib_files ${FILES_SNAP})
-#           INSTALL(
-#             FILES ${itkSnapLib_files}
-#             DESTINATION lib/${itkSnapLib}
-#             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-#           )
-#         ENDFOREACH()
+        FOREACH(itkSnapLib_files ${FILES_SNAP})
+          INSTALL(
+            FILES ${itkSnapLib_files}
+            DESTINATION lib/${itkSnapLib}
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+          )
+        ENDFOREACH()
 
-#       ENDFOREACH()
-#     ENDIF()
+      ENDFOREACH()
+    ENDIF()
 
-#   ENDIF()
+  ENDIF()
   
   IF (${subdir} STREQUAL "theia")
     IF(WIN32)

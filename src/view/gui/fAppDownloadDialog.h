@@ -37,6 +37,7 @@ public:
   // std::string m_baseModelDir;
 
   QString downloadPath;
+  QString fullPath;
   std::string downloadLink;
 
   QUrl url;
@@ -75,8 +76,7 @@ public slots:
   void cancelDownload();
 
 signals:
-  void doneDownload();
+  void doneDownload(std::string fullPath);
 };
-
 
 #endif

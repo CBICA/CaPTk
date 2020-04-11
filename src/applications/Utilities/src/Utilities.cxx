@@ -48,6 +48,7 @@ enum AvailableAlgorithms
   ImageStack2Join,
   JoinedImage2Stack,
   LabelSimilarity,
+  LabelSimilarityBraTS,
   Hausdorff
 };
 
@@ -255,9 +256,14 @@ int algorithmsRunner()
   }
   else if (requestedAlgorithm == Nifti2Dicom)
   {
+    std::cout << "!!! WARNING: " <<
+      "Trying to write DICOM from NIfTI is dependent on the fact that the reference DICOM and NIfTI are in the same physical space and describe the same organ type.\n";
     auto referenceDicom = targetImageFile;
     cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
-    std::cout << "Finished writing the DICOM file.\n";
+    if (cbica::exists(outputImageFile))
+    {
+      std::cout << "Finished writing the DICOM file.\n";
+    }
   }
   else if (requestedAlgorithm == Nifti2DicomSeg)
   {
@@ -312,7 +318,7 @@ int algorithmsRunner()
       using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
       cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
     }
-    if (targetImageFile == "ushort")
+    else if (targetImageFile == "ushort")
     {
       using DefaultPixelType = unsigned short;
       using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
@@ -639,59 +645,33 @@ int algorithmsRunner()
     using DefaultImageType = itk::Image< unsigned int, TImageType::ImageDimension >;
     auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
     auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
-    auto uniqueLabels = cbica::GetUniqueValuesInImage< DefaultImageType >(inputImage);
-    auto uniqueLabelsRef = cbica::GetUniqueValuesInImage< DefaultImageType >(referenceImage);
 
-    // sanity check
-    if (uniqueLabels.size() != uniqueLabelsRef.size())
+    auto stats = cbica::GetLabelStatistics< DefaultImageType >(inputImage, referenceImage);
+
+    std::cout << "Metric,Value\n";
+    for (const auto &stat : stats)
     {
-      std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
-      return EXIT_FAILURE;
-    }
-    else
-    {
-      for (size_t i = 0; i < uniqueLabels.size(); i++)
-      {
-        if (uniqueLabels[i] != uniqueLabelsRef[i])
-        {
-          std::cerr << "The label values in input and reference image are not consistent.\n";
-          return EXIT_FAILURE;
-        }
-      }
+      std::cout << stat.first << "," << stat.second << "\n";
     }
 
-    auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< DefaultImageType >::New();
+    return EXIT_SUCCESS;
+  }
+  else if (requestedAlgorithm == LabelSimilarityBraTS)
+  {
+    // this filter only works on unsigned int type
+    using DefaultImageType = itk::Image< unsigned int, TImageType::ImageDimension >;
+    auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
+    auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
 
-    similarityFilter->SetSourceImage(inputImage);
-    similarityFilter->SetTargetImage(referenceImage);
-    similarityFilter->Update();
+    auto stats = cbica::GetBraTSLabelStatistics< DefaultImageType >(inputImage, referenceImage);
 
-    //std::cout << "=== Entire Masked Area ===\n";
-    std::cout << "Property,Value\n";
-    std::cout << "TotalOverlap," << similarityFilter->GetTotalOverlap() << "\n";
-    std::cout << "Union(Jaccard)_Overall," << similarityFilter->GetUnionOverlap() << "\n";
-    std::cout << "Mean(DICE)_Overall," << similarityFilter->GetMeanOverlap() << "\n";
-    std::cout << "VolumeSimilarity_Overall," << similarityFilter->GetVolumeSimilarity() << "\n";
-    std::cout << "FalseNegativeError_Overall," << similarityFilter->GetFalseNegativeError() << "\n";
-    std::cout << "FalsePositiveError_Overall," << similarityFilter->GetFalsePositiveError() << "\n";
-
-    if (uniqueLabels.size() > 2) // basically if there is something more than 0 and 1
+    std::cout << "Metric,Value\n";
+    for (const auto &stat : stats)
     {
-      //std::cout << "=== Individual Labels ===\n";
-      //std::cout << "Property,Value\n";
-      for (size_t i = 0; i < uniqueLabels.size(); i++)
-      {
-        auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
-        std::cout << "LabelValue," << uniqueLabels_string << "\n";
-        std::cout << "TargetOverlap_Label" + uniqueLabels_string + "," << similarityFilter->GetTargetOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Union(Jaccard)_Label" + uniqueLabels_string + "," << similarityFilter->GetUnionOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "Mean(DICE)_Label" + uniqueLabels_string + "," << similarityFilter->GetMeanOverlap(uniqueLabels[i]) << "\n";
-        std::cout << "VolumeSimilarity_Label" + uniqueLabels_string + "," << similarityFilter->GetVolumeSimilarity(uniqueLabels[i]) << "\n";
-        std::cout << "FalseNegativeError_Label" + uniqueLabels_string + "," << similarityFilter->GetFalseNegativeError(uniqueLabels[i]) << "\n";
-        std::cout << "FalsePositiveError_Label" + uniqueLabels_string + "," << similarityFilter->GetFalsePositiveError(uniqueLabels[i]) << "\n";
-      }
+      std::cout << stat.first << "," << stat.second << "\n";
     }
-      return EXIT_SUCCESS;
+
+    return EXIT_SUCCESS;
   }
   else if (requestedAlgorithm == Hausdorff)
   {
@@ -837,12 +817,12 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("thO", "threshOtsu", cbica::Parameter::BOOLEAN, "0-1", "Whether to do Otsu threshold", "Generates a binary image which has been thresholded using Otsu", "Use '-tOI' to set Outside and Inside Values", "Optional mask to localize Otsu search area");
   parser.addOptionalParameter("tBn", "thrshBinary", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensity BELOW and ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Default for OUTSIDE_VALUE=0");
   parser.addOptionalParameter("tOI", "threshOutIn", cbica::Parameter::STRING, "Outside_Value,Inside_Value", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
-  parser.addOptionalParameter("cov", "convert", cbica::Parameter::BOOLEAN, "0-1", "The values that will go inside and outside the thresholded region", "Defaults to '1'");
   parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-i2w 10,20,30'");
   parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
   parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
   parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
+  parser.addOptionalParameter("lsb", "lSimilarityBrats", cbica::Parameter::FILE, "NIfTI Reference", "Calculate BraTS similarity measures for 2 brain labels", "Pass the reference map after '-lsb' and the comparison will be done with '-i'", "Assumed labels in image are '1,2,4' and missing labels will be populate with '0'");
   parser.addOptionalParameter("hd", "hausdorffDist", cbica::Parameter::FILE, "NIfTI Reference", "Calculate the Hausdorff Distance for the input image and", "the one passed after '-hd'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
@@ -857,8 +837,9 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100 -tOI -100,10000", "Above & Below Threshold between 50 and 100 with outside value -100 and inside value 10000");
   parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output -j2e 1", "Extract the joined image into its series");
   parser.addExampleUsage("-i C:/test/ -o C:/output.nii.gz -e2j 1.5", "Join the extracted images into a single image with spacing in the new dimension as 1.5");
-  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -r 100 -rr 1.0,1.0,1.0 -ri LINEAR", "Calculates an isotropic image from the input with spacing '1.0' in all dimensions using linear interpolation");
-  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -r 100 -rf C:/reference.nii.gz -ri LINEAR", "Calculates an isotropic image from the input with spacing from the reference image using linear interpolation");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0 -ri LINEAR", "Calculates an isotropic image from the input with spacing '1.0' in all dimensions using linear interpolation");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR", "Calculates an anisotropic image from the input with spacing '1.0' in x, '2.0' in y and '3.0' in z using linear interpolation");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR", "Calculates an isotropic image from the input with spacing from the reference image using linear interpolation");
   parser.addExampleUsage("-i C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz", "Calculates Total/Union/Mean Overlap (different DICE coefficients), Volume Similarity, False Positive/Negative Error for all labels");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
@@ -1212,6 +1193,11 @@ int main(int argc, char** argv)
     requestedAlgorithm = LabelSimilarity;
     parser.getParameterValue("ls", referenceMaskForSimilarity);
   }
+  else if (parser.isPresent("lsb"))
+  {
+  requestedAlgorithm = LabelSimilarityBraTS;
+  parser.getParameterValue("lsb", referenceMaskForSimilarity);
+  }
   else if (parser.isPresent("hd"))
   {
     requestedAlgorithm = Hausdorff;
@@ -1231,6 +1217,12 @@ int main(int argc, char** argv)
       std::cerr << "Images are in different spaces.\n";
       return EXIT_FAILURE;
     }
+  }
+
+  if (!cbica::isFile(inputImageFile))
+  {
+    std::cerr << "Input file '" << inputImageFile << "' not found.\n";
+    return EXIT_FAILURE;
   }
   auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
@@ -1313,7 +1305,7 @@ int main(int argc, char** argv)
       cbica::splitFileName(outputImageFile, path, base, ext);
       if (ext.find(".nii") != std::string::npos)
       {
-        std::cerr << "WARNING: NIfTI files do support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
+        std::cerr << "WARNING: NIfTI files do NOT support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
       }
       if (ext != ".mha")
       {

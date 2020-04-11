@@ -147,6 +147,14 @@ fHelpDialog::fHelpDialog()
   toolbar->addWidget(zoomValueLabel);
   toolbar->addWidget(percentLabel);
   toolbar->addSpacing(800);
+
+  // set policy for the webview to expand vertically.
+  QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
+  sizePolicy1.setHorizontalStretch(0);
+  sizePolicy1.setVerticalStretch(0);
+  sizePolicy1.setHeightForWidth(m_webView->sizePolicy().hasHeightForWidth());
+  m_webView->setSizePolicy(sizePolicy1);
+
   mainLayout->addLayout(toolbar);
   mainLayout->addWidget(m_webView);
 

@@ -150,9 +150,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 	}
 	return QualifiedSubjects;
 }
-int SurvivalPredictionOnExistingModel(const std::string modeldirectory,
-	const std::string inputdirectory,
-	const std::string outputdirectory)
+int SurvivalPredictionOnExistingModel(const std::string modeldirectory,const std::string inputdirectory,const std::string outputdirectory)
 {
 	std::cout << "Module loaded: Survival Prediction on Existing Model:" << std::endl;
 	std::vector<double> finalresult;

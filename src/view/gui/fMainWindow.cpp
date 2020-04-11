@@ -17,7 +17,7 @@
 #include "EGFRvIIISurrogateIndex.h"
 #include "TrainingModule.h"
 #include "GeodesicSegmentation.h"
-#include "N3BiasCorrection.h"
+#include "BiasCorrection.hpp"
 #include "SusanDenoising.h"
 #include "WhiteStripe.h"
 #include "PerfusionDerivatives.h"
@@ -71,6 +71,10 @@
 #include "yaml-cpp/yaml.h"
 
 #include <QFile>
+
+// #ifdef _WIN32
+//   #include "elzip.hpp"
+// #endif
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
@@ -267,11 +271,11 @@ fMainWindow::fMainWindow()
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
   this->m_toolTabdock->setWindowTitle("Double click to undock");
 
-  // Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
+//   Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
   connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
   connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
 
-  //! automatic undock on low resolution
+//  ! automatic undock on low resolution
   //! to be tested thoroughly
   QScreen *scr = QGuiApplication::primaryScreen();
   //!if primary screen resolution is lower than 1200x1024(any of x,y values)
@@ -537,9 +541,13 @@ fMainWindow::fMainWindow()
   mProjectVariant = std::string(PROJECT_VARIANT);
 
   connect(featurePanel, SIGNAL(helpClicked_FeaUsage(std::string)), this, SLOT(help_contextual(std::string)));
-  connect(&registrationPanel, SIGNAL(Registrationsignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)), this, SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, bool, std::string, bool, std::string, std::string)));
+  connect(&registrationPanel, 
+    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)),
+    this, 
+    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
+  cbica::createDir(downloadFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
   if (cbica::directoryExists(m_tempFolderLocation))
   {
@@ -601,12 +609,8 @@ fMainWindow::fMainWindow()
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
-<<<<<<< HEAD
-=======
-  connect(menuAppDownload, SIGNAL(triggered(QAction*)), this, SLOT(appDownload(QAction*)));
 
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
->>>>>>> 340c1299cc7476570687a0d04c0a352b87f87fe3
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
@@ -916,7 +920,7 @@ fMainWindow::fMainWindow()
 
   connect(&whiteStripeNormalizer, SIGNAL(RunWhiteStripe(double, int, int, int, double, double, int, bool, const std::string)), this, SLOT(CallWhiteStripe(double, int, int, int, double, double, int, bool, const std::string)));
 
-  connect(&atlasPanel, SIGNAL(GeneratePopualtionAtlas(const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallGeneratePopualtionAtlas(const std::string, const std::string, const std::string, const std::string)));
+  connect(&atlasPanel, SIGNAL(GeneratePopualtionAtlas(const std::string, const std::string, const std::string)), this, SLOT(CallGeneratePopualtionAtlas(const std::string, const std::string, const std::string)));
 
   connect(&nodulePanel, SIGNAL(SBRTNoduleParamReady(const std::string, const int)), this, SLOT(CallSBRTNodule(const std::string, const int)));
 
@@ -1180,28 +1184,22 @@ void fMainWindow::help_Download(QAction* action)
 
 void fMainWindow::appDownload(std::string currentApp)
 {
-  const std::string downloadFolder = cbica::getUserHomeDirectory() + "/." + std::string(PROJECT_NAME) + "/" + std::string(PROJECT_VERSION) + "_apps/";
-
   std::string downloadLink = m_appDownloadConfigs["apps"][currentApp]["Link"].as<std::string>();
 
   appDownloadDialog.SetDownloadPath(downloadFolder);
   appDownloadDialog.SetDownloadLink(downloadLink);
   appDownloadDialog.exec();
 
-  QTimer timer;
-  timer.setSingleShot(true);
-  QEventLoop loop;
-  connect( &appDownloadDialog, SIGNAL(doneDownload()), &loop, &QEventLoop::quit );
-  connect( &timer, &QTimer::timeout, &loop, &QEventLoop::quit );
-  timer.start(10000);
-  loop.exec();
+  connect( &appDownloadDialog, SIGNAL(doneDownload(std::string)), this, SLOT(unzipArchive(std::string)));    
+}
 
-  // if(timer.isActive())
-  //     // qDebug("encrypted");
-      
-  // else
-  //     // qDebug("timeout");
-    
+void fMainWindow::unzipArchive(std::string fullPath) 
+{
+// #ifdef _WIN32
+//   elz::extractZip(fullPath, downloadFolder);
+// #else
+//   std::system(("unzip " + fullPath + " -d " + downloadFolder).c_str());
+// #endif
 }
 
 void fMainWindow::help_BugTracker()
@@ -4337,9 +4335,7 @@ bool fMainWindow::CheckCompletenessOfInputDataForEGFR(bool & t1ceDataPresent, bo
   if (t1ceDataPresent == false)
     msg = msg + "\n" + "T1-Gd data.";
   if (t2flairDataPresent == false)
-  {
     msg = msg + "\n" + "T2-FLAIR data.";
-  }
   if (perfusionDataPresent == false)
     msg = msg + "\n" + "DSC-MRI data.";
   if (mCurrentNearPoints == 0)
@@ -4509,16 +4505,11 @@ void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, 
 }
 
 
-void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputdirectory)
+void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputFileName, const std::string inputatlas, const std::string outputdirectory)
 {
-  if (!cbica::isDir(inputdirectory))
+  if (!cbica::isFile(inputFileName))
   {
-    ShowErrorMessage("Input directory passed is not a valid directory, please re-check", this);
-    return;
-  }
-  if (!cbica::isFile(inputlabel))
-  {
-    ShowErrorMessage("Input Label passed is not a valid file, please re-check", this);
+    ShowErrorMessage("Input Batch file passed is not a valid file, please re-check", this);
     return;
   }
   if (!cbica::isFile(inputatlas))
@@ -4526,7 +4517,99 @@ void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputdirectory, 
     ShowErrorMessage("Input Atlas passed is not a valid file, please re-check", this);
     return;
   }
-  std::vector<typename ImageTypeFloat3D::Pointer> atlases = mPopulationAtlas.GeneratePopualtionAtlas(inputdirectory, inputlabel, inputatlas, outputdirectory);
+  //read and store the entire data of csv file
+  std::vector< std::vector < std::string > > allRows; // store the entire data of the CSV file as a vector of columns and rows (vector< rows <cols> >)
+  std::string  inputFile = cbica::dos2unix(inputFileName, outputdirectory);
+  std::ifstream inFile(inputFile.c_str());
+  std::string csvPath = cbica::getFilenamePath(inputFile);
+  while (inFile.good())
+  {
+    std::string line;
+    std::getline(inFile, line);
+    line.erase(std::remove(line.begin(), line.end(), '"'), line.end());
+    if (!line.empty())
+    {
+      allRows.push_back(cbica::stringSplit(line, ","));
+    }
+  }
+  inFile.close();
+  // sanity check to make sure that the file is not empty
+  if (allRows.size() == 0)
+  {
+    ShowErrorMessage("There is no data in the given file: " +inputFileName +" please re-check", this);
+    return;
+  } 
+  //put the data in respective vectors
+  std::vector< std::string > patient_ids, image_paths, atlas_labels;
+  for (int j = 1; j < allRows.size(); j++)
+  {
+    for (size_t k = 0; k < allRows[0].size(); k++)
+    {
+      auto check_wrap = allRows[0][k];
+      std::transform(check_wrap.begin(), check_wrap.end(), check_wrap.begin(), ::tolower);
+
+      if (check_wrap == "patient_ids")
+        patient_ids.push_back(allRows[j][k]);
+      else if (check_wrap == "images")
+        image_paths.push_back(allRows[j][k]);
+      else if (check_wrap == "atlas_labels")
+        atlas_labels.push_back(allRows[j][k]);
+    }
+  }
+
+  // sanity check to make sure that all patient ids have corresponding atlas numbers and paths
+  if (image_paths.size() != patient_ids.size() || image_paths.size() != atlas_labels.size())
+  {
+    ShowErrorMessage("There is a mismatch in the number of patinet ids, images, and atlas identifiers.", this);
+    return;
+  }
+  for (int j = 0; j < patient_ids.size(); j++)
+    std::cout << patient_ids[j] << image_paths[j] << atlas_labels[j] << std::endl;
+
+  //convert atlas labels from string to numbers
+  std::vector<int> atlas_labels_numbers;
+  for (int i = 0; i < atlas_labels.size(); i++)
+    atlas_labels_numbers.push_back(std::stoi(atlas_labels[i]));
+
+
+  //find number of atlas in the input file. 
+  //atlas numbers should in ascending order like, 1,2,3,....,n
+  int no_of_atlases = 0;
+  for (int i = 0; i < atlas_labels.size(); i++)
+  {
+    if (atlas_labels_numbers[i] > no_of_atlases)
+      no_of_atlases = atlas_labels_numbers[i];
+  }
+  if (no_of_atlases == 0)
+  {
+    ShowErrorMessage("Please specify atleast one label for the atlases.", this);
+    return;
+  }
+  std::cout << "Number of identified atlases: " << no_of_atlases << std::endl;
+
+  //find unique number of regions in the template image
+  //region numbers should be in ascending order like, 1,2,3,...,n
+  ImageType::Pointer AtlasImagePointer = cbica::ReadImage<ImageType>(inputatlas);
+  typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
+  IteratorType atlasIt(AtlasImagePointer, AtlasImagePointer->GetLargestPossibleRegion());
+  atlasIt.GoToBegin();
+  int numberofregions = 0;
+  while (!atlasIt.IsAtEnd())
+  {
+    if (atlasIt.Get() > numberofregions)
+      numberofregions = atlasIt.Get();
+    ++atlasIt;
+  }
+  if (numberofregions < 2)
+  {
+    ShowErrorMessage("There should be atleast two regions in the atlas file.", this);
+    return;
+  }
+  std::vector < std::string> region_names;
+  for (int index = 0; index < numberofregions; index++)
+    region_names.push_back("Location_" + std::to_string(index + 1));
+
+  std::vector<typename ImageTypeFloat3D::Pointer> atlases= mPopulationAtlas.GeneratePopualtionAtlas(image_paths, atlas_labels_numbers, inputatlas, no_of_atlases, outputdirectory);
   if (mPopulationAtlas.mLastErrorMessage.empty() && atlases.size() > 0)
   {
     for (int i = 0; i < atlases.size(); i++)
@@ -4537,13 +4620,22 @@ void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputdirectory, 
 
     }
     LoadSlicerImages(inputatlas, CAPTK::ImageExtension::NIfTI);
-    ShowMessage("Statistical atlases have been saved at the specified location and loaded.", this);
   }
   else
   {
-    ShowErrorMessage("Error in creating statistical atlases for the given set of subjects.", this);
+    ShowErrorMessage("Error in calculating statistical atlases for the given set of subjects.", this);
     return;
   }
+  //code to calculate spatial location features
+  VariableSizeMatrixType LocationFeaturesAll;
+  if (mPopulationAtlas.CalculateSpatialLocationFeatures(image_paths, inputatlas, numberofregions, LocationFeaturesAll, outputdirectory) == true)
+    WriteCSVFilesWithHorizontalAndVerticalHeaders(LocationFeaturesAll, patient_ids, region_names, outputdirectory+ "/locationfeatures.csv");
+  else
+  {
+    ShowErrorMessage("Error in calculating location features for the given set of subjects.", this);
+    exit(EXIT_FAILURE);
+  }
+  ShowMessage("Statistical atlases and spatial location features have been saved at the specified location and loaded.", this);
   updateProgress(0, "Statistical atlases have been saved at the specified location and loaded.");
 }
 
@@ -5807,17 +5899,15 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
-  // ShowErrorMessage("libra: " + scriptToCall);
+  // std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  // // ShowErrorMessage("libra: " + scriptToCall);
 
-  if (scriptToCall.compare("") == 0) {
+  // if (scriptToCall.empty()) {
+  //   appDownload("libra");
+  //   return;
+  // }
 
-    appDownload("libra");
-
-    // thread sleep / lock and check file
-
-    scriptToCall = getApplicationDownloadPath("libra");
-  }
+  std::string scriptToCall = m_allNonNativeApps["libra"];
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -5918,17 +6008,14 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  // std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
   // ShowErrorMessage("libra: " + scriptToCall);
 
-  if (scriptToCall.compare("") == 0) {
-
-    appDownload("libra");
-
-    // thread sleep / lock and check file
-
-    scriptToCall = getApplicationDownloadPath("libra");
-  }
+  // if (scriptToCall.empty()) {
+  //   appDownload("libra");
+  //   return;
+  // }
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -5983,17 +6070,14 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  // std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
   // ShowErrorMessage("libra: " + scriptToCall);
 
-  if (scriptToCall.compare("") == 0) {
-
-    appDownload("libra");
-
-    // thread sleep / lock and check file
-
-    scriptToCall = getApplicationDownloadPath("libra");
-  }
+  // if (scriptToCall.empty()) {
+  //   appDownload("libra");
+  //   return;
+  // }
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -6437,15 +6521,11 @@ void fMainWindow::ApplicationEGFR()
   }
   updateProgress(5);
 
-
   typedef ImageTypeFloat4D PerfusionImageType;
-
   ImageTypeFloat3D::Pointer T1CEImagePointer;
   ImageTypeFloat3D::Pointer T2FlairImagePointer;
   std::vector<ImageTypeFloat3D::Pointer>	PerfusionImagePointer;
 
-  itk::MultiResolutionImageRegistrationMethod<ImageTypeFloat3D, ImageTypeFloat3D>::Pointer Registrar;
-  std::vector<ImageTypeFloat3D::Pointer> Perfusion_Registered;
   PerfusionImageType::Pointer perfusionImage = PerfusionImageType::New();
 
   std::vector<ImageTypeFloat3D::IndexType> nearIndices;
@@ -6458,15 +6538,11 @@ void fMainWindow::ApplicationEGFR()
   while (!maskIt.IsAtEnd())
   {
     if (maskIt.Get() == 1)
-    {
       nearIndices.push_back(maskIt.GetIndex());
-    }
     else if (maskIt.Get() == 2)
       farIndices.push_back(maskIt.GetIndex());
     ++maskIt;
   }
-
-  std::string imagetype_string = "";
 
   for (unsigned int index = 0; index < mSlicerManagers.size(); index++)
   {
@@ -6475,43 +6551,11 @@ void fMainWindow::ApplicationEGFR()
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR)
       T2FlairImagePointer = mSlicerManagers[index]->mITKImage;
     else if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
-    {
-      if (mSlicerManagers[index]->mImageType == CAPTK::ImageExtension::NIfTI)
-      {
-        perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
-        imagetype_string = "nifti";
-      }
-      else
-      {
-        for (unsigned int seriesindex = 0; seriesindex < mSlicerManagers[index]->mPerfusionImagePointerDicom.size(); seriesindex++)
-          PerfusionImagePointer.push_back(mSlicerManagers[index]->mPerfusionImagePointerDicom[seriesindex]);
-        imagetype_string = "dicom";
-      }
-    }
-  }
-
-  Perfusion_Registered.resize(PerfusionImagePointer.size());
-  if (imagetype_string == "dicom")
-  {
-    Registrar = mPreprocessingObj.Registration<ImageTypeFloat3D, ImageTypeFloat3D>(T1CEImagePointer, PerfusionImagePointer[0]);
-    updateProgress(10);
-
-    for (unsigned int index = 0; index < PerfusionImagePointer.size(); index++)
-    {
-      Perfusion_Registered[index] = mPreprocessingObj.ResampleTransform<ImageTypeFloat3D>(Registrar, T1CEImagePointer, PerfusionImagePointer[index]);
-      updateProgress((index + 1) * 2 + 10);
-    }
+      perfusionImage = mSlicerManagers[index]->mPerfusionImagePointer;
   }
   VectorDouble EGFRStatusParams;
-
   EGFRStatusPredictor EGFRPredictor;
-
-  if (imagetype_string == "dicom")
-    EGFRStatusParams = EGFRPredictor.PredictEGFRStatus<ImageTypeFloat3D, PerfusionImageType>(perfusionImage, Perfusion_Registered, nearIndices, farIndices, CAPTK::ImageExtension::DICOM);
-  else
-    EGFRStatusParams = EGFRPredictor.PredictEGFRStatus<ImageTypeFloat3D, PerfusionImageType>(perfusionImage, Perfusion_Registered, nearIndices, farIndices, CAPTK::ImageExtension::NIfTI);
-
-
+  EGFRStatusParams = EGFRPredictor.PredictEGFRStatus<ImageTypeFloat3D, PerfusionImageType>(perfusionImage, nearIndices, farIndices);
   QString msg;
   msg = "PHI = " + QString::number(EGFRStatusParams[0]) + "\n\n----------\n\n(Near:Far) Peak Height ratio = " +
     QString::number(EGFRStatusParams[1] / EGFRStatusParams[2]) + "\n\nNear ROI voxels used = " +
@@ -7271,8 +7315,21 @@ void fMainWindow::ImageBiasCorrection()
     duplicator->Update();
     ImageType::Pointer inputImage = duplicator->GetOutput();
     updateProgress(5, "Bias correction in process");
-    N3BiasCorrection biasCorrecter /*= N3BiasCorrection()*/;
-    ImageType::Pointer outputImage = biasCorrecter.Run<ImageTypeFloat3D>(inputImage);
+    BiasCorrection biasCorrector;
+    // Use default values for bias correction for now -- until we add the appropriate GUI elements
+    // TODO: Either allow the GUI to change the below values or otherwise reorganize (cleanup)
+    // Incorporating options into the GUI dialog should also address switching between N3/N4
+    int bias_splineOrder = 3, bias_otsuBins = 10, bias_maxIterations = 100, bias_fittingLevels = 4;
+    float bias_filterNoise = 0.01, bias_fwhm = 0.15;
+    ImageType::Pointer outputImage = biasCorrector.Run<ImageType>("n3",
+                                                                  inputImage,
+                                                                  bias_splineOrder,
+                                                                  bias_maxIterations,
+                                                                  bias_fittingLevels,
+                                                                  bias_filterNoise,
+                                                                  bias_fwhm,
+                                                                  bias_otsuBins);
+
     if (outputImage.IsNotNull())
     {
       updateProgress(80, "Saving file");
@@ -7599,15 +7656,6 @@ void fMainWindow::ApplicationDeepMedicSegmentation(int type)
 
 void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, const std::string outputDirectory)
 {
-  std::string dmExe = "";
-
-  dmExe = getApplicationDownloadPath("deepmedic");
-
-  if (dmExe.compare("") != 0) {
-            ShowErrorMessage("DM empty");
-
-  }
-
   std::string file_t1ce, file_t1, file_flair, file_t2;
 
   cbica::createDir(outputDirectory);
@@ -7680,66 +7728,64 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     }
   }
 
-  // TBD: this requires cleanup
-  int type;
-  if (modelDirectory.find("tumor") != std::string::npos)
+  ShowErrorMessage("Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive.", this, "Long Running Application");
+
+  QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application", 
+    "Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive; press OK to continue...", 
+    QMessageBox::Ok | QMessageBox::Cancel);
+  box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
+  box->setWindowModality(Qt::NonModal);
+  QCoreApplication::processEvents();
+  if (box->exec() == QMessageBox::Ok)
   {
-    type = 0;
-  }
-  else if (modelDirectory.find("skull") != std::string::npos)
-  {
-    type = 1;
-  }
+    // TBD: this requires cleanup
+    int type;
+    if (modelDirectory.find("tumor") != std::string::npos)
+    {
+      type = 0;
+    }
+    else if (modelDirectory.find("skull") != std::string::npos)
+    {
+      type = 1;
+    }
 
-  QStringList args;
-  args << "-md" << modelDirectory.c_str()
-    << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
+    QStringList args;
+    args << "-md" << modelDirectory.c_str()
+      << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
 
-  if (!file_mask.empty())
-  {
-    args << "-m" << file_mask.c_str();
-  }
-  updateProgress(5, "Starting DeepMedic Segmentation");
+    if (!file_mask.empty())
+    {
+      args << "-m" << file_mask.c_str();
+    }
+    updateProgress(5, "Starting DeepMedic Segmentation");
 
-  if (dmExe == "") {
-    ShowErrorMessage("DeepMedic not in download path", this);
-
-    dmExe = getApplicationPath("DeepMedic");
-  }
-  
-  if (!cbica::exists(dmExe))
-  {
-    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
-    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
-    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
-
-    ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
-    updateProgress(0, "");
-    return;
-  }
+    auto dmExe = getApplicationPath("DeepMedic");
+    if (!cbica::exists(dmExe))
+    {
+      ShowErrorMessage("DeepMedic executable doesn't exist; can't run");
+      updateProgress(0, "");
+      return;
+    }
 
 
-  if (startExternalProcess(dmExe.c_str(), args) != 0)
-  {
-    //ShowErrorMessage(dmExe + " " + args.join(" ").toStdString());
-    //std::cout << "[DEBUG] dmExe: " << dmExe << "\n";
-    //std::cout << "[DEBUG] args: " << args.join(" ").toStdString() << "\n";
+    if (startExternalProcess(dmExe.c_str(), args) != 0)
+    {
+      ShowErrorMessage("DeepMedic returned with exit code != 0");
+      updateProgress(0, "");
+      return;
+    }
 
-    ShowErrorMessage("DeepMedic returned with exit code != 0");
-    updateProgress(0, "");
-    return;
-  }
-
-  auto output = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
-  if (cbica::exists(output))
-  {
-    readMaskFile(output);
-    updateProgress(100, "Completed.");
-  }
-  else
-  {
-    ShowErrorMessage("DeepMedic failed to generate results");
-    updateProgress(0, "");
+    auto output = outputDirectory + "/predictions/testApiSession/predictions/Segm.nii.gz";
+    if (cbica::exists(output))
+    {
+      readMaskFile(output);
+      updateProgress(100, "Completed.");
+    }
+    else
+    {
+      ShowErrorMessage("DeepMedic failed to generate results");
+      updateProgress(0, "");
+    }
   }
 
   return;
@@ -8785,8 +8831,10 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds)
 {
   int defaultfeatureselectiontype = 3;
+  int defaultoptimizationtype = 0;
+  int defaultcvtype = 1;
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,defaultfeatureselectiontype, modeldirectory))
+  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype, modeldirectory))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
@@ -8921,16 +8969,30 @@ void fMainWindow::ChangeMaskOpacity() // multiLabel uncomment this function
 
 void fMainWindow::ChangeMaskOpacity(const float newOpacity)
 {
-  for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
-  {
-    for (size_t j = 0; j < 3; j++)
-    {
-        this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = newOpacity;
-        this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(newOpacity);
-        this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
-    }
-  }
-  UpdateRenderWindows(); // reflect the new value
+	if (!m_ComparisonMode)
+	{
+		//regular mode
+		for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
+		{
+			for (size_t j = 0; j < 3; j++)
+			{
+				this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = newOpacity;
+				this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(newOpacity);
+				this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
+			}
+		}
+		UpdateRenderWindows(); // reflect the new value
+	}
+	else
+	{
+		//comparison mode
+		std::vector<vtkSmartPointer<Slicer>> comparisonViewers = this->GetComparisonViewers();
+		for (int i = 0; i < comparisonViewers.size(); i++)
+		{
+			//update mask opacity on comparison viewers
+			comparisonViewers[i]->SetMaskOpacity(newOpacity);
+		}
+	}
 }
 
 void fMainWindow::ChangeDrawingLabel(int drawingLabel) // multiLabel uncomment this function
@@ -9031,8 +9093,10 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
   m_IsGeodesicTrainingRunning = false;
 }
 
-void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames,
-  std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations)
+void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
+  std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames,
+  std::string metrics, bool rigidMode, bool affineMode, bool deformMode,
+  std::string radii, std::string iterations)
 {
   std::string configPathName;
   std::string configFileName;
@@ -9063,28 +9127,33 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     }
     updateProgress(static_cast<int>(100 / ((i + 1) * inputFileNames.size())), "processing Registration");
 
-    std::string fixedFileCommand = "-f " + fixedFileName;
-    std::string movingFileCommand = " -i " + inputFileNames[i];
-    std::string affineMatrixCommand = " -t " + matrixFileNames[i];
-    std::string outputCommand = " -o " + outputFileNames[i];
-    std::string metricsCommand = " -m " + metrics;
-    std::string iterationsCommand = " -n " + iterations;
     QStringList args;
-    args << "-reg" << "-trf" << "-a" << "-f" << fixedFileName.c_str()
-      << "-i" << inputFileNames[i].c_str() << "-t" << matrixFileNames[i].c_str() << "-o" << outputFileNames[i].c_str()
-      << "-m" << metrics.c_str() << "-n" << iterations.c_str();
+
+    args << "-i" << inputFileNames[i].c_str();
+    args << "-o" << outputFileNames[i].c_str();
+    args << "-rIA" << matrixFileNames[i].c_str();
+    args << "-rFI" << fixedFileName.c_str();
+    args << "-rNI" << iterations.c_str();
 
     if (metrics == "NCC")
-      args << "-ri" << radii.c_str();
-    if (affineMode)
+      args << ("-rME NCC-" + radii).c_str();
+    else
+      args << "-rME " << metrics.c_str();
+
+    args << "-reg";
+    if (rigidMode)
     {
-      args << "-a";
+      args << "Rigid";
+    }
+    else if (affineMode)
+    {
+      args << "Affine";
     }
     else
     {
-      args << "-r";
+      args << "Deformable";
     }
-    std::string fullCommandToRun = getApplicationPath("GreedyRegistration");
+    std::string fullCommandToRun = getApplicationPath("Preprocessing");
 
     if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)
     {
@@ -9119,10 +9188,12 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
 
     std::string mode;
 
-    if (affineMode == true)
+    if (affineMode)
       mode = "Affine";
-    else
+    else if (rigidMode)
       mode = "Rigid";
+    else
+      mode = "Deformable";
 
     if (file.is_open())
     {

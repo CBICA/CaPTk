@@ -2,15 +2,20 @@
 
 \page ReleaseNotes Changelog: Release Notes
 
-- New model and data for Pseudo-Progression Estimator
+- Fixes and updates in Feature Extraction, Utilities and Preprocessing 
 - Generic bug fixes and improvements 
-- Documentation updates
 
 ## Known Issues
 
 https://github.com/CBICA/CaPTk/issues
 
 ## Older Versions
+
+### 1.7.6
+
+- New model and data for Pseudo-Progression Estimator
+- Generic bug fixes and improvements 
+- Documentation updates
 
 ### 1.7.5
 

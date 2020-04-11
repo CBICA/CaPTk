@@ -101,7 +101,8 @@ enum Params
   LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, 
   LatticeFullImage, GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, 
   QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, 
-  ResamplingInterpolator_Mask, LBPStyle, MorphologicFeret, ParamMax
+  ResamplingInterpolator_Mask, SliceComputation, NaNHandling, 
+  LBPStyle, MorphologicFeret, ParamMax
 };
 static const char ParamsString[ParamMax + 1][30] =
 {
@@ -109,7 +110,8 @@ static const char ParamsString[ParamMax + 1][30] =
   "Window", "Step", "Boundary", "PatchBoundary", "Weight", 
   "FullImage", "FMax", "Gamma", "Level", "ETA", "Epsilon", 
   "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", 
-  "ResamplingInterpolator_Mask", "LBPStyle", "Feret", "ParamMax"
+  "ResamplingInterpolator_Mask", "SliceComputation", "NaNHandling",
+  "LBPStyle", "Feret", "ParamMax"
 };
 
 enum FeatureFamily
@@ -393,6 +395,14 @@ private:
   \param selected_feature Denotes a feature name
   */
   void SetFeatureParam(std::string featureFamily);
+
+  /**
+  \brief GetRadiusInImageCoordinates function gets the radius in image coordinates
+
+  \param radiusInWorldCoordinates Input radius in world coordinates
+  \return Corresponding radius in image coordinates
+  */
+  int GetRadiusInImageCoordinates(float radiusInWorldCoordinates);
 
   /**
   \brief Calculates the OffsetVectorPointer based on the provided radius in mm and directions
@@ -752,6 +762,7 @@ private:
     m_currentLatticeStart; //! this is the starting index of the current lattice patch
   bool m_LatticeComputation = false; //! flag to check if lattice-based computation has been enabled or not
   bool m_writeFeatureMaps = false; //! flag to check to write feature maps or not
+  bool m_keepNaNs = true; //! whether to keep the nan values or not
   float m_latticeWindow = 0, m_latticeStep = 0; //! these are defined in mm
   typename TImageType::IndexType m_latticeStepImage; //! lattice step as defined in the image coordinates
   typename TImageType::SizeType m_latticeSizeImage; //! lattice size in image space
@@ -769,6 +780,8 @@ private:
 
   // the parameters that keep changing on a per-feature basis
   int m_Radius = 0, m_Bins = 0, m_Dimension = 0, m_Direction = 0, m_neighborhood = 0, m_LBPStyle = 0;
+  std::vector< int > m_Bins_range, //! range of bins to calculate features on
+    m_Radius_range; //! range of radii to calculate features on
   float m_Radius_float = 0.0, m_Range = 0, 
     m_Bins_min = std::numeric_limits<float>::max(); //! the starting index of the histogram binning
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
@@ -778,6 +791,8 @@ private:
   float m_resamplingResolution = 0.0; //! resolution to resample the images and mask to before doing any kind of computation
   std::string m_resamplingInterpolator_Image = "Linear", //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
     m_resamplingInterpolator_Mask = "Nearest";
+
+  bool m_SliceComputation = false; //! Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only
 
   float m_gaborFMax = 0.25; //! TBD: what is the description of this?
   float m_gaborGamma = sqrtf(2); //! TBD: what is the description of this?
