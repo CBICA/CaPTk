@@ -62,7 +62,6 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fFetalBrain.h"
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
-#include "fAppDownloadDialog.h"
 
 #include <atomic>
 
@@ -270,8 +269,6 @@ private:
   fBottomImageInfoTip *infoPanel;
   fTumorPanel *tumorPanel;
 
-  fAppDownloadDialog appDownloadDialog;
-
   //-------------menu-----------
   QMenuBar *menubar;
   QMenu* menuFile;
@@ -281,7 +278,6 @@ private:
   QMenu* menuLoadFileDicom;
   QMenu* menuLoadFileNifti;
   QMenu* menuDownload;
-  
   QMenu* menuApp;
   QMenu* menuPreprocessing;
   QMenu* menuDeepLearning;
@@ -293,9 +289,6 @@ private:
   QAction *help_bugs;
   QAction *help_features;
 
-  // precompiled Apps download
-  QMenu* menuAppDownload;
-  // QAction *appDownload;
   //-------------actions-------------
 
   QAction *actionLoad_Recurrence_Images;
@@ -342,7 +335,6 @@ private:
   QHBoxLayout* bottomLayout;
     
   YAML::Node m_downloadLinks; //! structure to save download links
-  YAML::Node m_appDownloadConfigs; //! structure to for app decoupling
 
   /**
   \struct ActionAndName
@@ -380,13 +372,6 @@ private:
     vectorOfMiscApps, // the rest
     vectorOfPreprocessingActionsAndNames, // for preprocessing algorithms
     vectorOfDeepLearningActionsAndNames; // for deep learning applications
-  
-  std::vector< ActionAndName >
-    vectorOfGBMAppsDownload, // GBM-specific applications
-    vectorOfBreastAppsDownload, // breast-specific applications
-    vectorOfLungAppsDownload, // lung-specific applications
-    vectorOfSegmentationAppsDownload, // the segmentation applications
-    vectorOfMiscAppsDownload; // the rest
 
   QTableWidget * m_imagesTable;
   QTableWidget * m_nonVisImagesTable;
@@ -943,15 +928,8 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
-
   //! Open the github issue tracker
   void help_BugTracker();
-
-  /**
-  \brief For apps decoupling
-  */
-  void appDownload(std::string currentApp);
-  void unzipArchive(std::string fullPath);
 
   /**
   \brief Get contextual help 

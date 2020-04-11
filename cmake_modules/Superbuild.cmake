@@ -36,7 +36,6 @@ INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-Eigen.cmake )
 #INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV_Contrib.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-OpenCV.cmake )
 INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-ITK.cmake )
-
 IF( BUILD_CLAIRE )
   INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-PETSC.cmake )
   INCLUDE( ${PROJECT_SOURCE_DIR}/cmake_modules/External-fftw.cmake )
