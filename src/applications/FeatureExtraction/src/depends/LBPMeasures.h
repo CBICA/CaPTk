@@ -96,7 +96,7 @@ public:
       outputImage->DisconnectPipeline();
 
       TConstNeighborhoodIteratorType ImageIterator(radius, maskedInput, maskedInput->GetLargestPossibleRegion());
-      TRegionIteratorType outputIterator(outputImage, outputImage->GetLargestPossibleRegion());
+      itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetLargestPossibleRegion());
       
       for (ImageIterator.GoToBegin(); !ImageIterator.IsAtEnd(); ++ImageIterator)
       {
