@@ -386,8 +386,9 @@ fMainWindow::fMainWindow()
 
   auto lungAppList = " LungField Nodule Analysis";
   //std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
-  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule";
+  
   std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
 #ifndef __APPLE__
   preProcessingAlgos += " breastNormalize";
@@ -396,6 +397,7 @@ fMainWindow::fMainWindow()
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
   menuApp->addSeparator();
+
   if (!breastAppList.empty())
   {
     vectorOfBreastApps = populateStringListInMenu(breastAppList, this, menuApp, "Breast Cancer", false);
@@ -403,8 +405,10 @@ fMainWindow::fMainWindow()
   }
   vectorOfLungApps = populateStringListInMenu(lungAppList, this, menuApp, "Lung Cancer", false);
   menuApp->addSeparator();
+
   vectorOfSegmentationApps = populateStringListInMenu(segAppList, this, menuApp, "Segmentation", false);
   vectorOfMiscApps = populateStringListInMenu(miscAppList, this, menuApp, "Miscellaneous", false);
+  
   vectorOfPreprocessingActionsAndNames = populateStringListInMenu(preProcessingAlgos, this, menuPreprocessing, "", false);
   vectorOfDeepLearningActionsAndNames = populateStringListInMenu(deepLearningAlgos, this, menuDeepLearning, "", false);
   auto temp = populateStringListInMenu(" ", this, menuDeepLearning, "Breast", false);
@@ -585,6 +589,7 @@ fMainWindow::fMainWindow()
   connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
+
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
@@ -8902,16 +8907,30 @@ void fMainWindow::ChangeMaskOpacity() // multiLabel uncomment this function
 
 void fMainWindow::ChangeMaskOpacity(const float newOpacity)
 {
-  for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
-  {
-    for (size_t j = 0; j < 3; j++)
-    {
-        this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = newOpacity;
-        this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(newOpacity);
-        this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
-    }
-  }
-  UpdateRenderWindows(); // reflect the new value
+	if (!m_ComparisonMode)
+	{
+		//regular mode
+		for (size_t i = 0; i < this->mSlicerManagers.size(); i++)
+		{
+			for (size_t j = 0; j < 3; j++)
+			{
+				this->mSlicerManagers[i]->GetSlicer(j)->mMaskOpacity = newOpacity;
+				this->mSlicerManagers[i]->GetSlicer(j)->mMaskActor->SetOpacity(newOpacity);
+				this->mSlicerManagers[i]->GetSlicer(j)->mMask->Modified();
+			}
+		}
+		UpdateRenderWindows(); // reflect the new value
+	}
+	else
+	{
+		//comparison mode
+		std::vector<vtkSmartPointer<Slicer>> comparisonViewers = this->GetComparisonViewers();
+		for (int i = 0; i < comparisonViewers.size(); i++)
+		{
+			//update mask opacity on comparison viewers
+			comparisonViewers[i]->SetMaskOpacity(newOpacity);
+		}
+	}
 }
 
 void fMainWindow::ChangeDrawingLabel(int drawingLabel) // multiLabel uncomment this function

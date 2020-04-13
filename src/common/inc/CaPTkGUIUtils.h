@@ -202,7 +202,6 @@ inline QString getSaveFile(QWidget *parent, const std::string inputPath, const s
   return getSaveFile(parent, QString(inputPath.c_str()), QString(defaultFileName.c_str()), QString(extensions.c_str()));
 }
 
-
 /**
 \brief Get full path of the executable from the application name
 */
