@@ -278,7 +278,6 @@ private:
   QMenu* menuLoadFileDicom;
   QMenu* menuLoadFileNifti;
   QMenu* menuDownload;
-
   QMenu* menuApp;
   QMenu* menuPreprocessing;
   QMenu* menuDeepLearning;
@@ -288,6 +287,8 @@ private:
   QAction *helpMenu_download;
   QAction *help_forum;
   QAction *help_bugs;
+  QAction *help_features;
+
   //-------------actions-------------
 
   QAction *actionLoad_Recurrence_Images;
