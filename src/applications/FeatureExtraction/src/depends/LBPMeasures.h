@@ -88,6 +88,7 @@ public:
       auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
       masker->SetInput(this->m_inputImage);
       masker->SetMaskImage(this->m_Mask);
+      masker->SetOutsideValue(0);
       masker->Update();
 
       auto maskedInput = masker->GetOutput();
@@ -120,7 +121,7 @@ public:
       }
 
 
-      TConstIteratorType outputIterator(outputImage, outputImage->GetLargestPossibleRegion());
+      itk::ImageRegionConstIterator< TImageType > outputIterator(outputImage, outputImage->GetLargestPossibleRegion());
       double sum = 0;
       int counter = 0;
       for (outputIterator.GoToBegin(); !outputIterator.IsAtEnd(); ++outputIterator)
