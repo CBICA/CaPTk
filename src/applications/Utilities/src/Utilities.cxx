@@ -646,6 +646,29 @@ int algorithmsRunner()
     auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
     auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
 
+    if (inputMaskFile)
+    {
+      if (cbica::ImageSanityCheck(inputImageFile, inputMaskFile))
+      {
+        auto maskImage = cbica::ReadImage< TImageType >(inputMaskFile);
+        auto masker_1 = itk::MaskImageFilter< TImageType, TImageType >::New();
+        masker_1->SetInput(inputImage);
+        masker_1->SetMaskImage(maskImage);
+        masker_1->Update();
+        inputImage = masker_1->GetOutput();
+
+        auto masker_2 = itk::MaskImageFilter< TImageType, TImageType >::New();
+        masker_2->SetInput(referenceImage);
+        masker_2->SetMaskImage(maskImage);
+        masker_2->Update();
+        referenceImage = masker_2->GetOutput();
+      }
+      else
+      {
+        std::cerr << "Mask is not defined in the same physical space as input image and therefore has been discarded from computation.\n"
+      }
+    }
+
     auto stats = cbica::GetLabelStatistics< DefaultImageType >(inputImage, referenceImage);
 
     std::cout << "Metric,Value\n";
@@ -662,6 +685,29 @@ int algorithmsRunner()
     using DefaultImageType = itk::Image< unsigned int, TImageType::ImageDimension >;
     auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
     auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
+
+    if (inputMaskFile)
+    {
+      if (cbica::ImageSanityCheck(inputImageFile, inputMaskFile))
+      {
+        auto maskImage = cbica::ReadImage< TImageType >(inputMaskFile);
+        auto masker_1 = itk::MaskImageFilter< TImageType, TImageType >::New();
+        masker_1->SetInput(inputImage);
+        masker_1->SetMaskImage(maskImage);
+        masker_1->Update();
+        inputImage = masker_1->GetOutput();
+
+        auto masker_2 = itk::MaskImageFilter< TImageType, TImageType >::New();
+        masker_2->SetInput(referenceImage);
+        masker_2->SetMaskImage(maskImage);
+        masker_2->Update();
+        referenceImage = masker_2->GetOutput();
+      }
+      else
+      {
+        std::cerr << "Mask is not defined in the same physical space as input image and therefore has been discarded from computation.\n"
+      }
+    }
 
     auto stats = cbica::GetBraTSLabelStatistics< DefaultImageType >(inputImage, referenceImage);
 
