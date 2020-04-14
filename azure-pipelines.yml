@@ -701,32 +701,30 @@ jobs:
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    # # Configure and build superbuild
-    # - bash: |
-    #     cd bin
-    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-    #     make -j2
-    #     rm -rf install
+    # Configure and build superbuild
+    - bash: |
+        cd bin
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+        make -j2
+        rm -rf install
 
-    #   displayName: 'Configure and compile Superbuild'
+      displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        # cd $(Build.SourcesDirectory)/..
-        # ls
-        # tar cvfz superbuild.tar.gz superbuild
-        # ls
-        # rm -rf superbuild
-        # ls
-        # cd $(Build.SourcesDirectory)
+        cd $(Build.SourcesDirectory)/..
+        ls
+        tar cvfz superbuild.tar.gz superbuild
+        ls
+        rm -rf superbuild
+        ls
+        cd $(Build.SourcesDirectory)
 
         rm -rf bin
 
         mkdir bin
         cd bin
         
-        # cp -r $(Build.SourcesDirectory)/../superbuild.tar.gz ./
-        ## CHANGE BACK
-        cp -r /home/cbica-devs/Workspace/vsts/_work/1/s/superbuild.tar.gz ./
+        cp -r $(Build.SourcesDirectory)/../superbuild.tar.gz ./
         ls
         echo "cp"
         tar xvfz superbuild.tar.gz
@@ -737,14 +735,6 @@ jobs:
 
         mv superbuild/* ./
         ls
-        
-        # cd bin
-        
-        # rm -rf $(Build.SourcesDirectory)/../superbuild
-        # cp -r ./ $(Build.SourcesDirectory)/../superbuild
-
-        # ls $(Build.SourcesDirectory)/../superbuild
-        
       displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
@@ -875,30 +865,30 @@ jobs:
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    # - bash: |
-    #     cd bin
+    - bash: |
+        cd bin
 
-    #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-    #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
-    #     make -j 2
+        make -j 2
 
-    #   displayName: 'Configure and compile Superbuild'
+      displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        rm -rf bin
+        # rm -rf bin
 
-        mkdir bin
-        cd bin
-        cp -r ../../../../superbuild/ ./
-        ls
-        ls ITK-build
-        pwd
-        
+        # mkdir bin
         # cd bin
-        # cp -r ./ ../../../../superbuild
+        # cp -r ../../../../superbuild/ ./
+        # ls
+        # ls ITK-build
+        # pwd
+        
+        cd bin
+        cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
