@@ -710,6 +710,8 @@ jobs:
       displayName: 'Configure and compile Superbuild'
 
     - bash: |
+        rm -rf $(Build.SourcesDirectory)/../superbuild.tar.gz
+        mv * $(Build.SourcesDirectory)/../superbuild
         cd $(Build.SourcesDirectory)/..
         ls
         tar cvfz superbuild.tar.gz superbuild
@@ -877,17 +879,17 @@ jobs:
       displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        # rm -rf bin
+        rm -rf bin
 
-        # mkdir bin
-        # cd bin
-        # cp -r ../../../../superbuild/ ./
-        # ls
-        # ls ITK-build
-        # pwd
-        
+        mkdir bin
         cd bin
-        cp -r ./ ../../../../superbuild
+        cp -r ../../../../superbuild/ ./
+        ls
+        ls ITK-build
+        pwd
+        
+        # cd bin
+        # cp -r ./ ../../../../superbuild
         
       displayName: 'Move superbuild and qt and compiled apps'
 
