@@ -710,7 +710,9 @@ jobs:
       displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        mv * $(Build.SourcesDirectory)/../superbuild
+        mkdir $(Build.SourcesDirectory)/../superbuild
+        cd bin
+        mv ./* $(Build.SourcesDirectory)/../superbuild
         cd $(Build.SourcesDirectory)/..
         ls
         echo "Done cd"
