@@ -650,14 +650,14 @@ int algorithmsRunner()
     {
       if (cbica::ImageSanityCheck(inputImageFile, inputMaskFile))
       {
-        auto maskImage = cbica::ReadImage< TImageType >(inputMaskFile);
-        auto masker_1 = itk::MaskImageFilter< TImageType, TImageType >::New();
+        auto maskImage = cbica::ReadImage< DefaultImageType >(inputMaskFile);
+        auto masker_1 = itk::MaskImageFilter< DefaultImageType, DefaultImageType >::New();
         masker_1->SetInput(inputImage);
         masker_1->SetMaskImage(maskImage);
         masker_1->Update();
         inputImage = masker_1->GetOutput();
 
-        auto masker_2 = itk::MaskImageFilter< TImageType, TImageType >::New();
+        auto masker_2 = itk::MaskImageFilter< DefaultImageType, DefaultImageType >::New();
         masker_2->SetInput(referenceImage);
         masker_2->SetMaskImage(maskImage);
         masker_2->Update();
@@ -665,7 +665,7 @@ int algorithmsRunner()
       }
       else
       {
-        std::cerr << "Mask is not defined in the same physical space as input image and therefore has been discarded from computation.\n"
+        std::cerr << "Mask is not defined in the same physical space as input image and therefore has been discarded from computation.\n";
       }
     }
 
@@ -690,14 +690,14 @@ int algorithmsRunner()
     {
       if (cbica::ImageSanityCheck(inputImageFile, inputMaskFile))
       {
-        auto maskImage = cbica::ReadImage< TImageType >(inputMaskFile);
-        auto masker_1 = itk::MaskImageFilter< TImageType, TImageType >::New();
+        auto maskImage = cbica::ReadImage< DefaultImageType >(inputMaskFile);
+        auto masker_1 = itk::MaskImageFilter< DefaultImageType, DefaultImageType >::New();
         masker_1->SetInput(inputImage);
         masker_1->SetMaskImage(maskImage);
         masker_1->Update();
         inputImage = masker_1->GetOutput();
 
-        auto masker_2 = itk::MaskImageFilter< TImageType, TImageType >::New();
+        auto masker_2 = itk::MaskImageFilter< DefaultImageType, DefaultImageType >::New();
         masker_2->SetInput(referenceImage);
         masker_2->SetMaskImage(maskImage);
         masker_2->Update();
@@ -705,7 +705,7 @@ int algorithmsRunner()
       }
       else
       {
-        std::cerr << "Mask is not defined in the same physical space as input image and therefore has been discarded from computation.\n"
+        std::cerr << "Mask is not defined in the same physical space as input image and therefore has been discarded from computation.\n";
       }
     }
 
