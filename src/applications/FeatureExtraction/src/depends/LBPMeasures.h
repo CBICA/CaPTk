@@ -121,12 +121,12 @@ public:
       }
 
 
-      itk::ImageRegionConstIterator< TImageType > outputIterator(outputImage, outputImage->GetLargestPossibleRegion());
+      itk::ImageRegionConstIterator< TImageType > outputConstIterator(outputImage, outputImage->GetLargestPossibleRegion());
       double sum = 0;
       int counter = 0;
-      for (outputIterator.GoToBegin(); !outputIterator.IsAtEnd(); ++outputIterator)
+      for (outputConstIterator.GoToBegin(); !outputConstIterator.IsAtEnd(); ++outputConstIterator)
       {
-        sum += outputIterator.Get();
+        sum += outputConstIterator.Get();
         counter++;
       }
 
