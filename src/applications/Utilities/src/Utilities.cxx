@@ -646,7 +646,7 @@ int algorithmsRunner()
     auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
     auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
 
-    if (inputMaskFile)
+    if (!inputMaskFile.empty())
     {
       if (cbica::ImageSanityCheck(inputImageFile, inputMaskFile))
       {
@@ -686,7 +686,7 @@ int algorithmsRunner()
     auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
     auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
 
-    if (inputMaskFile)
+    if (!inputMaskFile.empty())
     {
       if (cbica::ImageSanityCheck(inputImageFile, inputMaskFile))
       {
