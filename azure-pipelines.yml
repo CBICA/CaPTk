@@ -695,34 +695,33 @@ jobs:
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
     
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
     # Configure and build superbuild
-    - bash: |
-        cd bin
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
-        make -j2
-        rm -rf install
+    # - bash: |
+    #     cd bin
+    #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
+    #     make -j2
+    #     rm -rf install
 
-      displayName: 'Configure and compile Superbuild'
+    #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        mkdir $(Build.SourcesDirectory)/../superbuild
-        cd bin
-        mv ./* $(Build.SourcesDirectory)/../superbuild
-        cd $(Build.SourcesDirectory)/..
-        ls
-        echo "Done cd"
-        tar cvfz superbuild.tar.gz superbuild
-        ls
-        echo "done tar"
-        rm -rf superbuild
-        ls
-        
-        cd $(Build.SourcesDirectory)
+        # mkdir $(Build.SourcesDirectory)/../superbuild
+        # cd bin
+        # mv ./* $(Build.SourcesDirectory)/../superbuild
+        # cd $(Build.SourcesDirectory)/..
+        # ls
+        # echo "Done cd"
+        # tar cvfz superbuild.tar.gz superbuild
+        # ls
+        # echo "done tar"
+        # rm -rf superbuild
+        # ls
+        # cd $(Build.SourcesDirectory)
 
         rm -rf bin
 
@@ -731,12 +730,12 @@ jobs:
         
         cp -r $(Build.SourcesDirectory)/../superbuild.tar.gz ./
         ls
-        echo "cp"
+        echo "Done cp"
         tar xvfz superbuild.tar.gz
         rm -rf superbuild.tar.gz
 
         ls
-        echo "tar"
+        echo "Done tar"
 
         mv superbuild/* ./
         ls
@@ -870,17 +869,17 @@ jobs:
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    - bash: |
-        cd bin
+    # - bash: |
+    #     cd bin
 
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+    #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+    #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-        cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
 
-        make -j 2
+    #     make -j 2
 
-      displayName: 'Configure and compile Superbuild'
+    #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
         rm -rf bin
