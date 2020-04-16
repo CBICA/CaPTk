@@ -7,14 +7,6 @@
 #include <QFileDialog>
 #include <QComboBox>
 #include <QCoreApplication>
-#include <QDialog>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
-#include <QFile>
-#include <QFileInfo>
-#include <QDir>
 #include "qdesktopservices.h"
 
 static QString IMAGES_EXTENSIONS = "Images (*.nii.gz *.nii *.dcm)";
@@ -208,99 +200,6 @@ inline QString getSaveFile(QWidget *parent, const QString inputPath, const QStri
 inline QString getSaveFile(QWidget *parent, const std::string inputPath, const std::string defaultFileName = "", const std::string extensions = IMAGES_EXTENSIONS.toStdString())
 {
   return getSaveFile(parent, QString(inputPath.c_str()), QString(defaultFileName.c_str()), QString(extensions.c_str()));
-}
-
-inline std::string getApplicationDownloadPath(std::string appName)
-{
-  std::string winExt
-#if WIN32
-    = ".exe"
-#endif
-    ;
-
-  auto appName_wrap = appName;
-
-  if ((appName_wrap.find("libra") != std::string::npos) || (appName_wrap.find("itksnap") != std::string::npos))
-  {
-#if WIN32
-    winExt = ".bat";
-#elif linux
-    winExt = "";
-#endif
-  }
-  else if (appName_wrap.find("confetti") != std::string::npos)
-  {
-    // appName_wrap = "ConfettiGUI";
-#ifndef _WIN32
-    winExt = ".py";
-#endif
-  }
-  else if (appName_wrap.find("theia") != std::string::npos)
-  {
-#ifndef _WIN32
-    winExt = ".py";
-#endif
-  }
-  else if (appName_wrap.find("deepmedic") != std::string::npos)
-  {
-    // appName_wrap = "deepMedicRun";
-#ifndef _WIN32
-    winExt = ".py";
-#endif
-  }
-
-// #ifdef CAPTK_PACKAGE_PROJECT
-// #ifndef __APPLE__
-    auto fullPath = downloadFolder + appName + "/" + appName_wrap + winExt;
-    // ShowErrorMessage(fullPath);
-
-    if (cbica::isFile(fullPath)) {
-
-      return fullPath;
-    }
-    else {
-      // ShowErrorMessage("Specified application was not found, please check");
-      return "";
-    }
-// #else
-//   if (appName.compare("itksnap") == 0) {
-//     return cbica::replaceString(
-//     cbica::normPath(captk_currentApplicationPath + "../Resources/bin/ITK-SNAP.app/Contents/MacOS/ITK-SNAP"), 
-//     "/Resources/Resources/", "/Resources/");
-//   }
-
-//   return cbica::replaceString(
-//     cbica::normPath(captk_currentApplicationPath + "../Resources/bin/" + appName_wrap), 
-//     "/Resources/Resources/", "/Resources/");
-// #endif  
-// #else
-//   if (cbica::isFile(captk_currentApplicationPath + appName_wrap + winExt))
-//   {
-//     return captk_currentApplicationPath + appName_wrap + winExt;
-//   }
-//   auto individualAppDir = cbica::normPath(captk_currentApplicationPath + "../../src/applications/individualApps/" + appName + "/");
-//   if (cbica::isFile(individualAppDir + "/" + appName_wrap + winExt))
-//   {
-//     return individualAppDir + "/" + appName_wrap + winExt;
-//   }
-//   individualAppDir = cbica::normPath(std::string(PROJECT_SOURCE_DIR) + "/src/applications/individualApps/" + appName + "/");
-//   if (appName.find("deepMedic") != std::string::npos)
-//   {
-//     individualAppDir = cbica::normPath(std::string(PROJECT_SOURCE_DIR) + "/src/applications/individualApps/deepmedic/");
-//   }
-//   if (cbica::isFile(individualAppDir + "/" + appName_wrap + winExt))
-//   {
-//     return individualAppDir + "/" + appName_wrap + winExt;
-//   }
-//   // we need a better check for the individual applications for the developer mode here
-//   else
-//   {
-// #ifdef CAPTK_PACKAGE_PROJECT
-//     ShowErrorMessage("Specified application was not found, please check");
-// #endif  
-//     return "";
-//   }
-// #endif 
 }
 
 /**
