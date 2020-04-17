@@ -889,7 +889,6 @@ jobs:
         cp -r ../../../../superbuild/ ./
         ls
         ls ITK-build
-        pwd
         
         # cd bin
         # cp -r ./ ../../../../superbuild
