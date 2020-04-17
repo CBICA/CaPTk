@@ -15,6 +15,40 @@ bool debugMode;
 
 size_t resizingFactor = 100;
 
+std::string findRelativeApplicationDownloadPath(const std::string appName)
+{
+  std::string winExt =
+#if WIN32
+    ".exe";
+#else
+    "";
+#endif
+
+  if (appName.find("libra") != std::string::npos)
+  {
+#if WIN32
+    winExt = ".bat";
+#endif
+  }
+
+  auto currentApplicationPath = cbica::normPath(cbica::getExecutablePath()) + "/";
+
+  auto appName_path = cbica::normPath(cbica::getUserHomeDirectory() + "/." + std::string(PROJECT_NAME) + "/" + std::string(PROJECT_VERSION) + "_apps/" + 
+#ifndef __APPLE__
+    appName + winExt
+#else
+    "../Resources/bin/" + appName_wrap
+#endif  
+  );
+
+  if (!cbica::isFile(appName_path))
+  {
+    std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
+    exit(EXIT_FAILURE);
+  }
+  return appName_path;
+}
+
 std::string findRelativeApplicationPath(const std::string appName)
 {
   std::string winExt =

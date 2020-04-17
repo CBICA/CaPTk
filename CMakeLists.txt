@@ -287,6 +287,19 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   FILE(GLOB_RECURSE YAMLCPP_Sources "${PROJECT_SOURCE_DIR}/src/thirdparty/yaml-cpp/src/*.cpp")
   SET( YAMLCPP_Headers ${YAMLCPP_Headers} CACHE STRING "YAML-CPP headers" FORCE )
   SET( YAMLCPP_Sources ${YAMLCPP_Sources} CACHE STRING "YAML-CPP sources" FORCE )
+
+  # # for 11Zip
+  # FILE(GLOB_RECURSE 11Zip_Headers "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include/*.h")
+  # FILE(GLOB_RECURSE 11Zip_HeadersCpp "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include/*.hpp")
+  # FILE(GLOB_RECURSE 11Zip_Sources "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/src/*.c")
+  # FILE(GLOB_RECURSE 11Zip_SourcesCpp "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/src/*.cpp")
+
+  # SET( 11Zip_Headers ${11Zip_Headers} CACHE STRING "11Zip headers" FORCE )
+  # SET( 11Zip_HeadersCpp ${11Zip_HeadersCpp} CACHE STRING "11Zip headers" FORCE )
+  # SET( 11Zip_Sources ${11Zip_Sources} CACHE STRING "11Zip sources" FORCE )
+  # SET( 11Zip_SourcesCpp ${11Zip_SourcesCpp} CACHE STRING "11Zip sources" FORCE )
+
+  # SET( 11Zip_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include)
   ### third party library processing
 
   FIND_PACKAGE(VTK REQUIRED)
@@ -312,7 +325,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF(VTK_VERSION VERSION_LESS 5.6.0)
 
 
-  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore WebEngineWidgets Concurrent Test Sql REQUIRED)
+  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore WebEngineWidgets Concurrent Test Sql Network REQUIRED)
 
   # For some reason IF(LINUX) doesn't work properly on linux
   # This is necessary for the whole project to compile on linux
@@ -347,11 +360,19 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     Qt5::Concurrent
     Qt5::Test
     Qt5::Sql
+    Qt5::Network
     ${ITK_LIBRARIES}
     ${VTK_LIBRARIES}
     ${OpenCV_LIBRARIES}
     ${OpenMP_LIBRARIES}
   )
+
+   # IF (WIN32) 
+  #   ADD_LIBRARY(elzip ${11Zip_Headers} ${11Zip_HeadersCpp} ${11Zip_Sources} ${11Zip_SourcesCpp})
+
+  #   SET( DEPENDENT_LIBS ${DEPENDENT_LIBS} elzip)
+  # ENDIF()
+
 
   IF(UNIX AND NOT APPLE)
     SET( DEPENDENT_LIBS 
@@ -494,6 +515,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${CACHED_INCLUDE_DIRS}
     ${OpenMP_INCLUDE_DIRS}
   )
+
+  # IF (WIN32) 
+  #   INCLUDE_DIRECTORIES(${11Zip_INCLUDE_DIRS})
+  # ENDIF()
   
   IF( BUILD_CONFETTI )
     IF (WIN32)
@@ -775,6 +800,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     SET_SOURCE_FILES_PROPERTIES(${sri24_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
 
     FILE(GLOB DOWNLOAD_LINKS "${DATA_DIR}/*.yaml")
+    MESSAGE(STATUS "YAML ${DOWNLOAD_LINKS}")
     SET_SOURCE_FILES_PROPERTIES(${DOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
 
     # FILE(GLOB APPSDOWNLOAD_LINKS "${DATA_DIR}/appsDownloadConfigs.yaml")
