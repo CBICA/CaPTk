@@ -202,7 +202,7 @@ public:
 	\param ventImage		Pointer to image having ventricles label
 	*/
 	template<class ImageType>
-	VectorDouble GetDistanceFeatures3(const typename ImageType::Pointer &edemaImage, const typename ImageType::Pointer &tumorImage, const typename ImageType::Pointer &ventImage);
+	VectorDouble GetDistanceFeatures(const typename ImageType::Pointer &edemaImage, const typename ImageType::Pointer &tumorImage, const typename ImageType::Pointer &ventImage);
 
 	/**
 	\brief Calculates the distance map of an image by keeping the given label as reference seed point
@@ -312,7 +312,7 @@ typename ImageType::Pointer SurvivalPredictor::RescaleImageIntensity(const typen
 }
 
 template<class ImageType>
-VectorDouble SurvivalPredictor::GetDistanceFeatures3(const typename ImageType::Pointer &edemaImage, const typename ImageType::Pointer &tumorImage, const typename ImageType::Pointer &ventImage)
+VectorDouble SurvivalPredictor::GetDistanceFeatures(const typename ImageType::Pointer &edemaImage, const typename ImageType::Pointer &tumorImage, const typename ImageType::Pointer &ventImage)
 {
 	//-----------------------create distance image----------------------------
 	VectorDouble VentEdemaSum;
@@ -674,7 +674,7 @@ VectorDouble  SurvivalPredictor::LoadTestData(const typename ImageType::Pointer 
 	typename ImageType::Pointer  ventDistanceMap = GetDistanceMap<ImageType>(ventImage);
 	typename ImageType::Pointer  tumorDistanceMap = GetDistanceMap<ImageType>(tumorImage);
 
-	VectorDouble DistanceFeatures = GetDistanceFeatures3<ImageType>(edemaDistanceMap, tumorDistanceMap, ventDistanceMap);
+	VectorDouble DistanceFeatures = GetDistanceFeatures<ImageType>(edemaDistanceMap, tumorDistanceMap, ventDistanceMap);
 
 
 
