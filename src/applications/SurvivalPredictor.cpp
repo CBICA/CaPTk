@@ -118,7 +118,7 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
 	  return false;
   }
 
-  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 161);
+  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), SURVIVAL_NO_OF_FEATURES);
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
 	  std::cout << "Patient's data loaded:" << sid + 1 << std::endl;
@@ -173,7 +173,7 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
   }
   std::cout << std::endl << "Building model....." << std::endl;
   VariableSizeMatrixType scaledFeatureSet;
-  scaledFeatureSet.SetSize(qualifiedsubjects.size(), 161);
+  scaledFeatureSet.SetSize(qualifiedsubjects.size(), SURVIVAL_NO_OF_FEATURES);
   VariableLengthVectorType meanVector;
   VariableLengthVectorType stdVector;
   mFeatureScalingLocalPtr.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
@@ -190,20 +190,8 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
   mFeatureExtractionLocalPtr.FormulateSurvivalTrainingData(scaledFeatureSet, AllSurvival, SixModelFeatures, EighteenModelFeatures);
   try
   {
-	  data.set_size(161, 1); // TOCHECK - are these hard coded sizes fine?
-	  for (unsigned int i = 0; i < meanVector.Size(); i++)
-		  data(i, 0) = meanVector[i];
-	  typedef itk::CSVNumericObjectFileWriter<double, 161, 1> WriterTypeVector;
-	  WriterTypeVector::Pointer writerv = WriterTypeVector::New();
-	  writerv->SetFileName(outputdirectory + "/Survival_ZScore_Mean.csv");
-	  writerv->SetInput(&data);
-	  writerv->Write();
-
-	  for (unsigned int i = 0; i < stdVector.Size(); i++)
-		  data(i, 0) = stdVector[i];
-	  writerv->SetFileName(outputdirectory + "/Survival_ZScore_Std.csv");
-	  writerv->SetInput(&data);
-	  writerv->Write();
+    WriteCSVFiles(meanVector, outputdirectory + "/Survival_ZScore_Mean.csv");
+    WriteCSVFiles(stdVector, outputdirectory + "/Survival_ZScore_Std.csv");
   }
   catch (const std::exception& e1)
   {

@@ -39,6 +39,7 @@ typedef vnl_matrix<double> MatrixType;
 // pre-calculated values
 #define SURVIVAL_SIZE_COMP 100
 #define SURVIVAL_NO_NEAR_DIST 100
+#define SURVIVAL_NO_OF_FEATURES 161
 
 /**
 \class SurvivalPredictor
