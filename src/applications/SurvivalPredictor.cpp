@@ -282,68 +282,44 @@ VectorDouble SurvivalPredictor::CombineEstimates(const VariableLengthVectorType 
 		float temp_abs, temp_pos1, temp_neg1, temp_1, temp_2;
 		// estimate for 1st vector
 		if (std::abs(estimates1[i]) < 2)
-		{
 			temp_abs = estimates1[i];
-		}
 		else
-		{
 			temp_abs = 0;
-		}
 
 		if (estimates1[i] > 1)
-		{
 			temp_pos1 = 1;
-		}
 		else
-		{
 			temp_pos1 = 0;
-		}
 
 		if (estimates1[i] < -1)
-		{
 			temp_neg1 = 1;
-		}
 		else
-		{
 			temp_neg1 = 0;
-		}
 		temp_1 = temp_abs + (temp_pos1 - temp_neg1);
 
 		// estimate for 2nd vector, all temp values are getting overwritten
 		if (std::abs(estimates2[i]) < 2)
-		{
 			temp_abs = estimates2[i];
-		}
 		else
-		{
 			temp_abs = 0;
-		}
 
 		if (estimates2[i] > 1)
-		{
 			temp_pos1 = 1;
-		}
 		else
-		{
 			temp_pos1 = 0;
-		}
 
 		if (estimates2[i] < -1)
-		{
 			temp_neg1 = 1;
-		}
 		else
-		{
 			temp_neg1 = 0;
-		}
-		temp_2 = temp_abs + (temp_pos1 - temp_neg1);
+
+    temp_2 = temp_abs + (temp_pos1 - temp_neg1);
 
 		// combine the two
 		returnVec[i] = temp_1 + temp_2;
 	}
 	return returnVec;
 }
-
 
 VectorDouble SurvivalPredictor::CombineEstimates(const VectorDouble &estimates1, const VectorDouble &estimates2)
 {
@@ -354,60 +330,36 @@ VectorDouble SurvivalPredictor::CombineEstimates(const VectorDouble &estimates1,
 		float temp_abs, temp_pos1, temp_neg1, temp_1, temp_2;
 		// estimate for 1st vector
 		if (std::abs(estimates1[i]) < 2)
-		{
 			temp_abs = estimates1[i];
-		}
-		else
-		{
-			temp_abs = 0;
-		}
+    else
+      temp_abs = 0;
 
 		if (estimates1[i] > 1)
-		{
 			temp_pos1 = 1;
-		}
-		else
-		{
-			temp_pos1 = 0;
-		}
+    else
+      temp_pos1 = 0;
 
 		if (estimates1[i] < -1)
-		{
 			temp_neg1 = 1;
-		}
 		else
-		{
 			temp_neg1 = 0;
-		}
 		temp_1 = temp_abs + (temp_pos1 - temp_neg1);
 
 		// estimate for 2nd vector, all temp values are getting overwritten
 		if (std::abs(estimates2[i]) < 2)
-		{
 			temp_abs = estimates2[i];
-		}
 		else
-		{
 			temp_abs = 0;
-		}
 
 		if (estimates2[i] > 1)
-		{
 			temp_pos1 = 1;
-		}
-		else
-		{
-			temp_pos1 = 0;
-		}
+    else
+      temp_pos1 = 0;
 
 		if (estimates2[i] < -1)
-		{
 			temp_neg1 = 1;
-		}
-		else
-		{
-			temp_neg1 = 0;
-		}
+    else
+      temp_neg1 = 0;
 		temp_2 = temp_abs + (temp_pos1 - temp_neg1);
 
 		// combine the two
@@ -462,7 +414,6 @@ VariableLengthVectorType SurvivalPredictor::DistanceFunctionLinear(const Variabl
     double distance = 0;
     for (unsigned int svID = 0; svID < wTranspose.Cols(); svID++)
       distance = distance + wTranspose(0, svID)*testData(patID, svID);
-
     Distances[patID] = distance - Rho;
   }
   return Distances;
@@ -592,7 +543,7 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
   }
 
   VariableSizeMatrixType FeaturesOfAllSubjects;
-	FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 164);
+	FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), SURVIVAL_NO_OF_FEATURES);
 
 	for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
 	{

@@ -1037,7 +1037,7 @@ double SurvivalPredictor::SurvivalEstimateOnGivenSubject(typename ImageType::Poi
     }
 
 		VariableSizeMatrixType FeaturesOfAllSubjects;
-		FeaturesOfAllSubjects.SetSize(1, 161);
+		FeaturesOfAllSubjects.SetSize(1, SURVIVAL_NO_OF_FEATURES);
 
 		VectorDouble TestFeatures = CalculateFeatures<ImageType>(T1CEImagePointer, T2FlairImagePointer, T1ImagePointer, T2ImagePointer,
 			RCBVImagePointer, PSRImagePointer, PHImagePointer, AXImagePointer, FAImagePointer, RADImagePointer, TRImagePointer, LabelImagePointer, AtlasImagePointer, TemplateImagePointer,  HistogramFeaturesConfigurations);
