@@ -139,7 +139,7 @@ public:
   */
   
   template<class ImageType>
-	VectorDouble  LoadTestData(const typename ImageType::Pointer &t1ceImagePointer,
+	VectorDouble  CalculateFeatures(const typename ImageType::Pointer &t1ceImagePointer,
 		const typename ImageType::Pointer &t2flairImagePointer,
 		const typename ImageType::Pointer &t1ImagePointer,
 		const typename ImageType::Pointer &t2ImagePointer,
@@ -233,7 +233,11 @@ public:
 	VectorDouble GetSpatialLocationFeatures(const typename ImageType::Pointer &labelImagePointer, 
 		const typename ImageType::Pointer &atlasImagePointer);
 
+  /**
+  \brief Calculates transpose of given input matrix
 
+  \param  inputmatrix Input data
+  */
   VariableSizeMatrixType MatrixTranspose(const VariableSizeMatrixType &inputmatrix);
 
 
@@ -271,9 +275,15 @@ public:
   
   VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &extractedfeatures, const VariableLengthVectorType selectedfeatures);
 
+  /**
+  \brief Calculates distance from the hyperplane of linear SVM classifier
+
+  \param testData			Final features of the test patients
+  \param filename		  Path to the model file
+  */
   VariableLengthVectorType DistanceFunctionLinear(const VariableSizeMatrixType &testData, const std::string &filename);
 
-	VariableLengthVectorType DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename);
+  VariableLengthVectorType DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename);
 
   /**
   \brief Combine estimates of both the classifiers to calculate final SPI
@@ -284,6 +294,11 @@ public:
   VectorDouble CombineEstimates(const VariableLengthVectorType &estimates1, const VariableLengthVectorType &estimates2);
 	VectorDouble CombineEstimates(const VectorDouble &estimates1, const VectorDouble &estimates2);
 
+  /**
+  \brief Rescales intensity of an image in the range of 0-255
+
+  \param  image     Input image
+  */
   template<class ImageType>
 	typename ImageType::Pointer RescaleImageIntensity(const typename ImageType::Pointer &image);
 
@@ -312,10 +327,10 @@ typename ImageType::Pointer SurvivalPredictor::RescaleImageIntensity(const typen
 template<class ImageType>
 VectorDouble SurvivalPredictor::GetDistanceFeatures(const typename ImageType::Pointer &edemaImage, const typename ImageType::Pointer &tumorImage, const typename ImageType::Pointer &ventImage)
 {
-	//-----------------------create distance image----------------------------
+	//create distance image
 	VectorDouble VentEdemaSum;
 	VectorDouble VentTumorSum;
-	//-------------------------get sum of images----------------------------------
+	//get sum of images
 	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
 	IteratorType tumorIt(tumorImage, tumorImage->GetLargestPossibleRegion());
 	IteratorType ventIt(ventImage, ventImage->GetLargestPossibleRegion());
@@ -349,7 +364,7 @@ VectorDouble SurvivalPredictor::GetDistanceFeatures(const typename ImageType::Po
 
 	return DistanceFeatures;
 }
-//--------------------------------------------------------------------------------------
+
 template<class ImageType>
 typename ImageType::Pointer SurvivalPredictor::GetDistanceMap(const typename ImageType::Pointer &labelImagePointer)
 {
@@ -400,10 +415,9 @@ typename ImageType::Pointer SurvivalPredictor::GetDistanceMapWithLabel(const typ
 	typename ImageType::Pointer distanceimage = distanceMapImageFilter->GetOutput();
 	return distanceimage;
 }
-//---------------------------------------------------------------------------------------
 
 template<class ImageType>
-VectorDouble  SurvivalPredictor::LoadTestData(const typename ImageType::Pointer &t1ceImagePointer,
+VectorDouble  SurvivalPredictor::CalculateFeatures(const typename ImageType::Pointer &t1ceImagePointer,
 	const typename ImageType::Pointer &t2flairImagePointer,
 	const typename ImageType::Pointer &t1ImagePointer,
 	const typename ImageType::Pointer &t2ImagePointer,
@@ -461,10 +475,6 @@ VectorDouble  SurvivalPredictor::LoadTestData(const typename ImageType::Pointer 
 	VectorDouble necoreIntensitiesRCBV;
 	VectorDouble necoreIntensitiesPSR;
 	VectorDouble necoreIntensitiesPH;
-
-
-	//VectorDouble GlistrFeatures = GetGlistrFeatures(parametersNames);
-
 
 	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
 	IteratorType imIt(labelImagePointer, labelImagePointer->GetLargestPossibleRegion());
@@ -533,7 +543,7 @@ VectorDouble  SurvivalPredictor::LoadTestData(const typename ImageType::Pointer 
 		necoreIntensitiesPH.push_back(phImagePointer.GetPointer()->GetPixel(necoreIndices[i]));
 	}
 
-	//------------------------------------------------------get histogram and statistics features-------------------
+	//get histogram and statistics features
 	VectorDouble TumorBinsT1 = GetHistogramFeatures(tumorIntensitiesT1, configuration(0,0), configuration(0,1), configuration(0,2));
 	VectorDouble TumorBinsT2 = GetHistogramFeatures(tumorIntensitiesT2, configuration(1,0), configuration(1,1), configuration(1,2));
 	VectorDouble TumorBinsT1CE = GetHistogramFeatures(tumorIntensitiesT1CE, configuration(2, 0), configuration(2, 1), configuration(2, 2));
@@ -606,7 +616,7 @@ VectorDouble  SurvivalPredictor::LoadTestData(const typename ImageType::Pointer 
 	VectorDouble necoreStatisticsPSR = GetStatisticalFeatures(necoreIntensitiesPSR);
 	VectorDouble necoreStatisticsPH = GetStatisticalFeatures(necoreIntensitiesPH);
 
-	//-------------------------------Find connected components and get volumetric features -----------------------------
+	//find connected components and get volumetric features
 	std::vector<typename ImageType::Pointer> RevisedImages = RevisedTumorArea<ImageType>(labelImagePointer);
 	typename ImageType::Pointer tumorImage = RevisedImages[0];
 	typename ImageType::Pointer etumorImage = RevisedImages[1];
@@ -646,7 +656,7 @@ VectorDouble  SurvivalPredictor::LoadTestData(const typename ImageType::Pointer 
   //VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(atlasImagePointer,templateImagePointer);
   //, templateImagePointer);
 
-	//--------------------------------Alternate function for distance features----------------------------------------------  
+	//Alternate function for distance features
 	typename ImageType::Pointer  edemaDistanceMap = GetDistanceMapWithLabel<ImageType>(labelImagePointer, CAPTK::GLISTR_OUTPUT_LABELS::EDEMA);
 
 	typename ImageType::Pointer ventImage = ImageType::New();
@@ -725,6 +735,7 @@ VectorDouble  SurvivalPredictor::LoadTestData(const typename ImageType::Pointer 
 	TestFeatures.insert(TestFeatures.end(), spatialLocationFeatures.begin(), spatialLocationFeatures.end());
 	return TestFeatures;
 }
+
 template<class ImageType>
 std::vector<typename ImageType::Pointer> SurvivalPredictor::RevisedTumorArea(const typename ImageType::Pointer &labelImagePointer)
 {
@@ -1028,7 +1039,7 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 		VariableSizeMatrixType FeaturesOfAllSubjects;
 		FeaturesOfAllSubjects.SetSize(1, 161);
 
-		VectorDouble TestFeatures = LoadTestData<ImageType>(T1CEImagePointer, T2FlairImagePointer, T1ImagePointer, T2ImagePointer,
+		VectorDouble TestFeatures = CalculateFeatures<ImageType>(T1CEImagePointer, T2FlairImagePointer, T1ImagePointer, T2ImagePointer,
 			RCBVImagePointer, PSRImagePointer, PHImagePointer, AXImagePointer, FAImagePointer, RADImagePointer, TRImagePointer, LabelImagePointer, AtlasImagePointer, TemplateImagePointer,  HistogramFeaturesConfigurations);
 		FeaturesOfAllSubjects(0, 0) = age;
 		for (unsigned int i = 1; i <= TestFeatures.size(); i++)
