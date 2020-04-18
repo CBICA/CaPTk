@@ -5,12 +5,6 @@
 #include "fMainWindow.h"
 #include "cbicaStatistics.h"
 
-
-typedef itk::Image< float, 3 > ImageType;
-//SurvivalPredictor::~SurvivalPredictor()
-//{
-//}
-
 VectorDouble SurvivalPredictor::GetStatisticalFeatures(const VectorDouble &intensities)
 {
   VectorDouble StatisticalFeatures;

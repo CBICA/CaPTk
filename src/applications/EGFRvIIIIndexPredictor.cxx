@@ -4,11 +4,68 @@
 #include "CaPTkEnums.h"
 
 //------------------EGFRvIII Prediction on existing model-----------------------
-std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname)
+std::vector<std::map<CAPTK::ImageModalityType, std::string>> 
+LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname, 
+  int applicationtype)
 {
 	std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
 	std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+  subjectNames.push_back("AASF_2014.02.18");
+  subjectNames.push_back("AASG_2014.02.26");
+  subjectNames.push_back("AASH_2014.02.27");
+  subjectNames.push_back("AASK_2013.08.26");
+  subjectNames.push_back("AASN_2014.04.22");
+  subjectNames.push_back("AASO_2014.05.11");
+  subjectNames.push_back("AASR_2014.05.19");
+  subjectNames.push_back("AASU_2014.06.03");
+  subjectNames.push_back("AASV_2013.08.11");
+  subjectNames.push_back("AASW_2014.06.05");
+  subjectNames.push_back("AASX_2014.06.18");
+  subjectNames.push_back("AASY_2014.06.25");
+  subjectNames.push_back("AASZ_2006.07.19");
+  subjectNames.push_back("AATB_2006.08.15");
+  subjectNames.push_back("AATD_2006.09.24");
+  subjectNames.push_back("AATE_2006.11.26");
+  subjectNames.push_back("AATF_2006.12.19");
+  subjectNames.push_back("AATP_2008.11.01");
+  subjectNames.push_back("AATV_2009.01.15");
+  subjectNames.push_back("AATW_2006.07.23");
+  subjectNames.push_back("AATX_2006.09.07");
+  subjectNames.push_back("AAUC_2008.02.17");
+  subjectNames.push_back("AAUE_2006.07.11");
+  subjectNames.push_back("AAUF_2008.01.07");
+  subjectNames.push_back("AAUM_2008.03.06");
+  subjectNames.push_back("AAUQ_2007.05.13");
+  subjectNames.push_back("AAUR_2007.01.28");
+  subjectNames.push_back("AAVG_2006.08.30");
+  subjectNames.push_back("AAVJ_2006.12.12");
+  subjectNames.push_back("AAVS_2008.01.23");
+  subjectNames.push_back("AAVV_2007.05.24");
+  subjectNames.push_back("AAWA_2008.10.01");
+  subjectNames.push_back("AAWB_2008.12.18");
+  subjectNames.push_back("AAWG_2007.04.05");
+  subjectNames.push_back("AAWH_2007.01.02");
+  subjectNames.push_back("AAWI_2006.11.28");
+  subjectNames.push_back("AAWJ_2006.07.27");
+  subjectNames.push_back("AAWK_2007.04.11");
+  subjectNames.push_back("AAXI_2007.01.14");
+  subjectNames.push_back("AAXJ_2007.01.25");
+  subjectNames.push_back("AAXL_2006.09.01");
+  subjectNames.push_back("AAXM_2007.12.20");
+  subjectNames.push_back("AAXO_2007.12.13");
+  subjectNames.push_back("AAXQ_2007.08.30");
+  subjectNames.push_back("AAXV_2007.06.28");
+  subjectNames.push_back("AAXW_2007.04.03");
+  subjectNames.push_back("AAYI_2008.11.26");
+  subjectNames.push_back("AAYU_2008.03.02");
+  subjectNames.push_back("AAYV_2009.04.30");
+  subjectNames.push_back("AAYW_2008.10.09");
+  subjectNames.push_back("AAZA_2009.01.02");
+  subjectNames.push_back("AAZD_2008.06.22");
+  subjectNames.push_back("AAZF_2008.07.17");
+  subjectNames.push_back("AAZH_2008.06.13");
+
   std::sort(subjectNames.begin(), subjectNames.end());
 
 	for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
@@ -120,9 +177,12 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 		if (cbica::fileExists(subjectPath + "/features.csv"))
 			featureFilePath = subjectPath + "/features.csv";
 			
-			if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() 
-        || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty() || featureFilePath.empty())
+		if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() 
+        || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
 			continue;
+
+    if (applicationtype == CAPTK::MachineLearningApplicationSubtype::TRAINING && featureFilePath.empty())
+      continue;
 
 		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
 		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2] = t2FilePath;
@@ -153,7 +213,7 @@ int EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory,
 {
 	std::cout << "Module loaded: EGFRvIII Prediction on Existing Model:" << std::endl;
 	std::vector<double> finalresult;
-	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
+	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory, CAPTK::MachineLearningApplicationSubtype::TESTING);
   if (QualifiedSubjects.size() == 0)
   {
     std::cout << "No subject found with required input. Exiting...." << std::endl;
@@ -180,7 +240,7 @@ int PrepareNewEGFRvIIIPredictionModel(const std::string inputdirectory,const std
 {
 	std::cout << "Module loaded: Prepare EGFRvIII Prediction Model." << std::endl;
 	std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory, CAPTK::MachineLearningApplicationSubtype::TRAINING);
 	EGFRvIIIIndexPredictor objEGFRvIIIPredictor;
 	std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
 	if (QualifiedSubjects.size() == 0)
