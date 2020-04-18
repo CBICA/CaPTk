@@ -656,7 +656,7 @@ VectorDouble  SurvivalPredictor::CalculateFeatures(const typename ImageType::Poi
   //VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(atlasImagePointer,templateImagePointer);
   //, templateImagePointer);
 
-	//Alternate function for distance features
+	//alternate function to calculate distance features
 	typename ImageType::Pointer  edemaDistanceMap = GetDistanceMapWithLabel<ImageType>(labelImagePointer, CAPTK::GLISTR_OUTPUT_LABELS::EDEMA);
 
 	typename ImageType::Pointer ventImage = ImageType::New();
@@ -684,7 +684,7 @@ VectorDouble  SurvivalPredictor::CalculateFeatures(const typename ImageType::Poi
 
 	VectorDouble DistanceFeatures = GetDistanceFeatures<ImageType>(edemaDistanceMap, tumorDistanceMap, ventDistanceMap);
 
-  //copy data from vectors to one final feature vector
+  //copy data from individual vectors to one final feature vector
 	VectorDouble TestFeatures;
 	TestFeatures.insert(TestFeatures.end(), VolumetricFeatures.begin(), VolumetricFeatures.end());
 	TestFeatures.insert(TestFeatures.end(), DistanceFeatures.begin(), DistanceFeatures.end());
@@ -865,7 +865,6 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 	typename ImageType::Pointer etumorImage = RevisedImages[1];
 	typename ImageType::Pointer ncrImage = RevisedImages[2];
 
-
 	typename ImageType::Pointer localizeImage = ImageType::New();
 	localizeImage->CopyInformation(labelImagePointer);
 	localizeImage->SetRequestedRegion(labelImagePointer->GetLargestPossibleRegion());
@@ -873,7 +872,7 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 	localizeImage->Allocate();
 	localizeImage->FillBuffer(0);
 
-	//mulitply revised tumor image with the atlas ROI image
+	//multiply revised tumor image with the atlas ROI image
 	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
 	IteratorType tumorIt(tumorImage, tumorImage->GetLargestPossibleRegion());
 	IteratorType localizeIt(localizeImage, localizeImage->GetLargestPossibleRegion());
@@ -914,8 +913,9 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 
 	return location;
 }
-	template<class ImageType>
-	double SurvivalPredictor::SurvivalEstimateOnGivenSubject(typename ImageType::Pointer LabelImagePointer,
+
+template<class ImageType>
+double SurvivalPredictor::SurvivalEstimateOnGivenSubject(typename ImageType::Pointer LabelImagePointer,
 		typename ImageType::Pointer AtlasImagePointer,
 		typename ImageType::Pointer TemplateImagePointer,
 		typename ImageType::Pointer T1CEImagePointer,
@@ -1035,7 +1035,6 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
       exit(EXIT_FAILURE);
     }
 
-		//----------------------------------------------------
 		VariableSizeMatrixType FeaturesOfAllSubjects;
 		FeaturesOfAllSubjects.SetSize(1, 161);
 

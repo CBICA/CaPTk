@@ -48,8 +48,6 @@ VectorDouble SurvivalPredictor::GetHistogramFeatures(const VectorDouble &intensi
   }
   Ranges[Ranges.size() - 1][1] = 255;
   Ranges[0][0] = 0;
-
-
   BinCount.SetSize(Ranges.size());
   for (unsigned int j = 0; j < Ranges.size(); j++)
   {
@@ -119,7 +117,7 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
 	  logger.WriteError("Cannot find the file 'Survival_HMFeatures_Configuration.csv' in the ../data/survival directory. Error code : " + std::string(e1.what()));
 	  return false;
   }
- //---------------------------------------------------------------------------
+
   FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 161);
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
@@ -184,48 +182,9 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
     for (unsigned int j = 0; j < scaledFeatureSet.Cols(); j++)
       if (std::isnan(scaledFeatureSet(i, j)))
         scaledFeatureSet(i, j) = 0;
-    //
-//  for (int i = 0; i < 105; i++)
-//    for (int j = 0; j < 166; j++)
-//      data(i, j) = scaledFeatureSet(i, j);
-//  writer->SetFileName("scaled_train_features.csv");
-//  writer->SetInput(&data);
-//  writer->Write();
-//
-//
-//
-  //VariableSizeMatrixType ScaledFeatureSetAfterAddingAge;
-  //ScaledFeatureSetAfterAddingAge.SetSize(scaledFeatureSet.Rows(), scaledFeatureSet.Cols() + 1);
-  //for (unsigned int i = 0; i < scaledFeatureSet.Rows(); i++)
-  //{
-  //  ScaledFeatureSetAfterAddingAge(i, 0) = ages[i]; 
-  //  for (unsigned int j = 0; j < scaledFeatureSet.Cols(); j++)
-  //  {
-  //    ScaledFeatureSetAfterAddingAge(i, j+1) = scaledFeatureSet(i, j);
-  //  }
-  //}
-//
-//  //readerMean->SetFileName("scaledfeatures.csv");
-//  //readerMean->SetFieldDelimiterCharacter(',');
-//  //readerMean->HasColumnHeadersOff();
-//  //readerMean->HasRowHeadersOff();
-//  //readerMean->Parse();
-//  ////typedef vnl_matrix<double> MatrixType;
-//  //dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-//
-//  //for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-//  //  for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-//  //    scaledFeatureSet(i, j) = dataMatrix(i, j);
-//  //{
-//  //  ages.push_back(dataMatrix(i, 0));
-//  //  survival.push_back(dataMatrix(i, 1));
-//  //}
-//
-////-----------------------writing in files to compare results------------------------------
+
   typedef vnl_matrix<double> MatrixType;
   MatrixType data;
-  
-
   VariableSizeMatrixType SixModelFeatures;
   VariableSizeMatrixType EighteenModelFeatures;
   mFeatureExtractionLocalPtr.FormulateSurvivalTrainingData(scaledFeatureSet, AllSurvival, SixModelFeatures, EighteenModelFeatures);
@@ -251,7 +210,6 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
 	  logger.WriteError("Error in writing output files to the output directory = " + outputdirectory + "Error code : " + std::string(e1.what()));
 	  return false;
   }
-  //---------------------------------------------------------------------------
   VariableLengthVectorType selectedfeatures_6Months;
   VariableLengthVectorType selectedfeatures_18Months;
   VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(SixModelFeatures,selectedfeatures_6Months);
@@ -470,7 +428,6 @@ VectorDouble SurvivalPredictor::CombineEstimates(const VectorDouble &estimates1,
 	return returnVec;
 }
 
-
 VariableLengthVectorType SurvivalPredictor::DistanceFunctionLinear(const VariableSizeMatrixType &testData, const std::string &filename)
 {
   CSVFileReaderType::Pointer readerMean = CSVFileReaderType::New();
@@ -645,8 +602,8 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
     logger.WriteError("Error in reading the file: " + modeldirectory + "/Survival_SelectedFeatures_18Months.csv. Error code : " + std::string(e1.what()));
     return results;
   }
-  //----------------------------------------------------
-	VariableSizeMatrixType FeaturesOfAllSubjects;
+
+  VariableSizeMatrixType FeaturesOfAllSubjects;
 	FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 164);
 
 	for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
@@ -675,8 +632,6 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 				RCBVImagePointer, PSRImagePointer, PHImagePointer, AXImagePointer, FAImagePointer, RADImagePointer, TRImagePointer, LabelImagePointer, AtlasImagePointer, TemplateImagePointer, HistogramFeaturesConfigurations);
 
 			double age;
-
-
       reader->SetFileName(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES]));
 			reader->SetFieldDelimiterCharacter(',');
 			reader->HasColumnHeadersOff();
@@ -712,7 +667,6 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 			ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
 		ScaledFeatureSetAfterAddingLabel(i, j) = 0;
 	}
-
 
   VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures_6months);
 	VariableSizeMatrixType EighteenModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures_18months);
@@ -765,19 +719,19 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 
 }
 
-VariableSizeMatrixType SurvivalPredictor::SelectModelFeatures(const VariableSizeMatrixType &SixModelFeatures,const VariableLengthVectorType selectedfeatures)
+VariableSizeMatrixType SurvivalPredictor::SelectModelFeatures(const VariableSizeMatrixType &allfeatures,const VariableLengthVectorType indicesselectedfeatures)
 {
-  VariableSizeMatrixType SixModelSelectedFeatures; 
-  SixModelSelectedFeatures.SetSize(SixModelFeatures.Rows(),selectedfeatures.Size()+1);
+  VariableSizeMatrixType SelectedFeatures; 
+  SelectedFeatures.SetSize(allfeatures.Rows(),indicesselectedfeatures.Size()+1);
   int counter = 0;
-  for (unsigned int i = 0; i < selectedfeatures.Size(); i++)
+  for (unsigned int i = 0; i < indicesselectedfeatures.Size(); i++)
   {
-    for (unsigned int j = 0; j < SixModelFeatures.Rows(); j++)
-      SixModelSelectedFeatures(j, counter) = SixModelFeatures(j, selectedfeatures[i]);
+    for (unsigned int j = 0; j < allfeatures.Rows(); j++)
+      SelectedFeatures(j, counter) = allfeatures(j, indicesselectedfeatures[i]);
     counter++;
   }
- for (unsigned int j = 0; j < SixModelFeatures.Rows(); j++)
-      SixModelSelectedFeatures(j, selectedfeatures.Size()) = SixModelFeatures(j, SixModelFeatures.Cols()-1);
+ for (unsigned int j = 0; j < allfeatures.Rows(); j++)
+   SelectedFeatures(j, indicesselectedfeatures.Size()) = allfeatures(j, allfeatures.Cols()-1);
 
-  return SixModelSelectedFeatures;
+  return SelectedFeatures;
 }
