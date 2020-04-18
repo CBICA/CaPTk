@@ -85,7 +85,7 @@ VectorDouble SurvivalPredictor::GetVolumetricFeatures(const double &edemaSize,co
   return VolumetricFeatures;
 }
 
-int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inputdirectory,const std::vector< std::map< CAPTK::ImageModalityType, std::string > > &qualifiedsubjects, const std::string &outputdirectory)
+int SurvivalPredictor::TrainNewSurvivalPredictionModel(const std::string &inputdirectory,const std::vector< std::map< CAPTK::ImageModalityType, std::string > > &qualifiedsubjects, const std::string &outputdirectory)
 {
   VectorDouble AllSurvival; 
   VariableSizeMatrixType FeaturesOfAllSubjects;
@@ -111,7 +111,6 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
 	  logger.WriteError("Cannot find the file 'Survival_HMFeatures_Configuration.csv' in the ../data/survival directory. Error code : " + std::string(e1.what()));
 	  return false;
   }
-
   FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), SURVIVAL_NO_OF_FEATURES);
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
@@ -144,14 +143,12 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
 		  reader->HasRowHeadersOff();
 		  reader->Parse();
 		  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-
 		  for (unsigned int i = 0; i < dataMatrix.rows(); i++)
 		  {
 			  ages.push_back(dataMatrix(i, 0));
 			  survival.push_back(dataMatrix(i, 1));
 			  AllSurvival.push_back(dataMatrix(i, 1));
 		  }
-
 		  VectorDouble TestFeatures = CalculateFeatures<ImageType>(T1CEImagePointer, T2FlairImagePointer, T1ImagePointer, T2ImagePointer,
 			  RCBVImagePointer, PSRImagePointer, PHImagePointer, AXImagePointer, FAImagePointer, RADImagePointer, TRImagePointer, LabelImagePointer, AtlasImagePointer, TemplateImagePointer, HistogramFeaturesConfigurations);
 

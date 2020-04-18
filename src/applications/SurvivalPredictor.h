@@ -31,7 +31,6 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "ApplicationBase.h"
 #endif
 
-
 typedef itk::Image< float, 3 > ImageType;
 typedef itk::CSVArray2DFileReader<double> CSVFileReaderType;
 typedef vnl_matrix<double> MatrixType;
@@ -249,7 +248,7 @@ public:
 	\param qualifiedsubjects	List of qualifeid subjects having all the data avaialble to train a model
 	\param outputdirectory		Path to the output directory
 	*/
-	int PrepareNewSurvivalPredictionModel(
+	int TrainNewSurvivalPredictionModel(
 		const std::string &inputdirectory,
 		const std::vector< std::map< CAPTK::ImageModalityType, std::string > > &qualifiedsubjects, 
 		const std::string &outputdirectory);
