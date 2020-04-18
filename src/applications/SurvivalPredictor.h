@@ -271,8 +271,6 @@ public:
   
   VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &extractedfeatures, const VariableLengthVectorType selectedfeatures);
 
-	template<class ImageType>
-	typename ImageType::Pointer RemoveSmallerComponentsFromTumor(const typename ImageType::Pointer &etumorImage, const typename ImageType::Pointer &ncrImage);
   VariableLengthVectorType DistanceFunctionLinear(const VariableSizeMatrixType &testData, const std::string &filename);
 
 	VariableLengthVectorType DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename);
@@ -676,10 +674,7 @@ VectorDouble  SurvivalPredictor::LoadTestData(const typename ImageType::Pointer 
 
 	VectorDouble DistanceFeatures = GetDistanceFeatures<ImageType>(edemaDistanceMap, tumorDistanceMap, ventDistanceMap);
 
-
-
-
-	//copy data from vectors to one final feature vector
+  //copy data from vectors to one final feature vector
 	VectorDouble TestFeatures;
 	TestFeatures.insert(TestFeatures.end(), VolumetricFeatures.begin(), VolumetricFeatures.end());
 	TestFeatures.insert(TestFeatures.end(), DistanceFeatures.begin(), DistanceFeatures.end());
@@ -850,82 +845,6 @@ std::vector<typename ImageType::Pointer> SurvivalPredictor::RevisedTumorArea(con
 
 	return RevisedImages;
 }
-template<class ImageType>
-typename ImageType::Pointer SurvivalPredictor::RemoveSmallerComponentsFromTumor(const typename ImageType::Pointer &etumorImage, const typename ImageType::Pointer &ncrImage)
-{
-	typename ImageType::Pointer tumorImage = ImageType::New();
-	tumorImage->CopyInformation(etumorImage);
-	tumorImage->SetRequestedRegion(etumorImage->GetLargestPossibleRegion());
-	tumorImage->SetBufferedRegion(etumorImage->GetBufferedRegion());
-	tumorImage->Allocate();
-	tumorImage->FillBuffer(0);
-
-	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-	IteratorType tumorIt(tumorImage, tumorImage->GetLargestPossibleRegion());
-	IteratorType ncrIt(ncrImage, ncrImage->GetLargestPossibleRegion());
-	IteratorType etIt(etumorImage, etumorImage->GetLargestPossibleRegion());
-
-	tumorIt.GoToBegin();
-	etIt.GoToBegin();
-	ncrIt.GoToBegin();
-
-	while (!tumorIt.IsAtEnd())
-	{
-		if (etIt.Get() == CAPTK::VOXEL_STATUS::ON || ncrIt.Get() == CAPTK::VOXEL_STATUS::ON)
-			tumorIt.Set(CAPTK::VOXEL_STATUS::ON);
-		else
-			tumorIt.Set(CAPTK::VOXEL_STATUS::OFF);
-
-		++tumorIt;
-		++etIt;
-		++ncrIt;
-	}
-
-	typedef itk::Image< unsigned short, 3 > OutputImageType;
-
-	typedef itk::ConnectedComponentImageFilter <ImageType, OutputImageType> ConnectedComponentImageFilterType;
-	typename ConnectedComponentImageFilterType::Pointer connected = ConnectedComponentImageFilterType::New();
-	connected->FullyConnectedOn();
-	connected->SetInput(tumorImage);
-	connected->Update();
-	OutputImageType::Pointer labeledImage = connected->GetOutput();
-
-	connected->GetObjectCount();
-	std::vector<int> sizes;
-	typedef itk::ImageRegionIteratorWithIndex <OutputImageType> OutputIteratorType;
-	OutputIteratorType lbimIt(labeledImage, labeledImage->GetLargestPossibleRegion());
-
-	for (unsigned int i = 0; i < connected->GetObjectCount(); i++)
-	{
-		int counter = 0;
-		lbimIt.GoToBegin();
-		while (!lbimIt.IsAtEnd())
-		{
-			if (lbimIt.Get() == i + 1)
-				counter++;
-			++lbimIt;
-		}
-		sizes.push_back(counter);
-	}
-	for (unsigned int i = 0; i < connected->GetObjectCount(); i++)
-	{
-		if (sizes[i] < SURVIVAL_SIZE_COMP)
-		{
-			lbimIt.GoToBegin();
-			tumorIt.GoToBegin();
-			while (!lbimIt.IsAtEnd())
-			{
-				if (lbimIt.Get() == i + 1)
-					tumorIt.Set(CAPTK::VOXEL_STATUS::OFF);
-
-				++lbimIt;
-				++tumorIt;
-			}
-		}
-	}
-	return tumorImage;
-}
-
 
 template<class ImageType>
 VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageType::Pointer &labelImagePointer, const typename ImageType::Pointer &jacobtemplateImagePointer)
