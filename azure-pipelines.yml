@@ -941,7 +941,7 @@ jobs:
         cd bin
 
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-        pkgname="_Installer"
+        pkgname="_Installer_selfhost"
         pkgname="$version$pkgname"
 
         rm -rf *.pkg
@@ -974,7 +974,7 @@ jobs:
 
         productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
-        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+        mv *_Installer* $(Build.ArtifactStagingDirectory)
 
         rm -rf _CPack*
 
@@ -996,7 +996,7 @@ jobs:
     #   inputs:
     #     sshEndpoint: cbicaNITRC
     #     sourceFolder: $(Build.ArtifactStagingDirectory)
-    #     contents: '*_Installer.*'
+    #     contents: '*_Installer*'
     #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
     #     cleanTargetFolder: false
     #     overwrite: true
