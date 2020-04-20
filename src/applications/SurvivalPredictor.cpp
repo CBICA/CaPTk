@@ -377,7 +377,7 @@ VariableLengthVectorType SurvivalPredictor::DistanceFunctionLinear(const Variabl
   Coefficients.SetSize(dataMatrix.rows(), 1);
   Distances.SetSize(testData.Rows(), 1);
   
-  //copy the support vectors, coefficients, rho, and bestg values from the model file
+  //copy the support vectors, coefficients, and rho values from the model file
   for (unsigned int i = 0; i < dataMatrix.rows(); i++)
   {
     unsigned int j = 0;
@@ -616,7 +616,7 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 		{
 			VariableLengthVectorType result_6;
 			VariableLengthVectorType result_18;
-			result_6 = DistanceFunction(SixModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model6.csv");
+			result_6 = DistanceFunctionLinear(SixModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model6.csv");
 			result_18 = DistanceFunctionLinear(EighteenModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model18.csv");
 			results = CombineEstimates(result_6, result_18);
 			for (size_t i = 0; i < results.size(); i++)

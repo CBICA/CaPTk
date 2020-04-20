@@ -38,7 +38,7 @@ typedef vnl_matrix<double> MatrixType;
 // pre-calculated values
 #define SURVIVAL_SIZE_COMP 100
 #define SURVIVAL_NO_NEAR_DIST 100
-#define SURVIVAL_NO_OF_FEATURES 161
+#define SURVIVAL_NO_OF_FEATURES 164
 
 /**
 \class SurvivalPredictor
@@ -230,7 +230,7 @@ public:
 	\param atlasImagePointer		Pointer to image having segmentation labels in atlas space
 	*/
 	template<class ImageType>
-	VectorDouble GetSpatialLocationFeatures(const typename ImageType::Pointer &labelImagePointer, 
+	VectorDouble GetSpatialLocationFeatures(const std::vector<typename ImageType::Pointer> &revisedimages,
 		const typename ImageType::Pointer &atlasImagePointer);
 
   /**
@@ -616,7 +616,10 @@ VectorDouble  SurvivalPredictor::CalculateFeatures(const typename ImageType::Poi
 	VectorDouble necoreStatisticsPSR = GetStatisticalFeatures(necoreIntensitiesPSR);
 	VectorDouble necoreStatisticsPH = GetStatisticalFeatures(necoreIntensitiesPH);
 
-	//find connected components and get volumetric features
+
+  
+  
+  //find connected components and get volumetric features
 	std::vector<typename ImageType::Pointer> RevisedImages = RevisedTumorArea<ImageType>(labelImagePointer);
 	typename ImageType::Pointer tumorImage = RevisedImages[0];
 	typename ImageType::Pointer etumorImage = RevisedImages[1];
@@ -652,7 +655,8 @@ VectorDouble  SurvivalPredictor::CalculateFeatures(const typename ImageType::Poi
 		++tumorIt;
 	}
 	VectorDouble VolumetricFeatures = GetVolumetricFeatures(edemaIndices.size(), etumorIndices.size(), necoreIndices.size(), brainIndices.size());
-  VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(labelImagePointer, atlasImagePointer);
+
+  VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(RevisedImages, atlasImagePointer);
   //VectorDouble spatialLocationFeatures = GetSpatialLocationFeatures<ImageType>(atlasImagePointer,templateImagePointer);
   //, templateImagePointer);
 
@@ -858,17 +862,115 @@ std::vector<typename ImageType::Pointer> SurvivalPredictor::RevisedTumorArea(con
 }
 
 template<class ImageType>
-VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageType::Pointer &labelImagePointer, const typename ImageType::Pointer &jacobtemplateImagePointer)
+VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const std::vector<typename ImageType::Pointer> &revisedimages,
+  const typename ImageType::Pointer &atlaswarpedImagePointer)
 {
-	std::vector<typename ImageType::Pointer> RevisedImages = RevisedTumorArea<ImageType>(labelImagePointer);
-	typename ImageType::Pointer tumorImage = RevisedImages[0];
-	typename ImageType::Pointer etumorImage = RevisedImages[1];
-	typename ImageType::Pointer ncrImage = RevisedImages[2];
+  typename ImageType::Pointer roi21ImagePointer = ImageType::New();
+  roi21ImagePointer->CopyInformation(atlaswarpedImagePointer);
+  roi21ImagePointer->SetRequestedRegion(atlaswarpedImagePointer->GetLargestPossibleRegion());
+  roi21ImagePointer->SetBufferedRegion(atlaswarpedImagePointer->GetBufferedRegion());
+  roi21ImagePointer->Allocate();
+  roi21ImagePointer->FillBuffer(0);
 
+  typename ImageType::Pointer roi9ImagePointer = ImageType::New();
+  roi9ImagePointer->CopyInformation(atlaswarpedImagePointer);
+  roi9ImagePointer->SetRequestedRegion(atlaswarpedImagePointer->GetLargestPossibleRegion());
+  roi9ImagePointer->SetBufferedRegion(atlaswarpedImagePointer->GetBufferedRegion());
+  roi9ImagePointer->Allocate();
+  roi9ImagePointer->FillBuffer(0);
+
+  typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
+  IteratorType roi9It(roi9ImagePointer, roi9ImagePointer->GetLargestPossibleRegion()); 
+  IteratorType roi21It(roi21ImagePointer, roi21ImagePointer->GetLargestPossibleRegion());
+  IteratorType atlasIt(atlaswarpedImagePointer, atlaswarpedImagePointer->GetLargestPossibleRegion());
+
+  atlasIt.GoToBegin();
+  roi21It.GoToBegin();
+  while (!atlasIt.IsAtEnd())
+  {
+    if (atlasIt.Get() == 1 || atlasIt.Get() == 10 || atlasIt.Get() == 106 || atlasIt.Get() == 114 || atlasIt.Get() == 17 || atlasIt.Get() == 2 || atlasIt.Get() == 5 || atlasIt.Get() == 6 || atlasIt.Get() == 75)
+      roi21It.Set(301);
+    else if (atlasIt.Get() == 100 || atlasIt.Get() == 125 || atlasIt.Get() == 130 || atlasIt.Get() == 139 || atlasIt.Get() == 140 || atlasIt.Get() == 145 || atlasIt.Get() == 165 || atlasIt.Get() == 21 || atlasIt.Get() == 26 || atlasIt.Get() == 36 || atlasIt.Get() == 59 || atlasIt.Get() == 86 || atlasIt.Get() == 99)
+      roi21It.Set(302);
+    else if (atlasIt.Get() == 101 || atlasIt.Get() == 118 || atlasIt.Get() == 119 || atlasIt.Get() == 18 || atlasIt.Get() == 196 || atlasIt.Get() == 61 || atlasIt.Get() == 62 || atlasIt.Get() == 64 || atlasIt.Get() == 83 || atlasIt.Get() == 92 || atlasIt.Get() == 94 || atlasIt.Get() == 95 || atlasIt.Get() == 96)
+      roi21It.Set(303);
+    else if (atlasIt.Get() == 102 || atlasIt.Get() == 33 || atlasIt.Get() == 72)
+      roi21It.Set(304);
+    else if (atlasIt.Get() == 105 || atlasIt.Get() == 107 || atlasIt.Get() == 110 || atlasIt.Get() == 19 || atlasIt.Get() == 32 || atlasIt.Get() == 60 || atlasIt.Get() == 88)
+      roi21It.Set(305);
+    else if (atlasIt.Get() == 108)
+      roi21It.Set(306);
+    else if (atlasIt.Get() == 11 || atlasIt.Get() == 128 || atlasIt.Get() == 16 || atlasIt.Get() == 35 || atlasIt.Get() == 53)
+      roi21It.Set(307);
+    else if (atlasIt.Get() == 112 || atlasIt.Get() == 132 || atlasIt.Get() == 175 || atlasIt.Get() == 38 || atlasIt.Get() == 45 || atlasIt.Get() == 63 || atlasIt.Get() == 97)
+      roi21It.Set(308);
+    else if (atlasIt.Get() == 12 || atlasIt.Get() == 14 || atlasIt.Get() == 34 || atlasIt.Get() == 39 || atlasIt.Get() == 43)
+      roi21It.Set(309);
+    else if (atlasIt.Get() == 133)
+      roi21It.Set(310);
+    else if (atlasIt.Get() == 136 || atlasIt.Get() == 15 || atlasIt.Get() == 30 || atlasIt.Get() == 50 || atlasIt.Get() == 70 || atlasIt.Get() == 80 || atlasIt.Get() == 85 || atlasIt.Get() == 9 || atlasIt.Get() == 90)
+      roi21It.Set(311);
+    else if (atlasIt.Get() == 137 || atlasIt.Get() == 159 || atlasIt.Get() == 41 || atlasIt.Get() == 52 || atlasIt.Get() == 56 || atlasIt.Get() == 57 || atlasIt.Get() == 74)
+      roi21It.Set(312);
+    else if (atlasIt.Get() == 154 || atlasIt.Get() == 251 || atlasIt.Get() == 37 || atlasIt.Get() == 54 || atlasIt.Get() == 69 || atlasIt.Get() == 73 || atlasIt.Get() == 98)
+      roi21It.Set(313);
+    else if (atlasIt.Get() == 20)
+      roi21It.Set(314);
+    else if (atlasIt.Get() == 203 || atlasIt.Get() == 23 || atlasIt.Get() == 25)
+      roi21It.Set(315);
+    else if (atlasIt.Get() == 254)
+      roi21It.Set(316);
+    else if (atlasIt.Get() == 27)
+      roi21It.Set(317);
+    else if (atlasIt.Get() == 29)
+      roi21It.Set(318);
+    else if (atlasIt.Get() == 4)
+      roi21It.Set(319);
+    else if (atlasIt.Get() == 67 || atlasIt.Get() == 76)
+      roi21It.Set(320);
+    else if (atlasIt.Get() == 7)
+      roi21It.Set(321);
+
+    ++atlasIt;
+    ++roi21It;
+  }
+
+  roi21It.GoToBegin();
+  while (!roi21It.IsAtEnd())
+  {
+    roi21It.Set(roi21It.Get() - 300);
+    ++roi21It;
+  }
+  roi9It.GoToBegin();
+  roi21It.GoToBegin();
+  while (!roi21It.IsAtEnd())
+  {
+    if (roi21It.Get() == 1 || roi21It.Get() == 11)
+      roi9It.Set(1);
+    else if (roi21It.Get() == 2 || roi21It.Get() == 3)
+      roi9It.Set(2);
+    else if (roi21It.Get() == 5 || roi21It.Get() == 12)
+      roi9It.Set(3);
+    else if (roi21It.Get() == 4 || roi21It.Get() == 7 || roi21It.Get() == 9 || roi21It.Get() == 15)
+      roi9It.Set(4);
+    else if (roi21It.Get() == 6 || roi21It.Get() == 14 || roi21It.Get() == 19)
+      roi9It.Set(5);
+    else if (roi21It.Get() == 10 || roi21It.Get() == 16 || roi21It.Get() == 17 || roi21It.Get() == 18 || roi21It.Get() == 21)
+      roi9It.Set(6);
+    else if (roi21It.Get() == 8 || roi21It.Get() == 13)
+      roi9It.Set(7);
+    else if (roi21It.Get() == 20)
+      roi9It.Set(8);
+    else if (roi21It.Get() == 14)
+      roi9It.Set(9);
+    ++roi21It;
+    ++roi9It;
+  }
+	typename ImageType::Pointer tumorImage = revisedimages[0];
 	typename ImageType::Pointer localizeImage = ImageType::New();
-	localizeImage->CopyInformation(labelImagePointer);
-	localizeImage->SetRequestedRegion(labelImagePointer->GetLargestPossibleRegion());
-	localizeImage->SetBufferedRegion(labelImagePointer->GetBufferedRegion());
+	localizeImage->CopyInformation(atlaswarpedImagePointer);
+	localizeImage->SetRequestedRegion(atlaswarpedImagePointer->GetLargestPossibleRegion());
+	localizeImage->SetBufferedRegion(atlaswarpedImagePointer->GetBufferedRegion());
 	localizeImage->Allocate();
 	localizeImage->FillBuffer(0);
 
@@ -876,18 +978,17 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const typename ImageT
 	typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
 	IteratorType tumorIt(tumorImage, tumorImage->GetLargestPossibleRegion());
 	IteratorType localizeIt(localizeImage, localizeImage->GetLargestPossibleRegion());
-	IteratorType atlasIt(jacobtemplateImagePointer, jacobtemplateImagePointer->GetLargestPossibleRegion());
 
-	atlasIt.GoToBegin();
+	roi9It.GoToBegin();
 	tumorIt.GoToBegin();
 	localizeIt.GoToBegin();
 
 	while (!tumorIt.IsAtEnd())
 	{
-		localizeIt.Set(tumorIt.Get()*atlasIt.Get());
+		localizeIt.Set(tumorIt.Get()*roi9It.Get());
 		++localizeIt;
 		++tumorIt;
-		++atlasIt;
+		++roi9It;
 	}
 	//find number of voxels in 9 ROIs
 	VectorDouble location;
