@@ -1148,6 +1148,11 @@ void fMainWindow::appDownload(std::string currentApp)
 {
   std::string downloadLink = m_appDownloadConfigs["apps"][currentApp]["Link"].as<std::string>();
 
+  ShowErrorMessage(downloadFolder);
+  if (!cbica::directoryExists(downloadFolder)) {
+    ShowErrorMessage("no dir");
+  }
+
   appDownloadDialog.SetDownloadPath(downloadFolder);
   appDownloadDialog.SetDownloadLink(downloadLink);
   appDownloadDialog.exec();

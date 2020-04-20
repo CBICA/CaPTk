@@ -252,7 +252,7 @@ inline std::string getApplicationDownloadPath(std::string appName)
 // #ifdef CAPTK_PACKAGE_PROJECT
 // #ifndef __APPLE__
     auto fullPath = downloadFolder + appName + "/" + appName_wrap + winExt;
-    // ShowErrorMessage(fullPath);
+    ShowErrorMessage("FULLPATH " + fullPath);
 
     if (cbica::isFile(fullPath)) {
 

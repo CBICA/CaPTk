@@ -70,7 +70,6 @@ void fAppDownloadDialog::ConfirmButtonPressed()
     progressDialog->setWindowTitle(tr("HTTP"));
     progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
 
-
     startRequest(url);
 
     this->close();
