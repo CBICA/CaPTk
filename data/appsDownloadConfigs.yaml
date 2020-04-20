@@ -2,23 +2,25 @@ version: v1.0
 class: DownloadConfigs
 apps:
   confetti:
-    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/confetti.zip
-    Downloaded: 0
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/confetti.zip
   dcm2nii:
-    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/dcm2nii.zip
-    Downloaded: 0
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/dcm2nii.zip
+    Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/dcm2nii.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/dcm2nii.zip
   libra:
-    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/libra.zip
-    Downloaded: 0
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/libra.zip
+    Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/libra.zip
   deepmedic:
-    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/deepmedic.zip
-    Downloaded: 0
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/deepmedic.zip
+    Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/deepmedic.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/deepmedic.zip
   itksnap:
-    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/itksnap.zip
-    Downloaded: 0
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/itksnap.zip
+    Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/itksnap.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/itksnap.zip
   theia:
-    Link: https://github.com/CBICA/precompiledBinaries/raw/master/windows/theia.zip
-    Downloaded: 0
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/theia.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/theia.zip
 hints:
   SoftwareRequirement:
     packages:

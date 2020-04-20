@@ -1146,12 +1146,19 @@ void fMainWindow::about()
 
 void fMainWindow::appDownload(std::string currentApp)
 {
-  std::string downloadLink = m_appDownloadConfigs["apps"][currentApp]["Link"].as<std::string>();
+  std::string linkyml = "";
 
-  ShowErrorMessage(downloadFolder);
-  if (!cbica::directoryExists(downloadFolder)) {
-    ShowErrorMessage("no dir");
-  }
+#ifdef _WIN32
+  linkyml = "Windows";
+#elif __APPLE__
+  linkyml = "macOS";
+#else
+  linkyml = "Linux";
+#endif
+
+  std::string downloadLink = m_appDownloadConfigs["apps"][currentApp][linkyml].as<std::string>();
+
+  ShowErrorMessage(downloadLink);
 
   appDownloadDialog.SetDownloadPath(downloadFolder);
   appDownloadDialog.SetDownloadLink(downloadLink);
