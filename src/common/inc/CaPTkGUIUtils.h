@@ -220,8 +220,16 @@ inline std::string getApplicationDownloadPath(std::string appName)
 
   auto appName_wrap = appName;
 
-  if ((appName_wrap.find("libra") != std::string::npos) || (appName_wrap.find("itksnap") != std::string::npos))
+  if (appName_wrap.find("libra") != std::string::npos)
   {
+#if WIN32
+    winExt = ".bat";
+#elif linux
+    appName_wrap = "bin/" + appName_wrap;
+    winExt = "";
+#endif
+  }
+  else if (appName_wrap.find("itksnap") != std::string::npos) {
 #if WIN32
     winExt = ".bat";
 #elif linux
@@ -252,7 +260,6 @@ inline std::string getApplicationDownloadPath(std::string appName)
 // #ifdef CAPTK_PACKAGE_PROJECT
 // #ifndef __APPLE__
     auto fullPath = downloadFolder + appName + "/" + appName_wrap + winExt;
-    ShowErrorMessage("FULLPATH " + fullPath);
 
     if (cbica::isFile(fullPath)) {
 

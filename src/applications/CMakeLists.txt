@@ -332,75 +332,75 @@ FOREACH(subdir ${SUBDIRECTORIES})
 
   ENDIF()
 
-  IF (BUILD_LIBRASINGLE AND (${subdir} STREQUAL "libra"))
+  # IF (BUILD_LIBRASINGLE AND (${subdir} STREQUAL "libra"))
   
-    SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} librasingle librabatch" CACHE STRING "Available stand-alone apps" FORCE)
-    # ALSO add this to CAPTK_BRREAST_APPS
+  #   SET( CAPTK_APP_LIST_PY_GUI "${CAPTK_APP_LIST_PY_GUI} librasingle librabatch" CACHE STRING "Available stand-alone apps" FORCE)
+  #   # ALSO add this to CAPTK_BRREAST_APPS
 
-    IF(WIN32)
-      INSTALL(FILES ${SUBDIRPATH}/libra.exe
-        DESTINATION bin
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      )
-      INSTALL(FILES ${SUBDIRPATH}/libra.bat
-        DESTINATION bin
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      )
-      INSTALL(DIRECTORY "${SUBDIRPATH}/Mathworks" DESTINATION bin)
+  #   IF(WIN32)
+  #     INSTALL(FILES ${SUBDIRPATH}/libra.exe
+  #       DESTINATION bin
+  #       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #     )
+  #     INSTALL(FILES ${SUBDIRPATH}/libra.bat
+  #       DESTINATION bin
+  #       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #     )
+  #     INSTALL(DIRECTORY "${SUBDIRPATH}/Mathworks" DESTINATION bin)
 
-    ELSEIF( UNIX AND NOT APPLE )
+  #   ELSEIF( UNIX AND NOT APPLE )
       
-      IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
-        IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
+  #     IF( NOT EXISTS "${SUBDIRPATH}/MCR" )
+  #       IF( EXISTS "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" )
         
-          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-            WORKING_DIRECTORY ${SUBDIRPATH}
-            RESULT_VARIABLE RESULT_CODE
-          )
+  #         EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+  #           WORKING_DIRECTORY ${SUBDIRPATH}
+  #           RESULT_VARIABLE RESULT_CODE
+  #         )
           
-          IF( RESULT_CODE EQUAL 0 )
-            #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-            #  WORKING_DIRECTORY ${SUBDIRPATH}
-            #  RESULT_VARIABLE RESULT_CODE
-            #)
+  #         IF( RESULT_CODE EQUAL 0 )
+  #           #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+  #           #  WORKING_DIRECTORY ${SUBDIRPATH}
+  #           #  RESULT_VARIABLE RESULT_CODE
+  #           #)
             
-          ENDIF()
-        ELSE()
-          FILE(DOWNLOAD "ftp://www.nitrc.org/home/groups/captk/downloads/MCR.zip" "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+  #         ENDIF()
+  #       ELSE()
+  #         FILE(DOWNLOAD "ftp://www.nitrc.org/home/groups/captk/downloads/MCR.zip" "${PROJECT_SOURCE_DIR}/binaries/MCR.zip" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
           
-          EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E unzip ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-            WORKING_DIRECTORY ${SUBDIRPATH}
-            RESULT_VARIABLE RESULT_CODE
-          )
+  #         EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E unzip ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+  #           WORKING_DIRECTORY ${SUBDIRPATH}
+  #           RESULT_VARIABLE RESULT_CODE
+  #         )
           
-          IF( RESULT_CODE EQUAL 0 )
-            #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
-            #  WORKING_DIRECTORY ${SUBDIRPATH}
-            #  RESULT_VARIABLE RESULT_CODE
-            #)
+  #         IF( RESULT_CODE EQUAL 0 )
+  #           #EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E  remove -f ${PROJECT_SOURCE_DIR}/binaries/MCR.zip
+  #           #  WORKING_DIRECTORY ${SUBDIRPATH}
+  #           #  RESULT_VARIABLE RESULT_CODE
+  #           #)
             
-          ENDIF()
-        ENDIF()
-      ENDIF()
+  #         ENDIF()
+  #       ENDIF()
+  #     ENDIF()
       
-      INSTALL(CODE "execute_process(COMMAND dos2unix ${SUBDIRPATH}/bin/libra)")
-      INSTALL(CODE "execute_process(COMMAND chmod 755 matlab_helper ${SUBDIRPATH}/MCR/v84/bin/glnxa64/matlab_helper)")
-      INSTALL(FILES ${SUBDIRPATH}/bin/libra
-        DESTINATION bin
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      )
-      INSTALL(FILES ${SUBDIRPATH}/libexec/libra
-        DESTINATION libexec
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      )
-      INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
-        DESTINATION libexec
-        # PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
-        USE_SOURCE_PERMISSIONS
-      )
-    ENDIF()
+  #     INSTALL(CODE "execute_process(COMMAND dos2unix ${SUBDIRPATH}/bin/libra)")
+  #     INSTALL(CODE "execute_process(COMMAND chmod 755 matlab_helper ${SUBDIRPATH}/MCR/v84/bin/glnxa64/matlab_helper)")
+  #     INSTALL(FILES ${SUBDIRPATH}/bin/libra
+  #       DESTINATION bin
+  #       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #     )
+  #     INSTALL(FILES ${SUBDIRPATH}/libexec/libra
+  #       DESTINATION libexec
+  #       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  #     )
+  #     INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
+  #       DESTINATION libexec
+  #       # PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
+  #       USE_SOURCE_PERMISSIONS
+  #     )
+  #   ENDIF()
 
-  ENDIF()
+  # ENDIF()
 
   IF (BUILD_ITKSNAP AND (${subdir} STREQUAL "itksnap"))
 

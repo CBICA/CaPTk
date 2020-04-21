@@ -113,7 +113,7 @@ RUN_FIXES () {
   # so we just manually do it
   # In addition LIBRA needs the Matlab runtime with one VERY SPECIFIC file
   # to be marked as executable or else the whole thing WILL NOT work. We'll get to that in a second.
-  echo "[:] Adding LIBRA..."
+  # echo "[:] Adding LIBRA..."
   cd ${SRC_DIR}
   # # nothing do here since the installation has happened via CMake
   # cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
@@ -146,8 +146,8 @@ RUN_FIXES () {
   echo "[:] Marking MATLAB binaries as executable..."
 
   # # The magic file that we need to be executable from earlier
-  cd ./libexec/MCR/v84/bin/glnxa64
-  chmod +x matlab_helper
+  # cd ./libexec/MCR/v84/bin/glnxa64
+  # chmod +x matlab_helper
   # cd ${USR_DIR}/libexec/MCR/v84/etc/glnxa64
   # chmod +x MLM
   # chmod +x lmgrd
@@ -163,8 +163,8 @@ RUN_FIXES () {
   echo "[:] Running dos2unix..."
 
   # Libra needs it
-  dos2unix libra
-  chmod +x libra
+  # dos2unix libra
+  # chmod +x libra
   # So does confetti
   dos2unix ConfettiGUI.py
   chmod +x ConfettiGUI.py
@@ -172,7 +172,7 @@ RUN_FIXES () {
   cd ../libexec
   dos2unix ConfettiCore.py
   chmod +x ConfettiCore.py
-  chmod +x libra
+  # chmod +x libra
 
   # Go back up to install root, we're done with our fixes.
   cd ${INSTALL_DIR}
