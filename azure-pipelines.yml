@@ -781,7 +781,7 @@ jobs:
         rm -rf 5.12.1
 
         ls externalApps
-        ls externalApps/linux/
+        ls externalApps/binaries_linux/
 
         make -j2
         make install/strip
