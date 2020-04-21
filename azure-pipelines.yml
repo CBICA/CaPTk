@@ -780,6 +780,9 @@ jobs:
         rm -rf qt.zip
         rm -rf 5.12.1
 
+        ls externalApps
+        ls externalApps/linux/
+
         make -j2
         make install/strip
       displayName: 'Configure and compile CaPTk'
