@@ -1166,8 +1166,7 @@ void fMainWindow::appDownload(std::string currentApp)
 
 void fMainWindow::unzipArchive(QString fullPath, QString extractPath) 
 {
-  ShowErrorMessage(fullPath.toStdString() + " ep " + extractPath.toStdString());
-
+  // ShowErrorMessage(fullPath.toStdString() + " ep " + extractPath.toStdString());
   QZipReader zr(fullPath);
   bool ret = zr.extractAll(extractPath);
 }

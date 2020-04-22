@@ -52,7 +52,8 @@ public:
   void SetPaths(std::string inputPath, std::string currentApp)
   {
     downloadPath = QString::fromStdString(inputPath);
-    extractPath = QString::fromStdString(inputPath + "/" + currentApp);
+    // extractPath = QString::fromStdString(inputPath + currentApp);
+    extractPath = QString::fromStdString(inputPath);
   }
 
   void SetDownloadLink(std::string inputLink) {

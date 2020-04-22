@@ -17,13 +17,9 @@
 \verbatim
 chmod +x CaPTk_${Version}.bin
 \endverbatim
-- To install CaPTk to the current directory where the AppImage was downloaded, run the following command:
+- To install CaPTk, run the following command:
 \verbatim
-./CaPTk_${Version}.bin
-\endverbatim
-- To specify a preferred directory to install CaPTk, run the following command:
-\verbatim
-./CaPTk_${Version}.bin --target {path_to_preferred_directory}
+./CaPTk_${Version}.bin --target {path_to_your_choice_of_directory}
 \endverbatim
 - Follow prompts to install.
 
