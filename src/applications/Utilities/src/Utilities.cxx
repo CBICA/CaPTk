@@ -15,6 +15,10 @@
 #include "itkExtractImageFilter.h"
 #include "itkLabelOverlapMeasuresImageFilter.h"
 #include "itkHausdorffDistanceImageFilter.h"
+#include "itkCSVArray2DFileReader.h"
+#include "itkCSVNumericObjectFileWriter.h"
+
+#include "vtkAnatomicalOrientation.h"
 
 #include "cbicaDCMQIWrapper.h"
 
@@ -55,6 +59,7 @@ int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator = "LINEAR", dicomSegJSON, orientationDesired, coordinateToTransform, referenceMaskForSimilarity;
 std::string dicomFolderPath;
+std::string inputBvecFile;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
@@ -64,6 +69,55 @@ float imageStack2JoinSpacing = 1.0;
 int joinedImage2stackedAxis;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
+
+using MatrixType = vnl_matrix<double>;
+
+MatrixType ReadBvecFile(std::string filename)
+{
+    using CSVFileReaderType = itk::CSVArray2DFileReader<double>;
+    //read bvec file
+    CSVFileReaderType::Pointer csvreader = CSVFileReaderType::New();
+
+    itk::SizeValueType rows;
+    itk::SizeValueType cols;
+    try
+    {
+        csvreader->SetFileName(filename);
+        csvreader->SetFieldDelimiterCharacter(' ');
+        csvreader->HasColumnHeadersOff();
+        csvreader->HasRowHeadersOff();
+        csvreader->Parse();
+        csvreader->GetDataDimension(rows, cols);
+    }
+    catch (const std::exception& e1)
+    {
+        std::cout << "Cannot find the specified bvec file. Error code : " + std::string(e1.what());
+    }
+    MatrixType dataMatrix(rows, cols); // give data matrix a definite size
+    dataMatrix = csvreader->GetArray2DDataObject()->GetMatrix();
+    return dataMatrix;
+}
+
+bool WriteBvecFile(MatrixType matrix, std::string filename)
+{
+    using WriterType = itk::CSVNumericObjectFileWriter<double>;
+    WriterType::Pointer writer = WriterType::New();
+
+    try {
+        writer->SetInput(&matrix);
+        writer->SetFileName(filename);
+        writer->SetFieldDelimiterCharacter(' ');
+        writer->Update();
+    }
+    catch (...) {
+        std::cout << "File writing failed. Check permissions, etc." << std::endl;
+        return false;
+    }
+
+    return true;
+
+}
+
 
 template< class TImageType >
 int algorithmsRunner()
@@ -830,7 +884,10 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
   parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
-  parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e");
+  parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image in \"from\" convention", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e",
+      "Use the -bv or --bvec option to reorient an accompanying bvec file." );
+  parser.addOptionalParameter("bv", "bvec", cbica::Parameter::FILE, "bvec file to reorient", "The bvec file to reorient alongside the corresponding image", "For correct output, the given file should be in the same orientation as the input image",
+      "This option can only be used alongside the -or or --orient options.");
   parser.addOptionalParameter("thA", "threshAbove", cbica::Parameter::FLOAT, "Desired_Threshold", "The intensity ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
   parser.addOptionalParameter("thB", "threshBelow", cbica::Parameter::FLOAT, "Desired_Threshold", "The intensity BELOW which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
   parser.addOptionalParameter("tAB", "threshAnB", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensities outside Lower and Upper thresholds will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
@@ -981,6 +1038,10 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("or", orientationDesired);
     requestedAlgorithm = OrientImage;
+    if (parser.isPresent("bv"))
+    {
+        parser.getParameterValue("bv", inputBvecFile);
+    }
   }
   else if (parser.isPresent("tb"))
   {
@@ -1311,6 +1372,7 @@ int main(int argc, char** argv)
       std::cout << "Original Image Orientation: " << output.first << "\n";
       std::string path, base, ext;
       cbica::splitFileName(outputImageFile, path, base, ext);
+
       if (ext.find(".nii") != std::string::npos)
       {
         std::cerr << "WARNING: NIfTI files do support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
@@ -1340,6 +1402,8 @@ int main(int argc, char** argv)
 
     if (requestedAlgorithm == OrientImage) // this does not work for 2 or 4-D images
     {
+      typedef vnl_matrix<double> MatrixType;
+
       using OrientationImageType = itk::Image< float, 3 >;
       auto imageSize = inputImageInfo.GetImageSize();
 
@@ -1362,6 +1426,18 @@ int main(int argc, char** argv)
       auto joinFilter = itk::JoinSeriesImageFilter< OrientationImageType, ImageType >::New();
 
       bool originalOrientationOutput = false;
+      std::string originalOrientation;
+
+      // make orientations uniform uppercase
+      std::transform(orientationDesired.begin(), orientationDesired.end(), orientationDesired.begin(), ::toupper);
+      vtkAnatomicalOrientation vtkDesiredOrientation(orientationDesired);
+      vtkAnatomicalOrientation vtkOriginalOrientation; // will be read into from the input image orientation
+      if (!vtkDesiredOrientation.IsValid()) // preliminary check usin
+      {
+          std::cout << "Cannot reorient: desired orientation \" " + orientationDesired + 
+              "\"" + "is not a valid orientation." << std::endl;
+          return(EXIT_FAILURE);
+      }
       // loop through time points
       for (size_t i = 0; i < imageSize[3]; i++)
       {
@@ -1377,7 +1453,9 @@ int main(int argc, char** argv)
         auto output = cbica::GetImageOrientation< OrientationImageType >(CurrentTimePoint, orientationDesired);
         if (!originalOrientationOutput)
         {
-          std::cout << "Original Image Orientation: " << output.first << "\n";
+          originalOrientation = output.first;
+          std::cout << "Original Image Orientation: " << originalOrientation << "\n";
+          vtkOriginalOrientation.SetForAcronym(originalOrientation);
           originalOrientationOutput = true;
         }
 
@@ -1399,6 +1477,26 @@ int main(int argc, char** argv)
       {
         cbica::WriteImage< ImageType >(joinFilter->GetOutput(), outputImageFile);
       }
+      std::cout << "Finished reorienting " + inputImageFile + " (" + originalOrientation + ") to "
+          + outputImageFile + " (" + orientationDesired + ")" << std::endl;
+      if (!inputBvecFile.empty())
+      {
+          std::cout << "Reorienting supplied bvec file to " + orientationDesired << std::endl;
+          std::string bvecOutputFile = path + "/" + base + ".bvec"; // same basename as output image
+
+          double transform[9] = { 0.0 };
+          vtkOriginalOrientation.GetTransformTo(vtkDesiredOrientation, transform);
+          MatrixType transformMatrix(3, 3, 9, transform);
+          MatrixType dataMatrix = ReadBvecFile(inputBvecFile);
+          MatrixType resultMatrix(dataMatrix); // same shape as data
+          resultMatrix = dataMatrix.transpose() * transformMatrix; // apply the transform
+          resultMatrix.inplace_transpose(); // transpose back to original shape
+          bool writeSucceeded = WriteBvecFile(resultMatrix, bvecOutputFile);
+          if (!writeSucceeded) 
+          {
+              return EXIT_FAILURE;
+          }
+      }
       return EXIT_SUCCESS;
     }
 
@@ -1413,3 +1511,5 @@ int main(int argc, char** argv)
 
   return EXIT_SUCCESS;
 }
+
+
