@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.6</span>
+   &#160;<span id="projectnumber">1.7.7.nonRelease.20200417.860a432b</span>
    </div>
   </td>
  </tr>
@@ -64,27 +64,20 @@ $(document).ready(function(){initNavTree('Glioblastoma_Atlas.html',''); initResi
 <div class="textblock"><p>This application facilitates the users to generate population atlases for patients with different tumor subgroups [1] to emphasize their heterogeneity.</p>
 <p><b>REQUIREMENTS:</b></p><ol type="1">
 <li>Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4)</li>
-<li>Groups: A csv file having patient's label file name e.g. SegmentationLabel.nii.gz (in first column) and group (in second column). (Note that the CSV file should be in ASCII format)</li>
-<li>Standard atlas: A standard atlas to map all the patients in a unified space.</li>
-<li>The data (segmentation label files) of multiple patients should reside under the same folder, e.g.:<ul>
-<li>Data_of_multiple_patients<ol type="a">
-<li>Subject_ID1.nii.gz</li>
-<li>Subject_ID2.nii.gz</li>
-<li>...</li>
-<li>Subject_IDn.nii.gz</li>
-</ol>
-</li>
-</ul>
-</li>
+<li>Standard atlas: A standard atlas to map all the patients in a unified space. Atlas should have region numbers in the ascending order, such as 1,2,3,...,n.</li>
+<li>Batch File: A csv file having patients' IDs, group (atlas) number, and path to the actual segmented image. Atlas numbers should be in the ascending order, such as 1,2,3,...,n. Segmentation images should be in the same space as the standard atlas (Note that the CSV file should be in ASCII format, and the CSV file should have the following column headers in any sequence: PATIENT_IDS,IMAGES, ATLAS_LABELS).</li>
 </ol>
 <p><b>USAGE:</b></p><ol type="1">
 <li>Launch the Population Atlases application using the 'Applications -&gt; Population Atlas' menu option.</li>
-<li>Specify the Input (e.g., Data_of_multiple_patients) and Output directories, groups and atlas files.</li>
-<li>Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window. <br  />
+<li>Specify the Input batch file (e.g., Data_of_multiple_patients), Atlas file, and Output directories.</li>
+<li>Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window.<ol type="a">
+<li>The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory. <br  />
+</li>
+</ol>
 </li>
 </ol>
 <ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -l C:/GroupFile -a C:/AtlasFile -o C:/populationAtlasesOutput
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -a C:/AtlasFile -o C:/populationAtlasesOutput
 </pre></li>
 </ul>
 <hr  />

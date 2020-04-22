@@ -278,7 +278,6 @@ private:
   QMenu* menuLoadFileDicom;
   QMenu* menuLoadFileNifti;
   QMenu* menuDownload;
-
   QMenu* menuApp;
   QMenu* menuPreprocessing;
   QMenu* menuDeepLearning;
@@ -288,6 +287,8 @@ private:
   QAction *helpMenu_download;
   QAction *help_forum;
   QAction *help_bugs;
+  QAction *help_features;
+
   //-------------actions-------------
 
   QAction *actionLoad_Recurrence_Images;
@@ -869,7 +870,7 @@ public slots:
   /**
   \brief Generate population atlas
   */
-  void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputImageFile);
+  void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputatlas, const std::string outputImageFile);
 
   /**
   \brief Generete SBRT Nodule
@@ -1444,7 +1445,10 @@ public slots:
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
   //! Performs the registration
-  void Registration(std::string fixedfilename, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
+  void Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
+    std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, 
+    std::string metrics, bool rigidMode, bool affineMode, bool deformMode, 
+    std::string radii, std::string iterations);
 
   //confirm before exit
   void closeEvent(QCloseEvent * event);

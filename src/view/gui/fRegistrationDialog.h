@@ -32,7 +32,7 @@ class fRegistrationDialog : public QDialog, private Ui::fRegistrationDialog
 public:
     fRegistrationDialog();
     ~fRegistrationDialog();
-    bool affineMode = true, registrationMode = true;
+    bool affineMode = true, rigidMode = true, deformMode = false;
     std::string metric = "NMI";
     std::string radius = "5x5x5";
     std::string m_iterations = "100x50x5";
@@ -64,6 +64,7 @@ public:
     void SelectMatrixFile5();
     void SelectedAffineMode();
     void SelectedRigidMode();
+    void SelectedDeformMode();
     void SelectedMetric(int index);
     void addMoreImages();
     void SelectGenerateMatrix(bool checked);
@@ -72,7 +73,13 @@ public:
     void getIterations(const QString iterations);
  
 signals:
-    void Registrationsignal(std::string fixedfilename, std::vector<std::string> inputfilenames, std::vector<std::string> outputfilenames, std::vector<std::string> matrixfilenames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
+    void RegistrationSignal(std::string fixedfilename, 
+      std::vector<std::string> inputfilenames, 
+      std::vector<std::string> outputfilenames, 
+      std::vector<std::string> matrixfilenames, 
+      std::string metrics, 
+      bool rigidMode, bool affineMode, bool deformMode, 
+      std::string radii, std::string iterations);
 };
 
 #endif

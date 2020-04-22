@@ -1337,60 +1337,74 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
             }
             else
             {
+              m_Radius_range.clear();
               m_Radius_range.push_back(std::atoi(currentValue.c_str()));
             }
           }
-          //else
-          //{
-          //  // sanity check
-          //  if (temp.size() != 3)
-          //  {
-          //    std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
-          //    exit(EXIT_FAILURE);
-          //  }
+          else
+          {
+            // sanity check
+            if (temp.size() != 3)
+            {
+              std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
+              exit(EXIT_FAILURE);
+            }
 
-          //  std::vector< int > tempRange;
+            std::vector< int > tempRange;
 
-          //  // check for world coordinates in full set
-          //  bool worldRadDetected = false;
-          //  for (size_t i = 0; i < temp.size(); i++)
-          //  {
-          //    if (temp[i].find(".") != std::string::npos) // this means that the distance is float
-          //    {
-          //      worldRadDetected = true;
-          //      break;
-          //    }
-          //  }
+            // check for world coordinates in full set
+            bool worldRadDetected = false;
+            for (size_t i = 0; i < temp.size(); i++)
+            {
+              // sanity checks
+              if (temp[i].empty())
+              {
+                std::cerr << "Cannot pass an empty argument to the radius range.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[i].find("-") != std::string::npos)
+              {
+                std::cerr << "Radius cannot be negative.\n";
+                exit(EXIT_FAILURE);
+              }
 
-          //  // if a single value is detected in world coordinates, process the entire set the same way
-          //  for (size_t i = 0; i < temp.size(); i++)
-          //  {
-          //    if (worldRadDetected)
-          //    {
-          //      tempRange.push_back(
-          //        GetRadiusInImageCoordinates(
-          //          std::atof(temp[i].c_str())));
-          //    }
-          //    else
-          //    {
-          //      tempRange.push_back(std::atoi(temp[i].c_str()));
-          //    }
-          //  }
+              if (temp[i].find(".") != std::string::npos) // this means that the distance is float
+              {
+                worldRadDetected = true;
+                break;
+              }
+            }
 
-          //  int min = tempRange[0],
-          //    max = tempRange[2],
-          //    range = tempRange[1];
+            // if a single value is detected in world coordinates, process the entire set the same way
+            for (size_t i = 0; i < temp.size(); i++)
+            {
+              if (worldRadDetected)
+              {
+                tempRange.push_back(
+                  GetRadiusInImageCoordinates(
+                    std::atof(temp[i].c_str())));
+              }
+              else
+              {
+                tempRange.push_back(std::atoi(temp[i].c_str()));
+              }
+            }
 
-          //  if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
-          //  {
-          //    std::swap(min, max);
-          //  }
-          //  // populate the full range
-          //  for (int rad = min; rad <= max; rad += range)
-          //  {
-          //    m_Radius_range.push_back(rad);
-          //  }
-          //} // else-loop end
+            int min = tempRange[0],
+              max = tempRange[2],
+              range = tempRange[1];
+
+            if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
+            {
+              std::swap(min, max);
+            }
+            m_Radius_range.clear();
+            // populate the full range
+            for (int rad = min; rad <= max; rad += range)
+            {
+              m_Radius_range.push_back(rad);
+            }
+          } // else-loop end
         }
         else if (outer_key == ParamsString[Neighborhood])
         {
@@ -1401,30 +1415,51 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
           auto temp = cbica::stringSplit(currentValue, ":");
           if (temp.size() == 1) // single value calculation
           {
+            m_Bins_range.clear();
             m_Bins_range.push_back(std::atoi(currentValue.c_str()));
           }
-          //else
-          //{
-          //  // sanity check
-          //  if (temp.size() != 3)
-          //  {
-          //    std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
-          //    exit(EXIT_FAILURE);
-          //  }
-          //  int min = std::atoi(temp[0].c_str()),
-          //    max = std::atoi(temp[2].c_str()),
-          //    range = std::atoi(temp[1].c_str());
+          else
+          {
+            // sanity check
+            if (temp.size() != 3)
+            {
+              std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
+              exit(EXIT_FAILURE);
+            }
+            for (size_t bin = 0; bin < temp.size(); bin++)
+            {
+              // sanity checks
+              if (temp[bin].empty())
+              {
+                std::cerr << "Cannot pass an empty argument to the bin range.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[bin].find("-") != std::string::npos)
+              {
+                std::cerr << "Bins cannot be negative.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[bin].find(".") != std::string::npos)
+              {
+                std::cerr << "Bins need to be integer values.\n";
+                exit(EXIT_FAILURE);
+              }
+            }
+            int min = std::atoi(temp[0].c_str()),
+              max = std::atoi(temp[2].c_str()),
+              range = std::atoi(temp[1].c_str());
 
-          //  if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
-          //  {
-          //    std::swap(min, max);
-          //  }
-          //  // populate the full range
-          //  for (int bin = min; bin <= max; bin += range)
-          //  {
-          //    m_Bins_range.push_back(bin);
-          //  }
-          //} // else-loop end
+            if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
+            {
+              std::swap(min, max);
+            }
+            m_Bins_range.clear();
+            // populate the full range
+            for (int bin = min; bin <= max; bin += range)
+            {
+              m_Bins_range.push_back(bin);
+            }
+          } // else-loop end
         }
         else if (outer_key == ParamsString[Bins_Min])
         {
@@ -1560,15 +1595,8 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         {
           if (currentValue == "0")
           {
-            m_wholeImageBinning = false;
+            m_keepNaNs = false;
           }
-        }
-        else if (outer_key == ParamsString[WholeImageBinning])
-        {
-        if (currentValue == "Remove")
-        {
-          m_keepNaNs = false;
-        }
         }
         else if (outer_key == ParamsString[LBPStyle])
         {
@@ -2193,9 +2221,12 @@ void FeatureExtraction< TImage >::Update()
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
           m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator_Image);
-          if (m_debug)
+          if (m_debug || m_writeIntermediateFiles)
           {
-            std::cout << "[DEBUG] Writing resampled image(s) to the output directory.\n";
+            if (m_debug)
+            {
+              std::cout << "[DEBUG] Writing resampled image(s) to the output directory.\n";
+            }
             cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/image_" + m_modality[i] +
               "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image +
               "_" + m_initializedTimestamp + ".nii.gz"));
@@ -2209,9 +2240,12 @@ void FeatureExtraction< TImage >::Update()
           roundingFilter->Update();
           m_Mask = roundingFilter->GetOutput();
         }
-        if (m_debug)
+        if (m_debug || m_writeIntermediateFiles)
         {
-          std::cout << "[DEBUG] Writing resampled mask to the output directory.\n";
+          if (m_debug)
+          {
+            std::cout << "[DEBUG] Writing resampled mask to the output directory.\n";
+          }
           cbica::WriteImage< TImage >(m_Mask, cbica::normPath(m_outputPath +
             "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + 
             "_" + m_initializedTimestamp + ".nii.gz"));
@@ -2313,7 +2347,7 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
-      cbica::ProgressBar progressBar(allROIs.size() + m_inputImages.size());
+      cbica::ProgressBar progressBar(allROIs.size() * m_inputImages.size());
       if (!m_debug)
       {
         std::cout << "Starting computation of selected features.\n";
@@ -2403,11 +2437,19 @@ void FeatureExtraction< TImage >::Update()
             }
 
             auto temp = m_Features.find(FeatureFamilyString[Intensity]);
+            SetFeatureParam("Intensity");
             std::get<2>(temp->second) = m_modality[i];
             std::get<3>(temp->second) = allROIs[j].label;
             CalculateIntensity(m_currentNonZeroImageValues, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
 
-            WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[Intensity], std::get<4>(temp->second), "N.A.", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+            std::string currentFeatureFamily = "Intensity";
+            if (!m_Bins_range.empty() && !m_Radius_range.empty())
+            {
+              currentFeatureFamily += "_Bins-" +
+                std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+            }
+
+            WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second), "N.A.", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
             if (m_debug)
             {
@@ -2450,6 +2492,13 @@ void FeatureExtraction< TImage >::Update()
                 {
                   auto tempT1 = std::chrono::high_resolution_clock::now();
 
+                  std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" +
+                    std::to_string(m_Bins_range[0]);
+                  if (!m_Radius_range.empty())
+                  {
+                    currentFeatureFamily += "_Radius-" + std::to_string(m_Radius_range[0]);
+                  }
+
                   //auto local_map = std::get<1>(temp->second);
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
@@ -2459,7 +2508,7 @@ void FeatureExtraction< TImage >::Update()
                     auto m_Bins_string = std::to_string(m_Bins);
                     CalculateHistogram(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
 
-                    WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string, std::get<4>(temp->second),
+                    WriteFeatures(m_modality[i], allROIs[j].label, std::string(currentFeatureFamily) + "_Bins-" + m_Bins_string, std::get<4>(temp->second),
                       "Bins=" + m_Bins_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
                   }
                   if (m_debug)
@@ -2485,15 +2534,23 @@ void FeatureExtraction< TImage >::Update()
                     std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
 
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]);
+
+                    if (!m_Bins_range.empty() && !m_Radius_range.empty())
+                    {
+                      currentFeatureFamily += "_Bins-" +
+                        std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+                    }
+
                     if (TImage::ImageDimension == 3)
                     {
                       CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                         "Axis=3D;Dimension=3D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
                       if (!writeFeatureMapsAndLattice && m_SliceComputation)
                       {
-                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        //std::string currentFeatureFamily = FeatureFamilyString[f];
                         CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[0], currentMask_patch, std::get<4>(temp->second));
                         WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
                           "Axis=X;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2538,16 +2595,24 @@ void FeatureExtraction< TImage >::Update()
 
                     std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
+                    
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]);
+
+                    if (!m_Bins_range.empty() && !m_Radius_range.empty())
+                    {
+                      currentFeatureFamily += "_Bins-" +
+                        std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+                    }
 
                     if (TImage::ImageDimension == 3)
                     {
                       CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                         "Axis=3D;Dimension=3D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
                       if (!writeFeatureMapsAndLattice && m_SliceComputation)
                       {
-                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        //std::string currentFeatureFamily = FeatureFamilyString[f];
                         CalculateVolumetric<TImage>(currentMask_patch_axisImages[0], std::get<4>(temp->second));
                         WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
                           "Axis=X;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -3130,9 +3195,18 @@ void FeatureExtraction< TImage >::Update()
                     m_Radius = m_Radius_range[r];
                     auto m_Radius_string = std::to_string(m_Radius);
 
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Radius-" 
+                      + std::to_string(m_Radius_range[r]);
+
+                    if (!m_Bins_range.empty())
+                    {
+                      currentFeatureFamily += "_Bins-" +
+                        std::to_string(m_Bins_range[0]);
+                    }
+
                     CalculateLBP(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
 
-                    WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
+                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                       "Neighborhood=" + std::to_string(m_neighborhood) + ";Radius=" + m_Radius_string + ";Style=" + std::to_string(m_LBPStyle), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
                   } // end radius-loop
 
@@ -3161,7 +3235,6 @@ void FeatureExtraction< TImage >::Update()
 
       if (!m_debug)
       {
-        ++progressBar; // gets it to 100%
         progressBar.display();
         progressBar.done();
         std::cout << "Finished calculating features, writing the output.\n";
