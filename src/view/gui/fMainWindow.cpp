@@ -1161,7 +1161,7 @@ void fMainWindow::appDownload(std::string currentApp)
   appDownloadDialog.SetDownloadLink(downloadLink);
   appDownloadDialog.exec();
 
-  connect( &appDownloadDialog, SIGNAL(doneDownload(std::string)), this, SLOT(unzipArchive(QString, QString)));    
+  connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(unzipArchive(QString, QString)));    
 }
 
 void fMainWindow::unzipArchive(QString fullPath, QString extractPath) 
