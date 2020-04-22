@@ -932,7 +932,7 @@ public slots:
   \brief For apps decoupling
   */
   void appDownload(std::string currentApp);
-  void fMainWindow::unzipArchive(QString fullPath, QString extractPath);
+  void unzipArchive(QString fullPath, QString extractPath);
 
   /**
   \brief Help for downloading Sample Data
