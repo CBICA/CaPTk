@@ -72,10 +72,7 @@
 
 #include <QFile>
 
-// #ifdef _WIN32
-//   #include "elzip.hpp"
-// #endif
-
+#include "qzipreader.h"
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
@@ -1160,20 +1157,19 @@ void fMainWindow::appDownload(std::string currentApp)
 
   // ShowErrorMessage(downloadLink);
 
-  appDownloadDialog.SetDownloadPath(downloadFolder);
+  appDownloadDialog.SetPaths(downloadFolder, currentApp);
   appDownloadDialog.SetDownloadLink(downloadLink);
   appDownloadDialog.exec();
 
-  connect( &appDownloadDialog, SIGNAL(doneDownload(std::string)), this, SLOT(unzipArchive(std::string)));    
+  connect( &appDownloadDialog, SIGNAL(doneDownload(std::string)), this, SLOT(unzipArchive(QString, QString)));    
 }
 
-void fMainWindow::unzipArchive(std::string fullPath) 
+void fMainWindow::unzipArchive(QString fullPath, QString extractPath) 
 {
-#ifdef _WIN32
-  // elz::extractZip(fullPath, downloadFolder);
-#else
-  std::system(("unzip " + fullPath + " -d " + downloadFolder).c_str());
-#endif
+  ShowErrorMessage(fullPath.toStdString() + " ep " + extractPath.toStdString());
+
+  QZipReader zr(fullPath);
+  bool ret = zr.extractAll(extractPath);
 }
 
 void fMainWindow::help_Interactions()

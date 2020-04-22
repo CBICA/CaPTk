@@ -54,6 +54,7 @@ SET( GUI
   AppearancePage
   CaPTkDockWidget
   fAppDownloadDialog
+  QZipReader
   #fSegmentationPanel
   #fHelpAppDialog
 )

@@ -37,6 +37,7 @@ public:
   // std::string m_baseModelDir;
 
   QString downloadPath;
+  QString extractPath;
   QString fullPath;
   std::string downloadLink;
 
@@ -48,9 +49,10 @@ public:
   qint64 fileSize;
   QString qInputLink;
 
-  void SetDownloadPath(const std::string inputPath)
+  void SetPaths(std::string inputPath, std::string currentApp)
   {
     downloadPath = QString::fromStdString(inputPath);
+    extractPath = QString::fromStdString(inputPath + "/" + currentApp);
   }
 
   void SetDownloadLink(std::string inputLink) {
@@ -76,7 +78,7 @@ public slots:
   void cancelDownload();
 
 signals:
-  void doneDownload(std::string fullPath);
+  void doneDownload(QString fullPath, QString extractPath);
 };
 
 #endif
