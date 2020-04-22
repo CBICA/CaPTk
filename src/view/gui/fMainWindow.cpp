@@ -72,7 +72,7 @@
 
 #include <QFile>
 
-#include "qzipreader.h"
+#include "QZipReader.h"
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
