@@ -264,6 +264,8 @@ public:
     QGroupBox* othersGroup = new QGroupBox("Operations");
     QHBoxLayout* operationsHLayout = new QHBoxLayout();
     QVBoxLayout* othersLayout = new QVBoxLayout();
+	QVBoxLayout* operationsV2Layout = new QVBoxLayout();
+
     othersLayout->addWidget(clearSelectedLabelButton);
     othersLayout->addWidget(clearAllLabelButton);
     othersLayout->addWidget(UndoButton);
