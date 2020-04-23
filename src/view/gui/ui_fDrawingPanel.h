@@ -299,9 +299,9 @@ public:
     changeLayout_V->addWidget(changeNewValues);
     changeLayout_V->addWidget(changeButton);
     changeGroup->setLayout(changeLayout_V);
-    changeGroup->setMaximumWidth(constButtonWidth20 + 15);
-    othersLayout->addWidget(changeGroup);
-    othersGroup->setLayout(othersLayout);
+    //changeGroup->setMaximumWidth(constButtonWidth20 + 15);
+    //othersLayout->addWidget(changeGroup);
+    //othersGroup->setLayout(othersLayout);
 
 	operationsHLayout->addLayout(othersLayout);
 	operationsHLayout->addLayout((operationsV2Layout));
