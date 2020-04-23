@@ -41,6 +41,7 @@ fDrawingPanel::fDrawingPanel(QWidget * parent) : QWidget(parent)
   connect(shapesSphereButton, SIGNAL(clicked()), this, SLOT(shapesSphereButtonFunctionality()));
   connect(HelpButton, SIGNAL(clicked()), this, SLOT(helpClicked()));
   connect(changeButton, SIGNAL(clicked()), this, SLOT(ChangeLabelValuesClicked()));
+  connect(applyMaskButton, SIGNAL(clicked()), this, SLOT(OnApplyMaskButtonClicked()));
 }
 
 void fDrawingPanel::helpClicked()
@@ -135,6 +136,5 @@ void fDrawingPanel::FillButtonFunctionality()
 
 void fDrawingPanel::OnApplyMaskButtonClicked()
 {
-	std::cout << "OnApplyMaskButtonClicked" << std::endl;
 	emit ApplyMask();
 }
