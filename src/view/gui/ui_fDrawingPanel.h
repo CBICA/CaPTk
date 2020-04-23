@@ -262,6 +262,7 @@ public:
     shapesGroup->setLayout(shapesLayout);
 
     QGroupBox* othersGroup = new QGroupBox("Operations");
+    QHBoxLayout* operationsHLayout = new QHBoxLayout();
     QVBoxLayout* othersLayout = new QVBoxLayout();
     othersLayout->addWidget(clearSelectedLabelButton);
     othersLayout->addWidget(clearAllLabelButton);
