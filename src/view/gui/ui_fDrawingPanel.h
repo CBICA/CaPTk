@@ -301,6 +301,9 @@ public:
     othersLayout->addWidget(changeGroup);
     othersGroup->setLayout(othersLayout);
 
+	operationsHLayout->addLayout(othersLayout);
+	othersGroup->setLayout(operationsHLayout);
+
     HelpButton = new QPushButton();
     HelpButton->setIcon(QIcon((iconDir + "help.png").c_str()));
     HelpButton->setToolTip("Get Help");
