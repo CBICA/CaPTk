@@ -81,6 +81,7 @@ public:
   QLineEdit* changeOldValues;
   QLineEdit* changeNewValues;
   QPushButton* changeButton;
+  QPushButton* applyMaskButton;
 
   void setupUi(QWidget *parent)
   {
@@ -176,7 +177,11 @@ public:
     clearSelectedLabelButton->setToolTip(QString("Clear selected label from the image"));
     clearSelectedLabelButton->setFixedWidth(constButtonWidth20);
 
-
+    applyMaskButton = new QPushButton(parent);
+    applyMaskButton->setIconSize(iconSize);
+    applyMaskButton->setText(QString("Apply Mask"));
+    applyMaskButton->setToolTip(QString("Apply mask on all loaded images."));
+    applyMaskButton->setFixedWidth(constButtonWidth20);
 
 	  UndoButton = new QPushButton(parent);
     UndoButton->setIcon(undoIcon);
