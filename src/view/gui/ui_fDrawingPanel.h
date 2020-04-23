@@ -322,15 +322,15 @@ public:
     helpLayout->addWidget(HelpButton);
     helpLayout->addStretch();
 
-	  QHBoxLayout* subLayout = new QHBoxLayout();
+      QHBoxLayout* subLayout = new QHBoxLayout(parent);
 	  subLayout->addWidget(shapesGroup);
     subLayout->addWidget(drawPropertiesGroup);
     subLayout->addWidget(othersGroup);
 	  subLayout->addStretch();
     subLayout->addLayout(helpLayout);
-    QVBoxLayout* mainLayout = new QVBoxLayout(parent);
-	  mainLayout->addLayout(subLayout);
-	  mainLayout->addStretch();
+//    QVBoxLayout* mainLayout = new QVBoxLayout(parent);
+//	  mainLayout->addLayout(subLayout);
+//	  mainLayout->addStretch();
 	  QMetaObject::connectSlotsByName(parent);
   }
 
