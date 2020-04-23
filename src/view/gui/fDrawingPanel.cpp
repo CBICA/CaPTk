@@ -132,3 +132,9 @@ void fDrawingPanel::FillButtonFunctionality()
   enableShapeButton(shapeFillButton);
   emit shapesButtonClicked(SHAPE_MODE_FILL);
 }
+
+void fDrawingPanel::OnApplyMaskButtonClicked()
+{
+	std::cout << "OnApplyMaskButtonClicked" << std::endl;
+	emit ApplyMask();
+}
