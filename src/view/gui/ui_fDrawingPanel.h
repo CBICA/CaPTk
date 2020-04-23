@@ -304,6 +304,7 @@ public:
     othersGroup->setLayout(othersLayout);
 
 	operationsHLayout->addLayout(othersLayout);
+	operationsHLayout->addLayout((operationsV2Layout));
 	othersGroup->setLayout(operationsHLayout);
 
     HelpButton = new QPushButton();
