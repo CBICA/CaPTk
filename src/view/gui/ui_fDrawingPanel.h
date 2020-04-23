@@ -307,6 +307,7 @@ public:
     //changeGroup->setMaximumWidth(constButtonWidth20 + 15);
     //othersLayout->addWidget(changeGroup);
     //othersGroup->setLayout(othersLayout);
+	operationsV2Layout->addWidget(changeGroup);
 
 	operationsHLayout->addLayout(othersLayout);
 	operationsHLayout->addLayout((operationsV2Layout));
