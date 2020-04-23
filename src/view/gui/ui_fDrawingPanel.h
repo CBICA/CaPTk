@@ -274,6 +274,7 @@ public:
     othersLayout->addWidget(clearSelectedLabelButton);
     othersLayout->addWidget(clearAllLabelButton);
     othersLayout->addWidget(UndoButton);
+    othersLayout->addWidget(applyMaskButton);
   	//othersLayout->addStretch();
 
     changeOldValues = new QLineEdit("");
