@@ -282,7 +282,7 @@ public:
     changeNewValues->setPlaceholderText("New Values");
     changeNewValues->setToolTip("New values to change in format AxBxC");
     changeNewValues->setObjectName(QString::fromUtf8("changeNewValues"));
-    changeNewValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    changeNewValues->setAlignment(Qt::AlignCenter);
     changeNewValues->setFixedWidth(constButtonWidth20);
 
     changeButton = new QPushButton(parent);
