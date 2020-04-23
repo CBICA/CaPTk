@@ -275,7 +275,7 @@ public:
     changeOldValues->setPlaceholderText("Old Values");
     changeOldValues->setToolTip("Old values to change in format AxBxC");
     changeOldValues->setObjectName(QString::fromUtf8("changeOldValues"));
-    changeOldValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    changeOldValues->setAlignment(Qt::AlignCenter);
     changeOldValues->setFixedWidth(constButtonWidth20);
 
     changeNewValues = new QLineEdit("");
