@@ -49,6 +49,23 @@ Controls which features to calculate its respective parameters.
 
 [Sample](https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/1_params_default.csv): ```$CaPTk_Install_Directory/data/features/1_params_default.csv```
 
+## Preprocessing
+
+CaPTk's Feature Extraction provides default resampling to ensure all computations happen in the same physical space.
+
+The ```Generic``` options in the parameter file control all options, which are:
+
+| Parameter | Description |
+|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Resampling | Resamples all images and masks to this value of voxel/pixel resolution before computations (0: no resampling): reduce this number of more accuracy |
+| ResamplingInterpolator_Image | Type of interpolator to use for input image(s) if resampling is happening; ignored if m_resamplingResolution = 0 |
+| ResamplingInterpolator_Mask | Type of interpolator to use for the mask image if resampling is happening; ignored if m_resamplingResolution = 0 |
+| Quantization_Extent | Whether the quantization of Intensities is supposed to happen on a per-image basis or on a per-ROI basis |
+| Quantization_Type | FixedBinNumber (FBN): the bins are uniformly distributed across the minimum and maximum extent in the ROI/Image as defined under 'Quantization_Extent';<br> FixedBinSize (FBS): bins are added in a fixed step between the minimum and maximum extent in the ROI/Image as defined under 'Quantization_Extent' the requested size is provided in 'Bins';<br> Equal: each bin holds an equal number of intensities |
+| SliceComputation | Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only |
+| NaN-Handling | Specify how to handle features with NaN values 'Remove' removes the feature from output - keep in mind this might cause issues with output file in multi-subject (i.e. Training/Batch) mode |
+| WholeImageBinning | Controls whether the entire image binning happens or just the defined region |
+
 ### Making your own parameter file
 
 1. Copy the sample parameter file
