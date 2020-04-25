@@ -319,7 +319,7 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
     ngldmCalculator.EnableDebugMode();
   }
   ngldmCalculator.SetDistanceMax(GetMaximumDistanceWithinTheDefinedROI(itkImage, maskImage));
-  ngldmCalculator.Update();
+  //ngldmCalculator.Update();
   //std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << ngldmCalculator.GetRange() << std::endl;
 
   auto temp = ngldmCalculator.GetOutput();
