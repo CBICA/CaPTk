@@ -865,6 +865,7 @@ template<class ImageType>
 VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const std::vector<typename ImageType::Pointer> &revisedimages,
   const typename ImageType::Pointer &atlaswarpedImagePointer)
 {
+  //initialize two images: one to store 21 ROIs and the other to store 9 ROIs
   typename ImageType::Pointer roi21ImagePointer = ImageType::New();
   roi21ImagePointer->CopyInformation(atlaswarpedImagePointer);
   roi21ImagePointer->SetRequestedRegion(atlaswarpedImagePointer->GetLargestPossibleRegion());
@@ -884,6 +885,8 @@ VectorDouble SurvivalPredictor::GetSpatialLocationFeatures(const std::vector<typ
   IteratorType roi21It(roi21ImagePointer, roi21ImagePointer->GetLargestPossibleRegion());
   IteratorType atlasIt(atlaswarpedImagePointer, atlaswarpedImagePointer->GetLargestPossibleRegion());
 
+  //these hardcoded values have been taken from the matlab code 
+  //in future, we may read these mappings from csv instead of writing here
   atlasIt.GoToBegin();
   roi21It.GoToBegin();
   while (!atlasIt.IsAtEnd())
