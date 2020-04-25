@@ -652,14 +652,17 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 VariableSizeMatrixType SurvivalPredictor::SelectModelFeatures(const VariableSizeMatrixType &allfeatures,const VariableLengthVectorType indicesselectedfeatures)
 {
   VariableSizeMatrixType SelectedFeatures; 
+  //make a feature matrix to store selected features. rows= rows of input features, columns=number of selected features + 1 (to store groundtruth label)
   SelectedFeatures.SetSize(allfeatures.Rows(),indicesselectedfeatures.Size()+1);
   int counter = 0;
+  //copy selected features
   for (unsigned int i = 0; i < indicesselectedfeatures.Size(); i++)
   {
     for (unsigned int j = 0; j < allfeatures.Rows(); j++)
       SelectedFeatures(j, counter) = allfeatures(j, indicesselectedfeatures[i]);
     counter++;
   }
+  //copy groundtruth label
  for (unsigned int j = 0; j < allfeatures.Rows(); j++)
    SelectedFeatures(j, indicesselectedfeatures.Size()) = allfeatures(j, allfeatures.Cols()-1);
 
