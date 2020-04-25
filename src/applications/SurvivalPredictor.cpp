@@ -268,6 +268,7 @@ VectorDouble SurvivalPredictor::CombineEstimates(const VariableLengthVectorType 
 {
 	VectorDouble returnVec;
 	returnVec.resize(estimates1.Size());
+  // +1/-1 are the class labels, and 2 is the capping limit that we apply on the predicted distances.
 	for (size_t i = 0; i < estimates1.Size(); i++)
 	{
 		float temp_abs, temp_pos1, temp_neg1, temp_1, temp_2;
@@ -316,6 +317,7 @@ VectorDouble SurvivalPredictor::CombineEstimates(const VectorDouble &estimates1,
 {
 	VectorDouble returnVec;
 	returnVec.resize(estimates1.size());
+  // +1/-1 are the class labels, and 2 is the capping limit that we apply on the predicted distances.
 	for (size_t i = 0; i < estimates1.size(); i++)
 	{
 		float temp_abs, temp_pos1, temp_neg1, temp_1, temp_2;
