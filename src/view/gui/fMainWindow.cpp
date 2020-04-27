@@ -3133,9 +3133,15 @@ void fMainWindow::OnApplyMask()
 {
 	std::cout << "fMainWindow::OnApplyMask()" << std::endl;
 
+	//get loaded mask
 	ImageTypeFloat3D::Pointer mask = this->getMaskImage();
 	std::string maskFile = m_tempFolderLocation + "/mask1.nii.gz";
 	cbica::WriteImage<ImageTypeFloat3D>(mask, maskFile);
+
+	//get loaded images
+	std::vector<std::string> fileNames;
+	std::vector<std::string> modality;
+	std::vector<ImageTypeFloat3D::Pointer> nloadedimages = this->getLodedImages(fileNames, modality)
 }
 
 void fMainWindow::StartEGFREstimate()
