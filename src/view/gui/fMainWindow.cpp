@@ -856,7 +856,7 @@ fMainWindow::fMainWindow()
   connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity()));
   connect(drawingPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
   connect(drawingPanel, SIGNAL(sig_ChangeLabelValuesClicked(const std::string, const std::string)), this, SLOT(CallLabelValuesChange(const std::string, const std::string)));
-
+  connect(drawingPanel, SIGNAL(ApplyMask()), this, SLOT(OnApplyMask()));
 
   connect(&recurrencePanel, SIGNAL(SubjectBasedRecurrenceEstimate(std::string, bool, bool, bool, bool)), this, SLOT(StartRecurrenceEstimate(const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(SubjectBasedExistingRecurrenceEstimate(std::string, std::string, bool, bool, bool, bool)), this, SLOT(LoadedSubjectExistingRecurrenceEstimate(const std::string &, const std::string &, bool, bool, bool, bool)));
@@ -3129,6 +3129,10 @@ void fMainWindow::clearMask(int label)
   UpdateNumberOfPointsInTable();
 }
 
+void fMainWindow::OnApplyMask()
+{
+	std::cout << "fMainWindow::OnApplyMask()" << std::endl;
+}
 
 void fMainWindow::StartEGFREstimate()
 {
