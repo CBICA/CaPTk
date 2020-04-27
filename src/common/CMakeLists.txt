@@ -13,7 +13,6 @@ SET( ${PROJECT_NAME}_HDRS
 
 SET( ${PROJECT_NAME}_SRCS
   src/CaPTkGUIUtils.cpp
-  src/CaPTkutils.cpp
 )
 
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/inc
