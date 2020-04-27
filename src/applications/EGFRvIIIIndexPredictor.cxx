@@ -4,11 +4,14 @@
 #include "CaPTkEnums.h"
 
 //------------------EGFRvIII Prediction on existing model-----------------------
-std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname)
+std::vector<std::map<CAPTK::ImageModalityType, std::string>> 
+LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname, 
+  int applicationtype)
 {
 	std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
 	std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+
   std::sort(subjectNames.begin(), subjectNames.end());
 
 	for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
@@ -120,9 +123,12 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 		if (cbica::fileExists(subjectPath + "/features.csv"))
 			featureFilePath = subjectPath + "/features.csv";
 			
-			if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() 
-        || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty() || featureFilePath.empty())
+		if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() 
+        || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
 			continue;
+
+    if (applicationtype == CAPTK::MachineLearningApplicationSubtype::TRAINING && featureFilePath.empty())
+      continue;
 
 		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
 		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2] = t2FilePath;
@@ -153,7 +159,7 @@ int EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory,
 {
 	std::cout << "Module loaded: EGFRvIII Prediction on Existing Model:" << std::endl;
 	std::vector<double> finalresult;
-	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
+	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory, CAPTK::MachineLearningApplicationSubtype::TESTING);
   if (QualifiedSubjects.size() == 0)
   {
     std::cout << "No subject found with required input. Exiting...." << std::endl;
@@ -180,7 +186,7 @@ int PrepareNewEGFRvIIIPredictionModel(const std::string inputdirectory,const std
 {
 	std::cout << "Module loaded: Prepare EGFRvIII Prediction Model." << std::endl;
 	std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory, CAPTK::MachineLearningApplicationSubtype::TRAINING);
 	EGFRvIIIIndexPredictor objEGFRvIIIPredictor;
 	std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
 	if (QualifiedSubjects.size() == 0)
