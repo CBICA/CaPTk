@@ -3134,7 +3134,7 @@ void fMainWindow::OnApplyMask()
 	std::cout << "fMainWindow::OnApplyMask()" << std::endl;
 
 	//check if mask exists
-	if (!this->isMaskDefined())
+	if (this->isMaskDefined())
 	{
 		//get loaded mask
 		ImageTypeFloat3D::Pointer mask = this->getMaskImage();
