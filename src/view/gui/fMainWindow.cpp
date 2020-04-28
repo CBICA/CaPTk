@@ -3131,15 +3131,11 @@ void fMainWindow::clearMask(int label)
 
 void fMainWindow::OnApplyMask()
 {
-	std::cout << "fMainWindow::OnApplyMask()" << std::endl;
-
 	//check if mask exists
 	if (this->isMaskDefined())
 	{
 		//get loaded mask
 		ImageTypeFloat3D::Pointer mask = this->getMaskImage();
-		std::string maskFile = m_tempFolderLocation + "/mask1.nii.gz";
-		cbica::WriteImage<ImageTypeFloat3D>(mask, maskFile);
 
 		//get loaded images
 		std::vector<std::string> fileNames, modality, baseFileNames;
@@ -3166,7 +3162,6 @@ void fMainWindow::OnApplyMask()
 			this->LoadSlicerImages(maskedFilename, CAPTK::ImageExtension::NIfTI);
 		}
 	}
-
 }
 
 void fMainWindow::StartEGFREstimate()
