@@ -3135,38 +3135,37 @@ void fMainWindow::OnApplyMask()
 
 	//check if mask exists
 	if (!this->isMaskDefined())
-		return;
-
-	//get loaded mask
-	ImageTypeFloat3D::Pointer mask = this->getMaskImage();
-	std::string maskFile = m_tempFolderLocation + "/mask1.nii.gz";
-	cbica::WriteImage<ImageTypeFloat3D>(mask, maskFile);
-
-	//get loaded images
-	std::vector<std::string> fileNames, modality, baseFileNames;
-	std::vector<ImageTypeFloat3D::Pointer> nloadedimages = this->getLodedImages(fileNames, modality);
-
-	//get base file names of all loaded images
-	for (unsigned int i = 0; i < mSlicerManagers.size(); i++)
 	{
-		baseFileNames.push_back(mSlicerManagers[i]->GetBaseFileName());
+		//get loaded mask
+		ImageTypeFloat3D::Pointer mask = this->getMaskImage();
+		std::string maskFile = m_tempFolderLocation + "/mask1.nii.gz";
+		cbica::WriteImage<ImageTypeFloat3D>(mask, maskFile);
+
+		//get loaded images
+		std::vector<std::string> fileNames, modality, baseFileNames;
+		std::vector<ImageTypeFloat3D::Pointer> nloadedimages = this->getLodedImages(fileNames, modality);
+
+		//get base file names of all loaded images
+		for (unsigned int i = 0; i < mSlicerManagers.size(); i++)
+		{
+			baseFileNames.push_back(mSlicerManagers[i]->GetBaseFileName());
+		}
+
+		//apply mask on all loaded images
+		for (int i = 0; i < nloadedimages.size(); i++)
+		{
+			auto maskFilter = itk::MaskImageFilter<ImageTypeFloat3D, ImageTypeFloat3D>::New();
+			maskFilter->SetInput(nloadedimages[i]);
+			maskFilter->SetMaskImage(mask);
+			maskFilter->Update();
+			auto maskedimg = maskFilter->GetOutput();
+			std::string maskedFilename = m_tempFolderLocation + "/" + baseFileNames[i] + "_masked" + ".nii.gz"; //masked images are written in temp dir at this path
+			cbica::WriteImage<ImageTypeFloat3D>(maskedimg, maskedFilename);
+
+			//load the masked images back into captk
+			this->LoadSlicerImages(maskedFilename, CAPTK::ImageExtension::NIfTI);
+		}
 	}
-
-	//apply mask on all loaded images
-	for (int i = 0; i < nloadedimages.size(); i++)
-	{
-		auto maskFilter = itk::MaskImageFilter<ImageTypeFloat3D, ImageTypeFloat3D>::New();
-		maskFilter->SetInput(nloadedimages[i]);
-		maskFilter->SetMaskImage(mask);
-		maskFilter->Update();
-		auto maskedimg = maskFilter->GetOutput();
-		std::string maskedFilename = m_tempFolderLocation + "/" + baseFileNames[i] + "_masked" + ".nii.gz"; //masked images are written in temp dir at this path
-		cbica::WriteImage<ImageTypeFloat3D>(maskedimg, maskedFilename);
-
-		//load the masked images back into captk
-		this->LoadSlicerImages(maskedFilename, CAPTK::ImageExtension::NIfTI);
-	}
-
 
 }
 
