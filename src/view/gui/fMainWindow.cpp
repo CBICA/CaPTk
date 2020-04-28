@@ -3133,6 +3133,10 @@ void fMainWindow::OnApplyMask()
 {
 	std::cout << "fMainWindow::OnApplyMask()" << std::endl;
 
+	//check if mask exists
+	if (!this->isMaskDefined())
+		return;
+
 	//get loaded mask
 	ImageTypeFloat3D::Pointer mask = this->getMaskImage();
 	std::string maskFile = m_tempFolderLocation + "/mask1.nii.gz";
