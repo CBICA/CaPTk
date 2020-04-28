@@ -10,21 +10,6 @@
 #define UI_fDrawingPanel_H
 
 #include <QtCore/QVariant>
-// #include <QtGui/QAction>
-// #include <QtGui/QApplication>
-// #include <QtGui/QButtonGroup>
-// #include <QtGui/QFrame>
-// #include <QtGui/QGridLayout>
-// #include <QtGui/QHBoxLayout>
-// #include <QtGui/QHeaderView>
-// #include <QtGui/QLabel>
-// #include <QtGui/QPushButton>
-// #include <QtGui/QRadioButton>
-// #include <QtGui/QSpacerItem>
-// #include <QtGui/QTableWidget>
-// #include <QtGui/QVBoxLayout>
-// #include <QtGui/QWidget>
-// NEW CHANGES
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
@@ -42,11 +27,9 @@
 #include <qcombobox.h>
 #include <QToolButton>
 #include "qlineedit.h"
-//#include <QPushButton.h>
 #include <qgroupbox.h>
 #include <qsize.h>
 
-//#include "CAPTk.h"
 #include "CaPTkGUIUtils.h"
 
 QT_BEGIN_NAMESPACE
@@ -296,6 +279,7 @@ public:
     changeButton->setToolTip(QString("Change the selected label sets"));
     changeButton->setFixedWidth(constButtonWidth20);
 
+	//change label values group box
     auto changeGroup = new QGroupBox("Change Label Values");
     auto changeLayout_V = new QVBoxLayout(changeGroup);
     //auto changeLayout_H = new QHBoxLayout(changeGroup);
@@ -306,11 +290,9 @@ public:
     changeLayout_V->addWidget(changeButton);
     changeGroup->setLayout(changeLayout_V);
 	changeGroup->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    //changeGroup->setMaximumWidth(constButtonWidth20 + 15);
-    //othersLayout->addWidget(changeGroup);
-    //othersGroup->setLayout(othersLayout);
 	operationsV2Layout->addWidget(changeGroup);
 
+	//operations group box has a horizontal layout
 	operationsHLayout->addLayout(othersLayout);
 	operationsHLayout->addLayout((operationsV2Layout));
 	othersGroup->setLayout(operationsHLayout);
@@ -323,15 +305,14 @@ public:
     helpLayout->addWidget(HelpButton);
     helpLayout->addStretch();
 
+	//add all widgets to overall layout
       QHBoxLayout* subLayout = new QHBoxLayout(parent);
 	  subLayout->addWidget(shapesGroup);
     subLayout->addWidget(drawPropertiesGroup);
     subLayout->addWidget(othersGroup);
 	  subLayout->addStretch();
     subLayout->addLayout(helpLayout);
-//    QVBoxLayout* mainLayout = new QVBoxLayout(parent);
-//	  mainLayout->addLayout(subLayout);
-//	  mainLayout->addStretch();
+
 	  QMetaObject::connectSlotsByName(parent);
   }
 
