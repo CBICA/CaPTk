@@ -3143,9 +3143,14 @@ void fMainWindow::OnApplyMask()
 	cbica::WriteImage<ImageTypeFloat3D>(mask, maskFile);
 
 	//get loaded images
-	std::vector<std::string> fileNames;
-	std::vector<std::string> modality;
+	std::vector<std::string> fileNames, modality, baseFileNames;
 	std::vector<ImageTypeFloat3D::Pointer> nloadedimages = this->getLodedImages(fileNames, modality);
+
+	//get base file names of all loaded images
+	for (unsigned int i = 0; i < mSlicerManagers.size(); i++)
+	{
+		baseFileNames.push_back(mSlicerManagers[i]->GetBaseFileName());
+	}
 
 	//apply mask on all loaded images
 	for (int i = 0; i < nloadedimages.size(); i++)
@@ -3155,7 +3160,7 @@ void fMainWindow::OnApplyMask()
 		maskFilter->SetMaskImage(mask);
 		maskFilter->Update();
 		auto maskedimg = maskFilter->GetOutput();
-		std::string maskedFilename = m_tempFolderLocation + "/" + fileNames[i] + std::to_string(i) + ".nii.gz";
+		std::string maskedFilename = m_tempFolderLocation + "/" + baseFileNames[i] + "_masked" + ".nii.gz"; //masked images are written in temp dir at this path
 		cbica::WriteImage<ImageTypeFloat3D>(maskedimg, maskedFilename);
 
 		//load the masked images back into captk
