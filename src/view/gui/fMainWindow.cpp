@@ -3141,7 +3141,21 @@ void fMainWindow::OnApplyMask()
 	//get loaded images
 	std::vector<std::string> fileNames;
 	std::vector<std::string> modality;
-	std::vector<ImageTypeFloat3D::Pointer> nloadedimages = this->getLodedImages(fileNames, modality)
+	std::vector<ImageTypeFloat3D::Pointer> nloadedimages = this->getLodedImages(fileNames, modality);
+
+	//apply mask on all loaded images
+	for (int i = 0; i < nloadedimages.size(); i++)
+	{
+		auto maskFilter = itk::MaskImageFilter<ImageTypeFloat3D, ImageTypeFloat3D>::New();
+		maskFilter->SetInput(nloadedimages[i]);
+		maskFilter->SetMaskImage(mask);
+		maskFilter->Update();
+		auto maskedimg = maskFilter->GetOutput();
+		std::string maskedFilename = m_tempFolderLocation + "/" + fileNames[i] + std::to_string(i) + ".nii.gz";
+		cbica::WriteImage<ImageTypeFloat3D>(maskedimg, maskedFilename);
+	}
+
+
 }
 
 void fMainWindow::StartEGFREstimate()
