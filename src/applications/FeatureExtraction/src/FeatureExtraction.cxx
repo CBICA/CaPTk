@@ -365,6 +365,11 @@ int main(int argc, char** argv)
       std::cerr << "Mask File cannot handle a directory input, please use absolute paths.\n";
       exit(EXIT_FAILURE);
     }
+    else if (!cbica::fileExists(maskfilename))
+    {
+      std::cerr << "Mask File cannot be non-existent.\n";
+      exit(EXIT_FAILURE);
+    }
   }
 
   //if (parser.isPresent("L"))
@@ -499,6 +504,12 @@ int main(int argc, char** argv)
       inputImages.resize(image_paths.size());
       for (size_t i = 0; i < image_paths.size(); i++)
       {
+        // sanity check
+        if (!cbica::fileExists(image_paths[i]))
+        {
+          std::cerr << "Image File '" << image_paths[i] << "' does not exist on the filesystem.\n";
+          exit(EXIT_FAILURE);
+        }
         inputImages[i] = cbica::ReadImage< ImageType >(image_paths[i]);
         inputImages[i]->DisconnectPipeline(); // ensure the new image exists as a separate memory block
         // sanity check
