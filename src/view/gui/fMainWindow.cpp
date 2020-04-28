@@ -3157,6 +3157,9 @@ void fMainWindow::OnApplyMask()
 		auto maskedimg = maskFilter->GetOutput();
 		std::string maskedFilename = m_tempFolderLocation + "/" + fileNames[i] + std::to_string(i) + ".nii.gz";
 		cbica::WriteImage<ImageTypeFloat3D>(maskedimg, maskedFilename);
+
+		//load the masked images back into captk
+		this->LoadSlicerImages(maskedFilename, CAPTK::ImageExtension::NIfTI);
 	}
 
 
