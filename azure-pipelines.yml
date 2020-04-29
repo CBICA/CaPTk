@@ -655,22 +655,22 @@ jobs:
 
       displayName: 'Build & Package CaPTk'
 
-    # - powershell: |
-    #     cd bin
-    #     mv *_Installer.* $(Build.ArtifactStagingDirectory)
-    #   displayName: 'Move installer to staging directory'
+    - powershell: |
+        cd bin
+        mv *_Installer.* $(Build.ArtifactStagingDirectory)
+      displayName: 'Move installer to staging directory'
 
-    # - task: PublishBuildArtifacts@1
-    #   inputs:
-    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #     artifactName: '$(Build.DefinitionName)_installer_Windows_selfhost'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
 
-    # - task: DownloadBuildArtifacts@0
-    #   inputs:
-    #     buildType: 'current'
-    #     downloadType: 'single'
-    #     artifactName: '$(Build.DefinitionName)_installer_Windows_selfhost'
-    #     downloadPath: '$(System.ArtifactsDirectory)'
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_Windows'
+        downloadPath: '$(System.ArtifactsDirectory)'
 
 - job: 'Linux_SelfHost'
   displayName: "Self-hosted agent on Linux"
@@ -821,14 +821,14 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
         continueOnError: true
 
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux_selfhost'
+        artifactName: '$(Build.DefinitionName)_installer_Linux'
         downloadPath: '$(System.ArtifactsDirectory)'
         continueOnError: true
 
@@ -943,7 +943,7 @@ jobs:
         cd bin
 
         version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-        pkgname="_Installer_selfhost"
+        pkgname="_Installer"
         pkgname="$version$pkgname"
 
         rm -rf *.pkg
@@ -985,13 +985,13 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_macOS_selfhost'
+        artifactName: '$(Build.DefinitionName)_installer_macOS'
 
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_macOS_selfhost'
+        artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
 
     # - task: CopyFilesOverSSH@0
