@@ -164,101 +164,100 @@ jobs:
     #     rm -rf testing
     #   displayName: 'Performing the Tests'
 
-    - script: |
-        cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
-        rm -rf install_manifest.txt
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-        cmake --build . --target PACKAGE --config Release
+    # - script: |
+    #     cd bin
+    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
+    #     rm -rf install_manifest.txt
+    #     setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+    #     setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+    #     cmake --build . --target PACKAGE --config Release
 
-        ls -lt *_Installer.*
+    #     ls -lt *_Installer.*
 
-      displayName: 'Package CaPTk'
+    #   displayName: 'Package CaPTk'
 
-    - bash: |
-        # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
-        # ver=${str#*=}
-        rm -rf binaries
-        rm -rf scripts
+    # - bash: |
+    #     # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'ƒ
+    #     rm -rf binaries
+    #     rm -rf scripts
         
-        cd bin
+    #     cd bin
         
-        # ls -lt *.exe
-        # echo "Version: $ver"
-        # if [[ $ver == *"nonRelease"* ]]; then
-        #   echo "Building non-release"
-        #   mv *_Installer.exe CaPTk_$ver\_Installer.exe
-        # fi
+    #     # ls -lt *.exe
+    #     # echo "Version: $ver"
+    #     # if [[ $ver == *"nonRelease"* ]]; then
+    #     #   echo "Building non-release"
+    #     #   mv *_Installer.exe CaPTk_$ver\_Installer.exe
+    #     # fi
 
-        ls -lt *.exe
+    #     ls -lt *.exe
 
-        mv -v *_Installer.* $(Build.ArtifactStagingDirectory)
+    #     mv -v *_Installer.* $(Build.ArtifactStagingDirectory)
 
-      displayName: 'Ensuring that the correct version ID is picked up'
+    #   displayName: 'Ensuring that the correct version ID is picked up'
 
-    # # - bash: |
-    # #     rm -rf src
-    # #     rm -rf docs*
-    # #     rm -rf data
-    # #     rm -rf binaries
-    # #     rm -rf scripts
-    # #     rm -rf bin_windows_20200212.tar.gz
-    # #     rm -rf install_manifest.txt
-    # #     rm -rf CMakeLists.txt
+    # # # - bash: |
+    # # #     rm -rf src
+    # # #     rm -rf docs*
+    # # #     rm -rf data
+    # # #     rm -rf binaries
+    # # #     rm -rf scripts
+    # # #     rm -rf bin_windows_20200212.tar.gz
+    # # #     rm -rf install_manifest.txt
+    # # #     rm -rf CMakeLists.txt
 
-    # #     cd bin
-    # #     rm -rf *proj*
+    # # #     cd bin
+    # # #     rm -rf *proj*
 
-    # #     tar cvfz externalApps.tar.gz externalApps
-    # #     tar cvfz qt.tar.gz qt
+    # # #     tar cvfz externalApps.tar.gz externalApps
+    # # #     tar cvfz qt.tar.gz qt
 
-    # #     rm -rf qt
-    # #     rm -rf externalApps
-    # #     rm -rf _CPack*
-    # #     rm -rf CMakeCache.txt
+    # # #     rm -rf qt
+    # # #     rm -rf externalApps
+    # # #     rm -rf _CPack*
+    # # #     rm -rf CMakeCache.txt
 
-    # #     # cmake -UPROJECT_VERSION # delete the project version definition
+    # # #     # cmake -UPROJECT_VERSION # delete the project version definition
         
-    # #     cd ../
+    # # #     cd ../
 
-    # #     mv bin bin_windows
-    # #     # tar cvfz bin_windows_20200212.tar.gz bin_windows
-    # #     rm -rf bin_windows
-    # #   displayName: 'Zipping bin'
+    # # #     mv bin bin_windows
+    # # #     # tar cvfz bin_windows_20200212.tar.gz bin_windows
+    # # #     rm -rf bin_windows
+    # # #   displayName: 'Zipping bin'
 
-    - bash: |
+    # - bash: |
         
-        rm -rf src
-        rm -rf docs*
-        rm -rf data
-        rm -rf install_manifest.txt
-        rm -rf CMakeLists.txt
-        rm -rf bin
+    #     rm -rf src
+    #     rm -rf docs*
+    #     rm -rf data
+    #     rm -rf install_manifest.txt
+    #     rm -rf CMakeLists.txt
+    #     rm -rf bin
 
-      displayName: 'Freeing Space'
+    #   displayName: 'Freeing Space'
 
-    # - powershell: |
-    #     get-psdrive | Where Free*
+    # # - powershell: |
+    # #     get-psdrive | Where Free*
 
-    #     cd $(Build.ArtifactStagingDirectory)
-    #     pwd
+    # #     cd $(Build.ArtifactStagingDirectory)
+    # #     pwd
 
-    #   displayName: 'Disk space check'
+    # #   displayName: 'Disk space check'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Windows'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Windows'
-        continueOnError: true
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
+    #     continueOnError: true
+    #     downloadPath: '$(System.ArtifactsDirectory)'
 
     # - task: CopyFilesOverSSH@0
     #   inputs:
