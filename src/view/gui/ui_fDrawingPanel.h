@@ -166,7 +166,7 @@ public:
     applyMaskButton->setToolTip(QString("Apply mask on all loaded images."));
     applyMaskButton->setFixedWidth(constButtonWidth20);
 
-	  UndoButton = new QPushButton(parent);
+	UndoButton = new QPushButton(parent);
     UndoButton->setIcon(undoIcon);
     UndoButton->setIconSize(iconSize);
     UndoButton->setText(QString("Undo"));
