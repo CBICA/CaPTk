@@ -621,7 +621,9 @@ jobs:
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DQt5_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=OFF ..
         setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
         setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
-    
+
+        rm -rf externalApps/binaries_windows/libra
+
         cmake --build . --target ALL_BUILD --config Release
         
       displayName: 'Configure and compile CaPTk'

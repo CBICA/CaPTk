@@ -1155,7 +1155,7 @@ void fMainWindow::appDownload(std::string currentApp)
 
   std::string downloadLink = m_appDownloadConfigs["apps"][currentApp][linkyml].as<std::string>();
 
-  // ShowErrorMessage(downloadLink);
+  ShowErrorMessage(downloadLink);
 
   appDownloadDialog.SetPaths(downloadFolder, currentApp);
   appDownloadDialog.SetDownloadLink(downloadLink);
@@ -6004,7 +6004,7 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   // std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
   std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
-  ShowErrorMessage("libra: " + scriptToCall);
+  // ShowErrorMessage("libra: " + scriptToCall);
 
   if (scriptToCall.empty()) {
     appDownload("libra");
@@ -6066,7 +6066,7 @@ void fMainWindow::ApplicationLIBRASingle()
 
   // std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
   std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
-  ShowErrorMessage("libra: " + scriptToCall);
+  // ShowErrorMessage("libra: " + scriptToCall);
 
   if (scriptToCall.empty()) {
     appDownload("libra");
