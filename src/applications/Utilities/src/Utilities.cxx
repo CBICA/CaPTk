@@ -1532,7 +1532,7 @@ int main(int argc, char** argv)
           resultMatrix = dataMatrix.transpose() * transformMatrix; // apply the transform
           resultMatrix.inplace_transpose(); // transpose back to original shape
           bool writeSucceeded = WriteBvecFile(resultMatrix, bvecOutputFile);
-          if (!writeSucceeded) 
+          if (!writeSucceeded)
           {
               return EXIT_FAILURE;
           }
