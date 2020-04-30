@@ -910,7 +910,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
   parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
-  parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image in \"from\" convention", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e",
+  parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e",
       "Use the -bv or --bvec option to reorient an accompanying bvec file." );
   parser.addOptionalParameter("bv", "bvec", cbica::Parameter::FILE, "bvec file to reorient", "The bvec file to reorient alongside the corresponding image", "For correct output, the given file should be in the same orientation as the input image",
       "This option can only be used alongside the -or or --orient options.");
@@ -1470,7 +1470,7 @@ int main(int argc, char** argv)
       std::transform(orientationDesired.begin(), orientationDesired.end(), orientationDesired.begin(), ::toupper);
       vtkAnatomicalOrientation vtkDesiredOrientation(orientationDesired);
       vtkAnatomicalOrientation vtkOriginalOrientation; // will be read into from the input image orientation
-      if (!vtkDesiredOrientation.IsValid()) // preliminary check usin
+      if (!vtkDesiredOrientation.IsValid())
       {
           std::cout << "Cannot reorient: desired orientation \" " + orientationDesired + 
               "\"" + "is not a valid orientation." << std::endl;
@@ -1519,6 +1519,8 @@ int main(int argc, char** argv)
           + outputImageFile + " (" + orientationDesired + ")" << std::endl;
       if (!inputBvecFile.empty())
       {
+          /* Bvec reorientation code is based on a set of python scripts from Drew Parker @ CBICA. 
+          See orientations_captk.py and test_las_to_lps.py in /CaPTk/deprecated/Utilities. */
           std::cout << "Reorienting supplied bvec file to " + orientationDesired << std::endl;
           std::string bvecOutputFile = path + "/" + base + ".bvec"; // same basename as output image
 
