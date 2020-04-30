@@ -789,7 +789,6 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
     //auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
     using ImageTypePerfusion = itk::Image< float, 4 >;
     auto perfImagePointerNifti = cbica::ReadImage< ImageTypePerfusion >(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
-    
     std::vector<ImageType::IndexType> indices;
 
     VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);

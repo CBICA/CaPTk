@@ -72,10 +72,6 @@
 
 #include <QFile>
 
-// #ifdef _WIN32
-//   #include "elzip.hpp"
-// #endif
-
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
@@ -172,7 +168,6 @@ fMainWindow::fMainWindow()
   setupUi(this);
 
   m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
-  m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/appsDownloadConfigs.yaml");
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -204,9 +199,6 @@ fMainWindow::fMainWindow()
   actionAbout = new QAction(this);
   actionPreferences = new QAction(this);
 
-  // precompiled Apps download
-  // appsDownload = new QAction(this);
-
   //---------------setting menu and status bar for the main window---------------
   this->setStatusBar(statusbar);
 
@@ -220,7 +212,6 @@ fMainWindow::fMainWindow()
   menuFile->addMenu(menuLoadFile);
   menuFile->addMenu(menuSaveFile);
   menuApp = new QMenu("Applications");
-  // menuAppDownload = new QMenu("Applications (Test Dwnld)");
   menuDeepLearning = new QMenu("Deep Learning");
   menuPreprocessing = new QMenu("Preprocessing");
   menuHelp = new QMenu("Help");
@@ -308,14 +299,11 @@ fMainWindow::fMainWindow()
   supportMenu->addAction(help_bugs);
   supportMenu->addAction(helpMenu_download);
 
-  // menuAppDownload->addAction(appDownload);
-
   menubar->addMenu(menuFile);
   menubar->addMenu(menuPreprocessing);
 #ifndef PACKAGE_VIEWER
   menubar->addMenu(menuApp);
 #endif
-  // menubar->addMenu(menuAppDownload);
   menubar->addMenu(menuDeepLearning);
   menubar->addMenu(menuHelp);
   this->setMenuBar(menubar);
@@ -325,7 +313,6 @@ fMainWindow::fMainWindow()
 #ifndef PACKAGE_VIEWER
   menubar->addAction(menuApp->menuAction());
 #endif
-  // menubar->addAction(menuAppDownload->menuAction());
   menubar->addAction(menuDeepLearning->menuAction());
   menubar->addAction(menuHelp->menuAction());
 
@@ -410,23 +397,17 @@ fMainWindow::fMainWindow()
 
   vectorOfGBMApps = populateStringListInMenu(brainAppList, this, menuApp, "Glioblastoma", false);
   menuApp->addSeparator();
-  // vectorOfGBMAppsDownload = populateStringListInMenu(brainAppList, this, menuAppDownload, "Glioblastoma", false);
-  // menuAppDownload->addSeparator();
+
   if (!breastAppList.empty())
   {
     vectorOfBreastApps = populateStringListInMenu(breastAppList, this, menuApp, "Breast Cancer", false);
     menuApp->addSeparator();
-    // vectorOfBreastAppsDownload = populateStringListInMenu(breastAppList, this, menuAppDownload, "Breast Cancer", false);
-    // menuAppDownload->addSeparator();
   }
   vectorOfLungApps = populateStringListInMenu(lungAppList, this, menuApp, "Lung Cancer", false);
   menuApp->addSeparator();
-  // vectorOfLungAppsDownload = populateStringListInMenu(lungAppList, this, menuAppDownload, "Lung Cancer", false);
-  // menuAppDownload->addSeparator();
+
   vectorOfSegmentationApps = populateStringListInMenu(segAppList, this, menuApp, "Segmentation", false);
-  // vectorOfSegmentationAppsDownload = populateStringListInMenu(segAppList, this, menuAppDownload, "Segmentation", false);
   vectorOfMiscApps = populateStringListInMenu(miscAppList, this, menuApp, "Miscellaneous", false);
-  // vectorOfMiscAppsDownload = populateStringListInMenu(miscAppList, this, menuAppDownload, "Miscellaneous", false);
   
   vectorOfPreprocessingActionsAndNames = populateStringListInMenu(preProcessingAlgos, this, menuPreprocessing, "", false);
   vectorOfDeepLearningActionsAndNames = populateStringListInMenu(deepLearningAlgos, this, menuDeepLearning, "", false);
@@ -547,7 +528,6 @@ fMainWindow::fMainWindow()
     SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
-  cbica::createDir(downloadFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
   if (cbica::directoryExists(m_tempFolderLocation))
   {
@@ -876,7 +856,7 @@ fMainWindow::fMainWindow()
   connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity()));
   connect(drawingPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
   connect(drawingPanel, SIGNAL(sig_ChangeLabelValuesClicked(const std::string, const std::string)), this, SLOT(CallLabelValuesChange(const std::string, const std::string)));
-
+  connect(drawingPanel, SIGNAL(ApplyMask()), this, SLOT(OnApplyMask()));
 
   connect(&recurrencePanel, SIGNAL(SubjectBasedRecurrenceEstimate(std::string, bool, bool, bool, bool)), this, SLOT(StartRecurrenceEstimate(const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(SubjectBasedExistingRecurrenceEstimate(std::string, std::string, bool, bool, bool, bool)), this, SLOT(LoadedSubjectExistingRecurrenceEstimate(const std::string &, const std::string &, bool, bool, bool, bool)));
@@ -888,7 +868,7 @@ fMainWindow::fMainWindow()
 
 
   connect(&survivalPanel, SIGNAL(SurvivalPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForSurvivalPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
-  connect(&survivalPanel, SIGNAL(PrepareNewSurvivalPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewSurvivalPredictionModelFromMain(const std::string, const std::string)));
+  connect(&survivalPanel, SIGNAL(TrainNewSurvivalPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewSurvivalPredictionModelFromMain(const std::string, const std::string)));
 
   connect(&egfrv3Panel, SIGNAL(EGFRvIIIPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&egfrv3Panel, SIGNAL(PrepareNewEGFRvIIIPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewEGFRvIIIPredictionModelFromMain(const std::string, const std::string)));
@@ -1180,26 +1160,6 @@ void fMainWindow::help_Download(QAction* action)
     ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
-}
-
-void fMainWindow::appDownload(std::string currentApp)
-{
-  std::string downloadLink = m_appDownloadConfigs["apps"][currentApp]["Link"].as<std::string>();
-
-  appDownloadDialog.SetDownloadPath(downloadFolder);
-  appDownloadDialog.SetDownloadLink(downloadLink);
-  appDownloadDialog.exec();
-
-  connect( &appDownloadDialog, SIGNAL(doneDownload(std::string)), this, SLOT(unzipArchive(std::string)));    
-}
-
-void fMainWindow::unzipArchive(std::string fullPath) 
-{
-// #ifdef _WIN32
-//   elz::extractZip(fullPath, downloadFolder);
-// #else
-//   std::system(("unzip " + fullPath + " -d " + downloadFolder).c_str());
-// #endif
 }
 
 void fMainWindow::help_BugTracker()
@@ -3169,6 +3129,40 @@ void fMainWindow::clearMask(int label)
   UpdateNumberOfPointsInTable();
 }
 
+void fMainWindow::OnApplyMask()
+{
+	//check if mask exists
+	if (this->isMaskDefined())
+	{
+		//get loaded mask
+		ImageTypeFloat3D::Pointer mask = this->getMaskImage();
+
+		//get loaded images
+		std::vector<std::string> fileNames, modality, baseFileNames;
+		std::vector<ImageTypeFloat3D::Pointer> nloadedimages = this->getLodedImages(fileNames, modality);
+
+		//get base file names of all loaded images
+		for (unsigned int i = 0; i < mSlicerManagers.size(); i++)
+		{
+			baseFileNames.push_back(mSlicerManagers[i]->GetBaseFileName());
+		}
+
+		//apply mask on all loaded images
+		for (int i = 0; i < nloadedimages.size(); i++)
+		{
+			auto maskFilter = itk::MaskImageFilter<ImageTypeFloat3D, ImageTypeFloat3D>::New();
+			maskFilter->SetInput(nloadedimages[i]);
+			maskFilter->SetMaskImage(mask);
+			maskFilter->Update();
+			auto maskedimg = maskFilter->GetOutput();
+			std::string maskedFilename = m_tempFolderLocation + "/" + baseFileNames[i] + "_masked" + ".nii.gz"; //masked images are written in temp dir at this path
+			cbica::WriteImage<ImageTypeFloat3D>(maskedimg, maskedFilename);
+
+			//load the masked images back into captk
+			this->LoadSlicerImages(maskedFilename, CAPTK::ImageExtension::NIfTI);
+		}
+	}
+}
 
 void fMainWindow::StartEGFREstimate()
 {
@@ -4928,7 +4922,7 @@ void fMainWindow::CallForNewSurvivalPredictionModelFromMain(const std::string in
   }
 
 
-  if (mSurvivalPredictor.PrepareNewSurvivalPredictionModel(inputdirectory, QualifiedSubjects, outputdirectory) == false)
+  if (mSurvivalPredictor.TrainNewSurvivalPredictionModel(inputdirectory, QualifiedSubjects, outputdirectory) == false)
   {
     std::string message;
     message = "Survival Training did not finish as expected, please see log file for details: ";
@@ -5899,14 +5893,6 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  // std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
-  // // ShowErrorMessage("libra: " + scriptToCall);
-
-  // if (scriptToCall.empty()) {
-  //   appDownload("libra");
-  //   return;
-  // }
-
   std::string scriptToCall = m_allNonNativeApps["libra"];
 
   if (cbica::fileExists(scriptToCall))
@@ -6009,13 +5995,6 @@ void fMainWindow::ApplicationBreastSegmentation()
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
-  // std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
-  // ShowErrorMessage("libra: " + scriptToCall);
-
-  // if (scriptToCall.empty()) {
-  //   appDownload("libra");
-  //   return;
-  // }
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -6071,13 +6050,6 @@ void fMainWindow::ApplicationLIBRASingle()
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
-  // std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
-  // ShowErrorMessage("libra: " + scriptToCall);
-
-  // if (scriptToCall.empty()) {
-  //   appDownload("libra");
-  //   return;
-  // }
 
   if (cbica::fileExists(scriptToCall))
   {

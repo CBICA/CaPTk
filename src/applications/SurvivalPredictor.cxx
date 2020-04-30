@@ -166,7 +166,7 @@ int SurvivalPredictionOnExistingModel(const std::string modeldirectory,const std
 	}
 	return EXIT_SUCCESS;
 }
-int PrepareNewSurvivalPredictionModel(const std::string inputdirectory,
+int TrainNewSurvivalPredictionModel(const std::string inputdirectory,
 	const std::string outputdirectory)
 {
 	std::cout << "Module loaded: Prepare Survival Prediction Model." << std::endl;
@@ -181,7 +181,7 @@ int PrepareNewSurvivalPredictionModel(const std::string inputdirectory,
 	if (QualifiedSubjects.size() == 0)
 		std::cout << "No subject found with required input." << std::endl;
 	else
-		objSurvivalPredictor.PrepareNewSurvivalPredictionModel(inputdirectory, QualifiedSubjects, outputdirectory);
+		objSurvivalPredictor.TrainNewSurvivalPredictionModel(inputdirectory, QualifiedSubjects, outputdirectory);
 	return EXIT_SUCCESS;
 }
 int main(int argc, char **argv)
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
 		SurvivalPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
 	}
 	else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
-		PrepareNewSurvivalPredictionModel(inputDirectoryName, outputDirectoryName);
+		TrainNewSurvivalPredictionModel(inputDirectoryName, outputDirectoryName);
 	else
 	{
 		parser.echoVersion();

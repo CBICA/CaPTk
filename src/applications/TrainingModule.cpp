@@ -2100,7 +2100,7 @@ std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeM
       if (CrossValidatedBalancedAccuraciesFinal[sizeofcvaccuracies - 1] == 1 && CrossValidatedBalancedAccuraciesFinal[sizeofcvaccuracies - 2] == 1 && CrossValidatedBalancedAccuraciesFinal[sizeofcvaccuracies - 3] == 1)
         break;
     }
-    ////if (sizeofcvaccuracies >= 2)
+    //if (sizeofcvaccuracies >= 2)
     //{
     //  if (CrossValidatedBalancedAccuraciesFinal[sizeofcvaccuracies - 1]< CrossValidatedBalancedAccuraciesFinal[sizeofcvaccuracies - 2] )
     //    break;
