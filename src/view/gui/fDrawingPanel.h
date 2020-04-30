@@ -76,7 +76,7 @@ signals :
   void CurrentMaskOpacityChanged(int); // multiLabel related change
   void helpClicked_Interaction(std::string);
   void sig_ChangeLabelValuesClicked(const std::string, const std::string);
-
+  void ApplyMask();
 
 public slots :
 
@@ -113,7 +113,11 @@ public slots :
   void shapesSphereButtonFunctionality();
   void helpClicked();
 
+  //! Change mask label values
   void ChangeLabelValuesClicked();
+
+  //! Apply mask
+  void OnApplyMaskButtonClicked();
 
 private:
   int m_currentOpacity; // set default to the tenth spinbox selection (1.0 mask opacity)

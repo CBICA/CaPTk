@@ -856,7 +856,7 @@ fMainWindow::fMainWindow()
   connect(drawingPanel, SIGNAL(CurrentMaskOpacityChanged(int)), this, SLOT(ChangeMaskOpacity()));
   connect(drawingPanel, SIGNAL(helpClicked_Interaction(std::string)), this, SLOT(help_contextual(std::string)));
   connect(drawingPanel, SIGNAL(sig_ChangeLabelValuesClicked(const std::string, const std::string)), this, SLOT(CallLabelValuesChange(const std::string, const std::string)));
-
+  connect(drawingPanel, SIGNAL(ApplyMask()), this, SLOT(OnApplyMask()));
 
   connect(&recurrencePanel, SIGNAL(SubjectBasedRecurrenceEstimate(std::string, bool, bool, bool, bool)), this, SLOT(StartRecurrenceEstimate(const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(SubjectBasedExistingRecurrenceEstimate(std::string, std::string, bool, bool, bool, bool)), this, SLOT(LoadedSubjectExistingRecurrenceEstimate(const std::string &, const std::string &, bool, bool, bool, bool)));
@@ -3129,6 +3129,40 @@ void fMainWindow::clearMask(int label)
   UpdateNumberOfPointsInTable();
 }
 
+void fMainWindow::OnApplyMask()
+{
+	//check if mask exists
+	if (this->isMaskDefined())
+	{
+		//get loaded mask
+		ImageTypeFloat3D::Pointer mask = this->getMaskImage();
+
+		//get loaded images
+		std::vector<std::string> fileNames, modality, baseFileNames;
+		std::vector<ImageTypeFloat3D::Pointer> nloadedimages = this->getLodedImages(fileNames, modality);
+
+		//get base file names of all loaded images
+		for (unsigned int i = 0; i < mSlicerManagers.size(); i++)
+		{
+			baseFileNames.push_back(mSlicerManagers[i]->GetBaseFileName());
+		}
+
+		//apply mask on all loaded images
+		for (int i = 0; i < nloadedimages.size(); i++)
+		{
+			auto maskFilter = itk::MaskImageFilter<ImageTypeFloat3D, ImageTypeFloat3D>::New();
+			maskFilter->SetInput(nloadedimages[i]);
+			maskFilter->SetMaskImage(mask);
+			maskFilter->Update();
+			auto maskedimg = maskFilter->GetOutput();
+			std::string maskedFilename = m_tempFolderLocation + "/" + baseFileNames[i] + "_masked" + ".nii.gz"; //masked images are written in temp dir at this path
+			cbica::WriteImage<ImageTypeFloat3D>(maskedimg, maskedFilename);
+
+			//load the masked images back into captk
+			this->LoadSlicerImages(maskedFilename, CAPTK::ImageExtension::NIfTI);
+		}
+	}
+}
 
 void fMainWindow::StartEGFREstimate()
 {
