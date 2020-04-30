@@ -1536,6 +1536,8 @@ int main(int argc, char** argv)
           {
               return EXIT_FAILURE;
           }
+          std::cout << "Finished reorienting " + bvecOutputFile + " (" + originalOrientation + ") to "
+              + outputImageFile + " (" + orientationDesired + ")" << std::endl;
       }
       return EXIT_SUCCESS;
     }
