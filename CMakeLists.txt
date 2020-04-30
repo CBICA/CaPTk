@@ -282,18 +282,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     #ENDFOREACH()
   ENDFOREACH()
 
-  # # for 11Zip
-  # FILE(GLOB_RECURSE 11Zip_Headers "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include/*.h")
-  # FILE(GLOB_RECURSE 11Zip_HeadersCpp "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include/*.hpp")
-  # FILE(GLOB_RECURSE 11Zip_Sources "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/src/*.c")
-  # FILE(GLOB_RECURSE 11Zip_SourcesCpp "${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/src/*.cpp")
-
-  # SET( 11Zip_Headers ${11Zip_Headers} CACHE STRING "11Zip headers" FORCE )
-  # SET( 11Zip_HeadersCpp ${11Zip_HeadersCpp} CACHE STRING "11Zip headers" FORCE )
-  # SET( 11Zip_Sources ${11Zip_Sources} CACHE STRING "11Zip sources" FORCE )
-  # SET( 11Zip_SourcesCpp ${11Zip_SourcesCpp} CACHE STRING "11Zip sources" FORCE )
-
-  # SET( 11Zip_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/thirdparty/11Zip/include)
+  # for YAML-CPP
+  FILE(GLOB_RECURSE YAMLCPP_Headers "${PROJECT_SOURCE_DIR}/src/thirdparty/yaml-cpp/include/yaml-cpp/*.h")
+  FILE(GLOB_RECURSE YAMLCPP_Sources "${PROJECT_SOURCE_DIR}/src/thirdparty/yaml-cpp/src/*.cpp")
+  SET( YAMLCPP_Headers ${YAMLCPP_Headers} CACHE STRING "YAML-CPP headers" FORCE )
+  SET( YAMLCPP_Sources ${YAMLCPP_Sources} CACHE STRING "YAML-CPP sources" FORCE )
   ### third party library processing
 
   FIND_PACKAGE(VTK REQUIRED)
@@ -319,7 +312,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF(VTK_VERSION VERSION_LESS 5.6.0)
 
 
-  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore WebEngineWidgets Concurrent Test Sql Network REQUIRED)
+  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore WebEngineWidgets Concurrent Test Sql REQUIRED)
+
   # For some reason IF(LINUX) doesn't work properly on linux
   # This is necessary for the whole project to compile on linux
   IF(WIN32)
@@ -353,18 +347,11 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     Qt5::Concurrent
     Qt5::Test
     Qt5::Sql
-    Qt5::Network
     ${ITK_LIBRARIES}
     ${VTK_LIBRARIES}
     ${OpenCV_LIBRARIES}
     ${OpenMP_LIBRARIES}
   )
-
-  # IF (WIN32) 
-  #   ADD_LIBRARY(elzip ${11Zip_Headers} ${11Zip_HeadersCpp} ${11Zip_Sources} ${11Zip_SourcesCpp})
-
-  #   SET( DEPENDENT_LIBS ${DEPENDENT_LIBS} elzip)
-  # ENDIF()
 
   IF(UNIX AND NOT APPLE)
     SET( DEPENDENT_LIBS 
@@ -507,10 +494,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${CACHED_INCLUDE_DIRS}
     ${OpenMP_INCLUDE_DIRS}
   )
-
-  # IF (WIN32) 
-  #   INCLUDE_DIRECTORIES(${11Zip_INCLUDE_DIRS})
-  # ENDIF()
   
   IF( BUILD_CONFETTI )
     IF (WIN32)
@@ -794,16 +777,12 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB DOWNLOAD_LINKS "${DATA_DIR}/links.yaml")
     SET_SOURCE_FILES_PROPERTIES(${DOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
 
-    FILE(GLOB DOWNLOAD_LINKS "${DATA_DIR}/appsDownloadConfigs.yaml")
-    SET_SOURCE_FILES_PROPERTIES(${DOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
-
     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FLAIR_FILE} ${FLAIR_TESTTUMOR_FILE} ${survival_FILES} ${egfrv3_FILES} ${sri24_FILES} ${DOWNLOAD_LINKS})
 
   ELSE ()
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/links.yaml" DESTINATION data)
-    INSTALL(FILES "${DATA_DIR}/appsDownloadConfigs.yaml" DESTINATION data)
     INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/molecular" DESTINATION data PATTERN ".svn" EXCLUDE)

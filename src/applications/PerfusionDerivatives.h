@@ -164,7 +164,7 @@ typename ImageType::Pointer PerfusionDerivatives::GetOneImageVolume(typename Per
   filter->SetExtractionRegion(desiredRegion);
   filter->SetInput(perfImagePointerNifti);
 
-  filter->SetDirectionCollapseToIdentity(); // This is required.
+  filter->SetDirectionCollapseToSubmatrix(); // This is required.
   filter->Update();
   return filter->GetOutput();
 }

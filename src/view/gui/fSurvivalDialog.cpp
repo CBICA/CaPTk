@@ -118,7 +118,7 @@ void fSurvivalPredictor::ConfirmButtonPressed()
     //  }
     //}
     //--------------function call--------------------
-    emit PrepareNewSurvivalPredictionModel(existingMaskDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString());
+    emit TrainNewSurvivalPredictionModel(existingMaskDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString());
   }
   this->close();
 }
