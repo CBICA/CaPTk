@@ -10,21 +10,6 @@
 #define UI_fDrawingPanel_H
 
 #include <QtCore/QVariant>
-// #include <QtGui/QAction>
-// #include <QtGui/QApplication>
-// #include <QtGui/QButtonGroup>
-// #include <QtGui/QFrame>
-// #include <QtGui/QGridLayout>
-// #include <QtGui/QHBoxLayout>
-// #include <QtGui/QHeaderView>
-// #include <QtGui/QLabel>
-// #include <QtGui/QPushButton>
-// #include <QtGui/QRadioButton>
-// #include <QtGui/QSpacerItem>
-// #include <QtGui/QTableWidget>
-// #include <QtGui/QVBoxLayout>
-// #include <QtGui/QWidget>
-// NEW CHANGES
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
@@ -42,11 +27,9 @@
 #include <qcombobox.h>
 #include <QToolButton>
 #include "qlineedit.h"
-//#include <QPushButton.h>
 #include <qgroupbox.h>
 #include <qsize.h>
 
-//#include "CAPTk.h"
 #include "CaPTkGUIUtils.h"
 
 QT_BEGIN_NAMESPACE
@@ -81,6 +64,7 @@ public:
   QLineEdit* changeOldValues;
   QLineEdit* changeNewValues;
   QPushButton* changeButton;
+  QPushButton* applyMaskButton;
 
   void setupUi(QWidget *parent)
   {
@@ -176,9 +160,13 @@ public:
     clearSelectedLabelButton->setToolTip(QString("Clear selected label from the image"));
     clearSelectedLabelButton->setFixedWidth(constButtonWidth20);
 
+    applyMaskButton = new QPushButton(parent);
+    applyMaskButton->setIconSize(iconSize);
+    applyMaskButton->setText(QString("Apply Mask"));
+    applyMaskButton->setToolTip(QString("Apply mask on all loaded images."));
+    applyMaskButton->setFixedWidth(constButtonWidth20);
 
-
-	  UndoButton = new QPushButton(parent);
+	UndoButton = new QPushButton(parent);
     UndoButton->setIcon(undoIcon);
     UndoButton->setIconSize(iconSize);
     UndoButton->setText(QString("Undo"));
@@ -262,24 +250,28 @@ public:
     shapesGroup->setLayout(shapesLayout);
 
     QGroupBox* othersGroup = new QGroupBox("Operations");
+    QHBoxLayout* operationsHLayout = new QHBoxLayout();
     QVBoxLayout* othersLayout = new QVBoxLayout();
+	QVBoxLayout* operationsV2Layout = new QVBoxLayout();
+
     othersLayout->addWidget(clearSelectedLabelButton);
     othersLayout->addWidget(clearAllLabelButton);
     othersLayout->addWidget(UndoButton);
+    othersLayout->addWidget(applyMaskButton);
   	//othersLayout->addStretch();
 
     changeOldValues = new QLineEdit("");
     changeOldValues->setPlaceholderText("Old Values");
     changeOldValues->setToolTip("Old values to change in format AxBxC");
     changeOldValues->setObjectName(QString::fromUtf8("changeOldValues"));
-    changeOldValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    changeOldValues->setAlignment(Qt::AlignCenter);
     changeOldValues->setFixedWidth(constButtonWidth20);
 
     changeNewValues = new QLineEdit("");
     changeNewValues->setPlaceholderText("New Values");
     changeNewValues->setToolTip("New values to change in format AxBxC");
     changeNewValues->setObjectName(QString::fromUtf8("changeNewValues"));
-    changeNewValues->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    changeNewValues->setAlignment(Qt::AlignCenter);
     changeNewValues->setFixedWidth(constButtonWidth20);
 
     changeButton = new QPushButton(parent);
@@ -287,6 +279,7 @@ public:
     changeButton->setToolTip(QString("Change the selected label sets"));
     changeButton->setFixedWidth(constButtonWidth20);
 
+	//change label values group box
     auto changeGroup = new QGroupBox("Change Label Values");
     auto changeLayout_V = new QVBoxLayout(changeGroup);
     //auto changeLayout_H = new QHBoxLayout(changeGroup);
@@ -296,9 +289,13 @@ public:
     changeLayout_V->addWidget(changeNewValues);
     changeLayout_V->addWidget(changeButton);
     changeGroup->setLayout(changeLayout_V);
-    changeGroup->setMaximumWidth(constButtonWidth20 + 15);
-    othersLayout->addWidget(changeGroup);
-    othersGroup->setLayout(othersLayout);
+	changeGroup->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	operationsV2Layout->addWidget(changeGroup);
+
+	//operations group box has a horizontal layout
+	operationsHLayout->addLayout(othersLayout);
+	operationsHLayout->addLayout((operationsV2Layout));
+	othersGroup->setLayout(operationsHLayout);
 
     HelpButton = new QPushButton();
     HelpButton->setIcon(QIcon((iconDir + "help.png").c_str()));
@@ -308,15 +305,14 @@ public:
     helpLayout->addWidget(HelpButton);
     helpLayout->addStretch();
 
-	  QHBoxLayout* subLayout = new QHBoxLayout();
+	//add all widgets to overall layout
+      QHBoxLayout* subLayout = new QHBoxLayout(parent);
 	  subLayout->addWidget(shapesGroup);
     subLayout->addWidget(drawPropertiesGroup);
     subLayout->addWidget(othersGroup);
 	  subLayout->addStretch();
     subLayout->addLayout(helpLayout);
-    QVBoxLayout* mainLayout = new QVBoxLayout(parent);
-	  mainLayout->addLayout(subLayout);
-	  mainLayout->addStretch();
+
 	  QMetaObject::connectSlotsByName(parent);
   }
 

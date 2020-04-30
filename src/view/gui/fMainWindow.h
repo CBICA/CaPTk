@@ -523,6 +523,10 @@ signals:
   void TissuePointsFocused(bool bFocused);
 
 public slots:
+
+	//! apply mask to loaded images
+	void OnApplyMask();
+
 	//!display Preferences dialog
 	void OnPreferencesMenuClicked();
 

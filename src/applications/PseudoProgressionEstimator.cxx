@@ -177,7 +177,7 @@ int PrepareNewSurvivalPredictionModel(const std::string inputdirectory, const st
   std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
   if (QualifiedSubjects.size() == 0)
     std::cout << "No subject found with required input. Exiting...." << std::endl;
-  else if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
+  else if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<20)
     std::cout << "There should be atleast 20 patients to build reliable pseudo-progression model. Exiting...." << std::endl;
   else
     objPseudoProgressionEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, true, true, true, true);
