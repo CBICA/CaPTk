@@ -28,6 +28,6 @@ void CaPTkDockWidget::closeEvent(QCloseEvent * event)
 	std::cout << "CaPTkDockWidget::closeEvent" << std::endl;
 	if (this->isFloating())
 	{
-		event->ignore();
+		//event->ignore();
 	}
 }
