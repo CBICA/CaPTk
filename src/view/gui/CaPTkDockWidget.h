@@ -14,12 +14,17 @@ class CaPTkDockWidget : public QDockWidget
     Q_OBJECT
 public:
     explicit CaPTkDockWidget(QWidget *parent = nullptr);
+
+protected:
     void dragEnterEvent(QDragEnterEvent* event);
     void dropEvent(QDropEvent* event);
+	void closeEvent(QCloseEvent *event);
 
 signals:
     void dragEnteredDockWidget(QDragEnterEvent*);
     void droppedOnDockWidget(QDropEvent*);
+
+private:
 
 };
 

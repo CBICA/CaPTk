@@ -22,3 +22,8 @@ void CaPTkDockWidget::dropEvent(QDropEvent *event) {
     // This emits the accepted drop event. Handling the contents is the responsibility of the receiver.
     emit droppedOnDockWidget(event);
 }
+
+void CaPTkDockWidget::closeEvent(QCloseEvent * event)
+{
+	std::cout << "CaPTkDockWidget::closeEvent" << std::endl;
+}
