@@ -532,7 +532,6 @@ jobs:
 #       displayName: Uploading to NITRC 
 #       condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
      
-
 - job: 'MacOSBuild'
   displayName: "End-to-end MacOS build & package"
   timeoutInMinutes: 0
