@@ -8,6 +8,8 @@ CaPTkDockWidget::CaPTkDockWidget(QWidget *parent) : QDockWidget(parent)
 {
     // We must specifically allow drops on the DockWidget.
     this->setAcceptDrops(true);
+
+	this->m_parent = parent;
 }
 
 void CaPTkDockWidget::dragEnterEvent(QDragEnterEvent* event) {

@@ -25,6 +25,7 @@ signals:
     void droppedOnDockWidget(QDropEvent*);
 
 private:
+	QWidget* m_parent;
 
 };
 
