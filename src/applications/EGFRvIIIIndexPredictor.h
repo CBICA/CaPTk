@@ -77,7 +77,6 @@ public:
   FeatureExtractionClass mFeatureExtractionLocalPtr;
   FeatureScalingClass mFeatureScalingLocalPtr;
   cbica::Logging logger;
-
   /**
   \brief Calculates the features for given images of one subject
 
@@ -802,7 +801,7 @@ VectorDouble  EGFRvIIIIndexPredictor::LoadTestData(const typename ImageType::Poi
 
   //copy data from vectors to one final feature vector
   VectorDouble TestFeatures;
-  //copy locaiton features
+  //copy location features
   TestFeatures.insert(TestFeatures.end(), spatialLocationFeatures_4.begin(), spatialLocationFeatures_4.end());
 
   //copy volumetric features
