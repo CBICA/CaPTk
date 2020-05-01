@@ -12,6 +12,4 @@ Though some functionality does exist on the graphical interface, this executable
 
 ## To Do
 
-- Skull Stripping
-
 For new features, please put a pull or feature request via github.com/CBICA/CaPTk.
