@@ -367,7 +367,7 @@ int main(int argc, char** argv)
     }
     else if (!cbica::fileExists(maskfilename))
     {
-      std::cerr << "Mask File cannot be a non-existant file.\n";
+      std::cerr << "Mask File cannot be non-existent.\n";
       exit(EXIT_FAILURE);
     }
   }
