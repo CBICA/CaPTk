@@ -2,6 +2,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QApplication>
 #include <iostream>
 
 CaPTkDockWidget::CaPTkDockWidget(QWidget *parent) : QDockWidget(parent)
@@ -30,6 +31,6 @@ void CaPTkDockWidget::closeEvent(QCloseEvent * event)
 	std::cout << "CaPTkDockWidget::closeEvent" << std::endl;
 	if (this->isFloating())
 	{
-		//event->ignore();
+		QApplication::postEvent(this->m_parent, event);
 	}
 }
