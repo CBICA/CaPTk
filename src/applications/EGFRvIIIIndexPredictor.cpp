@@ -149,7 +149,7 @@ int EGFRvIIIIndexPredictor::PrepareNewEGFRvIIIPredictionModel(const std::string 
   //ImageType::Pointer NEGAtlasImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/egfrv3/EGFRneg.nii.gz");
   //ImageType::Pointer POSAtlasImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/egfrv3/EGFRpos.nii.gz");
     
-  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 448);
+  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), EGFR_NO_OF_FEATURES);
   std::vector<std::string> patient_ids;
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
@@ -444,7 +444,7 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
 
   //extract features from the given dataset
   VariableSizeMatrixType FeaturesOfAllSubjects;
-  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 448);
+  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), EGFR_NO_OF_FEATURES);
   std::vector<std::string> patient_ids;
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
@@ -496,11 +496,9 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
       return results;
     }
   }
-  std::string FeatureLabels[448] = { "Age","Loc_Mean_diff","Loc_Max_Diff","Loc_Mean_Ratio","Loc_Max_Ratio",
-    "ET_PatientSpace","NCR_PatientSpace","ED_PatientSpace","brain size_PatientSpace","ET+NCR_PatientSpace","ET+NCR/BS_PatientSpace","Edema/BS","ET/ET+NCR_PatientSpace","NCR/ET+NCR_PatientSpace","Edema/ET+NCR_PatientSpace",
+  std::string FeatureLabels[EGFR_NO_OF_FEATURES] = { "Age","Loc_Mean_diff","Loc_Max_Diff","Loc_Mean_Ratio","Loc_Max_Ratio","ET_PatientSpace","NCR_PatientSpace","ED_PatientSpace","brain size_PatientSpace","ET+NCR_PatientSpace","ET+NCR/BS_PatientSpace","Edema/BS","ET/ET+NCR_PatientSpace","NCR/ET+NCR_PatientSpace","Edema/ET+NCR_PatientSpace",
     "ET_Atl","NCR_Atl","ED_Atl","brain size_Atl","ET+NCR_Atl","ET+NCR/BS_Atl","Edema/BS_Atl","ET/ET+NCR_Atl","NCR/ET+NCR_Atl","Edema/ET+NCR_Atl",
-    "Vent_Tumor_Dist","Vent_ED_Dist",
-    "Mean_ET_T1CE","STD_ET_T1CE","Mean_ET_T1","STD_ET_T1","Mean_ET_T2","STD_ET_T2","Mean_ET_Flair","STD_ET_Flair","Mean_ET_PH","STD_ET_PH",
+    "Vent_Tumor_Dist","Vent_ED_Dist","Mean_ET_T1CE","STD_ET_T1CE","Mean_ET_T1","STD_ET_T1","Mean_ET_T2","STD_ET_T2","Mean_ET_Flair","STD_ET_Flair","Mean_ET_PH","STD_ET_PH",
     "Mean_ET_PSR","STD_ET_PSR","Mean_ET_RCBV","STD_ET_RCBV","Mean_ET_FA","STD_ET_FA","Mean_ET_AX","STD_ET_AX","Mean_ET_RAD","STD_ET_RAD","Mean_ET_TR","STD_ET_TR",
     "Mean_NCR_T1CE","STD_NCR_T1CE","Mean_NCR_T1","STD_NCR_T1","Mean_NCR_T2","STD_NCR_T2","Mean_NCR_Flair","STD_NCR_Flair","Mean_NCR_PH","STD_NCR_PH",
     "Mean_NCR_PSR","STD_NCR_PSR","Mean_NCR_RCBV","STD_NCR_RCBV","Mean_NCR_FA","STD_NCR_FA","Mean_NCR_AX","STD_NCR_AX","Mean_NCR_RAD","STD_NCR_RAD","Mean_NCR_TR","STD_NCR_TR",
@@ -544,7 +542,11 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
 
   std::cout << "Feature writing started:" << std::endl;
   //write raw extracted features to a .csv file
-  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, FeatureLabels, outputdirectory + "/RawFeatures.csv");
+  std::vector<std::string> StringFeatureLabels;
+  for (int index = 0; index < EGFR_NO_OF_FEATURES; index++)
+    StringFeatureLabels.push_back(FeatureLabels[index]);
+
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, StringFeatureLabels, outputdirectory + "/RawFeatures.csv");
 
   //scale raw features based on the z-score values
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);

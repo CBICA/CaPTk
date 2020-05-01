@@ -37,7 +37,7 @@ typedef vnl_matrix<double> MatrixType;
 
 #define EGFR_SIZE_COMP 100
 #define EGFR_NO_NEAR_DIST 100
-
+#define EGFR_NO_OF_FEATURES 448
 /**
 \class EGFRvIIIIndexPredictor
 
