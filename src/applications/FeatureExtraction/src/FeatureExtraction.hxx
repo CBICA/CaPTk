@@ -322,11 +322,11 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   //ngldmCalculator.Update();
   //std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << ngldmCalculator.GetRange() << std::endl;
 
-  auto temp = ngldmCalculator.GetOutput();
-  for (auto const& f : temp)
-  {
-    featurevec[f.first] = f.second;
-  }
+  //auto temp = ngldmCalculator.GetOutput();
+  //for (auto const& f : temp)
+  //{
+  //  featurevec[f.first] = f.second;
+  //}
   //featurevec["LowDependenceEmphasis"] = ngldmCalculator.GetLowDependenceEmphasis();
   //featurevec["HighDependenceEmphasis"] = ngldmCalculator.GetHighDependenceEmphasis();
   //featurevec["LowGreyLevelCountEmphasis"] = ngldmCalculator.GetLowGreyLevelCountEmphasis();
