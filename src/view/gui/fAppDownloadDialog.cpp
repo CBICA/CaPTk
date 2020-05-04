@@ -42,7 +42,7 @@ void fAppDownloadDialog::ConfirmButtonPressed()
         fileName = "index.html";
 
     fullPath = downloadPath + fileName;
-    ShowErrorMessage(fullPath.toStdString());
+    // ShowErrorMessage(fullPath.toStdString());
 
     if (QFile::exists(fullPath)) {
         if (QMessageBox::question(this, tr("HTTP"),

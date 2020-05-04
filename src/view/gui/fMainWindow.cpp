@@ -1155,7 +1155,7 @@ void fMainWindow::appDownload(std::string currentApp)
 
   std::string downloadLink = m_appDownloadConfigs["apps"][currentApp][linkyml].as<std::string>();
 
-  ShowErrorMessage(downloadLink);
+  // ShowErrorMessage(downloadLink);
 
   appDownloadDialog.SetPaths(downloadFolder, currentApp);
   appDownloadDialog.SetDownloadLink(downloadLink);
