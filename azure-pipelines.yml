@@ -818,6 +818,9 @@ jobs:
 
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
+        rm -rf bin
+        df -k .
+
       displayName: 'Set up environment variables for packager and build a package'
 
     - task: PublishBuildArtifacts@1
