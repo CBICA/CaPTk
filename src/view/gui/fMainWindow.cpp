@@ -265,6 +265,7 @@ fMainWindow::fMainWindow()
 //   Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
   connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
   connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
+  connect(m_toolTabdock, SIGNAL(close()), this, SLOT(close()));
 
 //  ! automatic undock on low resolution
   //! to be tested thoroughly
@@ -981,6 +982,7 @@ fMainWindow::fMainWindow()
 
 fMainWindow::~fMainWindow()
 {
+std::cout << "fMainWindow::~fMainWindow" << std::endl;
   for (int i = 0; i < (int)mSlicerManagers.size(); i++)
   {
     if (mSlicerManagers[i] != NULL)
@@ -9376,6 +9378,7 @@ void fMainWindow::SetOpacity()
 
 void fMainWindow::closeEvent(QCloseEvent* event)
 {
+  std::cout << "fMainWindow::closeEvent" << std::endl;
   if (m_NumberOfUnfinishedExternalProcesses > 0)
   {
     ShowErrorMessage("Please close all external applications before exiting.");
