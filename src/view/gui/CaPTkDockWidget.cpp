@@ -25,9 +25,16 @@ void CaPTkDockWidget::dropEvent(QDropEvent *event) {
 
 void CaPTkDockWidget::closeEvent(QCloseEvent * event)
 {
+	//we reach here when Alt+F4 is pressed to close the dockwidget
+
+	//we handle this case only when the dockwidget is floating
 	if (this->isFloating())
 	{
+		//we don't want to handle the dockwidget close
 		event->ignore();
+
+		//instead we want to close the application 
+		//we throw a signal to the mainwindow to close
 		emit close();
 	}
 }

@@ -18,11 +18,15 @@ public:
 protected:
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
     virtual void dropEvent(QDropEvent* event) override;
+
+	//handler for close
 	virtual void closeEvent(QCloseEvent *event) override;
 
 signals:
     void dragEnteredDockWidget(QDragEnterEvent*);
     void droppedOnDockWidget(QDropEvent*);
+
+	//signal to close the application
 	void close(); 
 
 };

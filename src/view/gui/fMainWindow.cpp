@@ -265,7 +265,7 @@ fMainWindow::fMainWindow()
 //   Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
   connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
   connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
-  connect(m_toolTabdock, SIGNAL(close()), this, SLOT(close()));
+  connect(m_toolTabdock, SIGNAL(close()), this, SLOT(close())); //call the application close routine on signal from dockwidget
 
 //  ! automatic undock on low resolution
   //! to be tested thoroughly
