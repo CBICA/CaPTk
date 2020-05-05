@@ -982,7 +982,6 @@ fMainWindow::fMainWindow()
 
 fMainWindow::~fMainWindow()
 {
-std::cout << "fMainWindow::~fMainWindow" << std::endl;
   for (int i = 0; i < (int)mSlicerManagers.size(); i++)
   {
     if (mSlicerManagers[i] != NULL)
@@ -9378,7 +9377,6 @@ void fMainWindow::SetOpacity()
 
 void fMainWindow::closeEvent(QCloseEvent* event)
 {
-  std::cout << "fMainWindow::closeEvent" << std::endl;
   if (m_NumberOfUnfinishedExternalProcesses > 0)
   {
     ShowErrorMessage("Please close all external applications before exiting.");

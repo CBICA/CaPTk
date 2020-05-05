@@ -16,9 +16,9 @@ public:
     explicit CaPTkDockWidget(QWidget *parent = nullptr);
 
 protected:
-    void dragEnterEvent(QDragEnterEvent* event);
-    void dropEvent(QDropEvent* event);
-	void closeEvent(QCloseEvent *event);
+    virtual void dragEnterEvent(QDragEnterEvent* event) override;
+    virtual void dropEvent(QDropEvent* event) override;
+	virtual void closeEvent(QCloseEvent *event) override;
 
 signals:
     void dragEnteredDockWidget(QDragEnterEvent*);
