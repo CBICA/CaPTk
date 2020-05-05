@@ -2,15 +2,12 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
-#include <QApplication>
 #include <iostream>
 
 CaPTkDockWidget::CaPTkDockWidget(QWidget *parent) : QDockWidget(parent)
 {
     // We must specifically allow drops on the DockWidget.
     this->setAcceptDrops(true);
-
-	this->m_parent = parent;
 }
 
 void CaPTkDockWidget::dragEnterEvent(QDragEnterEvent* event) {
@@ -28,10 +25,8 @@ void CaPTkDockWidget::dropEvent(QDropEvent *event) {
 
 void CaPTkDockWidget::closeEvent(QCloseEvent * event)
 {
-	std::cout << "CaPTkDockWidget::closeEvent" << std::endl;
 	if (this->isFloating())
 	{
-		//QApplication::sendEvent(this->m_parent, event);
 		event->ignore();
 		emit close();
 	}

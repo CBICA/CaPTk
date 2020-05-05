@@ -25,9 +25,6 @@ signals:
     void droppedOnDockWidget(QDropEvent*);
 	void close(); 
 
-private:
-	QWidget* m_parent;
-
 };
 
 #endif // CAPTKDOCKWIDGET_H
