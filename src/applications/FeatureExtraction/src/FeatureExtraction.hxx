@@ -322,11 +322,11 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   //ngldmCalculator.Update();
   //std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << ngldmCalculator.GetRange() << std::endl;
 
-  //auto temp = ngldmCalculator.GetOutput();
-  //for (auto const& f : temp)
-  //{
-  //  featurevec[f.first] = f.second;
-  //}
+  auto temp = ngldmCalculator.GetOutput();
+  for (auto const& f : temp)
+  {
+    featurevec[f.first] = f.second;
+  }
   //featurevec["LowDependenceEmphasis"] = ngldmCalculator.GetLowDependenceEmphasis();
   //featurevec["HighDependenceEmphasis"] = ngldmCalculator.GetHighDependenceEmphasis();
   //featurevec["LowGreyLevelCountEmphasis"] = ngldmCalculator.GetLowGreyLevelCountEmphasis();
@@ -2952,10 +2952,10 @@ void FeatureExtraction< TImage >::Update()
                       if (TImage::ImageDimension == 3)
                       {
                         std::string currentFeatureFamily = FeatureFamilyString[f];
-                        CalculateNGLDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
-                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
-                          "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                          ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        //CalculateNGLDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
+                        //WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                        //  "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        //  ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
                         //if (!writeFeatureMapsAndLattice && m_SliceComputation)
                         //{
