@@ -10,7 +10,8 @@ CaPTkDockWidget::CaPTkDockWidget(QWidget *parent) : QDockWidget(parent)
     this->setAcceptDrops(true);
 }
 
-void CaPTkDockWidget::dragEnterEvent(QDragEnterEvent* event) {
+void CaPTkDockWidget::dragEnterEvent(QDragEnterEvent* event) 
+{
     /* This emits the drag-enter event to whatever this dockwidget is connected to.
      * calling event->acceptProposedAction() is the responsibility of the receiver,
      * and this must be performed before any QDropEvent will function.
@@ -18,7 +19,8 @@ void CaPTkDockWidget::dragEnterEvent(QDragEnterEvent* event) {
     emit dragEnteredDockWidget(event);
 }
 
-void CaPTkDockWidget::dropEvent(QDropEvent *event) {
+void CaPTkDockWidget::dropEvent(QDropEvent *event) 
+{
     // This emits the accepted drop event. Handling the contents is the responsibility of the receiver.
     emit droppedOnDockWidget(event);
 }
