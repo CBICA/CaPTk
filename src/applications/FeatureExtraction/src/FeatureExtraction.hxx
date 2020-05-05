@@ -196,6 +196,7 @@ void FeatureExtraction< TImage >::CalculateLBP(const typename TImage::Pointer it
     lbpCalculator.SetRadius(m_Radius);
   }
   lbpCalculator.SetInputImage(itkImage);
+  lbpCalculator.SetInputMask(mask);
   lbpCalculator.SetNeighbors(m_neighborhood);
   lbpCalculator.SetLBPStyle(m_LBPStyle);
   if (m_debug)
