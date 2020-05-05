@@ -32,6 +32,7 @@ void CaPTkDockWidget::closeEvent(QCloseEvent * event)
 	if (this->isFloating())
 	{
 		//QApplication::sendEvent(this->m_parent, event);
+		event->ignore();
 		emit close();
 	}
 }
