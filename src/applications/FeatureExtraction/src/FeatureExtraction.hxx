@@ -196,6 +196,7 @@ void FeatureExtraction< TImage >::CalculateLBP(const typename TImage::Pointer it
     lbpCalculator.SetRadius(m_Radius);
   }
   lbpCalculator.SetInputImage(itkImage);
+  lbpCalculator.SetInputMask(mask);
   lbpCalculator.SetNeighbors(m_neighborhood);
   lbpCalculator.SetLBPStyle(m_LBPStyle);
   if (m_debug)
@@ -2952,10 +2953,10 @@ void FeatureExtraction< TImage >::Update()
                       if (TImage::ImageDimension == 3)
                       {
                         std::string currentFeatureFamily = FeatureFamilyString[f];
-                        CalculateNGLDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
-                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
-                          "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                          ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        //CalculateNGLDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
+                        //WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                        //  "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        //  ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
                         //if (!writeFeatureMapsAndLattice && m_SliceComputation)
                         //{
