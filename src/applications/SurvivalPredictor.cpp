@@ -575,7 +575,6 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 		{
 			ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
 			ImageType::Pointer AtlasImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
-			//ImageType::Pointer TemplateImagePointer = cbica::ReadImage<ImageType>("../data/survival/Template.nii.gz");
       ImageType::Pointer TemplateImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/survival/Template.nii.gz");
 			ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
 			ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
