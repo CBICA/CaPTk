@@ -54,8 +54,6 @@ SET( GUI
   AppearancePage
   CaPTkDockWidget
   fAppDownloadDialog
-  QZipReader
-  StandaloneApps
   #fSegmentationPanel
   #fHelpAppDialog
 )
@@ -85,6 +83,9 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/IPreferencePage.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/QZipReader.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/StandaloneApps.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/StandaloneApps.cpp"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
   #"${CMAKE_CURRENT_SOURCE_DIR}/ApplicationBase.h"

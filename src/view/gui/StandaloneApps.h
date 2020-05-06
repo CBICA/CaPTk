@@ -1,27 +1,51 @@
-/**
-\file StandaloneApps.h
+#ifndef STANDALONEAPPS_H
+#define STANDALONEAPPS_H
 
-\brief Declaration of StandaloneApps class
-*/
+#include <QObject>
+#include <QMutex>
+#include <QVariant>
 
-#ifndef _StandaloneApps_h_
-#define _StandaloneApps_h_
-
-#include "CaPTkUtils.h"
-#include "CaPTkGUIUtils.h"
-
-/**
-\class StandaloneApps
-
-\brief QSettings storage
-*/
-class StandaloneApps
+class StandaloneApps : public QObject
 {
 public:
-  StandaloneApps();
-  ~StandaloneApps();
-  
+	static StandaloneApps* GetInstance(QString appName);
+
+	//! setters/getters
+	// void SetName(QString appName);
+	// QString GetName() const;
+
+	void SetAction(QString action);
+	QString GetAction() const;
+
+	void SetStatus(QString status);
+	QString GetStatus() const;
+
+	void SetFileAvailability(QString available);
+	QString GetFileAvailability() const;
+
+	void StoreAppSetting(QString action, QString status, QString appName);
+	void RetreiveAppSetting(QString appName);
+
+	//! print preferences(for debugging purposes)
+	void Debug();
+
+private:
+	//! constructor/desctrucor
+	StandaloneApps() = default;
+	~StandaloneApps() = default;
+
+	Q_DISABLE_COPY(StandaloneApps)
+
+	//! ivars
+	static StandaloneApps* m_Instance;
+	static QMutex m_Mutex;
+
+	// QString m_AppName;
+	QString m_Action;
+	QString m_Status;
+	// QString m_DownloadStatus;
+	// QString m_ExtractStatus;
+	QString m_FileAvailability = QVariant("false").toString();
 };
 
-
-#endif
+#endif 

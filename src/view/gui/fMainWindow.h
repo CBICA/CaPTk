@@ -80,9 +80,6 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 #include "yaml-cpp/node/node.h"
 
-#include "QZipReader.h"
-#include "StandaloneApps.h"
-
 class SlicerManager;
 class Slicer;
 class SimpleImageManager;
