@@ -645,16 +645,6 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
   //write scaled features in a .csv file
   WriteCSVFilesWithHorizontalAndVerticalHeaders(ScaledTestingData, patient_ids, FeatureLabels, outputdirectory + "/ScaledFeatures.csv");
   
- // VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
-	//ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
-	//for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
-	//{
-	//	unsigned int j = 0;
-	//	for (j = 0; j < ScaledTestingData.Cols(); j++)
-	//		ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
-	//	ScaledFeatureSetAfterAddingLabel(i, j) = 0;
-	//}
-
   VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(ScaledTestingData,selectedfeatures_6months);
 	VariableSizeMatrixType EighteenModelSelectedFeatures = SelectModelFeatures(ScaledTestingData,selectedfeatures_18months);
   std::vector<std::string> SelectedFeatureLabels_6months, SelectedFeatureLabels_18months;
