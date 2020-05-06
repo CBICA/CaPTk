@@ -112,15 +112,16 @@ int SurvivalPredictor::TrainNewSurvivalPredictionModel(const std::string &inputd
 	  return false;
   }
   FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), SURVIVAL_NO_OF_FEATURES);
+  std::vector<std::string> patient_ids;
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
 	  std::cout << "Patient's data loaded:" << sid + 1 << std::endl;
 	  std::map< CAPTK::ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
+    patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
 	  try
 	  {
 		  ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
 		  ImageType::Pointer AtlasImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
-		  //ImageType::Pointer TemplateImagePointer = cbica::ReadImage<ImageType>("../data/survival/Template.nii.gz");
       ImageType::Pointer TemplateImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/survival/Template.nii.gz");
 		  ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
 		  ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
@@ -162,6 +163,28 @@ int SurvivalPredictor::TrainNewSurvivalPredictionModel(const std::string &inputd
 		  return false;
 	  }
   }
+  std::string FeatureLabels[SURVIVAL_NO_OF_FEATURES] = { "Age","ET","NCR","ED","brain size","ET+NCR","(ET+NCR)x100/brain size","EDx100/brain size","ETx100/(ET+NCR)","NCRx100/(ET+NCR)","NCRx100/(ET+NCR)",
+    "Vent_Tumor_Dist","Vent_ED_Dist","Mean_ET_T1CE","STD_ET_T1CE","Mean_ET_T1","STD_ET_T1","Mean_ET_T2","STD_ET_T2","Mean_ET_Flair","STD_ET_Flair","Mean_ET_PH","STD_ET_PH","Mean_ET_PSR","STD_ET_PSR","Mean_ET_RCBV","STD_ET_RCBV","Mean_ET_FA","STD_ET_FA","Mean_ET_AX","STD_ET_AX","Mean_ET_RAD","STD_ET_RAD","Mean_ET_ADC","STD_ET_ADC",
+    "ET_T1CE_Bin1","ET_T1CE_Bin2","ED_T1CE_Bin1","ED_T1CE_Bin2","ED_T1CE_Bin3","ED_T1CE_Bin4","NCR_T1CE_Bin1","NCR_T1CE_Bin2",
+    "ET_T1_Bin1","ET_T1_Bin2","ED_T1_Bin1","ED_T1_Bin2","ED_T1_Bin3","ED_T1_Bin4","ED_T1_Bin5","ED_T1_Bin6","ED_T1_Bin7","ED_T1_Bin8","ED_T1_Bin9","NCR_T1_Bin1","NCR_T1_Bin2",
+    "ET_T2_Bin1","ET_T2_Bin2","ED_T2_Bin1","ED_T2_Bin2","ED_T2_Bin3","ED_T2_Bin4","ED_T2_Bin5","ED_T2_Bin6","ED_T2_Bin7","ED_T2_Bin8","ED_T2_Bin9","NCR_T2_Bin1","NCR_T2_Bin2",
+    "ET_Flair_Bin1","ET_Flair_Bin2","ET_Flair_Bin3","ED_Flair_Bin1","ED_Flair_Bin2","ED_Flair_Bin3","ED_Flair_Bin4","ED_Flair_Bin5","ED_Flair_Bin6","ED_Flair_Bin7","ED_Flair_Bin8","ED_Flair_Bin9","NCR_Flair_Bin1","NCR_Flair_Bin2","NCR_Flair_Bin3","NCR_Flair_Bin4","NCR_Flair_Bin5","NCR_Flair_Bin6","NCR_Flair_Bin7",
+    "ET_PH_Bin1","ET_PH_Bin2","ET_PH_Bin3","ED_PH_Bin1","ED_PH_Bin2","ED_PH_Bin3","ED_PH_Bin4","ED_PH_Bin5","ED_PH_Bin6","ED_PH_Bin7","ED_PH_Bin8","NCR_PH_Bin1","NCR_PH_Bin2","NCR_PH_Bin3",
+    "ET_PSR_Bin1","ET_PSR_Bin2","ET_PSR_Bin3","ET_PSR_Bin4","ED_PSR_Bin1","ED_PSR_Bin2","ED_PSR_Bin3","ED_PSR_Bin4","ED_PSR_Bin5","ED_PSR_Bin6","ED_PSR_Bin7","ED_PSR_Bin8","ED_PSR_Bin9","ED_PSR_Bin10","NCR_PSR_Bin1","NCR_PSR_Bin2","NCR_PSR_Bin3",
+    "ET_RCBV_Bin1","ET_RCBV_Bin2","ET_RCBV_Bin3","ED_RCBV_Bin1","ED_RCBV_Bin2","ED_RCBV_Bin3","NCR_RCBV_Bin1","NCR_RCBV_Bin2","NCR_RCBV_Bin3",
+    "ET_FA_Bin1","ET_FA_Bin2","ED_FA_Bin1","ED_FA_Bin2","NCR_FA_Bin1","NCR_FA_Bin2",
+    "ET_AX_Bin1","ET_AX_Bin2","ED_AX_Bin1","ED_AX_Bin2","NCR_AX_Bin1","NCR_AX_Bin2","NCR_AX_Bin3",
+    "ET_RAD_Bin1","ET_RAD_Bin2","ED_RAD_Bin1","ED_RAD_Bin2","NCR_RAD_Bin1","NCR_RAD_Bin2","NCR_RAD_Bin3",
+    "ET_ADC_Bin1","ET_ADC_Bin2","ED_ADC_Bin1","ED_ADC_Bin2","NCR_ADC_Bin1","NCR_ADC_Bin2","NCR_ADC_Bin3",
+    "Frontal","Temporal","Parietal","Basal G","Insula","CC_Fornix","Occipital","Cere","Brain stem" };
+
+  //write raw extracted features to a .csv file
+  std::vector<std::string> StringFeatureLabels;
+  for (int index = 0; index < SURVIVAL_NO_OF_FEATURES; index++)
+    StringFeatureLabels.push_back(FeatureLabels[index]);
+
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, StringFeatureLabels, outputdirectory + "/RawFeatures.csv");
+
   std::cout << std::endl << "Building model....." << std::endl;
   VariableSizeMatrixType scaledFeatureSet;
   scaledFeatureSet.SetSize(qualifiedsubjects.size(), SURVIVAL_NO_OF_FEATURES);
@@ -174,32 +197,36 @@ int SurvivalPredictor::TrainNewSurvivalPredictionModel(const std::string &inputd
       if (std::isnan(scaledFeatureSet(i, j)))
         scaledFeatureSet(i, j) = 0;
 
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(scaledFeatureSet, patient_ids, StringFeatureLabels, outputdirectory + "/ScaledFeatures.csv");
+
   typedef vnl_matrix<double> MatrixType;
   MatrixType data;
   VariableSizeMatrixType SixModelFeatures;
   VariableSizeMatrixType EighteenModelFeatures;
   mFeatureExtractionLocalPtr.FormulateSurvivalTrainingData(scaledFeatureSet, AllSurvival, SixModelFeatures, EighteenModelFeatures);
-  try
-  {
-    WriteCSVFiles(meanVector, outputdirectory + "/Survival_ZScore_Mean.csv");
-    WriteCSVFiles(stdVector, outputdirectory + "/Survival_ZScore_Std.csv");
-  }
-  catch (const std::exception& e1)
-  {
-	  logger.WriteError("Error in writing output files to the output directory = " + outputdirectory + "Error code : " + std::string(e1.what()));
-	  return false;
-  }
+  StringFeatureLabels.push_back("Label");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(SixModelFeatures, patient_ids, StringFeatureLabels, outputdirectory + "/FormulatedFeatures_6months.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(EighteenModelFeatures, patient_ids, StringFeatureLabels, outputdirectory + "/FormulatedFeatures_18months.csv");
+  WriteCSVFiles(meanVector, outputdirectory + "/Survival_ZScore_Mean.csv");
+  WriteCSVFiles(stdVector, outputdirectory + "/Survival_ZScore_Std.csv");
+
   VariableLengthVectorType selectedfeatures_6Months;
   VariableLengthVectorType selectedfeatures_18Months;
   VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(SixModelFeatures,selectedfeatures_6Months);
   VariableSizeMatrixType EighteenModelSelectedFeatures = SelectModelFeatures(EighteenModelFeatures,selectedfeatures_18Months);
-
-  //WriteCSVFiles(FeaturesOfAllSubjects, outputdirectory + "/FeaturesOfAllSubjects.csv");
-  //WriteCSVFiles(scaledFeatureSet, outputdirectory + "/scaledFeatureSet.csv");
-  //WriteCSVFiles(SixModelFeatures, outputdirectory + "/SixModelFeatures.csv");
-  //WriteCSVFiles(EighteenModelFeatures, outputdirectory + "/EighteenModelFeatures.csv");
-  //WriteCSVFiles(SixModelSelectedFeatures, outputdirectory + "/SixModelSelectedFeatures.csv");
-  //WriteCSVFiles(EighteenModelSelectedFeatures, outputdirectory + "/EighteenModelSelectedFeatures.csv");
+  std::vector<std::string> SelectedFeatureLabels_6months, SelectedFeatureLabels_18months;
+  for (int index = 0; index < selectedfeatures_6Months.Size(); index++)
+  {
+    int currentindex = selectedfeatures_6Months[index];
+    SelectedFeatureLabels_6months.push_back(FeatureLabels[currentindex]);
+  }
+  for (int index = 0; index < selectedfeatures_18Months.Size(); index++)
+  {
+    int currentindex = selectedfeatures_18Months[index];
+    SelectedFeatureLabels_18months.push_back(FeatureLabels[currentindex]);
+  }
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(SixModelSelectedFeatures, patient_ids, StringFeatureLabels, outputdirectory + "/SelectedFeatures_6months.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(EighteenModelSelectedFeatures, patient_ids, StringFeatureLabels, outputdirectory + "/SelectedFeatures_18months.csv");
 
    try
    {
@@ -537,16 +564,16 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 
   VariableSizeMatrixType FeaturesOfAllSubjects;
 	FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), SURVIVAL_NO_OF_FEATURES);
-
+  std::vector<std::string> patient_ids;
 	for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
 	{
 		std::cout << "Subject No:" << sid << std::endl;
 		std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[sid];
+    patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
 		try
 		{
 			ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
 			ImageType::Pointer AtlasImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
-			//ImageType::Pointer TemplateImagePointer = cbica::ReadImage<ImageType>("../data/survival/Template.nii.gz");
       ImageType::Pointer TemplateImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/survival/Template.nii.gz");
 			ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
 			ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
@@ -584,32 +611,57 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 			return results;
 		}
 	}
+  
+  std::string FeatureLabels[SURVIVAL_NO_OF_FEATURES] = { "Age","ET","NCR","ED","brain size","ET+NCR","(ET+NCR)x100/brain size","EDx100/brain size","ETx100/(ET+NCR)","NCRx100/(ET+NCR)","NCRx100/(ET+NCR)",
+    "Vent_Tumor_Dist","Vent_ED_Dist","Mean_ET_T1CE","STD_ET_T1CE","Mean_ET_T1","STD_ET_T1","Mean_ET_T2","STD_ET_T2","Mean_ET_Flair","STD_ET_Flair","Mean_ET_PH","STD_ET_PH","Mean_ET_PSR","STD_ET_PSR","Mean_ET_RCBV","STD_ET_RCBV","Mean_ET_FA","STD_ET_FA","Mean_ET_AX","STD_ET_AX","Mean_ET_RAD","STD_ET_RAD","Mean_ET_ADC","STD_ET_ADC",
+    "ET_T1CE_Bin1","ET_T1CE_Bin2","ED_T1CE_Bin1","ED_T1CE_Bin2","ED_T1CE_Bin3","ED_T1CE_Bin4","NCR_T1CE_Bin1","NCR_T1CE_Bin2",
+    "ET_T1_Bin1","ET_T1_Bin2","ED_T1_Bin1","ED_T1_Bin2","ED_T1_Bin3","ED_T1_Bin4","ED_T1_Bin5","ED_T1_Bin6","ED_T1_Bin7","ED_T1_Bin8","ED_T1_Bin9","NCR_T1_Bin1","NCR_T1_Bin2",
+    "ET_T2_Bin1","ET_T2_Bin2","ED_T2_Bin1","ED_T2_Bin2","ED_T2_Bin3","ED_T2_Bin4","ED_T2_Bin5","ED_T2_Bin6","ED_T2_Bin7","ED_T2_Bin8","ED_T2_Bin9","NCR_T2_Bin1","NCR_T2_Bin2",
+    "ET_Flair_Bin1","ET_Flair_Bin2","ET_Flair_Bin3","ED_Flair_Bin1","ED_Flair_Bin2","ED_Flair_Bin3","ED_Flair_Bin4","ED_Flair_Bin5","ED_Flair_Bin6","ED_Flair_Bin7","ED_Flair_Bin8","ED_Flair_Bin9","NCR_Flair_Bin1","NCR_Flair_Bin2","NCR_Flair_Bin3","NCR_Flair_Bin4","NCR_Flair_Bin5","NCR_Flair_Bin6","NCR_Flair_Bin7",
+    "ET_PH_Bin1","ET_PH_Bin2","ET_PH_Bin3","ED_PH_Bin1","ED_PH_Bin2","ED_PH_Bin3","ED_PH_Bin4","ED_PH_Bin5","ED_PH_Bin6","ED_PH_Bin7","ED_PH_Bin8","NCR_PH_Bin1","NCR_PH_Bin2","NCR_PH_Bin3",
+    "ET_PSR_Bin1","ET_PSR_Bin2","ET_PSR_Bin3","ET_PSR_Bin4","ED_PSR_Bin1","ED_PSR_Bin2","ED_PSR_Bin3","ED_PSR_Bin4","ED_PSR_Bin5","ED_PSR_Bin6","ED_PSR_Bin7","ED_PSR_Bin8","ED_PSR_Bin9","ED_PSR_Bin10","NCR_PSR_Bin1","NCR_PSR_Bin2","NCR_PSR_Bin3",
+    "ET_RCBV_Bin1","ET_RCBV_Bin2","ET_RCBV_Bin3","ED_RCBV_Bin1","ED_RCBV_Bin2","ED_RCBV_Bin3","NCR_RCBV_Bin1","NCR_RCBV_Bin2","NCR_RCBV_Bin3",
+    "ET_FA_Bin1","ET_FA_Bin2","ED_FA_Bin1","ED_FA_Bin2","NCR_FA_Bin1","NCR_FA_Bin2",
+    "ET_AX_Bin1","ET_AX_Bin2","ED_AX_Bin1","ED_AX_Bin2","NCR_AX_Bin1","NCR_AX_Bin2","NCR_AX_Bin3",
+    "ET_RAD_Bin1","ET_RAD_Bin2","ED_RAD_Bin1","ED_RAD_Bin2","NCR_RAD_Bin1","NCR_RAD_Bin2","NCR_RAD_Bin3",
+    "ET_ADC_Bin1","ET_ADC_Bin2","ED_ADC_Bin1","ED_ADC_Bin2","NCR_ADC_Bin1","NCR_ADC_Bin2","NCR_ADC_Bin3",
+    "Frontal","Temporal","Parietal","Basal G","Insula","CC_Fornix","Occipital","Cere","Brain stem" };
+
+  //write raw extracted features to a .csv file
+  std::vector<std::string> StringFeatureLabels;
+  for (int index = 0; index < SURVIVAL_NO_OF_FEATURES; index++)
+    StringFeatureLabels.push_back(FeatureLabels[index]);
+
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, StringFeatureLabels, outputdirectory + "/RawFeatures.csv");
+
 	VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
   for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
     for (unsigned int j = 0; j < ScaledTestingData.Cols(); j++)
       if (std::isnan(ScaledTestingData(i, j)))
         ScaledTestingData(i, j) = 0;
 
-	VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
-	ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
-	for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
-	{
-		unsigned int j = 0;
-		for (j = 0; j < ScaledTestingData.Cols(); j++)
-			ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
-		ScaledFeatureSetAfterAddingLabel(i, j) = 0;
-	}
-
-  VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures_6months);
-	VariableSizeMatrixType EighteenModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures_18months);
-
-  WriteCSVFiles(FeaturesOfAllSubjects, outputdirectory + "/raw_features.csv");
-  WriteCSVFiles(ScaledTestingData, outputdirectory + "/scaled_features.csv");
-  WriteCSVFiles(ScaledFeatureSetAfterAddingLabel, outputdirectory + "/scaled_features_with_label.csv");
-  WriteCSVFiles(SixModelSelectedFeatures, outputdirectory + "/selectedfeatures_6months.csv");
-  WriteCSVFiles(EighteenModelSelectedFeatures, outputdirectory + "/selectedfeatures_18months.csv");
+  //write scaled features in a .csv file
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(ScaledTestingData, patient_ids, FeatureLabels, outputdirectory + "/ScaledFeatures.csv");
   
-	try
+  VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(ScaledTestingData,selectedfeatures_6months);
+	VariableSizeMatrixType EighteenModelSelectedFeatures = SelectModelFeatures(ScaledTestingData,selectedfeatures_18months);
+  std::vector<std::string> SelectedFeatureLabels_6months, SelectedFeatureLabels_18months;
+  for (int index = 0; index < selectedfeatures_6months.Size(); index++)
+  {
+    int currentindex = selectedfeatures_6months[index];
+    SelectedFeatureLabels_6months.push_back(FeatureLabels[currentindex]);
+  }
+  for (int index = 0; index < selectedfeatures_18months.Size(); index++)
+  {
+    int currentindex = selectedfeatures_18months[index];
+    SelectedFeatureLabels_18months.push_back(FeatureLabels[currentindex]);
+  }
+
+  //write selected features in a .csv file
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(SixModelSelectedFeatures, patient_ids, SelectedFeatureLabels_6months, outputdirectory + "/ScaledFeatures_6months.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(EighteenModelSelectedFeatures, patient_ids, SelectedFeatureLabels_18months, outputdirectory + "/ScaledFeatures_18months.csv");
+
+  try
 	{
 		std::ofstream myfile;
 		myfile.open(outputdirectory + "/results.csv");
@@ -648,25 +700,20 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 		return results;
 	}
 	return results;
-
 }
 
-VariableSizeMatrixType SurvivalPredictor::SelectModelFeatures(const VariableSizeMatrixType &allfeatures,const VariableLengthVectorType indicesselectedfeatures)
+VariableSizeMatrixType SurvivalPredictor::SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VariableLengthVectorType &selectedFeatures)
 {
-  VariableSizeMatrixType SelectedFeatures; 
-  //make a feature matrix to store selected features. rows= rows of input features, columns=number of selected features + 1 (to store groundtruth label)
-  SelectedFeatures.SetSize(allfeatures.Rows(),indicesselectedfeatures.Size()+1);
+  VariableSizeMatrixType ModelSelectedFeatures;
+  //make a feature matrix to store selected features. rows= rows of input features, columns=number of selected features 
+  ModelSelectedFeatures.SetSize(ModelFeatures.Rows(), selectedFeatures.Size());
   int counter = 0;
   //copy selected features
-  for (unsigned int i = 0; i < indicesselectedfeatures.Size(); i++)
+  for (unsigned int i = 0; i < selectedFeatures.Size(); i++)
   {
-    for (unsigned int j = 0; j < allfeatures.Rows(); j++)
-      SelectedFeatures(j, counter) = allfeatures(j, indicesselectedfeatures[i]);
+    for (unsigned int j = 0; j < ModelFeatures.Rows(); j++)
+      ModelSelectedFeatures(j, counter) = ModelFeatures(j, selectedFeatures[i]);
     counter++;
   }
-  //copy groundtruth label
- for (unsigned int j = 0; j < allfeatures.Rows(); j++)
-   SelectedFeatures(j, indicesselectedfeatures.Size()) = allfeatures(j, allfeatures.Cols()-1);
-
-  return SelectedFeatures;
+  return ModelSelectedFeatures;
 }
