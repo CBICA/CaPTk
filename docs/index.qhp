@@ -48,7 +48,7 @@
         <section title="What if I am having an issue not listed here?" ref="FAQ.html#gs_FAQ_9" />
       </section>
       <section title="How To Guides" ref="How_To_Guides.html">
-        <section title="Pre-processing" ref="ht_Preprocessing.html">
+        <section title="Preprocessing" ref="ht_Preprocessing.html">
           <section title="\verbatim" ref="ht_Preprocessing.html#autotoc_md23" />
         </section>
         <section title="DICOM to NIfTI conversion" ref="preprocessing_dcm2nii.html" />
@@ -159,7 +159,7 @@
       <keyword name="Getting Started" id="Getting Started" ref="Getting_Started.html" />
       <keyword name="Frequently Asked Questions" id="Frequently Asked Questions" ref="FAQ.html" />
       <keyword name="How To Guides" id="How To Guides" ref="How_To_Guides.html" />
-      <keyword name="Pre-processing" id="Pre-processing" ref="ht_Preprocessing.html" />
+      <keyword name="Preprocessing" id="Preprocessing" ref="ht_Preprocessing.html" />
       <keyword name="DICOM to NIfTI conversion" id="DICOM to NIfTI conversion" ref="preprocessing_dcm2nii.html" />
       <keyword name="Image Co-registration" id="Image Co-registration" ref="preprocessing_reg.html" />
       <keyword name="Denoise-SUSAN (ITK filter)" id="Denoise-SUSAN (ITK filter)" ref="preprocessing_susan.html" />
