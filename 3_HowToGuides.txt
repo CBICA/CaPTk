@@ -4,7 +4,7 @@
 
 This section provides step-by-step guidance to apply the CaPTk functionalities:
 
-- \subpage ht_Preprocessing "Pre-processing"
+- \subpage ht_Preprocessing "Preprocessing"
   - [DICOM to NIfTI conversion](preprocessing_dcm2nii.html)
   - [Registration](preprocessing_reg.html)
   - [Denoise-SUSAN (ITK filter)](preprocessing_susan.html)
@@ -44,7 +44,7 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 
 
 /**
-\page ht_Preprocessing Pre-processing
+\page ht_Preprocessing Preprocessing
 The following applications can be called from the GUI: 
 
 - \subpage preprocessing_dcm2nii "DICOM to NIfTI conversion"
@@ -314,7 +314,7 @@ References:
 /**
 \page seg_DL Deep Learning Segmentation
 
-For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the pre-processing).
+For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the preprocessing).
 
 <b> REQUIREMENTS:</b>
 The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.
