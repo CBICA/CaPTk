@@ -34,6 +34,7 @@ bool PseudoProgressionEstimator::TrainNewModelOnGivenData(const std::vector<std:
   std::vector<double> traininglabels;
   VariableSizeMatrixType TrainingData = LoadPseudoProgressionTrainingData(qualifiedsubjects, traininglabels, outputdirectory);
 
+  //write header here
   WriteCSVFiles(TrainingData, outputdirectory + "/combinedfeatures-captk-afterfixed.csv");
   WriteCSVFiles(traininglabels, outputdirectory + "/labels.csv");
 
@@ -225,6 +226,8 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
 
   std::vector<double> traininglabels;
   VariableSizeMatrixType TrainingData = LoadPseudoProgressionTestingData(qualifiedsubjects, traininglabels, outputdirectory, modeldirectory);
+
+  //write header here
   WriteCSVFiles(TrainingData, outputdirectory + "/testingfeatures.csv");
 
   MatrixType meanMatrix;
