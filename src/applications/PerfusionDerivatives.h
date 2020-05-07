@@ -357,14 +357,6 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePH(typename Perfusion
     ++bIt;
     ++phIt;
   }
-  ////itk::NiftiImageIO::Pointer nifti_io = itk::NiftiImageIO::New();
-  //typedef itk::ImageFileWriter< ImageType > WriterType;
-  //typename WriterType::Pointer writer1 = WriterType::New();
-  //writer1->SetFileName("PH_Image.nii.gz");
-  ////writer1->SetImageIO(nifti_io);
-  //writer1->SetInput(PH);
-  //writer1->Update();
-
   return PH;
 }
 
