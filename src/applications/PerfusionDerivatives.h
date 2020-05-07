@@ -224,7 +224,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
         C.GetPointer()->SetPixel(index3D, sum / (endrecoverypoint-startrecoverypoint+1));
       }
 
-  typename ImageType::Pointer PSR = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[6];
+  typename ImageType::Pointer PSR = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[0];
 
   typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
   IteratorType aIt(A, A->GetLargestPossibleRegion());
@@ -343,7 +343,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePH(typename Perfusion
         B.GetPointer()->SetPixel(index, min_value);
       }
   //---------------------------------------------------------------------------------------------------
-  typename ImageType::Pointer PH = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[6];
+  typename ImageType::Pointer PH = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[0];
   typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
   IteratorType aIt(A, A->GetLargestPossibleRegion());
   IteratorType bIt(B, B->GetLargestPossibleRegion());
@@ -367,6 +367,7 @@ template< class ImageType, class PerfusionImageType >
 typename ImageType::Pointer PerfusionDerivatives::CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti,double EchoTime)
 {
 	typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
+  //6th time-point is used here considering the fact that perfusion signal becomes stable at this point. might replace with percentage in future
   typename ImageType::Pointer MASK = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[6];
 	//-------------------------------
 	//step 1
