@@ -284,11 +284,6 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
     ++psrIt;
     ++scaledpsrIt;
   }
-
-  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionDerivativesRelatedMaterial/PSR_Image_AfterScaling.nii.gz");
-  //writer1->SetInput(ScaledPSR);
-  //writer1->Update();
-
   return ScaledPSR;
 }
 
