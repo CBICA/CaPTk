@@ -210,8 +210,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
         }
         double min_value = *std::min_element(std::begin(local_measures), std::end(local_measures));
         B.GetPointer()->SetPixel(index3D, min_value);
-        //if(min_value>0)
-        //  std::cout << min_value << std::endl;
+
         //---------------------------------------mean from 30-40------------------------------------
         //taking 66%- 88% of the signal
         int startrecoverypoint = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * .66;
@@ -249,24 +248,6 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
     ++cIt;
     ++psrIt;
   }
-  //typedef itk::ImageFileWriter< ImageType > WriterType;
-  //typename WriterType::Pointer writer1 = WriterType::New();
-  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionDerivativesRelatedMaterial/PSR_Image_BeforeScaling.nii.gz");
-  //writer1->SetInput(PSR);
-  //writer1->Update();
-
-  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionDerivativesRelatedMaterial/A.nii.gz");
-  //writer1->SetInput(A);
-  //writer1->Update();
-
-  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionDerivativesRelatedMaterial/B.nii.gz");
-  //writer1->SetInput(B);
-  //writer1->Update();
-
-  //writer1->SetFileName("E:/SoftwareDevelopmentProjects/PerfusionDerivativesRelatedMaterial/C.nii.gz");
-  //writer1->SetInput(C);
-  //writer1->Update();
-
 
   //scaling the image between 0-255
   psrIt.GoToBegin();
