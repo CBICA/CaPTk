@@ -106,7 +106,7 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
   typename PerfusionImageType::Pointer perfImagePointerNifti;
   try
   {
-    perfImagePointerNifti = mNiftiLocalPtr.Read4DNiftiImage(perfusionFile);
+    perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(perfusionFile);
   }
   catch (const std::exception& e1)
   {
