@@ -200,14 +200,6 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
           index4D[3] = k;
           sum = sum + perfImagePointerNifti->GetPixel(index4D);
         }
-        //if (x == 75 && y == 149 && z == 94)
-        //{
-        //  for (unsigned int k = 0; k <= 9; k++)
-        //  {
-        //    index4D[3] = k;
-        //    std::cout << perfImagePointerNifti->GetPixel(index4D) << std::endl;
-        //  }
-        //}
         A.GetPointer()->SetPixel(index3D, sum / (baselinesize+1));
         //---------------------------------------minimum vector------------------------------------
         std::vector<double> local_measures;
