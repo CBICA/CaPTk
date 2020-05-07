@@ -273,7 +273,7 @@ public:
   \param selectedfeatures	  List of indices of selected features
   */
   
-  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &extractedfeatures, const VariableLengthVectorType selectedfeatures);
+  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VariableLengthVectorType &selectedFeatures);
 
   /**
   \brief Calculates distance from the hyperplane of linear SVM classifier
