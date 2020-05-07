@@ -564,31 +564,6 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateRCBV(typename Perfusi
 			}
 		}
 	}
-	//typedef vnl_matrix<double> MatrixType;
-	//MatrixType data;
-	//data.set_size(885791 , 3);
-	//for (unsigned int i = 0; i < 885791; i++)
-	//{
-	// data(i, 0) = perfusionImageIndices(i, 0);
-	// data(i, 1) = perfusionImageIndices(i, 1);
-	// data(i, 2) = perfusionImageIndices(i, 2);
-	//}
-	//typedef itk::CSVNumericObjectFileWriter<double, 885791,3> WriterTypeVector;
-	//WriterTypeVector::Pointer writerv = WriterTypeVector::New();
-	//writerv->SetFileName("AllPerfusionIndices.csv");
-	//writerv->SetInput(&data);
-	//writerv->Write();
-
-
-	//data.set_size(885791, 45);
-	//for (unsigned int i = 0; i < 885791; i++)
-	// for (unsigned int j = 0; j < 45; j++)
-	//  data(i, j) = perfusionImage(i, j);
-	//typedef itk::CSVNumericObjectFileWriter<double, 885791, 45> WriterTypeVectorData;
-	//WriterTypeVectorData::Pointer writerdata = WriterTypeVectorData::New();
-	//writerdata->SetFileName("AllPerfusion.csv");
-	//writerdata->SetInput(&data);
-	//writerdata->Write();
 	//////-----------------------------------------------------------------------------------------------------------------
 	VariableLengthVectorType meanPerfusionImage;
 	meanPerfusionImage.SetSize(region.GetSize()[3], 1);
@@ -599,21 +574,6 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateRCBV(typename Perfusi
 			local_sum = local_sum + perfusionImage(y, x);
 		meanPerfusionImage[x] = local_sum / maskIndicesGreaterThan30Counter;
 	}
-	//data.set_size(45,1);
-	//for (unsigned int i = 0; i < meanPerfusionImage.Size(); i++)
-	// data(i, 0) = meanPerfusionImage[i];
-	//typedef itk::CSVNumericObjectFileWriter<double, 45,1> WriterTypeVector1;
-	//WriterTypeVector1::Pointer writerv1 = WriterTypeVector1::New();
-	//writerv1->SetFileName("AveragePerfusion.csv");
-	//writerv1->SetInput(&data);
-	//writerv1->Write();
-
-
-
-
-
-
-
 	//////----------------------------------------------------------------------------------------------------------------
 	for (unsigned int x = 0; x < meanPerfusionImage.Size(); x++)
 	{
@@ -718,7 +678,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateRCBV(typename Perfusi
 	double ww = std::round(rCBV_copy[std::round(index - 0.001*index)]);
 
 	////----------------------------------------------------------------------------------------------------------------
-	////Multiply rCBV with 255 adn divide by ww
+	////Multiply rCBV with 255 and divide by ww
 	IteratorType rcbvIt(rCBV, rCBV->GetLargestPossibleRegion());
 	rcbvIt.GoToBegin();
 	while (!rcbvIt.IsAtEnd())
