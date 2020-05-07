@@ -227,8 +227,17 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
   std::vector<double> traininglabels;
   VariableSizeMatrixType TrainingData = LoadPseudoProgressionTestingData(qualifiedsubjects, traininglabels, outputdirectory, modeldirectory);
 
+  //create a vector of loaded subjects. These are used as row headers in csv
+  std::vector<std::string> patient_ids;
+  for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
+  {
+	  std::map< ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
+	  patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
+  }
+
   //write header here
-  WriteCSVFiles(TrainingData, outputdirectory + "/testingfeatures.csv");
+  //WriteCSVFiles(TrainingData, outputdirectory + "/testingfeatures.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(TrainingData, patient_ids, FeatureLabels, outputdirectory + "/testingfeatures.csv");
 
   MatrixType meanMatrix;
   VariableLengthVectorType mean;
