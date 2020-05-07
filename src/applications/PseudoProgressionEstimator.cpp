@@ -34,8 +34,16 @@ bool PseudoProgressionEstimator::TrainNewModelOnGivenData(const std::vector<std:
   std::vector<double> traininglabels;
   VariableSizeMatrixType TrainingData = LoadPseudoProgressionTrainingData(qualifiedsubjects, traininglabels, outputdirectory);
 
+  std::vector<std::string> patient_ids;
+  for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
+  {
+	  std::map< ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
+	  patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
+  }
+
   //write header here
-  WriteCSVFiles(TrainingData, outputdirectory + "/combinedfeatures-captk-afterfixed.csv");
+  //WriteCSVFiles(TrainingData, outputdirectory + "/combinedfeatures-captk-afterfixed.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(TrainingData, patient_ids, FeatureLabels, outputdirectory + "/combinedfeatures-captk-afterfixed.csv");
   WriteCSVFiles(traininglabels, outputdirectory + "/labels.csv");
 
   std::cout << std::endl << "Building model....." << std::endl;
