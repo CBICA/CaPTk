@@ -183,9 +183,9 @@
       <keyword name="Brain Cancer: Population Atlas" id="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
       <keyword name="Brain Cancer: Confetti" id="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
       <keyword name="Miscellaneous: Directionality Estimator" id="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
-      <keyword name="Breast Cancer: Breast Segmentation" id="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
       <keyword name="Breast Cancer: Breast Density Estimation (LIBRA)" id="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
       <keyword name="Breast Cancer: Texture Feature Extraction" id="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
+      <keyword name="Breast Cancer: Breast Segmentation" id="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
       <keyword name="Lung Cancer: Radiomics Analysis of Lung Cancer" id="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
       <keyword name="Miscellaneous: Diffusion Derivatives" id="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
       <keyword name="Miscellaneous: Training Module" id="Miscellaneous: Training Module" ref="Training_Module.html" />
@@ -244,9 +244,9 @@
       <file>Glioblastoma_Atlas.html</file>
       <file>Glioblastoma_Confetti.html</file>
       <file>Glioblastoma_Directionality.html</file>
-      <file>BreastCancer_breastSegmentation.html</file>
       <file>BreastCancer_LIBRA.html</file>
       <file>BreastCancer_texture.html</file>
+      <file>BreastCancer_breastSegmentation.html</file>
       <file>LungCancer_SBRT.html</file>
       <file>Diffusion_Derivatives.html</file>
       <file>Training_Module.html</file>
