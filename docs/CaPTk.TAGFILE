@@ -163,6 +163,11 @@
     <filename>Glioblastoma_Directionality</filename>
   </compound>
   <compound kind="page">
+    <name>BreastCancer_breastSegmentation</name>
+    <title>Breast Cancer: Breast Segmentation</title>
+    <filename>BreastCancer_breastSegmentation</filename>
+  </compound>
+  <compound kind="page">
     <name>BreastCancer_LIBRA</name>
     <title>Breast Cancer: Breast Density Estimation (LIBRA)</title>
     <filename>BreastCancer_LIBRA</filename>
@@ -171,11 +176,6 @@
     <name>BreastCancer_texture</name>
     <title>Breast Cancer: Texture Feature Extraction</title>
     <filename>BreastCancer_texture</filename>
-  </compound>
-  <compound kind="page">
-    <name>BreastCancer_breastSegmentation</name>
-    <title>Breast Cancer: Breast Segmentation</title>
-    <filename>BreastCancer_breastSegmentation</filename>
   </compound>
   <compound kind="page">
     <name>LungCancer_SBRT</name>
