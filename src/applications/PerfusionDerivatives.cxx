@@ -88,10 +88,7 @@ int main(int argc, char **argv)
   std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, rcbvPresent, psrPresent, phPresent, inputEchoName);
   std::cout << "Writing measures to the specified output directory.\n";
 
-  if (perfusionDerivatives.size() == 0)
-  {
-  }
-  else
+  if (perfusionDerivatives.size() > 0)
   {
     if (psrPresent == 1)
       cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputDirectoryName + "/PSR.nii.gz");
