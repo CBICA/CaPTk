@@ -172,7 +172,7 @@ typename ImageType::Pointer PerfusionDerivatives::GetOneImageVolume(typename Per
 template< class ImageType, class PerfusionImageType >
 typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typename PerfusionImageType::Pointer perfImagePointerNifti)
 {
-  //---------------------------------------mean from 1-10------------------------------------
+  //mean from 1-10
   typename ImageType::Pointer A = cbica::GetExtractedImages<PerfusionImageType,ImageType>(perfImagePointerNifti)[0];
   typename ImageType::Pointer B = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[0];
   typename ImageType::Pointer C = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[0];
