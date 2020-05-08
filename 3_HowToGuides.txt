@@ -4,37 +4,37 @@
 
 This section provides step-by-step guidance to apply the CaPTk functionalities:
 
-- \subpage ht_Preprocessing "Preprocessing"
+- \subpage ht_Preprocessing "Pre-processing"
   - [DICOM to NIfTI conversion](preprocessing_dcm2nii.html)
-  - [Registration](preprocessing_reg.html)
-  - [Denoise-SUSAN (ITK filter)](preprocessing_susan.html)
-  - [Bias Correction (ITK filter)](preprocessing_bias.html)
+  - [Image Registration](preprocessing_reg.html)
+  - [Image Denoizing (SUSAN - ITK filter)](preprocessing_susan.html)
+  - [N3 Bias Correction (ITK filter)](preprocessing_bias.html)
+  - [N4 Bias Correction (ITK filter)](preprocessing_bias.html)
   - [Histogram Matching](preprocessing_histoMatch.html)
   - [Z-Score Normalization](preprocessing_zScoreNorm.html)
 - \subpage ht_Segmentation "Segmentation"
-  - [Geodesic Distance Training Segmentation](seg_GeoTrain.html)
+  - [Interactive Machine Learning based - Utilizing Geodesic Distance Transform and SVM](seg_GeoTrain.html)
   - [ITK-SNAP](seg_SNAP.html)
-  - [Deep Learning Segmentation](seg_DL.html)
+  - [Deep Learning based - pre-trained models offered for a) skull-stripping and b) brain tumors](seg_DL.html)
 - \subpage ht_FeatureExtraction "Feature Extraction"
-- [<b>Training Module</b>](Training_Module.html)
+- [<b>ML Training Module</b>](Training_Module.html)
 - \subpage ht_SpecialApps "Specialized Applications"
-  - [Brain Cancer: WhiteStripe Normalization](Glioblastoma_WhiteStripe.html)
+  - [Brain Cancer: Novel MRI Normalization - WhiteStripe](Glioblastoma_WhiteStripe.html)
   - [Brain Cancer: Population Atlas](Glioblastoma_Atlas.html)
-  - [Brain Cancer: Confetti](Glioblastoma_Confetti.html)
-  - [Brain Cancer: Glioblastoma Infiltration Index (Recurrence)](Glioblastoma_Recurrence.html)
-  - [Brain Cancer: Pseudoprogression Infiltration Index](Glioblastoma_Pseudoprogression.html)
+  - [Brain Cancer: Confetti - Diffusion track visualization](Glioblastoma_Confetti.html)
+  - [Brain Cancer: Glioblastoma Infiltration Index (Recurrence Predictor)](Glioblastoma_Recurrence.html)
+  - [Brain Cancer: Pseudoprogression/TrueProgression Index](Glioblastoma_Pseudoprogression.html)
   - [Brain Cancer: Glioblastoma Survival Prediction Index](Glioblastoma_Survival.html)
   - [Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)](Glioblastoma_PHI.html)
-  - [Brain Cancer: Glioblastoma EGFRvIII SVM Index](Glioblastoma_EGFRvIII.html)
+  - [Brain Cancer: Glioblastoma EGFRvIII SVM Prediction](Glioblastoma_EGFRvIII.html)
   - [Brain Cancer: Glioblastoma Molecular Subtype Prediction](Glioblastoma_Molecular.html)
   - [Breast Cancer: Breast Density Estimation (LIBRA)](BreastCancer_LIBRA.html)
   - [Breast Cancer: Texture Feature Extraction](BreastCancer_texture.html)
   - [Breast Cancer: Breast Segmentation](BreastCancer_breastSegmentation.html)
-  - [Lung Cancer: Radiomics Analysis of Lung Cancer (SBRT Lung)](LungCancer_SBRT.html)
+  - [Lung Cancer: Radiomic Analysis of Lung Cancer (SBRT Lung)](LungCancer_SBRT.html)
   - [Miscellaneous: Directionality Estimator](Glioblastoma_Directionality.html)
   - [Miscellaneous: Diffusion Derivatives](Diffusion_Derivatives.html)
-  - [Miscellaneous: PCA Volume Extraction](PCA_Extraction.html)
-  - [Miscellaneous: Training Module](Training_Module.html)
+  - [Miscellaneous: Principal Component Images Extraction](PCA_Extraction.html)
 - \subpage ht_utilities "Utilities (CLI only)": Collection of helper utilities such as resampling, thresholding, image information, casting, label statistics, etc.
 
 Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
@@ -1011,11 +1011,11 @@ Reference:
 /**
 \page BreastCancer_texture Breast Cancer: Texture Feature Extraction
 
-This application extracts the Texture Features as described in the paper [1]. It uses the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the computation. 
+This application extracts the Texture Features as described in the paper [1]. It uses [LIBRA](BreastCancer_LIBRA.html) for segmentation and the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the feature computation.
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
-	- [AIMILIA] FFDM vendors currently supported: GE Healthcare and Hologic.
+	- FFDM vendors currently supported: GE Healthcare and Hologic.
 	- Each image stored in a separate folder.
 	
 <b>USAGE:</b>
