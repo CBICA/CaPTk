@@ -190,8 +190,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
         index3D[0] = x;
         index3D[1] = y;
         index3D[2] = z;
-        //---------------------------------------mean from 1-10------------------------------------
-        //taking first 20% of the signal
+        //mean of first 20% of the signal
         int baselinesize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * .20;
 
         double sum = 0;
