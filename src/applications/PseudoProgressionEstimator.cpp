@@ -37,7 +37,7 @@ bool PseudoProgressionEstimator::TrainNewModelOnGivenData(const std::vector<std:
   std::vector<std::string> patient_ids;
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
-	  std::map< ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
+	  std::map< CAPTK::ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
 	  patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
   }
 
@@ -239,7 +239,7 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
   std::vector<std::string> patient_ids;
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
-	  std::map< ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
+	  std::map< CAPTK::ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
 	  patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
   }
 
