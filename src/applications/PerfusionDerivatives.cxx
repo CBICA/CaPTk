@@ -63,8 +63,8 @@ int main(int argc, char **argv)
     outputDirectoryName = argv[tempPosition + 1];
   }
 
-  // std::cout << "Input File:" << inputFileName << std::endl;
-  // std::cout << "Output Directory:" << outputDirectoryName << std::endl;
+  std::cout << "Input File:" << inputFileName << std::endl;
+  std::cout << "Output Directory:" << outputDirectoryName << std::endl;
   // cbica::Logging(loggerFile, "Input directory name: " + inputFileName + "\n");
 	// cbica::Logging(loggerFile, "Output directory name: " + outputDirectoryName + "\n");
 
