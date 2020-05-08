@@ -31,11 +31,11 @@ var NAVTREE =
       [ "Image Visualization", "Getting_Started.html#gs_imageVisualization", null ],
       [ "Tab Docking", "Getting_Started.html#gs_tabDocking", null ],
       [ "Coordinate definition (Seed-point initialization)", "Getting_Started.html#gs_seedpoints", [
-        [ "Bug Tracker and Feature Request", "index.html#autotoc_md114", null ],
-        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md115", null ],
-        [ "Supporting Grant", "index.html#autotoc_md116", null ],
-        [ "Disclaimer", "index.html#autotoc_md117", null ],
-        [ "Contact", "index.html#autotoc_md118", null ],
+        [ "Bug Tracker and Feature Request", "index.html#autotoc_md117", null ],
+        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md118", null ],
+        [ "Supporting Grant", "index.html#autotoc_md119", null ],
+        [ "Disclaimer", "index.html#autotoc_md120", null ],
+        [ "Contact", "index.html#autotoc_md121", null ],
         [ "Tumor Points", "Getting_Started.html#gs_seedpoints_tumor", null ],
         [ "Tissue Points", "Getting_Started.html#gs_seedpoints_tissue", null ]
       ] ],
@@ -67,6 +67,7 @@ var NAVTREE =
       [ "Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients", "Science.html#phiEstimator", null ],
       [ "Prediction of Overall Survival in Glioblastoma Patients", "Science.html#survivalPredictor", null ],
       [ "Probability Maps of Potential Recurrence of Glioblastoma Tumors", "Science.html#recurrencePredictor", null ],
+      [ "Prediction of Progression-Free Survival (PFS) and Recurrence Pattern (RP) in Glioblastoma", "Science.html#jcoCancer", null ],
       [ "Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer", "Science.html#libraPapers", null ]
     ] ],
     [ "Technical Reference", "Technical_Reference.html", "Technical_Reference" ],
