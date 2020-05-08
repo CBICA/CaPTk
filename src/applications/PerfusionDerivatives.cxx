@@ -40,7 +40,6 @@ int main(int argc, char **argv)
   {
     inputFileName = argv[tempPosition + 1];
   }
-
   if (parser.compareParameter("e", tempPosition))
   {
 	  inputEchoName = atof(argv[tempPosition + 1]);
