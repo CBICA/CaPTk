@@ -52,6 +52,7 @@ int main(int argc, char **argv)
   {
 	  phPresent = atoi(argv[tempPosition + 1]);
   }
+
   if (parser.compareParameter("r", tempPosition))
   {
 	  rcbvPresent = atoi(argv[tempPosition + 1]);

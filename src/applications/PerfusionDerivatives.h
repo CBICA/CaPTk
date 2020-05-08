@@ -138,7 +138,7 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
   }
   catch (const std::exception& e1)
   {
-    logger.WriteError("Unable to calculate perfusion derivatives. Error code : " + std::string(e1.what()));
+    logger.WriteError("Unable to calculate perfusion descriptors. Error code : " + std::string(e1.what()));
     return perfusionDerivatives;
   }
   return perfusionDerivatives;
