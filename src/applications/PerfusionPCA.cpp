@@ -302,7 +302,7 @@ bool PerfusionPCA::PrepareNewPCAModel(const int number, const std::string inputd
 
   for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
   {
-    std::cout << "Revising Perfusion Image: " << sid << std::endl;
+    std::cout << "Revising current perfusion image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
     auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
     ImageTypeFloat4D::RegionType region = perfImagePointerNifti.GetPointer()->GetLargestPossibleRegion();
