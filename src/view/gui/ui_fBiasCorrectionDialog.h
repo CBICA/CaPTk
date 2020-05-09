@@ -138,9 +138,8 @@ public:
         options_splineOrderName->setObjectName(QString::fromUtf8("options_splineOrderName"));
         sizePolicy.setHeightForWidth(options_splineOrderName->sizePolicy().hasHeightForWidth());
         options_splineOrderName->setSizePolicy(sizePolicy);
-        options_splineOrderName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+        options_splineOrderName->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
         options_splineOrderName->setText("");
-        options_splineOrderName->setValidator(new QIntValidator(0, 100, optionsGroupBox));
 
         optionsGridLayout->addWidget(options_splineOrderLabel, gridRowCounter, 0);
         optionsGridLayout->addWidget(options_splineOrderName, gridRowCounter, 1);
@@ -153,9 +152,8 @@ public:
         options_otsuBinsName->setObjectName(QString::fromUtf8("options_otsuBinsName"));
         sizePolicy.setHeightForWidth(options_otsuBinsName->sizePolicy().hasHeightForWidth());
         options_otsuBinsName->setSizePolicy(sizePolicy);
-        options_otsuBinsName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+        options_otsuBinsName->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
         options_otsuBinsName->setText("");
-        options_otsuBinsName->setValidator(new QIntValidator(0, 100, optionsGroupBox));
 
         gridRowCounter++;
         optionsGridLayout->addWidget(options_otsuBinsLabel, gridRowCounter, 0);
@@ -169,9 +167,8 @@ public:
         options_maxIterationsName->setObjectName(QString::fromUtf8("options_maxIterationsName"));
         sizePolicy.setHeightForWidth(options_maxIterationsName->sizePolicy().hasHeightForWidth());
         options_maxIterationsName->setSizePolicy(sizePolicy);
-        options_maxIterationsName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+        options_maxIterationsName->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
         options_maxIterationsName->setText("");
-        options_maxIterationsName->setValidator(new QIntValidator(0, 100, optionsGroupBox));
 
         gridRowCounter++;
         optionsGridLayout->addWidget(options_maxIterationsLabel, gridRowCounter, 0);
@@ -185,9 +182,8 @@ public:
         options_fittingLevelsName->setObjectName(QString::fromUtf8("options_fittingLevelsName"));
         sizePolicy.setHeightForWidth(options_fittingLevelsName->sizePolicy().hasHeightForWidth());
         options_fittingLevelsName->setSizePolicy(sizePolicy);
-        options_fittingLevelsName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+        options_fittingLevelsName->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
         options_fittingLevelsName->setText("");
-        options_fittingLevelsName->setValidator(new QIntValidator(0, 100, optionsGroupBox));
 
         gridRowCounter++;
         optionsGridLayout->addWidget(options_fittingLevelsLabel, gridRowCounter, 0);
@@ -201,7 +197,7 @@ public:
         options_filterNoiseName->setObjectName(QString::fromUtf8("options_filterNoiseName"));
         sizePolicy.setHeightForWidth(options_filterNoiseName->sizePolicy().hasHeightForWidth());
         options_filterNoiseName->setSizePolicy(sizePolicy);
-        options_filterNoiseName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+        options_filterNoiseName->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
         options_filterNoiseName->setText("");
         options_filterNoiseName->setValidator(new QIntValidator(0, 100, optionsGroupBox));
 
@@ -217,9 +213,8 @@ public:
         options_fwhmName->setObjectName(QString::fromUtf8("options_fwhmName"));
         sizePolicy.setHeightForWidth(options_fwhmName->sizePolicy().hasHeightForWidth());
         options_fwhmName->setSizePolicy(sizePolicy);
-        options_fwhmName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+        options_fwhmName->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
         options_fwhmName->setText("");
-        options_fwhmName->setValidator(new QIntValidator(0, 100, optionsGroupBox));
 
         gridRowCounter++;
         optionsGridLayout->addWidget(options_fwhmLabel, gridRowCounter, 0);

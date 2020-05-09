@@ -42,8 +42,7 @@ public slots:
      void CancelButtonPressed();
      void ConfirmButtonPressed();
      void SelectOutputImage();
-     void SelectedN3();
-     void SelectedN4();
+     void SelectedMode(int);
 
 private:
     void LoadDefaultParameters();

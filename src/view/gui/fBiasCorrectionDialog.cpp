@@ -11,8 +11,7 @@ fBiasCorrectionDialog::fBiasCorrectionDialog()
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
     connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
     connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputImage()));
-    connect(mode_radioButtons, SIGNAL(buttonClicked(0)), this, SLOT(SelectedN3()));
-    connect(mode_radioButtons, SIGNAL(buttonClicked(1)), this, SLOT(SelectedN4()));
+    connect(mode_radioButtons, SIGNAL(buttonClicked(int)), this, SLOT(SelectedMode(int)));
 
     this->LoadDefaultParameters();
 }
@@ -71,15 +70,17 @@ void fBiasCorrectionDialog::SelectOutputImage()
 }
 // if either is selected, enable confirm for the rest of the session
 // (impossible to "un-choose" and the setting persists)
-void fBiasCorrectionDialog::SelectedN3()
+void fBiasCorrectionDialog::SelectedMode(int mode)
 {
-    this->correctionMode = "N3";
-    this->confirmButton->setEnabled(true);
-}
+    if (mode == 0)
+    {
+        this->correctionMode = "N3";
+    }
+    else if (mode == 1)
+    {
+        this->correctionMode = "N4";
+    }
 
-void fBiasCorrectionDialog::SelectedN4()
-{
-    this->correctionMode = "N4";
     this->confirmButton->setEnabled(true);
 }
 
