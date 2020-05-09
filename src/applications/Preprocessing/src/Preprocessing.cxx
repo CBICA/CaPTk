@@ -48,9 +48,14 @@ registrationAffineTransformInput, registrationDeformableTransformInput;
 int histoMatchQuantiles = 40, histoMatchBins = 100,
 registrationTypeInt, registrationRigidDof = 12;
 bool registrationIntermediate = false, registrationSegmentationMoving = false;
-float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95, bias_fwhm = 0.15, rescaleLower = 0, rescaleUpper = 1000,
-ssSigma = 0.5, ssIntensityThreshold = 80, bias_filterNoise = 0.01;
-int bias_splineOrder = 3, bias_otsuBins = 10, ssRadius = 1, bias_maxIterations = 100, bias_fittingLevels = 4;
+float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95,
+bias_fwhm = BiasCorrection::default_fwhm, rescaleLower = 0, rescaleUpper = 1000,
+ssSigma = 0.5, ssIntensityThreshold = 80,
+bias_filterNoise = BiasCorrection::default_filterNoise;
+int bias_splineOrder = BiasCorrection::default_splineOrder, 
+bias_otsuBins = BiasCorrection::default_otsuBins, ssRadius = 1, 
+bias_maxIterations = BiasCorrection::default_maxIterations,
+bias_fittingLevels = BiasCorrection::default_fittingLevels;
 // Note: increases to bias_fittingLevels cause exponential increases in execution time, be warned
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true, debugMode = false;
