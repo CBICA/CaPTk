@@ -149,11 +149,13 @@ int EGFRvIIIIndexPredictor::PrepareNewEGFRvIIIPredictionModel(const std::string 
   //ImageType::Pointer NEGAtlasImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/egfrv3/EGFRneg.nii.gz");
   //ImageType::Pointer POSAtlasImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/egfrv3/EGFRpos.nii.gz");
     
-  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 448);
+  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), EGFR_NO_OF_FEATURES);
+  std::vector<std::string> patient_ids;
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
     std::cout << "Patient's data loaded:" << sid + 1 << std::endl;
     std::map< CAPTK::ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
+    patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
     try
     {
       ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
@@ -216,8 +218,9 @@ int EGFRvIIIIndexPredictor::PrepareNewEGFRvIIIPredictionModel(const std::string 
   }
   std::cout << std::endl << "Features loaded....." << std::endl;
   std::cout << "Feature writing started:" << std::endl;
-  WriteCSVFiles(FeaturesOfAllSubjects, outputdirectory + "/RawFeatures.csv");
-  //------------------------------------------------------------------------------------
+
+  //WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, FeatureLabels, outputdirectory + "/RawFeatures.csv");
+
   VariableSizeMatrixType scaledFeatureSet;
   scaledFeatureSet.SetSize(FeaturesOfAllSubjects.Rows(), FeaturesOfAllSubjects.Cols());
   VariableLengthVectorType meanVector;
@@ -226,21 +229,8 @@ int EGFRvIIIIndexPredictor::PrepareNewEGFRvIIIPredictionModel(const std::string 
   
   try
   {
-    MatrixType data;
-    data.set_size(448, 1); // TOCHECK - are these hard coded sizes fine?
-    for (unsigned int i = 0; i < meanVector.Size(); i++)
-      data(i, 0) = meanVector[i];
-    typedef itk::CSVNumericObjectFileWriter<double, 448, 1> WriterTypeVector;
-    WriterTypeVector::Pointer writerv = WriterTypeVector::New();
-    writerv->SetFileName(outputdirectory + "/EGFRvIII_ZScore_Mean.csv");
-    writerv->SetInput(&data);
-    writerv->Write();
-
-    for (unsigned int i = 0; i < stdVector.Size(); i++)
-      data(i, 0) = stdVector[i];
-    writerv->SetFileName(outputdirectory + "/EGFRvIII_ZScore_Std.csv");
-    writerv->SetInput(&data);
-    writerv->Write();
+    WriteCSVFiles(meanVector, outputdirectory + "/EGFRvIII_ZScore_Mean.csv");
+    WriteCSVFiles(stdVector, outputdirectory + "/EGFRvIII_ZScore_Std.csv");
   }
   catch (const std::exception& e1)
   {
@@ -251,7 +241,7 @@ int EGFRvIIIIndexPredictor::PrepareNewEGFRvIIIPredictionModel(const std::string 
 
   std::cout << std::endl << "Scaling done....." << std::endl;
   std::cout << "Feature writing started:" << std::endl;
-  WriteCSVFiles(scaledFeatureSet, outputdirectory + "/ScaledFeatures.csv");
+  //WriteCSVFilesWithHorizontalAndVerticalHeaders(scaledFeatureSet, patient_ids, FeatureLabels, outputdirectory + "/ScaledFeatures.csv");
 
   ////---------------------------------------------------------------------------
   //bool ModelSelectedFeatures = SelectModelFeaturesForTrainingSVMFFSel(scaledFeatureSet, AllLabels,outputdirectory);
@@ -408,6 +398,8 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
   }
 
   //read selected feature indices from the model directory
+  MatrixType featuresMatrix;
+  std::cout << modeldirectory + "/EGFRvIII_SelectedFeatures.csv" << std::endl;
   try
   {
     reader->SetFileName(modeldirectory + "/EGFRvIII_SelectedFeatures.csv");
@@ -415,18 +407,17 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
     reader->HasColumnHeadersOff();
     reader->HasRowHeadersOff();
     reader->Parse();
-    meanMatrix = reader->GetArray2DDataObject()->GetMatrix();
+    featuresMatrix = reader->GetArray2DDataObject()->GetMatrix();
 
-    selectedfeatures.SetSize(meanMatrix.size());
-    for (unsigned int i = 0; i < meanMatrix.size(); i++)
-      selectedfeatures[i] = meanMatrix(0, i);
+    selectedfeatures.SetSize(featuresMatrix.size());
+    for (unsigned int i = 0; i < featuresMatrix.size(); i++)
+      selectedfeatures[i] = featuresMatrix(0, i);
   }
   catch (const std::exception& e1)
   {
     logger.WriteError("Error in reading the file: " + modeldirectory + "/EGFRvIII_SelectedFeatures.csv. Error code : " + std::string(e1.what()));
     return results;
   }
-  
   //read EGFRneg and EGFRpos atlases from the model directory
   ImageType::Pointer POSAtlasImagePointer;
   ImageType::Pointer NEGAtlasImagePointer;
@@ -453,12 +444,13 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
 
   //extract features from the given dataset
   VariableSizeMatrixType FeaturesOfAllSubjects;
-  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 448);
-
+  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), EGFR_NO_OF_FEATURES);
+  std::vector<std::string> patient_ids;
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
     std::cout << "Subject No:" << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[sid];
+    patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
     try
     {
       ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
@@ -504,28 +496,74 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
       return results;
     }
   }
+  std::string FeatureLabels[EGFR_NO_OF_FEATURES] = { "Age","Loc_Mean_diff","Loc_Max_Diff","Loc_Mean_Ratio","Loc_Max_Ratio","ET_PatientSpace","NCR_PatientSpace","ED_PatientSpace","brain size_PatientSpace","ET+NCR_PatientSpace","ET+NCR/BS_PatientSpace","Edema/BS","ET/ET+NCR_PatientSpace","NCR/ET+NCR_PatientSpace","Edema/ET+NCR_PatientSpace",
+    "ET_Atl","NCR_Atl","ED_Atl","brain size_Atl","ET+NCR_Atl","ET+NCR/BS_Atl","Edema/BS_Atl","ET/ET+NCR_Atl","NCR/ET+NCR_Atl","Edema/ET+NCR_Atl",
+    "Vent_Tumor_Dist","Vent_ED_Dist","Mean_ET_T1CE","STD_ET_T1CE","Mean_ET_T1","STD_ET_T1","Mean_ET_T2","STD_ET_T2","Mean_ET_Flair","STD_ET_Flair","Mean_ET_PH","STD_ET_PH",
+    "Mean_ET_PSR","STD_ET_PSR","Mean_ET_RCBV","STD_ET_RCBV","Mean_ET_FA","STD_ET_FA","Mean_ET_AX","STD_ET_AX","Mean_ET_RAD","STD_ET_RAD","Mean_ET_TR","STD_ET_TR",
+    "Mean_NCR_T1CE","STD_NCR_T1CE","Mean_NCR_T1","STD_NCR_T1","Mean_NCR_T2","STD_NCR_T2","Mean_NCR_Flair","STD_NCR_Flair","Mean_NCR_PH","STD_NCR_PH",
+    "Mean_NCR_PSR","STD_NCR_PSR","Mean_NCR_RCBV","STD_NCR_RCBV","Mean_NCR_FA","STD_NCR_FA","Mean_NCR_AX","STD_NCR_AX","Mean_NCR_RAD","STD_NCR_RAD","Mean_NCR_TR","STD_NCR_TR",
+    "Mean_ED_T1CE","STD_ED_T1CE","Mean_ED_T1","STD_ED_T1","Mean_ED_T2","STD_ED_T2","Mean_ED_Flair","STD_ED_Flair","Mean_ED_PH","STD_ED_PH",
+    "Mean_ED_PSR","STD_ED_PSR","Mean_ED_RCBV","STD_ED_RCBV","Mean_ED_FA","STD_ED_FA","Mean_ED_AX","STD_ED_AX","Mean_ED_RAD","STD_ED_RAD","Mean_ED_TR","STD_ED_TR",
+    "ET_T1CE_Bin1","ET_T1CE_Bin2","ET_T1CE_Bin3","ET_T1CE_Bin4","ET_T1CE_Bin5","ET_T1CE_Bin6","ET_T1CE_Bin7","ET_T1CE_Bin8","ET_T1CE_Bin9","ET_T1CE_Bin10",
+    "ED_T1CE_Bin1","ED_T1CE_Bin2","ED_T1CE_Bin3","ED_T1CE_Bin4","ED_T1CE_Bin5","ED_T1CE_Bin6","ED_T1CE_Bin7","ED_T1CE_Bin8","ED_T1CE_Bin9","ED_T1CE_Bin10",
+    "NCR_T1CE_Bin1","NCR_T1CE_Bin2","NCR_T1CE_Bin3","NCR_T1CE_Bin4","NCR_T1CE_Bin5","NCR_T1CE_Bin6","NCR_T1CE_Bin7",
+    "ET_T1_Bin1","ET_T1_Bin2","ET_T1_Bin3","ET_T1_Bin4","ET_T1_Bin5","ET_T1_Bin6","ET_T1_Bin7","ET_T1_Bin8","ET_T1_Bin9","ET_T1_Bin10",
+    "ED_T1_Bin1","ED_T1_Bin2","ED_T1_Bin3","ED_T1_Bin4","ED_T1_Bin5","ED_T1_Bin6","ED_T1_Bin7","ED_T1_Bin8","ED_T1_Bin9","ED_T1_Bin10",
+    "NCR_T1_Bin1","NCR_T1_Bin2","NCR_T1_Bin3","NCR_T1_Bin4","NCR_T1_Bin5","NCR_T1_Bin6","NCR_T1_Bin7","NCR_T1_Bin8","NCR_T1_Bin9","NCR_T1_Bin10",
+    "ET_T2_Bin1","ET_T2_Bin2","ET_T2_Bin3","ET_T2_Bin4","ET_T2_Bin5","ET_T2_Bin6","ET_T2_Bin7","ET_T2_Bin8","ET_T2_Bin9","ET_T2_Bin10",
+    "ED_T2_Bin1","ED_T2_Bin2","ED_T2_Bin3","ED_T2_Bin4","ED_T2_Bin5","ED_T2_Bin6","ED_T2_Bin7","ED_T2_Bin8","ED_T2_Bin9","ED_T2_Bin10",
+    "NCR_T2_Bin1","NCR_T2_Bin2","NCR_T2_Bin3","NCR_T2_Bin4","NCR_T2_Bin5","NCR_T2_Bin6","NCR_T2_Bin7","NCR_T2_Bin8","NCR_T2_Bin9","NCR_T2_Bin10",
+    "ET_Flair_Bin1","ET_Flair_Bin2","ET_Flair_Bin3","ET_Flair_Bin4","ET_Flair_Bin5","ET_Flair_Bin6","ET_Flair_Bin7","ET_Flair_Bin8","ET_Flair_Bin9","ET_Flair_Bin10",
+    "ED_Flair_Bin1","ED_Flair_Bin2","ED_Flair_Bin3","ED_Flair_Bin4","ED_Flair_Bin5","ED_Flair_Bin6","ED_Flair_Bin7","ED_Flair_Bin8","ED_Flair_Bin9","ED_Flair_Bin10",
+    "NCR_Flair_Bin1","NCR_Flair_Bin2","NCR_Flair_Bin3","NCR_Flair_Bin4","NCR_Flair_Bin5","NCR_Flair_Bin6","NCR_Flair_Bin7","NCR_Flair_Bin8","NCR_Flair_Bin9","NCR_Flair_Bin10",
+    "ET_PH_Bin1","ET_PH_Bin2","ET_PH_Bin3","ET_PH_Bin4","ET_PH_Bin5","ET_PH_Bin6","ET_PH_Bin7","ET_PH_Bin8","ET_PH_Bin9","ET_PH_Bin10",
+    "ED_PH_Bin1","ED_PH_Bin2","ED_PH_Bin3","ED_PH_Bin4","ED_PH_Bin5","ED_PH_Bin6","ED_PH_Bin7","ED_PH_Bin8","ED_PH_Bin9","ED_PH_Bin10",
+    "NCR_PH_Bin1","NCR_PH_Bin2","NCR_PH_Bin3","NCR_PH_Bin4","NCR_PH_Bin5","NCR_PH_Bin6","NCR_PH_Bin7","NCR_PH_Bin8","NCR_PH_Bin9","NCR_PH_Bin10",
+    "ET_PSR_Bin1","ET_PSR_Bin2","ET_PSR_Bin3","ET_PSR_Bin4","ET_PSR_Bin5","ET_PSR_Bin6","ET_PSR_Bin7","ET_PSR_Bin8","ET_PSR_Bin9","ET_PSR_Bin10",
+    "ED_PSR_Bin1","ED_PSR_Bin2","ED_PSR_Bin3","ED_PSR_Bin4","ED_PSR_Bin5","ED_PSR_Bin6","ED_PSR_Bin7","ED_PSR_Bin8","ED_PSR_Bin9","ED_PSR_Bin10",
+    "NCR_PSR_Bin1","NCR_PSR_Bin2","NCR_PSR_Bin3","NCR_PSR_Bin4","NCR_PSR_Bin5","NCR_PSR_Bin6","NCR_PSR_Bin7","NCR_PSR_Bin8","NCR_PSR_Bin9","NCR_PSR_Bin10",
+    "ET_RCBV_Bin1","ET_RCBV_Bin2","ET_RCBV_Bin3","ET_RCBV_Bin4","ET_RCBV_Bin5","ET_RCBV_Bin6","ET_RCBV_Bin7","ET_RCBV_Bin8","ET_RCBV_Bin9","ET_RCBV_Bin10",
+    "ED_RCBV_Bin1","ED_RCBV_Bin2","ED_RCBV_Bin3","ED_RCBV_Bin4","ED_RCBV_Bin5","ED_RCBV_Bin6","ED_RCBV_Bin7","ED_RCBV_Bin8","ED_RCBV_Bin9","ED_RCBV_Bin10",
+    "NCR_RCBV_Bin1","NCR_RCBV_Bin2","NCR_RCBV_Bin3","NCR_RCBV_Bin4","NCR_RCBV_Bin5","NCR_RCBV_Bin6","NCR_RCBV_Bin7","NCR_RCBV_Bin8","NCR_RCBV_Bin9","NCR_RCBV_Bin10",
+    "ET_FA_Bin1","ET_FA_Bin2","ET_FA_Bin3","ET_FA_Bin4","ET_FA_Bin5","ET_FA_Bin6","ET_FA_Bin7","ET_FA_Bin8","ET_FA_Bin9","ET_FA_Bin10",
+    "ED_FA_Bin1","ED_FA_Bin2","ED_FA_Bin3","ED_FA_Bin4","ED_FA_Bin5","ED_FA_Bin6","ED_FA_Bin7","ED_FA_Bin8","ED_FA_Bin9","ED_FA_Bin10",
+    "NCR_FA_Bin1","   NCR_FA_Bin2","NCR_FA_Bin3","NCR_FA_Bin4","NCR_FA_Bin5","NCR_FA_Bin6","NCR_FA_Bin7","NCR_FA_Bin8","NCR_FA_Bin9","NCR_FA_Bin10",
+    "ET_AX_Bin1","ET_AX_Bin2","ET_AX_Bin3","ET_AX_Bin4","ET_AX_Bin5","ET_AX_Bin6","ET_AX_Bin7","ET_AX_Bin8","ET_AX_Bin9","ET_AX_Bin10",
+    "ED_AX_Bin1","ED_AX_Bin2","ED_AX_Bin3","ED_AX_Bin4","ED_AX_Bin5","ED_AX_Bin6","ED_AX_Bin7","ED_AX_Bin8","ED_AX_Bin9","ED_AX_Bin10",
+    "NCR_AX_Bin1","NCR_AX_Bin2","NCR_AX_Bin3","NCR_AX_Bin4","NCR_AX_Bin5","NCR_AX_Bin6","NCR_AX_Bin7","NCR_AX_Bin8","NCR_AX_Bin9","NCR_AX_Bin10",
+    "ET_RAD_Bin1","ET_RAD_Bin2","ET_RAD_Bin3","ET_RAD_Bin4","ET_RAD_Bin5","ET_RAD_Bin6","ET_RAD_Bin7","ET_RAD_Bin8","ET_RAD_Bin9","   ET_RAD_Bin10",
+    "ED_RAD_Bin1","ED_RAD_Bin2","ED_RAD_Bin3","ED_RAD_Bin4","ED_RAD_Bin5","ED_RAD_Bin6","ED_RAD_Bin7","ED_RAD_Bin8","ED_RAD_Bin9","ED_RAD_Bin10",
+    "NCR_RAD_Bin1","NCR_RAD_Bin2","NCR_RAD_Bin3","NCR_RAD_Bin4","NCR_RAD_Bin5","NCR_RAD_Bin6","NCR_RAD_Bin7","NCR_RAD_Bin8","NCR_RAD_Bin9","NCR_RAD_Bin10",
+    "ET_TR_Bin1","ET_TR_Bin2","ET_TR_Bin3","ET_TR_Bin4","ET_TR_Bin5","ET_TR_Bin6","ET_TR_Bin7","ET_TR_Bin8","ET_TR_Bin9","ET_TR_Bin10",
+    "ED_TR_Bin1","ED_TR_Bin2","ED_TR_Bin3","ED_TR_Bin4","ED_TR_Bin5","ED_TR_Bin6","ED_TR_Bin7","ED_TR_Bin8","ED_TR_Bin9","ED_TR_Bin10",
+    "NCR_TR_Bin1","NCR_TR_Bin2","NCR_TR_Bin3","NCR_TR_Bin4","NCR_TR_Bin5","NCR_TR_Bin6","NCR_TR_Bin7","NCR_TR_Bin8","NCR_TR_Bin9","NCR_TR_Bin10",
+    "Frontal","Temporal","Parietal","Basal G","Insula","CC_Fornix","Occipital","Cere","Brain stem",
+    "ROI1","ROI2","ROI3","ROI4","ROI5","ROI6","ROI7","ROI8","ROI9","ROI10","ROI11","ROI12","ROI13","ROI14","ROI15","ROI16","ROI18","ROI19","ROI20" };
+
   std::cout << "Feature writing started:" << std::endl;
-  //write raw extracted features in a .csv file
-  WriteCSVFiles(FeaturesOfAllSubjects, outputdirectory + "/RawFeatures.csv");
+  //write raw extracted features to a .csv file
+  std::vector<std::string> StringFeatureLabels;
+  for (int index = 0; index < EGFR_NO_OF_FEATURES; index++)
+    StringFeatureLabels.push_back(FeatureLabels[index]);
+
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, StringFeatureLabels, outputdirectory + "/RawFeatures.csv");
 
   //scale raw features based on the z-score values
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
   
-  VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
-  ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
-  for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < ScaledTestingData.Cols(); j++)
-      ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
-    ScaledFeatureSetAfterAddingLabel(i, j) = 0;
-  }
   //write scaled features in a .csv file
-  WriteCSVFiles(ScaledFeatureSetAfterAddingLabel, outputdirectory + "/ScaledFeatures.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, FeatureLabels, outputdirectory + "/ScaledFeatures.csv");
 
   //select model features
-  VariableSizeMatrixType ModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures);
-  WriteCSVFiles(ModelSelectedFeatures, outputdirectory + "/ScaledSelectedFeatures.csv");
+  VariableSizeMatrixType ModelSelectedFeatures = SelectModelFeatures(ScaledTestingData,selectedfeatures);
+  std::vector<std::string> SelectedFeatureLabels;
+  for (int index = 0; index < selectedfeatures.Size(); index++)
+  {
+    int currentindex = selectedfeatures[index];
+    SelectedFeatureLabels.push_back(FeatureLabels[currentindex]);
+  }
+
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(ModelSelectedFeatures, patient_ids, SelectedFeatureLabels, outputdirectory + "/ScaledSelectedFeatures.csv");
 
   //apply SVM model on the test data
   try
@@ -571,13 +609,12 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
     return results;
   }
   return results;
-
 }
 
 VariableSizeMatrixType EGFRvIIIIndexPredictor::SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures,const VariableLengthVectorType &selectedFeatures)
 {
   VariableSizeMatrixType ModelSelectedFeatures;
-  ModelSelectedFeatures.SetSize(ModelFeatures.Rows(), selectedFeatures.Size()+1);
+  ModelSelectedFeatures.SetSize(ModelFeatures.Rows(), selectedFeatures.Size());
   int counter = 0;
   for (unsigned int i = 0; i < selectedFeatures.Size(); i++)
   {
@@ -585,9 +622,6 @@ VariableSizeMatrixType EGFRvIIIIndexPredictor::SelectModelFeatures(const Variabl
       ModelSelectedFeatures(j, counter) = ModelFeatures(j, selectedFeatures[i]);
     counter++;
   }
-  for (unsigned int j = 0; j < ModelFeatures.Rows(); j++)
-    ModelSelectedFeatures(j, selectedFeatures.Size()) = ModelFeatures(j, 448);
-
   return ModelSelectedFeatures;
 }
 

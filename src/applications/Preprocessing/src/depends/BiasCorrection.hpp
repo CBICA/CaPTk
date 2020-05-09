@@ -22,7 +22,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 #include "cbicaUtilities.h"
 #include "cbicaLogging.h"
-#include "CaPTkDefines.h"
+//#include "CaPTkDefines.h"
 
 
 /**

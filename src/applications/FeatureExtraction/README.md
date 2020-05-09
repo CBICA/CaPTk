@@ -2,7 +2,7 @@
 
 ## Command Line Usage
 
-The examples given are with the assumption that the user is running the application on Windows. Remove the *.exe* at the end for Linux/macOS.
+The examples given are with the assumption that the user is running the application on Windows. Remove the *.exe* at the end for Linux/macOS. 
 
 ### Example for Single Subject Computation
 

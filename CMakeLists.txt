@@ -14,7 +14,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 7 )
 SET( PROJECT_VERSION_PATCH 7.nonRelease )
-SET( PROJECT_VERSION_TWEAK )
+SET( PROJECT_VERSION_TWEAK ) 
 
 # check for the string "nonRelease" in the PROJECT_VERSION_PATCH variable
 # if it is found, add timestamp and git hash of commit to the version
