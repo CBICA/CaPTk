@@ -139,7 +139,7 @@ int main(int argc, char **argv)
     object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
   }
   else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
-    object_pca.TrainNewPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
+    object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
   else
   {
     parser.echoVersion();

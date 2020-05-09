@@ -134,7 +134,6 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
   }
 
   //read all the model parameters
-  //-----------------------------
   VariableSizeMatrixType PCA_PERF;
   VariableLengthVectorType Mean_PERF;
   CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
@@ -144,7 +143,6 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
   reader->HasColumnHeadersOff();
   reader->HasRowHeadersOff();
 
-  //-------------perfusion related data reading------------------
   reader->SetFileName(modelDirectoryName + "/PCA_PERF.csv");
   reader->Parse();
   dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
@@ -153,7 +151,6 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PERF(i, j) = dataMatrix(i, j);
 
-
   reader->SetFileName(modelDirectoryName + "/Mean_PERF.csv");
   reader->Parse();
   dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
@@ -161,8 +158,7 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
   for (unsigned int i = 0; i < dataMatrix.size(); i++)
     Mean_PERF[i] = dataMatrix(0, i);
 
-  //Apply existing PCA model on the test patient
-  //--------------------------------------------------------------------------------------------
+  //Apply existing PCA model to the test patient
   PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCAForTestData(PerfusionDataMap, PCA_PERF, Mean_PERF);
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
 
@@ -172,30 +168,12 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
 
     auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
-    ImageTypeFloat4D::RegionType region = perfImagePointerNifti.GetPointer()->GetLargestPossibleRegion();
-    ImageTypeFloat4D::IndexType regionIndex;
-    ImageTypeFloat4D::SizeType regionSize;
-    regionSize[0] = region.GetSize()[0];
-    regionSize[1] = region.GetSize()[1];
-    regionSize[2] = region.GetSize()[2];
-    regionSize[3] = 0;
-    regionIndex[0] = 0;
-    regionIndex[1] = 0;
-    regionIndex[2] = 0;
-    regionIndex[3] = 0;
+    std::vector<ImageType::Pointer> PerfusionImageVector = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti);
 
     std::vector<ImageType::Pointer> OnePatientperfusionImages;
     for (int i = 0; i < 10; i++)
     {
-      regionIndex[3] = i;
-      ImageTypeFloat4D::RegionType desiredRegion(regionIndex, regionSize);
-      auto filter = itk::ExtractImageFilter< ImageTypeFloat4D, ImageTypeFloat3D >::New();
-      filter->SetExtractionRegion(desiredRegion);
-      filter->SetInput(perfImagePointerNifti);
-      filter->SetDirectionCollapseToIdentity();
-      filter->Update();
-      ImageType::Pointer CurrentTimePoint = filter->GetOutput();
-
+      ImageType::Pointer CurrentTimePoint = PerfusionImageVector[i];
       itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
       imageIt.GoToBegin();
       while (!imageIt.IsAtEnd())
@@ -209,7 +187,6 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
         CurrentTimePoint.GetPointer()->SetPixel(indices[j], revisedPerfData(j, i));
 
       OnePatientperfusionImages.push_back(CurrentTimePoint);
-      //cbica::WriteImage<ImageType>(CurrentTimePoint, "E:/Projects/PSU/Data/" + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
     }
     RevisedPerfusionImagesOfAllPatients.push_back(OnePatientperfusionImages);
   }
@@ -227,8 +204,7 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
   }
   return true;
 }
-
-bool PerfusionPCA::TrainNewPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects)
+bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects)
 {
   PerfusionMapType PerfusionDataMap;
 
@@ -269,6 +245,8 @@ bool PerfusionPCA::TrainNewPCAModel(const int number, const std::string inputdir
     std::cout << "Revising current perfusion image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
     auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    std::vector<ImageType::Pointer> PerfusionImageVector = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti);
+
     ImageTypeFloat4D::RegionType region = perfImagePointerNifti.GetPointer()->GetLargestPossibleRegion();
     ImageTypeFloat4D::IndexType regionIndex;
     ImageTypeFloat4D::SizeType regionSize;
@@ -284,15 +262,7 @@ bool PerfusionPCA::TrainNewPCAModel(const int number, const std::string inputdir
     std::vector<ImageType::Pointer> OnePatientperfusionImages;
     for (int i = 0; i < number; i++)
     {
-      regionIndex[3] = i;
-      ImageTypeFloat4D::RegionType desiredRegion(regionIndex, regionSize);
-      auto filter = itk::ExtractImageFilter< ImageTypeFloat4D, ImageTypeFloat3D >::New();
-      filter->SetExtractionRegion(desiredRegion);
-      filter->SetInput(perfImagePointerNifti);
-      filter->SetDirectionCollapseToIdentity();
-      filter->Update();
-      ImageType::Pointer CurrentTimePoint = filter->GetOutput();
-
+      ImageType::Pointer CurrentTimePoint = PerfusionImageVector[i];
       itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
       imageIt.GoToBegin();
       while (!imageIt.IsAtEnd())
