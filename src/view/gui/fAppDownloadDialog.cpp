@@ -174,7 +174,7 @@ void fAppDownloadDialog::httpDownloadFinished()
     file = 0;
     manager = 0;
 
-    emit doneDownload(fullPath, extractPath);
+    emit doneDownload(fullPath, extractPath, appName);
 }
 
 // During the download progress, it can be canceled

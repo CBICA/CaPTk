@@ -1142,7 +1142,7 @@ void fMainWindow::about()
 #endif
 }
 
-void fMainWindow::appDownload(std::string currentApp)
+void fMainWindow::appDownload(std::string appName)
 {
   std::string linkyml = "";
 
@@ -1154,22 +1154,32 @@ void fMainWindow::appDownload(std::string currentApp)
   linkyml = "Linux";
 #endif
 
-  std::string downloadLink = m_appDownloadConfigs["apps"][currentApp][linkyml].as<std::string>();
+  std::string downloadLink = m_appDownloadConfigs["apps"][appName][linkyml].as<std::string>();
 
   // ShowErrorMessage(downloadLink);
 
-  appDownloadDialog.SetPaths(downloadFolder, currentApp);
+  appDownloadDialog.SetPaths(downloadFolder, appName);
   appDownloadDialog.SetDownloadLink(downloadLink);
   appDownloadDialog.exec();
 
-  connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(unzipArchive(QString, QString)));    
+  connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString, QString)), this, SLOT(unzipArchive(QString, QString, QString)));    
 }
 
-void fMainWindow::unzipArchive(QString fullPath, QString extractPath) 
+void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString appName) 
 {
-  // ShowErrorMessage(fullPath.toStdString() + " ep " + extractPath.toStdString());
+  StandaloneApps stlapps = StandaloneApps::GetInstance();
+
+  stlapps->RetreiveAppSetting(appName);
+  stlapps->Debug();
+
+  stlapps->StoreAppSetting("Download", "Done", "libra");
+  
   QZipReader zr(fullPath);
+  stlapps->StoreAppSetting("Extract", "Start", "libra");
+
   bool ret = zr.extractAll(extractPath);
+  stlapps->StoreAppSetting("Extract", "Done", "libra");
+
 }
 
 void fMainWindow::help_Interactions()
@@ -5894,7 +5904,19 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
+  // StandaloneApps stlapps = StandaloneApps::GetInstance();
+
+  // stlapps->RetreiveAppSetting("libra");
+  // stlapps->Debug();
+
+  // if (stldapps->GetStatus().isEmpty() || 
+  //     (stldapps->GetAction() == "Download" && stldapps->GetStatus() == "Start")) {
+  //     appDownload("libra");
+  //     return;
+  // }
+
   std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+
   // ShowErrorMessage("libra: " + scriptToCall);
 
   if (scriptToCall.empty()) {
@@ -6065,14 +6087,37 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  // std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
-  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
-  // ShowErrorMessage("libra: " + scriptToCall);
+  StandaloneApps stlapps = StandaloneApps::GetInstance();
 
-  if (scriptToCall.empty()) {
-    appDownload("libra");
+  stlapps->RetreiveAppSetting("libra");
+  stlapps->Debug();
+
+  std::string scriptToCall = "";
+
+  if (stldapps->GetStatus().isEmpty()) {
+      //|| (stldapps->GetAction() == "Download" && stldapps->GetStatus() == "Start")) {
+      appDownload("libra");
+      return;
+  }
+
+  if (!(stldapps->GetAction() == "Download" && stldapps->GetStatus() == "Start")) { // if download is not started
+    if (stldapps->GetAction() == "Extract" && stldapps->GetStatus() == "Done") { // if extraction finished
+      scriptToCall = getApplicationDownloadPath("libra");
+    }
+    else {
+      !(stldapps->GetAction() == "Download" && stldapps->GetStatus() == "Done") { // if download is never started or not done before
+        appDownload("libra");
+        stlapps->StoreAppSetting("Download", "Start", "libra");
+        return;
+      } 
+    }
+  } 
+  else { // download already started
+    ShowErrorMessage("The application is being downloaded");
     return;
   }
+
+  ShowErrorMessage("libra: " + scriptToCall);
 
   if (cbica::fileExists(scriptToCall))
   {

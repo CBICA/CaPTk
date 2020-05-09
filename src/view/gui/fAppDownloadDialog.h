@@ -39,6 +39,7 @@ public:
   QString downloadPath;
   QString extractPath;
   QString fullPath;
+  QString appName;
   std::string downloadLink;
 
   QUrl url;
@@ -49,11 +50,12 @@ public:
   qint64 fileSize;
   QString qInputLink;
 
-  void SetPaths(std::string inputPath, std::string currentApp)
+  void SetPaths(std::string inputPath, std::string inputAppName)
   {
     downloadPath = QString::fromStdString(inputPath);
     // extractPath = QString::fromStdString(inputPath + currentApp);
     extractPath = QString::fromStdString(inputPath);
+    appName = QString::fromStdString(inputAppName);
   }
 
   void SetDownloadLink(std::string inputLink) {
@@ -79,7 +81,7 @@ public slots:
   void cancelDownload();
 
 signals:
-  void doneDownload(QString fullPath, QString extractPath);
+  void doneDownload(QString fullPath, QString extractPath, QString appName);
 };
 
 #endif
