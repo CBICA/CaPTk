@@ -1,13 +1,5 @@
 #include "PerfusionPCA.h"
 
-
-//PerfusionPCA::PerfusionPCA()
-//{
-//}
-//PerfusionPCA::~PerfusionPCA()
-//{
-//}
-
 PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector, vtkSmartPointer<vtkTable> &ReducedPCAs)
 {
   PerfusionMapType RevisedPerfusionMap;
@@ -236,7 +228,7 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
   return true;
 }
 
-bool PerfusionPCA::PrepareNewPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects)
+bool PerfusionPCA::TrainNewPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects)
 {
   PerfusionMapType PerfusionDataMap;
 
@@ -255,51 +247,23 @@ bool PerfusionPCA::PrepareNewPCAModel(const int number, const std::string inputd
   }
 
   //combining perfusion data, calcualting PCA
-  //-----------------------------------------
   VariableSizeMatrixType TransformationMatrix;
   VariableLengthVectorType MeanVector;
   vtkSmartPointer<vtkTable> TransformedData;
   PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCA(PerfusionDataMap, TransformationMatrix, MeanVector, TransformedData);
 
-  std::ofstream myfile;
-  myfile.open(outputdirectory + "/PCA_PERF.csv");
-  for (unsigned int index1 = 0; index1 < TransformationMatrix.Rows(); index1++)
-  {
-    for (unsigned int index2 = 0; index2 < TransformationMatrix.Cols(); index2++)
-    {
-      if (index2 == 0)
-        myfile << std::to_string(TransformationMatrix[index1][index2]);
-      else
-        myfile << "," << std::to_string(TransformationMatrix[index1][index2]);
-    }
-    myfile << "\n";
-  }
-  myfile.close();
-
-  myfile.open(outputdirectory + "/Mean_PERF.csv");
-  for (unsigned int index1 = 0; index1 < MeanVector.Size(); index1++)
-    myfile << std::to_string(MeanVector[index1]) << ",";
-  myfile << "\n";
-  myfile.close();
-
-  myfile.open(outputdirectory + "/PCA_Data.csv");
+  VariableSizeMatrixType TransformedDataMatrix;
+  TransformedDataMatrix.SetSize(TransformedData->GetNumberOfRows(), TransformedData->GetNumberOfColumns());
   for (unsigned int index1 = 0; index1 < TransformedData.GetPointer()->GetNumberOfRows(); index1++)
-  {
     for (unsigned int index2 = 0; index2 < TransformedData.GetPointer()->GetNumberOfColumns(); index2++)
-    {
-      if (index2 == 0)
-        myfile << std::to_string(TransformedData->GetValue(index1, index2).ToDouble());
-      else
-        myfile << "," << std::to_string(TransformedData->GetValue(index1, index2).ToDouble());
-    }
-    myfile << "\n";
-  }
-  myfile.close();
+      TransformedDataMatrix(index1, index2) = TransformedData->GetValue(index1, index2).ToDouble();
+
+  WriteCSVFiles(TransformationMatrix, outputdirectory + "/PCA_PERF.csv");
+  WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv");
+  WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv");
 
   //Putting back in images of respective patients
-
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
-
   for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
   {
     std::cout << "Revising current perfusion image: " << sid << std::endl;
@@ -342,7 +306,6 @@ bool PerfusionPCA::PrepareNewPCAModel(const int number, const std::string inputd
         CurrentTimePoint.GetPointer()->SetPixel(indices[j], revisedPerfData(j, i));
 
       OnePatientperfusionImages.push_back(CurrentTimePoint);
-      //cbica::WriteImage<ImageType>(CurrentTimePoint, outputdirectory + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
     }
     RevisedPerfusionImagesOfAllPatients.push_back(OnePatientperfusionImages);
   }
