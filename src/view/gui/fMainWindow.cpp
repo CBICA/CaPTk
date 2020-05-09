@@ -1167,7 +1167,7 @@ void fMainWindow::appDownload(std::string appName)
 
 void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString appName) 
 {
-  StandaloneApps stlapps = StandaloneApps::GetInstance();
+  StandaloneApps* stlapps = StandaloneApps::GetInstance();
 
   stlapps->RetreiveAppSetting(appName);
   stlapps->Debug();
@@ -6087,7 +6087,7 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  StandaloneApps stlapps = StandaloneApps::GetInstance();
+  StandaloneApps* stlapps = StandaloneApps::GetInstance();
 
   stlapps->RetreiveAppSetting("libra");
   stlapps->Debug();
