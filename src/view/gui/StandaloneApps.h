@@ -8,7 +8,7 @@
 class StandaloneApps : public QObject
 {
 public:
-	static StandaloneApps* GetInstance(QString appName);
+	static StandaloneApps* GetInstance();
 
 	//! setters/getters
 	// void SetName(QString appName);

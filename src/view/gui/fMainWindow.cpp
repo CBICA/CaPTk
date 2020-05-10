@@ -6105,7 +6105,7 @@ void fMainWindow::ApplicationLIBRASingle()
       scriptToCall = getApplicationDownloadPath("libra");
     }
     else {
-      !(stldapps->GetAction() == "Download" && stldapps->GetStatus() == "Done") { // if download is never started or not done before
+      if (!(stldapps->GetAction() == "Download" && stldapps->GetStatus() == "Done")) { // if download is never started or not done before
         appDownload("libra");
         stlapps->StoreAppSetting("Download", "Start", "libra");
         return;

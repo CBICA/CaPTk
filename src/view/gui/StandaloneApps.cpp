@@ -12,7 +12,7 @@
 StandaloneApps* StandaloneApps::m_Instance = nullptr;
 QMutex StandaloneApps::m_Mutex;
 
-StandaloneApps* StandaloneApps::GetInstance(QString appName)
+StandaloneApps* StandaloneApps::GetInstance()
 {
 	if (m_Instance == nullptr)
 	{
