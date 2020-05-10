@@ -5909,8 +5909,8 @@ void fMainWindow::ApplicationLIBRABatch()
   // stlapps->RetreiveAppSetting("libra");
   // stlapps->Debug();
 
-  // if (stldapps->GetStatus().isEmpty() || 
-  //     (stldapps->GetAction() == "Download" && stldapps->GetStatus() == "Start")) {
+  // if (stlapps->GetStatus().isEmpty() || 
+  //     (stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) {
   //     appDownload("libra");
   //     return;
   // }
@@ -6094,18 +6094,18 @@ void fMainWindow::ApplicationLIBRASingle()
 
   std::string scriptToCall = "";
 
-  if (stldapps->GetStatus().isEmpty()) {
-      //|| (stldapps->GetAction() == "Download" && stldapps->GetStatus() == "Start")) {
+  if (stlapps->GetStatus().isEmpty()) {
+      //|| (stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) {
       appDownload("libra");
       return;
   }
 
-  if (!(stldapps->GetAction() == "Download" && stldapps->GetStatus() == "Start")) { // if download is not started
-    if (stldapps->GetAction() == "Extract" && stldapps->GetStatus() == "Done") { // if extraction finished
+  if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) { // if download is not started
+    if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Done") { // if extraction finished
       scriptToCall = getApplicationDownloadPath("libra");
     }
     else {
-      if (!(stldapps->GetAction() == "Download" && stldapps->GetStatus() == "Done")) { // if download is never started or not done before
+      if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Done")) { // if download is never started or not done before
         appDownload("libra");
         stlapps->StoreAppSetting("Download", "Start", "libra");
         return;
