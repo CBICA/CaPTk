@@ -143,7 +143,7 @@ Reference:
 
 /**  
 \page preprocessing_bias Bias Correction (ITK filter)
-This tool corrects an image, already loaded in CaPTk, for magnetic field inhomogeneities using a non-parametric method [1]. Users have the option to switch between N3 [1] and N4 correction.
+This tool corrects an image, already loaded in CaPTk, for magnetic field inhomogeneities using a non-parametric method [1]. Users have the option to switch between N3 [1] and N4 [2] correction.
 
 <b>REQUIREMENTS:</b>
 	-# An image loaded in CaPTk.
