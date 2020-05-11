@@ -1170,16 +1170,20 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
   StandaloneApps* stlapps = StandaloneApps::GetInstance();
 
   stlapps->RetreiveAppSetting(appName);
-  stlapps->Debug();
+  stlapps->Debug("done download");
 
   stlapps->StoreAppSetting("Download", "Done", "libra");
   
-  QZipReader zr(fullPath);
-  stlapps->StoreAppSetting("Extract", "Start", "libra");
+  if (cbica::isFile(fullPath.toStdString())) {
+    QZipReader zr(fullPath);
+    stlapps->StoreAppSetting("Extract", "Start", "libra");
+    
+    stlapps->RetreiveAppSetting(appName);
+    stlapps->Debug("start unzip");
 
-  bool ret = zr.extractAll(extractPath);
-  stlapps->StoreAppSetting("Extract", "Done", "libra");
-
+    bool ret = zr.extractAll(extractPath);
+    stlapps->StoreAppSetting("Extract", "Done", "libra");
+  }
 }
 
 void fMainWindow::help_Interactions()
@@ -6092,17 +6096,22 @@ void fMainWindow::ApplicationLIBRASingle()
   StandaloneApps* stlapps = StandaloneApps::GetInstance();
 
   stlapps->RetreiveAppSetting("libra");
-  stlapps->Debug();
+  stlapps->Debug("first call");
 
   if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) { // if download is not started
     if (scriptToCall.empty()) { // app not found or delete after extraction
       stlapps->StoreAppSetting("", "", "libra");
     }
 
+    stlapps->RetreiveAppSetting("libra");
+    stlapps->Debug("inside if");
+
     if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Done") { // if extraction finished
       scriptToCall = getApplicationDownloadPath("libra");
     }
     else {
+      stlapps->RetreiveAppSetting("libra");
+      stlapps->Debug("inside if if");
       if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Done")) { // if download is never started or not done before
         appDownload("libra");
         stlapps->StoreAppSetting("Download", "Start", "libra");
@@ -6134,7 +6143,7 @@ void fMainWindow::ApplicationLIBRASingle()
   }
   else
   {
-    // ShowErrorMessage("Cannot find :" + scriptToCall, this);
+    ShowErrorMessage("Cannot find :" + scriptToCall, this);
   }
 }
 

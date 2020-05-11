@@ -89,9 +89,9 @@ void StandaloneApps::RetreiveAppSetting(QString appName)
 		this->SetFileAvailability(QVariant(false).toString());
 }
 
-void StandaloneApps::Debug()
+void StandaloneApps::Debug(QString step)
 {
-	qDebug() << " StandaloneApps::Debug() " << endl;
+	qDebug() << " StandaloneApps::Debug() " + step.toStdString() << endl;
 	qDebug() << " action = " << this->m_Action << endl;
 	qDebug() << " status = " << this->m_Status << endl;
 }

@@ -27,7 +27,7 @@ public:
 	void RetreiveAppSetting(QString appName);
 
 	//! print preferences(for debugging purposes)
-	void Debug();
+	void Debug(QString step);
 
 private:
 	//! constructor/desctrucor
