@@ -6094,11 +6094,11 @@ void fMainWindow::ApplicationLIBRASingle()
   stlapps->RetreiveAppSetting("libra");
   stlapps->Debug();
 
-  if (scriptToCall.empty()) { // app not found
-    stlapps->StoreAppSetting("", "", "libra");
-  }
-
   if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) { // if download is not started
+    if (scriptToCall.empty()) { // app not found or delete after extraction
+      stlapps->StoreAppSetting("", "", "libra");
+    }
+
     if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Done") { // if extraction finished
       scriptToCall = getApplicationDownloadPath("libra");
     }
