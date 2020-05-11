@@ -63,9 +63,9 @@
     <filename>preprocessing_susan</filename>
   </compound>
   <compound kind="page">
-    <name>preprocessing_biasN4</name>
-    <title>N4 Bias Correction (ITK filter)</title>
-    <filename>preprocessing_biasN4</filename>
+    <name>preprocessing_bias</name>
+    <title>Bias Correction (ITK filter)</title>
+    <filename>preprocessing_bias</filename>
   </compound>
   <compound kind="page">
     <name>preprocessing_histoMatch</name>
