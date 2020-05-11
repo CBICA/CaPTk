@@ -6087,17 +6087,15 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
+  std::string scriptToCall = getApplicationDownloadPath("libra");
+
   StandaloneApps* stlapps = StandaloneApps::GetInstance();
 
   stlapps->RetreiveAppSetting("libra");
   stlapps->Debug();
 
-  std::string scriptToCall = "";
-
-  if (stlapps->GetStatus().isEmpty()) {
-      //|| (stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) {
-      appDownload("libra");
-      return;
+  if (scriptToCall.empty()) { // app not found
+    stlapps->StoreAppSetting("", "", "libra");
   }
 
   if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) { // if download is not started
@@ -6116,8 +6114,6 @@ void fMainWindow::ApplicationLIBRASingle()
     ShowErrorMessage("The application is being downloaded");
     return;
   }
-
-  ShowErrorMessage("libra: " + scriptToCall);
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -6138,7 +6134,7 @@ void fMainWindow::ApplicationLIBRASingle()
   }
   else
   {
-    ShowErrorMessage("Cannot find :" + scriptToCall, this);
+    // ShowErrorMessage("Cannot find :" + scriptToCall, this);
   }
 }
 
