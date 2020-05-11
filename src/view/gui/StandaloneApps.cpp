@@ -91,7 +91,7 @@ void StandaloneApps::RetreiveAppSetting(QString appName)
 
 void StandaloneApps::Debug(QString step)
 {
-	qDebug() << " StandaloneApps::Debug() " << step.toStdString() << endl;
+	qDebug() << " StandaloneApps::Debug() " << step << endl;
 	qDebug() << " action = " << this->m_Action << endl;
 	qDebug() << " status = " << this->m_Status << endl;
 }
