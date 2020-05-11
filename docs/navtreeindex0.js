@@ -71,7 +71,7 @@ var NAVTREEINDEX0 =
 "index.html#autotoc_md120":[3],
 "index.html#autotoc_md121":[4],
 "pages.html":[],
-"preprocessing_biasN4.html":[3,0,3],
+"preprocessing_bias.html":[3,0,3],
 "preprocessing_dcm2nii.html":[3,0,0],
 "preprocessing_histoMatch.html":[3,0,4],
 "preprocessing_reg.html":[3,0,1],

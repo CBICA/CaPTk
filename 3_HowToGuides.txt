@@ -8,7 +8,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
   - [DICOM to NIfTI conversion](preprocessing_dcm2nii.html)
   - [Registration](preprocessing_reg.html)
   - [Denoise-SUSAN (ITK filter)](preprocessing_susan.html)
-  - [N4 Bias Correction (ITK filter)](preprocessing_biasN4.html)
+  - [Bias Correction (ITK filter)](preprocessing_bias.html)
   - [Histogram Matching](preprocessing_histoMatch.html)
   - [Z-Score Normalization](preprocessing_zScoreNorm.html)
 - \subpage ht_Segmentation "Segmentation"
@@ -50,7 +50,7 @@ The following applications can be called from the GUI:
 - \subpage preprocessing_dcm2nii "DICOM to NIfTI conversion"
 - \subpage preprocessing_reg "Registration"
 - \subpage preprocessing_susan "Denoise-SUSAN (ITK filter)"
-- \subpage preprocessing_biasN4 "N4 Bias Correction (ITK filter)"
+- \subpage preprocessing_bias "Bias Correction (ITK filter)"
 - \subpage preprocessing_histoMatch "Histogram Matching"
 - \subpage preprocessing_zScoreNorm "Z-Score Normalization"
 
@@ -142,8 +142,8 @@ Reference:
 
 
 /**  
-\page preprocessing_biasN4 N4 Bias Correction (ITK filter)
-This tool corrects an image, already loaded in CaPTk, for magnetic field inhomogeneities using a non-parametric method [1].
+\page preprocessing_bias Bias Correction (ITK filter)
+This tool corrects an image, already loaded in CaPTk, for magnetic field inhomogeneities using a non-parametric method [1]. Users have the option to switch between N3 [1] and N4 correction.
 
 <b>REQUIREMENTS:</b>
 	-# An image loaded in CaPTk.
@@ -164,6 +164,7 @@ ${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/ima
 Reference:
 
 -# J.G.Sled, A.P.Zijdenbos, A.C.Evans. "A nonparametric method for automatic correction of intensity nonuniformity in MRI data" IEEE Trans Med Imaging. 17(1):87-97, 1998.
+-# N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee. "N4ITK: improved N3 bias correction." IEEE transactions on medical imaging 29.6 (2010): 1310-1320.
 
 */
 
