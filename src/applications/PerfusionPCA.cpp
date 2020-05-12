@@ -240,7 +240,6 @@ bool PerfusionPCA::PrepareNewPCAModel(const int number, const std::string inputd
 {
   PerfusionMapType PerfusionDataMap;
 
-
   //Extracting perfusion data of all the patients and putting in PerfusionDataMap
   for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
   {
@@ -298,7 +297,6 @@ bool PerfusionPCA::PrepareNewPCAModel(const int number, const std::string inputd
   myfile.close();
 
   //Putting back in images of respective patients
-  //---------------------------------------------
 
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
 

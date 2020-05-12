@@ -124,8 +124,6 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputFileName);
-  //ImageTypeFloat4D::Pointer perfusionImage = cbica::ReadImage<ImageTypeFloat4D>(inputFileName);
-  //ImageTypeFloat3D::Pointer maskImage = cbica::ReadImage<ImageTypeFloat3D>(inputMaskName);
 
   if (QualifiedSubjects.size() == 0)
   {
