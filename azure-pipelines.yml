@@ -950,7 +950,7 @@ jobs:
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool: 'Linux'
+  pool: 'Ubuntu_16.04'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
@@ -1125,7 +1125,7 @@ jobs:
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool: 'macOS'
+  pool: 'macOS_10.13'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
