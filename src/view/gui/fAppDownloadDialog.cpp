@@ -135,6 +135,9 @@ void fAppDownloadDialog::httpDownloadFinished()
         }
         reply->deleteLater();
         progressDialog->hide();
+
+        emit cancelDownload(appName);
+
         return;
     }
 
@@ -182,5 +185,8 @@ void fAppDownloadDialog::cancelDownload()
 {
     httpRequestAborted = true;
     reply->abort();
+
+    emit cancelDownload(appName);
+
     this->close();
 }
