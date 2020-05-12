@@ -54,7 +54,7 @@
         <section title="DICOM to NIfTI conversion" ref="preprocessing_dcm2nii.html" />
         <section title="Image Co-registration" ref="preprocessing_reg.html" />
         <section title="Denoise-SUSAN (ITK filter)" ref="preprocessing_susan.html" />
-        <section title="N4 Bias Correction (ITK filter)" ref="preprocessing_biasN4.html" />
+        <section title="Bias Correction (ITK filter)" ref="preprocessing_bias.html" />
         <section title="Histogram Matching" ref="preprocessing_histoMatch.html" />
         <section title="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
       </section>
@@ -75,9 +75,9 @@
         <section title="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
         <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
         <section title="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
+        <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
         <section title="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
         <section title="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
-        <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
         <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
         <section title="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
         <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
@@ -163,7 +163,7 @@
       <keyword name="DICOM to NIfTI conversion" id="DICOM to NIfTI conversion" ref="preprocessing_dcm2nii.html" />
       <keyword name="Image Co-registration" id="Image Co-registration" ref="preprocessing_reg.html" />
       <keyword name="Denoise-SUSAN (ITK filter)" id="Denoise-SUSAN (ITK filter)" ref="preprocessing_susan.html" />
-      <keyword name="N4 Bias Correction (ITK filter)" id="N4 Bias Correction (ITK filter)" ref="preprocessing_biasN4.html" />
+      <keyword name="Bias Correction (ITK filter)" id="Bias Correction (ITK filter)" ref="preprocessing_bias.html" />
       <keyword name="Histogram Matching" id="Histogram Matching" ref="preprocessing_histoMatch.html" />
       <keyword name="Z-Scoring Normalization" id="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
       <keyword name="Segmentation" id="Segmentation" ref="ht_Segmentation.html" />
@@ -224,7 +224,7 @@
       <file>preprocessing_dcm2nii.html</file>
       <file>preprocessing_reg.html</file>
       <file>preprocessing_susan.html</file>
-      <file>preprocessing_biasN4.html</file>
+      <file>preprocessing_bias.html</file>
       <file>preprocessing_histoMatch.html</file>
       <file>preprocessing_zScoreNorm.html</file>
       <file>ht_Segmentation.html</file>

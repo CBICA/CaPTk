@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): Preprocessing</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): Bias Correction (ITK filter)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -52,28 +52,34 @@
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('ht_Preprocessing.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('preprocessing_bias.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Preprocessing </div>  </div>
+<div class="title">Bias Correction (ITK filter) </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The following applications can be called from the GUI:</p>
-<ul>
-<li><a class="el" href="preprocessing_dcm2nii.html">DICOM to NIfTI conversion</a></li>
-<li><a class="el" href="preprocessing_reg.html">Registration</a></li>
-<li><a class="el" href="preprocessing_susan.html">Denoise-SUSAN (ITK filter)</a></li>
-<li><a class="el" href="preprocessing_bias.html">Bias Correction (ITK filter)</a></li>
-<li><a class="el" href="preprocessing_histoMatch.html">Histogram Matching</a></li>
-<li><a class="el" href="preprocessing_zScoreNorm.html">Z-Score Normalization</a></li>
-</ul>
-<p>For a full list of available applications and examples, please use the command: </p>
-<h2><a class="anchor" id="autotoc_md23"></a>
-\verbatim</h2>
-<p>${CaPTk_InstallDir}/bin/Preprocessing -h  </p>
+<div class="textblock"><p>This tool corrects an image, already loaded in CaPTk, for magnetic field inhomogeneities using a non-parametric method [1]. Users have the option to switch between N3 [1] and N4 [2] correction.</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>An image loaded in CaPTk.</li>
+</ol>
+<p><b>USAGE:</b></p><ol type="1">
+<li>Load an image in CaPTk.</li>
+<li>Launch the tool using the 'Preprocessing' -&gt; 'BiasCorrection' menu option.</li>
+<li>Specify the output filename.</li>
+<li>Click on 'Save'.</li>
+<li>The output image is saved in the specified folder and automatically loaded in CaPTk.</li>
+<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4
+</pre></li>
+</ol>
+<hr  />
+<p>Reference:</p>
+<ol type="1">
+<li>J.G.Sled, A.P.Zijdenbos, A.C.Evans. "A nonparametric method for automatic correction of intensity nonuniformity in MRI data" IEEE Trans Med Imaging. 17(1):87-97, 1998.</li>
+<li>N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee. "N4ITK: improved N3 bias correction." IEEE transactions on medical imaging 29.6 (2010): 1310-1320. </li>
+</ol>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

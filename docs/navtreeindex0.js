@@ -1,8 +1,8 @@
 var NAVTREEINDEX0 =
 {
-"BreastCancer_LIBRA.html":[3,3,9],
-"BreastCancer_breastSegmentation.html":[3,3,11],
-"BreastCancer_texture.html":[3,3,10],
+"BreastCancer_LIBRA.html":[3,3,10],
+"BreastCancer_breastSegmentation.html":[3,3,9],
+"BreastCancer_texture.html":[3,3,11],
 "Diffusion_Derivatives.html":[3,3,14],
 "Download.html":[6],
 "FAQ.html":[2],
@@ -71,7 +71,7 @@ var NAVTREEINDEX0 =
 "index.html#autotoc_md120":[3],
 "index.html#autotoc_md121":[4],
 "pages.html":[],
-"preprocessing_biasN4.html":[3,0,3],
+"preprocessing_bias.html":[3,0,3],
 "preprocessing_dcm2nii.html":[3,0,0],
 "preprocessing_histoMatch.html":[3,0,4],
 "preprocessing_reg.html":[3,0,1],
