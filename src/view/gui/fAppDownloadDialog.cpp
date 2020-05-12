@@ -22,6 +22,8 @@ fAppDownloadDialog::~fAppDownloadDialog()
 
 void fAppDownloadDialog::CancelButtonPressed()
 {
+    emit cancelDownload(appName);
+
     this->close();
 }
 
