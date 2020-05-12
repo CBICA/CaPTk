@@ -40,7 +40,6 @@ int main(int argc, char **argv)
   {
     inputFileName = argv[tempPosition + 1];
   }
-
   if (parser.compareParameter("e", tempPosition))
   {
 	  inputEchoName = atof(argv[tempPosition + 1]);
@@ -53,6 +52,7 @@ int main(int argc, char **argv)
   {
 	  phPresent = atoi(argv[tempPosition + 1]);
   }
+
   if (parser.compareParameter("r", tempPosition))
   {
 	  rcbvPresent = atoi(argv[tempPosition + 1]);
@@ -62,11 +62,8 @@ int main(int argc, char **argv)
   {
     outputDirectoryName = argv[tempPosition + 1];
   }
-
-  // std::cout << "Input File:" << inputFileName << std::endl;
-  // std::cout << "Output Directory:" << outputDirectoryName << std::endl;
-  // cbica::Logging(loggerFile, "Input directory name: " + inputFileName + "\n");
-	// cbica::Logging(loggerFile, "Output directory name: " + outputDirectoryName + "\n");
+  std::cout << "Input File:" << inputFileName << std::endl;
+  std::cout << "Output Directory:" << outputDirectoryName << std::endl;
 
   if (!cbica::isFile(inputFileName))
   {
@@ -88,10 +85,8 @@ int main(int argc, char **argv)
   std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, rcbvPresent, psrPresent, phPresent, inputEchoName);
   std::cout << "Writing measures to the specified output directory.\n";
 
-  if (perfusionDerivatives.size() == 0)
-  {
-  }
-  else
+  //write perfusion derivatives
+  if (perfusionDerivatives.size() > 0)
   {
     if (psrPresent == 1)
       cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputDirectoryName + "/PSR.nii.gz");
@@ -102,6 +97,7 @@ int main(int argc, char **argv)
 
     std::cout << "Perfusion derivatives have been saved at the specified locations.\n";
   }
+
   std::cout << "Finished successfully.\n";
   std::cout << "\nPress any key to continue............\n";
 

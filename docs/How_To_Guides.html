@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.7.7.nonRelease.20200417.860a432b</span>
+   &#160;<span id="projectnumber">1.7.7.nonRelease.20200506.aae9eef1</span>
    </div>
   </td>
  </tr>
@@ -63,11 +63,44 @@ $(document).ready(function(){initNavTree('How_To_Guides.html',''); initResizable
 <div class="contents">
 <div class="textblock"><p>This section provides step-by-step guidance to apply the CaPTk functionalities:</p>
 <ul>
-<li><a class="el" href="ht_Preprocessing.html">Pre-processing</a></li>
-<li><a class="el" href="ht_Segmentation.html">Segmentation</a></li>
+<li><a class="el" href="ht_Preprocessing.html">Pre-processing</a><ul>
+<li><a href="preprocessing_dcm2nii.html">DICOM to NIfTI conversion</a></li>
+<li><a href="preprocessing_reg.html">Image Registration</a></li>
+<li><a href="preprocessing_susan.html">Image Denoizing (SUSAN - ITK filter)</a></li>
+<li><a href="preprocessing_bias.html">N3 Bias Correction (ITK filter)</a></li>
+<li><a href="preprocessing_bias.html">N4 Bias Correction (ITK filter)</a></li>
+<li><a href="preprocessing_histoMatch.html">Histogram Matching</a></li>
+<li><a href="preprocessing_zScoreNorm.html">Z-Score Normalization</a></li>
+</ul>
+</li>
+<li><a class="el" href="ht_Segmentation.html">Segmentation</a><ul>
+<li><a href="seg_GeoTrain.html">Interactive Machine Learning based - Utilizing Geodesic Distance Transform and SVM</a></li>
+<li><a href="seg_SNAP.html">ITK-SNAP</a></li>
+<li><a href="seg_DL.html">Deep Learning based - pre-trained models offered for a) skull-stripping and b) brain tumors</a></li>
+</ul>
+</li>
 <li><a class="el" href="ht_FeatureExtraction.html">Feature Extraction</a></li>
-<li><a class="el" href="ht_SpecialApps.html">Specialized Applications Usage</a></li>
-<li><a class="el" href="ht_utilities.html">Utilities (CLI only)</a></li>
+<li><a href="Training_Module.html"><b>ML Training Module</b></a></li>
+<li><a class="el" href="ht_SpecialApps.html">Specialized Applications</a><ul>
+<li><a href="Glioblastoma_WhiteStripe.html">Brain Cancer: Novel MRI Normalization - WhiteStripe</a></li>
+<li><a href="Glioblastoma_Atlas.html">Brain Cancer: Population Atlas</a></li>
+<li><a href="Glioblastoma_Confetti.html">Brain Cancer: Confetti - Diffusion track visualization</a></li>
+<li><a href="Glioblastoma_Recurrence.html">Brain Cancer: Glioblastoma Infiltration Index (Recurrence Predictor)</a></li>
+<li><a href="Glioblastoma_Pseudoprogression.html">Brain Cancer: Pseudoprogression/TrueProgression Index</a></li>
+<li><a href="Glioblastoma_Survival.html">Brain Cancer: Glioblastoma Survival Prediction Index</a></li>
+<li><a href="Glioblastoma_PHI.html">Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)</a></li>
+<li><a href="Glioblastoma_EGFRvIII.html">Brain Cancer: Glioblastoma EGFRvIII SVM Prediction</a></li>
+<li><a href="Glioblastoma_Molecular.html">Brain Cancer: Glioblastoma Molecular Subtype Prediction</a></li>
+<li><a href="BreastCancer_breastSegmentation.html">Breast Cancer: Breast Segmentation</a></li>
+<li><a href="BreastCancer_LIBRA.html">Breast Cancer: Breast Density Estimation (LIBRA)</a></li>
+<li><a href="BreastCancer_texture.html">Breast Cancer: Texture Feature Extraction</a></li>
+<li><a href="LungCancer_SBRT.html">Lung Cancer: Radiomic Analysis of Lung Cancer (SBRT Lung)</a></li>
+<li><a href="Glioblastoma_Directionality.html">Miscellaneous: Directionality Estimator</a></li>
+<li><a href="Diffusion_Derivatives.html">Miscellaneous: Diffusion Derivatives</a></li>
+<li><a href="PCA_Extraction.html">Miscellaneous: Principal Component Images Extraction</a></li>
+</ul>
+</li>
+<li><a class="el" href="ht_utilities.html">Utilities (CLI only)</a>: Collection of helper utilities such as resampling, thresholding, image information, casting, label statistics, etc.</li>
 </ul>
 <p>Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.</p>
 <hr  />

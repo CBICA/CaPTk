@@ -265,6 +265,7 @@ fMainWindow::fMainWindow()
 //   Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
   connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
   connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
+  connect(m_toolTabdock, SIGNAL(close()), this, SLOT(close())); //call the application close routine on signal from dockwidget
 
 //  ! automatic undock on low resolution
   //! to be tested thoroughly
@@ -911,6 +912,9 @@ fMainWindow::fMainWindow()
   connect(this, SIGNAL(TissuePointsFocused(bool)), tumorPanel, SLOT(tTableFocused(bool)));
   connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(panelChanged(int)));
   connect(infoPanel, SIGNAL(MoveSlicerCursor(double, double, double, int)), this, SLOT(MoveSlicerCursor(double, double, double, int)));
+
+  connect(&biascorrectionPanel, SIGNAL(CallBiasCorrection(const std::string, QString, int, int, int, int, float, float)),
+      this, SLOT(CallBiasCorrection(const std::string, QString, int, int, int, int, float, float)));
 
   AxialViewWidget->hide();
   CoronalViewWidget->hide();
@@ -7266,20 +7270,30 @@ void fMainWindow::ImageMamogramPreprocess()
 
 void fMainWindow::ImageBiasCorrection()
 {
-  auto items = m_imagesTable->selectedItems();
-  if (items.empty())
-  {
-    ShowErrorMessage("Please load an image to run bias correction on", this);
-    return;
-  }
+    // Requires an image to be loaded before allowing user access to the bias correction dialog
+    auto items = m_imagesTable->selectedItems();
+    if (items.empty())
+    {
+        ShowErrorMessage("Please load an image to run bias correction on", this);
+        return;
+    }
 
-  int index = GetSlicerIndexFromItem(items[0]);
-  if (index < 0 || index >= (int)mSlicerManagers.size())
-    return;
+    int index = GetSlicerIndexFromItem(items[0]);
+    if (index < 0 || index >= (int)mSlicerManagers.size())
+        return;
 
-  QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "biasCorrect.nii.gz");
+    biascorrectionPanel.mInputPathName = mInputPathName;
+    biascorrectionPanel.exec();
+}
+
+void fMainWindow::CallBiasCorrection(const std::string correctionType, QString saveFileName,
+    int bias_splineOrder, int bias_otsuBins, int bias_maxIterations, int bias_fittingLevels,
+    float bias_filterNoise, float bias_fwhm)
+{
   if (!saveFileName.isEmpty())
   {
+    auto items = m_imagesTable->selectedItems();
+    int index = GetSlicerIndexFromItem(items[0]);
     auto saveFileName_string = saveFileName.toStdString();
     typedef itk::ImageDuplicator<ImageType> DuplicatorType;
     DuplicatorType::Pointer duplicator = DuplicatorType::New();
@@ -7288,11 +7302,7 @@ void fMainWindow::ImageBiasCorrection()
     ImageType::Pointer inputImage = duplicator->GetOutput();
     updateProgress(5, "Bias correction in process");
     BiasCorrection biasCorrector;
-    // Use default values for bias correction for now -- until we add the appropriate GUI elements
-    // TODO: Either allow the GUI to change the below values or otherwise reorganize (cleanup)
-    // Incorporating options into the GUI dialog should also address switching between N3/N4
-    int bias_splineOrder = 3, bias_otsuBins = 10, bias_maxIterations = 100, bias_fittingLevels = 4;
-    float bias_filterNoise = 0.01, bias_fwhm = 0.15;
+
     ImageType::Pointer outputImage = biasCorrector.Run<ImageType>("n3",
                                                                   inputImage,
                                                                   bias_splineOrder,

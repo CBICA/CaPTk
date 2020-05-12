@@ -22,7 +22,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 #include "cbicaUtilities.h"
 #include "cbicaLogging.h"
-#include "CaPTkDefines.h"
+//#include "CaPTkDefines.h"
 
 
 /**
@@ -43,6 +43,10 @@ protected:
 cbica::Logging logger;
 
 public:
+    // default values
+    static const int default_splineOrder = 3, default_otsuBins = 10, default_maxIterations = 100, default_fittingLevels = 4;
+    static constexpr float default_filterNoise = 0.01, default_fwhm = 0.15;
+
 
 BiasCorrection() {};
 ~BiasCorrection() {};
@@ -63,12 +67,12 @@ template<class TImageType, class TMaskImageType>
 typename TImageType::Pointer Run(std::string correctionType, // n3, N3, N4, or n4
                                 typename TImageType::Pointer inputImage,
                                 typename TMaskImageType::Pointer maskImage,
-                                int splineOrder,
-                                int maxIterations,
-                                int fittingLevels,
-                                float filterNoise,
-                                float fwhm,
-                                int otsuBins
+                                int splineOrder = default_splineOrder,
+                                int maxIterations = default_maxIterations,
+                                int fittingLevels = default_fittingLevels,
+                                float filterNoise = default_filterNoise,
+                                float fwhm = default_fwhm,
+                                int otsuBins = default_otsuBins
                                 );
 
 /**
@@ -80,12 +84,13 @@ typename TImageType::Pointer Run(std::string correctionType, // n3, N3, N4, or n
 template<class TImageType>
 typename TImageType::Pointer Run(std::string correctionType,
                                 typename TImageType::Pointer inputImage,
-                                int splineOrder,
-                                int maxIterations,
-                                int fittingLevels,
-                                float filterNoise,
-                                float fwhm,
-                                int otsuBins);
+                                int splineOrder = default_splineOrder,
+                                int maxIterations = default_maxIterations,
+                                int fittingLevels = default_fittingLevels,
+                                float filterNoise = default_filterNoise,
+                                float fwhm = default_fwhm,
+                                int otsuBins = default_otsuBins
+                                );
 
 };
 

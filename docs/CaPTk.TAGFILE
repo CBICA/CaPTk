@@ -44,7 +44,7 @@
   </compound>
   <compound kind="page">
     <name>ht_Preprocessing</name>
-    <title>Pre-processing</title>
+    <title>Preprocessing</title>
     <filename>ht_Preprocessing</filename>
   </compound>
   <compound kind="page">
@@ -63,9 +63,9 @@
     <filename>preprocessing_susan</filename>
   </compound>
   <compound kind="page">
-    <name>preprocessing_biasN4</name>
-    <title>N4 Bias Correction (ITK filter)</title>
-    <filename>preprocessing_biasN4</filename>
+    <name>preprocessing_bias</name>
+    <title>Bias Correction (ITK filter)</title>
+    <filename>preprocessing_bias</filename>
   </compound>
   <compound kind="page">
     <name>preprocessing_histoMatch</name>
@@ -204,6 +204,7 @@
     <docanchor file="Science.html" title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients">phiEstimator</docanchor>
     <docanchor file="Science.html" title="Prediction of Overall Survival in Glioblastoma Patients">survivalPredictor</docanchor>
     <docanchor file="Science.html" title="Probability Maps of Potential Recurrence of Glioblastoma Tumors">recurrencePredictor</docanchor>
+    <docanchor file="Science.html" title="Prediction of Progression-Free Survival (PFS) and Recurrence Pattern (RP) in Glioblastoma">jcoCancer</docanchor>
     <docanchor file="Science.html" title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer">libraPapers</docanchor>
   </compound>
   <compound kind="page">

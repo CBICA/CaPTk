@@ -5,13 +5,13 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.7.nonRelease.20200417.860a432b" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.7.7.nonRelease.20200506.aae9eef1" ref="index.html">
         <section title="Overview" ref="index.html">
-          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md114" />
-          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md115" />
-          <section title="Supporting Grant" ref="index.html#autotoc_md116" />
-          <section title="Disclaimer" ref="index.html#autotoc_md117" />
-          <section title="Contact" ref="index.html#autotoc_md118" />
+          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md117" />
+          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md118" />
+          <section title="Supporting Grant" ref="index.html#autotoc_md119" />
+          <section title="Disclaimer" ref="index.html#autotoc_md120" />
+          <section title="Contact" ref="index.html#autotoc_md121" />
         </section>
       </section>
       <section title="Getting Started" ref="Getting_Started.html">
@@ -48,13 +48,13 @@
         <section title="What if I am having an issue not listed here?" ref="FAQ.html#gs_FAQ_9" />
       </section>
       <section title="How To Guides" ref="How_To_Guides.html">
-        <section title="Pre-processing" ref="ht_Preprocessing.html">
+        <section title="Preprocessing" ref="ht_Preprocessing.html">
           <section title="\verbatim" ref="ht_Preprocessing.html#autotoc_md23" />
         </section>
         <section title="DICOM to NIfTI conversion" ref="preprocessing_dcm2nii.html" />
         <section title="Image Co-registration" ref="preprocessing_reg.html" />
         <section title="Denoise-SUSAN (ITK filter)" ref="preprocessing_susan.html" />
-        <section title="N4 Bias Correction (ITK filter)" ref="preprocessing_biasN4.html" />
+        <section title="Bias Correction (ITK filter)" ref="preprocessing_bias.html" />
         <section title="Histogram Matching" ref="preprocessing_histoMatch.html" />
         <section title="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
       </section>
@@ -75,9 +75,9 @@
         <section title="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
         <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
         <section title="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
+        <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
         <section title="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
         <section title="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
-        <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
         <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
         <section title="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
         <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
@@ -89,6 +89,7 @@
       <section title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients" ref="Science.html#phiEstimator" />
       <section title="Prediction of Overall Survival in Glioblastoma Patients" ref="Science.html#survivalPredictor" />
       <section title="Probability Maps of Potential Recurrence of Glioblastoma Tumors" ref="Science.html#recurrencePredictor" />
+      <section title="Prediction of Progression-Free Survival (PFS) and Recurrence Pattern (RP) in Glioblastoma" ref="Science.html#jcoCancer" />
       <section title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer" ref="Science.html#libraPapers" />
     </section>
     <section title="Technical Reference" ref="Technical_Reference.html">
@@ -111,45 +112,45 @@
       </section>
     </section>
     <section title="Download Instructions" ref="Download.html">
-      <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following paper:" ref="Download.html#autotoc_md76" />
+      <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:" ref="Download.html#autotoc_md79" />
     </section>
-    <section title="License" ref="Download.html#autotoc_md78" />
+    <section title="License" ref="Download.html#autotoc_md81" />
   </section>
 </section>
 <section title="Installation Instructions" ref="Installation.html">
-  <section title="Windows" ref="Installation.html#autotoc_md82" />
-  <section title="Linux" ref="Installation.html#autotoc_md83" />
-  <section title="macOS" ref="Installation.html#autotoc_md84" />
+  <section title="Windows" ref="Installation.html#autotoc_md85" />
+  <section title="Linux" ref="Installation.html#autotoc_md86" />
+  <section title="macOS" ref="Installation.html#autotoc_md87" />
 </section>
 </section>
 <section title="Changelog: Release Notes" ref="ReleaseNotes.html">
-<section title="Known Issues" ref="ReleaseNotes.html#autotoc_md88" />
-<section title="Older Versions" ref="ReleaseNotes.html#autotoc_md89">
-  <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md90" />
-  <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md91" />
-  <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md92" />
-  <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md93" />
-  <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md94" />
-  <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md95" />
-  <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md96" />
-  <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md97" />
-  <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md98" />
-  <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md99" />
-  <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md100" />
-  <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md101" />
-  <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md102" />
-  <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md103" />
-  <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md104" />
-  <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md105" />
-  <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md106" />
-  <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md107" />
+<section title="Known Issues" ref="ReleaseNotes.html#autotoc_md91" />
+<section title="Older Versions" ref="ReleaseNotes.html#autotoc_md92">
+  <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md93" />
+  <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md94" />
+  <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md95" />
+  <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md96" />
+  <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md97" />
+  <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md98" />
+  <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md99" />
+  <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md100" />
+  <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md101" />
+  <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md102" />
+  <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md103" />
+  <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md104" />
+  <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md105" />
+  <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md106" />
+  <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md107" />
+  <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md108" />
+  <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md109" />
+  <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md110" />
 </section>
 </section>
 </section>
 <section title="People (Credits)" ref="People.html">
-<section title="Advisors:" ref="People.html#autotoc_md111" />
-<section title="Developers:" ref="People.html#autotoc_md112" />
-<section title="Collaborators:" ref="People.html#autotoc_md113" />
+<section title="Advisors:" ref="People.html#autotoc_md114" />
+<section title="Developers:" ref="People.html#autotoc_md115" />
+<section title="Collaborators:" ref="People.html#autotoc_md116" />
 </section>
 </section>
 </section>
@@ -158,11 +159,11 @@
       <keyword name="Getting Started" id="Getting Started" ref="Getting_Started.html" />
       <keyword name="Frequently Asked Questions" id="Frequently Asked Questions" ref="FAQ.html" />
       <keyword name="How To Guides" id="How To Guides" ref="How_To_Guides.html" />
-      <keyword name="Pre-processing" id="Pre-processing" ref="ht_Preprocessing.html" />
+      <keyword name="Preprocessing" id="Preprocessing" ref="ht_Preprocessing.html" />
       <keyword name="DICOM to NIfTI conversion" id="DICOM to NIfTI conversion" ref="preprocessing_dcm2nii.html" />
       <keyword name="Image Co-registration" id="Image Co-registration" ref="preprocessing_reg.html" />
       <keyword name="Denoise-SUSAN (ITK filter)" id="Denoise-SUSAN (ITK filter)" ref="preprocessing_susan.html" />
-      <keyword name="N4 Bias Correction (ITK filter)" id="N4 Bias Correction (ITK filter)" ref="preprocessing_biasN4.html" />
+      <keyword name="Bias Correction (ITK filter)" id="Bias Correction (ITK filter)" ref="preprocessing_bias.html" />
       <keyword name="Histogram Matching" id="Histogram Matching" ref="preprocessing_histoMatch.html" />
       <keyword name="Z-Scoring Normalization" id="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
       <keyword name="Segmentation" id="Segmentation" ref="ht_Segmentation.html" />
@@ -223,7 +224,7 @@
       <file>preprocessing_dcm2nii.html</file>
       <file>preprocessing_reg.html</file>
       <file>preprocessing_susan.html</file>
-      <file>preprocessing_biasN4.html</file>
+      <file>preprocessing_bias.html</file>
       <file>preprocessing_histoMatch.html</file>
       <file>preprocessing_zScoreNorm.html</file>
       <file>ht_Segmentation.html</file>

@@ -24,6 +24,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkPowImageFilter.h"
 #include "itkImageDuplicator.h"
 #include "itkMaskImageFilter.h"
+#include "itkImageDuplicator.h"
 
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
@@ -93,8 +94,7 @@ public:
 
       auto maskedInput = masker->GetOutput();
 
-      auto outputImage = maskedInput;
-      outputImage->DisconnectPipeline();
+      auto outputImage = cbica::CreateImage< TImageType >(maskedInput);
 
       TConstNeighborhoodIteratorType ImageIterator(radius, maskedInput, maskedInput->GetLargestPossibleRegion());
       itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetLargestPossibleRegion());
