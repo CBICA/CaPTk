@@ -240,8 +240,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
   MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
 
-  MESSAGE( AUTHOR_WARNING "=== [DEBUG] Building CaPTk version=${PROJECT_VERSION}" )
-  
   SET( CMAKE_COLOR_MAKEFILE ON )
   # option to compile only the viewer
   SET( CAPTK_BUILD_CONSOLE_ONLY OFF CACHE BOOL "Do you want only the interactive capabilities of ${PROJECT_NAME}? Enabling this will remove all algorithms from compilation." )
