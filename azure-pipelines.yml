@@ -891,7 +891,7 @@ jobs:
       displayName: 'Configure and compile Superbuild'
 
     - bash: |
-        rm -rf bin
+        # rm -rf bin
 
         # mkdir bin
         # cd bin
