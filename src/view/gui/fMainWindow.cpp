@@ -1173,17 +1173,26 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
   stlapps->RetreiveAppSetting(appName);
   stlapps->Debug("done download");
 
-  stlapps->StoreAppSetting("Download", "Done", "libra");
+  stlapps->StoreAppSetting("Download", "Done", appName);
   
   if (cbica::isFile(fullPath.toStdString())) {
     QZipReader zr(fullPath);
-    stlapps->StoreAppSetting("Extract", "Start", "libra");
+    stlapps->StoreAppSetting("Extract", "Start", appName);
     
     stlapps->RetreiveAppSetting(appName);
     stlapps->Debug("start unzip");
 
-    bool ret = zr.extractAll(extractPath);
-    stlapps->StoreAppSetting("Extract", "Done", "libra");
+    bool extracted = zr.extractAll(extractPath);
+
+    if (extracted) {
+      stlapps->StoreAppSetting("Extract", "Done", appName);
+    }
+    else {
+      stlapps->RetreiveAppSetting(appName);
+      stlapps->Debug("extraction failed");
+
+      stlapps->StoreAppSetting("", "", appName);
+    }
   }
 }
 
@@ -1194,7 +1203,7 @@ void fMainWindow::cancelDownload(QString appName)
   stlapps->RetreiveAppSetting(appName);
   stlapps->Debug("cancel download");
 
-  stlapps->StoreAppSetting("", "", "libra");
+  stlapps->StoreAppSetting("", "", appName);
 }
 
 void fMainWindow::help_Interactions()
