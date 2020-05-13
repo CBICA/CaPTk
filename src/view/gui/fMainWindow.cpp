@@ -6130,6 +6130,7 @@ void fMainWindow::ApplicationLIBRASingle()
       stlapps->Debug("Path Set");
     }
     else {
+      
       if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Done")) { // if download is never started or not done before
         appDownload("libra");
         stlapps->StoreAppSetting("Download", "Start", "libra");
