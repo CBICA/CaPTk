@@ -398,10 +398,27 @@ namespace cbica
       std::cerr << "Row dimension mismatch for directions.\n";
       return false;
     }
-    if (directions_1 != directions_2)
+    // check with tolerance
+    for (size_t i = 0; i < directions_1.RowDimensions; i++)
     {
-      std::cerr << "Directions are not the same.\n";
-      return false;
+      for (size_t j = 0; j < directions_1.ColumnDimensions; j++)
+      {
+        if (directions_1[i][j] != directions_2[i][j])
+        {
+          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100 / directions_1[i][j];
+          if (percentageDifference > 0.0001)
+          {
+            std::cerr << "Direction mismatch at dimension '[" << i << "," << j << "]'\n";
+            return false;
+          }
+          else
+          {
+            std::cout << "Ignoring direction difference of '" <<
+              percentageDifference << "%' in dimension '[" <<
+              i << "," << j << "]'\n";
+          }
+        }
+      }
     }
 
     for (size_t d = 0; d < TImageType::ImageDimension; d++)
@@ -430,28 +447,6 @@ namespace cbica
           std::cout << "Ignoring spacing difference of '" <<
             percentageDifference << "%' in dimension '" <<
             d << "'\n";
-        }
-      }
-    }
-
-    for (size_t i = 0; i < directions_1.RowDimensions; i++)
-    {
-      for (size_t j = 0; j < directions_1.ColumnDimensions; j++)
-      {
-        if (directions_1[i][j] != directions_2[i][j])
-        {
-          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100 / directions_1[i][j];
-          if (percentageDifference > 0.0001)
-          {
-            std::cerr << "Direction mismatch at dimension '[" << i << "," << j << "]'\n";
-            return false;
-          }
-          else
-          {
-            std::cout << "Ignoring direction difference of '" <<
-              percentageDifference << "%' in dimension '[" <<
-              i << "," << j << "]'\n";
-          }
         }
       }
     }
