@@ -374,7 +374,8 @@ else
   ./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./linux-makeself
 
   # ensure a unique identifier for centos7
-  if [[ "$OSrelease" == 'centos7' ]]; then
+  os_release = `echo $OSrelease`
+  if [[ "$os_release" == 'centos7' ]]; then
    mv CaPTk_${ver}_Installer.bin CaPTk_${ver}_Installer_centos7.bin
   fi
 
