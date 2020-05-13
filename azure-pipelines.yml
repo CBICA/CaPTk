@@ -1121,11 +1121,11 @@ jobs:
       condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 - job: 'macOS_SelfHost'
-  displayName: "Self-hosted agent on macOS 10.13"
+  displayName: "Self-hosted agent on macOS 10.14"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool: 'macOS_10.13'
+  pool: 'macOS_10.14'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
@@ -1282,4 +1282,3 @@ jobs:
         continueOnError: true
       displayName: Uploading to NITRC
       condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
-      
