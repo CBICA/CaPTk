@@ -1121,7 +1121,7 @@ jobs:
       condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 - job: 'macOS_SelfHost'
-  displayName: "Self-hosted agent on macOS"
+  displayName: "Self-hosted agent on macOS 10.13"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
