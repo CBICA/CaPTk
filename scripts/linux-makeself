@@ -124,6 +124,10 @@ install_captk () {
 # Print license with a reader
 cat ./LICENSE | more
 
+echo "printenv"
+printenv
+
+
 echo ""
 for i in {1..3}
 do
