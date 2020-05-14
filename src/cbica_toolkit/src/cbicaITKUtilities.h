@@ -374,7 +374,10 @@ namespace cbica
   \brief Check properties of 2 images to see if they are defined in the same space.
   */
   template< typename TImageType >
-  inline bool ImageSanityCheck(const typename TImageType::Pointer image1, const typename TImageType::Pointer image2)
+  inline bool ImageSanityCheck(
+    const typename TImageType::Pointer image1, 
+    const typename TImageType::Pointer image2,
+    const float nifti2dicomTolerance = 0.0)
   {
     auto size_1 = image1->GetLargestPossibleRegion().GetSize();
     auto size_2 = image2->GetLargestPossibleRegion().GetSize();
@@ -406,7 +409,7 @@ namespace cbica
         if (directions_1[i][j] != directions_2[i][j])
         {
           auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100 / std::abs(directions_1[i][j]);
-          if (percentageDifference > 5)
+          if (percentageDifference >= nifti2dicomTolerance)
           {
             std::cerr << "Direction mismatch at location '[" << i << "," << j << "]'\n";
             return false;
