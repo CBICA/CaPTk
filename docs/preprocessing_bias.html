@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): Miscellaneous: Diffusion Derivatives</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): Bias Correction (ITK filter)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -52,31 +52,35 @@
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('Diffusion_Derivatives.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('preprocessing_bias.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Miscellaneous: Diffusion Derivatives </div>  </div>
+<div class="title">Bias Correction (ITK filter) </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).</p>
-<p><b> REQUIREMENTS:</b></p><ol type="1">
-<li>A single DW-MRI image</li>
-<li>Its accompanying BVec and BVal files [Note: these files should be calculated by 'dcm2nii' or any other appropriate software.]</li>
-<li>A mask for which the measurements will be extracted</li>
+<div class="textblock"><p>This tool corrects an image, already loaded in CaPTk, for magnetic field inhomogeneities using a non-parametric method [1]. Users have the option to switch between N3 [1] and N4 [2] correction.</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>An image loaded in CaPTk.</li>
 </ol>
-<p><b> USAGE:</b></p><ol type="1">
-<li>Launch the application from "Applications" -&gt; "Diffusion Derivatives".</li>
-<li>Specify the paths to the input DW-MRI image, bval and bvec files with the gradient information, and the mask defining the voxels to extract the measurements.</li>
-<li>Identify the diffusion measurements to be extracted, and the output directory.</li>
-<li>Press the "Confirm" button.</li>
-<li>The extracted measurements will be saved at the specified location (~5 minutes). <pre class="fragment">${CaPTk_InstallDir}/bin/ DiffusionDerivatives.exe -i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -v C:/input.bvec -a 1 -f 1 -r 1 -t 1 -o C:/output
+<p><b>USAGE:</b></p><ol type="1">
+<li>Load an image in CaPTk.</li>
+<li>Launch the tool using the 'Preprocessing' -&gt; 'BiasCorrection' menu option.</li>
+<li>Specify the output filename.</li>
+<li>Click on 'Save'.</li>
+<li>The output image is saved in the specified folder and automatically loaded in CaPTk.</li>
+<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_biasCorr.nii.gz -n4
 </pre></li>
 </ol>
 <hr  />
- </div></div><!-- contents -->
+<p>Reference:</p>
+<ol type="1">
+<li>J.G.Sled, A.P.Zijdenbos, A.C.Evans. "A nonparametric method for automatic correction of intensity nonuniformity in MRI data" IEEE Trans Med Imaging. 17(1):87-97, 1998.</li>
+<li>N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee. "N4ITK: improved N3 bias correction." IEEE transactions on medical imaging 29.6 (2010): 1310-1320. </li>
+</ol>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->
