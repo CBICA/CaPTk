@@ -5231,7 +5231,7 @@ void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory,
     return;
   }
   PerfusionPCA mPCAEstimator;
-  if (mPCAEstimator.PrepareNewPCAModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
+  if (mPCAEstimator.TrainNewPerfusionModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
     ShowMessage("Trained pseudoprogression model has been saved at the specified location.", this);
   else
     ShowErrorMessage("Pseudoprogression Estimator wasn't able to save the training files as expected. See log file for details: " + loggerFile, this);
