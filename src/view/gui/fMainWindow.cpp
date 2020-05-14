@@ -1175,7 +1175,7 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
     stlapps->Debug("Done download");
 
     stlapps->StoreAppSetting("Download", "Done", appName);
-    
+
     QZipReader zr(fullPath);
     stlapps->StoreAppSetting("Extract", "Start", appName);
     
@@ -1188,7 +1188,7 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
       stlapps->StoreAppSetting("Extract", "Done", appName);
     }
     else {
-      ShowErrorMessage("Installation failed. Please re-run installtion.")
+      ShowErrorMessage("Installation failed. Please re-run installtion.");
       stlapps->RetreiveAppSetting(appName);
       stlapps->Debug("Extraction failed");
 
