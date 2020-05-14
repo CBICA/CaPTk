@@ -58,9 +58,11 @@ The following applications can be called from the GUI:
 - \subpage preprocessing_zScoreNorm "Z-Score Normalization"
 
 For a full list of available applications and examples, please use the command: 
+
 \verbatim
 ${CaPTk_InstallDir}/bin/Preprocessing -h
 \endverbatim
+
 --------
 */
 
