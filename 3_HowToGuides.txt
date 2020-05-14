@@ -477,8 +477,6 @@ ${CaPTk_InstallDir}/bin/MolecularSubtypePredictor.exe -t 0 -i C:/MolecularSubtyp
 ${CaPTk_InstallDir}/bin/MolecularSubtypePredictor.exe -t 1 -i C:/MolecularSubtypeInput -m C:/MolecularSubtypeModel -o C:/MolecularSubtypeOutput
 \endverbatim
 
-<br>
-	
 --------
 
 References:
