@@ -26,6 +26,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 #include "cbicaLogging.h"
 #include "CaPTkDefines.h"
 #include "CaPTkEnums.h"
+#include "CaPTkUtils.h"
 #include "itkCSVArray2DFileReader.h"
 #include "cbicaITKSafeImageIO.h"
 
@@ -60,7 +61,7 @@ public:
   std::vector<typename ImageTypeFloat3D::Pointer> Run(typename ImageTypeFloat3D::Pointer maskImagePointerNifti, typename ImageTypeFloat4D::Pointer perfImagePointerNifti);
 */
 
-  bool PrepareNewPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory,std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects);
+  bool TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory,std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects);
   bool ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects,const std::string ModelDirectoryName);
   
   template<class PerfusionImageType, class ImageType>

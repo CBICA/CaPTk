@@ -5,10 +5,37 @@
 This section provides step-by-step guidance to apply the CaPTk functionalities:
 
 - \subpage ht_Preprocessing "Pre-processing"
+  - [DICOM to NIfTI conversion](preprocessing_dcm2nii.html)
+  - [Image Registration](preprocessing_reg.html)
+  - [Image Denoizing (SUSAN - ITK filter)](preprocessing_susan.html)
+  - [N3 Bias Correction (ITK filter)](preprocessing_bias.html)
+  - [N4 Bias Correction (ITK filter)](preprocessing_bias.html)
+  - [Histogram Matching](preprocessing_histoMatch.html)
+  - [Z-Score Normalization](preprocessing_zScoreNorm.html)
 - \subpage ht_Segmentation "Segmentation"
+  - [Interactive Machine Learning based - Utilizing Geodesic Distance Transform and SVM](seg_GeoTrain.html)
+  - [ITK-SNAP](seg_SNAP.html)
+  - [Deep Learning based - pre-trained models offered for a) skull-stripping and b) brain tumors](seg_DL.html)
 - \subpage ht_FeatureExtraction "Feature Extraction"
-- \subpage ht_SpecialApps "Specialized Applications Usage"
-- \subpage ht_utilities "Utilities (CLI only)"
+- [<b>ML Training Module</b>](Training_Module.html)
+- \subpage ht_SpecialApps "Specialized Applications"
+  - [Brain Cancer: Novel MRI Normalization - WhiteStripe](Glioblastoma_WhiteStripe.html)
+  - [Brain Cancer: Population Atlas](Glioblastoma_Atlas.html)
+  - [Brain Cancer: Confetti - Diffusion track visualization](Glioblastoma_Confetti.html)
+  - [Brain Cancer: Glioblastoma Infiltration Index (Recurrence Predictor)](Glioblastoma_Recurrence.html)
+  - [Brain Cancer: Pseudoprogression/TrueProgression Index](Glioblastoma_Pseudoprogression.html)
+  - [Brain Cancer: Glioblastoma Survival Prediction Index](Glioblastoma_Survival.html)
+  - [Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)](Glioblastoma_PHI.html)
+  - [Brain Cancer: Glioblastoma EGFRvIII SVM Prediction](Glioblastoma_EGFRvIII.html)
+  - [Brain Cancer: Glioblastoma Molecular Subtype Prediction](Glioblastoma_Molecular.html)
+  - [Breast Cancer: Breast Segmentation](BreastCancer_breastSegmentation.html)
+  - [Breast Cancer: Breast Density Estimation (LIBRA)](BreastCancer_LIBRA.html)
+  - [Breast Cancer: Texture Feature Extraction](BreastCancer_texture.html)
+  - [Lung Cancer: Radiomic Analysis of Lung Cancer (SBRT Lung)](LungCancer_SBRT.html)
+  - [Miscellaneous: Directionality Estimator](Glioblastoma_Directionality.html)
+  - [Miscellaneous: Diffusion Derivatives](Diffusion_Derivatives.html)
+  - [Miscellaneous: Principal Component Images Extraction](PCA_Extraction.html)
+- \subpage ht_utilities "Utilities (CLI only)": Collection of helper utilities such as resampling, thresholding, image information, casting, label statistics, etc.
 
 Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
 
@@ -17,13 +44,13 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 
 
 /**
-\page ht_Preprocessing Pre-processing
+\page ht_Preprocessing Preprocessing
 The following applications can be called from the GUI: 
 
 - \subpage preprocessing_dcm2nii "DICOM to NIfTI conversion"
 - \subpage preprocessing_reg "Registration"
 - \subpage preprocessing_susan "Denoise-SUSAN (ITK filter)"
-- \subpage preprocessing_biasN4 "N4 Bias Correction (ITK filter)"
+- \subpage preprocessing_bias "Bias Correction (ITK filter)"
 - \subpage preprocessing_histoMatch "Histogram Matching"
 - \subpage preprocessing_zScoreNorm "Z-Score Normalization"
 
@@ -115,8 +142,8 @@ Reference:
 
 
 /**  
-\page preprocessing_biasN4 N4 Bias Correction (ITK filter)
-This tool corrects an image, already loaded in CaPTk, for magnetic field inhomogeneities using a non-parametric method [1].
+\page preprocessing_bias Bias Correction (ITK filter)
+This tool corrects an image, already loaded in CaPTk, for magnetic field inhomogeneities using a non-parametric method [1]. Users have the option to switch between N3 [1] and N4 [2] correction.
 
 <b>REQUIREMENTS:</b>
 	-# An image loaded in CaPTk.
@@ -137,6 +164,7 @@ ${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/ima
 Reference:
 
 -# J.G.Sled, A.P.Zijdenbos, A.C.Evans. "A nonparametric method for automatic correction of intensity nonuniformity in MRI data" IEEE Trans Med Imaging. 17(1):87-97, 1998.
+-# N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee. "N4ITK: improved N3 bias correction." IEEE transactions on medical imaging 29.6 (2010): 1310-1320.
 
 */
 
@@ -287,7 +315,7 @@ References:
 /**
 \page seg_DL Deep Learning Segmentation
 
-For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the pre-processing).
+For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the preprocessing).
 
 <b> REQUIREMENTS:</b>
 The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.
@@ -363,7 +391,6 @@ References:
 
 */
 
-
 /**
 \page ht_SpecialApps Specialized Applications (SAs) Usage
 Contains the following applications: 
@@ -377,9 +404,9 @@ Contains the following applications:
 - \subpage Glioblastoma_PHI "Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)"
 - \subpage Glioblastoma_EGFRvIII "Brain Cancer: Glioblastoma EGFRvIII SVM Index"
 - \subpage Glioblastoma_Molecular "Brain Cancer: Glioblastoma Molecular Subtype Prediction"
+- \subpage BreastCancer_breastSegmentation "Breast Cancer: Breast Segmentation"
 - \subpage BreastCancer_LIBRA "Breast Cancer: Breast Density Estimation (LIBRA)"
 - \subpage BreastCancer_texture "Breast Cancer: Texture Feature Extraction"
-- \subpage BreastCancer_breastSegmentation "Breast Cancer: Breast Segmentation"
 - \subpage LungCancer_SBRT "Lung Cancer: Radiomics Analysis of Lung Cancer (SBRT Lung)"
 - \subpage Glioblastoma_Directionality "Miscellaneous: Directionality Estimator"
 - \subpage Diffusion_Derivatives "Miscellaneous: Diffusion Derivatives"
@@ -984,11 +1011,11 @@ Reference:
 /**
 \page BreastCancer_texture Breast Cancer: Texture Feature Extraction
 
-This application extracts the Texture Features as described in the paper [1]. It uses the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the computation. 
+This application extracts the Texture Features as described in the paper [1]. It uses [LIBRA](BreastCancer_LIBRA.html) for segmentation and the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the feature computation.
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
-	- [AIMILIA] FFDM vendors currently supported: GE Healthcare and Hologic.
+	- FFDM vendors currently supported: GE Healthcare and Hologic.
 	- Each image stored in a separate folder.
 	
 <b>USAGE:</b>

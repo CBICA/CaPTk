@@ -49,9 +49,6 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 
 int main(int argc, char **argv)
 {
-  //-i E:\SoftwareDevelopmentProjects\PCAApplicationRelatedMaterial\data -o E:\SoftwareDevelopmentProjects\PCAApplicationRelatedMaterial\output -t 0 -n 10
-  //-i E:\SoftwareDevelopmentProjects\PCAApplicationRelatedMaterial\testingdata -o E:\SoftwareDevelopmentProjects\PCAApplicationRelatedMaterial\output -t 1 -n 10 -m E : \SoftwareDevelopmentProjects\PCAApplicationRelatedMaterial\model
-
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionPCA");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory.");
   parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
@@ -124,8 +121,6 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputFileName);
-  //ImageTypeFloat4D::Pointer perfusionImage = cbica::ReadImage<ImageTypeFloat4D>(inputFileName);
-  //ImageTypeFloat3D::Pointer maskImage = cbica::ReadImage<ImageTypeFloat3D>(inputMaskName);
 
   if (QualifiedSubjects.size() == 0)
   {
@@ -141,10 +136,10 @@ int main(int argc, char **argv)
       std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
       return EXIT_FAILURE;
     }
-    //object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
+    object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
   }
   else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
-    object_pca.PrepareNewPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
+    object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
   else
   {
     parser.echoVersion();
