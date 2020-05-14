@@ -408,13 +408,13 @@ namespace cbica
           auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100 / std::abs(directions_1[i][j]);
           if (percentageDifference > 5)
           {
-            std::cerr << "Direction mismatch at dimension '[" << i << "," << j << "]'\n";
+            std::cerr << "Direction mismatch at location '[" << i << "," << j << "]'\n";
             return false;
           }
           else
           {
             std::cout << "Ignoring direction difference of '" <<
-              percentageDifference << "%' in dimension '[" <<
+              percentageDifference << "%' in location '[" <<
               i << "," << j << "]'\n";
           }
         }
