@@ -327,6 +327,7 @@ int algorithmsRunner()
       }
       else
       {
+        std::cerr << "Direction tolerance: " << nifti2dicomTolerance << "%\n";
         std::cerr << "Couldn't write DICOM series.\n";
         return EXIT_FAILURE;
       }
