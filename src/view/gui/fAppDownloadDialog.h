@@ -82,6 +82,7 @@ public slots:
 
 signals:
   void doneDownload(QString fullPath, QString extractPath, QString appName);
+  void startDownload(QString appName);
   void cancelDownload(QString appName);
 };
 

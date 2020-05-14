@@ -1163,6 +1163,7 @@ void fMainWindow::appDownload(std::string appName)
   appDownloadDialog.exec();
 
   connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString, QString)), this, SLOT(unzipArchive(QString, QString, QString))); 
+  connect( &appDownloadDialog, SIGNAL(startDownload(QString)), this, SLOT(startDownload(QString)));    
   connect( &appDownloadDialog, SIGNAL(cancelDownload(QString)), this, SLOT(cancelDownload(QString)));    
 }
 
@@ -1184,17 +1185,26 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
 
     bool extracted = zr.extractAll(extractPath);
 
-    if (extracted) {
-      stlapps->StoreAppSetting("Extract", "Done", appName);
-    }
-    else {
+    if (getApplicationDownloadPath("libra").emtpy()) {
       ShowErrorMessage("Installation failed. Please re-run installtion.");
       stlapps->RetreiveAppSetting(appName);
       stlapps->Debug("Extraction failed");
 
       stlapps->StoreAppSetting("", "", appName);
     }
+    else {
+      stlapps->StoreAppSetting("Extract", "Done", appName);
+    }
   }
+}
+
+void fMainWindow::startDownload(QString appName) {
+  StandaloneApps* stlapps = StandaloneApps::GetInstance();
+
+  stlapps->RetreiveAppSetting(appName);
+  stlapps->Debug("Download Start");
+
+  stlapps->StoreAppSetting("Download", "Start", appName);
 }
 
 void fMainWindow::cancelDownload(QString appName) 
@@ -6136,10 +6146,7 @@ void fMainWindow::ApplicationLIBRASingle()
     }
     else if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Done")) { // if download is never started or not done before
       appDownload("libra");
-      stlapps->StoreAppSetting("Download", "Start", "libra");
-
-      stlapps->RetreiveAppSetting("libra");
-      stlapps->Debug("Download Start");
+      
       return;
     } 
   } 

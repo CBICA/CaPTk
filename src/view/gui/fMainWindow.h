@@ -933,6 +933,7 @@ public slots:
   */
   void appDownload(std::string currentApp);
   void unzipArchive(QString fullPath, QString extractPath, QString appName);
+  void startDownload(QString appName);
   void cancelDownload(QString appName);
 
   /**
