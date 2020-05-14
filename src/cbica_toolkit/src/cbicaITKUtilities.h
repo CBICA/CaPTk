@@ -409,10 +409,13 @@ namespace cbica
         if (directions_1[i][j] != directions_2[i][j])
         {
           auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100 / std::abs(directions_1[i][j]);
-          if (percentageDifference >= nifti2dicomTolerance)
+          if (percentageDifference > nifti2dicomTolerance)
           {
-            std::cerr << "Direction mismatch >= " << nifti2dicomTolerance << 
+            std::cerr << "Direction mismatch > " << nifti2dicomTolerance << 
               "% at location '[" << i << "," << j << "]' of direction matrix.\n";
+
+            std::cout << "Direction for input 1:\n" << directions_1 << "\n" <<
+              "Direction for input 2:\n" << directions_2 << "\n";
             return false;
           }
           else
