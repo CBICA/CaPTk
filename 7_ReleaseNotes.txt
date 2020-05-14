@@ -2,8 +2,24 @@
 
 \page ReleaseNotes Changelog: Release Notes
 
-- Fixes and updates in Feature Extraction, Utilities and Preprocessing 
-- Generic bug fixes and improvements 
+- Fixes to Preprocessing 
+  - NIfTI to DICOM writing improvements
+  - Registration improvements (rigid and deformable added to CLI and GUI)
+  - Bias correction improvements
+- Added functionality in Utilities
+  - Label statistics (generic and BraTS-specific)
+  - Casting fixes
+- Fixes to Feature Extraction
+- Fixes to a lot of brain-cancer applications:
+  - PCA calculation
+  - Perfusion derivatives fixes
+  - Diffusion derivatives 
+  - Survival fixes
+  - Recurrence fixes
+  - Pseudoprogression fixes
+- Generic GUI bug fixes and improvements 
+
+For a full list, please see https://github.com/CBICA/CaPTk/issues?q=is%3Aissue+is%3Aclosed
 
 ## Known Issues
 
