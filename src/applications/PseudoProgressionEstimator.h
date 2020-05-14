@@ -396,7 +396,7 @@ private:
   std::string mCurrentOutputDir;
 
   //feature header
-  std::vector<std::string> FeatureLabels = { "Names","Eccentricity","Elongation","Perimeter","Roundedness","Flatness",
+  std::vector<std::string> FeatureLabels = { "Eccentricity","Elongation","Perimeter","Roundedness","Flatness",
 "T1_Bins_1","T1_Bins_2","T1_Bins_3","T1_Bins_4","T1_Bins_5","T1_Bins_6","T1_Bins_7","T1_Bins_8","T1_Bins_9",
 "T1_Bins_10","T1_Intensity_Min","T1_Intensity_Max","T1_Intensity_Mean","T1_Intensity_Variance","T1_Intensity_Std",
 "T1_Intensity_Skew","T1_Intensity_Kurtosis","T1_GLCM_Correlation","T1_GLCM_Contrast","T1_GLCM_Entropy",
