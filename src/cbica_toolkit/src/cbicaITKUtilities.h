@@ -414,8 +414,8 @@ namespace cbica
             std::cerr << "Direction mismatch > " << nifti2dicomTolerance << 
               "% at location '[" << i << "," << j << "]' of direction matrix.\n";
 
-            std::cout << "Direction for input 1:\n" << directions_1 << "\n" <<
-              "Direction for input 2:\n" << directions_2 << "\n";
+            std::cout << "Direction matrix for input 1:\n" << directions_1 << "\n" <<
+              "Direction matrix for input 2:\n" << directions_2 << "\n";
             return false;
           }
           else
