@@ -313,10 +313,23 @@ int algorithmsRunner()
     std::cout << "!!! WARNING: " <<
       "Trying to write DICOM from NIfTI is dependent on the fact that the reference DICOM and NIfTI are in the same physical space and describe the same organ type.\n";
     auto referenceDicom = targetImageFile;
-    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance);
-    if (cbica::exists(outputImageFile))
+    bool prevOutput = false;
+    if (cbica::isDir(outputImageFile))
     {
-      std::cout << "Finished writing the DICOM file.\n";
+      prevOutput = true;
+    }
+    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance);
+    if (!prevOutput)
+    {
+      if (cbica::exists(outputImageFile))
+      {
+        std::cout << "Finished writing the DICOM series.\n";
+      }
+      else
+      {
+        std::cerr << "Couldn't write DICOM series.\n";
+        return EXIT_FAILURE;
+      }
     }
   }
   else if (requestedAlgorithm == Nifti2DicomSeg)
