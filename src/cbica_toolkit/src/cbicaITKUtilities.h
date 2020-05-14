@@ -405,8 +405,8 @@ namespace cbica
       {
         if (directions_1[i][j] != directions_2[i][j])
         {
-          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100 / directions_1[i][j];
-          if (percentageDifference > 0.0001)
+          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100 / std::abs(directions_1[i][j]);
+          if (percentageDifference > 5)
           {
             std::cerr << "Direction mismatch at dimension '[" << i << "," << j << "]'\n";
             return false;
