@@ -124,11 +124,24 @@ install_captk () {
 # Print license with a reader
 cat ./LICENSE | more
 
-echo "printenv"
-printenv
+echo "$PWD"
+echo "$USER_PWD"
+# printenv 
 
+# if --target flag is provided when installer extracted
+# then PWD is not a tmp directory but is --target dir
+# then point target_dir there
+# else point target_dir to USER_PWD, which is current location of installer
 
-echo ""
+target_dir = ""
+if [[ $PWD == *"tmp"* ]]; then
+  $target_dir = $USER_PWD
+else
+  $target_dir = $PWD
+fi
+
+echo "TARGET DIR ${target_dir}"
+
 for i in {1..3}
 do
   read -p "I accept the terms of the licenses above [Y/N] " choice

@@ -1168,19 +1168,19 @@ void fMainWindow::appDownload(std::string appName)
 
 void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString appName) 
 {
-  StandaloneApps* stlapps = StandaloneApps::GetInstance();
-
-  stlapps->RetreiveAppSetting(appName);
-  stlapps->Debug("done download");
-
-  stlapps->StoreAppSetting("Download", "Done", appName);
-  
   if (cbica::isFile(fullPath.toStdString())) {
+    StandaloneApps* stlapps = StandaloneApps::GetInstance();
+
+    stlapps->RetreiveAppSetting(appName);
+    stlapps->Debug("Done download");
+
+    stlapps->StoreAppSetting("Download", "Done", appName);
+    
     QZipReader zr(fullPath);
     stlapps->StoreAppSetting("Extract", "Start", appName);
     
     stlapps->RetreiveAppSetting(appName);
-    stlapps->Debug("start unzip");
+    stlapps->Debug("Extraction start");
 
     bool extracted = zr.extractAll(extractPath);
 
@@ -1188,8 +1188,9 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
       stlapps->StoreAppSetting("Extract", "Done", appName);
     }
     else {
+      ShowErrorMessage("Installation failed. Please re-run installtion.")
       stlapps->RetreiveAppSetting(appName);
-      stlapps->Debug("extraction failed");
+      stlapps->Debug("Extraction failed");
 
       stlapps->StoreAppSetting("", "", appName);
     }
@@ -6129,17 +6130,18 @@ void fMainWindow::ApplicationLIBRASingle()
       stlapps->RetreiveAppSetting("libra");
       stlapps->Debug("Path Set");
     }
-    else {
-      
-      if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Done")) { // if download is never started or not done before
-        appDownload("libra");
-        stlapps->StoreAppSetting("Download", "Start", "libra");
-
-        stlapps->RetreiveAppSetting("libra");
-        stlapps->Debug("Download Start");
-        return;
-      } 
+    else if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Start") { // if extraction finished
+      ShowErrorMessage("The application is being installed");
+      return;
     }
+    else if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Done")) { // if download is never started or not done before
+      appDownload("libra");
+      stlapps->StoreAppSetting("Download", "Start", "libra");
+
+      stlapps->RetreiveAppSetting("libra");
+      stlapps->Debug("Download Start");
+      return;
+    } 
   } 
   else { // download already started
     ShowErrorMessage("The application is being downloaded");
