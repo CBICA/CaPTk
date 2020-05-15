@@ -428,11 +428,10 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "", "The Optional input mask file.", "This is needed for normalization only");
   parser.addRequiredParameter("md", "modelDir", cbica::Parameter::DIRECTORY, "", "The trained model to use", "See examples in '${CaPTk_installDir}/data/deepMedic/saved_models'");
   parser.addRequiredParameter("o", "output", cbica::Parameter::DIRECTORY, "", "The output directory");
+  parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization", "Set to '0' if you are passing normalized images");
+  parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: " + std::to_string(quantLower) + "," + std::to_string(quantUpper));
+  parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: " + std::to_string(cutOffLower) + "," + std::to_string(cutOffUpper));
 
-  parser.addOptionalParameter("ql", "quantLower", cbica::Parameter::FLOAT, "0-100", "The Lower Quantile range to remove", "This is needed for normalization only", "Default: 5");
-  parser.addOptionalParameter("qu", "quantUpper", cbica::Parameter::FLOAT, "0-100", "The Upper Quantile range to remove", "This is needed for normalization only", "Default: 95");
-  parser.addOptionalParameter("cl", "cutOffLower", cbica::Parameter::FLOAT, "0-10", "The Lower Cut-off (multiple of stdDev) to remove", "This is needed for normalization only", "Default: 3");
-  parser.addOptionalParameter("cu", "cutOffUpper", cbica::Parameter::FLOAT, "0-10", "The Upper Cut-off (multiple of stdDev) to remove", "This is needed for normalization only", "Default: 3");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   parser.addApplicationDescription("This is a Deep Learning based inference engine based on DeepMedic (see documentation for details)");
   parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping", "This does a skull stripping of the input structural data");
@@ -475,24 +474,39 @@ int main(int argc, char **argv)
     parser.getParameterValue("md", modelDirName);
   }
 
-  if (parser.isPresent("ql"))
+  if (parser.isPresent("zc"))
   {
-    parser.getParameterValue("ql", quantLower);
-  }
-  if (parser.isPresent("qu"))
-  {
-    parser.getParameterValue("qu", quantUpper);
-  }
+    std::string tempCutOff;
+    parser.getParameterValue("zc", tempCutOff);
+    auto temp = cbica::stringSplit(tempCutOff, ",");
+    if (temp.size() == 2)
+    {
+      cutOffLower = std::atof(temp[0].c_str());
+      cutOffUpper = std::atof(temp[1].c_str());
 
-  if (parser.isPresent("cl"))
-  {
-    parser.getParameterValue("cl", cutOffLower);
+      if (cutOffUpper < cutOffLower)
+      {
+        std::swap(cutOffUpper, cutOffLower);
+      }
+    }
   }
-  if (parser.isPresent("cu"))
+  if (parser.isPresent("zq"))
   {
-    parser.getParameterValue("cu", cutOffUpper);
-  }
+    std::string tempCutOff;
+    parser.getParameterValue("zq", tempCutOff);
+    auto temp = cbica::stringSplit(tempCutOff, ",");
+    if (temp.size() == 2)
+    {
+      quantLower = std::atof(temp[0].c_str());
+      quantUpper = std::atof(temp[1].c_str());
 
+      if (quantUpper < quantLower)
+      {
+        std::swap(quantUpper, quantLower);
+      }
+    }
+  }
+  
   if (parser.isPresent("t"))
   {
     parser.getParameterValue("t", inferenceType);
