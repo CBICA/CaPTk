@@ -110,7 +110,7 @@ install_captk () {
   # Creating a symbolic link
   echo "Creating symbolic link 'captk'"
   cd ${target_dir}/CaPTk/${ver}/
-  ln -s ${target_dir}/CaPTk-${ver}.bin captk
+  ln -s ./CaPTk-${ver}.bin captk
 
   # Display any warnings at the end
   if [ ${fusefail} -eq 1 ]
