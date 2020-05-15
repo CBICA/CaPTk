@@ -22,7 +22,7 @@
 
 std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, modelDirName, inputBVecName, outputDirectory, outputFile, loggerFileIn;
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;
-bool maskProvided = false, debugMode = false;
+bool maskProvided = false, debugMode = false, enableNormalization = true;
 int inferenceType = 0;
 
 enum InferenceTypes
@@ -234,86 +234,89 @@ void algorithmRunner()
     std::cout << "== Done.\n";
   }
 
-  if (inferenceType == TumorSegmentation)
+  if (enableNormalization)
   {
-    std::cout << "=== Checking and rectifying (z-score) normalization status.\n";
-    auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
-    statsCalculator->SetInput(t1cImg);
-    statsCalculator->Update();
-    if (statsCalculator->GetMean() != 0)
+    if (inferenceType == TumorSegmentation)
     {
-      std::cout << "== Starting Normalization of T1CE image.\n";
-      ZScoreNormalizer< TImageType > normalizer;
+      std::cout << "=== Checking and rectifying (z-score) normalization status.\n";
+      auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+      statsCalculator->SetInput(t1cImg);
+      statsCalculator->Update();
+      if (statsCalculator->GetMean() != 0)
+      {
+        std::cout << "== Starting Normalization of T1CE image.\n";
+        ZScoreNormalizer< TImageType > normalizer;
+        normalizer.SetInputImage(t1cImg);
+        normalizer.SetInputMask(maskImage);
+        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
+        normalizer.SetQuantiles(quantLower, quantUpper);
+        normalizer.Update();
+        t1cImg = normalizer.GetOutput();
+        std::cout << "== Done.\n";
+      }
+
+      statsCalculator->SetInput(t1Img);
+      statsCalculator->Update();
+      if (statsCalculator->GetMean() != 0)
+      {
+        std::cout << "== Starting Normalization of T1 image.\n";
+        ZScoreNormalizer< TImageType > normalizer;
+        normalizer.SetInputImage(t1Img);
+        normalizer.SetInputMask(maskImage);
+        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
+        normalizer.SetQuantiles(quantLower, quantUpper);
+        normalizer.Update();
+        t1Img = normalizer.GetOutput();
+        std::cout << "== Done.\n";
+      }
+
+      statsCalculator->SetInput(t2Img);
+      statsCalculator->Update();
+      if (statsCalculator->GetMean() != 0)
+      {
+        std::cout << "== Starting Normalization of T2 image.\n";
+        ZScoreNormalizer< TImageType > normalizer;
+        normalizer.SetInputImage(t2Img);
+        normalizer.SetInputMask(maskImage);
+        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
+        normalizer.SetQuantiles(quantLower, quantUpper);
+        normalizer.Update();
+        t2Img = normalizer.GetOutput();
+        std::cout << "== Done.\n";
+      }
+
+      statsCalculator->SetInput(flImg);
+      statsCalculator->Update();
+      if (statsCalculator->GetMean() != 0)
+      {
+        std::cout << "== Starting Normalization of T2-Flair image.\n";
+        ZScoreNormalizer< TImageType > normalizer;
+        normalizer.SetInputImage(flImg);
+        normalizer.SetInputMask(maskImage);
+        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
+        normalizer.SetQuantiles(quantLower, quantUpper);
+        normalizer.Update();
+        flImg = normalizer.GetOutput();
+        std::cout << "== Done.\n";
+      }
+      std::cout << "=== Done.\n";
+    }
+
+    if (inferenceType == SkullStripping)
+    {
+      std::cout << "=== Starting P1P2Normalize.\n";
+
+      P1P2Normalizer< TImageType > normalizer;
       normalizer.SetInputImage(t1cImg);
-      normalizer.SetInputMask(maskImage);
-      normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-      normalizer.SetQuantiles(quantLower, quantUpper);
-      normalizer.Update();
       t1cImg = normalizer.GetOutput();
-      std::cout << "== Done.\n";
-    }
-
-    statsCalculator->SetInput(t1Img);
-    statsCalculator->Update();
-    if (statsCalculator->GetMean() != 0)
-    {
-      std::cout << "== Starting Normalization of T1 image.\n";
-      ZScoreNormalizer< TImageType > normalizer;
       normalizer.SetInputImage(t1Img);
-      normalizer.SetInputMask(maskImage);
-      normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-      normalizer.SetQuantiles(quantLower, quantUpper);
-      normalizer.Update();
       t1Img = normalizer.GetOutput();
-      std::cout << "== Done.\n";
-    }
-
-    statsCalculator->SetInput(t2Img);
-    statsCalculator->Update();
-    if (statsCalculator->GetMean() != 0)
-    {
-      std::cout << "== Starting Normalization of T2 image.\n";
-      ZScoreNormalizer< TImageType > normalizer;
       normalizer.SetInputImage(t2Img);
-      normalizer.SetInputMask(maskImage);
-      normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-      normalizer.SetQuantiles(quantLower, quantUpper);
-      normalizer.Update();
       t2Img = normalizer.GetOutput();
-      std::cout << "== Done.\n";
-    }
-
-    statsCalculator->SetInput(flImg);
-    statsCalculator->Update();
-    if (statsCalculator->GetMean() != 0)
-    {
-      std::cout << "== Starting Normalization of T2-Flair image.\n";
-      ZScoreNormalizer< TImageType > normalizer;
       normalizer.SetInputImage(flImg);
-      normalizer.SetInputMask(maskImage);
-      normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-      normalizer.SetQuantiles(quantLower, quantUpper);
-      normalizer.Update();
       flImg = normalizer.GetOutput();
-      std::cout << "== Done.\n";
+      std::cout << "=== Done.\n";
     }
-    std::cout << "=== Done.\n";
-  }
-
-  if (inferenceType == SkullStripping)
-  {
-    std::cout << "=== Starting P1P2Normalize.\n";
-
-    P1P2Normalizer< TImageType > normalizer;
-    normalizer.SetInputImage(t1cImg);
-    t1cImg = normalizer.GetOutput();
-    normalizer.SetInputImage(t1Img);
-    t1Img = normalizer.GetOutput();
-    normalizer.SetInputImage(t2Img);
-    t2Img = normalizer.GetOutput();
-    normalizer.SetInputImage(flImg);
-    flImg = normalizer.GetOutput();
-    std::cout << "=== Done.\n";
   }
 
   if (inferenceType <= SkullStripping)
@@ -474,6 +477,10 @@ int main(int argc, char **argv)
     parser.getParameterValue("md", modelDirName);
   }
 
+  if (parser.isPresent("zn"))
+  {
+    parser.getParameterValue("zn", enableNormalization);
+  }
   if (parser.isPresent("zc"))
   {
     std::string tempCutOff;
