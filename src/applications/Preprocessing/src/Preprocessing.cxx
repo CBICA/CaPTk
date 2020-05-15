@@ -95,7 +95,7 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == ZScoreNormalize)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
+    if (inputImageFiles.size() > 1) // multiple images passed
     {
       std::vector< typename TImageType::Pointer > inputImages, inputMask;
       for (size_t i = 0; i < inputImageFiles.size(); i++)
@@ -128,19 +128,11 @@ int algorithmsRunner()
 
       auto combinedOutput = normalizer.GetOutput();
       auto extractedOutputs = cbica::GetExtractedImages< NewImageType, TImageType >(combinedOutput);
-      
-      if (extractedOutputs.size() > 1)
-      {
-        for (size_t i = 0; i < extractedOutputs.size(); i++)
-        {
-          cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + "_zscored.nii.gz");
-        }
-      }
-      else
-      {
-        cbica::WriteImage< TImageType >(extractedOutputs[0], outputImageFile);
-      }
 
+      for (size_t i = 0; i < extractedOutputs.size(); i++)
+      {
+        cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + "_zscored.nii.gz");
+      }
     }
     else
     {
