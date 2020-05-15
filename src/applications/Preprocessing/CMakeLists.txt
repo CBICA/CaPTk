@@ -22,6 +22,13 @@ ENDIF()
 # ADD_SUBDIRECTORY(greedy)
 
 ### greedy is not picked up by macOS
+SET(GREEDY_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/greedy )
+INCLUDE_DIRECTORIES(
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${GREEDY_SOURCE_DIR}
+  ${GREEDY_SOURCE_DIR}/src
+  ${GREEDY_SOURCE_DIR}/src/ITKFilters/include
+)
 
 CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/greedy/src/GreedyVersion.cxx.in
