@@ -126,8 +126,8 @@ install_captk () {
 # Print license with a reader
 cat ./LICENSE | more
 
-echo "${PWD}"
-echo "${USER_PWD}"
+# echo "${PWD}"
+# echo "${USER_PWD}"
 # printenv 
 
 # if --target flag is provided when installer extracted

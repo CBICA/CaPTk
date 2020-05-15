@@ -1186,7 +1186,7 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
     bool extracted = zr.extractAll(extractPath);
 
     if (getApplicationDownloadPath("libra").empty()) {
-      ShowErrorMessage("Installation failed. Please re-run installtion.");
+      // ShowErrorMessage("Installation failed. Please re-run installtion.");
       stlapps->RetreiveAppSetting(appName);
       stlapps->Debug("Extraction failed");
 
