@@ -891,16 +891,35 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
+        # mkdir $(Build.SourcesDirectory)/../superbuild
+        # cd bin
+        # mv ./* $(Build.SourcesDirectory)/../superbuild
+        # cd $(Build.SourcesDirectory)/..
+        # ls
+        # echo "Done cd"
+        # tar cvfz superbuild.tar.gz superbuild
+        # ls
+        # echo "done tar"
+        # rm -rf superbuild
+        # ls
+        # cd $(Build.SourcesDirectory)
+
         rm -rf bin
 
         mkdir bin
         cd bin
-        cp -r ../../../../superbuild/ ./
+        
+        cp -r $(Build.SourcesDirectory)/../superbuild.tar.gz ./
         ls
-        
-        # cd bin
-        # cp -r ./ ../../../../superbuild
-        
+        echo "Done cp"
+        tar xvfz superbuild.tar.gz
+        rm -rf superbuild.tar.gz
+
+        ls
+        echo "Done tar"
+
+        mv superbuild/* ./
+        ls
       displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
