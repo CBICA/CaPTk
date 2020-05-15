@@ -5,7 +5,7 @@
 # It is meant to be bundled within makeself to install the binaries to the correct directories.
 
 install_captk () {
-  target_dir = $1
+  target_dir=$1
   echo "TARGET DIR ${target_dir}"
   # Prep stage
 
@@ -135,12 +135,13 @@ echo "${USER_PWD}"
 # then point target_dir there
 # else point target_dir to USER_PWD, which is current location of installer
 
-target_dir = ""
+target_dir=""
+
 if [[ ${PWD} == *"tmp"* ]]; then
-  target_dir = ${USER_PWD}
+  target_dir=${USER_PWD}
   echo "Userpwd"
 else
-  target_dir = ${PWD}
+  target_dir=${PWD}
   echo "pwd"
 fi
 
