@@ -24,6 +24,7 @@ std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, modelDirName
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;
 bool maskProvided = false, debugMode = false, enableNormalization = true;
 int inferenceType = 0;
+float resamplingRes = 1;
 
 enum InferenceTypes
 {
@@ -247,7 +248,10 @@ void algorithmRunner()
         std::cout << "== Starting Normalization of T1CE image.\n";
         ZScoreNormalizer< TImageType > normalizer;
         normalizer.SetInputImage(t1cImg);
-        normalizer.SetInputMask(maskImage);
+        if (maskProvided)
+        {
+          normalizer.SetInputMask(maskImage);
+        }
         normalizer.SetCutoffs(cutOffLower, cutOffUpper);
         normalizer.SetQuantiles(quantLower, quantUpper);
         normalizer.Update();
@@ -262,7 +266,10 @@ void algorithmRunner()
         std::cout << "== Starting Normalization of T1 image.\n";
         ZScoreNormalizer< TImageType > normalizer;
         normalizer.SetInputImage(t1Img);
-        normalizer.SetInputMask(maskImage);
+        if (maskProvided)
+        {
+          normalizer.SetInputMask(maskImage);
+        }
         normalizer.SetCutoffs(cutOffLower, cutOffUpper);
         normalizer.SetQuantiles(quantLower, quantUpper);
         normalizer.Update();
@@ -277,7 +284,10 @@ void algorithmRunner()
         std::cout << "== Starting Normalization of T2 image.\n";
         ZScoreNormalizer< TImageType > normalizer;
         normalizer.SetInputImage(t2Img);
-        normalizer.SetInputMask(maskImage);
+        if (maskProvided)
+        {
+          normalizer.SetInputMask(maskImage);
+        }
         normalizer.SetCutoffs(cutOffLower, cutOffUpper);
         normalizer.SetQuantiles(quantLower, quantUpper);
         normalizer.Update();
@@ -292,7 +302,10 @@ void algorithmRunner()
         std::cout << "== Starting Normalization of T2-Flair image.\n";
         ZScoreNormalizer< TImageType > normalizer;
         normalizer.SetInputImage(flImg);
-        normalizer.SetInputMask(maskImage);
+        if (maskProvided)
+        {
+          normalizer.SetInputMask(maskImage);
+        }
         normalizer.SetCutoffs(cutOffLower, cutOffUpper);
         normalizer.SetQuantiles(quantLower, quantUpper);
         normalizer.Update();
@@ -321,13 +334,16 @@ void algorithmRunner()
 
   if (inferenceType <= SkullStripping)
   {
-    std::cout << "=== Starting resampling of images to isotropic resolution.\n";
-    t1cImg = cbica::ResampleImage< TImageType >(t1cImg); // default is linear resampling to isotropic resolution of 1.0
-    t1Img = cbica::ResampleImage< TImageType >(t1Img); // default is linear resampling to isotropic resolution of 1.0
-    flImg = cbica::ResampleImage< TImageType >(flImg); // default is linear resampling to isotropic resolution of 1.0
-    t2Img = cbica::ResampleImage< TImageType >(t2Img); // default is linear resampling to isotropic resolution of 1.0
-    maskImage = cbica::ResampleImage< TImageType >(maskImage, 1.0, "Nearest"); // default is linear resampling to isotropic resolution of 1.0
-    std::cout << "=== Done.\n";
+    if (resamplingRes > 0)
+    {
+      std::cout << "=== Starting resampling of images to isotropic resolution.\n";
+      t1cImg = cbica::ResampleImage< TImageType >(t1cImg, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
+      t1Img = cbica::ResampleImage< TImageType >(t1Img, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
+      flImg = cbica::ResampleImage< TImageType >(flImg, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
+      t2Img = cbica::ResampleImage< TImageType >(t2Img, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
+      maskImage = cbica::ResampleImage< TImageType >(maskImage, resamplingRes, "Nearest"); // default is linear resampling to isotropic resolution of 1.0
+      std::cout << "=== Done.\n";
+    }
   }
 
   cbica::createDir(outputDirectory);
@@ -434,6 +450,7 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization", "Set to '0' if you are passing normalized images");
   parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: " + std::to_string(quantLower) + "," + std::to_string(quantUpper));
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: " + std::to_string(cutOffLower) + "," + std::to_string(cutOffUpper));
+  parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::FLOAT, "0-10", "[Resample] Isotropic resampling resolution to change to", "Defaults to " + std::to_string(resamplingRes), "If '0' is passed, no resampling is done.");
 
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   parser.addApplicationDescription("This is a Deep Learning based inference engine based on DeepMedic (see documentation for details)");
@@ -512,6 +529,11 @@ int main(int argc, char **argv)
         std::swap(quantUpper, quantLower);
       }
     }
+  }
+
+  if (parser.isPresent("rr"))
+  {
+    parser.getParameterValue("rr", resamplingRes);
   }
   
   if (parser.isPresent("t"))
