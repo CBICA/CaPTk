@@ -41,6 +41,9 @@ AppearancePage::AppearancePage(QWidget *parent) :
 	{
 		ui->themeComboBox->setCurrentIndex(ThemeType::Dark);
         this->ApplySelectedAppearance();
+
+		//update appearance preferences in application preferences
+		this->UpdateAppearancePreferences();
 	}
 
 }
