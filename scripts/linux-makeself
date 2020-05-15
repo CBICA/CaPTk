@@ -6,7 +6,7 @@
 
 install_captk () {
   target_dir=$1
-  echo "TARGET DIR ${target_dir}"
+  echo "Installing to: ${target_dir}"
   # Prep stage
 
   # Check for file
@@ -139,13 +139,11 @@ target_dir=""
 
 if [[ ${PWD} == *"tmp"* ]]; then
   target_dir=${USER_PWD}
-  echo "Userpwd"
+  # echo "Userpwd"
 else
   target_dir=${PWD}
-  echo "pwd"
+  # echo "pwd"
 fi
-
-echo "TARGET DIR ${target_dir}"
 
 for i in {1..3}
 do
