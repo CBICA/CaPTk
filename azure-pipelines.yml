@@ -904,6 +904,8 @@ jobs:
         # ls
         # cd $(Build.SourcesDirectory)
 
+        pwd
+
         rm -rf bin
 
         mkdir bin
