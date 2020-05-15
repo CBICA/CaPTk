@@ -37,7 +37,7 @@ AppearancePage::AppearancePage(QWidget *parent) :
 	connect(ui->themeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnChangeTheme(int)));
 
     // initialize with DARK theme
-	if (!QVariant(ApplicationPreferences::GetInstance()->GetFileAvailability()).toBool())
+	if (!QVariant(ApplicationPreferences::GetInstance()->GetUserPreferencesAvailability()).toBool())
 	{
 		ui->themeComboBox->setCurrentIndex(ThemeType::Dark);
         this->ApplySelectedAppearance();
@@ -141,7 +141,7 @@ void AppearancePage::OnCancel()
 void AppearancePage::Restore()
 {
     // we restore only if user preferences are available
-    if (QVariant(ApplicationPreferences::GetInstance()->GetFileAvailability()).toBool())
+    if (QVariant(ApplicationPreferences::GetInstance()->GetUserPreferencesAvailability()).toBool())
     {
         // get font/theme from preferences, update the appearance-page selections to reflect this
         this->m_SelectedFont.fromString(ApplicationPreferences::GetInstance()->GetFont());
