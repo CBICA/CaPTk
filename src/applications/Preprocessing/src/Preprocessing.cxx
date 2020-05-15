@@ -128,11 +128,19 @@ int algorithmsRunner()
 
       auto combinedOutput = normalizer.GetOutput();
       auto extractedOutputs = cbica::GetExtractedImages< NewImageType, TImageType >(combinedOutput);
-
-      for (size_t i = 0; i < extractedOutputs.size(); i++)
+      
+      if (extractedOutputs.size() > 1)
       {
-        cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + "_zscored.nii.gz");
+        for (size_t i = 0; i < extractedOutputs.size(); i++)
+        {
+          cbica::WriteImage< TImageType >(extractedOutputs[i], outputDir + "/" + cbica::getFilenameBase(inputImageFiles[i]) + "_zscored.nii.gz");
+        }
       }
+      else
+      {
+        cbica::WriteImage< TImageType >(extractedOutputs[0], outputImageFile);
+      }
+
     }
     else
     {
