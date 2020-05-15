@@ -1172,6 +1172,8 @@ jobs:
         # rm -rf superbuild
         # ls
         # cd $(Build.SourcesDirectory)
+        
+        pwd
 
         rm -rf bin
 
@@ -1199,6 +1201,7 @@ jobs:
 
     - bash: |
         cd bin
+        pwd
 
         rm -rf CaPTk_*
 
