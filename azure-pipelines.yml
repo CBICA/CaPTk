@@ -1190,7 +1190,6 @@ jobs:
         echo "Done tar"
 
         mv superbuild/* ./
-        ls
 
         cat ITK-build/ITKTargets.cmake
       displayName: 'Move superbuild and qt and compiled apps'
