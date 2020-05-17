@@ -1,8 +1,8 @@
 var NAVTREEINDEX0 =
 {
-"BreastCancer_LIBRA.html":[3,3,9],
-"BreastCancer_breastSegmentation.html":[3,3,11],
-"BreastCancer_texture.html":[3,3,10],
+"BreastCancer_LIBRA.html":[3,3,10],
+"BreastCancer_breastSegmentation.html":[3,3,9],
+"BreastCancer_texture.html":[3,3,11],
 "Diffusion_Derivatives.html":[3,3,14],
 "Download.html":[6],
 "FAQ.html":[2],
