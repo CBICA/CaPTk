@@ -156,14 +156,16 @@ int SurvivalPredictionOnExistingModel(const std::string modeldirectory,
   std::cout << "Module loaded: Pseudoprogression Estimation on Existing Model:" << std::endl;
   std::vector<double> finalresult;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(CAPTK::MachineLearningApplicationSubtype::TESTING, inputdirectory, true, true, true, true);
-  std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
-  PseudoProgressionEstimator objPseudoProgressionEstimator;
-  bool data = objPseudoProgressionEstimator.PseudoProgressionEstimateOnExistingModel(QualifiedSubjects, modeldirectory, inputdirectory, outputdirectory, true, true, true, true);
-  //for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
-  //{
-  //	std::map<ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
-  //	//std::cout << static_cast<std::string>(onesubject[IMAGE_TYPE_SUDOID]) << ": " << result[subjectID] << std::endl;
-  //}
+  if (QualifiedSubjects.size() == 0)
+    std::cout << "No subject found with required input. Exiting...." << std::endl;
+  else
+  {
+    std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
+    PseudoProgressionEstimator objPseudoProgressionEstimator;
+    bool result = objPseudoProgressionEstimator.PseudoProgressionEstimateOnExistingModel(QualifiedSubjects, modeldirectory, inputdirectory, outputdirectory, true, true, true, true);
+    if(result==true)
+      std::cout<<"Results saved in the output folder."<<std::endl;
+  }
 
   return EXIT_SUCCESS;
 }

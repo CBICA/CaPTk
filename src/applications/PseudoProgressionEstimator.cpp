@@ -350,14 +350,14 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     myfile << "SubjectName,Score (Pseudo), Score (Recurrence)\n";
     if (cbica::fileExists(modeldirectory + "/PSU_SVM_Model.xml") == true && cbica::fileExists(modeldirectory + "/REC_SVM_Model.xml") == true)
     {
-      VectorDouble result_6;
-      VectorDouble result_18;
-      result_6 = testOpenCVSVM(PseudoModelSelectedFeatures, modeldirectory + "/PSU_SVM_Model.xml");
-      result_18 = testOpenCVSVM(RecurrenceModelSelectedFeatures, modeldirectory + "/REC_SVM_Model.xml");
-      for (size_t i = 0; i < result_6.size(); i++)
+      VectorDouble result_psu;
+      VectorDouble result_rec;
+      result_psu = testOpenCVSVM(PseudoModelSelectedFeatures, modeldirectory + "/PSU_SVM_Model.xml");
+      result_rec = testOpenCVSVM(RecurrenceModelSelectedFeatures, modeldirectory + "/REC_SVM_Model.xml");
+      for (size_t i = 0; i < result_psu.size(); i++)
       {
         std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[i];
-        myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(result_6[i]) + "," + std::to_string(result_18[i]) + "\n";
+        myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(result_psu[i]) + "," + std::to_string(result_rec[i]) + "\n";
       }
     }
     myfile.close();
@@ -368,7 +368,6 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     //return results;
   }
   //  return results;
-
 
   //check for the presence of model file
   //if (!cbica::fileExists(modeldirectory + "/" + mTrainedModelNameXML))
@@ -1582,6 +1581,7 @@ PerfusionMapType PseudoProgressionEstimator::CombineAndCalculatePerfusionPCAForT
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
   }
+
   FeatureReductionClass m_featureReduction;
   VectorVectorDouble ReducedPCAs = m_featureReduction.ApplyPCAOnTestDataWithGivenTransformations(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
 

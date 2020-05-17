@@ -1792,7 +1792,7 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
   {
     msg = ex.what();
   }
-  //apply SVM model on test data
+  //apply SVM model on training data
   cv::Mat predicted(1, 1, CV_32F);
   for (int i = 0; i < trainingData.rows; i++)
   {
@@ -1802,6 +1802,8 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
     svm->predict(sample, predicted, true);
     predictedDistances.push_back(predicted.ptr< float >(0)[0]);
   }
+  for (int i = 0; i < predictedLabels.size(); i++)
+    predictedDistances[i] = std::abs(predictedDistances[i])*predictedLabels[i];
   //Write the selected features and crossvalidated accuracies
   WriteCSVFiles(predictedLabels, outputdirectory + "/predicted_labels_training.csv");
   WriteCSVFiles(predictedDistances, outputdirectory + "/predicted_distances_training.csv");
