@@ -8815,8 +8815,9 @@ void fMainWindow::CallTrainingSimulation(const std::string featurefilename, cons
   int defaultfeatureselectiontype = 3;
   int defaultoptimizationtype = 0;
   int defaultcvtype = 1;
+
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype, modeldirectory))
+  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, conf,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
