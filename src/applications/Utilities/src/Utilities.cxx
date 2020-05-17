@@ -17,6 +17,7 @@
 #include "itkHausdorffDistanceImageFilter.h"
 #include "itkCSVArray2DFileReader.h"
 #include "itkCSVNumericObjectFileWriter.h"
+#include "itkInvertIntensityImageFilter.h"
 
 #include "vtkAnatomicalOrientation.h"
 
@@ -665,7 +666,10 @@ int algorithmsRunner()
     thresholder->SetInsideValue(thresholdInsideValue);
     thresholder->Update();
     std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
-    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+
+    auto invertIntensityFilter = itk::InvertIntensityImageFilter< TImageType >::New();
+    invertIntensityFilter->SetInput(thresholder->GetOutput());
+    cbica::WriteImage< TImageType >(invertIntensityFilter->GetOutput(), outputImageFile);
   }
   else if (requestedAlgorithm == ConvertFormat)
   {
