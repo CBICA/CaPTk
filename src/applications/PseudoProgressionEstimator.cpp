@@ -909,7 +909,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 
   for (unsigned int sid = 0; sid < testingsubjects.size(); sid++)
   {
-    std::cout << "Loading Remianing Features: " << sid << std::endl;
+    std::cout << "Loading Remaining Features: " << sid << std::endl;
     VectorDouble neuroScores;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = testingsubjects[sid];
 
