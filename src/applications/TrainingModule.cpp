@@ -2208,7 +2208,7 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
   
   
   crossvalidatedaccuracies = CrossValidatedBalancedAccuracies;
-  std::cout << "Feature Selection Done!!!" << std::endl;
+  std::cout << "Feature Selection Done!" << std::endl;
   //we are doing moving average to avoid local maxima. in pairs of 3, we average them and pick the middle one. 
   //TODO: consider selecting the first feature out of the three features involved in moving average
 
@@ -2222,7 +2222,7 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
   std::vector<int> FinalSelectedFeatures;
   for (int index = 0; index <= max_performance_counter; index++)
     FinalSelectedFeatures.push_back(indices[index]);
-  std::cout << "No. of selected features!!!" << FinalSelectedFeatures.size() << std::endl;
+  std::cout << "No. of selected features!" << FinalSelectedFeatures.size() << std::endl;
 
   return FinalSelectedFeatures;
 }
