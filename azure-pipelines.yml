@@ -818,8 +818,8 @@ jobs:
     #   displayName: Uploading to NITRC
     #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
-- job: 'WINDOWS_SelfHost'
-  displayName: "Self-hosted agent on Windows"
+- job: 'Windows_SelfHost'
+  displayName: "Self-hosted agent on Windows 7"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
@@ -946,11 +946,11 @@ jobs:
       condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
 - job: 'Linux_SelfHost'
-  displayName: "Self-hosted agent on Linux"
+  displayName: "Self-hosted agent on Ubuntu 16.04"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool: 'Linux'
+  pool: 'Ubuntu_16.04'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
@@ -1097,14 +1097,14 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_ubuntu1604'
         continueOnError: true
 
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_ubuntu1604'
         downloadPath: '$(System.ArtifactsDirectory)'
         continueOnError: true
 
@@ -1120,12 +1120,12 @@ jobs:
       displayName: Uploading to NITRC 
       condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
-- job: 'CBICA_OSX_SelfHost'
-  displayName: "Self-hosted agent on cbica-osx"
+- job: 'macOS_SelfHost'
+  displayName: "Self-hosted agent on macOS 10.14"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool: 'macOS'
+  pool: 'macOS_10.14'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
