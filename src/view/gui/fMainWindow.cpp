@@ -948,9 +948,6 @@ fMainWindow::fMainWindow()
 
   mHelpDlg = new fHelpDialog();
 
-  //connect
-  connect(m_toolTabdock, SIGNAL(topLevelChanged(bool)), this, SLOT(toolTabDockChanged(bool)));
-
   recurrencePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   msubtypePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   survivalPanel.SetCurrentLoggerPath(m_tempFolderLocation);
