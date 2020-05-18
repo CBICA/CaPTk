@@ -12,8 +12,8 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # STRING(TIMESTAMP TODAY "%Y%m%d")
 
 SET( PROJECT_VERSION_MAJOR 1 )
-SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 7.nonRelease )
+SET( PROJECT_VERSION_MINOR 8 )
+SET( PROJECT_VERSION_PATCH 0.nonRelease )
 SET( PROJECT_VERSION_TWEAK ) 
 
 # check for the string "nonRelease" in the PROJECT_VERSION_PATCH variable
@@ -240,8 +240,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
   MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
 
-  MESSAGE( AUTHOR_WARNING "=== [DEBUG] Building CaPTk version=${PROJECT_VERSION}" )
-  
   SET( CMAKE_COLOR_MAKEFILE ON )
   # option to compile only the viewer
   SET( CAPTK_BUILD_CONSOLE_ONLY OFF CACHE BOOL "Do you want only the interactive capabilities of ${PROJECT_NAME}? Enabling this will remove all algorithms from compilation." )

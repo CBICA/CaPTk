@@ -9098,8 +9098,9 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     return;
   }
 
-  configPathName = itksys::SystemTools::GetFilenamePath(matrixFileNames[0]).c_str();
-  configFileName = configPathName + "/" + itksys::SystemTools::GetFilenameWithoutExtension(matrixFileNames[0]).c_str() + extn;
+  std::string path, base, ext;
+  cbica::splitFileName(matrixFileNames[0], path, base, ext);
+  configFileName = path + "/" + base + extn;
 
   for (unsigned int i = 0; i < inputFileNames.size(); i++)
   {

@@ -17,6 +17,7 @@
 #include "itkHausdorffDistanceImageFilter.h"
 #include "itkCSVArray2DFileReader.h"
 #include "itkCSVNumericObjectFileWriter.h"
+#include "itkInvertIntensityImageFilter.h"
 
 #include "vtkAnatomicalOrientation.h"
 
@@ -66,7 +67,7 @@ int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues, resamplingResolution_full = "1.0,1.0,1.0", resamplingReference;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
-float imageStack2JoinSpacing = 1.0;
+float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0;
 int joinedImage2stackedAxis;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true;
@@ -313,10 +314,24 @@ int algorithmsRunner()
     std::cout << "!!! WARNING: " <<
       "Trying to write DICOM from NIfTI is dependent on the fact that the reference DICOM and NIfTI are in the same physical space and describe the same organ type.\n";
     auto referenceDicom = targetImageFile;
-    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
-    if (cbica::exists(outputImageFile))
+    bool prevOutput = false;
+    if (cbica::isDir(outputImageFile))
     {
-      std::cout << "Finished writing the DICOM file.\n";
+      prevOutput = true;
+    }
+    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance);
+    if (!prevOutput)
+    {
+      if (cbica::exists(outputImageFile))
+      {
+        std::cout << "Finished writing the DICOM series.\n";
+      }
+      else
+      {
+        std::cerr << "Direction tolerance: " << nifti2dicomTolerance << "%\n";
+        std::cerr << "Couldn't write DICOM series.\n";
+        return EXIT_FAILURE;
+      }
     }
   }
   else if (requestedAlgorithm == Nifti2DicomSeg)
@@ -651,7 +666,10 @@ int algorithmsRunner()
     thresholder->SetInsideValue(thresholdInsideValue);
     thresholder->Update();
     std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
-    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
+
+    auto invertIntensityFilter = itk::InvertIntensityImageFilter< TImageType >::New();
+    invertIntensityFilter->SetInput(thresholder->GetOutput());
+    cbica::WriteImage< TImageType >(invertIntensityFilter->GetOutput(), outputImageFile);
   }
   else if (requestedAlgorithm == ConvertFormat)
   {
@@ -908,6 +926,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
   parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
+  parser.addOptionalParameter("ndD", "nifi2dicomDirc", cbica::Parameter::FLOAT, "0-100", "The direction tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomTolerance) + "'");
   parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e",
@@ -999,6 +1018,10 @@ int main(int argc, char** argv)
     requestedAlgorithm = Nifti2Dicom;
     parser.getParameterValue("n2d", targetImageFile); // in this case, it is the DICOM reference file
     parser.getParameterValue("o", outputImageFile);
+    if (parser.isPresent("ndD"))
+    {
+      parser.getParameterValue("ndD", nifti2dicomTolerance);
+    }
   }
   else if (parser.isPresent("ds"))
   {
