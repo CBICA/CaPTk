@@ -43,3 +43,18 @@ void CaPTkDockWidget::closeEvent(QCloseEvent * event)
 		emit close();
 	}
 }
+
+void CaPTkDockWidget::toolTabDockChanged(bool bUnDocked)
+{
+	//get title label
+	QLabel *title = qobject_cast<QLabel*>(this->titleBarWidget());
+
+	if (bUnDocked)
+	{
+		title->setText("Double click to dock");
+	}
+	else
+	{
+		title->setText("Double click to undock");
+	}
+}
