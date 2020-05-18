@@ -867,11 +867,11 @@ jobs:
         
     #   displayName: 'Move superbuild and qt and compiled apps'
     
-    - powershell: |
-        git pull origin master
-        git log -1
-        # cat CMakeLists.txt | grep -i "PROJECT_VERSION"
-      displayName: 'Testing git pull and version'
+    # - powershell: |
+    #     git pull origin master
+    #     git log -1
+    #     # cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+    #   displayName: 'Testing git pull and version'
 
     - script: |
         cd bin
@@ -1019,11 +1019,11 @@ jobs:
         
       displayName: 'Move superbuild and qt and compiled apps'
 
-    - bash: |
-        git pull origin master
-        git log -1
-        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
-      displayName: 'Testing git pull and version'
+    # - bash: |
+    #     git pull origin master
+    #     git log -1
+    #     cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+    #   displayName: 'Testing git pull and version'
           
     - bash: |
         rm -rf bin/qt.zip
@@ -1248,7 +1248,10 @@ jobs:
         rm -rf install_manifest.txt
         make package
 
-        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/  ./CaPTk_$version.pkg
+        pkgpath=""
+        if [ -d "$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/" ]; then pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/"; else pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/"; fi
+
+        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $pkgpath ./CaPTk_$version.pkg
 
         productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
 
