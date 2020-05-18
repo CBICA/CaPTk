@@ -2,12 +2,15 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QLabel>
 #include <iostream>
 
 CaPTkDockWidget::CaPTkDockWidget(QWidget *parent) : QDockWidget(parent)
 {
     // We must specifically allow drops on the DockWidget.
     this->setAcceptDrops(true);
+
+	this->setTitleBarWidget(new QLabel("Double click to undock",this));
 }
 
 void CaPTkDockWidget::dragEnterEvent(QDragEnterEvent* event) 
