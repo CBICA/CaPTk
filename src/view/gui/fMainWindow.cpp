@@ -2730,18 +2730,6 @@ void fMainWindow::MoveSlicerCursor(double x, double y, double z, int mode)
   propogateSlicerPosition();
 }
 
-void fMainWindow::toolTabDockChanged(bool bUnDocked)
-{
-  if (bUnDocked)
-  {
-	  this->m_toolTabdock->setWindowTitle("Double click to dock");
-  }
-  else
-  {
-	  this->m_toolTabdock->setWindowTitle("Double click to undock");
-  }
-}
-
 VectorVectorDouble fMainWindow::FormulateDrawingPointsForEdemaSegmentation()
 {
   VectorVectorDouble Indices;
