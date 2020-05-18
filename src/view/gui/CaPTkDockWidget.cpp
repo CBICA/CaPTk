@@ -10,7 +10,11 @@ CaPTkDockWidget::CaPTkDockWidget(QWidget *parent) : QDockWidget(parent)
     // We must specifically allow drops on the DockWidget.
     this->setAcceptDrops(true);
 
+	//customize title bar
 	this->setTitleBarWidget(new QLabel("Double click to undock",this));
+
+	//signal/slots connections
+	connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(toolTabDockChanged(bool)));
 }
 
 void CaPTkDockWidget::dragEnterEvent(QDragEnterEvent* event) 
@@ -49,11 +53,11 @@ void CaPTkDockWidget::toolTabDockChanged(bool bUnDocked)
 	//get title label
 	QLabel *title = qobject_cast<QLabel*>(this->titleBarWidget());
 
-	if (bUnDocked)
+	if (bUnDocked) //floating state
 	{
 		title->setText("Double click to dock");
 	}
-	else
+	else //docked state
 	{
 		title->setText("Double click to undock");
 	}
