@@ -1,7 +1,7 @@
 trigger:
   batch: true
   branches:
-    include: ['master']
+    include: ['*']
 
 # 20200312: apparently this is now explicitly required for azure
 pr:
@@ -1275,8 +1275,6 @@ jobs:
         productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
         mv *_Installer* $(Build.ArtifactStagingDirectory)
-
-        rm -rf _CPack*
 
       displayName: 'Package CaPTk (.dmg and .pkg)'
 
