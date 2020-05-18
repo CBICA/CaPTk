@@ -324,7 +324,7 @@ int main(int argc, char** argv)
   // show the "about" screen in the first run
   if (!cbica::fileExists(tutorialScreen))
   {
-    auto rec = QApplication::desktop()->screenGeometry();
+    // auto rec = QApplication::desktop()->screenGeometry();
     // std::cout << "Detected Size: " << rec.width() << "x" << rec.height() << "\n";
     window.about();
   }

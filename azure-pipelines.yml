@@ -1140,7 +1140,7 @@ jobs:
     - bash: |
         mkdir -p bin
         cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
         # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
         # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
         # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
@@ -1160,18 +1160,38 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
+        # mkdir $(Build.SourcesDirectory)/../superbuild
+        # cd bin
+        # mv ./* $(Build.SourcesDirectory)/../superbuild
+        # cd $(Build.SourcesDirectory)/..
+        # ls
+        # echo "Done cd"
+        # tar cvfz superbuild.tar.gz superbuild
+        # ls
+        # echo "done tar"
+        # rm -rf superbuild
+        # ls
+        # cd $(Build.SourcesDirectory)
+        
+        pwd
+
         rm -rf bin
 
         mkdir bin
         cd bin
-        cp -r ../../../../superbuild/ ./
+        
+        cp -r $(Build.SourcesDirectory)/../superbuild.tar.gz ./
         ls
-        ls ITK-build
-        pwd
-        
-        # cd bin
-        # cp -r ./ ../../../../superbuild
-        
+        echo "Done cp"
+        tar xvfz superbuild.tar.gz
+        rm -rf superbuild.tar.gz
+
+        ls
+        echo "Done tar"
+
+        mv superbuild/* ./
+
+        cat ITK-build/ITKTargets.cmake
       displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
@@ -1182,6 +1202,7 @@ jobs:
 
     - bash: |
         cd bin
+        pwd
 
         rm -rf CaPTk_*
 
