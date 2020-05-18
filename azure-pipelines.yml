@@ -1194,11 +1194,11 @@ jobs:
         cat ITK-build/ITKTargets.cmake
       displayName: 'Move superbuild and qt and compiled apps'
 
-    - bash: |
-        git pull origin master
-        git log -1
-        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
-      displayName: 'Testing git pull and version'
+    # - bash: |
+    #     git pull origin master
+    #     git log -1
+    #     cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+    #   displayName: 'Testing git pull and version'
 
     - bash: |
         cd bin
