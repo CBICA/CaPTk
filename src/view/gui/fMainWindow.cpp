@@ -266,7 +266,7 @@ fMainWindow::fMainWindow()
   connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
   connect(m_toolTabdock, SIGNAL(close()), this, SLOT(close())); //call the application close routine on signal from dockwidget
 
-//  ! automatic undock on low resolution
+  //! automatic undock on low resolution
   //! to be tested thoroughly
   QScreen *scr = QGuiApplication::primaryScreen();
   //!if primary screen resolution is lower than 1200x1024(any of x,y values)
