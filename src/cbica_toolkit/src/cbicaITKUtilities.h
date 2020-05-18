@@ -374,7 +374,10 @@ namespace cbica
   \brief Check properties of 2 images to see if they are defined in the same space.
   */
   template< typename TImageType >
-  inline bool ImageSanityCheck(const typename TImageType::Pointer image1, const typename TImageType::Pointer image2)
+  inline bool ImageSanityCheck(
+    const typename TImageType::Pointer image1, 
+    const typename TImageType::Pointer image2,
+    const float nifti2dicomTolerance = 0.0)
   {
     auto size_1 = image1->GetLargestPossibleRegion().GetSize();
     auto size_2 = image2->GetLargestPossibleRegion().GetSize();
@@ -398,38 +401,59 @@ namespace cbica
       std::cerr << "Row dimension mismatch for directions.\n";
       return false;
     }
-    if (directions_1 != directions_2)
+    // check with tolerance
+    for (size_t i = 0; i < directions_1.RowDimensions; i++)
     {
-      std::cerr << "Directions are not the same.\n";
-      return false;
+      for (size_t j = 0; j < directions_1.ColumnDimensions; j++)
+      {
+        if (directions_1[i][j] != directions_2[i][j])
+        {
+          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100 / std::abs(directions_1[i][j]);
+          if (percentageDifference > nifti2dicomTolerance)
+          {
+            std::cerr << "Direction mismatch > " << nifti2dicomTolerance << 
+              "% at location '[" << i << "," << j << "]' of direction matrix.\n";
+
+            std::cout << "Direction matrix for input 1:\n" << directions_1 << "\n" <<
+              "Direction matrix for input 2:\n" << directions_2 << "\n";
+            return false;
+          }
+          else
+          {
+            std::cout << "Ignoring direction difference of '" <<
+              percentageDifference << "%' in location '[" <<
+              i << "," << j << "]' of direction matrix.\n";
+          }
+        }
+      }
     }
 
-    for (size_t i = 0; i < TImageType::ImageDimension; i++)
+    for (size_t d = 0; d < TImageType::ImageDimension; d++)
     {
-      if (size_1[i] != size_2[i])
+      if (size_1[d] != size_2[d])
       {
-        std::cerr << "Size mismatch at dimension '" << i << "'\n";
+        std::cerr << "Size mismatch at dimension '" << d << "'\n";
         return false;
       }
-      if (origin_1[i] != origin_2[i])
+      if (origin_1[d] != origin_2[d])
       {
-        std::cerr << "Origin mismatch at dimension '" << i << "'\n";
+        std::cerr << "Origin mismatch at dimension '" << d << "'\n";
         return false;
       }
-      if (spacing_1[i] != spacing_2[i])
+      if (spacing_1[d] != spacing_2[d])
       {
-        auto percentageDifference = std::abs(spacing_1[i] - spacing_2[i]) * 100;
-        percentageDifference /= spacing_1[i];
+        auto percentageDifference = std::abs(spacing_1[d] - spacing_2[d]) * 100;
+        percentageDifference /= spacing_1[d];
         if (percentageDifference > 0.0001)
         {
-          std::cerr << "Spacing mismatch at dimension '" << i << "'\n";
+          std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
           return false;
         }
         else
         {
           std::cout << "Ignoring spacing difference of '" <<
             percentageDifference << "%' in dimension '" <<
-            i << "'\n";
+            d << "'\n";
         }
       }
     }
@@ -516,8 +540,18 @@ namespace cbica
         {
           if (imageDirs1[d][i] != imageDirs2[d][i])
           {
-            std::cout << "The direction in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") at '" << i << "' doesn't match.\n";
-            return false;
+            auto percentageDifference = std::abs(imageDirs1[d][i] - imageDirs2[d][i]) * 100 / imageDirs1[d][i];
+            if (percentageDifference > 0.0001)
+            {
+              std::cerr << "Direction mismatch at dimension '" << d << "'\n";
+              return false;
+            }
+            else
+            {
+              std::cout << "Ignoring direction difference of '" <<
+                percentageDifference << "%' in dimension '" <<
+                d << "'\n";
+            }
           }
         }
       }
