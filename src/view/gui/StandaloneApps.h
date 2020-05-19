@@ -73,6 +73,17 @@ class ASyncExtract : public QThread
 	}
 
 public:
+	static ASyncExtract* GetInstance()
+	{
+		if (m_Instance == nullptr)
+		{
+			m_Mutex.lock();
+			m_Instance = new ASyncExtract();
+			// m_Instance.SetName(appName);
+			m_Mutex.unlock();
+		}
+		return m_Instance;
+	}
 	void setFullPath(QString fullPath) {
 		this->fullPath = fullPath;
 	}
@@ -80,6 +91,9 @@ public:
 private:
 	ASyncExtract() = default;
 	~ASyncExtract() = default;
+	
+	static ASyncExtract* m_Instance;
+	static QMutex m_Mutex;
 
 	QString fullPath;
 
