@@ -17,8 +17,8 @@ public:
     void SetTheme(QString theme);
     QString GetTheme() const;
 
-	void SetFileAvailability(QString available);
-	QString GetFileAvailability() const;
+	void SetUserPreferencesAvailability(QString available);
+	QString GetUserPreferencesAvailability() const;
 
 		//! Serialize 
 	void SerializePreferences();
@@ -42,7 +42,7 @@ private:
 
     QString m_Font;
     QString m_Theme;
-	QString m_FileAvailability = QVariant("false").toString();
+	QString m_UserPreferencesAvailability = QVariant("false").toString();
 };
 
 #endif // APPLICATIONPREFERENCES_H

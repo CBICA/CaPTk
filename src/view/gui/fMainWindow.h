@@ -1307,9 +1307,6 @@ public slots:
   */
   void UpdateLinkedNavigation(Slicer* refSlicer);
 
-  //! Dock/undock behaviour changed
-  void toolTabDockChanged(bool bUnDocked);
-
   //! Returns the active tab from the tab widget
   int getActiveTabId()
   {
