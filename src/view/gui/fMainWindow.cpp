@@ -8739,7 +8739,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
-  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, TE);
+  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, TE,outputFolder);
 
   if (perfusionDerivatives.size() == 0)
   {
