@@ -1185,7 +1185,7 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
 
     // bool extracted = zr.extractAll(extractPath);
 
-    ASyncExtract *asyncExtract = new ASyncExtract(this);
+    ASyncExtract *asyncExtract = new ASyncExtract();
     // connect(asyncExtract, &ASyncExtract::resultReady, this, &MyObject::handleResults);
     // connect(asyncExtract, &ASyncExtract::finished, asyncExtract, &QObject::deleteLater);
     asyncExtract->start();

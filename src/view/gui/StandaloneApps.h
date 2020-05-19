@@ -78,6 +78,9 @@ public:
 	}
 
 private:
+	ASyncExtract() = default;
+	~ASyncExtract() = default;
+
 	QString fullPath;
 
 signals:
