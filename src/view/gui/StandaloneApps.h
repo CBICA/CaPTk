@@ -63,7 +63,7 @@ class ASyncExtract : public QThread
 
 	StandaloneApps* stlapps = StandaloneApps::GetInstance();
 
-	QZipReader zr(fullPath);
+	QZipReader zr(this->fullPath);
 	// stlapps->StoreAppSetting("Extract", "Start", appName);
 
 	// stlapps->RetreiveAppSetting(appName);
@@ -71,6 +71,14 @@ class ASyncExtract : public QThread
 
 	emit resultReady(result);
 	}
+
+public:
+	void setFullPath(QString fullPath) {
+		this->fullPath = fullPath;
+	}
+
+private:
+	QString fullPath;
 
 signals:
     void resultReady(const QString &s);
