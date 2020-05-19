@@ -22,6 +22,10 @@ protected:
 	//handler for close
 	virtual void closeEvent(QCloseEvent *event) override;
 
+protected slots:
+	//! Dock/undock behaviour changed
+	void toolTabDockChanged(bool bUnDocked);
+
 signals:
     void dragEnteredDockWidget(QDragEnterEvent*);
     void droppedOnDockWidget(QDropEvent*);
