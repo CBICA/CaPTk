@@ -1177,7 +1177,7 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
 
     stlapps->StoreAppSetting("Download", "Done", appName);
 
-    ASyncExtract* asyncExtract = ASyncExtract::GetInstance();
+    ASyncExtract* asyncExtract = new ASyncExtract();
     // connect(asyncExtract, &ASyncExtract::resultReady, this, &MyObject::handleResults);
     // connect(asyncExtract, &ASyncExtract::finished, asyncExtract, &QObject::deleteLater);
     asyncExtract->start();

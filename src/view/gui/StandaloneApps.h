@@ -56,8 +56,6 @@ private:
 class ASyncExtract : public QThread
 {
 	Q_OBJECT
-
-public:
 	void run() override {
 		QString result;
 
@@ -71,30 +69,16 @@ public:
 
 		emit resultReady(result);
 	}	
-	
-	static ASyncExtract* GetInstance()
-	{
-		if (m_Instance == nullptr)
-		{
-			m_Mutex.lock();
-			m_Instance = new ASyncExtract();
-			// m_Instance.SetName(appName);
-			m_Mutex.unlock();
-		}
-		return m_Instance;
-	}
+
+public:
+	ASyncExtract() = default;
+	~ASyncExtract() = default;
+
 	void setFullPath(QString fullPath) {
 		this->fullPath = fullPath;
 	}
 
 private:
-	ASyncExtract() = default;
-	~ASyncExtract() = default;
-	
-	static ASyncExtract* m_Instance;
-	static QMutex m_Mutex;
-
-	Q_DISABLE_COPY(ASyncExtract)
 
 	QString fullPath;
 
