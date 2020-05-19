@@ -3,6 +3,8 @@
 #include "cbicaCmdParser.h"
 #include "CaPTkEnums.h"
 
+#include "CaPTkGUIUtils.h"
+
 //------------------EGFRvIII Prediction on existing model-----------------------
 std::vector<std::map<CAPTK::ImageModalityType, std::string>> 
 LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname, 
@@ -200,7 +202,7 @@ int main(int argc, char **argv)
 	cbica::CmdParser parser = cbica::CmdParser(argc, argv, "EGFRvIIIIndexPredictor");
 	parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
 	parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory having test subjects");
-	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
+	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models", "Penn Model: " + getAppropriateDownloadLink("EGFRvIIIIndexPredictor", "Model"));
 	parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
 	parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("EGFRvIIIIndexPredictor -i <input dir> -t 0 -o <output dir>");

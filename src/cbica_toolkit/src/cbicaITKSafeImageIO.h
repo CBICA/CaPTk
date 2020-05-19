@@ -746,13 +746,16 @@ namespace cbica
   \param dicomImageReferenceDir Reference DICOM image
   \param imageToWrite Pointer to processed image data which is to be written
   \param outputDir File containing the image
+  \param nifti2dicomTolerance The direction tolerance for sanity check
   \param outputPrefix The prefix for the output filenames
   \return itk::Image of specified pixel and dimension type
   */
   template <typename ComputedImageType = ImageTypeFloat3D>
-  void WriteDicomImageFromReference(const std::string dicomImageReferenceDir, typename ComputedImageType::Pointer imageToWrite, const std::string &outputDir, const std::string& outputPrefix = "image")
+  void WriteDicomImageFromReference(const std::string dicomImageReferenceDir, 
+    typename ComputedImageType::Pointer imageToWrite, 
+    const std::string &outputDir, const float nifti2dicomTolerance = 0.0, 
+    const std::string& outputPrefix = "image")
   {
-    cbica::createDir(outputDir);
     if (cbica::isDir(dicomImageReferenceDir))
     {
       using DicomImageType = itk::Image< int, ComputedImageType::ImageDimension >;
@@ -764,13 +767,14 @@ namespace cbica
       caster->SetInput(imageToWrite);
       caster->Update();
       auto imageToWrite_casted = caster->GetOutput();
-      if (!cbica::ImageSanityCheck< DicomImageType >(referenceDicom, imageToWrite_casted))
+      if (!cbica::ImageSanityCheck< DicomImageType >(referenceDicom, imageToWrite_casted, nifti2dicomTolerance))
       {
         std::cerr << "The reference DICOM image and image to write are not consistent.\n";
         return;
       }
       // end sanity check
 
+      cbica::createDir(outputDir);
       auto inputImageReader = itk::ImageSeriesReader< DicomImageType >::New();
       auto dicomIO = itk::GDCMImageIO::New();
       auto nameGenerator = itk::GDCMSeriesFileNames::New();
