@@ -53,26 +53,25 @@ private:
 	QString m_FileAvailability = QVariant("false").toString();
 };
 
-#endif 
-
 class ASyncExtract : public QThread
 {
 	Q_OBJECT
-	void run() override {
-	QString result;
-
-	StandaloneApps* stlapps = StandaloneApps::GetInstance();
-
-	QZipReader zr(this->fullPath);
-	// stlapps->StoreAppSetting("Extract", "Start", appName);
-
-	// stlapps->RetreiveAppSetting(appName);
-	// stlapps->Debug("Extraction start");
-
-	emit resultReady(result);
-	}
 
 public:
+	void run() override {
+		QString result;
+
+		StandaloneApps* stlapps = StandaloneApps::GetInstance();
+
+		QZipReader zr(this->fullPath);
+		// stlapps->StoreAppSetting("Extract", "Start", appName);
+
+		// stlapps->RetreiveAppSetting(appName);
+		// stlapps->Debug("Extraction start");
+
+		emit resultReady(result);
+	}	
+	
 	static ASyncExtract* GetInstance()
 	{
 		if (m_Instance == nullptr)
@@ -95,8 +94,12 @@ private:
 	static ASyncExtract* m_Instance;
 	static QMutex m_Mutex;
 
+	Q_DISABLE_COPY(ASyncExtract)
+
 	QString fullPath;
 
 signals:
     void resultReady(const QString &s);
 };
+
+#endif 
