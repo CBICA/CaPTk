@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMutex>
 #include <QVariant>
+#include <QThread>
 
 #include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
