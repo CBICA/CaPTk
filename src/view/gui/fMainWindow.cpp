@@ -1177,14 +1177,6 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
 
     stlapps->StoreAppSetting("Download", "Done", appName);
 
-    // QZipReader zr(fullPath);
-    // stlapps->StoreAppSetting("Extract", "Start", appName);
-    
-    // stlapps->RetreiveAppSetting(appName);
-    // stlapps->Debug("Extraction start");
-
-    // bool extracted = zr.extractAll(extractPath);
-
     ASyncExtract* asyncExtract = ASyncExtract::GetInstance();
     // connect(asyncExtract, &ASyncExtract::resultReady, this, &MyObject::handleResults);
     // connect(asyncExtract, &ASyncExtract::finished, asyncExtract, &QObject::deleteLater);
