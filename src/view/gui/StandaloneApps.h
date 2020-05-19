@@ -5,6 +5,10 @@
 #include <QMutex>
 #include <QVariant>
 
+#include "CaPTkUtils.h"
+#include "CaPTkGUIUtils.h"
+#include "QZipReader.h"
+
 class StandaloneApps : public QObject
 {
 public:
@@ -49,3 +53,24 @@ private:
 };
 
 #endif 
+
+class ASyncExtract : public QThread
+{
+	Q_OBJECT
+	void run() override {
+	QString result;
+
+	StandaloneApps* stlapps = StandaloneApps::GetInstance();
+
+	QZipReader zr(fullPath);
+	// stlapps->StoreAppSetting("Extract", "Start", appName);
+
+	// stlapps->RetreiveAppSetting(appName);
+	// stlapps->Debug("Extraction start");
+
+	emit resultReady(result);
+	}
+
+signals:
+    void resultReady(const QString &s);
+};

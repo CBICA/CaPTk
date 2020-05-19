@@ -72,7 +72,7 @@
 
 #include <QFile>
 
-#include "QZipReader.h"
+// #include "QZipReader.h"
 #include "StandaloneApps.h"
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
@@ -1177,13 +1177,18 @@ void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString ap
 
     stlapps->StoreAppSetting("Download", "Done", appName);
 
-    QZipReader zr(fullPath);
-    stlapps->StoreAppSetting("Extract", "Start", appName);
+    // QZipReader zr(fullPath);
+    // stlapps->StoreAppSetting("Extract", "Start", appName);
     
-    stlapps->RetreiveAppSetting(appName);
-    stlapps->Debug("Extraction start");
+    // stlapps->RetreiveAppSetting(appName);
+    // stlapps->Debug("Extraction start");
 
-    bool extracted = zr.extractAll(extractPath);
+    // bool extracted = zr.extractAll(extractPath);
+
+    ASyncExtract *asyncExtract = new ASyncExtract(this);
+    // connect(asyncExtract, &ASyncExtract::resultReady, this, &MyObject::handleResults);
+    // connect(asyncExtract, &ASyncExtract::finished, asyncExtract, &QObject::deleteLater);
+    asyncExtract->start();
 
     if (getApplicationDownloadPath("libra").empty()) {
       // ShowErrorMessage("Installation failed. Please re-run installtion.");
