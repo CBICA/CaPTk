@@ -53,7 +53,6 @@ By downloading CaPTk, you agree to our [License](./LICENSE). You can review Inst
 | Linux          | https://www.nitrc.org/frs/downloadlink.php/11778 |
 | Linux (CentOS7)| https://www.nitrc.org/frs/downloadlink.php/11779 |
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11780 |
-| Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
 ## Development Builds
 
