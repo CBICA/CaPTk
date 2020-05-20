@@ -260,14 +260,13 @@ fMainWindow::fMainWindow()
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
-  this->m_toolTabdock->setWindowTitle("Double click to undock");
 
 //   Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
   connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
   connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
   connect(m_toolTabdock, SIGNAL(close()), this, SLOT(close())); //call the application close routine on signal from dockwidget
 
-//  ! automatic undock on low resolution
+  //! automatic undock on low resolution
   //! to be tested thoroughly
   QScreen *scr = QGuiApplication::primaryScreen();
   //!if primary screen resolution is lower than 1200x1024(any of x,y values)
@@ -947,9 +946,6 @@ fMainWindow::fMainWindow()
   m_progressBar->setValue(0);
 
   mHelpDlg = new fHelpDialog();
-
-  //connect
-  connect(m_toolTabdock, SIGNAL(topLevelChanged(bool)), this, SLOT(toolTabDockChanged(bool)));
 
   recurrencePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   msubtypePanel.SetCurrentLoggerPath(m_tempFolderLocation);
@@ -2728,18 +2724,6 @@ void fMainWindow::MoveSlicerCursor(double x, double y, double z, int mode)
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
   }
   propogateSlicerPosition();
-}
-
-void fMainWindow::toolTabDockChanged(bool bUnDocked)
-{
-  if (bUnDocked)
-  {
-	  this->m_toolTabdock->setWindowTitle("Double click to dock");
-  }
-  else
-  {
-	  this->m_toolTabdock->setWindowTitle("Double click to undock");
-  }
 }
 
 VectorVectorDouble fMainWindow::FormulateDrawingPointsForEdemaSegmentation()
@@ -9097,8 +9081,9 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     return;
   }
 
-  configPathName = itksys::SystemTools::GetFilenamePath(matrixFileNames[0]).c_str();
-  configFileName = configPathName + "/" + itksys::SystemTools::GetFilenameWithoutExtension(matrixFileNames[0]).c_str() + extn;
+  std::string path, base, ext;
+  cbica::splitFileName(matrixFileNames[0], path, base, ext);
+  configFileName = path + "/" + base + extn;
 
   for (unsigned int i = 0; i < inputFileNames.size(); i++)
   {

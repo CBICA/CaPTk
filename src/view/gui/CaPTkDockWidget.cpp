@@ -2,12 +2,19 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QLabel>
 #include <iostream>
 
 CaPTkDockWidget::CaPTkDockWidget(QWidget *parent) : QDockWidget(parent)
 {
     // We must specifically allow drops on the DockWidget.
     this->setAcceptDrops(true);
+
+	//customize title bar
+	this->setTitleBarWidget(new QLabel("Double click to undock",this));
+
+	//signal/slots connections
+	connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(toolTabDockChanged(bool)));
 }
 
 void CaPTkDockWidget::dragEnterEvent(QDragEnterEvent* event) 
@@ -38,5 +45,20 @@ void CaPTkDockWidget::closeEvent(QCloseEvent * event)
 		//instead we want to close the application 
 		//we throw a signal to the mainwindow to close
 		emit close();
+	}
+}
+
+void CaPTkDockWidget::toolTabDockChanged(bool bUnDocked)
+{
+	//get title label
+	QLabel *title = qobject_cast<QLabel*>(this->titleBarWidget());
+
+	if (bUnDocked) //floating state
+	{
+		title->setText("Double click to dock");
+	}
+	else //docked state
+	{
+		title->setText("Double click to undock");
 	}
 }
