@@ -18,6 +18,13 @@
   - Recurrence fixes
   - Pseudoprogression fixes
 - Generic GUI bug fixes and improvements 
+- Apply mask functionaity from drawing panel added
+- bvec reorientation functionality added from Utilities
+- Headers added to csv features files for multiple applications
+- Fixed application font mismatch on GUI
+- Fixed mask opacity change functionaity from comparison mode
+- Fixes for issues identified during Testathon Feb 2020
+- Documentation updates
 
 For a full list, please see https://github.com/CBICA/CaPTk/issues?q=is%3Aissue+is%3Aclosed
 
