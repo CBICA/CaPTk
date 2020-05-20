@@ -57,17 +57,18 @@ class ASyncExtract : public QThread
 {
 	Q_OBJECT
 	void run() override {
-		QString result;
 
 		StandaloneApps* stlapps = StandaloneApps::GetInstance();
 
 		QZipReader zr(this->fullPath);
-		// stlapps->StoreAppSetting("Extract", "Start", appName);
+		stlapps->StoreAppSetting("Extract", "Start", this->appName);
 
-		// stlapps->RetreiveAppSetting(appName);
-		// stlapps->Debug("Extraction start");
+		stlapps->RetreiveAppSetting(this->appName);
+		stlapps->Debug("Extraction start");
 
-		emit resultReady(result);
+		bool extracted = zr.extractAll(this->extractPath);
+
+		emit resultReady(this->appName);
 	}	
 
 public:
@@ -78,9 +79,19 @@ public:
 		this->fullPath = fullPath;
 	}
 
+	void setExtractPath(QString extractPath) {
+		this->extractPath = extractPath;
+	}
+
+	void setAppName(QString appName) {
+		this->appName = appName;
+	}
+
 private:
 
 	QString fullPath;
+	QString extractPath;
+	QString appName;
 
 signals:
     void resultReady(const QString &s);

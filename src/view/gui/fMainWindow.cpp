@@ -1162,37 +1162,9 @@ void fMainWindow::appDownload(std::string appName)
   appDownloadDialog.SetDownloadLink(downloadLink);
   appDownloadDialog.exec();
 
-  connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString, QString)), this, SLOT(unzipArchive(QString, QString, QString))); 
+  connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString, QString)), this, SLOT(startUnzip(QString, QString, QString))); 
   connect( &appDownloadDialog, SIGNAL(startDownload(QString)), this, SLOT(startDownload(QString)));    
   connect( &appDownloadDialog, SIGNAL(cancelDownload(QString)), this, SLOT(cancelDownload(QString)));    
-}
-
-void fMainWindow::unzipArchive(QString fullPath, QString extractPath, QString appName) 
-{
-  if (cbica::isFile(fullPath.toStdString())) {
-    StandaloneApps* stlapps = StandaloneApps::GetInstance();
-
-    stlapps->RetreiveAppSetting(appName);
-    stlapps->Debug("Done download");
-
-    stlapps->StoreAppSetting("Download", "Done", appName);
-
-    ASyncExtract* asyncExtract = new ASyncExtract();
-    // connect(asyncExtract, &ASyncExtract::resultReady, this, &MyObject::handleResults);
-    // connect(asyncExtract, &ASyncExtract::finished, asyncExtract, &QObject::deleteLater);
-    asyncExtract->start();
-
-    if (getApplicationDownloadPath("libra").empty()) {
-      // ShowErrorMessage("Installation failed. Please re-run installtion.");
-      stlapps->RetreiveAppSetting(appName);
-      stlapps->Debug("Extraction failed");
-
-      stlapps->StoreAppSetting("", "", appName);
-    }
-    else {
-      stlapps->StoreAppSetting("Extract", "Done", appName);
-    }
-  }
 }
 
 void fMainWindow::startDownload(QString appName) {
@@ -1209,9 +1181,47 @@ void fMainWindow::cancelDownload(QString appName)
   StandaloneApps* stlapps = StandaloneApps::GetInstance();
 
   stlapps->RetreiveAppSetting(appName);
-  stlapps->Debug("cancel download");
+  stlapps->Debug("Cancel Download");
 
   stlapps->StoreAppSetting("", "", appName);
+}
+
+void fMainWindow::startUnzip(QString fullPath, QString extractPath, QString appName) 
+{
+  if (cbica::isFile(fullPath.toStdString())) {
+    StandaloneApps* stlapps = StandaloneApps::GetInstance();
+
+    stlapps->RetreiveAppSetting(appName);
+    stlapps->Debug("Done download");
+
+    stlapps->StoreAppSetting("Download", "Done", appName);
+
+    ASyncExtract* asyncExtract = new ASyncExtract();
+
+    connect(asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip(QString));
+    connect(asyncExtract, &ASyncExtract::finished, asyncExtract, &QObject::deleteLater);
+
+    asyncExtract->setFullPath(fullPath);
+    asyncExtract->setExtractPath(extractPath);
+    asyncExtract->setAppName(appName);
+
+    asyncExtract->start();
+  }
+}
+
+void fMainWindow::doneUnzip(QString appName) {
+  StandaloneApps* stlapps = StandaloneApps::GetInstance();
+
+  if (getApplicationDownloadPath("libra").empty()) {
+      // ShowErrorMessage("Installation failed. Please re-run installtion.");
+      stlapps->RetreiveAppSetting(appName);
+      stlapps->Debug("Extraction failed");
+
+      stlapps->StoreAppSetting("", "", appName);
+    }
+    else {
+      stlapps->StoreAppSetting("Extract", "Done", appName);
+    }
 }
 
 void fMainWindow::help_Interactions()
