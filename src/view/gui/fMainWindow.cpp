@@ -1199,6 +1199,7 @@ void fMainWindow::startUnzip(QString fullPath, QString extractPath, QString appN
     ASyncExtract* asyncExtract = new ASyncExtract();
 
     connect(asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip(QString)));
+    connect(&asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip(QString)));
     connect(asyncExtract, &ASyncExtract::finished, asyncExtract, &QObject::deleteLater);
 
     asyncExtract->setFullPath(fullPath);
@@ -1212,16 +1213,18 @@ void fMainWindow::startUnzip(QString fullPath, QString extractPath, QString appN
 void fMainWindow::doneUnzip(QString appName) {
   StandaloneApps* stlapps = StandaloneApps::GetInstance();
 
-  if (getApplicationDownloadPath("libra").empty()) {
-      // ShowErrorMessage("Installation failed. Please re-run installtion.");
-      stlapps->RetreiveAppSetting(appName);
-      stlapps->Debug("Extraction failed");
+  // if (getApplicationDownloadPath("libra").empty()) {
+  //   // ShowErrorMessage("Installation failed. Please re-run installtion.");
+  //   stlapps->RetreiveAppSetting(appName);
+  //   stlapps->Debug("Extraction failed");
 
-      stlapps->StoreAppSetting("", "", appName);
-    }
-    else {
-      stlapps->StoreAppSetting("Extract", "Done", appName);
-    }
+  //   stlapps->StoreAppSetting("", "", appName);
+  // }
+  // else {
+    stlapps->RetreiveAppSetting(appName);
+    stlapps->Debug("Extraction done");
+    stlapps->StoreAppSetting("Extract", "Done", appName);
+  // }
 }
 
 void fMainWindow::help_Interactions()

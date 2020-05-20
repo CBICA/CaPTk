@@ -68,6 +68,9 @@ class ASyncExtract : public QThread
 
 		bool extracted = zr.extractAll(this->extractPath);
 
+		stlapps->RetreiveAppSetting(appName);
+    	stlapps->Debug("Extraction done in background");
+
 		emit resultReady(this->appName);
 	}	
 
@@ -94,7 +97,7 @@ private:
 	QString appName;
 
 signals:
-    void resultReady(const QString &s);
+    void resultReady(QString appName);
 };
 
 #endif 
