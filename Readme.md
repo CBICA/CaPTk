@@ -45,6 +45,16 @@ By downloading CaPTk, you agree to our [License](./LICENSE). You can review Inst
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11650 |
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
+## Test Build (1.8.0.Alpha)
+
+| Platform (x64) | Link                                             |
+|:--------------:|:------------------------------------------------:|
+| Windows        | https://www.nitrc.org/frs/downloadlink.php/11777 |
+| Linux          | https://www.nitrc.org/frs/downloadlink.php/11778 |
+| Linux (CentOS7)| https://www.nitrc.org/frs/downloadlink.php/11779 |
+| macOS          | https://www.nitrc.org/frs/downloadlink.php/11780 |
+| Archive        | https://www.nitrc.org/frs/?group_id=1059         |
+
 ## Development Builds
 
 These are UNTESTED development builds from the latest master. Use at your own risk.
