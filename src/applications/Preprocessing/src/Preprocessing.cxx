@@ -70,7 +70,7 @@ int algorithmsRunner()
       std::cout << "Starting Histogram Matching.\n";
     }
 
-    if (!inputImageFiles.empty()) // multiple images passed
+    if (inputImageFiles.size() > 1) // multiple images passed
     {
       std::cerr << "This operation cannot currently be performed with multiple images.\n";
       return EXIT_FAILURE;
@@ -199,7 +199,7 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == BiasCorrectionN3)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
+    if (inputImageFiles.size() > 1) // multiple images passed
     {
       std::cerr << "This operation cannot currently be performed with multiple images.\n";
       return EXIT_FAILURE;
@@ -233,7 +233,7 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == BiasCorrectionN4)
   {
-      if (!inputImageFiles.empty()) // multiple images passed
+      if (inputImageFiles.size() > 1) // multiple images passed
       {
         std::cerr << "This operation cannot currently be performed with multiple images.\n";
         return EXIT_FAILURE;
@@ -268,7 +268,7 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == SusanDenoisingAlgo)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
+    if (inputImageFiles.size() > 1) // multiple images passed
     {
       std::cerr << "This operation cannot currently be performed with multiple images.\n";
       return EXIT_FAILURE;
