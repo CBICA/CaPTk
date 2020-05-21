@@ -1199,7 +1199,6 @@ void fMainWindow::startUnzip(QString fullPath, QString extractPath, QString appN
     ASyncExtract* asyncExtract = new ASyncExtract();
 
     connect(asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip(QString)));
-    connect(&asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip(QString)));
     connect(asyncExtract, &ASyncExtract::finished, asyncExtract, &QObject::deleteLater);
 
     asyncExtract->setFullPath(fullPath);
