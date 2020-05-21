@@ -1128,6 +1128,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         
       ENDFOREACH()
 
+      changeLibOmpDylib(${EXE_NAME} "greedy")
+
     ENDIF()
 
     INCLUDE(CPack)
