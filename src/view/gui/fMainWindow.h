@@ -1468,7 +1468,7 @@ public slots:
   void Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
     std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, 
     std::string metrics, bool rigidMode, bool affineMode, bool deformMode, 
-    std::string radii, std::string iterations);
+    std::string radii, std::string iterations, std::string degreesOfFreedom);
 
   //confirm before exit
   void closeEvent(QCloseEvent * event);
