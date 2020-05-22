@@ -275,6 +275,9 @@ public:
         gridRowCounter++;
         registrationGridLayout->addWidget(options_iterations, gridRowCounter, 0, 1, 1);
         registrationGridLayout->addWidget(iterations, gridRowCounter, 1, 1, 1);
+        gridRowCounter++;
+        registrationGridLayout->addWidget(options_degreesOfFreedom, gridRowCounter, 0, 1, 1);
+        registrationGridLayout->addWidget(iterations, gridRowCounter, 1, 1, 1);
 
         /*--------------------Fixed Image--------------------------------*/
         fixedFileLabel = new QLabel(registrationGroupBox);
