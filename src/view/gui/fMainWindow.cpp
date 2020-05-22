@@ -9110,11 +9110,11 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     args << "-reg";
     if (rigidMode)
     {
-      args << ("Rigid-" + degreesOfFreedom).c_str();
+      args << "Rigid";
     }
     else if (affineMode)
     {
-      args << "Affine";
+      args << ("Affine-" + degreesOfFreedom).c_str();
     }
     else
     {
