@@ -270,6 +270,7 @@ public:
         degreesOfFreedom->setValidator(validater);
         degreesOfFreedom->setToolTip("Degrees of Freedom for Rigid Registration: 6-12");
         degreesOfFreedom->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+        degreesOfFreedom->setEnabled(false);
 
         gridRowCounter++;
         registrationGridLayout->addWidget(options_iterations, gridRowCounter, 0, 1, 1);
