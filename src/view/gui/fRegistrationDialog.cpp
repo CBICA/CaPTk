@@ -607,6 +607,7 @@ void fRegistrationDialog::SelectedAffineMode()
   affineMode = true;
   rigidMode = false;
   deformMode = false;
+  degreesOfFreedom->setEnabled(false);
 }
 
 void fRegistrationDialog::SelectedRigidMode()
@@ -626,6 +627,7 @@ void fRegistrationDialog::SelectedDeformMode()
   affineMode = false;
   rigidMode = false;
   deformMode = true;
+  degreesOfFreedom->setEnabled(false);
 }
 
 void fRegistrationDialog::SelectedMetric(int index)
