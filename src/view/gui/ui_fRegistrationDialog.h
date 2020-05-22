@@ -44,6 +44,7 @@ public:
 
     QLineEdit *fixedFileName;
     QLineEdit *iterations;
+    QLineEdit *degreesOfFreedom;
     QLineEdit *nccRadii;
     QLineEdit *movingFileName1;
     QLineEdit *movingFileName2;
@@ -59,6 +60,7 @@ public:
     QLabel *movingFileLabel5;
     QLabel *options_NCC_radii;
     QLabel *options_iterations;
+    QLabel *options_degreesOfFreedom;
 
     QPushButton *fixedFileButton;
     QPushButton *movingFileButton1;
@@ -258,6 +260,16 @@ public:
         iterations->setValidator(val); 
         iterations->setToolTip("Iterations per resolution: Low x Medium x High");
         iterations->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+        options_degreesOfFreedom = new QLabel(registrationGroupBox);
+        options_degreesOfFreedom->setObjectName("dofLabel");
+        options_degreesOfFreedom->setSizePolicy(sizePolicy);
+        degreesOfFreedom = new QLineEdit("12");
+        QIntValidator* validater = new QIntValidator(0, 12, registrationGroupBox);
+        degreesOfFreedom->setObjectName("degreesOfFreedom");
+        degreesOfFreedom->setValidator(validater);
+        degreesOfFreedom->setToolTip("Degrees of Freedom for Rigid Registration: 6-12");
+        degreesOfFreedom->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
         gridRowCounter++;
         registrationGridLayout->addWidget(options_iterations, gridRowCounter, 0, 1, 1);
