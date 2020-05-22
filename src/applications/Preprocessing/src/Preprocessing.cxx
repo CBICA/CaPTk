@@ -199,71 +199,70 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == BiasCorrectionN3)
   {
-  if (inputImageFiles.size() > 1) // multiple images passed
-  {
-    std::cerr << "This operation cannot currently be performed with multiple images.\n";
-    return EXIT_FAILURE;
-  }
-  else
-  {
-    auto inputImage = cbica::ReadImage<TImageType>(inputImageFile);
-    typedef itk::Image<unsigned char, TImageType::ImageDimension> TMaskImageType;
-    typename TMaskImageType::Pointer maskImage; // mask inits to null
-    if (!inputMaskFile.empty())
+    if (inputImageFiles.size() > 1) // multiple images passed
     {
-      maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
+      std::cerr << "This operation cannot currently be performed with multiple images.\n";
+      return EXIT_FAILURE;
     }
+    else
+    {
+      auto inputImage = cbica::ReadImage<TImageType>(inputImageFile);
+      typedef itk::Image<unsigned char, TImageType::ImageDimension> TMaskImageType;
+      typename TMaskImageType::Pointer maskImage; // mask inits to null
+      if (!inputMaskFile.empty())
+      {
+        maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
+      }
 
-    BiasCorrection biasCorrector;
-    auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n3",
-      inputImage,
-      maskImage,
-      bias_splineOrder,
-      bias_maxIterations,
-      bias_fittingLevels,
-      bias_filterNoise,
-      bias_fwhm,
-      bias_otsuBins);
+      BiasCorrection biasCorrector;
+      auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n3",
+        inputImage,
+        maskImage,
+        bias_splineOrder,
+        bias_maxIterations,
+        bias_fittingLevels,
+        bias_filterNoise,
+        bias_fwhm,
+        bias_otsuBins);
 
 
-    cbica::WriteImage< TImageType >(outputImage, outputImageFile);
-    return EXIT_SUCCESS;
-  }
+      cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+      return EXIT_SUCCESS;
+    }
   }
 
   else if (requestedAlgorithm == BiasCorrectionN4)
   {
-  if (inputImageFiles.size() > 1) // multiple images passed
-  {
-    std::cerr << "This operation cannot currently be performed with multiple images.\n";
-    return EXIT_FAILURE;
-  }
-  else
-  {
-    auto inputImage = cbica::ReadImage<TImageType>(inputImageFile);
-    typedef itk::Image<unsigned char, TImageType::ImageDimension> TMaskImageType;
-    typename TMaskImageType::Pointer maskImage; // mask inits to null
-    if (!inputMaskFile.empty())
+    if (inputImageFiles.size() > 1) // multiple images passed
     {
-      maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
+      std::cerr << "This operation cannot currently be performed with multiple images.\n";
+      return EXIT_FAILURE;
     }
+    else
+    {
+      auto inputImage = cbica::ReadImage<TImageType>(inputImageFile);
+      typedef itk::Image<unsigned char, TImageType::ImageDimension> TMaskImageType;
+      typename TMaskImageType::Pointer maskImage; // mask inits to null
+      if (!inputMaskFile.empty())
+      {
+        maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
+      }
 
-    BiasCorrection biasCorrector;
-    auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n4",
-      inputImage,
-      maskImage,
-      bias_splineOrder,
-      bias_maxIterations,
-      bias_fittingLevels,
-      bias_filterNoise,
-      bias_fwhm,
-      bias_otsuBins);
+      BiasCorrection biasCorrector;
+      auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n4",
+        inputImage,
+        maskImage,
+        bias_splineOrder,
+        bias_maxIterations,
+        bias_fittingLevels,
+        bias_filterNoise,
+        bias_fwhm,
+        bias_otsuBins);
 
 
-    cbica::WriteImage< TImageType >(outputImage, outputImageFile);
-    return EXIT_SUCCESS;
-  }
-
+      cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+      return EXIT_SUCCESS;
+    }
   }
 
   else if (requestedAlgorithm == SusanDenoisingAlgo)
