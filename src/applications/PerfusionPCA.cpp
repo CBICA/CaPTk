@@ -171,7 +171,7 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
     std::vector<ImageType::Pointer> PerfusionImageVector = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti);
 
     std::vector<ImageType::Pointer> OnePatientperfusionImages;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < number; i++)
     {
       ImageType::Pointer CurrentTimePoint = PerfusionImageVector[i];
       itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
