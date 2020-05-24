@@ -8717,7 +8717,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 {
   if (!cbica::isFile(inputfilename))
   {
-    ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
+    ShowErrorMessage("Input image passed is not a valid file, please re-check", this);
     return;
   }
   typedef ImageTypeFloat4D PerfusionImageType;
