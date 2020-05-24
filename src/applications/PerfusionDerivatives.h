@@ -106,29 +106,19 @@ public:
 template< class ImageType, class PerfusionImageType >
 std::vector<double> PerfusionDerivatives::CalculateAveragePerfusionCurve(typename PerfusionImageType::Pointer perfImagePointerNifti)
 {
-  std::vector<double> AverageCurve;
-  ImageTypeFloat4D::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
-  for (unsigned int volumes = 0; volumes < region.GetSize()[3]; volumes++)
+  PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
+  std::vector<double> AverageCurve(region.GetSize()[3],0);
+  typedef itk::ImageRegionIteratorWithIndex <PerfusionImageType> IteratorType;
+  IteratorType perfIt(perfImagePointerNifti, perfImagePointerNifti->GetLargestPossibleRegion());
+  perfIt.GoToBegin();
+  while (!perfIt.IsAtEnd())
   {
-    double volume_mean = 0;
-    for (unsigned int i = 0; i < region.GetSize()[0]; i++)
-      for (unsigned int j = 0; j < region.GetSize()[1]; j++)
-        for (unsigned int k = 0; k < region.GetSize()[2]; k++)
-        {
-          typename ImageType::IndexType index3D;
-          index3D[0] = i;
-          index3D[1] = j;
-          index3D[2] = k;
-
-          typename PerfusionImageType::IndexType index4D;
-          index4D[0] = i;
-          index4D[1] = j;
-          index4D[2] = k;
-          index4D[3] = volumes;
-          volume_mean = volume_mean + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
-        }
-    AverageCurve.push_back(std::round(volume_mean / region.GetSize()[3]));
+    AverageCurve[perfIt.GetIndex()[3]]= AverageCurve[perfIt.GetIndex()[3]]+ perfIt.Get();
+    ++perfIt;
   }
+  int SizeOfOneVolume = region.GetSize()[0] * region.GetSize()[1] * region.GetSize()[2];
+  for(unsigned int index=0;index<AverageCurve.size();index++)
+    AverageCurve[index] = std::round(AverageCurve[index]/SizeOfOneVolume);
   return AverageCurve;
 }
 
