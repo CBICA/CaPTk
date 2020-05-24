@@ -87,8 +87,6 @@ public:
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePH(typename PerfusionImageType::Pointer perfImagePointerNifti);
 
-
-
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti, const double TE);
 
@@ -102,7 +100,7 @@ public:
   std::vector<double> CalculateAveragePerfusionCurve(typename PerfusionImageType::Pointer perfImagePointerNifti);
 
   template<class ImageType, class PerfusionImageType >
-  bool CheckPerfusionQuality(typename PerfusionImageType::Pointer perfImagePointerNifti, const std::string outputdirectory);
+  bool IsPerfusionQualityGood(typename PerfusionImageType::Pointer perfImagePointerNifti, const std::string outputdirectory);
 };
 
 template< class ImageType, class PerfusionImageType >
@@ -135,7 +133,7 @@ std::vector<double> PerfusionDerivatives::CalculateAveragePerfusionCurve(typenam
 }
 
 template<class ImageType, class PerfusionImageType >
-bool PerfusionDerivatives::CheckPerfusionQuality(typename PerfusionImageType::Pointer perfImagePointerNifti,const std::string outputdirectory)
+bool PerfusionDerivatives::IsPerfusionQualityGood(typename PerfusionImageType::Pointer perfImagePointerNifti,const std::string outputdirectory)
 {
   std::vector<double> averagecurve = CalculateAveragePerfusionCurve<ImageType, PerfusionImageType>(perfImagePointerNifti);
   WriteCSVFiles(averagecurve, outputdirectory + "/AeragePerfusionCurve.csv");
@@ -173,7 +171,7 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
     logger.WriteError("Unable to open the given DSC-MRI file. Error code : " + std::string(e1.what()));
     return perfusionDerivatives;
   }
-  if (CheckPerfusionQuality<ImageType, PerfusionImageType>(perfImagePointerNifti,outputdirectory) == false)
+  if (IsPerfusionQualityGood<ImageType, PerfusionImageType>(perfImagePointerNifti,outputdirectory) == false)
     return perfusionDerivatives;
   std::cout << "Perfusion curve validated!!!" << std::endl;
 
