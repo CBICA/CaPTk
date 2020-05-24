@@ -155,6 +155,7 @@ bool PerfusionDerivatives::IsPerfusionQualityGood(typename PerfusionImageType::P
     std::cout << "Drop of the curve does not lie in between the baseline and the recovery signal." << std::endl;
     return false;
   }
+  return true;
 }
 
 template< class ImageType, class PerfusionImageType >
@@ -265,6 +266,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
           index4D[3] = k;
           sum = sum + perfImagePointerNifti->GetPixel(index4D);
         }
+        //total number of volumes is equal to the difference between the baseline_end and baseline_start, plus 1 
         A.GetPointer()->SetPixel(index3D, sum / (baseline_end-baseline_start+1));
         //---------------------------------------minimum vector------------------------------------
         std::vector<double> local_measures;
