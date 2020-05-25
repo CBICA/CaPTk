@@ -17,6 +17,8 @@ Its long-term goal is to provide widely used technology that leverages the value
 
 CaPTk is developed and maintained by the [Center for Biomedical Image Computing and Analytics (CBICA)](https://www.cbica.upenn.edu/) at the University of Pennsylvania.
 
+For a full list of applications and functionalities, please see https://cbica.github.io/CaPTk/How_To_Guides.html
+
 For more details, please visit us at https://www.cbica.upenn.edu/captk
 
 For project documentation and how-to guides, please visit https://cbica.github.io/CaPTk/
@@ -42,6 +44,15 @@ By downloading CaPTk, you agree to our [License](./LICENSE). You can review Inst
 | Linux          | https://www.nitrc.org/frs/downloadlink.php/11651 |
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11650 |
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
+
+## Test Build (1.8.0.Alpha)
+
+| Platform (x64) | Link                                             |
+|:--------------:|:------------------------------------------------:|
+| Windows        | https://www.nitrc.org/frs/downloadlink.php/11777 |
+| Linux          | https://www.nitrc.org/frs/downloadlink.php/11778 |
+| Linux (CentOS7)| https://www.nitrc.org/frs/downloadlink.php/11779 |
+| macOS          | https://www.nitrc.org/frs/downloadlink.php/11780 |
 
 ## Development Builds
 

@@ -23,8 +23,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkAddImageFilter.h"
 #include "itkPowImageFilter.h"
 #include "itkImageDuplicator.h"
-
-#include "itkOpenCVImageBridge.h"
+#include "itkMaskImageFilter.h"
+#include "itkImageDuplicator.h"
 
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
@@ -85,12 +85,20 @@ public:
           radius[i] = m_radius;
       }
 
-      auto outputImageFilter = itk::ImageDuplicator< TImageType >::New();
-      outputImageFilter->SetInputImage(this->m_inputImage);
-      outputImageFilter->Update();
+      // mask the input mask
+      auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
+      masker->SetInput(this->m_inputImage);
+      masker->SetMaskImage(this->m_Mask);
+      masker->SetOutsideValue(0);
+      masker->Update();
 
-      TConstNeighborhoodIteratorType ImageIterator(radius, outputImageFilter->GetOutput(), outputImageFilter->GetOutput()->GetLargestPossibleRegion());
+      auto maskedInput = masker->GetOutput();
 
+      auto outputImage = cbica::CreateImage< TImageType >(maskedInput);
+
+      TConstNeighborhoodIteratorType ImageIterator(radius, maskedInput, maskedInput->GetLargestPossibleRegion());
+      itk::ImageRegionIterator< TImageType > outputIterator(outputImage, outputImage->GetLargestPossibleRegion());
+      
       for (ImageIterator.GoToBegin(); !ImageIterator.IsAtEnd(); ++ImageIterator)
       {
         auto currentindex = ImageIterator.GetIndex();
@@ -107,16 +115,18 @@ public:
           lbp_pattern += (NeighborIntensityValue > CenterIntensityValue) << neighborhoodNumber;
           neighborhoodNumber++;
         }
-        outputImageFilter->GetOutput()->SetPixel(currentindex, lbp_pattern);
+
+        outputIterator.SetIndex(currentindex);
+        outputIterator.Set(lbp_pattern);
       }
 
 
-      TConstIteratorType OutputIterator(outputImageFilter->GetOutput(), outputImageFilter->GetOutput()->GetLargestPossibleRegion());
+      itk::ImageRegionConstIterator< TImageType > outputConstIterator(outputImage, outputImage->GetLargestPossibleRegion());
       double sum = 0;
       int counter = 0;
-      for (OutputIterator.GoToBegin(); !OutputIterator.IsAtEnd(); ++OutputIterator)
+      for (outputConstIterator.GoToBegin(); !outputConstIterator.IsAtEnd(); ++outputConstIterator)
       {
-        sum += OutputIterator.Get();
+        sum += outputConstIterator.Get();
         counter++;
       }
 

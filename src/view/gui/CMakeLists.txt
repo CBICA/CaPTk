@@ -53,6 +53,7 @@ SET( GUI
   fTexturePipelineDialog
   AppearancePage
   CaPTkDockWidget
+  fBiasCorrectionDialog
   fAppDownloadDialog
   #fSegmentationPanel
   #fHelpAppDialog

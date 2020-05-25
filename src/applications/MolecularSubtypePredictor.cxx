@@ -2,6 +2,7 @@
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
 
+#include "CaPTkGUIUtils.h"
 
 
 //------------------Molecular subtype prediction on existing model-----------------------
@@ -192,7 +193,7 @@ int main(int argc, char **argv)
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "MolecularSubtypePredictor");
   parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory having test subjects");
-  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
+  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models", "Penn Model: " + getAppropriateDownloadLink("MolecularSubtypePredictor", "Model"));
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("MolecularSubtypePredictor -t 0 -i <input dir> -o <output dir>");

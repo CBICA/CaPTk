@@ -2,7 +2,6 @@ var Technical_Reference =
 [
     [ "Feature Extraction", "tr_FeatureExtraction.html", [
       [ "Pre-Existing Parameter Configurations", "tr_FeatureExtraction.html#tr_fe_defaults", [
-        [ "\\verbatim", "ht_Preprocessing.html#autotoc_md23", null ],
         [ "Default 3D Image Feature Extraction Parameters", "tr_FeatureExtraction.html#tr_fe_def_main", null ],
         [ "Default 2D Image Feature Extraction Parameters", "tr_FeatureExtraction.html#tr_fe_def_lattice", null ],
         [ "Customizing Parameters", "tr_FeatureExtraction.html#tr_fe_customization", null ]

@@ -13,7 +13,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
   for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
   {
     std::string subjectPath = directoryname + "/" + subjectNames[sid];
-
+    
     std::string perfFilePath = "";
     std::string labelPath = "";
 
@@ -49,14 +49,11 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 
 int main(int argc, char **argv)
 {
-  //-i E:\SoftwareDevelopmentProjects\PCAApplicationRelatedMaterial\data -o E:\SoftwareDevelopmentProjects\PCAApplicationRelatedMaterial\output -t 0 -n 10
-  //-i E:\SoftwareDevelopmentProjects\PCAApplicationRelatedMaterial\testingdata -o E:\SoftwareDevelopmentProjects\PCAApplicationRelatedMaterial\output -t 1 -n 10 -m E : \SoftwareDevelopmentProjects\PCAApplicationRelatedMaterial\model
-
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionPCA");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory.");
   parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
   parser.addRequiredParameter("n", "number of PCAs", cbica::Parameter::STRING, "", "The number of principal components.");
-  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
+  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having PCA models");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("");
@@ -72,7 +69,6 @@ int main(int argc, char **argv)
   int tempPosition;
   int applicationType;
   applicationType = 0;
-
 
   double inputPCs = 0;
   std::string inputFileName, inputMaskName, outputDirectoryName, modelDirectoryName;
@@ -124,14 +120,13 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputFileName);
-  //ImageTypeFloat4D::Pointer perfusionImage = cbica::ReadImage<ImageTypeFloat4D>(inputFileName);
-  //ImageTypeFloat3D::Pointer maskImage = cbica::ReadImage<ImageTypeFloat3D>(inputMaskName);
 
   if (QualifiedSubjects.size() == 0)
   {
     std::cout << "There is no subject with the required input in the given directory." << std::endl;
     return EXIT_FAILURE;
   }
+  std::cout << "Number of subjects with the required input: " << QualifiedSubjects.size() << std::endl;
   PerfusionPCA object_pca;
   if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
   {
@@ -141,10 +136,10 @@ int main(int argc, char **argv)
       std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
       return EXIT_FAILURE;
     }
-    //object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
+    object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
   }
   else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
-    object_pca.PrepareNewPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
+    object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
   else
   {
     parser.echoVersion();

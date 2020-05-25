@@ -22,8 +22,9 @@
 
 std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, modelDirName, inputBVecName, outputDirectory, outputFile, loggerFileIn;
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;
-bool maskProvided = false, debugMode = false;
+bool maskProvided = false, debugMode = false, enableNormalization = true;
 int inferenceType = 0;
+float resamplingRes = 1;
 
 enum InferenceTypes
 {
@@ -234,97 +235,115 @@ void algorithmRunner()
     std::cout << "== Done.\n";
   }
 
-  if (inferenceType == TumorSegmentation)
+  if (enableNormalization)
   {
-    std::cout << "=== Checking and rectifying (z-score) normalization status.\n";
-    auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
-    statsCalculator->SetInput(t1cImg);
-    statsCalculator->Update();
-    if (statsCalculator->GetMean() != 0)
+    if (inferenceType == TumorSegmentation)
     {
-      std::cout << "== Starting Normalization of T1CE image.\n";
-      ZScoreNormalizer< TImageType > normalizer;
+      std::cout << "=== Checking and rectifying (z-score) normalization status.\n";
+      auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+      statsCalculator->SetInput(t1cImg);
+      statsCalculator->Update();
+      if (statsCalculator->GetMean() != 0)
+      {
+        std::cout << "== Starting Normalization of T1CE image.\n";
+        ZScoreNormalizer< TImageType > normalizer;
+        normalizer.SetInputImage(t1cImg);
+        if (maskProvided)
+        {
+          normalizer.SetInputMask(maskImage);
+        }
+        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
+        normalizer.SetQuantiles(quantLower, quantUpper);
+        normalizer.Update();
+        t1cImg = normalizer.GetOutput();
+        std::cout << "== Done.\n";
+      }
+
+      statsCalculator->SetInput(t1Img);
+      statsCalculator->Update();
+      if (statsCalculator->GetMean() != 0)
+      {
+        std::cout << "== Starting Normalization of T1 image.\n";
+        ZScoreNormalizer< TImageType > normalizer;
+        normalizer.SetInputImage(t1Img);
+        if (maskProvided)
+        {
+          normalizer.SetInputMask(maskImage);
+        }
+        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
+        normalizer.SetQuantiles(quantLower, quantUpper);
+        normalizer.Update();
+        t1Img = normalizer.GetOutput();
+        std::cout << "== Done.\n";
+      }
+
+      statsCalculator->SetInput(t2Img);
+      statsCalculator->Update();
+      if (statsCalculator->GetMean() != 0)
+      {
+        std::cout << "== Starting Normalization of T2 image.\n";
+        ZScoreNormalizer< TImageType > normalizer;
+        normalizer.SetInputImage(t2Img);
+        if (maskProvided)
+        {
+          normalizer.SetInputMask(maskImage);
+        }
+        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
+        normalizer.SetQuantiles(quantLower, quantUpper);
+        normalizer.Update();
+        t2Img = normalizer.GetOutput();
+        std::cout << "== Done.\n";
+      }
+
+      statsCalculator->SetInput(flImg);
+      statsCalculator->Update();
+      if (statsCalculator->GetMean() != 0)
+      {
+        std::cout << "== Starting Normalization of T2-Flair image.\n";
+        ZScoreNormalizer< TImageType > normalizer;
+        normalizer.SetInputImage(flImg);
+        if (maskProvided)
+        {
+          normalizer.SetInputMask(maskImage);
+        }
+        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
+        normalizer.SetQuantiles(quantLower, quantUpper);
+        normalizer.Update();
+        flImg = normalizer.GetOutput();
+        std::cout << "== Done.\n";
+      }
+      std::cout << "=== Done.\n";
+    }
+
+    if (inferenceType == SkullStripping)
+    {
+      std::cout << "=== Starting P1P2Normalize.\n";
+
+      P1P2Normalizer< TImageType > normalizer;
       normalizer.SetInputImage(t1cImg);
-      normalizer.SetInputMask(maskImage);
-      normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-      normalizer.SetQuantiles(quantLower, quantUpper);
-      normalizer.Update();
       t1cImg = normalizer.GetOutput();
-      std::cout << "== Done.\n";
-    }
-
-    statsCalculator->SetInput(t1Img);
-    statsCalculator->Update();
-    if (statsCalculator->GetMean() != 0)
-    {
-      std::cout << "== Starting Normalization of T1 image.\n";
-      ZScoreNormalizer< TImageType > normalizer;
       normalizer.SetInputImage(t1Img);
-      normalizer.SetInputMask(maskImage);
-      normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-      normalizer.SetQuantiles(quantLower, quantUpper);
-      normalizer.Update();
       t1Img = normalizer.GetOutput();
-      std::cout << "== Done.\n";
-    }
-
-    statsCalculator->SetInput(t2Img);
-    statsCalculator->Update();
-    if (statsCalculator->GetMean() != 0)
-    {
-      std::cout << "== Starting Normalization of T2 image.\n";
-      ZScoreNormalizer< TImageType > normalizer;
       normalizer.SetInputImage(t2Img);
-      normalizer.SetInputMask(maskImage);
-      normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-      normalizer.SetQuantiles(quantLower, quantUpper);
-      normalizer.Update();
       t2Img = normalizer.GetOutput();
-      std::cout << "== Done.\n";
-    }
-
-    statsCalculator->SetInput(flImg);
-    statsCalculator->Update();
-    if (statsCalculator->GetMean() != 0)
-    {
-      std::cout << "== Starting Normalization of T2-Flair image.\n";
-      ZScoreNormalizer< TImageType > normalizer;
       normalizer.SetInputImage(flImg);
-      normalizer.SetInputMask(maskImage);
-      normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-      normalizer.SetQuantiles(quantLower, quantUpper);
-      normalizer.Update();
       flImg = normalizer.GetOutput();
-      std::cout << "== Done.\n";
+      std::cout << "=== Done.\n";
     }
-    std::cout << "=== Done.\n";
-  }
-
-  if (inferenceType == SkullStripping)
-  {
-    std::cout << "=== Starting P1P2Normalize.\n";
-
-    P1P2Normalizer< TImageType > normalizer;
-    normalizer.SetInputImage(t1cImg);
-    t1cImg = normalizer.GetOutput();
-    normalizer.SetInputImage(t1Img);
-    t1Img = normalizer.GetOutput();
-    normalizer.SetInputImage(t2Img);
-    t2Img = normalizer.GetOutput();
-    normalizer.SetInputImage(flImg);
-    flImg = normalizer.GetOutput();
-    std::cout << "=== Done.\n";
   }
 
   if (inferenceType <= SkullStripping)
   {
-    std::cout << "=== Starting resampling of images to isotropic resolution.\n";
-    t1cImg = cbica::ResampleImage< TImageType >(t1cImg); // default is linear resampling to isotropic resolution of 1.0
-    t1Img = cbica::ResampleImage< TImageType >(t1Img); // default is linear resampling to isotropic resolution of 1.0
-    flImg = cbica::ResampleImage< TImageType >(flImg); // default is linear resampling to isotropic resolution of 1.0
-    t2Img = cbica::ResampleImage< TImageType >(t2Img); // default is linear resampling to isotropic resolution of 1.0
-    maskImage = cbica::ResampleImage< TImageType >(maskImage, 1.0, "Nearest"); // default is linear resampling to isotropic resolution of 1.0
-    std::cout << "=== Done.\n";
+    if (resamplingRes > 0)
+    {
+      std::cout << "=== Starting resampling of images to isotropic resolution.\n";
+      t1cImg = cbica::ResampleImage< TImageType >(t1cImg, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
+      t1Img = cbica::ResampleImage< TImageType >(t1Img, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
+      flImg = cbica::ResampleImage< TImageType >(flImg, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
+      t2Img = cbica::ResampleImage< TImageType >(t2Img, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
+      maskImage = cbica::ResampleImage< TImageType >(maskImage, resamplingRes, "Nearest"); // default is linear resampling to isotropic resolution of 1.0
+      std::cout << "=== Done.\n";
+    }
   }
 
   cbica::createDir(outputDirectory);
@@ -428,11 +447,11 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "", "The Optional input mask file.", "This is needed for normalization only");
   parser.addRequiredParameter("md", "modelDir", cbica::Parameter::DIRECTORY, "", "The trained model to use", "See examples in '${CaPTk_installDir}/data/deepMedic/saved_models'");
   parser.addRequiredParameter("o", "output", cbica::Parameter::DIRECTORY, "", "The output directory");
+  parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization", "Set to '0' if you are passing normalized images");
+  parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: " + std::to_string(quantLower) + "," + std::to_string(quantUpper));
+  parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: " + std::to_string(cutOffLower) + "," + std::to_string(cutOffUpper));
+  parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::FLOAT, "0-10", "[Resample] Isotropic resampling resolution to change to", "Defaults to " + std::to_string(resamplingRes), "If '0' is passed, no resampling is done.");
 
-  parser.addOptionalParameter("ql", "quantLower", cbica::Parameter::FLOAT, "0-100", "The Lower Quantile range to remove", "This is needed for normalization only", "Default: 5");
-  parser.addOptionalParameter("qu", "quantUpper", cbica::Parameter::FLOAT, "0-100", "The Upper Quantile range to remove", "This is needed for normalization only", "Default: 95");
-  parser.addOptionalParameter("cl", "cutOffLower", cbica::Parameter::FLOAT, "0-10", "The Lower Cut-off (multiple of stdDev) to remove", "This is needed for normalization only", "Default: 3");
-  parser.addOptionalParameter("cu", "cutOffUpper", cbica::Parameter::FLOAT, "0-10", "The Upper Cut-off (multiple of stdDev) to remove", "This is needed for normalization only", "Default: 3");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   parser.addApplicationDescription("This is a Deep Learning based inference engine based on DeepMedic (see documentation for details)");
   parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping", "This does a skull stripping of the input structural data");
@@ -475,24 +494,48 @@ int main(int argc, char **argv)
     parser.getParameterValue("md", modelDirName);
   }
 
-  if (parser.isPresent("ql"))
+  if (parser.isPresent("zn"))
   {
-    parser.getParameterValue("ql", quantLower);
+    parser.getParameterValue("zn", enableNormalization);
   }
-  if (parser.isPresent("qu"))
+  if (parser.isPresent("zc"))
   {
-    parser.getParameterValue("qu", quantUpper);
+    std::string tempCutOff;
+    parser.getParameterValue("zc", tempCutOff);
+    auto temp = cbica::stringSplit(tempCutOff, ",");
+    if (temp.size() == 2)
+    {
+      cutOffLower = std::atof(temp[0].c_str());
+      cutOffUpper = std::atof(temp[1].c_str());
+
+      if (cutOffUpper < cutOffLower)
+      {
+        std::swap(cutOffUpper, cutOffLower);
+      }
+    }
+  }
+  if (parser.isPresent("zq"))
+  {
+    std::string tempCutOff;
+    parser.getParameterValue("zq", tempCutOff);
+    auto temp = cbica::stringSplit(tempCutOff, ",");
+    if (temp.size() == 2)
+    {
+      quantLower = std::atof(temp[0].c_str());
+      quantUpper = std::atof(temp[1].c_str());
+
+      if (quantUpper < quantLower)
+      {
+        std::swap(quantUpper, quantLower);
+      }
+    }
   }
 
-  if (parser.isPresent("cl"))
+  if (parser.isPresent("rr"))
   {
-    parser.getParameterValue("cl", cutOffLower);
+    parser.getParameterValue("rr", resamplingRes);
   }
-  if (parser.isPresent("cu"))
-  {
-    parser.getParameterValue("cu", cutOffUpper);
-  }
-
+  
   if (parser.isPresent("t"))
   {
     parser.getParameterValue("t", inferenceType);

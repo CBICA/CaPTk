@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "ZScoreNormalizer.h"
+#include "cbicaStatistics.h"
 
 template< class TImageType >
 void ZScoreNormalizer< TImageType >::SetInputImage(typename TImageType::Pointer image)
@@ -261,22 +262,52 @@ std::map< std::string, double > ZScoreNormalizer< TImageType >::GetStatisticsFor
   std::map< std::string, double > results;
   // mean, stdDev, max
 
-  auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
-  statsCalculator->SetInput(m_inputImage);
-  try
-  {
-    statsCalculator->Update();
-  }
-  catch (const std::exception&e)
-  {
-    std::cerr << "Error caught during stats calculation: " << e.what() << "\n";
-    return results;
-  }
+  /// not using this piece of code because of differences in values
+  //auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+  //statsCalculator->SetInput(m_inputImage);
+  //try
+  //{
+  //  statsCalculator->Update();
+  //}
+  //catch (const std::exception&e)
+  //{
+  //  std::cerr << "Error caught during stats calculation: " << e.what() << "\n";
+  //  return results;
+  //}
+  //results["Max"] = statsCalculator->GetMaximum();
+  //results["Min"] = statsCalculator->GetMinimum();
+  //results["Std"] = sqrtf(statsCalculator->GetVariance());
+  //results["Mean"] = statsCalculator->GetMean();
+  /// not using this piece of code because of differences in values
 
-  results["Max"] = statsCalculator->GetMaximum();
-  results["Min"] = statsCalculator->GetMinimum();
-  results["Std"] = sqrtf(statsCalculator->GetVariance());
-  results["Mean"] = statsCalculator->GetMean();
+  std::vector< typename TImageType::PixelType > nonZeroPixels;
+
+  TConstIteratorType  imageIterator(m_inputImage, m_inputImage->GetLargestPossibleRegion());
+  imageIterator.GoToBegin();
+  while (!imageIterator.IsAtEnd())
+  {
+    auto currentPixel = imageIterator.Get();
+    if (considerMask)
+    {
+      if (currentPixel > 0)
+      {
+        nonZeroPixels.push_back(currentPixel);
+      }
+    }
+    else
+    {
+      nonZeroPixels.push_back(currentPixel);
+    }
+
+    ++imageIterator;
+  }
+  cbica::Statistics< typename TImageType::PixelType > calculator;
+  calculator.SetInput(nonZeroPixels);
+
+  results["Max"] = calculator.GetMaximum();
+  results["Min"] = calculator.GetMinimum();
+  results["Std"] = calculator.GetStandardDeviation();
+  results["Mean"] = calculator.GetMean();
 
   return results;
 }
