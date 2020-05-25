@@ -103,7 +103,6 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
         rm -rf installLibs
         rm -rf qt.zip
-        rm -rf binaries_windows.zip
         rm -rf install
       displayName: 'Configure and compile Superbuild'
 
@@ -123,6 +122,10 @@ jobs:
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
         setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
         setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+        rm -rf binaries_windows.zip
+
+        rm -rf externalApps/binaries_windows/libra
+
         cmake --build . --target ALL_BUILD --config Release
         rm -rf externalApps
       displayName: 'Configure and compile CaPTk'
@@ -165,7 +168,6 @@ jobs:
     #     cd bin
     #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
     #     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
-    #     rm -rf binaries_windows.zip
     #     rm -rf install_manifest.txt
     #     setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
     #     setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
@@ -176,8 +178,9 @@ jobs:
     #   displayName: 'Package CaPTk'
 
     # - bash: |
-    #     # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
-    #     # ver=${str#*=}
+    #     # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'ƒ
+    #     rm -rf binaries
+    #     rm -rf scripts
         
     #     cd bin
         
@@ -194,57 +197,54 @@ jobs:
 
     #   displayName: 'Ensuring that the correct version ID is picked up'
 
-    # # - bash: |
-    # #     rm -rf src
-    # #     rm -rf docs*
-    # #     rm -rf data
-    # #     rm -rf binaries
-    # #     rm -rf scripts
-    # #     rm -rf bin_windows_20200212.tar.gz
-    # #     rm -rf install_manifest.txt
-    # #     rm -rf CMakeLists.txt
+    # # # - bash: |
+    # # #     rm -rf src
+    # # #     rm -rf docs*
+    # # #     rm -rf data
+    # # #     rm -rf binaries
+    # # #     rm -rf scripts
+    # # #     rm -rf bin_windows_20200212.tar.gz
+    # # #     rm -rf install_manifest.txt
+    # # #     rm -rf CMakeLists.txt
 
-    # #     cd bin
-    # #     rm -rf *proj*
+    # # #     cd bin
+    # # #     rm -rf *proj*
 
-    # #     tar cvfz externalApps.tar.gz externalApps
-    # #     tar cvfz qt.tar.gz qt
+    # # #     tar cvfz externalApps.tar.gz externalApps
+    # # #     tar cvfz qt.tar.gz qt
 
-    # #     rm -rf qt
-    # #     rm -rf externalApps
-    # #     rm -rf _CPack*
-    # #     rm -rf CMakeCache.txt
+    # # #     rm -rf qt
+    # # #     rm -rf externalApps
+    # # #     rm -rf _CPack*
+    # # #     rm -rf CMakeCache.txt
 
-    # #     # cmake -UPROJECT_VERSION # delete the project version definition
+    # # #     # cmake -UPROJECT_VERSION # delete the project version definition
         
-    # #     cd ../
+    # # #     cd ../
 
-    # #     mv bin bin_windows
-    # #     # tar cvfz bin_windows_20200212.tar.gz bin_windows
-    # #     rm -rf bin_windows
-    # #   displayName: 'Zipping bin'
+    # # #     mv bin bin_windows
+    # # #     # tar cvfz bin_windows_20200212.tar.gz bin_windows
+    # # #     rm -rf bin_windows
+    # # #   displayName: 'Zipping bin'
 
     # - bash: |
         
     #     rm -rf src
     #     rm -rf docs*
     #     rm -rf data
-    #     rm -rf binaries
-    #     rm -rf scripts
-    #     rm -rf bin_windows_20200212.tar.gz
     #     rm -rf install_manifest.txt
     #     rm -rf CMakeLists.txt
     #     rm -rf bin
 
     #   displayName: 'Freeing Space'
 
-    # - powershell: |
-    #     get-psdrive | Where Free*
+    # # - powershell: |
+    # #     get-psdrive | Where Free*
 
-    #     cd $(Build.ArtifactStagingDirectory)
-    #     pwd
+    # #     cd $(Build.ArtifactStagingDirectory)
+    # #     pwd
 
-    #   displayName: 'Disk space check'
+    # #   displayName: 'Disk space check'
 
     # - task: PublishBuildArtifacts@1
     #   inputs:
@@ -882,7 +882,9 @@ jobs:
         cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="E:/LibsCaPTk/ITK-build" -DDCMTK_DIR="E:/LibsCaPTk/DCMTK-build" -DQt5_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5" -DQt5Core_DIR="E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core" -DBUILD_TESTING=OFF ..
         setx PATH "E:/LibsCaPTk/bin/qt/5.12.1/bin;%PATH%"
         setx CMAKE_PREFIX_PATH "E:/LibsCaPTk/ITK-build;E:/LibsCaPTk/DCMTK-build;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5Core;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebView;E:/LibsCaPTk/qt/5.12.1/lib/cmake/Qt5WebEngineCore;%CMAKE_PREFIX_PATH%"
-    
+
+        rm -rf externalApps/binaries_windows/libra
+
         cmake --build . --target ALL_BUILD --config Release
         
       displayName: 'Configure and compile CaPTk'
@@ -954,7 +956,6 @@ jobs:
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-      #fetchDepth: 1  # the depth of commits to ask Git to fetch; defaults to no limit
 
     # submodule 
     - bash: |
@@ -974,7 +975,7 @@ jobs:
         ls -lt
       displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
 
-    # # Configure and build superbuild
+    # Configure and build superbuild
     # - bash: |
     #     cd bin
     #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" ..
@@ -984,14 +985,18 @@ jobs:
     #   displayName: 'Configure and compile Superbuild'
 
     - bash: |
+        # mkdir $(Build.SourcesDirectory)/../superbuild
+        # cd bin
+        # mv ./* $(Build.SourcesDirectory)/../superbuild
         # cd $(Build.SourcesDirectory)/..
         # ls
+        # echo "Done cd"
         # tar cvfz superbuild.tar.gz superbuild
         # ls
+        # echo "done tar"
         # rm -rf superbuild
         # ls
-
-        cd $(Build.SourcesDirectory)
+        # cd $(Build.SourcesDirectory)
 
         rm -rf bin
 
@@ -1000,23 +1005,15 @@ jobs:
         
         cp -r $(Build.SourcesDirectory)/../superbuild.tar.gz ./
         ls
-        echo "cp"
+        echo "Done cp"
         tar xvfz superbuild.tar.gz
         rm -rf superbuild.tar.gz
 
         ls
-        echo "tar"
+        echo "Done tar"
 
         mv superbuild/* ./
         ls
-        
-        # cd bin
-        
-        # rm -rf $(Build.SourcesDirectory)/../superbuild
-        # cp -r ./ $(Build.SourcesDirectory)/../superbuild
-
-        # ls $(Build.SourcesDirectory)/../superbuild
-        
       displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
@@ -1057,6 +1054,8 @@ jobs:
         rm -rf binaries_linux.zip
         rm -rf qt.zip
         rm -rf 5.12.1
+
+        rm -rf externalApps/binaries_linux/libra
 
         make -j2
         make install/strip

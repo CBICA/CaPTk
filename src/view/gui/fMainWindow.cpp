@@ -72,6 +72,8 @@
 
 #include <QFile>
 
+#include "QZipReader.h"
+
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
@@ -168,6 +170,7 @@ fMainWindow::fMainWindow()
   setupUi(this);
 
   m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+  m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/appsDownloadConfigs.yaml");
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -528,6 +531,7 @@ fMainWindow::fMainWindow()
     SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
+  cbica::createDir(downloadFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
   if (cbica::directoryExists(m_tempFolderLocation))
   {
@@ -1135,6 +1139,36 @@ void fMainWindow::about()
 #if CAPTK_PACKAGE_PROJECT
   mHelpTutorial.exec();
 #endif
+}
+
+void fMainWindow::appDownload(std::string currentApp)
+{
+  std::string linkyml = "";
+
+#ifdef _WIN32
+  linkyml = "Windows";
+#elif __APPLE__
+  linkyml = "macOS";
+#else
+  linkyml = "Linux";
+#endif
+
+  std::string downloadLink = m_appDownloadConfigs["apps"][currentApp][linkyml].as<std::string>();
+
+  ShowErrorMessage(downloadLink);
+
+  appDownloadDialog.SetPaths(downloadFolder, currentApp);
+  appDownloadDialog.SetDownloadLink(downloadLink);
+  appDownloadDialog.exec();
+
+  connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(unzipArchive(QString, QString)));    
+}
+
+void fMainWindow::unzipArchive(QString fullPath, QString extractPath) 
+{
+  // ShowErrorMessage(fullPath.toStdString() + " ep " + extractPath.toStdString());
+  QZipReader zr(fullPath);
+  bool ret = zr.extractAll(extractPath);
 }
 
 void fMainWindow::help_Interactions()
@@ -5881,7 +5915,15 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  std::string scriptToCall = m_allNonNativeApps["libra"];
+  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  // ShowErrorMessage("libra: " + scriptToCall);
+
+  if (scriptToCall.empty()) {
+    appDownload("libra");
+    return;
+  }
+
+  // std::string scriptToCall = m_allNonNativeApps["libra"];
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -5982,7 +6024,14 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  // std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  // ShowErrorMessage("libra: " + scriptToCall);
+
+  if (scriptToCall.empty()) {
+    appDownload("libra");
+    return;
+  }
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -6037,7 +6086,14 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  // std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  // ShowErrorMessage("libra: " + scriptToCall);
+
+  if (scriptToCall.empty()) {
+    appDownload("libra");
+    return;
+  }
 
   if (cbica::fileExists(scriptToCall))
   {

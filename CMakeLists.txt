@@ -285,6 +285,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   FILE(GLOB_RECURSE YAMLCPP_Sources "${PROJECT_SOURCE_DIR}/src/thirdparty/yaml-cpp/src/*.cpp")
   SET( YAMLCPP_Headers ${YAMLCPP_Headers} CACHE STRING "YAML-CPP headers" FORCE )
   SET( YAMLCPP_Sources ${YAMLCPP_Sources} CACHE STRING "YAML-CPP sources" FORCE )
+
   ### third party library processing
 
   FIND_PACKAGE(VTK REQUIRED)
@@ -310,7 +311,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   ENDIF(VTK_VERSION VERSION_LESS 5.6.0)
 
 
-  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore WebEngineWidgets Concurrent Test Sql REQUIRED)
+  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore WebEngineWidgets Concurrent Test Sql Network REQUIRED)
 
   # For some reason IF(LINUX) doesn't work properly on linux
   # This is necessary for the whole project to compile on linux
@@ -345,6 +346,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     Qt5::Concurrent
     Qt5::Test
     Qt5::Sql
+    Qt5::Network
     ${ITK_LIBRARIES}
     ${VTK_LIBRARIES}
     ${OpenCV_LIBRARIES}
@@ -492,7 +494,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${CACHED_INCLUDE_DIRS}
     ${OpenMP_INCLUDE_DIRS}
   )
-  
+
   IF( BUILD_CONFETTI )
     IF (WIN32)
       # do nothing for windows since the pre-compiled binaries will be used
@@ -772,8 +774,12 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB sri24_FILES "${DATA_DIR}/sri24/*.*")
     SET_SOURCE_FILES_PROPERTIES(${sri24_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
 
-    FILE(GLOB DOWNLOAD_LINKS "${DATA_DIR}/links.yaml")
+    FILE(GLOB DOWNLOAD_LINKS "${DATA_DIR}/*.yaml")
+    MESSAGE(STATUS "YAML ${DOWNLOAD_LINKS}")
     SET_SOURCE_FILES_PROPERTIES(${DOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
+
+    # FILE(GLOB APPSDOWNLOAD_LINKS "${DATA_DIR}/appsDownloadConfigs.yaml")
+    # SET_SOURCE_FILES_PROPERTIES(${APPSDOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
 
     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FLAIR_FILE} ${FLAIR_TESTTUMOR_FILE} ${survival_FILES} ${egfrv3_FILES} ${sri24_FILES} ${DOWNLOAD_LINKS})
 
@@ -781,6 +787,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/links.yaml" DESTINATION data)
+    INSTALL(FILES "${DATA_DIR}/appsDownloadConfigs.yaml" DESTINATION data)
     INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/molecular" DESTINATION data PATTERN ".svn" EXCLUDE)

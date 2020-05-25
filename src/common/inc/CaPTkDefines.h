@@ -39,6 +39,7 @@
   const std::string captk_SampleDataFolder = cbica::getUserHomeDirectory() + "/" + std::string(PROJECT_NAME) + "/SampleData"; // kept separate because of folder creation
   const std::string captk_PretrainedFolder = cbica::getUserHomeDirectory() + "/" + std::string(PROJECT_NAME) + "/PretrainedModels"; // kept separate because of folder creation
   const std::string loggerFolder = loggerFolderBase + std::string(PROJECT_VERSION) + "/";
+  const std::string downloadFolder = loggerFolder + "apps/";
 
   const std::string loggerFile = loggerFolder + cbica::replaceString(cbica::getCurrentLocalDate(), ":", "-") + ".log";
   const std::string aboutScreenSeen = loggerFolder + "aboutSeen.txt"; // file to check if the user has seen "about" page or not

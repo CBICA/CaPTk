@@ -1,0 +1,29 @@
+version: v1.0
+class: DownloadConfigs
+apps:
+  confetti:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/confetti.zip
+  dcm2nii:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/dcm2nii.zip
+    Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/dcm2nii.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/dcm2nii.zip
+  libra:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/libra.zip
+    Linux: https://github.com/PhucNgo1711/precompiledBinaries/raw/master/linux_ubuntu16.04/libra.zip
+  deepmedic:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/deepmedic.zip
+    Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/deepmedic.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/deepmedic.zip
+  itksnap:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/itksnap.zip
+    Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/itksnap.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/itksnap.zip
+  theia:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/theia.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/theia.zip
+hints:
+  SoftwareRequirement:
+    packages:
+      CaPTk:
+        version:
+          - 1.7.7
