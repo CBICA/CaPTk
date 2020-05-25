@@ -22,6 +22,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "FeatureScalingClass.h"
 #include "CaPTkDefines.h"
 #include "cbicaLogging.h"
+#include "CaPTkEnums.h"
 
 
 #ifdef APP_BASE_CAPTK_H
@@ -67,9 +68,14 @@ public:
 
   std::vector<int> UpdateUnselectedFeatures(std::vector<int> SelectedFeatures, int size);
 
-  bool Run(const std::string inputFeaturesFile, const std::string inputLabelsFile, const std::string outputdirectory,const int classifierType, const int foldtype, const int conftype, const int featureselectiontype,
-    const int optimizationType, const int crossvalidationType,
-    const std::string modeldirectory);
+  bool Run(const std::string inputFeaturesFile,
+    const std::string outputdirectory,
+    const std::string inputLabelsFile,
+    const std::string modeldirectory,
+    const int classifiertype, const int foldtype,
+    const int confType, const int featureselectiontype,
+    const int optimizationType, const int crossvalidationType);
+
 
   std::string mEighteenTrainedFile, mSixTrainedFile;
 
@@ -79,7 +85,8 @@ public:
   VectorDouble CalculatePerformanceMeasures(VectorDouble predictedLabels, VectorDouble GivenLabels);
 
   VectorDouble CrossValidation(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder,
-    const int classifiertype, const int foldtype,const int featureselectiontype);
+    const int classifiertype, const int foldtype,const int featureselectiontype,
+    const int optimizationType, const int crossvalidationType);
 
   VectorDouble InternalCrossValidation(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue,int kerneltype);
 

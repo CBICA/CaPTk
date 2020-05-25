@@ -70,7 +70,7 @@ int algorithmsRunner()
       std::cout << "Starting Histogram Matching.\n";
     }
 
-    if (!inputImageFiles.empty()) // multiple images passed
+    if (inputImageFiles.size() > 1) // multiple images passed
     {
       std::cerr << "This operation cannot currently be performed with multiple images.\n";
       return EXIT_FAILURE;
@@ -199,7 +199,7 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == BiasCorrectionN3)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
+    if (inputImageFiles.size() > 1) // multiple images passed
     {
       std::cerr << "This operation cannot currently be performed with multiple images.\n";
       return EXIT_FAILURE;
@@ -211,19 +211,19 @@ int algorithmsRunner()
       typename TMaskImageType::Pointer maskImage; // mask inits to null
       if (!inputMaskFile.empty())
       {
-          maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
+        maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
       }
 
       BiasCorrection biasCorrector;
       auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n3",
-                                                                       inputImage,
-                                                                       maskImage,
-                                                                       bias_splineOrder,
-                                                                       bias_maxIterations,
-                                                                       bias_fittingLevels,
-                                                                       bias_filterNoise,
-                                                                       bias_fwhm,
-                                                                       bias_otsuBins);
+        inputImage,
+        maskImage,
+        bias_splineOrder,
+        bias_maxIterations,
+        bias_fittingLevels,
+        bias_filterNoise,
+        bias_fwhm,
+        bias_otsuBins);
 
 
       cbica::WriteImage< TImageType >(outputImage, outputImageFile);
@@ -233,42 +233,41 @@ int algorithmsRunner()
 
   else if (requestedAlgorithm == BiasCorrectionN4)
   {
-      if (!inputImageFiles.empty()) // multiple images passed
+    if (inputImageFiles.size() > 1) // multiple images passed
+    {
+      std::cerr << "This operation cannot currently be performed with multiple images.\n";
+      return EXIT_FAILURE;
+    }
+    else
+    {
+      auto inputImage = cbica::ReadImage<TImageType>(inputImageFile);
+      typedef itk::Image<unsigned char, TImageType::ImageDimension> TMaskImageType;
+      typename TMaskImageType::Pointer maskImage; // mask inits to null
+      if (!inputMaskFile.empty())
       {
-        std::cerr << "This operation cannot currently be performed with multiple images.\n";
-        return EXIT_FAILURE;
-      }
-      else
-      {
-        auto inputImage = cbica::ReadImage<TImageType>(inputImageFile);
-        typedef itk::Image<unsigned char, TImageType::ImageDimension> TMaskImageType;
-        typename TMaskImageType::Pointer maskImage; // mask inits to null
-        if (!inputMaskFile.empty())
-        {
-            maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
-        }
-
-        BiasCorrection biasCorrector;
-        auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n4",
-                                                                         inputImage,
-                                                                         maskImage,
-                                                                         bias_splineOrder,
-                                                                         bias_maxIterations,
-                                                                         bias_fittingLevels,
-                                                                         bias_filterNoise,
-                                                                         bias_fwhm,
-                                                                         bias_otsuBins);
-
-
-        cbica::WriteImage< TImageType >(outputImage, outputImageFile);
-        return EXIT_SUCCESS;
+        maskImage = cbica::ReadImage<TMaskImageType>(inputMaskFile);
       }
 
+      BiasCorrection biasCorrector;
+      auto outputImage = biasCorrector.Run<TImageType, TMaskImageType>("n4",
+        inputImage,
+        maskImage,
+        bias_splineOrder,
+        bias_maxIterations,
+        bias_fittingLevels,
+        bias_filterNoise,
+        bias_fwhm,
+        bias_otsuBins);
+
+
+      cbica::WriteImage< TImageType >(outputImage, outputImageFile);
+      return EXIT_SUCCESS;
+    }
   }
 
   else if (requestedAlgorithm == SusanDenoisingAlgo)
   {
-    if (!inputImageFiles.empty()) // multiple images passed
+    if (inputImageFiles.size() > 1) // multiple images passed
     {
       std::cerr << "This operation cannot currently be performed with multiple images.\n";
       return EXIT_FAILURE;
@@ -386,12 +385,20 @@ int algorithmsRunner()
       std::string commandToCall;
       if (!cbica::fileExists(interimFiles_affineTransform))
       {
-        if (registrationTypeInt == RegistrationTypeEnum::Affine)
+        if (registrationTypeInt == RegistrationTypeEnum::Rigid)
         {
+          if (TImageType::ImageDimension == 3)
+          {
+            registrationRigidDof = 6;
+          }
+          else if (TImageType::ImageDimension == 2)
+          {
+            registrationRigidDof = 3;
+          }
           commandToCall = greedyPathAndDim + " -a" +
             commonCommands +
             metricsCommand +
-            " -ia-image-centers -o " + interimFiles_affineTransform;
+            " -ia-image-centers -dof " + std::to_string(registrationRigidDof) + "-o " + interimFiles_affineTransform;
           ;
         }
         else
@@ -679,7 +686,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
   parser.addOptionalParameter("ssT", "susanThresh", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Intensity Variation Threshold", "Defaults to " + std::to_string(ssIntensityThreshold));
   parser.addOptionalParameter("p12", "p1p2norm", cbica::Parameter::STRING, "N.A.", "P1-P2 normalization required for skull stripping");
-  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine | Deformable | Rigid-DOF", "The kind of registration to perform", "Defaults to " + registrationType, "Can use Mask File with '-m' and multiple moving images with '-i'", "For Rigid, the second number defines the degrees of freedom, eg: '-ref Rigid-10'");
+  parser.addOptionalParameter("reg", "registration", cbica::Parameter::STRING, "Affine-DOF | Deformable | Rigid", "The kind of registration to perform", "Defaults to " + registrationType, "Can use Mask File with '-m' and multiple moving images with '-i'", "For Affine, the second number defines the degrees of freedom, eg: '-ref Affine-12'");
   parser.addOptionalParameter("rFI", "regFixedImg", cbica::Parameter::FILE, "NIfTI", "The Fixed Image for the registration", "Needed for registration");
   parser.addOptionalParameter("rME", "regMetrics", cbica::Parameter::STRING, "SSD | MI | NMI | NCC-AxBxC", "The kind of metrics to use: SSD (Sum of Squared Differences) or MI (Mutual Information) or", "NMI (Normalized Mutual Information) or NCC-AxBxC (Normalized Cross correlation with integer radius for 3D image)", "Defaults to " + registrationMetrics);
   parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The number of iterations per level of multi-res", "Defaults to " + registrationIterations);
@@ -873,6 +880,10 @@ int main(int argc, char** argv)
     if (registrationType.find("RIGID") != std::string::npos)
     {
       registrationTypeInt = RegistrationTypeEnum::Rigid;
+    }
+    else if (registrationType.find("AFFINE") != std::string::npos)
+    {
+      registrationTypeInt = RegistrationTypeEnum::Affine;
       auto temp = cbica::stringSplit(registrationType, "-");
       // check for different delimiters
       if (temp.size() == 1)
@@ -886,16 +897,12 @@ int main(int argc, char** argv)
       if (temp.size() == 2)
       {
         registrationRigidDof = std::atoi(temp[1].c_str());
-        if ((registrationRigidDof != 12) && (registrationRigidDof != 6))
+        if ((registrationRigidDof != 12) && (registrationRigidDof != 6) && (registrationRigidDof != 7))
         {
-          std::cerr << "Greedy only accepts 6 or 12 as the rigid DOF.\n";
+          std::cerr << "Greedy only accepts 6, 7 or 12 as the affine DOF.\n";
           return EXIT_FAILURE;
         }
       }
-    }
-    else if (registrationType.find("AFFINE") != std::string::npos)
-    {
-      registrationTypeInt = RegistrationTypeEnum::Affine;
     }
     else // default case
     {

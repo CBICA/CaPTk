@@ -607,6 +607,7 @@ void fRegistrationDialog::SelectedAffineMode()
   affineMode = true;
   rigidMode = false;
   deformMode = false;
+  degreesOfFreedom->setEnabled(true);
 }
 
 void fRegistrationDialog::SelectedRigidMode()
@@ -616,6 +617,7 @@ void fRegistrationDialog::SelectedRigidMode()
   affineMode = false;
   rigidMode = true;
   deformMode = false;
+  degreesOfFreedom->setEnabled(false);
 }
 
 void fRegistrationDialog::SelectedDeformMode()
@@ -625,6 +627,7 @@ void fRegistrationDialog::SelectedDeformMode()
   affineMode = false;
   rigidMode = false;
   deformMode = true;
+  degreesOfFreedom->setEnabled(false);
 }
 
 void fRegistrationDialog::SelectedMetric(int index)
@@ -881,7 +884,7 @@ void fRegistrationDialog::ConfirmButtonPressed()
       metric, 
       options_RIGID_selected->isChecked(), 
       options_AFFINE_selected->isChecked(), 
-      options_DEFORMABLE_selected->isChecked(), radius, m_iterations);
+      options_DEFORMABLE_selected->isChecked(), radius, m_iterations, degreesOfFreedom->text().toStdString());
     this->close();
   }
 }

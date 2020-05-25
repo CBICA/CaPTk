@@ -17,6 +17,11 @@ namespace CAPTK
     IMAGE_MAMMOGRAM, IMAGE_TYPE_FEATURES
   };
 
+  enum ClassificationConfigurationType
+  {
+    CONF_TYPE_UNDEFINED = 0, CONF_TYPE_KFOLD_CV, CONF_TYPE_DOUBLE, CONF_TYPE_SPLIT_TRAIN , CONF_TYPE_SPLIT_TEST
+  };
+
   //! The modality strings that are used in the GUI 
   static const char ImageModalityString[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES + 1][15] =
   { "DEF", "T1", "T1Gd", "T2",
