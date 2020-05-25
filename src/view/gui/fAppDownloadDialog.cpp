@@ -22,6 +22,8 @@ fAppDownloadDialog::~fAppDownloadDialog()
 
 void fAppDownloadDialog::CancelButtonPressed()
 {
+    emit cancelDownload(appName);
+
     this->close();
 }
 
@@ -42,7 +44,7 @@ void fAppDownloadDialog::ConfirmButtonPressed()
         fileName = "index.html";
 
     fullPath = downloadPath + fileName;
-    ShowErrorMessage(fullPath.toStdString());
+    // ShowErrorMessage(fullPath.toStdString());
 
     if (QFile::exists(fullPath)) {
         if (QMessageBox::question(this, tr("HTTP"),
@@ -69,6 +71,8 @@ void fAppDownloadDialog::ConfirmButtonPressed()
 
     progressDialog->setWindowTitle(tr("HTTP"));
     progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
+    
+    emit startDownload(appName);
 
     startRequest(url);
 
@@ -135,6 +139,9 @@ void fAppDownloadDialog::httpDownloadFinished()
         }
         reply->deleteLater();
         progressDialog->hide();
+
+        emit cancelDownload(appName);
+
         return;
     }
 
@@ -174,7 +181,7 @@ void fAppDownloadDialog::httpDownloadFinished()
     file = 0;
     manager = 0;
 
-    emit doneDownload(fullPath, extractPath);
+    emit doneDownload(fullPath, extractPath, appName);
 }
 
 // During the download progress, it can be canceled
@@ -182,5 +189,8 @@ void fAppDownloadDialog::cancelDownload()
 {
     httpRequestAborted = true;
     reply->abort();
+
+    emit cancelDownload(appName);
+
     this->close();
 }

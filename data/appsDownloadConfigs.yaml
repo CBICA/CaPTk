@@ -8,7 +8,7 @@ apps:
     Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/dcm2nii.zip
     macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/dcm2nii.zip
   libra:
-    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/libra.zip
+    Windows: https://github.com/PhucNgo1711/precompiledBinaries/raw/master/windows/libra.zip
     Linux: https://github.com/PhucNgo1711/precompiledBinaries/raw/master/linux_ubuntu16.04/libra.zip
   deepmedic:
     Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/deepmedic.zip

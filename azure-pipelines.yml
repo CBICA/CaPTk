@@ -967,6 +967,8 @@ jobs:
 
     # Moving LFS Files
     - bash: |
+        rm -rf binaries
+
         mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
@@ -1091,6 +1093,9 @@ jobs:
 
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
+        rm -rf bin
+        df -k .
+
       displayName: 'Set up environment variables for packager and build a package'
 
     - task: PublishBuildArtifacts@1
@@ -1171,7 +1176,7 @@ jobs:
         # rm -rf superbuild
         # ls
         # cd $(Build.SourcesDirectory)
-        
+
         pwd
 
         rm -rf bin
@@ -1189,7 +1194,7 @@ jobs:
         echo "Done tar"
 
         mv superbuild/* ./
-
+        ls
         cat ITK-build/ITKTargets.cmake
       displayName: 'Move superbuild and qt and compiled apps'
 

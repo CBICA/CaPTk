@@ -955,7 +955,10 @@ public slots:
   \brief For apps decoupling
   */
   void appDownload(std::string currentApp);
-  void unzipArchive(QString fullPath, QString extractPath);
+  void startDownload(QString appName);
+  void cancelDownload(QString appName);
+  void startUnzip(QString fullPath, QString extractPath, QString appName);
+  void doneUnzip(QString appName);
 
   /**
   \brief Help for downloading Sample Data
