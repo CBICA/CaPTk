@@ -9,6 +9,8 @@
 #include <unistd.h>
 #endif
 
+#include "cbicaUtilities.h"
+
 #ifdef WIN32
 #define stat _stat
 #endif
@@ -255,9 +257,9 @@ void fRegistrationDialog::SelectMovingFile1()
       return;
     }
     mInputPathName = itksys::SystemTools::GetFilenamePath(file.toStdString()).c_str();
-    QString fileName = itksys::SystemTools::GetFilenameWithoutExtension(file.toStdString()).c_str();
-    QString extn = itksys::SystemTools::GetFilenameExtension(file.toStdString()).c_str();
-    QString fixedfileName = itksys::SystemTools::GetFilenameWithoutExtension(fixed).c_str();
+    QString fileName = cbica::getFilenameBase(file.toStdString()).c_str();
+    QString extn = ".nii.gz";
+    QString fixedfileName = cbica::getFilenameBase(fixed).c_str();
 
     movingFileName1->setText(file);
     if (!matrixRadioButton->isChecked())
@@ -289,9 +291,9 @@ void fRegistrationDialog::SelectMovingFile2()
       return;
     }
     mInputPathName = itksys::SystemTools::GetFilenamePath(file.toStdString()).c_str();
-    QString fileName = itksys::SystemTools::GetFilenameWithoutExtension(file.toStdString()).c_str();
-    QString extn = itksys::SystemTools::GetFilenameExtension(file.toStdString()).c_str();
-    QString fixedfileName = itksys::SystemTools::GetFilenameWithoutExtension(fixed).c_str();
+    QString fileName = cbica::getFilenameBase(file.toStdString()).c_str();
+    QString extn = ".nii.gz";
+    QString fixedfileName = cbica::getFilenameBase(fixed).c_str();
 
     movingFileName2->setText(file);
 
@@ -325,9 +327,9 @@ void fRegistrationDialog::SelectMovingFile3()
       return;
     }
     mInputPathName = itksys::SystemTools::GetFilenamePath(file.toStdString()).c_str();
-    QString fileName = itksys::SystemTools::GetFilenameWithoutExtension(file.toStdString()).c_str();
-    QString extn = itksys::SystemTools::GetFilenameExtension(file.toStdString()).c_str();
-    QString fixedfileName = itksys::SystemTools::GetFilenameWithoutExtension(fixed).c_str();
+    QString fileName = cbica::getFilenameBase(file.toStdString()).c_str();
+    QString extn = ".nii.gz";
+    QString fixedfileName = cbica::getFilenameBase(fixed).c_str();
 
     movingFileName3->setText(file);
 
@@ -360,9 +362,9 @@ void fRegistrationDialog::SelectMovingFile4()
       return;
     }
     mInputPathName = itksys::SystemTools::GetFilenamePath(file.toStdString()).c_str();
-    QString fileName = itksys::SystemTools::GetFilenameWithoutExtension(file.toStdString()).c_str();
-    QString extn = itksys::SystemTools::GetFilenameExtension(file.toStdString()).c_str();
-    QString fixedfileName = itksys::SystemTools::GetFilenameWithoutExtension(fixed).c_str();
+    QString fileName = cbica::getFilenameBase(file.toStdString()).c_str();
+    QString extn = ".nii.gz";
+    QString fixedfileName = cbica::getFilenameBase(fixed).c_str();
 
     movingFileName4->setText(file);
 
@@ -396,9 +398,9 @@ void fRegistrationDialog::SelectMovingFile5()
       return;
     }
     mInputPathName = itksys::SystemTools::GetFilenamePath(file.toStdString()).c_str();
-    QString fileName = itksys::SystemTools::GetFilenameWithoutExtension(file.toStdString()).c_str();
-    QString extn = itksys::SystemTools::GetFilenameExtension(file.toStdString()).c_str();
-    QString fixedfileName = itksys::SystemTools::GetFilenameWithoutExtension(fixed).c_str();
+    QString fileName = cbica::getFilenameBase(file.toStdString()).c_str();
+    QString extn = ".nii.gz";
+    QString fixedfileName = cbica::getFilenameBase(fixed).c_str();
 
     movingFileName5->setText(file);
 
@@ -605,6 +607,7 @@ void fRegistrationDialog::SelectedAffineMode()
   affineMode = true;
   rigidMode = false;
   deformMode = false;
+  degreesOfFreedom->setEnabled(true);
 }
 
 void fRegistrationDialog::SelectedRigidMode()
@@ -614,6 +617,7 @@ void fRegistrationDialog::SelectedRigidMode()
   affineMode = false;
   rigidMode = true;
   deformMode = false;
+  degreesOfFreedom->setEnabled(false);
 }
 
 void fRegistrationDialog::SelectedDeformMode()
@@ -623,6 +627,7 @@ void fRegistrationDialog::SelectedDeformMode()
   affineMode = false;
   rigidMode = false;
   deformMode = true;
+  degreesOfFreedom->setEnabled(false);
 }
 
 void fRegistrationDialog::SelectedMetric(int index)
@@ -876,7 +881,10 @@ void fRegistrationDialog::ConfirmButtonPressed()
   {
     emit RegistrationSignal(fixedFileName->text().toStdString(), inputfilenames, 
       outputfilenames, matrixfilenames, 
-      metric, rigidMode, affineMode, deformMode, radius, m_iterations);
+      metric, 
+      options_RIGID_selected->isChecked(), 
+      options_AFFINE_selected->isChecked(), 
+      options_DEFORMABLE_selected->isChecked(), radius, m_iterations, degreesOfFreedom->text().toStdString());
     this->close();
   }
 }

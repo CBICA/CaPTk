@@ -17,6 +17,9 @@
 #include <QDir>
 #include "qdesktopservices.h"
 
+#include "yaml-cpp/node/node.h"
+#include "yaml-cpp/yaml.h"
+
 static QString IMAGES_EXTENSIONS = "Images (*.nii.gz *.nii *.dcm)";
 
 inline void fixComboBox(QComboBox *comboBoxToEdit)
@@ -380,4 +383,13 @@ inline std::string getCaPTkDataDir()
 inline bool openLink(const std::string &link)
 {
   return QDesktopServices::openUrl(QUrl(link.c_str()));
+}
+
+//! get download link
+inline std::string getAppropriateDownloadLink(const std::string &application, const std::string &type)
+{
+  YAML::Node m_downloadLinks;
+  m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+
+  return m_downloadLinks["inputs"][application][type].as<std::string>();
 }

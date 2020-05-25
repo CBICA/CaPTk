@@ -44,6 +44,7 @@ public:
 
     QLineEdit *fixedFileName;
     QLineEdit *iterations;
+    QLineEdit *degreesOfFreedom;
     QLineEdit *nccRadii;
     QLineEdit *movingFileName1;
     QLineEdit *movingFileName2;
@@ -59,6 +60,7 @@ public:
     QLabel *movingFileLabel5;
     QLabel *options_NCC_radii;
     QLabel *options_iterations;
+    QLabel *options_degreesOfFreedom;
 
     QPushButton *fixedFileButton;
     QPushButton *movingFileButton1;
@@ -262,6 +264,21 @@ public:
         gridRowCounter++;
         registrationGridLayout->addWidget(options_iterations, gridRowCounter, 0, 1, 1);
         registrationGridLayout->addWidget(iterations, gridRowCounter, 1, 1, 1);
+
+        options_degreesOfFreedom = new QLabel(registrationGroupBox);
+        options_degreesOfFreedom->setObjectName("dofLabel");
+        options_degreesOfFreedom->setSizePolicy(sizePolicy);
+        degreesOfFreedom = new QLineEdit("12");
+        QIntValidator* validater = new QIntValidator(2, 12, registrationGroupBox);
+        degreesOfFreedom->setObjectName("degreesOfFreedom");
+        degreesOfFreedom->setValidator(validater);
+        degreesOfFreedom->setToolTip("Degrees of Freedom for Rigid Registration: 6-12");
+        degreesOfFreedom->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+        degreesOfFreedom->setEnabled(false);
+
+        gridRowCounter++;
+        registrationGridLayout->addWidget(options_degreesOfFreedom, gridRowCounter, 0, 1, 1);
+        registrationGridLayout->addWidget(degreesOfFreedom, gridRowCounter, 1, 1, 1);
 
         /*--------------------Fixed Image--------------------------------*/
         fixedFileLabel = new QLabel(registrationGroupBox);
@@ -681,6 +698,7 @@ public:
         options_registration_label->setText("Registration:");
         options_NCC_radii->setText("Enter radii:");
         options_iterations->setText("Iterations:");
+        options_degreesOfFreedom->setText("Degrees of Freedom:");
         movingFileLabel1->setText("Moving Image 1: ");
         movingFileLabel2->setText("Moving Image 2:");
         movingFileLabel3->setText("Moving Image 3:");

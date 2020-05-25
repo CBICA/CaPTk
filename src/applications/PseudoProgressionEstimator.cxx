@@ -2,6 +2,7 @@
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
 #include "CaPTkEnums.h"
+#include "CaPTkGUIUtils.h"
 
 //------------------Survival Prediction on existing model-----------------------
 
@@ -10,7 +11,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
   std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
-
+  std::cout << subjectNames.size();
   std::sort(subjectNames.begin(), subjectNames.end());
 
   for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
@@ -156,14 +157,16 @@ int SurvivalPredictionOnExistingModel(const std::string modeldirectory,
   std::cout << "Module loaded: Pseudoprogression Estimation on Existing Model:" << std::endl;
   std::vector<double> finalresult;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPseudoProgression(CAPTK::MachineLearningApplicationSubtype::TESTING, inputdirectory, true, true, true, true);
-  std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
-  PseudoProgressionEstimator objPseudoProgressionEstimator;
-  bool data = objPseudoProgressionEstimator.PseudoProgressionEstimateOnExistingModel(QualifiedSubjects, modeldirectory, inputdirectory, outputdirectory, true, true, true, true);
-  //for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
-  //{
-  //	std::map<ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
-  //	//std::cout << static_cast<std::string>(onesubject[IMAGE_TYPE_SUDOID]) << ": " << result[subjectID] << std::endl;
-  //}
+  if (QualifiedSubjects.size() == 0)
+    std::cout << "No subject found with required input. Exiting...." << std::endl;
+  else
+  {
+    std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
+    PseudoProgressionEstimator objPseudoProgressionEstimator;
+    bool result = objPseudoProgressionEstimator.PseudoProgressionEstimateOnExistingModel(QualifiedSubjects, modeldirectory, inputdirectory, outputdirectory, true, true, true, true);
+    if(result==true)
+      std::cout<<"Results saved in the output folder."<<std::endl;
+  }
 
   return EXIT_SUCCESS;
 }
@@ -177,7 +180,7 @@ int PrepareNewSurvivalPredictionModel(const std::string inputdirectory, const st
   std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
   if (QualifiedSubjects.size() == 0)
     std::cout << "No subject found with required input. Exiting...." << std::endl;
-  else if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<=20)
+  else if (QualifiedSubjects.size() >0 && QualifiedSubjects.size()<20)
     std::cout << "There should be atleast 20 patients to build reliable pseudo-progression model. Exiting...." << std::endl;
   else
     objPseudoProgressionEstimator.TrainNewModelOnGivenData(QualifiedSubjects, outputdirectory, true, true, true, true);
@@ -189,7 +192,7 @@ int main(int argc, char **argv)
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PseudoProgressionEstimator");
   parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory having test subjects");
-  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
+  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models", "Penn Model: " + getAppropriateDownloadLink("PseudoProgressionEstimator", "Model"));
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
 

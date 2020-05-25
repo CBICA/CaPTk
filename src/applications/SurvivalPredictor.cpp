@@ -2,12 +2,8 @@
 #include "itkCSVNumericObjectFileWriter.h"
 #include "CaPTkGUIUtils.h"
 #include "CaPTkClassifierUtils.h"
-
-
-typedef itk::Image< float, 3 > ImageType;
-//SurvivalPredictor::~SurvivalPredictor()
-//{
-//}
+#include "fMainWindow.h"
+#include "cbicaStatistics.h"
 
 VectorDouble SurvivalPredictor::GetStatisticalFeatures(const VectorDouble &intensities)
 {
@@ -46,8 +42,6 @@ VectorDouble SurvivalPredictor::GetHistogramFeatures(const VectorDouble &intensi
   }
   Ranges[Ranges.size() - 1][1] = 255;
   Ranges[0][0] = 0;
-
-
   BinCount.SetSize(Ranges.size());
   for (unsigned int j = 0; j < Ranges.size(); j++)
   {
@@ -91,7 +85,7 @@ VectorDouble SurvivalPredictor::GetVolumetricFeatures(const double &edemaSize,co
   return VolumetricFeatures;
 }
 
-int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inputdirectory,const std::vector< std::map< CAPTK::ImageModalityType, std::string > > &qualifiedsubjects, const std::string &outputdirectory)
+int SurvivalPredictor::TrainNewSurvivalPredictionModel(const std::string &inputdirectory,const std::vector< std::map< CAPTK::ImageModalityType, std::string > > &qualifiedsubjects, const std::string &outputdirectory)
 {
   VectorDouble AllSurvival; 
   VariableSizeMatrixType FeaturesOfAllSubjects;
@@ -117,29 +111,29 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
 	  logger.WriteError("Cannot find the file 'Survival_HMFeatures_Configuration.csv' in the ../data/survival directory. Error code : " + std::string(e1.what()));
 	  return false;
   }
- //---------------------------------------------------------------------------
-  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 161);
+  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), SURVIVAL_NO_OF_FEATURES);
+  std::vector<std::string> patient_ids;
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
 	  std::cout << "Patient's data loaded:" << sid + 1 << std::endl;
 	  std::map< CAPTK::ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
+    patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
 	  try
 	  {
-		  ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-		  ImageType::Pointer AtlasImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
-		  //ImageType::Pointer TemplateImagePointer = ReadNiftiImage<ImageType>("../data/survival/Template.nii.gz");
-      ImageType::Pointer TemplateImagePointer = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "/survival/Template.nii.gz");
-		  ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
-		  ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
-		  ImageType::Pointer T1CEImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE])));
-		  ImageType::Pointer T2FlairImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR])));
-		  ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1])));
-		  ImageType::Pointer T2ImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2])));
-		  ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
-		  ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
-		  ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
-		  ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
-		  ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
+		  ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+		  ImageType::Pointer AtlasImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
+      ImageType::Pointer TemplateImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/survival/Template.nii.gz");
+		  ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
+		  ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
+		  ImageType::Pointer T1CEImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE])));
+		  ImageType::Pointer T2FlairImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR])));
+		  ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1])));
+		  ImageType::Pointer T2ImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2])));
+		  ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
+		  ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
+		  ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
+		  ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
+		  ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
 
 		  VectorDouble ages;
 		  VectorDouble survival;
@@ -150,15 +144,13 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
 		  reader->HasRowHeadersOff();
 		  reader->Parse();
 		  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-
 		  for (unsigned int i = 0; i < dataMatrix.rows(); i++)
 		  {
 			  ages.push_back(dataMatrix(i, 0));
 			  survival.push_back(dataMatrix(i, 1));
 			  AllSurvival.push_back(dataMatrix(i, 1));
 		  }
-
-		  VectorDouble TestFeatures = LoadTestData<ImageType>(T1CEImagePointer, T2FlairImagePointer, T1ImagePointer, T2ImagePointer,
+		  VectorDouble TestFeatures = CalculateFeatures<ImageType>(T1CEImagePointer, T2FlairImagePointer, T1ImagePointer, T2ImagePointer,
 			  RCBVImagePointer, PSRImagePointer, PHImagePointer, AXImagePointer, FAImagePointer, RADImagePointer, TRImagePointer, LabelImagePointer, AtlasImagePointer, TemplateImagePointer, HistogramFeaturesConfigurations);
 
 		  FeaturesOfAllSubjects(sid, 0) = ages[0];
@@ -171,9 +163,31 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
 		  return false;
 	  }
   }
+  std::string FeatureLabels[SURVIVAL_NO_OF_FEATURES] = { "Age","ET","NCR","ED","brain size","ET+NCR","(ET+NCR)x100/brain size","EDx100/brain size","ETx100/(ET+NCR)","NCRx100/(ET+NCR)","NCRx100/(ET+NCR)",
+    "Vent_Tumor_Dist","Vent_ED_Dist","Mean_ET_T1CE","STD_ET_T1CE","Mean_ET_T1","STD_ET_T1","Mean_ET_T2","STD_ET_T2","Mean_ET_Flair","STD_ET_Flair","Mean_ET_PH","STD_ET_PH","Mean_ET_PSR","STD_ET_PSR","Mean_ET_RCBV","STD_ET_RCBV","Mean_ET_FA","STD_ET_FA","Mean_ET_AX","STD_ET_AX","Mean_ET_RAD","STD_ET_RAD","Mean_ET_ADC","STD_ET_ADC",
+    "ET_T1CE_Bin1","ET_T1CE_Bin2","ED_T1CE_Bin1","ED_T1CE_Bin2","ED_T1CE_Bin3","ED_T1CE_Bin4","NCR_T1CE_Bin1","NCR_T1CE_Bin2",
+    "ET_T1_Bin1","ET_T1_Bin2","ED_T1_Bin1","ED_T1_Bin2","ED_T1_Bin3","ED_T1_Bin4","ED_T1_Bin5","ED_T1_Bin6","ED_T1_Bin7","ED_T1_Bin8","ED_T1_Bin9","NCR_T1_Bin1","NCR_T1_Bin2",
+    "ET_T2_Bin1","ET_T2_Bin2","ED_T2_Bin1","ED_T2_Bin2","ED_T2_Bin3","ED_T2_Bin4","ED_T2_Bin5","ED_T2_Bin6","ED_T2_Bin7","ED_T2_Bin8","ED_T2_Bin9","NCR_T2_Bin1","NCR_T2_Bin2",
+    "ET_Flair_Bin1","ET_Flair_Bin2","ET_Flair_Bin3","ED_Flair_Bin1","ED_Flair_Bin2","ED_Flair_Bin3","ED_Flair_Bin4","ED_Flair_Bin5","ED_Flair_Bin6","ED_Flair_Bin7","ED_Flair_Bin8","ED_Flair_Bin9","NCR_Flair_Bin1","NCR_Flair_Bin2","NCR_Flair_Bin3","NCR_Flair_Bin4","NCR_Flair_Bin5","NCR_Flair_Bin6","NCR_Flair_Bin7",
+    "ET_PH_Bin1","ET_PH_Bin2","ET_PH_Bin3","ED_PH_Bin1","ED_PH_Bin2","ED_PH_Bin3","ED_PH_Bin4","ED_PH_Bin5","ED_PH_Bin6","ED_PH_Bin7","ED_PH_Bin8","NCR_PH_Bin1","NCR_PH_Bin2","NCR_PH_Bin3",
+    "ET_PSR_Bin1","ET_PSR_Bin2","ET_PSR_Bin3","ET_PSR_Bin4","ED_PSR_Bin1","ED_PSR_Bin2","ED_PSR_Bin3","ED_PSR_Bin4","ED_PSR_Bin5","ED_PSR_Bin6","ED_PSR_Bin7","ED_PSR_Bin8","ED_PSR_Bin9","ED_PSR_Bin10","NCR_PSR_Bin1","NCR_PSR_Bin2","NCR_PSR_Bin3",
+    "ET_RCBV_Bin1","ET_RCBV_Bin2","ET_RCBV_Bin3","ED_RCBV_Bin1","ED_RCBV_Bin2","ED_RCBV_Bin3","NCR_RCBV_Bin1","NCR_RCBV_Bin2","NCR_RCBV_Bin3",
+    "ET_FA_Bin1","ET_FA_Bin2","ED_FA_Bin1","ED_FA_Bin2","NCR_FA_Bin1","NCR_FA_Bin2",
+    "ET_AX_Bin1","ET_AX_Bin2","ED_AX_Bin1","ED_AX_Bin2","NCR_AX_Bin1","NCR_AX_Bin2","NCR_AX_Bin3",
+    "ET_RAD_Bin1","ET_RAD_Bin2","ED_RAD_Bin1","ED_RAD_Bin2","NCR_RAD_Bin1","NCR_RAD_Bin2","NCR_RAD_Bin3",
+    "ET_ADC_Bin1","ET_ADC_Bin2","ED_ADC_Bin1","ED_ADC_Bin2","NCR_ADC_Bin1","NCR_ADC_Bin2","NCR_ADC_Bin3",
+    "Frontal","Temporal","Parietal","Basal G","Insula","CC_Fornix","Occipital","Cere","Brain stem" };
+
+  //write raw extracted features to a .csv file
+  std::vector<std::string> StringFeatureLabels;
+  for (int index = 0; index < SURVIVAL_NO_OF_FEATURES; index++)
+    StringFeatureLabels.push_back(FeatureLabels[index]);
+
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, StringFeatureLabels, outputdirectory + "/RawFeatures.csv");
+
   std::cout << std::endl << "Building model....." << std::endl;
   VariableSizeMatrixType scaledFeatureSet;
-  scaledFeatureSet.SetSize(qualifiedsubjects.size(), 161);
+  scaledFeatureSet.SetSize(qualifiedsubjects.size(), SURVIVAL_NO_OF_FEATURES);
   VariableLengthVectorType meanVector;
   VariableLengthVectorType stdVector;
   mFeatureScalingLocalPtr.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
@@ -182,85 +196,37 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
     for (unsigned int j = 0; j < scaledFeatureSet.Cols(); j++)
       if (std::isnan(scaledFeatureSet(i, j)))
         scaledFeatureSet(i, j) = 0;
-    //
-//  for (int i = 0; i < 105; i++)
-//    for (int j = 0; j < 166; j++)
-//      data(i, j) = scaledFeatureSet(i, j);
-//  writer->SetFileName("scaled_train_features.csv");
-//  writer->SetInput(&data);
-//  writer->Write();
-//
-//
-//
-  //VariableSizeMatrixType ScaledFeatureSetAfterAddingAge;
-  //ScaledFeatureSetAfterAddingAge.SetSize(scaledFeatureSet.Rows(), scaledFeatureSet.Cols() + 1);
-  //for (unsigned int i = 0; i < scaledFeatureSet.Rows(); i++)
-  //{
-  //  ScaledFeatureSetAfterAddingAge(i, 0) = ages[i]; 
-  //  for (unsigned int j = 0; j < scaledFeatureSet.Cols(); j++)
-  //  {
-  //    ScaledFeatureSetAfterAddingAge(i, j+1) = scaledFeatureSet(i, j);
-  //  }
-  //}
-//
-//  //readerMean->SetFileName("scaledfeatures.csv");
-//  //readerMean->SetFieldDelimiterCharacter(',');
-//  //readerMean->HasColumnHeadersOff();
-//  //readerMean->HasRowHeadersOff();
-//  //readerMean->Parse();
-//  ////typedef vnl_matrix<double> MatrixType;
-//  //dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-//
-//  //for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-//  //  for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-//  //    scaledFeatureSet(i, j) = dataMatrix(i, j);
-//  //{
-//  //  ages.push_back(dataMatrix(i, 0));
-//  //  survival.push_back(dataMatrix(i, 1));
-//  //}
-//
-////-----------------------writing in files to compare results------------------------------
+
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(scaledFeatureSet, patient_ids, StringFeatureLabels, outputdirectory + "/ScaledFeatures.csv");
+
   typedef vnl_matrix<double> MatrixType;
   MatrixType data;
-  
-
   VariableSizeMatrixType SixModelFeatures;
   VariableSizeMatrixType EighteenModelFeatures;
   mFeatureExtractionLocalPtr.FormulateSurvivalTrainingData(scaledFeatureSet, AllSurvival, SixModelFeatures, EighteenModelFeatures);
-  try
-  {
-	  data.set_size(161, 1); // TOCHECK - are these hard coded sizes fine?
-	  for (unsigned int i = 0; i < meanVector.Size(); i++)
-		  data(i, 0) = meanVector[i];
-	  typedef itk::CSVNumericObjectFileWriter<double, 161, 1> WriterTypeVector;
-	  WriterTypeVector::Pointer writerv = WriterTypeVector::New();
-	  writerv->SetFileName(outputdirectory + "/Survival_ZScore_Mean.csv");
-	  writerv->SetInput(&data);
-	  writerv->Write();
+  StringFeatureLabels.push_back("Label");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(SixModelFeatures, patient_ids, StringFeatureLabels, outputdirectory + "/FormulatedFeatures_6months.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(EighteenModelFeatures, patient_ids, StringFeatureLabels, outputdirectory + "/FormulatedFeatures_18months.csv");
+  WriteCSVFiles(meanVector, outputdirectory + "/Survival_ZScore_Mean.csv");
+  WriteCSVFiles(stdVector, outputdirectory + "/Survival_ZScore_Std.csv");
 
-	  for (unsigned int i = 0; i < stdVector.Size(); i++)
-		  data(i, 0) = stdVector[i];
-	  writerv->SetFileName(outputdirectory + "/Survival_ZScore_Std.csv");
-	  writerv->SetInput(&data);
-	  writerv->Write();
-  }
-  catch (const std::exception& e1)
-  {
-	  logger.WriteError("Error in writing output files to the output directory = " + outputdirectory + "Error code : " + std::string(e1.what()));
-	  return false;
-  }
-  //---------------------------------------------------------------------------
   VariableLengthVectorType selectedfeatures_6Months;
   VariableLengthVectorType selectedfeatures_18Months;
   VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(SixModelFeatures,selectedfeatures_6Months);
   VariableSizeMatrixType EighteenModelSelectedFeatures = SelectModelFeatures(EighteenModelFeatures,selectedfeatures_18Months);
-
-  //WriteCSVFiles(FeaturesOfAllSubjects, outputdirectory + "/FeaturesOfAllSubjects.csv");
-  //WriteCSVFiles(scaledFeatureSet, outputdirectory + "/scaledFeatureSet.csv");
-  //WriteCSVFiles(SixModelFeatures, outputdirectory + "/SixModelFeatures.csv");
-  //WriteCSVFiles(EighteenModelFeatures, outputdirectory + "/EighteenModelFeatures.csv");
-  //WriteCSVFiles(SixModelSelectedFeatures, outputdirectory + "/SixModelSelectedFeatures.csv");
-  //WriteCSVFiles(EighteenModelSelectedFeatures, outputdirectory + "/EighteenModelSelectedFeatures.csv");
+  std::vector<std::string> SelectedFeatureLabels_6months, SelectedFeatureLabels_18months;
+  for (int index = 0; index < selectedfeatures_6Months.Size(); index++)
+  {
+    int currentindex = selectedfeatures_6Months[index];
+    SelectedFeatureLabels_6months.push_back(FeatureLabels[currentindex]);
+  }
+  for (int index = 0; index < selectedfeatures_18Months.Size(); index++)
+  {
+    int currentindex = selectedfeatures_18Months[index];
+    SelectedFeatureLabels_18months.push_back(FeatureLabels[currentindex]);
+  }
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(SixModelSelectedFeatures, patient_ids, StringFeatureLabels, outputdirectory + "/SelectedFeatures_6months.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(EighteenModelSelectedFeatures, patient_ids, StringFeatureLabels, outputdirectory + "/SelectedFeatures_18months.csv");
 
    try
    {
@@ -275,24 +241,6 @@ int SurvivalPredictor::PrepareNewSurvivalPredictionModel(const std::string &inpu
    std::cout << std::endl << "Model saved to the output directory." << std::endl;
    return true;
 }
-void SurvivalPredictor::WriteCSVFiles(VariableSizeMatrixType inputdata, std::string filepath)
-{
-  std::ofstream myfile;
-  myfile.open(filepath);
-  for (unsigned int index1 = 0; index1 < inputdata.Rows(); index1++)
-  {
-    for (unsigned int index2 = 0; index2 < inputdata.Cols(); index2++)
-    {
-      if (index2 == 0)
-        myfile << std::to_string(inputdata[index1][index2]);
-      else
-        myfile << "," << std::to_string(inputdata[index1][index2]);
-    }
-    myfile << "\n";
-  }
-}
-
-
 
 VariableLengthVectorType SurvivalPredictor::DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename)
 {
@@ -347,137 +295,91 @@ VectorDouble SurvivalPredictor::CombineEstimates(const VariableLengthVectorType 
 {
 	VectorDouble returnVec;
 	returnVec.resize(estimates1.Size());
+  // +1/-1 are the class labels, and 2 is the capping limit that we apply on the predicted distances.
 	for (size_t i = 0; i < estimates1.Size(); i++)
 	{
 		float temp_abs, temp_pos1, temp_neg1, temp_1, temp_2;
 		// estimate for 1st vector
 		if (std::abs(estimates1[i]) < 2)
-		{
 			temp_abs = estimates1[i];
-		}
 		else
-		{
 			temp_abs = 0;
-		}
 
 		if (estimates1[i] > 1)
-		{
 			temp_pos1 = 1;
-		}
 		else
-		{
 			temp_pos1 = 0;
-		}
 
 		if (estimates1[i] < -1)
-		{
 			temp_neg1 = 1;
-		}
 		else
-		{
 			temp_neg1 = 0;
-		}
 		temp_1 = temp_abs + (temp_pos1 - temp_neg1);
 
 		// estimate for 2nd vector, all temp values are getting overwritten
 		if (std::abs(estimates2[i]) < 2)
-		{
 			temp_abs = estimates2[i];
-		}
 		else
-		{
 			temp_abs = 0;
-		}
 
 		if (estimates2[i] > 1)
-		{
 			temp_pos1 = 1;
-		}
 		else
-		{
 			temp_pos1 = 0;
-		}
 
 		if (estimates2[i] < -1)
-		{
 			temp_neg1 = 1;
-		}
 		else
-		{
 			temp_neg1 = 0;
-		}
-		temp_2 = temp_abs + (temp_pos1 - temp_neg1);
+
+    temp_2 = temp_abs + (temp_pos1 - temp_neg1);
 
 		// combine the two
 		returnVec[i] = temp_1 + temp_2;
 	}
 	return returnVec;
 }
-
 
 VectorDouble SurvivalPredictor::CombineEstimates(const VectorDouble &estimates1, const VectorDouble &estimates2)
 {
 	VectorDouble returnVec;
 	returnVec.resize(estimates1.size());
+  // +1/-1 are the class labels, and 2 is the capping limit that we apply on the predicted distances.
 	for (size_t i = 0; i < estimates1.size(); i++)
 	{
 		float temp_abs, temp_pos1, temp_neg1, temp_1, temp_2;
 		// estimate for 1st vector
 		if (std::abs(estimates1[i]) < 2)
-		{
 			temp_abs = estimates1[i];
-		}
-		else
-		{
-			temp_abs = 0;
-		}
+    else
+      temp_abs = 0;
 
 		if (estimates1[i] > 1)
-		{
 			temp_pos1 = 1;
-		}
-		else
-		{
-			temp_pos1 = 0;
-		}
+    else
+      temp_pos1 = 0;
 
 		if (estimates1[i] < -1)
-		{
 			temp_neg1 = 1;
-		}
 		else
-		{
 			temp_neg1 = 0;
-		}
 		temp_1 = temp_abs + (temp_pos1 - temp_neg1);
 
 		// estimate for 2nd vector, all temp values are getting overwritten
 		if (std::abs(estimates2[i]) < 2)
-		{
 			temp_abs = estimates2[i];
-		}
 		else
-		{
 			temp_abs = 0;
-		}
 
 		if (estimates2[i] > 1)
-		{
 			temp_pos1 = 1;
-		}
-		else
-		{
-			temp_pos1 = 0;
-		}
+    else
+      temp_pos1 = 0;
 
 		if (estimates2[i] < -1)
-		{
 			temp_neg1 = 1;
-		}
-		else
-		{
-			temp_neg1 = 0;
-		}
+    else
+      temp_neg1 = 0;
 		temp_2 = temp_abs + (temp_pos1 - temp_neg1);
 
 		// combine the two
@@ -485,7 +387,6 @@ VectorDouble SurvivalPredictor::CombineEstimates(const VectorDouble &estimates1,
 	}
 	return returnVec;
 }
-
 
 VariableLengthVectorType SurvivalPredictor::DistanceFunctionLinear(const VariableSizeMatrixType &testData, const std::string &filename)
 {
@@ -505,7 +406,7 @@ VariableLengthVectorType SurvivalPredictor::DistanceFunctionLinear(const Variabl
   Coefficients.SetSize(dataMatrix.rows(), 1);
   Distances.SetSize(testData.Rows(), 1);
   
-  //copy the support vectors, coefficients, rho, and bestg values from the model file
+  //copy the support vectors, coefficients, and rho values from the model file
   for (unsigned int i = 0; i < dataMatrix.rows(); i++)
   {
     unsigned int j = 0;
@@ -533,7 +434,6 @@ VariableLengthVectorType SurvivalPredictor::DistanceFunctionLinear(const Variabl
     double distance = 0;
     for (unsigned int svID = 0; svID < wTranspose.Cols(); svID++)
       distance = distance + wTranspose(0, svID)*testData(patID, svID);
-
     Distances[patID] = distance - Rho;
   }
   return Distances;
@@ -661,38 +561,36 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
     logger.WriteError("Error in reading the file: " + modeldirectory + "/Survival_SelectedFeatures_18Months.csv. Error code : " + std::string(e1.what()));
     return results;
   }
-  //----------------------------------------------------
-	VariableSizeMatrixType FeaturesOfAllSubjects;
-	FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 164);
 
+  VariableSizeMatrixType FeaturesOfAllSubjects;
+	FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), SURVIVAL_NO_OF_FEATURES);
+  std::vector<std::string> patient_ids;
 	for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
 	{
 		std::cout << "Subject No:" << sid << std::endl;
 		std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[sid];
+    patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
 		try
 		{
-			ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-			ImageType::Pointer AtlasImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
-			//ImageType::Pointer TemplateImagePointer = ReadNiftiImage<ImageType>("../data/survival/Template.nii.gz");
-      ImageType::Pointer TemplateImagePointer = ReadNiftiImage<ImageType>(getCaPTkDataDir() + "/survival/Template.nii.gz");
-			ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
-			ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
-			ImageType::Pointer T1CEImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE])));
-			ImageType::Pointer T2FlairImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR])));
-			ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1])));
-			ImageType::Pointer T2ImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2])));
-			ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
-			ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
-			ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
-			ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
-			ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
+			ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+			ImageType::Pointer AtlasImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
+      ImageType::Pointer TemplateImagePointer = cbica::ReadImage<ImageType>(getCaPTkDataDir() + "/survival/Template.nii.gz");
+			ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
+			ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
+			ImageType::Pointer T1CEImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE])));
+			ImageType::Pointer T2FlairImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR])));
+			ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1])));
+			ImageType::Pointer T2ImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2])));
+			ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
+			ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
+			ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
+			ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
+			ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
 
-			VectorDouble TestFeatures = LoadTestData<ImageType>(T1CEImagePointer, T2FlairImagePointer, T1ImagePointer, T2ImagePointer,
+			VectorDouble TestFeatures = CalculateFeatures<ImageType>(T1CEImagePointer, T2FlairImagePointer, T1ImagePointer, T2ImagePointer,
 				RCBVImagePointer, PSRImagePointer, PHImagePointer, AXImagePointer, FAImagePointer, RADImagePointer, TRImagePointer, LabelImagePointer, AtlasImagePointer, TemplateImagePointer, HistogramFeaturesConfigurations);
 
 			double age;
-
-
       reader->SetFileName(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FEATURES]));
 			reader->SetFieldDelimiterCharacter(',');
 			reader->HasColumnHeadersOff();
@@ -713,33 +611,57 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 			return results;
 		}
 	}
+  
+  std::string FeatureLabels[SURVIVAL_NO_OF_FEATURES] = { "Age","ET","NCR","ED","brain size","ET+NCR","(ET+NCR)x100/brain size","EDx100/brain size","ETx100/(ET+NCR)","NCRx100/(ET+NCR)","NCRx100/(ET+NCR)",
+    "Vent_Tumor_Dist","Vent_ED_Dist","Mean_ET_T1CE","STD_ET_T1CE","Mean_ET_T1","STD_ET_T1","Mean_ET_T2","STD_ET_T2","Mean_ET_Flair","STD_ET_Flair","Mean_ET_PH","STD_ET_PH","Mean_ET_PSR","STD_ET_PSR","Mean_ET_RCBV","STD_ET_RCBV","Mean_ET_FA","STD_ET_FA","Mean_ET_AX","STD_ET_AX","Mean_ET_RAD","STD_ET_RAD","Mean_ET_ADC","STD_ET_ADC",
+    "ET_T1CE_Bin1","ET_T1CE_Bin2","ED_T1CE_Bin1","ED_T1CE_Bin2","ED_T1CE_Bin3","ED_T1CE_Bin4","NCR_T1CE_Bin1","NCR_T1CE_Bin2",
+    "ET_T1_Bin1","ET_T1_Bin2","ED_T1_Bin1","ED_T1_Bin2","ED_T1_Bin3","ED_T1_Bin4","ED_T1_Bin5","ED_T1_Bin6","ED_T1_Bin7","ED_T1_Bin8","ED_T1_Bin9","NCR_T1_Bin1","NCR_T1_Bin2",
+    "ET_T2_Bin1","ET_T2_Bin2","ED_T2_Bin1","ED_T2_Bin2","ED_T2_Bin3","ED_T2_Bin4","ED_T2_Bin5","ED_T2_Bin6","ED_T2_Bin7","ED_T2_Bin8","ED_T2_Bin9","NCR_T2_Bin1","NCR_T2_Bin2",
+    "ET_Flair_Bin1","ET_Flair_Bin2","ET_Flair_Bin3","ED_Flair_Bin1","ED_Flair_Bin2","ED_Flair_Bin3","ED_Flair_Bin4","ED_Flair_Bin5","ED_Flair_Bin6","ED_Flair_Bin7","ED_Flair_Bin8","ED_Flair_Bin9","NCR_Flair_Bin1","NCR_Flair_Bin2","NCR_Flair_Bin3","NCR_Flair_Bin4","NCR_Flair_Bin5","NCR_Flair_Bin6","NCR_Flair_Bin7",
+    "ET_PH_Bin1","ET_PH_Bin2","ET_PH_Bin3","ED_PH_Bin1","ED_PH_Bin2","ED_PH_Bin3","ED_PH_Bin4","ED_PH_Bin5","ED_PH_Bin6","ED_PH_Bin7","ED_PH_Bin8","NCR_PH_Bin1","NCR_PH_Bin2","NCR_PH_Bin3",
+    "ET_PSR_Bin1","ET_PSR_Bin2","ET_PSR_Bin3","ET_PSR_Bin4","ED_PSR_Bin1","ED_PSR_Bin2","ED_PSR_Bin3","ED_PSR_Bin4","ED_PSR_Bin5","ED_PSR_Bin6","ED_PSR_Bin7","ED_PSR_Bin8","ED_PSR_Bin9","ED_PSR_Bin10","NCR_PSR_Bin1","NCR_PSR_Bin2","NCR_PSR_Bin3",
+    "ET_RCBV_Bin1","ET_RCBV_Bin2","ET_RCBV_Bin3","ED_RCBV_Bin1","ED_RCBV_Bin2","ED_RCBV_Bin3","NCR_RCBV_Bin1","NCR_RCBV_Bin2","NCR_RCBV_Bin3",
+    "ET_FA_Bin1","ET_FA_Bin2","ED_FA_Bin1","ED_FA_Bin2","NCR_FA_Bin1","NCR_FA_Bin2",
+    "ET_AX_Bin1","ET_AX_Bin2","ED_AX_Bin1","ED_AX_Bin2","NCR_AX_Bin1","NCR_AX_Bin2","NCR_AX_Bin3",
+    "ET_RAD_Bin1","ET_RAD_Bin2","ED_RAD_Bin1","ED_RAD_Bin2","NCR_RAD_Bin1","NCR_RAD_Bin2","NCR_RAD_Bin3",
+    "ET_ADC_Bin1","ET_ADC_Bin2","ED_ADC_Bin1","ED_ADC_Bin2","NCR_ADC_Bin1","NCR_ADC_Bin2","NCR_ADC_Bin3",
+    "Frontal","Temporal","Parietal","Basal G","Insula","CC_Fornix","Occipital","Cere","Brain stem" };
+
+  //write raw extracted features to a .csv file
+  std::vector<std::string> StringFeatureLabels;
+  for (int index = 0; index < SURVIVAL_NO_OF_FEATURES; index++)
+    StringFeatureLabels.push_back(FeatureLabels[index]);
+
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, StringFeatureLabels, outputdirectory + "/RawFeatures.csv");
+
 	VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
   for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
     for (unsigned int j = 0; j < ScaledTestingData.Cols(); j++)
       if (std::isnan(ScaledTestingData(i, j)))
         ScaledTestingData(i, j) = 0;
 
-	VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
-	ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
-	for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
-	{
-		unsigned int j = 0;
-		for (j = 0; j < ScaledTestingData.Cols(); j++)
-			ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
-		ScaledFeatureSetAfterAddingLabel(i, j) = 0;
-	}
-
-
-  VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures_6months);
-	VariableSizeMatrixType EighteenModelSelectedFeatures = SelectModelFeatures(ScaledFeatureSetAfterAddingLabel,selectedfeatures_18months);
-
-  WriteCSVFiles(FeaturesOfAllSubjects, outputdirectory + "/raw_features.csv");
-  WriteCSVFiles(ScaledTestingData, outputdirectory + "/scaled_features.csv");
-  WriteCSVFiles(ScaledFeatureSetAfterAddingLabel, outputdirectory + "/scaled_features_with_label.csv");
-  WriteCSVFiles(SixModelSelectedFeatures, outputdirectory + "/selectedfeatures_6months.csv");
-  WriteCSVFiles(EighteenModelSelectedFeatures, outputdirectory + "/selectedfeatures_18months.csv");
+  //write scaled features in a .csv file
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(ScaledTestingData, patient_ids, FeatureLabels, outputdirectory + "/ScaledFeatures.csv");
   
-	try
+  VariableSizeMatrixType SixModelSelectedFeatures = SelectModelFeatures(ScaledTestingData,selectedfeatures_6months);
+	VariableSizeMatrixType EighteenModelSelectedFeatures = SelectModelFeatures(ScaledTestingData,selectedfeatures_18months);
+  std::vector<std::string> SelectedFeatureLabels_6months, SelectedFeatureLabels_18months;
+  for (int index = 0; index < selectedfeatures_6months.Size(); index++)
+  {
+    int currentindex = selectedfeatures_6months[index];
+    SelectedFeatureLabels_6months.push_back(FeatureLabels[currentindex]);
+  }
+  for (int index = 0; index < selectedfeatures_18months.Size(); index++)
+  {
+    int currentindex = selectedfeatures_18months[index];
+    SelectedFeatureLabels_18months.push_back(FeatureLabels[currentindex]);
+  }
+
+  //write selected features in a .csv file
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(SixModelSelectedFeatures, patient_ids, SelectedFeatureLabels_6months, outputdirectory + "/ScaledFeatures_6months.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(EighteenModelSelectedFeatures, patient_ids, SelectedFeatureLabels_18months, outputdirectory + "/ScaledFeatures_18months.csv");
+
+  try
 	{
 		std::ofstream myfile;
 		myfile.open(outputdirectory + "/results.csv");
@@ -748,7 +670,7 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 		{
 			VariableLengthVectorType result_6;
 			VariableLengthVectorType result_18;
-			result_6 = DistanceFunction(SixModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model6.csv");
+			result_6 = DistanceFunctionLinear(SixModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model6.csv");
 			result_18 = DistanceFunctionLinear(EighteenModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model18.csv");
 			results = CombineEstimates(result_6, result_18);
 			for (size_t i = 0; i < results.size(); i++)
@@ -778,22 +700,20 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 		return results;
 	}
 	return results;
-
 }
 
-VariableSizeMatrixType SurvivalPredictor::SelectModelFeatures(const VariableSizeMatrixType &SixModelFeatures,const VariableLengthVectorType selectedfeatures)
+VariableSizeMatrixType SurvivalPredictor::SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VariableLengthVectorType &selectedFeatures)
 {
-  VariableSizeMatrixType SixModelSelectedFeatures; 
-  SixModelSelectedFeatures.SetSize(SixModelFeatures.Rows(),selectedfeatures.Size()+1);
+  VariableSizeMatrixType ModelSelectedFeatures;
+  //make a feature matrix to store selected features. rows= rows of input features, columns=number of selected features 
+  ModelSelectedFeatures.SetSize(ModelFeatures.Rows(), selectedFeatures.Size());
   int counter = 0;
-  for (unsigned int i = 0; i < selectedfeatures.Size(); i++)
+  //copy selected features
+  for (unsigned int i = 0; i < selectedFeatures.Size(); i++)
   {
-    for (unsigned int j = 0; j < SixModelFeatures.Rows(); j++)
-      SixModelSelectedFeatures(j, counter) = SixModelFeatures(j, selectedfeatures[i]);
+    for (unsigned int j = 0; j < ModelFeatures.Rows(); j++)
+      ModelSelectedFeatures(j, counter) = ModelFeatures(j, selectedFeatures[i]);
     counter++;
   }
- for (unsigned int j = 0; j < SixModelFeatures.Rows(); j++)
-      SixModelSelectedFeatures(j, selectedfeatures.Size()) = SixModelFeatures(j, SixModelFeatures.Cols()-1);
-
-  return SixModelSelectedFeatures;
+  return ModelSelectedFeatures;
 }

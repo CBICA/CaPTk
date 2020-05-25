@@ -3,8 +3,12 @@
 #include "cbicaCmdParser.h"
 #include "CaPTkEnums.h"
 
+#include "CaPTkGUIUtils.h"
+
 //------------------EGFRvIII Prediction on existing model-----------------------
-std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname)
+std::vector<std::map<CAPTK::ImageModalityType, std::string>> 
+LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname, 
+  int applicationtype)
 {
 	std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
@@ -120,9 +124,12 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 		if (cbica::fileExists(subjectPath + "/features.csv"))
 			featureFilePath = subjectPath + "/features.csv";
 			
-			if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() 
-        || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty() || featureFilePath.empty())
+		if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() 
+        || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
 			continue;
+
+    if (applicationtype == CAPTK::MachineLearningApplicationSubtype::TRAINING && featureFilePath.empty())
+      continue;
 
 		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
 		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2] = t2FilePath;
@@ -153,7 +160,7 @@ int EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory,
 {
 	std::cout << "Module loaded: EGFRvIII Prediction on Existing Model:" << std::endl;
 	std::vector<double> finalresult;
-	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
+	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory, CAPTK::MachineLearningApplicationSubtype::TESTING);
   if (QualifiedSubjects.size() == 0)
   {
     std::cout << "No subject found with required input. Exiting...." << std::endl;
@@ -180,7 +187,7 @@ int PrepareNewEGFRvIIIPredictionModel(const std::string inputdirectory,const std
 {
 	std::cout << "Module loaded: Prepare EGFRvIII Prediction Model." << std::endl;
 	std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory, CAPTK::MachineLearningApplicationSubtype::TRAINING);
 	EGFRvIIIIndexPredictor objEGFRvIIIPredictor;
 	std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
 	if (QualifiedSubjects.size() == 0)
@@ -195,7 +202,7 @@ int main(int argc, char **argv)
 	cbica::CmdParser parser = cbica::CmdParser(argc, argv, "EGFRvIIIIndexPredictor");
 	parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
 	parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory having test subjects");
-	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
+	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models", "Penn Model: " + getAppropriateDownloadLink("EGFRvIIIIndexPredictor", "Model"));
 	parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
 	parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("EGFRvIIIIndexPredictor -i <input dir> -t 0 -o <output dir>");

@@ -1666,7 +1666,7 @@ namespace cbica
     returnStatistics["Prevalence"] = returnStatistics["RP"] / (2 * inputRealLabels.size());
 
     // https://en.wikipedia.org/wiki/Sensitivity_and_specificity
-    returnStatistics["TPR"] = returnStatistics["TP"] / returnStatistics["RP"];
+    returnStatistics["TPR"] = returnStatistics["TP"] / (returnStatistics["TP"] + returnStatistics["FN"]);
     returnStatistics["Sensitivity"] = returnStatistics["TPR"];
     returnStatistics["Recall"] = returnStatistics["TPR"];
     returnStatistics["POD"] = returnStatistics["TPR"];
