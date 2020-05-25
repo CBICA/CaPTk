@@ -314,7 +314,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
 
   FIND_PACKAGE(Qt5 COMPONENTS Core Gui Svg Widgets WebView WebEngine WebEngineCore WebEngineWidgets Concurrent Test Sql Network REQUIRED)
-
   # For some reason IF(LINUX) doesn't work properly on linux
   # This is necessary for the whole project to compile on linux
   IF(WIN32)
