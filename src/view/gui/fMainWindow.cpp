@@ -6014,7 +6014,7 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  std::string scriptToCall = getStandaloneApp("libra");
+  std::string scriptToCall = getStandaloneApps("libra");
   if (scriptToCall.empty()) {
     return;
   }
@@ -6118,7 +6118,7 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getStandaloneApp("libra");
+  std::string scriptToCall = getStandaloneApps("libra");
   if (scriptToCall.empty()) {
     return;
   }
@@ -6176,7 +6176,7 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getStandaloneApp("libra");
+  std::string scriptToCall = getStandaloneApps("libra");
   if (scriptToCall.empty()) {
     return;
   }
