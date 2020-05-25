@@ -1196,7 +1196,7 @@ void fMainWindow::startUnzip(QString fullPath, QString extractPath, QString appN
 
     stlapps->StoreAppSetting("Download", "Done", appName);
 
-    updateProgress(50, "Extracting application");
+    updateProgress(50, "Extracting " + appName.toStdString());
     ASyncExtract* asyncExtract = new ASyncExtract();
 
     connect(asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip(QString)));
@@ -1215,7 +1215,7 @@ void fMainWindow::doneUnzip(QString appName) {
 
   if (getApplicationDownloadPath("libra").empty()) {
 
-    updateProgress(0, "Extracting application failed");
+    updateProgress(0, "Extracting " + appName.toStdString() + " failed");
 
     // ShowErrorMessage("Installation failed. Please re-run installtion.");
     stlapps->RetreiveAppSetting(appName);
@@ -1224,7 +1224,7 @@ void fMainWindow::doneUnzip(QString appName) {
     stlapps->StoreAppSetting("", "", appName);
   }
   else {
-    updateProgress(100, "Extracting application done");
+    updateProgress(100, "Extracting " + appName.toStdString() + " done");
 
     stlapps->RetreiveAppSetting(appName);
     stlapps->Debug("Extraction done");
@@ -5954,27 +5954,39 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  // StandaloneApps stlapps = StandaloneApps::GetInstance();
+  std::string scriptToCall = getApplicationDownloadPath("libra");
 
-  // stlapps->RetreiveAppSetting("libra");
-  // stlapps->Debug();
+  StandaloneApps* stlapps = StandaloneApps::GetInstance();
 
-  // if (stlapps->GetStatus().isEmpty() || 
-  //     (stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) {
-  //     appDownload("libra");
-  //     return;
-  // }
+  stlapps->RetreiveAppSetting("libra");
+  stlapps->Debug("Function call");
 
-  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
+  if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) { // if download is not started
+    if (scriptToCall.empty()) { // app not found or delete after extraction
+      stlapps->StoreAppSetting("", "", "libra");
+    }
 
-  // ShowErrorMessage("libra: " + scriptToCall);
+    if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Done") { // if extraction finished
+      scriptToCall = getApplicationDownloadPath("libra");
 
-  if (scriptToCall.empty()) {
-    appDownload("libra");
+      stlapps->RetreiveAppSetting("libra");
+      stlapps->Debug("Path Set");
+    }
+    else if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Start") { // if extraction finished
+      ShowErrorMessage("Libra is being installed");
+      updateProgress(50, "Extracting libra");
+      return;
+    }
+    else if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Done")) { // if download is never started or not done before
+      appDownload("libra");
+      
+      return;
+    } 
+  } 
+  else { // download already started
+    ShowErrorMessage("The application is being downloaded");
     return;
   }
-
-  // std::string scriptToCall = m_allNonNativeApps["libra"];
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -6075,12 +6087,37 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  // std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
-  std::string scriptToCall = getApplicationDownloadPath("libra");// m_allNonNativeApps["libra"];
-  // ShowErrorMessage("libra: " + scriptToCall);
+  std::string scriptToCall = getApplicationDownloadPath("libra");
 
-  if (scriptToCall.empty()) {
-    appDownload("libra");
+  StandaloneApps* stlapps = StandaloneApps::GetInstance();
+
+  stlapps->RetreiveAppSetting("libra");
+  stlapps->Debug("Function call");
+
+  if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) { // if download is not started
+    if (scriptToCall.empty()) { // app not found or delete after extraction
+      stlapps->StoreAppSetting("", "", "libra");
+    }
+
+    if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Done") { // if extraction finished
+      scriptToCall = getApplicationDownloadPath("libra");
+
+      stlapps->RetreiveAppSetting("libra");
+      stlapps->Debug("Path Set");
+    }
+    else if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Start") { // if extraction finished
+      ShowErrorMessage("Libra is being installed");
+      updateProgress(50, "Extracting libra");
+      return;
+    }
+    else if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Done")) { // if download is never started or not done before
+      appDownload("libra");
+      
+      return;
+    } 
+  } 
+  else { // download already started
+    ShowErrorMessage("The application is being downloaded");
     return;
   }
 
@@ -6156,7 +6193,8 @@ void fMainWindow::ApplicationLIBRASingle()
       stlapps->Debug("Path Set");
     }
     else if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Start") { // if extraction finished
-      ShowErrorMessage("The application is being installed");
+      ShowErrorMessage("Libra is being installed");
+      updateProgress(50, "Extracting libra");
       return;
     }
     else if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Done")) { // if download is never started or not done before
