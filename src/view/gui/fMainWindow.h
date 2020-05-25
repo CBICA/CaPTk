@@ -931,6 +931,7 @@ public slots:
   /**
   \brief For apps decoupling
   */
+  std::string getStandaloneApp(std::string appName);
   void appDownload(std::string currentApp);
   void startDownload(QString appName);
   void cancelDownload(QString appName);
