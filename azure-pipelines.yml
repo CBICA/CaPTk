@@ -1132,6 +1132,24 @@ jobs:
   pool: 'CentOS7'
 
   steps:
+    - bash: |
+        module unload dependency_bundle/3817
+        module unload python/canopy/27
+        module unload python
+        module unload ants
+
+        module load dcmtk/3.6.3
+        module load dependency_bundle/4358
+        module load qt
+        module load git/2.25.0
+
+        echo "Trying to see if LinuxDeployQt picks this up properly"
+        export QMAKE=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin/qmake
+        export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:$PATH
+        export LD_LIBRARY_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib:$LD_LIBRARY_PATH
+        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5
+
+      displayName: 'Load modules'
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
     # submodule 
@@ -1163,22 +1181,9 @@ jobs:
 
     #   displayName: 'Configure and compile Superbuild'
 
-    - bash: |
-        module unload dependency_bundle/3817
-        module unload python/canopy/27
-        module unload python
-        module unload ants
-
-        module load dcmtk/3.6.3
-        module load dependency_bundle/4358
-        module load qt
-
-        echo "Trying to see if LinuxDeployQt picks this up properly"
-        export QMAKE=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin/qmake
-        export PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/bin:$PATH
-        export LD_LIBRARY_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib:$LD_LIBRARY_PATH
-        export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5
-      displayName: 'Move superbuild and qt and compiled apps'
+    # - bash: |
+        
+    #   displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
         git pull origin master
