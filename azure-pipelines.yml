@@ -1132,7 +1132,7 @@ jobs:
   pool: 'CentOS7'
 
   steps:
-    - bash: |
+    - script: |
         module unload dependency_bundle/3817
         module unload python/canopy/27
         module unload python
@@ -1150,6 +1150,7 @@ jobs:
         export CMAKE_PREFIX_PATH=/cbica/software/external/qt/centos7/5.11.1/5.11.1/gcc_64/lib/cmake/Qt5
 
       displayName: 'Load modules'
+
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
     # submodule 

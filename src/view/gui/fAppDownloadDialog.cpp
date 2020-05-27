@@ -55,7 +55,7 @@ void fAppDownloadDialog::ConfirmButtonPressed()
         QFile::remove(fullPath);
     }
 
-    file = new QFile(fullPath);
+    file = QFile(fullPath);
     if (!file->open(QIODevice::WriteOnly)) {
         QMessageBox::information(this, tr("HTTP"),
                     tr("Unable to save the file %1: %2")
