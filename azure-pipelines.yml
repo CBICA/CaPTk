@@ -818,7 +818,7 @@ jobs:
     #   displayName: Uploading to NITRC
     #   condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
-- job: 'Windows_SelfHost'
+- job: 'Windows_SelfHost_Windows_7'
   displayName: "Self-hosted agent on Windows 7"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
@@ -947,7 +947,7 @@ jobs:
       displayName: Uploading to NITRC
       condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
-- job: 'Linux_SelfHost'
+- job: 'Linux_SelfHost_Ubuntu_16.04'
   displayName: "Self-hosted agent on Ubuntu 16.04"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
@@ -1124,7 +1124,7 @@ jobs:
       displayName: Uploading to NITRC 
       condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
-- job: 'Linux_SelfHost'
+- job: 'Linux_SelfHost_CentOS_7'
   displayName: "Self-hosted agent on CentOS 7"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
@@ -1286,7 +1286,7 @@ jobs:
       displayName: Uploading to NITRC 
       condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
-- job: 'macOS_SelfHost'
+- job: 'macOS_SelfHost_10.14'
   displayName: "Self-hosted agent on macOS 10.14"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
