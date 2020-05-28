@@ -4,6 +4,8 @@
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
 
+#include "BiasCorrection.hpp"
+
 #include <map>
 
 std::map< std::string, std::string > inputFiles;
@@ -133,12 +135,51 @@ int main(int argc, char** argv)
         cbica::WriteImage< ImageType >(inputImages_processed[modality], outputDir + "/" + modality + "_rai.nii.gz");
       }
     }
-  }
+
+    /// [3] N4 bias correction
+
+    if (debug)
+    {
+      std::cout << "Starting bias correction for modality '" << modality << "'.\n";
+    }
+
+    BiasCorrection biasCorrector;
+    {
+      using MaskImageType = itk::Image<unsigned char, ImageType::ImageDimension>;
+      typename MaskImageType::Pointer maskImage; // mask inits to null
+      auto outputImage = biasCorrector.Run<TImageType, MaskImageType>("n4",
+        inputImages_processed[modality],
+        maskImage,
+        BiasCorrection::default_splineOrder,
+        BiasCorrection::default_maxIterations,
+        BiasCorrection::default_fittingLevels,
+        BiasCorrection::default_filterNoise,
+        BiasCorrection::default_fwhm,
+        BiasCorrection::default_otsuBins);
+      if (outputImage.IsNotNull())
+      {
+        inputImages_processed[modality] = outputImage;
+        inputImages_processed[modality]->DisconnectPipeline();
+      }
+      else
+      {
+        std::cerr << "Something went wrong with bias-correcting the re-oriented image, please re-try or contact sofware@cbica.upenn.edu.\n";
+        return EXIT_FAILURE;
+      }
+    }
+    if (intermediateFiles)
+    {
+      if (debug)
+      {
+        std::cout << "Writing bias-corrected re-oriented image for modality '" << modality << "'.\n";
+      }
+      cbica::WriteImage< ImageType >(inputImages_processed[modality], outputDir + "/" + modality + "_rai_n4.nii.gz");
+    }
+
+
+  } // end inputFiles iterator
   // full pipeline goes here
   /*
-  3.  N4 bias correction (intermediate step)
-     *   No mask
-     *   shrinkFactor=4
   4.  Registration (Greedy)
      *   N4-biascorrected t1/t2/flair to N4-biascorrected t1ce, save matrix
      *   Registration of N4-biascorrected LPS t1ce to SRI, save matrix
