@@ -12,27 +12,6 @@ std::string outputDir;
 
 bool debug = true, intermediateFiles = true;
 
-template< class TImageType >
-int algorithmsRunner()
-{
-  // full pipeline goes here
-  /*
-  1.  Dicom to Nifti
-  2.  LPS reorientation
-  3.  N4 bias correction (intermediate step)
-     *   No mask
-     *   shrinkFactor=4
-  4.  Registration (Greedy)
-     *   N4-biascorrected t1/t2/flair to N4-biascorrected t1ce, save matrix
-     *   Registration of N4-biascorrected LPS t1ce to SRI, save matrix
-     *   Registration of LPS t1/t1ce/t2/flair (output of step 2) to SRI space using transformation matrix saved from 4a 4b. (only 1 interpolation for  all modalities)
-  5.  Generating brain mask (for BraTS, we QC here, and correct if needed)
-  6.  Skull stripping of registered Images
-  */
-  
-  return EXIT_SUCCESS;
-}
-
 int main(int argc, char** argv)
 {
   cbica::CmdParser parser(argc, argv, "Utilities");
@@ -87,55 +66,21 @@ int main(int argc, char** argv)
   }
 
   using ImageType = itk::Image< float, 3 >; // default image type
-  
-  switch (inputImageInfo.GetImageDimensions())
-  {
-  case 2:
-  {
-    // this shall never be used for this application
-    using ImageType = itk::Image< float, 2 >;
-    return algorithmsRunner< ImageType >();
 
-    break;
-  }
-  case 3:
-  {
-    using ImageType = itk::Image< float, 3 >;
-
-    if (requestedAlgorithm == OrientImage) // this does not work for 2 or 4-D images
-    {
-      auto output = cbica::GetImageOrientation< ImageType >(cbica::ReadImage< ImageType >(inputImageFile), orientationDesired);
-      std::cout << "Original Image Orientation: " << output.first << "\n";
-      std::string path, base, ext;
-      cbica::splitFileName(outputImageFile, path, base, ext);
-
-      if (ext.find(".nii") != std::string::npos)
-      {
-        std::cerr << "WARNING: NIfTI files do NOT support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
-      }
-      if (ext != ".mha")
-      {
-        auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
-        cbica::WriteImage< ImageType >(output.second, tempOutputFile);
-        auto reorientedInput = cbica::ReadImage< ImageType >(tempOutputFile);
-        cbica::WriteImage< ImageType >(reorientedInput, outputImageFile);
-        std::remove(tempOutputFile.c_str());
-      }
-      else
-      {
-        cbica::WriteImage< ImageType >(output.second, outputImageFile);
-      }
-      return EXIT_SUCCESS;
-    }
-
-    return algorithmsRunner< ImageType >();
-
-    break;
-  }
-  default:
-    std::cerr << "Supplied image has an unsupported dimension of '" << inputImageInfo.GetImageDimensions() << "'; only 2, 3 and 4 D images are supported.\n";
-    return EXIT_FAILURE; // exiting here because no further processing should be done on the image
-  }
+  // full pipeline goes here
+  /*
+  1.  Dicom to Nifti
+  2.  LPS reorientation
+  3.  N4 bias correction (intermediate step)
+     *   No mask
+     *   shrinkFactor=4
+  4.  Registration (Greedy)
+     *   N4-biascorrected t1/t2/flair to N4-biascorrected t1ce, save matrix
+     *   Registration of N4-biascorrected LPS t1ce to SRI, save matrix
+     *   Registration of LPS t1/t1ce/t2/flair (output of step 2) to SRI space using transformation matrix saved from 4a 4b. (only 1 interpolation for  all modalities)
+  5.  Generating brain mask (for BraTS, we QC here, and correct if needed)
+  6.  Skull stripping of registered Images
+  */
 
   return EXIT_SUCCESS;
 }
