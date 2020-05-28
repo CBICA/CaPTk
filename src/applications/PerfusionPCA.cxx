@@ -13,7 +13,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
   for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
   {
     std::string subjectPath = directoryname + "/" + subjectNames[sid];
-
+    
     std::string perfFilePath = "";
     std::string labelPath = "";
 
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory.");
   parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
   parser.addRequiredParameter("n", "number of PCAs", cbica::Parameter::STRING, "", "The number of principal components.");
-  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
+  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having PCA models");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("");
@@ -69,7 +69,6 @@ int main(int argc, char **argv)
   int tempPosition;
   int applicationType;
   applicationType = 0;
-
 
   double inputPCs = 0;
   std::string inputFileName, inputMaskName, outputDirectoryName, modelDirectoryName;
@@ -127,6 +126,7 @@ int main(int argc, char **argv)
     std::cout << "There is no subject with the required input in the given directory." << std::endl;
     return EXIT_FAILURE;
   }
+  std::cout << "Number of subjects with the required input: " << QualifiedSubjects.size() << std::endl;
   PerfusionPCA object_pca;
   if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
   {

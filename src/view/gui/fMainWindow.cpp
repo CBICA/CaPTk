@@ -260,14 +260,13 @@ fMainWindow::fMainWindow()
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
-  this->m_toolTabdock->setWindowTitle("Double click to undock");
 
 //   Set up our connections so that fMainWindow can receive all drag-and-drop events from our tool tab dock
   connect(m_toolTabdock, SIGNAL(dragEnteredDockWidget(QDragEnterEvent*)), this, SLOT(dragEnterEvent(QDragEnterEvent*)));
   connect(m_toolTabdock, SIGNAL(droppedOnDockWidget(QDropEvent*)), this, SLOT(dropEvent(QDropEvent*)));
   connect(m_toolTabdock, SIGNAL(close()), this, SLOT(close())); //call the application close routine on signal from dockwidget
 
-//  ! automatic undock on low resolution
+  //! automatic undock on low resolution
   //! to be tested thoroughly
   QScreen *scr = QGuiApplication::primaryScreen();
   //!if primary screen resolution is lower than 1200x1024(any of x,y values)
@@ -524,9 +523,9 @@ fMainWindow::fMainWindow()
 
   connect(featurePanel, SIGNAL(helpClicked_FeaUsage(std::string)), this, SLOT(help_contextual(std::string)));
   connect(&registrationPanel, 
-    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)),
+    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string)),
     this, 
-    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)));
+    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
@@ -947,9 +946,6 @@ fMainWindow::fMainWindow()
   m_progressBar->setValue(0);
 
   mHelpDlg = new fHelpDialog();
-
-  //connect
-  connect(m_toolTabdock, SIGNAL(topLevelChanged(bool)), this, SLOT(toolTabDockChanged(bool)));
 
   recurrencePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   msubtypePanel.SetCurrentLoggerPath(m_tempFolderLocation);
@@ -2728,18 +2724,6 @@ void fMainWindow::MoveSlicerCursor(double x, double y, double z, int mode)
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
   }
   propogateSlicerPosition();
-}
-
-void fMainWindow::toolTabDockChanged(bool bUnDocked)
-{
-  if (bUnDocked)
-  {
-	  this->m_toolTabdock->setWindowTitle("Double click to dock");
-  }
-  else
-  {
-	  this->m_toolTabdock->setWindowTitle("Double click to undock");
-  }
 }
 
 VectorVectorDouble fMainWindow::FormulateDrawingPointsForEdemaSegmentation()
@@ -8739,7 +8723,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
-  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, TE);
+  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, TE,outputFolder);
 
   if (perfusionDerivatives.size() == 0)
   {
@@ -8815,8 +8799,9 @@ void fMainWindow::CallTrainingSimulation(const std::string featurefilename, cons
   int defaultfeatureselectiontype = 3;
   int defaultoptimizationtype = 0;
   int defaultcvtype = 1;
+
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype, modeldirectory))
+  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, conf,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
@@ -9078,7 +9063,7 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
   std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames,
   std::string metrics, bool rigidMode, bool affineMode, bool deformMode,
-  std::string radii, std::string iterations)
+  std::string radii, std::string iterations, std::string degreesOfFreedom)
 {
   std::string configPathName;
   std::string configFileName;
@@ -9130,7 +9115,7 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     }
     else if (affineMode)
     {
-      args << "Affine";
+      args << ("Affine-" + degreesOfFreedom).c_str();
     }
     else
     {

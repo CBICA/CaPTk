@@ -79,7 +79,7 @@ signals:
       std::vector<std::string> matrixfilenames, 
       std::string metrics, 
       bool rigidMode, bool affineMode, bool deformMode, 
-      std::string radii, std::string iterations);
+      std::string radii, std::string iterations, std::string dof);
 };
 
 #endif

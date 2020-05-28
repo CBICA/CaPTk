@@ -84,24 +84,19 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
   PerfusionDerivatives objPerfusion;
-  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, rcbvPresent, psrPresent, phPresent, inputEchoName);
-  std::cout << "Writing measures to the specified output directory.\n";
+  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, rcbvPresent, psrPresent, phPresent, inputEchoName, outputDirectoryName);
 
   //write perfusion derivatives
   if (perfusionDerivatives.size() > 0)
   {
-    if (psrPresent == 1)
+    if (psrPresent==1)
       cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputDirectoryName + "/PSR.nii.gz");
-    if (phPresent == 1)
+    if (phPresent==1)
       cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputDirectoryName + "/PH.nii.gz");
-    if (rcbvPresent == 1)
+    if (rcbvPresent==1)
       cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[2], outputDirectoryName + "/ap-RCBV.nii.gz");
-
-    std::cout << "Perfusion derivatives have been saved at the specified locations.\n";
+    std::cout << "Perfusion derivatives written to the specified location." << std::endl;
   }
-
   std::cout << "Finished successfully.\n";
-  std::cout << "\nPress any key to continue............\n";
-
   return EXIT_SUCCESS;
 }

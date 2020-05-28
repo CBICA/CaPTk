@@ -1307,9 +1307,6 @@ public slots:
   */
   void UpdateLinkedNavigation(Slicer* refSlicer);
 
-  //! Dock/undock behaviour changed
-  void toolTabDockChanged(bool bUnDocked);
-
   //! Returns the active tab from the tab widget
   int getActiveTabId()
   {
@@ -1471,7 +1468,7 @@ public slots:
   void Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
     std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, 
     std::string metrics, bool rigidMode, bool affineMode, bool deformMode, 
-    std::string radii, std::string iterations);
+    std::string radii, std::string iterations, std::string degreesOfFreedom);
 
   //confirm before exit
   void closeEvent(QCloseEvent * event);
