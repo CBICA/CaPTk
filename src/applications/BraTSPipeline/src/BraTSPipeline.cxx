@@ -112,16 +112,30 @@ int main(int argc, char** argv)
     }
 
     /// [2] LPS/RAI re-orientation
+    if (debug)
+    {
+      std::cout << "Performing re-orientation to LPS for modality '" << modality << "'.\n";
+    }
     inputImages_processed[modality] = cbica::GetImageOrientation(inputImages[modality], "RAI").second;
     if (inputImages_processed[modality].IsNull())
     {
       std::cerr << "Something went wrong with re-orienting the input image, please re-try or contact sofware@cbica.upenn.edu.\n";
       return EXIT_FAILURE;
     }
+    else
+    {
+      if (intermediateFiles)
+      {
+        if (debug)
+        {
+          std::cout << "Writing re-oriented image for modality '" << modality << "'.\n";
+        }
+        cbica::WriteImage< ImageType >(inputImages_processed[modality], outputDir + "/" + modality + "_rai.nii.gz");
+      }
+    }
   }
   // full pipeline goes here
   /*
-  2.  LPS reorientation
   3.  N4 bias correction (intermediate step)
      *   No mask
      *   shrinkFactor=4
