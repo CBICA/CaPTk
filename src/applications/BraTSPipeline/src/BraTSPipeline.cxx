@@ -271,19 +271,24 @@ int main(int argc, char** argv)
     std::cout << "Registering T1CE to SRI atlas.\n";
   }
 
-  auto deepMedicExe = cbica::getExecutablePath() + "deepMedicRun"
+  auto deepMedicExe = cbica::getExecutablePath() + "DeepMedic"
 #if WIN32
     + ".exe"
 #endif
     ;
-  /*
-  4.  Registration (Greedy)
-     *   N4-biascorrected t1/t2/flair to N4-biascorrected t1ce, save matrix
-     *   Registration of N4-biascorrected LPS t1ce to SRI, save matrix
-     *   Registration of LPS t1/t1ce/t2/flair (output of step 2) to SRI space using transformation matrix saved from 4a 4b. (only 1 interpolation for  all modalities)
-  5.  Generating brain mask (for BraTS, we QC here, and correct if needed)
-  6.  Skull stripping of registered Images
-  */
+
+  fullCommand = " -t1c " + outputDir + "/T1CEToSRI.nii.gz -t1 " +
+    outputDir + "/T1ToSRI.nii.gz -t2 " +
+    outputDir + "/T2ToSRI.nii.gz -fl " +
+    outputDir + "/FLToSRI.nii.gz -o " + outputDir + "/dmOut/brainMask.nii.gz";
+
+  if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
+  {
+    std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
+    return EXIT_FAILURE;
+  }
+
+  std::cout << "Finished, please perform manual quality-check of generated brain mask before applying to input images.\n";
 
   return EXIT_SUCCESS;
 }
