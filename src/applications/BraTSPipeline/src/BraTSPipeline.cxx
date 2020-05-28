@@ -27,7 +27,7 @@ std::string getDataDir()
       captk_dataDir = currentAppPath + "../Resources/data/";
       if (!cbica::exists(captk_dataDir))
       {
-        std::cerr << "Data Directory not found. Please re-install")
+        std::cerr << "Data Directory not found. Please re-install.\n";
         return "";
       }
     }
