@@ -200,19 +200,29 @@ int main(int argc, char** argv)
     std::cout << "Registering T1CE to SRI atlas.\n";
   }
 
-  std::string greedyPathAndDim = cbica::getExecutablePath() + "greedy" +
+  auto greedyPathAndDim = cbica::getExecutablePath() + "greedy" +
 #if WIN32
     ".exe" +
 #endif
     " -d 3";
 
+  auto atlasImage = getDataDir() + "/sri24/atlastImage.nii.gz";
   auto image_t1ce = outputDir + "/T1CE_rai_n4.nii.gz";
+
+  auto fullCommand = " -a -m NMI -i " + atlasImage + " " + image_t1ce + " -o " + outputDir + "/t1ceToSRI.mat -ia-image-centers -n 100x50x10 -dof 6";
+
+  if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+  {
+    std::cerr << "Something went wrong when registering T1CE image to SRI atlas, please re-try or contact sofware@cbica.upenn.edu.\n";
+    return EXIT_FAILURE;
+  }
 
   // perform greedy to register image_t1ce to SRI24 atlas and save matrix
 
-  ///cbica/home/sakoc/software/greedy/v1.0.1/build/greedy -d 3 -a -m NMI -i /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/atlas.nii.gz /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/input.nii.gz -o /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/affine_matrix.mat -ia-image-centers -n 100x50x10 -dof 6
-
-  auto dataDir = getdata
+  ///cbica/home/sakoc/software/greedy/v1.0.1/build/greedy -d 3 -a -m NMI 
+  // -i /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/atlas.nii.gz 
+  // /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/input.nii.gz 
+  // -o /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/affine_matrix.mat -ia-image-centers -n 100x50x10 -dof 6
 
   for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
