@@ -14,6 +14,28 @@ std::string outputDir;
 
 bool debug = true, intermediateFiles = true;
 
+//! didn't want to include qt for this function
+std::string getDataDir()
+{
+  auto currentAppPath = cbica::getExecutablePath();
+  auto captk_dataDir = currentAppPath + "../data/";
+  if (!cbica::exists(captk_dataDir))
+  {
+    captk_dataDir = currentAppPath + "../../data/";
+    if (!cbica::exists(captk_dataDir))
+    {
+      captk_dataDir = currentAppPath + "../Resources/data/";
+      if (!cbica::exists(captk_dataDir))
+      {
+        std::cerr << "Data Directory not found. Please re-install")
+        return "";
+      }
+    }
+  }
+
+  return captk_dataDir;
+}
+
 int main(int argc, char** argv)
 {
   cbica::CmdParser parser(argc, argv, "Utilities");
@@ -170,7 +192,38 @@ int main(int argc, char** argv)
     // the bias-corrected images need to be written because these are passed on to greedy
     cbica::WriteImage< ImageType >(inputImages_processed[modality], outputDir + "/" + modality + "_rai_n4.nii.gz");
   } // end inputFiles iterator
-  // full pipeline goes here
+  
+
+  /// [4] Registration using Greedy
+  if (debug)
+  {
+    std::cout << "Registering T1CE to SRI atlas.\n";
+  }
+
+  std::string greedyPathAndDim = cbica::getExecutablePath() + "greedy" +
+#if WIN32
+    ".exe" +
+#endif
+    " -d 3";
+
+  auto image_t1ce = outputDir + "/T1CE_rai_n4.nii.gz";
+
+  // perform greedy to register image_t1ce to SRI24 atlas and save matrix
+
+  ///cbica/home/sakoc/software/greedy/v1.0.1/build/greedy -d 3 -a -m NMI -i /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/atlas.nii.gz /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/input.nii.gz -o /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/affine_matrix.mat -ia-image-centers -n 100x50x10 -dof 6
+
+  auto dataDir = getdata
+
+  for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
+  {
+    auto modality = it->first;
+    if (modality != "T1CE")
+    {
+      auto image_current = outputDir + "/" + modality + "_rai_n4.nii.gz";
+
+      // perform greedy to register image_current to image_t1ce and save matrix
+    }
+  }
   /*
   4.  Registration (Greedy)
      *   N4-biascorrected t1/t2/flair to N4-biascorrected t1ce, save matrix
