@@ -167,16 +167,8 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
       }
     }
-    if (intermediateFiles)
-    {
-      if (debug)
-      {
-        std::cout << "Writing bias-corrected re-oriented image for modality '" << modality << "'.\n";
-      }
-      cbica::WriteImage< ImageType >(inputImages_processed[modality], outputDir + "/" + modality + "_rai_n4.nii.gz");
-    }
-
-
+    // the bias-corrected images need to be written because these are passed on to greedy
+    cbica::WriteImage< ImageType >(inputImages_processed[modality], outputDir + "/" + modality + "_rai_n4.nii.gz");
   } // end inputFiles iterator
   // full pipeline goes here
   /*
