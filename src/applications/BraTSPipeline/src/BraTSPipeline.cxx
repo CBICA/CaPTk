@@ -8,6 +8,19 @@ template< class TImageType >
 int algorithmsRunner()
 {
   // full pipeline goes here
+  /*
+  1.  Dicom to Nifti
+  2.  LPS reorientation
+  3.  N4 bias correction (intermediate step)
+     *   No mask
+     *   shrinkFactor=4
+  4.  Registration (Greedy)
+     *   N4-biascorrected t1/t2/flair to N4-biascorrected t1ce, save matrix
+     *   Registration of N4-biascorrected LPS t1ce to SRI, save matrix
+     *   Registration of LPS t1/t1ce/t2/flair (output of step 2) to SRI space using transformation matrix saved from 4a 4b. (only 1 interpolation for  all modalities)
+  5.  Generating brain mask (for BraTS, we QC here, and correct if needed)
+  6.  Skull stripping of registered Images
+  */
   
   return EXIT_SUCCESS;
 }
