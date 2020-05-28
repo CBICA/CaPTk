@@ -9,7 +9,10 @@ CAPTK_ADD_PROJECT( ${PROJECT_NAME} 1.8.0)
 
 ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/../../cbica_toolkit/ cbica_toolkit ) # takes care of find_itk
 
-INCLUDE_DIRECTORIES( ${CACHED_INCLUDE_DIRS} )
+INCLUDE_DIRECTORIES( 
+  ${CACHED_INCLUDE_DIRS} 
+  ${PROJECT_SOURCE_DIR}/../Preprocessing/src/depends # this is needed for all preprocessing functionality
+)
 
 CAPTK_INITIAL_SETUP()
 
