@@ -67,15 +67,16 @@ int main(int argc, char** argv)
     parser.getParameterValue("i", intermediateFiles);
   }
   
-  if (parser.isPresent("i"))
+  // sanity checks
+  for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
-    parser.getParameterValue("i", inputImageFile);
+    if (!cbica::exists(it->second))
+    {
+      std::cerr << "Couldn't find the modality '" << it->first << "', denoted by '" << it->second << "'.\n";
+      return EXIT_FAILURE;
+    }
   }
-  if (parser.isPresent("o"))
-  {
-    parser.getParameterValue("o", outputImageFile);
-  }
-
+  
   if (!cbica::isFile(inputImageFile))
   {
     std::cerr << "Input file '" << inputImageFile << "' not found.\n";
