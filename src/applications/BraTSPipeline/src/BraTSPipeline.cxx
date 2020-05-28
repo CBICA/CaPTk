@@ -252,11 +252,16 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
       }
 
-      fullCommand = " -rf " + image_t1ce + " " + image_current
-        + " -o " + outputDir + "/" + modality + "ToSRI.mat -ia-image-centers -n 100x50x10 -dof 6";
+      fullCommand = " -rf " + image_t1ce + " -ri LINEAR -rm " + image_current + " " +
+        outputDir + "/" + modality + "ToSRI.nii.gz -r " 
+        + outputDir + "/T1CEToSRI.mat " 
+        + outputDir + "/" + modality + "ToSRI.mat";
 
-      //cbica/home/sakoc/software/greedy/v1.0.1/build/greedy -d 3 -rf /scratch/braintumoruser/rGreedy_Rigid.2SxDpQvfXX/atlas.nii.gz -ri LINEAR -rm /scratch/braintumoruser/rGreedy_Rigid.2SxDpQvfXX/input.nii.gz /scratch/braintumoruser/rGreedy_Rigid.2SxDpQvfXX/output.nii.gz -r /cbica/projects/brain_tumor/Brain_Tumor_2020/Protocols/2_Registration/AAAA/AAAA_2007.01.21/AAAA_2007.01.21_t1ce_LPS_N4_rSRI.mat /cbica/projects/brain_tumor/Brain_Tumor_2020/Protocols/2_Registration/AAAA/AAAA_2007.01.21/AAAA_2007.01.21_flair_LPS_N4_rT1ce.mat
-      
+      if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+      {
+        std::cerr << "Something went wrong when applying registration matrix to generate " << modality << " image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
+        return EXIT_FAILURE;
+      }
     }
   }
   /*
