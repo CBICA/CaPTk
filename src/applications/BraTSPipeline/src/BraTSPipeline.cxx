@@ -209,7 +209,8 @@ int main(int argc, char** argv)
   auto atlasImage = getDataDir() + "/sri24/atlastImage.nii.gz";
   auto image_t1ce = outputDir + "/T1CE_rai_n4.nii.gz";
 
-  auto fullCommand = " -a -m NMI -i " + atlasImage + " " + image_t1ce + " -o " + outputDir + "/t1ceToSRI.mat -ia-image-centers -n 100x50x10 -dof 6";
+  auto fullCommand = " -a -m NMI -i " + atlasImage + " " + image_t1ce 
+    + " -o " + outputDir + "/t1ceToSRI.mat -ia-image-centers -n 100x50x10 -dof 6";
 
   if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
   {
