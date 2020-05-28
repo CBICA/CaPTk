@@ -47,6 +47,14 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-t1c C:/input/t1ce.nii.gz -t1 C:/input/t1.nii.gz -t2 C:/input/t2.nii.gz -fl C:/input/flair.nii.gz -o C:/input/output", "Run full BraTS pipeline for specified (raw) NIfTI images");
 
   parser.addApplicationDescription("This application performs the BraTS challenge preprocessing pipeline.");
+
+  parser.getParameterValue("t1c", inputFiles["T1CE"]);
+  parser.getParameterValue("t1", inputFiles["T1"]);
+  parser.getParameterValue("t2", inputFiles["T2"]);
+  parser.getParameterValue("fl", inputFiles["FL"]);
+  parser.getParameterValue("o", outputDir);
+
+  cbica::createDir(outputDir);
   
   if (parser.isPresent("i"))
   {
