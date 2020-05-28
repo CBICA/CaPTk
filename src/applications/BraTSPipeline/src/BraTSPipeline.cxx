@@ -98,7 +98,14 @@ int main(int argc, char** argv)
     {
       if (cbica::IsDicom(it->second))
       {
-        std::cerr << "Something went wrong with the DICOM to NIfTI conversion, please use another package to conver to NIfTI and try again.\n";
+        std::cerr << "Something went wrong with the DICOM to NIfTI conversion for modality '" <<
+          it->first << "' with filename '" << it->second << "'"
+          << ", please use another package to conver to NIfTI and try again.\n";
+        return EXIT_FAILURE;
+      }
+      else
+      {
+        std::cerr << "Something went wrong with reading the raw input image, please re-try or contact sofware@cbica.upenn.edu.\n";
         return EXIT_FAILURE;
       }
     }
