@@ -228,8 +228,6 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  // perform greedy to register image_t1ce to SRI24 atlas and save matrix
-
   for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
     auto modality = it->first;
