@@ -75,15 +75,18 @@ int main(int argc, char** argv)
       std::cerr << "Couldn't find the modality '" << it->first << "', denoted by '" << it->second << "'.\n";
       return EXIT_FAILURE;
     }
+
+    auto inputImageInfo = cbica::ImageInfo(it->second);
+    if (inputImageInfo.GetImageDimensions() != 3)
+    {
+      std::cerr << "The BraTS pipeline is only valid for 3D images, whereas the image '" 
+        << it->second << "' for modality '" << it->first << "' has " <<
+        inputImageInfo.GetImageDimensions() << " dimentions.\n";
+      return EXIT_FAILURE;
+    }
+
   }
   
-  if (!cbica::isFile(inputImageFile))
-  {
-    std::cerr << "Input file '" << inputImageFile << "' not found.\n";
-    return EXIT_FAILURE;
-  }
-  auto inputImageInfo = cbica::ImageInfo(inputImageFile);
-
   switch (inputImageInfo.GetImageDimensions())
   {
   case 2:
