@@ -242,7 +242,8 @@ int main(int argc, char** argv)
 
       if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
       {
-        std::cerr << "Something went wrong when registering " << modality << "to T1CE image, please re-try or contact sofware@cbica.upenn.edu.\n";
+        std::cerr << "Something went wrong when registering " << modality 
+          << "to T1CE image, please re-try or contact sofware@cbica.upenn.edu.\n";
         return EXIT_FAILURE;
       }
     }
