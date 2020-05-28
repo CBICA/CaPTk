@@ -10,6 +10,8 @@ std::map< std::string, std::string > inputFiles;
 
 std::string outputDir;
 
+bool debug = true, intermediateFiles = true;
+
 template< class TImageType >
 int algorithmsRunner()
 {
@@ -55,6 +57,15 @@ int main(int argc, char** argv)
   parser.getParameterValue("o", outputDir);
 
   cbica::createDir(outputDir);
+
+  if (parser.isPresent("d"))
+  {
+    parser.getParameterValue("d", debug);
+  }
+  if (parser.isPresent("i"))
+  {
+    parser.getParameterValue("i", intermediateFiles);
+  }
   
   if (parser.isPresent("i"))
   {
