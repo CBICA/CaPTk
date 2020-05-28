@@ -80,18 +80,19 @@ int main(int argc, char** argv)
   }
   for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
+    auto modality = it->first;
     /// [1] read image - DICOM to NIfTI conversion, if applicable
-    inputImages[it->first] = cbica::ReadImage< ImageType >(it->second);
+    inputImages[modality] = cbica::ReadImage< ImageType >(it->second);
 
-    if (inputImages[it->first].IsNotNull())
+    if (inputImages[modality].IsNotNull())
     {
       if (intermediateFiles)
       {
         if (debug)
         {
-          std::cout << "Writing raw input (post DICOM conversion, if applicable) for modality '" << it->first << "'.\n";
+          std::cout << "Writing raw input (post DICOM conversion, if applicable) for modality '" << modality << "'.\n";
         }
-        cbica::WriteImage< ImageType >(inputImages[it->first], outputDir + "/" + it->first + "_raw.nii.gz");
+        cbica::WriteImage< ImageType >(inputImages[modality], outputDir + "/" + modality + "_raw.nii.gz");
       }
     }
     else
@@ -99,7 +100,7 @@ int main(int argc, char** argv)
       if (cbica::IsDicom(it->second))
       {
         std::cerr << "Something went wrong with the DICOM to NIfTI conversion for modality '" <<
-          it->first << "' with filename '" << it->second << "'"
+          modality << "' with filename '" << it->second << "'"
           << ", please use another package to conver to NIfTI and try again.\n";
         return EXIT_FAILURE;
       }
@@ -108,6 +109,14 @@ int main(int argc, char** argv)
         std::cerr << "Something went wrong with reading the raw input image, please re-try or contact sofware@cbica.upenn.edu.\n";
         return EXIT_FAILURE;
       }
+    }
+
+    /// [2] LPS/RAI re-orientation
+    inputImages_processed[modality] = cbica::GetImageOrientation(inputImages[modality], "RAI").second;
+    if (inputImages_processed[modality].IsNull())
+    {
+      std::cerr << "Something went wrong with re-orienting the input image, please re-try or contact sofware@cbica.upenn.edu.\n";
+      return EXIT_FAILURE;
     }
   }
   // full pipeline goes here
