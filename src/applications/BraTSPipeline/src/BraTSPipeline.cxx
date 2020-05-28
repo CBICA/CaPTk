@@ -80,6 +80,7 @@ int main(int argc, char** argv)
   }
   for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
+    /// [1] read image - DICOM to NIfTI conversion, if applicable
     inputImages[it->first] = cbica::ReadImage< ImageType >(it->second);
 
     if (inputImages[it->first].IsNotNull())
