@@ -84,8 +84,9 @@ int main(int argc, char** argv)
         inputImageInfo.GetImageDimensions() << " dimentions.\n";
       return EXIT_FAILURE;
     }
-
   }
+
+  using ImageType = itk::Image< float, 3 >; // default image type
   
   switch (inputImageInfo.GetImageDimensions())
   {
