@@ -264,6 +264,18 @@ int main(int argc, char** argv)
       }
     }
   }
+
+  /// [5] Skull-stripping using DeepMedic
+  if (debug)
+  {
+    std::cout << "Registering T1CE to SRI atlas.\n";
+  }
+
+  auto deepMedicExe = cbica::getExecutablePath() + "deepMedicRun"
+#if WIN32
+    + ".exe"
+#endif
+    ;
   /*
   4.  Registration (Greedy)
      *   N4-biascorrected t1/t2/flair to N4-biascorrected t1ce, save matrix
