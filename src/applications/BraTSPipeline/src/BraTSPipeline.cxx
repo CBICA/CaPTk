@@ -232,7 +232,19 @@ int main(int argc, char** argv)
     {
       auto image_current = outputDir + "/" + modality + "_rai_n4.nii.gz";
 
-      // perform greedy to register image_current to image_t1ce and save matrix
+      fullCommand = " -a -m NMI -i " + image_t1ce + " " + image_current
+        + " -o " + outputDir + "/" + modality + "ToSRI.mat -ia-image-centers -n 100x50x10 -dof 6";
+
+      if (debug)
+      {
+        std::cout << "Registering " << modality << " to T1CE.\n";
+      }
+
+      if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+      {
+        std::cerr << "Something went wrong when registering " << modality << "to T1CE image, please re-try or contact sofware@cbica.upenn.edu.\n";
+        return EXIT_FAILURE;
+      }
     }
   }
   /*
