@@ -70,10 +70,9 @@ int main(int argc, char** argv)
   }
 
   using ImageType = itk::Image< float, 3 >; // default image type
-  /*
-  1.  Dicom to Nifti
-  */
-  std::map< std::string, ImageType::Pointer > inputImages;
+
+  // variables to store various images
+  std::map< std::string, ImageType::Pointer > inputImages, inputImages_processed;
 
   if (debug)
   {
