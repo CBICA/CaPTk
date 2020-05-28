@@ -218,12 +218,17 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  // perform greedy to register image_t1ce to SRI24 atlas and save matrix
+  fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " +
+    image_t1ce + " " + outputDir + "/t1ceToSRI.nii.gz -r " +
+    outputDir + "/t1ceToSRI.mat";
 
-  ///cbica/home/sakoc/software/greedy/v1.0.1/build/greedy -d 3 -a -m NMI 
-  // -i /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/atlas.nii.gz 
-  // /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/input.nii.gz 
-  // -o /scratch/braintumoruser/rGreedy_Rigid.xP9PqORqxJ/affine_matrix.mat -ia-image-centers -n 100x50x10 -dof 6
+  if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+  {
+    std::cerr << "Something went wrong when applying registration matrix to generate T1CE image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
+    return EXIT_FAILURE;
+  }
+
+  // perform greedy to register image_t1ce to SRI24 atlas and save matrix
 
   for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
@@ -246,6 +251,12 @@ int main(int argc, char** argv)
           << "to T1CE image, please re-try or contact sofware@cbica.upenn.edu.\n";
         return EXIT_FAILURE;
       }
+
+      fullCommand = " -rf " + image_t1ce + " " + image_current
+        + " -o " + outputDir + "/" + modality + "ToSRI.mat -ia-image-centers -n 100x50x10 -dof 6";
+
+      //cbica/home/sakoc/software/greedy/v1.0.1/build/greedy -d 3 -rf /scratch/braintumoruser/rGreedy_Rigid.2SxDpQvfXX/atlas.nii.gz -ri LINEAR -rm /scratch/braintumoruser/rGreedy_Rigid.2SxDpQvfXX/input.nii.gz /scratch/braintumoruser/rGreedy_Rigid.2SxDpQvfXX/output.nii.gz -r /cbica/projects/brain_tumor/Brain_Tumor_2020/Protocols/2_Registration/AAAA/AAAA_2007.01.21/AAAA_2007.01.21_t1ce_LPS_N4_rSRI.mat /cbica/projects/brain_tumor/Brain_Tumor_2020/Protocols/2_Registration/AAAA/AAAA_2007.01.21/AAAA_2007.01.21_flair_LPS_N4_rT1ce.mat
+      
     }
   }
   /*
