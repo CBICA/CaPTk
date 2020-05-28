@@ -83,13 +83,24 @@ int main(int argc, char** argv)
   {
     inputImages[it->first] = cbica::ReadImage< ImageType >(it->second);
 
-    if (intermediateFiles)
+    if (inputImages[it->first].IsNotNull())
     {
-      if (debug)
+      if (intermediateFiles)
       {
-        std::cout << "Writing raw input (post DICOM conversion, if applicable) for modality '" << it->first << "'.\n";
+        if (debug)
+        {
+          std::cout << "Writing raw input (post DICOM conversion, if applicable) for modality '" << it->first << "'.\n";
+        }
+        cbica::WriteImage< ImageType >(inputImages[it->first], outputDir + "/" + it->first + "_raw.nii.gz");
       }
-      cbica::WriteImage< ImageType >(inputImages[it->first], outputDir + "/" + it->first + "_raw.nii.gz");
+    }
+    else
+    {
+      if (cbica::IsDicom(it->second))
+      {
+        std::cerr << "Something went wrong with the DICOM to NIfTI conversion, please use another package to conver to NIfTI and try again.\n";
+        return EXIT_FAILURE;
+      }
     }
   }
   // full pipeline goes here
