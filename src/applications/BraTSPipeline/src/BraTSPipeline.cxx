@@ -46,6 +46,10 @@ int main(int argc, char** argv)
     parser.getParameterValue("i", intermediateFiles);
   }
   
+  if (debug)
+  {
+    std::cout << "Performing sanity checks for input images.\n";
+  }
   // sanity checks
   for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
@@ -66,10 +70,30 @@ int main(int argc, char** argv)
   }
 
   using ImageType = itk::Image< float, 3 >; // default image type
-
-  // full pipeline goes here
   /*
   1.  Dicom to Nifti
+  */
+  std::map< std::string, ImageType::Pointer > inputImages;
+
+  if (debug)
+  {
+    std::cout << "Reading input images.\n";
+  }
+  for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
+  {
+    inputImages[it->first] = cbica::ReadImage< ImageType >(it->second);
+
+    if (intermediateFiles)
+    {
+      if (debug)
+      {
+        std::cout << "Writing raw input (post DICOM conversion, if applicable) for modality '" << it->first << "'.\n";
+      }
+      cbica::WriteImage< ImageType >(inputImages[it->first], outputDir + "/" + it->first + "_raw.nii.gz");
+    }
+  }
+  // full pipeline goes here
+  /*
   2.  LPS reorientation
   3.  N4 bias correction (intermediate step)
      *   No mask
