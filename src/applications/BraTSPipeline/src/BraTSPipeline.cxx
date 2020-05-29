@@ -250,7 +250,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
       }
 
-      fullCommand = " -rf " + image_t1ce + " -ri LINEAR -rm " + image_current + " " +
+      fullCommand = " -rf " + image_t1ce + " -ri LINEAR -rm " + inputFiles[modality] + " " +
         outputDir + "/" + modality + "ToSRI.nii.gz -r " 
         + outputDir + "/T1CEToSRI.mat " 
         + outputDir + "/" + modality + "ToSRI.mat";
