@@ -185,7 +185,8 @@ int main(int argc, char** argv)
 #endif
     " -d 3";
 
-  auto atlasImage = getCaPTkDataDir() + "/sri24/atlastImage.nii.gz";
+  auto captkDataDir = getCaPTkDataDir();
+  auto atlasImage = captkDataDir + "/sri24/atlastImage.nii.gz";
   auto image_t1ce = outputDir + "/T1CE_rai_n4.nii.gz";
 
   auto fullCommand = " -a -m NMI -i " + atlasImage + " " + image_t1ce 
@@ -254,7 +255,7 @@ int main(int argc, char** argv)
 #endif
     ;
 
-  fullCommand = " -t1c " + outputDir + "/T1CEToSRI.nii.gz -t1 " +
+  fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ -t1c " + outputDir + "/T1CEToSRI.nii.gz -t1 " +
     outputDir + "/T1ToSRI.nii.gz -t2 " +
     outputDir + "/T2ToSRI.nii.gz -fl " +
     outputDir + "/FLToSRI.nii.gz -o " + outputDir + "/dmOut/brainMask.nii.gz";
