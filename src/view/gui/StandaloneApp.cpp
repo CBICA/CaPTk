@@ -35,7 +35,7 @@ QString StandaloneApp::GetName() const
 	return m_AppName;
 }
 
-std::string StandaloneApp::getStandaloneApp(Qstring appName, fMainWindow* pMainWindow) {
+std::string StandaloneApp::getStandaloneApp(QString appName, fMainWindow* pMainWindow) {
 	this->m_fMainWindow = pMainWindow;
 	this->m_AppName = appName;
 

@@ -20,7 +20,7 @@ public:
 	void SetName(QString appName);
 	QString GetName() const;
 
-	std::string getStandaloneApp(Qstring appName, fMainWindow* pMainWindow);
+	std::string getStandaloneApp(QString appName, fMainWindow* pMainWindow);
 
 private:
 
@@ -36,7 +36,7 @@ private:
 	
 	YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/appsDownloadConfigs.yaml");
 
-	void appDownload(std::string currentApp);
+	void appDownload();
 	void startDownload();
 	void cancelDownload();
 	void startUnzip(QString fullPath, QString extractPath);

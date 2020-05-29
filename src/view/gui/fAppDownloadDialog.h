@@ -19,6 +19,13 @@
 
 //#include "CAPTk.h"
 #include "ui_fAppDownloadDialog.h"
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QUrl>
+#include <QFile>
+#include <QFileInfo>
+#include <QDir>
 
 /**
 \class fAppDownloadDialog
