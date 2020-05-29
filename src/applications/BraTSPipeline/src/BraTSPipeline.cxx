@@ -38,7 +38,7 @@ std::string getDataDir()
 
 int main(int argc, char** argv)
 {
-  cbica::CmdParser parser(argc, argv, "Utilities");
+  cbica::CmdParser parser(argc, argv, "BraTSPipeline");
 
   parser.addRequiredParameter("t1c", "t1ceImage", cbica::Parameter::STRING, "Input Image (DICOM or NIfTI)", "Input structural T1-weighted post-contrast image");
   parser.addRequiredParameter("t1", "t1Image", cbica::Parameter::STRING, "Input Image (DICOM or NIfTI)", "Input structural T1-weighted pre-contrast image");
