@@ -8,6 +8,7 @@
 #include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
 #include "QZipReader.h"
+#include "ApplicationPreferences.h"
 
 class ASyncExtract : public QThread
 {

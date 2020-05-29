@@ -9,6 +9,7 @@
 #include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
 #include "AsyncExtract.h"
+#include "ApplicationPreferences.h"
 
 // StandaloneApp* StandaloneApp::m_Instance = nullptr;
 // QMutex StandaloneApp::m_Mutex;
@@ -161,12 +162,12 @@ void StandaloneApp::doneUnzip() {
 		//  stlapps->Debug("Extraction failed");
 
 		//  stlapps->StoreAppSetting("", "", appName);
-		QMessageBox::information(this->m_fMainWindow, tr("Extration"), "Extracting " + this->m_AppName.toStdString() + " failed");
+		QMessageBox::information(this->m_fMainWindow, tr("Extration"), "Extraction failed");
 
 	}
 	else {
 		// updateProgress(100, "Extracting " + this->m_AppName.toStdString() + " done");
-		QMessageBox::information(this->m_fMainWindow, tr("Extration"),"Extracting " + this->m_AppName.toStdString() + " done");
+		QMessageBox::information(this->m_fMainWindow, tr("Extration"),"Extraction done");
 
 
 		//  stlapps->RetreiveAppSetting(appName);
