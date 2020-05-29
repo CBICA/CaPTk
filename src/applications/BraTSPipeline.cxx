@@ -231,7 +231,7 @@ int main(int argc, char** argv)
 
       fullCommand = " -rf " + image_t1ce + " -ri LINEAR -rm " + inputFiles[modality] + " " +
         outputDir + "/" + modality + "ToSRI.nii.gz -r " 
-        + outputDir + "/T1CEToSRI.mat " 
+        + outputDir + "/t1ceToSRI.mat " 
         + outputDir + "/" + modality + "ToSRI.mat";
 
       if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
