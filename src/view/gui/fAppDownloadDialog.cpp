@@ -1,9 +1,17 @@
+#include <QDialog>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QUrl>
+#include <QFile>
+#include <QFileInfo>
+#include <QDir>
+
 #include "fAppDownloadDialog.h"
-//#include "fProgressDialog.h"
-//#include "CAPTk.h"
 #include "CaPTkGUIUtils.h"
 
 #include "cbicaITKUtilities.h"
+#include "ApplicationPreferences.h"
 
 fAppDownloadDialog::fAppDownloadDialog()
 {
@@ -22,61 +30,87 @@ fAppDownloadDialog::~fAppDownloadDialog()
 
 void fAppDownloadDialog::CancelButtonPressed()
 {
-    emit cancelDownload(appName);
+    ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->SerializePreferences();
+
+    // emit cancelDownload();
 
     this->close();
 }
 
 void fAppDownloadDialog::ConfirmButtonPressed()
 {
-  // progressDialog = new QProgressDialog(this);
-    setupDownload(this);
+    ApplicationPreferences::GetInstance()->DeSerializePreferences();
+    bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
+    bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
+    bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
+    bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
 
-    connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
-
-    manager = new QNetworkAccessManager(this);
-
-    // url = 
-    QFileInfo fileInfo(url.path());
-    QString fileName = fileInfo.fileName();
-
-    if (fileName.isEmpty())
-        fileName = "index.html";
-
-    fullPath = downloadPath + fileName;
-    // ShowErrorMessage(fullPath.toStdString());
-
-    if (QFile::exists(fullPath)) {
-        if (QMessageBox::question(this, tr("HTTP"),
-                tr("There already exists a file %1. Overwrite?").arg(fileName),
-                QMessageBox::Yes|QMessageBox::No, QMessageBox::No)
-                == QMessageBox::No)
-                return;
-        QFile::remove(fullPath);
+    if(extractionFinished)
+    {
+        QMessageBox::information(this,tr("Download"),"Already Downloaded");
     }
-
-    file = new QFile(fullPath);
-    if (!file->open(QIODevice::WriteOnly)) {
-        QMessageBox::information(this, tr("HTTP"),
-                    tr("Unable to save the file %1: %2")
-                    .arg(fileName).arg(file->errorString()));
-        delete file;
-        file = 0;
-        return;
+    else if(downloadStarted && !downloadFinished)
+    {
+        QMessageBox::information(this,tr("Download"),"Download in progress");
     }
+    else if(extractionStarted && !extractionFinished)
+    {
+        QMessageBox::information(this,tr("Extract"),"Extraction in progress");
+    }
+    else
+    {
+        setupDownload(this);
 
-    // used for progressDialog
-    // This will be set true when canceled from progress dialog
-    httpRequestAborted = false;
+        connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
 
-    progressDialog->setWindowTitle(tr("HTTP"));
-    progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
-    
-    emit startDownload(appName);
+        manager = new QNetworkAccessManager(this);
 
-    startRequest(url);
+        // url = 
+        QFileInfo fileInfo(url.path());
+        QString fileName = fileInfo.fileName();
 
-    this->close();
+        if (fileName.isEmpty())
+            fileName = "index.html";
+
+        fullPath = downloadPath + fileName;
+        // ShowErrorMessage(fullPath.toStdString());
+
+        if (QFile::exists(fullPath)) {
+            if (QMessageBox::question(this, tr("HTTP"),
+                    tr("There already exists a file %1. Overwrite?").arg(fileName),
+                    QMessageBox::Yes|QMessageBox::No, QMessageBox::No)
+                    == QMessageBox::No)
+                    return;
+            QFile::remove(fullPath);
+        }
+
+        file = new QFile(fullPath);
+        if (!file->open(QIODevice::WriteOnly)) {
+            QMessageBox::information(this, tr("HTTP"),
+                        tr("Unable to save the file %1: %2")
+                        .arg(fileName).arg(file->errorString()));
+            delete file;
+            file = 0;
+            return;
+        }
+        
+        // used for progressDialog
+        // This will be set true when canceled from progress dialog
+        httpRequestAborted = false;
+
+        ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("true").toString());
+        ApplicationPreferences::GetInstance()->SerializePreferences();
+
+        progressDialog->setWindowTitle(tr("HTTP"));
+        progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
+        
+        // emit startDownload();
+
+        startRequest(url);
+
+        this->close();
+    }
 }
 
 
@@ -140,7 +174,10 @@ void fAppDownloadDialog::httpDownloadFinished()
         reply->deleteLater();
         progressDialog->hide();
 
-        emit cancelDownload(appName);
+        ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SerializePreferences();
+
+        // emit cancelDownload();
 
         return;
     }
@@ -149,6 +186,9 @@ void fAppDownloadDialog::httpDownloadFinished()
     progressDialog->hide();
     file->flush();
     file->close();
+
+    ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("true").toString());
+    ApplicationPreferences::GetInstance()->SerializePreferences();
 
     // get redirection url
     QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
@@ -181,7 +221,7 @@ void fAppDownloadDialog::httpDownloadFinished()
     file = 0;
     manager = 0;
 
-    emit doneDownload(fullPath, extractPath, appName);
+    emit doneDownload(fullPath, extractPath);
 }
 
 // During the download progress, it can be canceled
@@ -190,7 +230,9 @@ void fAppDownloadDialog::cancelDownload()
     httpRequestAborted = true;
     reply->abort();
 
-    emit cancelDownload(appName);
+    ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->SerializePreferences();
+    // emit cancelDownload();
 
     this->close();
 }

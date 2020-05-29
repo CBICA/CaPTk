@@ -11,16 +11,28 @@ public:
 	static ApplicationPreferences* GetInstance();
 
 	//! setters/getters
-    void SetFont(QString font);
-    QString GetFont() const;
+	void SetFont(QString font);
+	QString GetFont() const;
 
-    void SetTheme(QString theme);
-    QString GetTheme() const;
+	void SetTheme(QString theme);
+	QString GetTheme() const;
 
 	void SetUserPreferencesAvailability(QString available);
 	QString GetUserPreferencesAvailability() const;
 
-		//! Serialize 
+	void SetLibraDownloadStartedStatus(QString status);
+	QString GetLibraDownloadStartedStatus();
+
+	void SetLibraDownloadFinishedStatus(QString status);
+	QString GetLibraDownloadFinishedStatus();
+
+	void SetLibraExtractionStartedStatus(QString status);
+	QString GetLibraExtractionStartedStatus();
+
+	void SetLibraExtractionFinishedStatus(QString status);
+	QString GetLibraExtractionFinishedStatus();
+
+    //! Serialize
 	void SerializePreferences();
 
 	//! De-Serliaze
@@ -40,9 +52,15 @@ private:
 	static ApplicationPreferences* m_Instance;
 	static QMutex m_Mutex;
 
-    QString m_Font;
-    QString m_Theme;
+	QString m_Font;
+	QString m_Theme;
 	QString m_UserPreferencesAvailability = QVariant("false").toString();
+
+	//app download extract settings
+	QString m_LibraDownloadStarted;
+	QString m_LibraDownloadFinished;
+	QString m_LibraExtractionStarted;
+	QString m_LibraExtractionFinished;
 };
 
 #endif // APPLICATIONPREFERENCES_H

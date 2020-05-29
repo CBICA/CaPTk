@@ -7,14 +7,6 @@
 #include <QFileDialog>
 #include <QComboBox>
 #include <QCoreApplication>
-#include <QDialog>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
-#include <QFile>
-#include <QFileInfo>
-#include <QDir>
 #include "qdesktopservices.h"
 
 #include "yaml-cpp/node/node.h"
