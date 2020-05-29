@@ -3,6 +3,7 @@
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
+#include "CaPTkGUIUtils.h"
 
 #include "BiasCorrection.hpp"
 
@@ -13,28 +14,6 @@ std::map< std::string, std::string > inputFiles;
 std::string outputDir;
 
 bool debug = true, intermediateFiles = true;
-
-//! didn't want to include qt for this function
-std::string getDataDir()
-{
-  auto currentAppPath = cbica::getExecutablePath();
-  auto captk_dataDir = currentAppPath + "../data/";
-  if (!cbica::exists(captk_dataDir))
-  {
-    captk_dataDir = currentAppPath + "../../data/";
-    if (!cbica::exists(captk_dataDir))
-    {
-      captk_dataDir = currentAppPath + "../Resources/data/";
-      if (!cbica::exists(captk_dataDir))
-      {
-        std::cerr << "Data Directory not found. Please re-install.\n";
-        return "";
-      }
-    }
-  }
-
-  return captk_dataDir;
-}
 
 int main(int argc, char** argv)
 {
@@ -206,7 +185,7 @@ int main(int argc, char** argv)
 #endif
     " -d 3";
 
-  auto atlasImage = getDataDir() + "/sri24/atlastImage.nii.gz";
+  auto atlasImage = getCaPTkDataDir() + "/sri24/atlastImage.nii.gz";
   auto image_t1ce = outputDir + "/T1CE_rai_n4.nii.gz";
 
   auto fullCommand = " -a -m NMI -i " + atlasImage + " " + image_t1ce 
