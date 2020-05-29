@@ -38,7 +38,7 @@ class ASyncExtract : public QThread
 			{
 				ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
 				//after extraction remove the zip
-				bool successfullyremoved = QFile::remove(fullPath.c_str());
+				bool successfullyremoved = QFile::remove(this->fullPath.toStdString().c_str());
 			}
 			else
 			{
