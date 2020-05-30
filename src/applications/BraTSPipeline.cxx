@@ -230,7 +230,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
       }
 
-      fullCommand = " -rf " + image_t1ce + " -ri LINEAR -rm " + inputFiles[modality] + " " +
+      fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " + inputFiles[modality] + " " +
         outputDir + "/" + outputNames[modality] + ".nii.gz -r "
         + outputDir + "/" + outputNames["T1CE"] + ".mat "
         + outputDir + "/" + outputNames[modality] + ".mat";
