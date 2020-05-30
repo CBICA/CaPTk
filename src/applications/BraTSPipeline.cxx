@@ -204,7 +204,7 @@ int main(int argc, char** argv)
 
   if (debug)
   {
-    std::cout << "Greedy command:" << greedyPathAndDim + fullCommand << "\n";
+    std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
   }
 
   if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
@@ -250,7 +250,7 @@ int main(int argc, char** argv)
 
       if (debug)
       {
-        std::cout << "Greedy command:" << greedyPathAndDim + fullCommand << "\n";
+        std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
       }
 
       if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
@@ -278,7 +278,7 @@ int main(int argc, char** argv)
 
   if (debug)
   {
-    std::cout << "Command for DeepMedic: \n" << deepMedicExe + fullCommand << "\n";
+    std::cout << "Command for DeepMedic: " << deepMedicExe + fullCommand << "\n";
   }
 
   if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
