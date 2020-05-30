@@ -231,7 +231,7 @@ int main(int argc, char** argv)
       }
 
       fullCommand = " -rf " + image_t1ce + " -ri LINEAR -rm " + inputFiles[modality] + " " +
-        outputDir + "/" + modality + "ToSRI.nii.gz -r " 
+        outputDir + "/" + outputNames[modality] + ".nii.gz -r "
         + outputDir + "/" + outputNames["T1CE"] + ".mat "
         + outputDir + "/" + outputNames[modality] + ".mat";
 
@@ -256,6 +256,11 @@ int main(int argc, char** argv)
     outputDir + "/" + outputNames["T1"] + ".nii.gz -t2 " +
     outputDir + "/" + outputNames["T2"] + ".nii.gz -fl " +
     outputDir + "/" + outputNames["FL"] + ".nii.gz -o " + outputDir + "/dmOut/brainMask.nii.gz";
+
+  if (debug)
+  {
+    std::cout << "Command for DeepMedic: \n" << deepMedicExe + fullCommand << "\n";
+  }
 
   if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
   {
