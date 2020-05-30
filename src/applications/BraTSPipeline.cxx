@@ -246,7 +246,7 @@ int main(int argc, char** argv)
   /// [5] Skull-stripping using DeepMedic
   if (debug)
   {
-    std::cout << "Registering T1CE to SRI atlas.\n";
+    std::cout << "Starting skull-stripping using DeepMedic.\n";
   }
 
   auto deepMedicExe = cbica::getExecutablePath() + "DeepMedic"
