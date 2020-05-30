@@ -78,7 +78,9 @@ int main(int argc, char** argv)
   std::map< std::string, ImageType::Pointer > inputImages, inputImages_processed;
 
   // default names
-  std::map< std::string, std::string > outputNames;
+  std::map< std::string, std::string > outputNames,
+    inputReorientedFiles, inputReorientedBiasFiles, // filenames for reoriented and bias-corrected files
+    outputMatFiles, outputRegisteredImages; // filenames for  matrices and images
 
   if (debug)
   {
@@ -130,14 +132,9 @@ int main(int argc, char** argv)
     }
     else
     {
-      if (intermediateFiles)
-      {
-        if (debug)
-        {
-          std::cout << "Writing re-oriented image for modality '" << modality << "'.\n";
-        }
-        cbica::WriteImage< ImageType >(inputImages_processed[modality], outputDir + "/" + modality + "_rai.nii.gz");
-      }
+      inputReorientedFiles[modality] = outputDir + "/" + modality + "_rai.nii.gz";
+      // the re-oriented images need to be written because these are passed on to greedy
+      cbica::WriteImage< ImageType >(inputImages_processed[modality], inputReorientedFiles[modality]);
     }
 
     /// [3] N4 bias correction
@@ -172,12 +169,14 @@ int main(int argc, char** argv)
       }
     }
     // the bias-corrected images need to be written because these are passed on to greedy
-    cbica::WriteImage< ImageType >(inputImages_processed[modality], outputDir + "/" + modality + "_rai_n4.nii.gz");
+    inputReorientedBiasFiles[modality] = outputDir + "/" + modality + "_rai_n4.nii.gz";
+    cbica::WriteImage< ImageType >(inputImages_processed[modality], inputReorientedBiasFiles[modality]);
 
-    outputNames[modality] = modality + "_to_SRI";
+    outputNames[modality] = modality + "_to_SRI"; // all output names can be controlled from here
   } // end inputFiles iterator
   
   /// [4] Registration using Greedy
+  // we do T1CE to Atlas registration first because other registrations are dependent on this
   if (debug)
   {
     std::cout << "Registering T1CE to SRI atlas.\n";
@@ -187,10 +186,11 @@ int main(int argc, char** argv)
 
   auto captkDataDir = getCaPTkDataDir();
   auto atlasImage = captkDataDir + "/sri24/atlastImage.nii.gz";
-  auto image_t1ce = outputDir + "/T1CE_rai_n4.nii.gz";
+  outputMatFiles["T1CE"] = outputDir + "/" + outputNames["T1CE"] + ".mat";
+  outputRegisteredImages["T1CE"] = outputDir + "/" + outputNames["T1CE"] + ".nii.gz";
 
-  auto fullCommand = " -a -m NMI -i " + atlasImage + " " + image_t1ce 
-    + " -o " + outputDir + "/" + outputNames["T1CE"] + ".mat -ia-image-centers -n 100x50x10 -dof 6";
+  auto fullCommand = " -a -m NMI -i " + atlasImage + " " + inputReorientedBiasFiles["T1CE"]
+    + " -o " + outputMatFiles["T1CE"] + " -ia-image-centers -n 100x50x10 -dof 6";
 
   if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
   {
@@ -199,8 +199,8 @@ int main(int argc, char** argv)
   }
 
   fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " +
-    image_t1ce + " " + outputDir + "/" + outputNames["T1CE"] + ".nii.gz -r " +
-    outputDir + "/" + outputNames["T1CE"] + ".mat";
+    inputReorientedFiles["T1CE"] + " " + outputRegisteredImages["T1CE"] + " -r " +
+    outputMatFiles["T1CE"];
 
   if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
   {
@@ -211,12 +211,13 @@ int main(int argc, char** argv)
   for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
     auto modality = it->first;
-    if (modality != "T1CE")
+    if (modality != "T1CE") // T1CE registration has happened before
     {
-      auto image_current = outputDir + "/" + modality + "_rai_n4.nii.gz";
-
-      fullCommand = " -a -m NMI -i " + image_t1ce + " " + image_current
-        + " -o " + outputDir + "/" + outputNames[modality] + ".mat -ia-image-centers -n 100x50x10 -dof 6";
+      outputMatFiles[modality] = outputDir + "/" + outputNames[modality] + ".mat";
+      outputRegisteredImages[modality] = outputDir + "/" + outputNames[modality] + ".nii.gz";
+      // we use the bias-corrected image for registration as it is easier localize transformations
+      fullCommand = " -a -m NMI -i " + image_t1ce + " " + inputReorientedBiasFiles[modality]
+        + " -o " + outputMatFiles[modality] + " -ia-image-centers -n 100x50x10 -dof 6";
 
       if (debug)
       {
@@ -230,10 +231,17 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
       }
 
-      fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " + inputFiles[modality] + " " +
-        outputDir + "/" + outputNames[modality] + ".nii.gz -r "
-        + outputDir + "/" + outputNames["T1CE"] + ".mat "
-        + outputDir + "/" + outputNames[modality] + ".mat";
+      if (debug)
+      {
+        std::cout << "Generating image for " << modality << " registered to the atlas.\n";
+      }
+
+      // the final registration is applied on the original image after re-orientation (not bias-corrected) to
+      // ensure maximum fidelity with original image
+      fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " + inputReorientedFiles[modality] + " " +
+        outputRegisteredImages[modality] + " -r "
+        + outputMatFiles["T1CE"]
+        + outputMatFiles[modality];
 
       if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
       {
@@ -252,10 +260,11 @@ int main(int argc, char** argv)
   auto deepMedicExe = getApplicationPath("DeepMedic");
 
   fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ " + 
-    "-t1c " + outputDir + "/" + outputNames["T1CE"] + ".nii.gz -t1 " +
-    outputDir + "/" + outputNames["T1"] + ".nii.gz -t2 " +
-    outputDir + "/" + outputNames["T2"] + ".nii.gz -fl " +
-    outputDir + "/" + outputNames["FL"] + ".nii.gz -o " + outputDir + "/dmOut/brainMask.nii.gz";
+    "-t1c " + outputRegisteredImages["T1CE"] + " -t1 " +
+    outputRegisteredImages["T1"] + " -t2 " +
+    outputRegisteredImages["T2"] + " -fl " +
+    outputRegisteredImages["FL"] + " -o " + 
+    outputDir + "/dmOut/brainMask.nii.gz";
 
   if (debug)
   {
