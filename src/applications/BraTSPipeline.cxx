@@ -202,6 +202,11 @@ int main(int argc, char** argv)
     inputReorientedFiles["T1CE"] + " " + outputRegisteredImages["T1CE"] + " -r " +
     outputMatFiles["T1CE"];
 
+  if (debug)
+  {
+    std::cout << "Greedy command:" << greedyPathAndDim + fullCommand << "\n";
+  }
+
   if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
   {
     std::cerr << "Something went wrong when applying registration matrix to generate T1CE image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
@@ -242,6 +247,11 @@ int main(int argc, char** argv)
         outputRegisteredImages[modality] + " -r "
         + outputMatFiles["T1CE"]
         + outputMatFiles[modality];
+
+      if (debug)
+      {
+        std::cout << "Greedy command:" << greedyPathAndDim + fullCommand << "\n";
+      }
 
       if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
       {
