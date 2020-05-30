@@ -77,6 +77,9 @@ int main(int argc, char** argv)
   // variables to store various images
   std::map< std::string, ImageType::Pointer > inputImages, inputImages_processed;
 
+  // default names
+  std::map< std::string, std::string > outputNames;
+
   if (debug)
   {
     std::cout << "Reading input images.\n";
@@ -170,27 +173,24 @@ int main(int argc, char** argv)
     }
     // the bias-corrected images need to be written because these are passed on to greedy
     cbica::WriteImage< ImageType >(inputImages_processed[modality], outputDir + "/" + modality + "_rai_n4.nii.gz");
+
+    outputNames[modality] = modality + "_to_SRI";
   } // end inputFiles iterator
   
-
   /// [4] Registration using Greedy
   if (debug)
   {
     std::cout << "Registering T1CE to SRI atlas.\n";
   }
 
-  auto greedyPathAndDim = cbica::getExecutablePath() + "greedy" +
-#if WIN32
-    ".exe" +
-#endif
-    " -d 3";
+  auto greedyPathAndDim = getApplicationPath("greedy") + " -d 3";
 
   auto captkDataDir = getCaPTkDataDir();
   auto atlasImage = captkDataDir + "/sri24/atlastImage.nii.gz";
   auto image_t1ce = outputDir + "/T1CE_rai_n4.nii.gz";
 
   auto fullCommand = " -a -m NMI -i " + atlasImage + " " + image_t1ce 
-    + " -o " + outputDir + "/t1ceToSRI.mat -ia-image-centers -n 100x50x10 -dof 6";
+    + " -o " + outputDir + "/" + outputNames["T1CE"] + ".mat -ia-image-centers -n 100x50x10 -dof 6";
 
   if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
   {
@@ -199,8 +199,8 @@ int main(int argc, char** argv)
   }
 
   fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " +
-    image_t1ce + " " + outputDir + "/t1ceToSRI.nii.gz -r " +
-    outputDir + "/t1ceToSRI.mat";
+    image_t1ce + " " + outputDir + "/" + outputNames["T1CE"] + ".nii.gz -r " +
+    outputDir + "/" + outputNames["T1CE"] + ".mat";
 
   if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
   {
@@ -216,7 +216,7 @@ int main(int argc, char** argv)
       auto image_current = outputDir + "/" + modality + "_rai_n4.nii.gz";
 
       fullCommand = " -a -m NMI -i " + image_t1ce + " " + image_current
-        + " -o " + outputDir + "/" + modality + "ToSRI.mat -ia-image-centers -n 100x50x10 -dof 6";
+        + " -o " + outputDir + "/" + outputNames[modality] + ".mat -ia-image-centers -n 100x50x10 -dof 6";
 
       if (debug)
       {
@@ -232,8 +232,8 @@ int main(int argc, char** argv)
 
       fullCommand = " -rf " + image_t1ce + " -ri LINEAR -rm " + inputFiles[modality] + " " +
         outputDir + "/" + modality + "ToSRI.nii.gz -r " 
-        + outputDir + "/t1ceToSRI.mat " 
-        + outputDir + "/" + modality + "ToSRI.mat";
+        + outputDir + "/" + outputNames["T1CE"] + ".mat "
+        + outputDir + "/" + outputNames[modality] + ".mat";
 
       if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
       {
@@ -249,16 +249,13 @@ int main(int argc, char** argv)
     std::cout << "Starting skull-stripping using DeepMedic.\n";
   }
 
-  auto deepMedicExe = cbica::getExecutablePath() + "DeepMedic"
-#if WIN32
-    + ".exe"
-#endif
-    ;
+  auto deepMedicExe = getApplicationPath("DeepMedic");
 
-  fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ -t1c " + outputDir + "/T1CEToSRI.nii.gz -t1 " +
-    outputDir + "/T1ToSRI.nii.gz -t2 " +
-    outputDir + "/T2ToSRI.nii.gz -fl " +
-    outputDir + "/FLToSRI.nii.gz -o " + outputDir + "/dmOut/brainMask.nii.gz";
+  fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ " + 
+    "-t1c " + outputDir + "/" + outputNames["T1CE"] + ".nii.gz -t1 " +
+    outputDir + "/" + outputNames["T1"] + ".nii.gz -t2 " +
+    outputDir + "/" + outputNames["T2"] + ".nii.gz -fl " +
+    outputDir + "/" + outputNames["FL"] + ".nii.gz -o " + outputDir + "/dmOut/brainMask.nii.gz";
 
   if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
   {
