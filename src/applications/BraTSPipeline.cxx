@@ -221,7 +221,7 @@ int main(int argc, char** argv)
       outputMatFiles[modality] = outputDir + "/" + outputNames[modality] + ".mat";
       outputRegisteredImages[modality] = outputDir + "/" + outputNames[modality] + ".nii.gz";
       // we use the bias-corrected image for registration as it is easier localize transformations
-      fullCommand = " -a -m NMI -i " + image_t1ce + " " + inputReorientedBiasFiles[modality]
+      fullCommand = " -a -m NMI -i " + inputReorientedBiasFiles["T1CE"] + " " + inputReorientedBiasFiles[modality]
         + " -o " + outputMatFiles[modality] + " -ia-image-centers -n 100x50x10 -dof 6";
 
       if (debug)
