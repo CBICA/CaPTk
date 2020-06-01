@@ -144,33 +144,37 @@ int main(int argc, char** argv)
       std::cout << "Starting bias correction for modality '" << modality << "'.\n";
     }
 
-    BiasCorrection biasCorrector;
-    {
-      using MaskImageType = itk::Image<unsigned char, ImageType::ImageDimension>;
-      typename MaskImageType::Pointer maskImage; // mask inits to null
-      auto outputImage = biasCorrector.Run<TImageType, MaskImageType>("n4",
-        inputImages_processed[modality],
-        maskImage,
-        BiasCorrection::default_splineOrder,
-        BiasCorrection::default_maxIterations,
-        BiasCorrection::default_fittingLevels,
-        BiasCorrection::default_filterNoise,
-        BiasCorrection::default_fwhm,
-        BiasCorrection::default_otsuBins);
-      if (outputImage.IsNotNull())
-      {
-        inputImages_processed[modality] = outputImage;
-        inputImages_processed[modality]->DisconnectPipeline();
-      }
-      else
-      {
-        std::cerr << "Something went wrong with bias-correcting the re-oriented image, please re-try or contact sofware@cbica.upenn.edu.\n";
-        return EXIT_FAILURE;
-      }
-    }
     // the bias-corrected images need to be written because these are passed on to greedy
     inputReorientedBiasFiles[modality] = outputDir + "/" + modality + "_rai_n4.nii.gz";
-    cbica::WriteImage< ImageType >(inputImages_processed[modality], inputReorientedBiasFiles[modality]);
+
+    if (!cbica::fileExists(inputReorientedBiasFiles[modality]))
+    {
+      BiasCorrection biasCorrector;
+      {
+        using MaskImageType = itk::Image<unsigned char, ImageType::ImageDimension>;
+        typename MaskImageType::Pointer maskImage; // mask inits to null
+        auto outputImage = biasCorrector.Run<TImageType, MaskImageType>("n4",
+          inputImages_processed[modality],
+          maskImage,
+          BiasCorrection::default_splineOrder,
+          BiasCorrection::default_maxIterations,
+          BiasCorrection::default_fittingLevels,
+          BiasCorrection::default_filterNoise,
+          BiasCorrection::default_fwhm,
+          BiasCorrection::default_otsuBins);
+        if (outputImage.IsNotNull())
+        {
+          inputImages_processed[modality] = outputImage;
+          inputImages_processed[modality]->DisconnectPipeline();
+        }
+        else
+        {
+          std::cerr << "Something went wrong with bias-correcting the re-oriented image, please re-try or contact sofware@cbica.upenn.edu.\n";
+          return EXIT_FAILURE;
+        }
+      }
+      cbica::WriteImage< ImageType >(inputImages_processed[modality], inputReorientedBiasFiles[modality]);
+    }
 
     outputNames[modality] = modality + "_to_SRI"; // all output names can be controlled from here
   } // end inputFiles iterator
@@ -189,29 +193,41 @@ int main(int argc, char** argv)
   outputMatFiles["T1CE"] = outputDir + "/" + outputNames["T1CE"] + ".mat";
   outputRegisteredImages["T1CE"] = outputDir + "/" + outputNames["T1CE"] + ".nii.gz";
 
-  auto fullCommand = " -a -m NMI -i " + atlasImage + " " + inputReorientedBiasFiles["T1CE"]
-    + " -o " + outputMatFiles["T1CE"] + " -ia-image-centers -n 100x50x10 -dof 6";
+  std::string fullCommand;
 
-  if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+  if (!cbica::exists(outputMatFiles["T1CE"]))
   {
-    std::cerr << "Something went wrong when registering T1CE image to SRI atlas, please re-try or contact sofware@cbica.upenn.edu.\n";
-    return EXIT_FAILURE;
-  }
+    fullCommand = " -a -m NMI -i " + atlasImage + " " + inputReorientedBiasFiles["T1CE"]
+      + " -o " + outputMatFiles["T1CE"] + " -ia-image-centers -n 100x50x10 -dof 6";
 
-  fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " +
-    inputReorientedFiles["T1CE"] + " " + outputRegisteredImages["T1CE"] + " -r " +
-    outputMatFiles["T1CE"];
+    if (debug)
+    {
+      std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
+    }
+    if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+    {
+      std::cerr << "Something went wrong when registering T1CE image to SRI atlas, please re-try or contact sofware@cbica.upenn.edu.\n";
+      return EXIT_FAILURE;
+    }
+  } // end outputMatFiles["T1CE"] check
 
-  if (debug)
+  if (!cbica::exists(outputRegisteredImages["T1CE"]))
   {
-    std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
-  }
+    fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " +
+      inputReorientedFiles["T1CE"] + " " + outputRegisteredImages["T1CE"] + " -r " +
+      outputMatFiles["T1CE"];
 
-  if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
-  {
-    std::cerr << "Something went wrong when applying registration matrix to generate T1CE image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
-    return EXIT_FAILURE;
-  }
+    if (debug)
+    {
+      std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
+    }
+
+    if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+    {
+      std::cerr << "Something went wrong when applying registration matrix to generate T1CE image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
+      return EXIT_FAILURE;
+    }
+  } // end outputRegisteredImages["T1CE"] check
 
   for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
@@ -220,46 +236,53 @@ int main(int argc, char** argv)
     {
       outputMatFiles[modality] = outputDir + "/" + outputNames[modality] + ".mat";
       outputRegisteredImages[modality] = outputDir + "/" + outputNames[modality] + ".nii.gz";
-      // we use the bias-corrected image for registration as it is easier localize transformations
-      fullCommand = " -a -m NMI -i " + inputReorientedBiasFiles["T1CE"] + " " + inputReorientedBiasFiles[modality]
-        + " -o " + outputMatFiles[modality] + " -ia-image-centers -n 100x50x10 -dof 6";
 
-      if (debug)
+      if (!cbica::exists(outputMatFiles[modality]))
       {
-        std::cout << "Registering " << modality << " to T1CE.\n";
-      }
+        // we use the bias-corrected image for registration as it is easier localize transformations
+        fullCommand = " -a -m NMI -i " + inputReorientedBiasFiles["T1CE"] + " " + inputReorientedBiasFiles[modality]
+          + " -o " + outputMatFiles[modality] + " -ia-image-centers -n 100x50x10 -dof 6";
+        if (debug)
+        {
+          std::cout << "Registering " << modality << " to T1CE.\n";
+          std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
+        }
 
-      if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
-      {
-        std::cerr << "Something went wrong when registering " << modality 
-          << "to T1CE image, please re-try or contact sofware@cbica.upenn.edu.\n";
-        return EXIT_FAILURE;
-      }
+        if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+        {
+          std::cerr << "Something went wrong when registering " << modality
+            << "to T1CE image, please re-try or contact sofware@cbica.upenn.edu.\n";
+          return EXIT_FAILURE;
+        }
+      } // end outputMatFiles[modality] check
 
       if (debug)
       {
         std::cout << "Generating image for " << modality << " registered to the atlas.\n";
       }
 
-      // the final registration is applied on the original image after re-orientation (not bias-corrected) to
-      // ensure maximum fidelity with original image
-      fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " + inputReorientedFiles[modality] + " " +
-        outputRegisteredImages[modality] + " -r "
-        + outputMatFiles["T1CE"] + " "
-        + outputMatFiles[modality];
-
-      if (debug)
+      if (!cbica::exists(outputRegisteredImages[modality]))
       {
-        std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
-      }
+        // the final registration is applied on the original image after re-orientation (not bias-corrected) to
+        // ensure maximum fidelity with original image
+        fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " + inputReorientedFiles[modality] + " " +
+          outputRegisteredImages[modality] + " -r "
+          + outputMatFiles["T1CE"] + " "
+          + outputMatFiles[modality];
 
-      if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
-      {
-        std::cerr << "Something went wrong when applying registration matrix to generate " << modality << " image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
-        return EXIT_FAILURE;
-      }
-    }
-  }
+        if (debug)
+        {
+          std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
+        }
+
+        if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+        {
+          std::cerr << "Something went wrong when applying registration matrix to generate " << modality << " image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
+          return EXIT_FAILURE;
+        }
+      } // end outputRegisteredImages[modality] check
+    } // end modality check
+  } // end modality loop
 
   /// [5] Skull-stripping using DeepMedic
   if (debug)
@@ -267,24 +290,27 @@ int main(int argc, char** argv)
     std::cout << "Starting skull-stripping using DeepMedic.\n";
   }
 
-  auto deepMedicExe = getApplicationPath("DeepMedic");
-
-  fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ " + 
-    "-t1c " + outputRegisteredImages["T1CE"] + " -t1 " +
-    outputRegisteredImages["T1"] + " -t2 " +
-    outputRegisteredImages["T2"] + " -fl " +
-    outputRegisteredImages["FL"] + " -o " + 
-    outputDir + "/dmOut/brainMask.nii.gz";
-
-  if (debug)
+  if (!cbica::exists(outputDir + "/dmOut/brainMask.nii.gz"))
   {
-    std::cout << "Command for DeepMedic: " << deepMedicExe + fullCommand << "\n";
-  }
+    auto deepMedicExe = getApplicationPath("DeepMedic");
 
-  if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
-  {
-    std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
-    return EXIT_FAILURE;
+    fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ " +
+      "-t1c " + outputRegisteredImages["T1CE"] + " -t1 " +
+      outputRegisteredImages["T1"] + " -t2 " +
+      outputRegisteredImages["T2"] + " -fl " +
+      outputRegisteredImages["FL"] + " -o " +
+      outputDir + "/dmOut/brainMask.nii.gz";
+
+    if (debug)
+    {
+      std::cout << "Command for DeepMedic: " << deepMedicExe + fullCommand << "\n";
+    }
+
+    if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
+    {
+      std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
+      return EXIT_FAILURE;
+    }
   }
 
   std::cout << "Finished, please perform manual quality-check of generated brain mask before applying to input images.\n";
