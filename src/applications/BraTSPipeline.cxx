@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-t1c C:/input/t1ce/image.dcm -t1 C:/input/t1/image.dcm -t2 C:/input/t2/image.dcm -fl C:/input/flair/image.dcm -o C:/input/output", "Run full BraTS pipeline for specified DICOM images");
   parser.addExampleUsage("-t1c C:/input/t1ce.nii.gz -t1 C:/input/t1.nii.gz -t2 C:/input/t2.nii.gz -fl C:/input/flair.nii.gz -o C:/input/output", "Run full BraTS pipeline for specified (raw) NIfTI images");
 
-  parser.addApplicationDescription("This application performs the BraTS challenge preprocessing pipeline.");
+  parser.addApplicationDescription("This application performs the BraTS challenge preprocessing pipeline. Please delete contents of output directory or fresh run.");
 
   parser.getParameterValue("t1c", inputFiles["T1CE"]);
   parser.getParameterValue("t1", inputFiles["T1"]);
