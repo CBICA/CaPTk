@@ -240,6 +240,7 @@ This CLI-only application takes 4 structural brain MRIs as input and performs th
 - [Registration](preprocessing_reg.html) to SRI-24 atlas [4]
 - Apply registration to re-oriented image to maximize image fidelity
 - [Skull-stripping](seg_DL.html)
+- Put extracted brain mask back to original patient space 
 
 Reference:
 
