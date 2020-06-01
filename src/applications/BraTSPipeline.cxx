@@ -76,6 +76,7 @@ int main(int argc, char** argv)
 
   // variables to store various images
   std::map< std::string, ImageType::Pointer > inputImages, inputImages_processed;
+  std::map< std::string, std::string > inputModalities_orientation;
 
   // default names
   std::map< std::string, std::string > outputNames,
@@ -124,7 +125,10 @@ int main(int argc, char** argv)
     {
       std::cout << "Performing re-orientation to LPS for modality '" << modality << "'.\n";
     }
-    inputImages_processed[modality] = cbica::GetImageOrientation(inputImages[modality], "RAI").second;
+    
+    auto temp = cbica::GetImageOrientation(inputImages[modality], "RAI");
+    inputModalities_orientation[modality] = temp.first;
+    inputImages_processed[modality] = temp.second;
     if (inputImages_processed[modality].IsNull())
     {
       std::cerr << "Something went wrong with re-orienting the input image, please re-try or contact sofware@cbica.upenn.edu.\n";
@@ -311,7 +315,22 @@ int main(int argc, char** argv)
       std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
       return EXIT_FAILURE;
     }
-  }
+  } // end brainMask check
+
+
+  /// [6] Put brain mask back in patient space
+  auto brainMask_image = cbica::ReadImage< ImageType >(outputDir + "/dmOut/brainMask.nii.gz");
+  for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
+  {
+    auto modality = it->first;
+
+    // apply transformation back to re-oriented image space
+
+    // from re-oriented brainMask, use inputModalities_orientation to get back to patient orientation
+    //auto brainMask_reoriented = cbica::GetImageOrientation< ImageType >(brainMask_image, inputModalities_orientation[modality]).second;
+    
+  } // end modality loop
+
 
   std::cout << "Finished, please perform manual quality-check of generated brain mask before applying to input images.\n";
 
