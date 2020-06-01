@@ -38,7 +38,10 @@ int main(int argc, char** argv)
   parser.getParameterValue("fl", inputFiles["FL"]);
   parser.getParameterValue("o", outputDir);
 
-  cbica::createDir(outputDir);
+  if (!cbica::isDir)
+  {
+    cbica::createDir(outputDir);
+  }
 
   if (parser.isPresent("d"))
   {
