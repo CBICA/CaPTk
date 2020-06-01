@@ -297,7 +297,7 @@ int main(int argc, char** argv)
     std::cout << "Starting skull-stripping using DeepMedic.\n";
   }
 
-  auto brainMaskFile = outputDir + "/dmOut/brainMask.nii.gz";
+  auto brainMaskFile = outputDir + "/dmOut/brainMask_sri.nii.gz";
 
   if (!cbica::exists(brainMaskFile))
   {
@@ -326,7 +326,12 @@ int main(int argc, char** argv)
   std::map< std::string, std::string > outputFiles_withoutOrientationFix, outputFiles_withOrientationFix;
 
   /// [6] Put brain mask back in patient space
-  auto brainMask_image = cbica::ReadImage< ImageType >(brainMaskFile);
+  auto finalBrainMask = cbica::normalizePath(outputDir + "/brainMask_sri.nii.gz");
+  cbica::WriteImage< TImageType >(
+    cbica::ReadImage< TImageType >(brainMaskFile),
+    finalBrainMask
+    );
+
   for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
     auto modality = it->first;
@@ -344,7 +349,7 @@ int main(int argc, char** argv)
     */
 
     fullCommand = " -rf " + atlasImage + " -ri LABEL 0.2vox "
-      " -rm " + brainMaskFile + " " +
+      " -rm " + finalBrainMask + " " +
       outputFiles_withoutOrientationFix[modality] + " -r "
       + outputMatFiles["T1CE"] + ",-1";
     
@@ -363,12 +368,19 @@ int main(int argc, char** argv)
     {
       if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
       {
-        std::cerr << "Something went wrong when applying registration matrix to generate " << modality << " image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
+        std::cerr << "Something went wrong when applying registration matrix to generate " 
+          << modality << " image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
         return EXIT_FAILURE;
       }
     }
 
     // from re-oriented brainMask, use inputModalities_orientation to get back to patient orientation
+
+    if (debug)
+    {
+      std::cout << "Re-orienting mask from LPS to original patient space.\n";
+    }
+
     cbica::WriteImage< ImageType >(
       cbica::GetImageOrientation< ImageType >(
         cbica::ReadImage< ImageType >(outputFiles_withoutOrientationFix[modality]), // read mask generated in previous step
