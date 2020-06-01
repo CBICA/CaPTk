@@ -381,12 +381,14 @@ int main(int argc, char** argv)
       std::cout << "Re-orienting mask from LPS to original patient space.\n";
     }
 
-    cbica::WriteImage< ImageType >(
-      cbica::GetImageOrientation< ImageType >(
-        cbica::ReadImage< ImageType >(outputFiles_withoutOrientationFix[modality]), // read mask generated in previous step
-        inputModalities_orientation[modality]).second, // re-orient to original space
-      outputFiles_withOrientationFix[modality]); // write to file
-    
+    if (!cbica::exists(outputFiles_withOrientationFix[modality]))
+    {
+      cbica::WriteImage< ImageType >(
+        cbica::GetImageOrientation< ImageType >(
+          cbica::ReadImage< ImageType >(outputFiles_withoutOrientationFix[modality]), // read mask generated in previous step
+          inputModalities_orientation[modality]).second, // re-orient to original space
+        outputFiles_withOrientationFix[modality]); // write to file
+    }
   } // end modality loop
 
 
