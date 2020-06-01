@@ -245,7 +245,7 @@ int main(int argc, char** argv)
       // ensure maximum fidelity with original image
       fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " + inputReorientedFiles[modality] + " " +
         outputRegisteredImages[modality] + " -r "
-        + outputMatFiles["T1CE"]
+        + outputMatFiles["T1CE"] + " "
         + outputMatFiles[modality];
 
       if (debug)
