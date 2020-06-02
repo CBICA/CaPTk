@@ -7,6 +7,8 @@
 
 #include "BiasCorrection.hpp"
 
+#include "itkMaskImageFilter.h"
+
 #include <map>
 
 std::map< std::string, std::string > inputFiles;
@@ -84,7 +86,7 @@ int main(int argc, char** argv)
   // default names
   std::map< std::string, std::string > outputNames,
     inputReorientedFiles, inputReorientedBiasFiles, // filenames for reoriented and bias-corrected files
-    outputMatFiles, outputRegisteredImages; // filenames for  matrices and images
+    outputMatFiles, outputRegisteredImages, outputRegisteredMaskedImages; // filenames for  matrices and images
 
   if (debug)
   {
@@ -206,6 +208,7 @@ int main(int argc, char** argv)
   auto atlasImage = captkDataDir + "/sri24/atlastImage.nii.gz";
   outputMatFiles["T1CE"] = outputDir + "/" + outputNames["T1CE"] + ".mat";
   outputRegisteredImages["T1CE"] = outputDir + "/" + outputNames["T1CE"] + ".nii.gz";
+  outputRegisteredMaskedImages["T1CE"] = outputDir + "/" + outputNames["T1CE"] + "_brain.nii.gz";
 
   std::string fullCommand;
 
@@ -250,6 +253,7 @@ int main(int argc, char** argv)
     {
       outputMatFiles[modality] = outputDir + "/" + outputNames[modality] + ".mat";
       outputRegisteredImages[modality] = outputDir + "/" + outputNames[modality] + ".nii.gz";
+      outputRegisteredMaskedImages[modality] = outputDir + "/" + outputNames[modality] + "_brain.nii.gz";
 
       if (!cbica::exists(outputMatFiles[modality]))
       {
@@ -300,12 +304,12 @@ int main(int argc, char** argv)
     std::cout << "Starting skull-stripping using DeepMedic.\n";
   }
 
-  auto brainMaskFile = outputDir + "/dmOut/brainMask_sri.nii.gz";
+  auto deepMedicExe = getApplicationPath("DeepMedic");
+
+  auto brainMaskFile = outputDir + "/dmOut_skull/brainMask_sri.nii.gz";
 
   if (!cbica::exists(brainMaskFile))
   {
-    auto deepMedicExe = getApplicationPath("DeepMedic");
-
     fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ " +
       "-t1c " + outputRegisteredImages["T1CE"] + " -t1 " +
       outputRegisteredImages["T1"] + " -t2 " +
@@ -334,13 +338,55 @@ int main(int argc, char** argv)
   // variables to store outputs in patient space
   std::map< std::string, std::string > outputFiles_withoutOrientationFix, outputFiles_withOrientationFix;
 
-  /// [6] Put brain mask back in patient space
   auto finalBrainMask = cbica::normalizePath(outputDir + "/brainMask_sri.nii.gz");
   cbica::WriteImage< TImageType >(
     cbica::ReadImage< TImageType >(brainMaskFile),
     finalBrainMask
     );
+  
+  /// [6] Brain Tumor Segmentation
+  auto brainTumorMaskFile = outputDir + "/dmOut_tumor/tumors_sri.nii.gz";
 
+  if (!cbica::exists(brainTumorMaskFile))
+  {
+    // iterate over outputRegisteredMaskedImages
+    for (auto it = outputRegisteredMaskedImages.begin(); it != outputRegisteredMaskedImages.end(); it++)
+    {
+      auto modality = it->first;
+      auto maskFilter = itk::MaskImageFilter< ImageType, ImageType >::New();
+      maskFilter->SetInput(cbica::ReadImage< ImageType >(outputRegisteredImages[modality]));
+      maskFilter->SetMaskImage(cbica::ReadImage< TImageType >(finalBrainMask));
+      try
+      {
+        maskFilter->Update();
+      }
+      catch (const std::exception& e)
+      {
+        std::cerr << "Something went wrong when applying the brain mask to modality '" 
+          << modality << "': " << e.what();
+        return EXIT_FAILURE;
+      }
+    }
+    fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/brainTumorSegmentation/ " +
+      "-t1c " + outputRegisteredImages["T1CE"] + " -t1 " +
+      outputRegisteredImages["T1"] + " -t2 " +
+      outputRegisteredImages["T2"] + " -fl " +
+      outputRegisteredImages["FL"] + " -o " +
+      brainMaskFile;
+
+    if (debug)
+    {
+      std::cout << "Command for DeepMedic: " << deepMedicExe + fullCommand << "\n";
+    }
+
+    if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
+    {
+      std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
+      return EXIT_FAILURE;
+    }
+  } // end brainMask check
+
+  /// [6] Put brain mask back in patient space
   for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
   {
     auto modality = it->first;
@@ -390,10 +436,7 @@ int main(int argc, char** argv)
         outputFiles_withOrientationFix[modality]); // write to file
     }
   } // end modality loop
-
-
-  /// brain tumor segmentation
-
+  
   std::cout << "Finished, please perform manual quality-check of generated brain mask before applying to input images.\n";
 
   return EXIT_SUCCESS;
