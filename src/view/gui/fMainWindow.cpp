@@ -8629,20 +8629,20 @@ void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, con
   const std::string quantLower, const std::string quantUpper,
   const std::string cutoffLower, const std::string cutoffUpper, bool wholeImageMeanThreshold)
 {
-  if (!inputImage.empty() && !maskImage.empty() && !outputImageFile.empty())
+  if (!inputImage.empty() && !outputImageFile.empty())
   {
-    if (!cbica::isFile(maskImage))
-    {
-      ShowErrorMessage("Mask Image passed is not a valid file, please re-check", this);
-      return;
-    }
     if (!cbica::isFile(inputImage))
     {
       ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
       return;
     }
     auto input = cbica::ReadImage< ImageTypeFloat3D >(inputImage);
-    auto mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
+    auto mask = cbica::CreateImage< ImageTypeFloat3D >(input);
+
+    if (cbica::isFile(maskImage))
+    {
+      mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
+    }
 
     auto qLower = std::atof(quantLower.c_str());
     auto qUpper = std::atof(quantUpper.c_str());
