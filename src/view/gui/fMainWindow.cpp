@@ -7694,8 +7694,6 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     }
   }
 
-  ShowErrorMessage("Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive.", this, "Long Running Application");
-
   QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application", 
     "Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive; press OK to continue...", 
     QMessageBox::Ok | QMessageBox::Cancel);
