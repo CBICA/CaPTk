@@ -366,13 +366,14 @@ int main(int argc, char** argv)
           << modality << "': " << e.what();
         return EXIT_FAILURE;
       }
+      cbica::WriteImage< ImageType >(maskFilter->GetOutput(), it->second); // write the masked image 
     }
     fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/brainTumorSegmentation/ " +
-      "-t1c " + outputRegisteredImages["T1CE"] + " -t1 " +
-      outputRegisteredImages["T1"] + " -t2 " +
-      outputRegisteredImages["T2"] + " -fl " +
-      outputRegisteredImages["FL"] + " -o " +
-      brainMaskFile;
+      "-t1c " + outputRegisteredMaskedImages["T1CE"] + " -t1 " +
+      outputRegisteredMaskedImages["T1"] + " -t2 " +
+      outputRegisteredMaskedImages["T2"] + " -fl " +
+      outputRegisteredMaskedImages["FL"] + " -m " + finalBrainMask + 
+      " -o " + brainTumorMaskFile;
 
     if (debug)
     {
@@ -384,58 +385,79 @@ int main(int argc, char** argv)
       std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
       return EXIT_FAILURE;
     }
-  } // end brainMask check
+  } // end brainTumorMaskFile check
 
-  /// [6] Put brain mask back in patient space
-  for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
+  if (!cbica::exists(brainTumorMaskFile))
   {
-    auto modality = it->first;
+    std::cerr << "Brain Tumor Mask was not written, cannot proceed.\n";
+    return EXIT_FAILURE;
+  }
 
-    outputFiles_withoutOrientationFix[modality] = cbica::normalizePath(outputDir + "/brainMask+_" + modality + "_lps.nii.gz");
-    outputFiles_withOrientationFix[modality] = cbica::normalizePath(outputDir + "/brainMask+_" + modality + ".nii.gz");
-    
-    fullCommand = " -rf " + atlasImage + " -ri LABEL 0.2vox "
-      " -rm " + finalBrainMask + " " +
-      outputFiles_withoutOrientationFix[modality] + " -r "
-      + outputMatFiles["T1CE"] + ",-1";
-    
-    if (modality != "T1CE")
-    {
-      fullCommand += " " + outputMatFiles[modality] + ",-1"; // other modalities are co-registered to T1CE
-    }
+  auto finalBrainTumorMask = cbica::normalizePath(outputDir + "/brainTumorMask_sri.nii.gz");
+  cbica::WriteImage< TImageType >(
+    cbica::ReadImage< TImageType >(brainTumorMaskFile),
+    finalBrainTumorMask
+    );
 
-    if (debug)
-    {
-      std::cout << "Generating image for brain mask registered to re-oriented input.\n";
-      std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
-    }
+  /// [7] Put masks back in patient space
+  std::vector< std::string > masksToReorient;
+  masksToReorient.push_back(finalBrainMask);
+  masksToReorient.push_back(finalBrainTumorMask);
 
-    if (!cbica::exists(outputFiles_withoutOrientationFix[modality]))
+  for (size_t i = 0; i < masksToReorient.size(); i++)
+  {
+    auto currentMaskToReorient = masksToReorient[i];
+
+    for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
     {
-      if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+      auto modality = it->first;
+
+      outputFiles_withoutOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_sri.nii.gz", "_" + modality + "_lps.nii.gz");
+      outputFiles_withOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_sri.nii.gz", "_" + modality + "_lps.nii.gz");
+
+      fullCommand = " -rf " + atlasImage + " -ri LABEL 0.2vox "
+        " -rm " + currentMaskToReorient + " " +
+        outputFiles_withoutOrientationFix[modality] + " -r "
+        + outputMatFiles["T1CE"] + ",-1";
+
+      if (modality != "T1CE")
       {
-        std::cerr << "Something went wrong when applying registration matrix to generate " 
-          << modality << " image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
-        return EXIT_FAILURE;
+        fullCommand += " " + outputMatFiles[modality] + ",-1"; // other modalities are co-registered to T1CE
       }
-    }
 
-    // from re-oriented brainMask, use inputModalities_orientation to get back to patient orientation
+      if (debug)
+      {
+        std::cout << "Generating image for brain mask registered to re-oriented input.\n";
+        std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
+      }
 
-    if (debug)
-    {
-      std::cout << "Re-orienting mask from LPS to original patient space.\n";
-    }
+      if (!cbica::exists(outputFiles_withoutOrientationFix[modality]))
+      {
+        if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+        {
+          std::cerr << "Something went wrong when applying registration matrix to generate "
+            << modality << " image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
+          return EXIT_FAILURE;
+        }
+      }
 
-    if (!cbica::exists(outputFiles_withOrientationFix[modality]))
-    {
-      cbica::WriteImage< ImageType >(
-        cbica::GetImageOrientation< ImageType >(
-          cbica::ReadImage< ImageType >(outputFiles_withoutOrientationFix[modality]), // read mask generated in previous step
-          inputModalities_orientation[modality]).second, // re-orient to original space
-        outputFiles_withOrientationFix[modality]); // write to file
-    }
-  } // end modality loop
+      // from re-oriented brainMask, use inputModalities_orientation to get back to patient orientation
+
+      if (debug)
+      {
+        std::cout << "Re-orienting mask from LPS to original patient space.\n";
+      }
+
+      if (!cbica::exists(outputFiles_withOrientationFix[modality]))
+      {
+        cbica::WriteImage< ImageType >(
+          cbica::GetImageOrientation< ImageType >(
+            cbica::ReadImage< ImageType >(outputFiles_withoutOrientationFix[modality]), // read mask generated in previous step
+            inputModalities_orientation[modality]).second, // re-orient to original space
+          outputFiles_withOrientationFix[modality]); // write to file
+      }
+    } // end modality loop
+  } // end masks loop
   
   std::cout << "Finished, please perform manual quality-check of generated brain mask before applying to input images.\n";
 
