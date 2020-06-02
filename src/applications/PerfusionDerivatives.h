@@ -106,7 +106,7 @@ public:
 template< class ImageType, class PerfusionImageType >
 std::vector<double> PerfusionDerivatives::CalculateAveragePerfusionCurve(typename PerfusionImageType::Pointer perfImagePointerNifti)
 {
-  PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
+  typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
   std::vector<double> AverageCurve(region.GetSize()[3],0);
   typedef itk::ImageRegionIteratorWithIndex <PerfusionImageType> IteratorType;
   IteratorType perfIt(perfImagePointerNifti, perfImagePointerNifti->GetLargestPossibleRegion());
