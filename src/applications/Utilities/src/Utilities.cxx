@@ -1348,6 +1348,11 @@ int main(int argc, char** argv)
     }
   }
 
+  if (cbica::isDir(inputImageFile))
+  {
+    std::cerr << "Please pass the first file in the DICOM series as input.\n";
+    return EXIT_FAILURE;
+  }
   if (!cbica::isFile(inputImageFile))
   {
     std::cerr << "Input file '" << inputImageFile << "' not found.\n";
