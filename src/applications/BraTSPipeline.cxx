@@ -325,6 +325,12 @@ int main(int argc, char** argv)
     }
   } // end brainMask check
 
+  if (!cbica::exists(brainMaskFile))
+  {
+    std::cerr << "Brain Mask was not written, cannot proceed.\n";
+    return EXIT_FAILURE;
+  }
+
   // variables to store outputs in patient space
   std::map< std::string, std::string > outputFiles_withoutOrientationFix, outputFiles_withOrientationFix;
 
@@ -342,15 +348,6 @@ int main(int argc, char** argv)
     outputFiles_withoutOrientationFix[modality] = cbica::normalizePath(outputDir + "/brainMask+_" + modality + "_lps.nii.gz");
     outputFiles_withOrientationFix[modality] = cbica::normalizePath(outputDir + "/brainMask+_" + modality + ".nii.gz");
     
-    /*
-    greedy -d 3 -rf /scratch/braintumoruser/rGreedy_Rigid.pBpfcMiV4T/atlas.nii.gz -ri LABEL 0.2vox \
-    -rm /scratch/braintumoruser/rGreedy_Rigid.pBpfcMiV4T/input.nii.gz 
-    /scratch/braintumoruser/rGreedy_Rigid.pBpfcMiV4T/output.nii.gz \
-    -r /cbica/projects/brain_tumor/Brain_Tumor_2020/Protocols/2_Registration/AAAB/AAAB_2006.10.28/AAAB_2006.10.28_t1ce_LPS_N4_rSRI.mat,-1 
-    /cbica/projects/brain_tumor/Brain_Tumor_2020/Protocols/2_Registration/AAAB/AAAB_2006.10.28/AAAB_2006.10.28_flair_LPS_N4_rT1ce.mat,-1
-
-    */
-
     fullCommand = " -rf " + atlasImage + " -ri LABEL 0.2vox "
       " -rm " + finalBrainMask + " " +
       outputFiles_withoutOrientationFix[modality] + " -r "
@@ -394,6 +391,8 @@ int main(int argc, char** argv)
     }
   } // end modality loop
 
+
+  /// brain tumor segmentation
 
   std::cout << "Finished, please perform manual quality-check of generated brain mask before applying to input images.\n";
 
