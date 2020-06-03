@@ -190,7 +190,7 @@ private:
     auto outputImage = cbica::CreateImage< TImageType >(inputImage); // initialize outputImage
 
     itk::ImageRegionIterator<TImageType> outputIterator(outputImage, outputImage->GetLargestPossibleRegion());
-    itk::ImageRegionIterator<TImageType> dividerIterator(divider->GetOutput(), biasCorrector->GetOutput()->GetLargestPossibleRegion());
+    itk::ImageRegionIterator<TImageType> dividerIterator(divider->GetOutput(), divider->GetOutput()->GetLargestPossibleRegion());
 
     // output the newly bias-corrected image
     for (outputIterator.GoToBegin(), dividerIterator.GoToBegin(); !dividerIterator.IsAtEnd(); ++dividerIterator, ++outputIterator)
