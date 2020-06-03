@@ -130,9 +130,9 @@ private:
     biasCorrector->SetInput(inputShrunkImage);
     biasCorrector->SetMaskImage(inputShrunkMask);
     biasCorrector->SetSplineOrder(splineOrder);
-    //biasCorrector->SetWeinerFilterNoise(filterNoise);
+    //biasCorrector->SetWeinerFilterNoise(filterNoise); // not there for n4
     biasCorrector->SetBiasFieldFullWidthAtHalfMaximum(fwhm);
-    //biasCorrector->SetMaximumNumberOfIterations(maxIterations);
+    //biasCorrector->SetMaximumNumberOfIterations(maxIterations); // not there for n4
     biasCorrector->SetConvergenceThreshold(0.0000001);
     biasCorrector->SetNumberOfFittingLevels(fittingLevels); // increasing this exponentially increases execution time
     try
