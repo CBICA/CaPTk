@@ -8717,7 +8717,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 {
   if (!cbica::isFile(inputfilename))
   {
-    ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
+    ShowErrorMessage("Input image passed is not a valid file, please re-check", this);
     return;
   }
   typedef ImageTypeFloat4D PerfusionImageType;
@@ -8728,7 +8728,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   if (perfusionDerivatives.size() == 0)
   {
     std::string message;
-    message = "Perfusion derivatives were not calculated as expected, please see log file for details: ";
+    message = "Perfusion derivatives were not calculated as expected, please see the log file for details: ";
     message = message + loggerFile;
     ShowErrorMessage(message, this);
   }
