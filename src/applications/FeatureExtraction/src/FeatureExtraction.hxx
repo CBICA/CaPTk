@@ -3273,6 +3273,8 @@ void FeatureExtraction< TImage >::Update()
         }
         else
         {
+          currentPatientModalityROIFeatureFamilyFeature = cbica::stringReplace(currentPatientModalityROIFeatureFamilyFeature, m_patientID + "_", "");
+
           m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Max" + ",";
           m_trainingFile_features += currentMax + ",";
           m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Min" + ",";
@@ -3378,6 +3380,6 @@ void FeatureExtraction< TImage >::Update()
 
       auto t2 = std::chrono::high_resolution_clock::now();
       std::cout << "Total computation time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << " milliseconds\n";
-    }
-  }
-}
+    } // end imagesAreOkay check
+  } // end algorithmDone check
+} // end update function

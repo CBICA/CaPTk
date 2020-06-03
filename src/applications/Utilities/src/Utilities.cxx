@@ -989,29 +989,28 @@ int main(int argc, char** argv)
   {
     requestedAlgorithm = Dicom2Nifti;
 
-	// check if the Nifti output filename has been specified?
-	if (parser.isPresent("o"))
-	{
-		parser.getParameterValue("o", outputImageFile);
-	}
-	else
-	{
-		std::cerr << "DICOM2Nifti conversion requested but the output Nifti filename was not found. Please use the '-o' parameter.\n";
-		return EXIT_FAILURE;
-	}
+	  // check if the Nifti output filename has been specified?
+	  if (parser.isPresent("o"))
+	  {
+		  parser.getParameterValue("o", outputImageFile);
+	  }
+	  else
+	  {
+		  std::cerr << "DICOM2Nifti conversion requested but the output Nifti filename was not found. Please use the '-o' parameter.\n";
+		  return EXIT_FAILURE;
+	  }
 
-	// check if the Dicom input has been specified?
-	if (parser.isPresent("i"))
-	{
-		parser.getParameterValue("i", inputImageFile);
-	}
-	else
-	{
-		std::cerr << "DICOM2Nifti conversion requested but the input Dicom data was not found. Please use the '-i' parameter.\n";
-		return EXIT_FAILURE;
-	}
+	  // check if the Dicom input has been specified?
+	  if (parser.isPresent("i"))
+	  {
+		  parser.getParameterValue("i", inputImageFile);
+	  }
+	  else
+	  {
+		  std::cerr << "DICOM2Nifti conversion requested but the input Dicom data was not found. Please use the '-i' parameter.\n";
+		  return EXIT_FAILURE;
+	  }
     parser.getParameterValue("d2n", targetImageFile);
-
   }
   else if (parser.isPresent("n2d"))
   {
@@ -1333,7 +1332,7 @@ int main(int argc, char** argv)
     requestedAlgorithm = Hausdorff;
     parser.getParameterValue("hd", referenceMaskForSimilarity);
   }
-
+  
   // this doesn't need any template initialization
   if (requestedAlgorithm == SanityCheck)
   {
@@ -1349,6 +1348,11 @@ int main(int argc, char** argv)
     }
   }
 
+  if (cbica::isDir(inputImageFile))
+  {
+    std::cerr << "Please pass the first file in the DICOM series as input.\n";
+    return EXIT_FAILURE;
+  }
   if (!cbica::isFile(inputImageFile))
   {
     std::cerr << "Input file '" << inputImageFile << "' not found.\n";
