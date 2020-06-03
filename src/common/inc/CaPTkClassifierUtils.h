@@ -220,6 +220,7 @@ inline VectorDouble testOpenCVSVM(const VariableSizeMatrixType &testingData, con
 
   returnVecScore.resize(testingDataMat.rows);
   returnVecLabel.resize(testingDataMat.rows);
+  //this segment of code iterates through all the test samples and assigns predicted scores
   cv::Mat predicted(1, 1, CV_32F);
   for (int i = 0; i < testingDataMat.rows; i++)
   {
@@ -227,6 +228,7 @@ inline VectorDouble testOpenCVSVM(const VariableSizeMatrixType &testingData, con
     svm->predict(sample, predicted, true/*cv::ml::StatModel::RAW_OUTPUT*/);
     returnVecScore[i] = predicted.ptr< float >(0)[0];
   }
+  //this segment of code iterates through all the test samples and assigns predicted labels
   for (int i = 0; i < testingDataMat.rows; i++)
   {
     cv::Mat sample = testingDataMat.row(i);

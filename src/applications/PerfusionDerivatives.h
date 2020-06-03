@@ -87,8 +87,6 @@ public:
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePH(typename PerfusionImageType::Pointer perfImagePointerNifti);
 
-
-
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti, const double TE);
 
@@ -102,40 +100,30 @@ public:
   std::vector<double> CalculateAveragePerfusionCurve(typename PerfusionImageType::Pointer perfImagePointerNifti);
 
   template<class ImageType, class PerfusionImageType >
-  bool CheckPerfusionQuality(typename PerfusionImageType::Pointer perfImagePointerNifti, const std::string outputdirectory);
+  bool IsPerfusionQualityGood(typename PerfusionImageType::Pointer perfImagePointerNifti, const std::string outputdirectory);
 };
 
 template< class ImageType, class PerfusionImageType >
 std::vector<double> PerfusionDerivatives::CalculateAveragePerfusionCurve(typename PerfusionImageType::Pointer perfImagePointerNifti)
 {
-  std::vector<double> AverageCurve;
-  ImageTypeFloat4D::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
-  for (unsigned int volumes = 0; volumes < region.GetSize()[3]; volumes++)
+  typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
+  std::vector<double> AverageCurve(region.GetSize()[3],0);
+  typedef itk::ImageRegionIteratorWithIndex <PerfusionImageType> IteratorType;
+  IteratorType perfIt(perfImagePointerNifti, perfImagePointerNifti->GetLargestPossibleRegion());
+  perfIt.GoToBegin();
+  while (!perfIt.IsAtEnd())
   {
-    double volume_mean = 0;
-    for (unsigned int i = 0; i < region.GetSize()[0]; i++)
-      for (unsigned int j = 0; j < region.GetSize()[1]; j++)
-        for (unsigned int k = 0; k < region.GetSize()[2]; k++)
-        {
-          typename ImageType::IndexType index3D;
-          index3D[0] = i;
-          index3D[1] = j;
-          index3D[2] = k;
-
-          typename PerfusionImageType::IndexType index4D;
-          index4D[0] = i;
-          index4D[1] = j;
-          index4D[2] = k;
-          index4D[3] = volumes;
-          volume_mean = volume_mean + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
-        }
-    AverageCurve.push_back(std::round(volume_mean / region.GetSize()[3]));
+    AverageCurve[perfIt.GetIndex()[3]]= AverageCurve[perfIt.GetIndex()[3]]+ perfIt.Get();
+    ++perfIt;
   }
+  int SizeOfOneVolume = region.GetSize()[0] * region.GetSize()[1] * region.GetSize()[2];
+  for(unsigned int index=0;index<AverageCurve.size();index++)
+    AverageCurve[index] = std::round(AverageCurve[index]/SizeOfOneVolume);
   return AverageCurve;
 }
 
 template<class ImageType, class PerfusionImageType >
-bool PerfusionDerivatives::CheckPerfusionQuality(typename PerfusionImageType::Pointer perfImagePointerNifti,const std::string outputdirectory)
+bool PerfusionDerivatives::IsPerfusionQualityGood(typename PerfusionImageType::Pointer perfImagePointerNifti,const std::string outputdirectory)
 {
   std::vector<double> averagecurve = CalculateAveragePerfusionCurve<ImageType, PerfusionImageType>(perfImagePointerNifti);
   WriteCSVFiles(averagecurve, outputdirectory + "/AeragePerfusionCurve.csv");
@@ -157,6 +145,7 @@ bool PerfusionDerivatives::CheckPerfusionQuality(typename PerfusionImageType::Po
     std::cout << "Drop of the curve does not lie in between the baseline and the recovery signal." << std::endl;
     return false;
   }
+  return true;
 }
 
 template< class ImageType, class PerfusionImageType >
@@ -173,7 +162,7 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
     logger.WriteError("Unable to open the given DSC-MRI file. Error code : " + std::string(e1.what()));
     return perfusionDerivatives;
   }
-  if (CheckPerfusionQuality<ImageType, PerfusionImageType>(perfImagePointerNifti,outputdirectory) == false)
+  if (IsPerfusionQualityGood<ImageType, PerfusionImageType>(perfImagePointerNifti,outputdirectory) == false)
     return perfusionDerivatives;
   std::cout << "Perfusion curve validated!!!" << std::endl;
 
@@ -267,6 +256,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
           index4D[3] = k;
           sum = sum + perfImagePointerNifti->GetPixel(index4D);
         }
+        //total number of volumes is equal to the difference between the baseline_end and baseline_start, plus 1 
         A.GetPointer()->SetPixel(index3D, sum / (baseline_end-baseline_start+1));
         //---------------------------------------minimum vector------------------------------------
         std::vector<double> local_measures;
