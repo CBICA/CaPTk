@@ -7694,8 +7694,6 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     }
   }
 
-  ShowErrorMessage("Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive.", this, "Long Running Application");
-
   QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application", 
     "Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive; press OK to continue...", 
     QMessageBox::Ok | QMessageBox::Cancel);
@@ -8629,20 +8627,20 @@ void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, con
   const std::string quantLower, const std::string quantUpper,
   const std::string cutoffLower, const std::string cutoffUpper, bool wholeImageMeanThreshold)
 {
-  if (!inputImage.empty() && !maskImage.empty() && !outputImageFile.empty())
+  if (!inputImage.empty() && !outputImageFile.empty())
   {
-    if (!cbica::isFile(maskImage))
-    {
-      ShowErrorMessage("Mask Image passed is not a valid file, please re-check", this);
-      return;
-    }
     if (!cbica::isFile(inputImage))
     {
       ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
       return;
     }
     auto input = cbica::ReadImage< ImageTypeFloat3D >(inputImage);
-    auto mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
+    auto mask = cbica::CreateImage< ImageTypeFloat3D >(input);
+
+    if (cbica::isFile(maskImage))
+    {
+      mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
+    }
 
     auto qLower = std::atof(quantLower.c_str());
     auto qUpper = std::atof(quantUpper.c_str());
@@ -8717,7 +8715,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 {
   if (!cbica::isFile(inputfilename))
   {
-    ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
+    ShowErrorMessage("Input image passed is not a valid file, please re-check", this);
     return;
   }
   typedef ImageTypeFloat4D PerfusionImageType;
@@ -8728,7 +8726,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   if (perfusionDerivatives.size() == 0)
   {
     std::string message;
-    message = "Perfusion derivatives were not calculated as expected, please see log file for details: ";
+    message = "Perfusion derivatives were not calculated as expected, please see the log file for details: ";
     message = message + loggerFile;
     ShowErrorMessage(message, this);
   }

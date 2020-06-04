@@ -976,7 +976,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
   //    FeaturesOfAllSubjectsAfterRemovingStaticFeatures(sampleNo, featureCounter) = FeaturesOfAllSubjects(sampleNo, featureNo);
   //  featureCounter++;
   //}
-  if (confType != 4)
+  if (confType != CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TEST)
   {
     try
     {
@@ -1004,7 +1004,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
   TrainingModule mTrainingSimulator;
   VectorDouble FinalResult;
 
-  if (confType == 1)
+  if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV)
   {  
     //z-scoring of input features and saving corresponding mean and standard deviation in the output directory
     FeatureScalingClass mFeaturesScaling;
@@ -1036,7 +1036,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
     std::cout << "Scaling parameters written." << std::endl;
     FinalResult = mTrainingSimulator.CrossValidation(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype,featureselectiontype,optimizationType,crossvalidationType);
   }
-  else if (confType == 2)
+  else if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_DOUBLE)
   {
     //scaling of input features and saving corresponding mean and standard deviation in the output directory
     FeatureScalingClass mFeaturesScaling;
@@ -1093,7 +1093,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
     std::cout << "Scaling parameters written." << std::endl;
     FinalResult = mTrainingSimulator.SplitTrainTest(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype);
   }
-  else if (confType == 3)   //train
+  else if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN)   //train
   {
     if (mTrainingSimulator.TrainData2(FeaturesOfAllSubjects, LabelsOfAllSubjects, outputdirectory, classifiertype,featureselectiontype,optimizationType, crossvalidationType) == true)
       std::cout << "Training finished successfully: Trained model saved in the specified output directory." << std::endl;
