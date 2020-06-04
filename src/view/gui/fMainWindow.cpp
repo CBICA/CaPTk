@@ -523,9 +523,9 @@ fMainWindow::fMainWindow()
 
   connect(featurePanel, SIGNAL(helpClicked_FeaUsage(std::string)), this, SLOT(help_contextual(std::string)));
   connect(&registrationPanel, 
-    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)),
+    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string)),
     this, 
-    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string)));
+    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
@@ -7694,8 +7694,6 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     }
   }
 
-  ShowErrorMessage("Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive.", this, "Long Running Application");
-
   QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application", 
     "Deep Learning inference takes 5-30 minutes to run, during which CaPTk will not be responsive; press OK to continue...", 
     QMessageBox::Ok | QMessageBox::Cancel);
@@ -8629,20 +8627,20 @@ void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, con
   const std::string quantLower, const std::string quantUpper,
   const std::string cutoffLower, const std::string cutoffUpper, bool wholeImageMeanThreshold)
 {
-  if (!inputImage.empty() && !maskImage.empty() && !outputImageFile.empty())
+  if (!inputImage.empty() && !outputImageFile.empty())
   {
-    if (!cbica::isFile(maskImage))
-    {
-      ShowErrorMessage("Mask Image passed is not a valid file, please re-check", this);
-      return;
-    }
     if (!cbica::isFile(inputImage))
     {
       ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
       return;
     }
     auto input = cbica::ReadImage< ImageTypeFloat3D >(inputImage);
-    auto mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
+    auto mask = cbica::CreateImage< ImageTypeFloat3D >(input);
+
+    if (cbica::isFile(maskImage))
+    {
+      mask = cbica::ReadImage< ImageTypeFloat3D >(maskImage);
+    }
 
     auto qLower = std::atof(quantLower.c_str());
     auto qUpper = std::atof(quantUpper.c_str());
@@ -8717,18 +8715,18 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 {
   if (!cbica::isFile(inputfilename))
   {
-    ShowErrorMessage("Input Image passed is not a valid file, please re-check", this);
+    ShowErrorMessage("Input image passed is not a valid file, please re-check", this);
     return;
   }
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
-  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, TE);
+  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, TE,outputFolder);
 
   if (perfusionDerivatives.size() == 0)
   {
     std::string message;
-    message = "Perfusion derivatives were not calculated as expected, please see log file for details: ";
+    message = "Perfusion derivatives were not calculated as expected, please see the log file for details: ";
     message = message + loggerFile;
     ShowErrorMessage(message, this);
   }
@@ -8799,8 +8797,9 @@ void fMainWindow::CallTrainingSimulation(const std::string featurefilename, cons
   int defaultfeatureselectiontype = 3;
   int defaultoptimizationtype = 0;
   int defaultcvtype = 1;
+
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, targetfilename, outputFolder, classifier, folds, conf,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype, modeldirectory))
+  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, conf,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
@@ -9062,7 +9061,7 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
   std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames,
   std::string metrics, bool rigidMode, bool affineMode, bool deformMode,
-  std::string radii, std::string iterations)
+  std::string radii, std::string iterations, std::string degreesOfFreedom)
 {
   std::string configPathName;
   std::string configFileName;
@@ -9114,7 +9113,7 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     }
     else if (affineMode)
     {
-      args << "Affine";
+      args << ("Affine-" + degreesOfFreedom).c_str();
     }
     else
     {
