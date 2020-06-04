@@ -61,7 +61,7 @@ $(document).ready(function(){initNavTree('seg_DL.html',''); initResizable(); });
 <div class="title">Deep Learning Segmentation </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the preprocessing).</p>
+<div class="textblock"><p>For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping [3]. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the preprocessing).</p>
 <p><b> REQUIREMENTS:</b> The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.</p>
 <p><b> USAGE:</b></p><ol type="1">
 <li>Load the images that you want to segment in CaPTk.</li>
@@ -77,7 +77,8 @@ $(document).ready(function(){initNavTree('seg_DL.html',''); initResizable(); });
 <p>References:</p>
 <ol type="1">
 <li>K.Kamnitsas, C.Ledig, V.F.J.Newcombe, J.P.Simpson, A.D.Kane, D.K.Menon, D.Rueckert, B.Glocker, "Efficient Multi-Scale 3D CNN with Fully Connected CRF for Accurate Brain Lesion Segmentation", Medical Image Analysis, 2016.</li>
-<li>K.Kamnitsas, L.Chen, C.Ledig, D.Rueckert, B.Glocker, "Multi-Scale 3D CNNs for segmentation of brain Lesions in multi-modal MRI", in proceeding of ISLES challenge, MICCAI 2015. </li>
+<li>K.Kamnitsas, L.Chen, C.Ledig, D.Rueckert, B.Glocker, "Multi-Scale 3D CNNs for segmentation of brain Lesions in multi-modal MRI", in proceeding of ISLES challenge, MICCAI 2015.</li>
+<li>S.P.Thakur, J.Doshi, S.Pati, S.M.Ha, C.Sako, S.Talbar, U.Kulkarni, C.Davatzikos, G.Erus, S.Bakas, "Skull-Stripping of Glioblastoma MRI Scans Using 3D Deep Learning", Springer - BrainLes 2019 - LNCS, Vol.11992, 57-68, 2020. DOI: 10.1007/978-3-030-46640-4_6 </li>
 </ol>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
