@@ -190,7 +190,8 @@ inline VectorDouble testOpenCVSVM(const VariableSizeMatrixType &testingData, con
   //}
   //file.close();
 
-  VectorDouble returnVec;
+  VectorDouble returnVecScore;
+  VectorDouble returnVecLabel;
   //VariableSizeMatrixType returnMat;
   //returnMat.SetSize(testingData.Rows(), 1);
   //returnVec.resize(testingData.Rows());
@@ -217,22 +218,27 @@ inline VectorDouble testOpenCVSVM(const VariableSizeMatrixType &testingData, con
   // see http://docs.opencv.org/trunk/db/d7d/classcv_1_1ml_1_1StatModel.html#af1ea864e1c19796e6264ebb3950c0b9a for details regarding why '1'
   //svm->predict(testingDataMat, returnVec, 1);
 
-  returnVec.resize(testingDataMat.rows);
+  returnVecScore.resize(testingDataMat.rows);
+  returnVecLabel.resize(testingDataMat.rows);
+  //this segment of code iterates through all the test samples and assigns predicted scores
   cv::Mat predicted(1, 1, CV_32F);
   for (int i = 0; i < testingDataMat.rows; i++)
   {
     cv::Mat sample = testingDataMat.row(i);
-    /*float value = */svm->predict(sample, predicted, true/*cv::ml::StatModel::RAW_OUTPUT*/);
-    //float p = /*predicted.at<float>(0, 0)*/predicted.ptr< float >(0)[0];
-    returnVec[i] = predicted.ptr< float >(0)[0];
+    svm->predict(sample, predicted, true/*cv::ml::StatModel::RAW_OUTPUT*/);
+    returnVecScore[i] = predicted.ptr< float >(0)[0];
   }
+  //this segment of code iterates through all the test samples and assigns predicted labels
+  for (int i = 0; i < testingDataMat.rows; i++)
+  {
+    cv::Mat sample = testingDataMat.row(i);
+    svm->predict(sample, predicted, false/*cv::ml::StatModel::RAW_OUTPUT*/);
+    returnVecLabel[i] = predicted.ptr< float >(0)[0];
+  }
+  for (int i = 0; i < returnVecLabel.size(); i++)
+    returnVecScore[i]= std::abs(returnVecScore[i])*returnVecLabel[i];
 
-  //for (size_t i = 0; i < outputProbs.rows; i++)
-  //{
-  //  returnMat[i] = outputProbs.at<float>(i, 0);
-  //}
-
-  return returnVec;
+  return returnVecScore;
 }
 
 /**
