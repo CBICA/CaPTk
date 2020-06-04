@@ -94,6 +94,55 @@ public:
 
 private:
 
+    //! Overload function to configure N4 filter.
+    template <typename TInput, typename TMask, typename TOutput>
+    static void configureBiasCorrectionFilter(
+        typename itk::N4BiasFieldCorrectionImageFilter<TInput, TMask, TOutput>::Pointer filter,
+        int splineOrder,
+        int maxIterations,
+        int fittingLevels,
+        float filterNoise,
+        float fwhm,
+        int otsuBins)   
+    {
+        filter->SetSplineOrder(splineOrder);
+        filter->SetWienerFilterNoise(filterNoise); 
+        filter->SetBiasFieldFullWidthAtHalfMaximum(fwhm);
+        // need to pass an array of maxIterations integers (1 per fitting level)
+        filter->SetNumberOfFittingLevels(fittingLevels);
+        typename itk::N4BiasFieldCorrectionImageFilter<TInput, TMask, TOutput>::VariableSizeArrayType maximumNumberOfIterations(fittingLevels);
+        if (!(maxIterations > fittingLevels))
+        {
+            maximumNumberOfIterations.Fill(1);
+        }
+        else // general case
+        {
+            maximumNumberOfIterations.Fill(maxIterations / fittingLevels);
+        }
+        filter->SetMaximumNumberOfIterations(maximumNumberOfIterations);
+        filter->SetConvergenceThreshold(0.0000001);
+    }
+
+    //! Overload function to configure N3 filter.
+    template <typename TInput, typename TMask, typename TOutput>
+    static void configureBiasCorrectionFilter(
+        typename itk::N3MRIBiasFieldCorrectionImageFilter<TInput, TMask, TOutput>::Pointer filter,
+        int splineOrder,
+        int maxIterations,
+        int fittingLevels,
+        float filterNoise,
+        float fwhm,
+        int otsuBins)
+    {
+        // Perform any steps needed to set options for this particular type of bias-correction
+        filter->SetSplineOrder(splineOrder);
+        filter->SetWeinerFilterNoise(filterNoise); // not there for n4
+        filter->SetBiasFieldFullWidthAtHalfMaximum(fwhm);
+        filter->SetMaximumNumberOfIterations(maxIterations); // not there for n4
+        filter->SetConvergenceThreshold(0.0000001);
+        filter->SetNumberOfFittingLevels(fittingLevels);
+    }
+
   //! provide a single template function to handle the bias correction
   template< class TImageType, class TMaskImageType,
     class TBiasCorrectorType >
@@ -129,12 +178,10 @@ private:
     auto biasCorrector = typename TBiasCorrectorType::New();
     biasCorrector->SetInput(inputShrunkImage);
     biasCorrector->SetMaskImage(inputShrunkMask);
-    biasCorrector->SetSplineOrder(splineOrder);
-    //biasCorrector->SetWeinerFilterNoise(filterNoise); // not there for n4
-    biasCorrector->SetBiasFieldFullWidthAtHalfMaximum(fwhm);
-    //biasCorrector->SetMaximumNumberOfIterations(maxIterations); // not there for n4
-    biasCorrector->SetConvergenceThreshold(0.0000001);
-    biasCorrector->SetNumberOfFittingLevels(fittingLevels); // increasing this exponentially increases execution time
+
+    // defer miscellaneous filter-configuration to overloaded function
+    configureBiasCorrectionFilter<TImageType, TMaskImageType, TImageType>(biasCorrector, 
+        splineOrder, maxIterations, fittingLevels, filterNoise, fwhm, otsuBins);
     try
     {
       biasCorrector->Update();
@@ -145,7 +192,7 @@ private:
     }
 
 
-    // Map the B-spline lattice from the N3 filter back into the original input image's space
+    // Map the B-spline lattice from the filter back into the original input image's space
     typedef itk::BSplineControlPointImageFilter<typename TBiasCorrectorType::BiasFieldControlPointLatticeType,
       typename TBiasCorrectorType::ScalarImageType> BSplinerType;
     typename BSplinerType::Pointer bspliner = BSplinerType::New();
