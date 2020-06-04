@@ -162,12 +162,14 @@ void StandaloneApp::doneUnzip() {
 		//  stlapps->Debug("Extraction failed");
 
 		//  stlapps->StoreAppSetting("", "", appName);
-		QMessageBox::information(this, tr("Extration"), "Extraction failed");
+		// QMessageBox::information(this,tr("Extraction"),"Extraction failed");
+		qDebug() << "Extraction failed" << endl;
 
 	}
 	else {
 		// updateProgress(100, "Extracting " + this->m_AppName.toStdString() + " done");
-		QMessageBox::information(this, tr("Extration"),"Extraction done");
+		// QMessageBox::information(this, tr("Extraction"),"Extraction done");
+		qDebug() << "Extraction done" << endl;
 
 
 		//  stlapps->RetreiveAppSetting(appName);

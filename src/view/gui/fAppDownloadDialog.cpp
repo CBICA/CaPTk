@@ -9,7 +9,6 @@
 
 #include "fAppDownloadDialog.h"
 #include "CaPTkGUIUtils.h"
-
 #include "cbicaITKUtilities.h"
 #include "ApplicationPreferences.h"
 
