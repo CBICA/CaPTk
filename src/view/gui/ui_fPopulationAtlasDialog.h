@@ -125,7 +125,7 @@ public:
 
     cancelButton = new QPushButton(fPopulationAtlasDialog);
     cancelButton->setObjectName(QString::fromUtf8("Cancel"));
-    cancelButton->setText(QString("cancel"));
+    cancelButton->setText(QString("Cancel"));
 
     gridLayout_3->addWidget(inputfileLabel, 2, 0, 1, 1);
     gridLayout_3->addWidget(inputfileName, 2, 1, 1, 4);
