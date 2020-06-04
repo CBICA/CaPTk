@@ -6,7 +6,6 @@
 #include <QThread>
 
 #include "fAppDownloadDialog.h"
-#include "fMainWindow.h"
 #include "yaml-cpp/node/node.h"
 
 class StandaloneApp : public QObject
@@ -20,7 +19,7 @@ public:
 	void SetName(QString appName);
 	QString GetName() const;
 
-	std::string getStandaloneApp(QString appName, fMainWindow* pMainWindow);
+	std::string getStandaloneApp(QString appName);
 
 private:
 
@@ -30,7 +29,6 @@ private:
 	// static StandaloneApp* m_Instance;
 	// static QMutex m_Mutex;
 
-	static fMainWindow* m_fMainWindow;
 	fAppDownloadDialog appDownloadDialog;
 	QString m_AppName;
 	

@@ -36,8 +36,8 @@ QString StandaloneApp::GetName() const
 	return m_AppName;
 }
 
-std::string StandaloneApp::getStandaloneApp(QString appName, fMainWindow* pMainWindow) {
-	this->m_fMainWindow = pMainWindow;
+std::string StandaloneApp::getStandaloneApp(QString appName) {
+	// this = pMainWindow;
 	this->m_AppName = appName;
 
 	std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
@@ -101,9 +101,9 @@ void StandaloneApp::appDownload()
 	appDownloadDialog.SetDownloadLink(downloadLink);
 	appDownloadDialog.exec();
 
-	connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this->m_fMainWindow, SLOT(startUnzip(QString, QString))); 
-	// connect( &appDownloadDialog, SIGNAL(startDownload()), this->m_fMainWindow, SLOT(startDownload()));    
-	// connect( &appDownloadDialog, SIGNAL(cancelDownload()), this->m_fMainWindow, SLOT(cancelDownload()));    
+	connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(startUnzip(QString, QString))); 
+	// connect( &appDownloadDialog, SIGNAL(startDownload()), this, SLOT(startDownload()));    
+	// connect( &appDownloadDialog, SIGNAL(cancelDownload()), this, SLOT(cancelDownload()));    
 }
 
 void StandaloneApp::startDownload() 
@@ -162,12 +162,12 @@ void StandaloneApp::doneUnzip() {
 		//  stlapps->Debug("Extraction failed");
 
 		//  stlapps->StoreAppSetting("", "", appName);
-		QMessageBox::information(this->m_fMainWindow, tr("Extration"), "Extraction failed");
+		QMessageBox::information(this, tr("Extration"), "Extraction failed");
 
 	}
 	else {
 		// updateProgress(100, "Extracting " + this->m_AppName.toStdString() + " done");
-		QMessageBox::information(this->m_fMainWindow, tr("Extration"),"Extraction done");
+		QMessageBox::information(this, tr("Extration"),"Extraction done");
 
 
 		//  stlapps->RetreiveAppSetting(appName);
