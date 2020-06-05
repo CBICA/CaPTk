@@ -234,13 +234,15 @@ Reference:
 
 This CLI-only application takes 4 structural brain MRIs as input and performs the following steps [1-3]:
 
-- Re-orientation to LPS/RAI
-- [N4 Bias correction](preprocessing_bias.html)
-- [Co-registration](preprocessing_reg.html) to T1CE
-- [Registration](preprocessing_reg.html) to SRI-24 atlas [4]
-- Apply registration to re-oriented image to maximize image fidelity
-- [Skull-stripping](seg_DL.html)
-- Put extracted brain mask back to original patient space 
+-# Re-orientation to LPS/RAI
+-# [N4 Bias correction](preprocessing_bias.html)
+-# [Co-registration](preprocessing_reg.html) to T1CE
+-# [Registration](preprocessing_reg.html) to SRI-24 atlas [4]
+-# Apply registration to re-oriented image to maximize image fidelity
+-# [Skull-stripping](seg_DL.html)
+-# Put extracted brain mask back to original patient space 
+
+*NOTE*: This applications takes ~30 minutes to finish on an 8-core Intel i7 with 16GB of RAM. 
 
 Reference:
 
