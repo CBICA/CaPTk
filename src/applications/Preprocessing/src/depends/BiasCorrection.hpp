@@ -21,6 +21,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkShrinkImageFilter.h"
 
 #include "cbicaUtilities.h"
+#include "cbicaITKUtilities.h"
 #include "cbicaLogging.h"
 //#include "CaPTkDefines.h"
 
@@ -289,7 +290,7 @@ typename TImageType::Pointer BiasCorrection::Run(std::string correctionType, // 
     maskImage = otsu->GetOutput();
   }
 
-  auto outputImage = cbica::CreateImage< TImageType >(inputImage);
+  typename TImageType::Pointer outputImage = cbica::CreateImage<TImageType>(inputImage);
 
   typename TImageType::Pointer logField = TImageType::New();
   if (correctionType == "n3" || correctionType == "N3")
