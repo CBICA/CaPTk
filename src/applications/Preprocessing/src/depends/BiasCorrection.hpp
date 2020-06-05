@@ -233,7 +233,7 @@ private:
     divider->SetInput2(expFilter->GetOutput());
     divider->Update();
 
-    auto outputImage = cbica::CreateImage< TImageType >(inputImage); // initialize outputImage
+    auto outputImage = cbica::CreateImage< typename TImageType >(inputImage); // initialize outputImage
 
     itk::ImageRegionIterator<TImageType> outputIterator(outputImage, outputImage->GetLargestPossibleRegion());
     itk::ImageRegionIterator<TImageType> dividerIterator(divider->GetOutput(), divider->GetOutput()->GetLargestPossibleRegion());
