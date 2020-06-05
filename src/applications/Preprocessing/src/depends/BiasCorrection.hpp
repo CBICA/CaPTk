@@ -175,7 +175,7 @@ private:
     maskShrinker->Update();
     auto inputShrunkMask = maskShrinker->GetOutput();
 
-    auto biasCorrector = typename TBiasCorrectorType::New();
+    auto biasCorrector = TBiasCorrectorType::New();
     biasCorrector->SetInput(inputShrunkImage);
     biasCorrector->SetMaskImage(inputShrunkMask);
 
