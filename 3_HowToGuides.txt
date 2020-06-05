@@ -232,6 +232,11 @@ Reference:
 /**
 \page preprocessing_brats BraTS Preprocessing Pipeline
 
+<b>REQUIREMENTS:</b>
+	-# 4 structural MRI images (T1, T1CE, T2, FLAIR)
+
+<b>USAGE:</b>
+
 This CLI-only application takes 4 structural brain MRIs as input and performs the following steps [1-3]:
 
 -# Re-orientation to LPS/RAI
@@ -242,7 +247,14 @@ This CLI-only application takes 4 structural brain MRIs as input and performs th
 -# [Skull-stripping](seg_DL.html)
 -# Put extracted brain mask back to original patient space 
 
-*NOTE*: This applications takes ~30 minutes to finish on an 8-core Intel i7 with 16GB of RAM. 
+Example command:
+\verbatim
+${CaPTk_InstallDir}/bin/BraTSPipeline.exe -t1 C:/test/t1.nii.gz -t1c C:/test/t1ce.nii.gz -t2 C:/test/t2.nii.gz -fl C:/test/flair.nii.gz -o C:/test/outputDir 
+\endverbatim
+
+<b>NOTE</b>: This applications takes ~30 minutes to finish on an 8-core Intel i7 with 16GB of RAM.
+
+--------
 
 Reference:
 
