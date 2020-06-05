@@ -213,7 +213,6 @@ private:
     logField->Allocate();
 
     // Copy the bspliner output into logField
-    typedef itk::N3MRIBiasFieldCorrectionImageFilter<TImageType, TMaskImageType, TImageType> TBiasCorrectorType;
     itk::ImageRegionIterator<typename TBiasCorrectorType::ScalarImageType> ItB(bspliner->GetOutput(), bspliner->GetOutput()->GetLargestPossibleRegion());
     itk::ImageRegionIterator<TImageType> ItF(logField, logField->GetLargestPossibleRegion());
     for (ItB.GoToBegin(), ItF.GoToBegin(); !ItB.IsAtEnd(); ++ItB, ++ItF)
