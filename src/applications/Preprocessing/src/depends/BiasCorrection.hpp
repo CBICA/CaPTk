@@ -205,7 +205,7 @@ private:
     bspliner->Update();
 
     auto logField = TImageType::New();
-    // logField is the log of the bias field
+    // logField is the log of the bias field 
     logField->SetOrigin(bspliner->GetOutput()->GetOrigin());
     logField->SetSpacing(bspliner->GetOutput()->GetSpacing());
     logField->SetRegions(bspliner->GetOutput()->GetLargestPossibleRegion().GetSize());
