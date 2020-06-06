@@ -5,6 +5,8 @@
 #include <QMutex>
 #include <QThread>
 
+#include "QZipReader.h"
+#include "ApplicationPreferences.h"
 #include "fAppDownloadDialog.h"
 #include "yaml-cpp/node/node.h"
 
