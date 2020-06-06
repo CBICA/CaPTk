@@ -7287,7 +7287,7 @@ void fMainWindow::CallBiasCorrection(const std::string correctionType, QString s
     updateProgress(5, "Bias correction in process");
     BiasCorrection biasCorrector;
 
-    ImageType::Pointer outputImage = biasCorrector.Run<ImageType>("n3",
+    ImageType::Pointer outputImage = biasCorrector.Run<ImageType>(correctionType,
                                                                   inputImage,
                                                                   bias_splineOrder,
                                                                   bias_maxIterations,
