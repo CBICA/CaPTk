@@ -10,78 +10,66 @@
 #include "QZipReader.h"
 #include "ApplicationPreferences.h"
 
-class ASyncExtract : public QThread
-{
-	Q_OBJECT
-	void run() override {
+// class ASyncExtract : public QThread
+// {
+// 	Q_OBJECT
+// 	void run() override {
+// 		ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("true").toString());
 
-		// StandaloneApp* stlapps = StandaloneApp::GetInstance();
+// 		if (QFile::exists(this->fullPath))
+// 		{
+// 			QZipReader zr(this->fullPath);
+// 			bool ret = zr.extractAll(this->extractPath);
 
-		// QZipReader zr(this->fullPath);
-		// stlapps->StoreAppSetting("Extract", "Start", this->appName);
+// 			if(ret)
+// 			{
+// 				ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
+// 				//after extraction remove the zip
+// 				bool successfullyremoved = QFile::remove(this->fullPath.toStdString().c_str());
+// 			}
+// 			else
+// 			{
+// 				ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+// 			}
+// 		}
+// 		else
+// 		{
+// 			ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+// 		}
 
-		// stlapps->RetreiveAppSetting(this->appName);
-		// stlapps->Debug("Extraction start");
+// 		qDebug() << "Extraction done in background" << this->fullPath << endl;
 
-		// bool extracted = zr.extractAll(this->extractPath);
+// 		//serialize only once
+// 		ApplicationPreferences::GetInstance()->SerializePreferences();
 
-		// stlapps->RetreiveAppSetting(appName);
-    	// stlapps->Debug("Extraction done in background");
-		ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("true").toString());
+// 		emit resultReady(this->appName);
+// 	}	
 
-		if (QFile::exists(this->fullPath))
-		{
-			QZipReader zr(this->fullPath);
-			bool ret = zr.extractAll(this->extractPath);
+// public:
+// 	ASyncExtract() = default;
+// 	~ASyncExtract() = default;
 
-			if(ret)
-			{
-				ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
-				//after extraction remove the zip
-				bool successfullyremoved = QFile::remove(this->fullPath.toStdString().c_str());
-			}
-			else
-			{
-				ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
-			}
-		}
-		else
-		{
-			ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
-		}
+// 	void setFullPath(QString fullPath) {
+// 		this->fullPath = fullPath;
+// 	}
 
-		qDebug() << "Extraction done in background" << this->fullPath << endl;
+// 	void setExtractPath(QString extractPath) {
+// 		this->extractPath = extractPath;
+// 	}
 
-		//serialize only once
-		ApplicationPreferences::GetInstance()->SerializePreferences();
+// 	void setAppName(QString appName) {
+// 		this->appName = appName;
+// 	}
 
-		emit resultReady(this->appName);
-	}	
+// private:
+// 	Q_DISABLE_COPY(ASyncExtract)
 
-public:
-	ASyncExtract() = default;
-	~ASyncExtract() = default;
+// 	QString fullPath;
+// 	QString extractPath;
+// 	QString appName;
 
-	void setFullPath(QString fullPath) {
-		this->fullPath = fullPath;
-	}
-
-	void setExtractPath(QString extractPath) {
-		this->extractPath = extractPath;
-	}
-
-	void setAppName(QString appName) {
-		this->appName = appName;
-	}
-
-private:
-
-	QString fullPath;
-	QString extractPath;
-	QString appName;
-
-signals:
-    void resultReady(QString appName);
-};
+// signals:
+//     void resultReady(QString appName);
+// };
 
 #endif

@@ -8,7 +8,7 @@
 #include "cbicaLogging.h"
 #include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
-#include "AsyncExtract.h"
+// #include "AsyncExtract.h"
 #include "ApplicationPreferences.h"
 
 // StandaloneApp* StandaloneApp::m_Instance = nullptr;
@@ -162,14 +162,14 @@ void StandaloneApp::doneUnzip() {
 		//  stlapps->Debug("Extraction failed");
 
 		//  stlapps->StoreAppSetting("", "", appName);
-		// QMessageBox::information(this,tr("Extraction"),"Extraction failed");
-		qDebug() << "Extraction failed" << endl;
+		QMessageBox::information(NULL,tr("Extraction"),"Extraction failed");
+		// qDebug() << "Extraction failed" << endl;
 
 	}
 	else {
 		// updateProgress(100, "Extracting " + this->m_AppName.toStdString() + " done");
-		// QMessageBox::information(this, tr("Extraction"),"Extraction done");
-		qDebug() << "Extraction done" << endl;
+		QMessageBox::information(NULL, tr("Extraction"),"Extraction done");
+		// qDebug() << "Extraction done" << endl;
 
 
 		//  stlapps->RetreiveAppSetting(appName);
