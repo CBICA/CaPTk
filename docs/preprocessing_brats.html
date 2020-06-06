@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): Brain Cancer: Population Atlas</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): BraTS Preprocessing Pipeline</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.nonRelease.20200603.ef0894a7</span>
+   &#160;<span id="projectnumber">1.8.0.nonRelease.20200529.dec5fe32</span>
    </div>
   </td>
  </tr>
@@ -52,38 +52,30 @@
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('Glioblastoma_Atlas.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('preprocessing_brats.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Brain Cancer: Population Atlas </div>  </div>
+<div class="title">BraTS Preprocessing Pipeline </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This application facilitates the users to generate population atlases for patients with different tumor subgroups [1] to emphasize their heterogeneity.</p>
-<p><b>REQUIREMENTS:</b></p><ol type="1">
-<li>Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4)</li>
-<li>Standard atlas: A standard atlas to map all the patients in a unified space. Atlas should have region numbers in the ascending order, such as 1,2,3,...,n.</li>
-<li>Batch File: A csv file having patients' IDs, group (atlas) number, and path to the actual segmented image. Atlas numbers should be in the ascending order, such as 1,2,3,...,n. Segmentation images should be in the same space as the standard atlas (Note that the CSV file should be in ASCII format, and the CSV file should have the following column headers in any sequence: PATIENT_IDS,IMAGES, ATLAS_LABELS).</li>
-</ol>
-<p><b>USAGE:</b></p><ol type="1">
-<li>Launch the Population Atlases application using the 'Applications -&gt; Population Atlas' menu option.</li>
-<li>Specify the Input batch file (e.g., Data_of_multiple_patients), Atlas file, and Output directories.</li>
-<li>Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window.<ol type="a">
-<li>The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory. <br  />
-</li>
-</ol>
-</li>
-</ol>
+<div class="textblock"><p>This CLI-only application takes 4 structural brain MRIs as input and performs the following steps [1-3]:</p>
 <ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -a C:/AtlasFile -o C:/populationAtlasesOutput
-</pre></li>
+<li>Re-orientation to LPS/RAI</li>
+<li><a href="preprocessing_bias.html">N4 Bias correction</a></li>
+<li><a href="preprocessing_reg.html">Co-registration</a> to T1CE</li>
+<li><a href="preprocessing_reg.html">Registration</a> to SRI-24 atlas [4]</li>
+<li>Apply registration to re-oriented image to maximize image fidelity</li>
+<li><a href="seg_DL.html">Skull-stripping</a></li>
 </ul>
-<hr  />
 <p>Reference:</p>
 <ol type="1">
-<li>M. Bilello, H. Akbari, X. Da, J.M.Pisapia, S.Mohan, R.L.Wolf, D.M.O'Rourke, M.Martinez-Lage, C.Davatzikos. "Population-based MRI atlases of spatial distribution are specific to patient and tumor characteristics in glioblastoma", Neuroimage Clin. 12:34-40, 2016. DOI:10.1016/j.nicl.2016.03.007 </li>
+<li>B. H. Menze, A. Jakab, S. Bauer, J. Kalpathy-Cramer, K. Farahani, J. Kirby, et al. "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)", IEEE Transactions on Medical Imaging 34(10), 1993-2024 (2015) DOI: 10.1109/TMI.2014.2377694</li>
+<li>S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J.S. Kirby, et al., "Advancing The Cancer Genome Atlas glioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data, 4:170117 (2017) DOI: 10.1038/sdata.2017.117</li>
+<li>S. Bakas, M. Reyes, A. Jakab, S. Bauer, M. Rempfler, A. Crimi, et al., "Identifying the Best Machine Learning Algorithms for Brain Tumor Segmentation, Progression Assessment, and Overall Survival Prediction in the BRATS Challenge", arXiv preprint arXiv:1811.02629 (2018)</li>
+<li>T.Rohlfing, N.M.Zahr, E.V.Sullivan,A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human brain mapping, 31(5), pp.798-819. (2010) </li>
 </ol>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
