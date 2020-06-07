@@ -159,9 +159,9 @@ void StandaloneApp::doneUnzip() {
 		QMessageBox::information(NULL,tr("Extraction"),"Extraction failed");
 		// qDebug() << "Extraction failed" << endl;
 		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
-		ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus(QVariant("false").toString());
-		ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus(QVariant("false").toString());
-		ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus(QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SerializePreferences();
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
 	}
