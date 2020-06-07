@@ -31,6 +31,7 @@ void fAppDownloadDialog::CancelButtonPressed()
 {
     ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
+    ApplicationPreferences::GetInstance()->DisplayPreferences();
 
     // emit cancelDownload();
 
@@ -44,6 +45,9 @@ void fAppDownloadDialog::ConfirmButtonPressed()
     bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
     bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
     bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
+
+    ApplicationPreferences::GetInstance()->DisplayPreferences();
+
 
     if(extractionFinished)
     {
@@ -100,6 +104,8 @@ void fAppDownloadDialog::ConfirmButtonPressed()
 
         ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("true").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
+        ApplicationPreferences::GetInstance()->DisplayPreferences();
+
 
         progressDialog->setWindowTitle(tr("HTTP"));
         progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
@@ -175,6 +181,8 @@ void fAppDownloadDialog::httpDownloadFinished()
 
         ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
+        ApplicationPreferences::GetInstance()->DisplayPreferences();
+
 
         // emit cancelDownload();
 
@@ -188,6 +196,8 @@ void fAppDownloadDialog::httpDownloadFinished()
 
     ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("true").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
+    ApplicationPreferences::GetInstance()->DisplayPreferences();
+
 
     // get redirection url
     QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
@@ -231,6 +241,8 @@ void fAppDownloadDialog::cancelDownload()
 
     ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
+    ApplicationPreferences::GetInstance()->DisplayPreferences();
+
     // emit cancelDownload();
 
     this->close();

@@ -9,6 +9,7 @@
 #include "ApplicationPreferences.h"
 #include "fAppDownloadDialog.h"
 #include "yaml-cpp/node/node.h"
+#include "AsyncExtract.h"
 
 class StandaloneApp : public QObject
 {
@@ -41,6 +42,9 @@ private:
 	void appDownload();
 	void startDownload();
 	void cancelDownload();
+	
+
+private slots:
 	void startUnzip(QString fullPath, QString extractPath);
 	void doneUnzip();
 };
@@ -50,6 +54,8 @@ class ASyncExtract : public QThread
 	Q_OBJECT
 	void run() override {
 		ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("true").toString());
+		ApplicationPreferences::GetInstance()->SerializePreferences();
+		ApplicationPreferences::GetInstance()->DisplayPreferences();
 
 		if (QFile::exists(this->fullPath))
 		{
@@ -59,17 +65,23 @@ class ASyncExtract : public QThread
 			if(ret)
 			{
 				ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
+				ApplicationPreferences::GetInstance()->SerializePreferences();
+        		ApplicationPreferences::GetInstance()->DisplayPreferences();
 				//after extraction remove the zip
 				bool successfullyremoved = QFile::remove(this->fullPath.toStdString().c_str());
 			}
 			else
 			{
 				ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+				ApplicationPreferences::GetInstance()->SerializePreferences();
+        		ApplicationPreferences::GetInstance()->DisplayPreferences();
 			}
 		}
 		else
 		{
 			ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+			ApplicationPreferences::GetInstance()->SerializePreferences();
+        	ApplicationPreferences::GetInstance()->DisplayPreferences();
 		}
 
 		qDebug() << "Extraction done in background" << this->fullPath << endl;

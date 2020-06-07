@@ -8,7 +8,6 @@
 #include "cbicaLogging.h"
 #include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
-// #include "AsyncExtract.h"
 #include "ApplicationPreferences.h"
 
 // StandaloneApp* StandaloneApp::m_Instance = nullptr;
@@ -139,7 +138,7 @@ void StandaloneApp::startUnzip(QString fullPath, QString extractPath)
 		//  updateProgress(50, "Extracting " + appName.toStdString());
 		ASyncExtract* asyncExtract = new ASyncExtract();
 
-		connect(asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip(QString)));
+		connect(asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip()));
 		connect(asyncExtract, &ASyncExtract::finished, asyncExtract, &QObject::deleteLater);
 
 		asyncExtract->setFullPath(fullPath);
