@@ -64,24 +64,9 @@ class ASyncExtract : public QThread
 
 			if(ret)
 			{
-				ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
-				ApplicationPreferences::GetInstance()->SerializePreferences();
-        		ApplicationPreferences::GetInstance()->DisplayPreferences();
 				//after extraction remove the zip
 				bool successfullyremoved = QFile::remove(this->fullPath.toStdString().c_str());
 			}
-			else
-			{
-				ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
-				ApplicationPreferences::GetInstance()->SerializePreferences();
-        		ApplicationPreferences::GetInstance()->DisplayPreferences();
-			}
-		}
-		else
-		{
-			ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
-			ApplicationPreferences::GetInstance()->SerializePreferences();
-        	ApplicationPreferences::GetInstance()->DisplayPreferences();
 		}
 
 		qDebug() << "Extraction done in background" << this->fullPath << endl;

@@ -156,23 +156,22 @@ void StandaloneApp::doneUnzip() {
 
 		// updateProgress(0, "Extracting " + this->m_AppName.toStdString() + " failed");
 
-		// ShowErrorMessage("Installation failed. Please re-run installtion.");
-		//  stlapps->RetreiveAppSetting(appName);
-		//  stlapps->Debug("Extraction failed");
-
-		//  stlapps->StoreAppSetting("", "", appName);
 		QMessageBox::information(NULL,tr("Extraction"),"Extraction failed");
 		// qDebug() << "Extraction failed" << endl;
-
+		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus(QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus(QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus(QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->SerializePreferences();
+		ApplicationPreferences::GetInstance()->DisplayPreferences();
 	}
 	else {
 		// updateProgress(100, "Extracting " + this->m_AppName.toStdString() + " done");
 		QMessageBox::information(NULL, tr("Extraction"),"Extraction done");
 		// qDebug() << "Extraction done" << endl;
 
-
-		//  stlapps->RetreiveAppSetting(appName);
-		//  stlapps->Debug("Extraction done");
-		//  stlapps->StoreAppSetting("Extract", "Done", appName);
+		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
+		ApplicationPreferences::GetInstance()->SerializePreferences();
+		ApplicationPreferences::GetInstance()->DisplayPreferences();
 	}
 }

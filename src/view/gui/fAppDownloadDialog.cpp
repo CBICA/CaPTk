@@ -30,6 +30,9 @@ fAppDownloadDialog::~fAppDownloadDialog()
 void fAppDownloadDialog::CancelButtonPressed()
 {
     ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus(QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus(QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus(QVariant("false").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
     ApplicationPreferences::GetInstance()->DisplayPreferences();
 
@@ -180,9 +183,11 @@ void fAppDownloadDialog::httpDownloadFinished()
         progressDialog->hide();
 
         ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus(QVariant("false").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
         ApplicationPreferences::GetInstance()->DisplayPreferences();
-
 
         // emit cancelDownload();
 
@@ -193,11 +198,6 @@ void fAppDownloadDialog::httpDownloadFinished()
     progressDialog->hide();
     file->flush();
     file->close();
-
-    ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("true").toString());
-    ApplicationPreferences::GetInstance()->SerializePreferences();
-    ApplicationPreferences::GetInstance()->DisplayPreferences();
-
 
     // get redirection url
     QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
@@ -230,6 +230,9 @@ void fAppDownloadDialog::httpDownloadFinished()
     file = 0;
     manager = 0;
 
+    ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("true").toString());
+    ApplicationPreferences::GetInstance()->SerializePreferences();
+    ApplicationPreferences::GetInstance()->DisplayPreferences();
     emit doneDownload(fullPath, extractPath);
 }
 
@@ -240,6 +243,9 @@ void fAppDownloadDialog::cancelDownload()
     reply->abort();
 
     ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus(QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus(QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus(QVariant("false").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
     ApplicationPreferences::GetInstance()->DisplayPreferences();
 
