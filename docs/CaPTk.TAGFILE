@@ -188,6 +188,11 @@
     <filename>Diffusion_Derivatives</filename>
   </compound>
   <compound kind="page">
+    <name>PCA_Extraction</name>
+    <title>Miscellaneous: PCA Volume Extraction</title>
+    <filename>PCA_Extraction</filename>
+  </compound>
+  <compound kind="page">
     <name>Training_Module</name>
     <title>Miscellaneous: Training Module</title>
     <filename>Training_Module</filename>
