@@ -122,7 +122,7 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
   DiffusionDerivatives objDiffusion;
-  std::vector<typename ImageTypeFloat3D::Pointer> diffusionDerivatives = objDiffusion.Run(inputFileName, inputMaskName, inputBVecName, inputBValName, outputDirectoryName);
+  std::vector<typename ImageTypeFloat3D::Pointer> diffusionDerivatives = objDiffusion.Run(inputFileName, inputMaskName, inputBValName, inputBVecName, outputDirectoryName);
   std::cout << "Writing measures to the specified output directory.\n";
 
   //fa,tr, rad , ax
