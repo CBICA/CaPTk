@@ -442,17 +442,6 @@ fMainWindow::fMainWindow()
         menuDownload->addAction("LIBRA");
       }
     }
-    //if (currentActionAndName.name != "Breast Cancer")
-    //{
-    //  if (!libraCheck)
-    //  {
-    //    if (currentActionAndName.name.find("libra") != std::string::npos)
-    //    {
-    //      libraCheck = true;
-    //      menuDownload->addAction("LIBRA");
-    //    }
-    //  }
-    //}
   }
 
   bool sbrtCheck = false;
@@ -569,7 +558,6 @@ fMainWindow::fMainWindow()
 
   connect(actionLoad_Recurrence_Images, SIGNAL(triggered()), this, SLOT(openImages()));
   connect(actionLoad_Nifti_Images, SIGNAL(triggered()), this, SLOT(openImages()));
-  //connect(actionLoad_Dicom_Images, SIGNAL(triggered()), this, SLOT(openDicomImages()));
 
   connect(actionSave_ROI_Images, SIGNAL(triggered()), this, SLOT(SaveDrawing()));
   connect(actionSave_ROI_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomDrawing()));
