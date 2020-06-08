@@ -91,7 +91,7 @@ public:
     if (fBraTSSegmentation->objectName().isEmpty())
       fBraTSSegmentation->setObjectName(QString::fromUtf8("fBraTSSegmentation"));
     //fBraTSSegmentation->setWindowModality(Qt::NonModal);
-    fBraTSSegmentation->resize(200, 200); // needs to be screenSize dependent
+    fBraTSSegmentation->resize(400, 200); // needs to be screenSize dependent
     QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     sizePolicy.setHorizontalStretch(0);
     sizePolicy.setVerticalStretch(0);
@@ -239,7 +239,7 @@ public:
 
 
     confirmButton = new QPushButton(fBraTSSegmentation);
-    confirmButton->setObjectName(QString::fromUtf8("confirm"));
+    confirmButton->setObjectName(QString::fromUtf8("Confirm"));
     //confirmButton->setIcon(ButtonIcon);
     //confirmButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent
 
@@ -248,8 +248,8 @@ public:
     //cancelButton->setIcon(ButtonIcon);
     //cancelButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent
 
-    gridLayout->addWidget(confirmButton, 3, 0, 1, 1);
-    gridLayout->addWidget(cancelButton, 3, 1, 1, 1);
+    gridLayout->addWidget(confirmButton, 5, 0, 1, 1);
+    gridLayout->addWidget(cancelButton, 5, 1, 1, 1);
 
     retranslateUi(fBraTSSegmentation);
 
@@ -258,7 +258,7 @@ public:
 
   void retranslateUi(QDialog *fBraTSSegmentation)
   {
-    fBraTSSegmentation->setWindowTitle(QApplication::translate("fBraTSSegmentation", "Histogram Matching", 0));
+    fBraTSSegmentation->setWindowTitle(QApplication::translate("fBraTSSegmentation", "BraTS Pipeline", 0));
     confirmButton->setText(QApplication::translate("fBraTSSegmentation", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fBraTSSegmentation", "Cancel", 0));
 
