@@ -55,14 +55,20 @@ void fAppDownloadDialog::ConfirmButtonPressed()
     if(extractionFinished)
     {
         QMessageBox::information(this,tr("Download"),"Already Downloaded");
+        this->close();
+
     }
     else if(downloadStarted && !downloadFinished)
     {
         QMessageBox::information(this,tr("Download"),"Download in progress");
+        this->close();
+
     }
     else if(extractionStarted && !extractionFinished)
     {
         QMessageBox::information(this,tr("Extract"),"Extraction in progress");
+        this->close();
+
     }
     else
     {
@@ -108,8 +114,6 @@ void fAppDownloadDialog::ConfirmButtonPressed()
         ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("true").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
         ApplicationPreferences::GetInstance()->DisplayPreferences();
-
-
         progressDialog->setWindowTitle(tr("HTTP"));
         progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
         
@@ -233,6 +237,7 @@ void fAppDownloadDialog::httpDownloadFinished()
     ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("true").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
     ApplicationPreferences::GetInstance()->DisplayPreferences();
+    
     emit doneDownload(fullPath, extractPath);
 }
 
