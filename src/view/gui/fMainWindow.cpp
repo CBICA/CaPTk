@@ -6271,65 +6271,70 @@ void fMainWindow::ApplicationSBRTAnalysis()
   }
 
   analysisPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["LungCancer"]["Model"].as<std::string>());
-  analysisPanel.exec();
+  int result = analysisPanel.exec();
 
-  std::string inputFileName;
-  std::string maskName;
-  int roiLabel = 1;
-  std::string oname;
-  int outputFea = 0;
-  std::string logName;
-  std::string modelDir;
-
-  std::string metaName = analysisPanel.mInputPathName.toStdString() + "/meta_fea_proj.txt";
-  std::string projName = analysisPanel.mInputPathName.toStdString() + "/triFac_res_cpp_kc3_kr5_pet_cox_coeff_train_all.txt";
-
-  if (cbica::fileExists(metaName) == false ||
-    cbica::fileExists(projName) == false)
+  if (result == QDialog::Accepted)
   {
-    ShowErrorMessage("Model files not found. Please re-select the directory containing model files.", this);
-    return;
+	  std::string inputFileName;
+	  std::string maskName;
+	  int roiLabel = 1;
+	  std::string oname;
+	  int outputFea = 0;
+	  std::string logName;
+	  std::string modelDir;
+
+	  std::string metaName = analysisPanel.mInputPathName.toStdString() + "/meta_fea_proj.txt";
+	  std::string projName = analysisPanel.mInputPathName.toStdString() + "/triFac_res_cpp_kc3_kr5_pet_cox_coeff_train_all.txt";
+
+	  if (cbica::fileExists(metaName) == false ||
+		  cbica::fileExists(projName) == false)
+	  {
+		  ShowErrorMessage("Model files not found. Please re-select the directory containing model files.", this);
+		  return;
+	  }
+
+	  cbica::WriteImage< ImageTypeFloat3D >(getMaskImage(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
+	  cbica::Logging(loggerFile, "written temp mask");
+	  auto loadedMaskFile = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
+
+	  //! calling algorithm
+	  SBRT_Analysis< float, ImageTypeFloat3D::ImageDimension > anaObject;
+
+	  if (!logName.empty())
+	  {
+		  anaObject.SetLogger(logName);
+	  }
+
+	  inputFileName = petImageFile;
+	  maskName = loadedMaskFile;
+
+	  anaObject.SetParameters(roiLabel);
+
+	  updateProgress(20, "Initializing");
+	  anaObject.Initialization(inputFileName, maskName);
+	  cbica::Logging(loggerFile, "SBRT Analysis Initialization complete");
+
+	  updateProgress(50, "Feature Extraction");
+	  anaObject.FeaExtraction();
+	  cbica::Logging(loggerFile, "SBRT Analysis Feature Extraction complete");
+
+	  updateProgress(100, "Risk prediction");
+	  anaObject.GetPredictedRisk(metaName, projName);
+	  cbica::Logging(loggerFile, "SBRT Analysis Risk Prediction complete");
+
+	  if (outputFea == 1)
+	  {
+		  anaObject.OutputFeature(oname);
+	  }
+
+	  updateProgress(0, ""); //! reset progress bar
+
+	  QString msgStr = QString("Predicted Risk (Survival): %1\nPredicted Risk(Nodal Failure): %2").arg(anaObject.GetSurivalRisk())
+		  .arg(anaObject.GetNodalFailureRisk());
+	  QMessageBox::information(this, "Predicted Risk", msgStr, QMessageBox::Ok);
   }
-
-  cbica::WriteImage< ImageTypeFloat3D >(getMaskImage(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
-  cbica::Logging(loggerFile, "written temp mask");
-  auto loadedMaskFile = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
-
-  //! calling algorithm
-  SBRT_Analysis< float, ImageTypeFloat3D::ImageDimension > anaObject;
-
-  if (!logName.empty())
-  {
-    anaObject.SetLogger(logName);
-  }
-
-  inputFileName = petImageFile;
-  maskName = loadedMaskFile;
-
-  anaObject.SetParameters(roiLabel);
-
-  updateProgress(20, "Initializing");
-  anaObject.Initialization(inputFileName, maskName);
-  cbica::Logging(loggerFile, "SBRT Analysis Initialization complete");
-
-  updateProgress(50, "Feature Extraction");
-  anaObject.FeaExtraction();
-  cbica::Logging(loggerFile, "SBRT Analysis Feature Extraction complete");
-
-  updateProgress(100, "Risk prediction");
-  anaObject.GetPredictedRisk(metaName, projName);
-  cbica::Logging(loggerFile, "SBRT Analysis Risk Prediction complete");
-
-  if (outputFea == 1)
-  {
-    anaObject.OutputFeature(oname);
-  }
-
-  updateProgress(0, ""); //! reset progress bar
-
-  QString msgStr = QString("Predicted Risk (Survival): %1\nPredicted Risk(Nodal Failure): %2").arg(anaObject.GetSurivalRisk())
-    .arg(anaObject.GetNodalFailureRisk());
-  QMessageBox::information(this, "Predicted Risk", msgStr, QMessageBox::Ok);
+  else
+	  cbica::Logging(loggerFile, "ApplicationSBRTAnalysis Canceled");
 
   cbica::Logging(loggerFile, "Exiting ApplicationSBRTAnalysis ");
 }
