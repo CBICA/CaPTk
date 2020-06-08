@@ -75,6 +75,8 @@ public slots:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
 
+  void onIgnoreSSLErrors(QNetworkReply* rep,QList<QSslError> error);  
+
   // slot for readyRead() signal
   void httpReadyRead();
 

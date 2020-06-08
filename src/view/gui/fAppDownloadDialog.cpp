@@ -57,6 +57,7 @@ void fAppDownloadDialog::ConfirmButtonPressed()
         connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
 
         manager = new QNetworkAccessManager(this);
+        connect(manager,SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),this,SLOT(onIgnoreSSLErrors(QNetworkReply*,QList<QSslError>)));  
 
         // url = 
         QFileInfo fileInfo(url.path());
@@ -105,6 +106,10 @@ void fAppDownloadDialog::ConfirmButtonPressed()
     }
 }
 
+void fAppDownloadDialog::onIgnoreSSLErrors(QNetworkReply *rep, QList<QSslError> error)  
+{  
+    rep->ignoreSslErrors(error);  
+}  
 
 // This will be called when download button is clicked
 void fAppDownloadDialog::startRequest(QUrl url)
@@ -115,15 +120,7 @@ void fAppDownloadDialog::startRequest(QUrl url)
     // opened for reading which emits
     // the readyRead() signal whenever new data arrives.
     reply = manager->get(QNetworkRequest(url));
-    QSslError ignoreNOErrors(QSslError::NoError);
-
-    foreach(QSslError error, errors)
-        if(error.error() != QSslError::NoError)
-            qDebug() << error.errorString();
-
-    QList<QSslError> expectedSslErrors;
-    expectedSslErrors.append(ignoreNOErrors);
-    reply->ignoreSslErrors(expectedSslErrors);
+    // reply->ignoreSslErrors(expectedSslErrors);
 
     // Whenever more data is received from the network,
     // this readyRead() signal is emitted
