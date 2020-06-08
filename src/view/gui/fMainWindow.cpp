@@ -385,9 +385,8 @@ fMainWindow::fMainWindow()
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
-  //std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
-  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionPCA PerfusionDerivatives TrainingModule";
   
   std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
 #ifndef __APPLE__
@@ -443,17 +442,6 @@ fMainWindow::fMainWindow()
         menuDownload->addAction("LIBRA");
       }
     }
-    //if (currentActionAndName.name != "Breast Cancer")
-    //{
-    //  if (!libraCheck)
-    //  {
-    //    if (currentActionAndName.name.find("libra") != std::string::npos)
-    //    {
-    //      libraCheck = true;
-    //      menuDownload->addAction("LIBRA");
-    //    }
-    //  }
-    //}
   }
 
   bool sbrtCheck = false;
@@ -478,12 +466,9 @@ fMainWindow::fMainWindow()
   {
     if (currentActionAndName.name != "Miscellaneous")
     {
-      if ((currentActionAndName.name != "itksnap") && (currentActionAndName.name != "deepmedic"))
+      if (!currentActionAndName.name.empty())
       {
-        if (!currentActionAndName.name.empty())
-        {
-          menuDownload->addAction(currentActionAndName.name.c_str());
-        }
+        menuDownload->addAction(currentActionAndName.name.c_str());
       }
     }
   }
@@ -573,7 +558,6 @@ fMainWindow::fMainWindow()
 
   connect(actionLoad_Recurrence_Images, SIGNAL(triggered()), this, SLOT(openImages()));
   connect(actionLoad_Nifti_Images, SIGNAL(triggered()), this, SLOT(openImages()));
-  //connect(actionLoad_Dicom_Images, SIGNAL(triggered()), this, SLOT(openDicomImages()));
 
   connect(actionSave_ROI_Images, SIGNAL(triggered()), this, SLOT(SaveDrawing()));
   connect(actionSave_ROI_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomDrawing()));

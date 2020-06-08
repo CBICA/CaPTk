@@ -35,6 +35,12 @@ inputs:
   MolecularSubtypePredictor:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/MolecularSubtypePredictor.zip
     Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/MolecularSubtypePredictor.zip
+  PerfusionDerivatives:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PerfusionDerivatives.zip
+    Model: N.A.
+  PerfusionPCA:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PerfusionPCA.zip
+    Model: N.A.
   PopulationAtlases:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PopulationAtlases.zip
     Model: N.A.
