@@ -1,5 +1,4 @@
-#ifndef ASYNCEXTRACT_H
-#define ASYNCEXTRACT_H
+
 
 #include <QObject>
 #include <QThread>
@@ -65,4 +64,3 @@ signals:
     void resultReady(QString appName);
 };
 
-#endif
