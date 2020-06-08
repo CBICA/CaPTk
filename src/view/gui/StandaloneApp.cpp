@@ -9,6 +9,7 @@
 #include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
 #include "ApplicationPreferences.h"
+#include "ASyncExtract.h"
 
 void StandaloneApp::SetName(QString appName)
 {
