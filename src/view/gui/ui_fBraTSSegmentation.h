@@ -42,17 +42,33 @@ public:
   QGridLayout *gridLayout;
   QVBoxLayout * verticalLayout;
 
-  QGroupBox *referenceGroupBox;
-  QGridLayout *referenceGridLayout;
-  QLabel *referenceImageLabel;
-  QLineEdit *referenceImageName;
-  QPushButton *referenceImageButton;
+  QGroupBox *inputT1CEGroupBox;
+  QGridLayout *inputT1CEGridLayout;
 
-  QGroupBox *inputGroupBox;
-  QGridLayout *inputGridLayout;
-  QLabel *inputImageLabel;
-  QLineEdit *inputImageName;
-  QPushButton *inputImageButton;
+  QLabel *inputT1CEImageLabel;
+  QLineEdit *inputT1CEImageName;
+  QPushButton *inputT1CEImageButton;
+
+  QGroupBox *inputT1GroupBox;
+  QGridLayout *inputT1GridLayout;
+
+  QLabel *inputT1ImageLabel;
+  QLineEdit *inputT1ImageName;
+  QPushButton *inputT1ImageButton;
+
+  QGroupBox *inputT2GroupBox;
+  QGridLayout *inputT2GridLayout;
+
+  QLabel *inputT2ImageLabel;
+  QLineEdit *inputT2ImageName;
+  QPushButton *inputT2ImageButton;
+
+  QGroupBox *inputFLGroupBox;
+  QGridLayout *inputFLGridLayout;
+
+  QLabel *inputFLImageLabel;
+  QLineEdit *inputFLImageName;
+  QPushButton *inputFLImageButton;
 
   QGroupBox *outputGroupBox;
   QGridLayout *outputGridLayout;
@@ -87,60 +103,109 @@ public:
     gridLayout = new QGridLayout(fBraTSSegmentation);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
 
-    // reference
-    referenceGroupBox = new QGroupBox(fBraTSSegmentation);
-    referenceGroupBox->setTitle(QString::fromStdString("Reference Image"));
+    // input t1ce
+    inputT1CEGroupBox = new QGroupBox(fBraTSSegmentation);
+    inputT1CEGroupBox->setTitle(QString::fromStdString("Input T1CE Image"));
 
-    referenceGridLayout = new QGridLayout(referenceGroupBox);
-    referenceGridLayout->setObjectName(QString::fromUtf8("referenceGridLayout"));
+    inputT1CEGridLayout = new QGridLayout(inputT1CEGroupBox);
+    inputT1CEGridLayout->setObjectName(QString::fromUtf8("inputGridLayout"));
 
-    referenceImageLabel = new QLabel(referenceGroupBox);
-    sizePolicy.setHeightForWidth(referenceImageLabel->sizePolicy().hasHeightForWidth());
-    referenceImageLabel->setSizePolicy(sizePolicy);
+    inputT1CEImageLabel = new QLabel(inputT1CEGroupBox);
+    sizePolicy.setHeightForWidth(inputT1CEImageLabel->sizePolicy().hasHeightForWidth());
+    inputT1CEImageLabel->setSizePolicy(sizePolicy);
 
-    referenceImageName = new QLineEdit("");
-    referenceImageName->setObjectName(QString::fromUtf8("referenceImageName"));
-    sizePolicy.setHeightForWidth(referenceImageName->sizePolicy().hasHeightForWidth());
-    referenceImageName->setSizePolicy(sizePolicy);
-    referenceImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputT1CEImageName = new QLineEdit("");
+    inputT1CEImageName->setObjectName(QString::fromUtf8("inputImageName"));
+    sizePolicy.setHeightForWidth(inputT1CEImageName->sizePolicy().hasHeightForWidth());
+    inputT1CEImageName->setSizePolicy(sizePolicy);
+    inputT1CEImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-    referenceImageButton = new QPushButton(referenceGroupBox);
-    referenceImageButton->setObjectName(QString::fromUtf8("referenceImageButton"));
-    referenceImageButton->setText(QString("Browse"));
-    //referenceMaskButton->setToolTip(QString("Atlas based on which stripping is done"));
+    inputT1CEImageButton = new QPushButton(inputT1CEGroupBox);
+    inputT1CEImageButton->setObjectName(QString::fromUtf8("inputImageButton"));
+    inputT1CEImageButton->setText(QString("Browse"));
 
-    referenceGridLayout->addWidget(referenceImageLabel, 0, 0, 1, 1);
-    referenceGridLayout->addWidget(referenceImageName, 1, 0, 1, 1);
-    referenceGridLayout->addWidget(referenceImageButton, 1, 1, 1, 1);
+    inputT1CEGridLayout->addWidget(inputT1CEImageLabel, 0, 0, 1, 1);
+    inputT1CEGridLayout->addWidget(inputT1CEImageName, 1, 0, 1, 1);
+    inputT1CEGridLayout->addWidget(inputT1CEImageButton, 1, 1, 1, 1);
 
-    // input
-    inputGroupBox = new QGroupBox(fBraTSSegmentation);
-    inputGroupBox->setTitle(QString::fromStdString("Input Image"));
+    // input t1
+    inputT1GroupBox = new QGroupBox(fBraTSSegmentation);
+    inputT1GroupBox->setTitle(QString::fromStdString("Input T1 Image"));
 
-    inputGridLayout = new QGridLayout(inputGroupBox);
-    inputGridLayout->setObjectName(QString::fromUtf8("inputGridLayout"));
+    inputT1GridLayout = new QGridLayout(inputT1GroupBox);
+    inputT1GridLayout->setObjectName(QString::fromUtf8("inputGridLayout"));
 
-    inputImageLabel = new QLabel(inputGroupBox);
-    sizePolicy.setHeightForWidth(inputImageLabel->sizePolicy().hasHeightForWidth());
-    inputImageLabel->setSizePolicy(sizePolicy);
+    inputT1ImageLabel = new QLabel(inputT1GroupBox);
+    sizePolicy.setHeightForWidth(inputT1ImageLabel->sizePolicy().hasHeightForWidth());
+    inputT1ImageLabel->setSizePolicy(sizePolicy);
 
-    inputImageName = new QLineEdit("");
-    inputImageName->setObjectName(QString::fromUtf8("inputImageName"));
-    sizePolicy.setHeightForWidth(inputImageName->sizePolicy().hasHeightForWidth());
-    inputImageName->setSizePolicy(sizePolicy);
-    inputImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputT1ImageName = new QLineEdit("");
+    inputT1ImageName->setObjectName(QString::fromUtf8("inputImageName"));
+    sizePolicy.setHeightForWidth(inputT1ImageName->sizePolicy().hasHeightForWidth());
+    inputT1ImageName->setSizePolicy(sizePolicy);
+    inputT1ImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-    inputImageButton = new QPushButton(inputGroupBox);
-    inputImageButton->setObjectName(QString::fromUtf8("inputImageButton"));
-    inputImageButton->setText(QString("Browse"));
+    inputT1ImageButton = new QPushButton(inputT1GroupBox);
+    inputT1ImageButton->setObjectName(QString::fromUtf8("inputImageButton"));
+    inputT1ImageButton->setText(QString("Browse"));
 
-    inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
-    inputGridLayout->addWidget(inputImageName, 1, 0, 1, 1);
-    inputGridLayout->addWidget(inputImageButton, 1, 1, 1, 1);
+    inputT1GridLayout->addWidget(inputT1ImageLabel, 0, 0, 1, 1);
+    inputT1GridLayout->addWidget(inputT1ImageName, 1, 0, 1, 1);
+    inputT1GridLayout->addWidget(inputT1ImageButton, 1, 1, 1, 1);
+
+    // input t1
+    inputT2GroupBox = new QGroupBox(fBraTSSegmentation);
+    inputT2GroupBox->setTitle(QString::fromStdString("Input T2 Image"));
+
+    inputT2GridLayout = new QGridLayout(inputT2GroupBox);
+    inputT2GridLayout->setObjectName(QString::fromUtf8("inputGridLayout"));
+
+    inputT2ImageLabel = new QLabel(inputT2GroupBox);
+    sizePolicy.setHeightForWidth(inputT2ImageLabel->sizePolicy().hasHeightForWidth());
+    inputT2ImageLabel->setSizePolicy(sizePolicy);
+
+    inputT2ImageName = new QLineEdit("");
+    inputT2ImageName->setObjectName(QString::fromUtf8("inputImageName"));
+    sizePolicy.setHeightForWidth(inputT2ImageName->sizePolicy().hasHeightForWidth());
+    inputT2ImageName->setSizePolicy(sizePolicy);
+    inputT2ImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    inputT2ImageButton = new QPushButton(inputT2GroupBox);
+    inputT2ImageButton->setObjectName(QString::fromUtf8("inputImageButton"));
+    inputT2ImageButton->setText(QString("Browse"));
+
+    inputT2GridLayout->addWidget(inputT2ImageLabel, 0, 0, 1, 1);
+    inputT2GridLayout->addWidget(inputT2ImageName, 1, 0, 1, 1);
+    inputT2GridLayout->addWidget(inputT2ImageButton, 1, 1, 1, 1);
+
+    // input t1
+    inputFLGroupBox = new QGroupBox(fBraTSSegmentation);
+    inputFLGroupBox->setTitle(QString::fromStdString("Input FL Image"));
+
+    inputFLGridLayout = new QGridLayout(inputFLGroupBox);
+    inputFLGridLayout->setObjectName(QString::fromUtf8("inputGridLayout"));
+
+    inputFLImageLabel = new QLabel(inputFLGroupBox);
+    sizePolicy.setHeightForWidth(inputFLImageLabel->sizePolicy().hasHeightForWidth());
+    inputFLImageLabel->setSizePolicy(sizePolicy);
+
+    inputFLImageName = new QLineEdit("");
+    inputFLImageName->setObjectName(QString::fromUtf8("inputImageName"));
+    sizePolicy.setHeightForWidth(inputFLImageName->sizePolicy().hasHeightForWidth());
+    inputFLImageName->setSizePolicy(sizePolicy);
+    inputFLImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    inputFLImageButton = new QPushButton(inputFLGroupBox);
+    inputFLImageButton->setObjectName(QString::fromUtf8("inputImageButton"));
+    inputFLImageButton->setText(QString("Browse"));
+
+    inputFLGridLayout->addWidget(inputFLImageLabel, 0, 0, 1, 1);
+    inputFLGridLayout->addWidget(inputFLImageName, 1, 0, 1, 1);
+    inputFLGridLayout->addWidget(inputFLImageButton, 1, 1, 1, 1);
 
     // output
     outputGroupBox = new QGroupBox(fBraTSSegmentation);
-    outputGroupBox->setTitle(QString::fromStdString("Output"));
+    outputGroupBox->setTitle(QString::fromStdString("Output Directory"));
 
     outputGridLayout = new QGridLayout(outputGroupBox);
     outputGridLayout->setObjectName(QString::fromUtf8("outputGridLayout"));
@@ -166,9 +231,11 @@ public:
     outputGridLayout->addWidget(outputImageButton, 1, 1, 1, 1);
 
     // put the layout in perspective
-    gridLayout->addWidget(referenceGroupBox, 0, 0, 1, 2);
-    gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);
-    gridLayout->addWidget(outputGroupBox, 2, 0, 1, 2);
+    gridLayout->addWidget(inputT1CEGroupBox, 0, 0, 1, 2);
+    gridLayout->addWidget(inputT1GroupBox, 1, 0, 1, 2);
+    gridLayout->addWidget(inputT2GroupBox, 2, 0, 1, 2);
+    gridLayout->addWidget(inputFLGroupBox, 3, 0, 1, 2);
+    gridLayout->addWidget(outputGroupBox, 4, 0, 1, 2);
 
 
     confirmButton = new QPushButton(fBraTSSegmentation);
