@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QMutex>
-#include <QThread>
 
 #include "fAppDownloadDialog.h"
 #include "yaml-cpp/node/node.h"

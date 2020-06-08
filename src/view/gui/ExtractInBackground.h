@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QFile>
+#include <QDebug>
 
 #include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
@@ -15,8 +16,6 @@ class ExtractInBackground : public QThread
 	Q_OBJECT
 	void run() override {
 		ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("true").toString());
-		ApplicationPreferences::GetInstance()->SerializePreferences();
-		ApplicationPreferences::GetInstance()->DisplayPreferences();
 
 		if (QFile::exists(this->fullPath))
 		{
@@ -34,6 +33,7 @@ class ExtractInBackground : public QThread
 
 		//serialize only once
 		ApplicationPreferences::GetInstance()->SerializePreferences();
+		ApplicationPreferences::GetInstance()->DisplayPreferences();
 
 		emit resultReady(this->appName);
 	}	
