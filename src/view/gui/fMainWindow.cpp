@@ -385,7 +385,6 @@ fMainWindow::fMainWindow()
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
-  //std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
   //std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule";
   //std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule PerfusionDerivatives";
