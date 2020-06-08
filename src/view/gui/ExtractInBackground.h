@@ -10,7 +10,7 @@
 #include "QZipReader.h"
 #include "ApplicationPreferences.h"
 
-class ASyncExtract : public QThread
+class ExtractInBackground : public QThread
 {
 	Q_OBJECT
 	void run() override {
@@ -39,8 +39,8 @@ class ASyncExtract : public QThread
 	}	
 
 public:
-	ASyncExtract() = default;
-	~ASyncExtract() = default;
+	ExtractInBackground() = default;
+	~ExtractInBackground() = default;
 
 	void setFullPath(QString fullPath) {
 		this->fullPath = fullPath;
@@ -55,7 +55,7 @@ public:
 	}
 
 private:
-	Q_DISABLE_COPY(ASyncExtract)
+	Q_DISABLE_COPY(ExtractInBackground)
 
 	QString fullPath;
 	QString extractPath;
