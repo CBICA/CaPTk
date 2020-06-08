@@ -6,6 +6,8 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <QSslError>
+#include <QList>
 
 #include "fAppDownloadDialog.h"
 #include "CaPTkGUIUtils.h"
@@ -113,6 +115,15 @@ void fAppDownloadDialog::startRequest(QUrl url)
     // opened for reading which emits
     // the readyRead() signal whenever new data arrives.
     reply = manager->get(QNetworkRequest(url));
+    QSslError ignoreNOErrors(QSslError::NoError);
+
+    foreach(QSslError error, errors)
+        if(error.error() != QSslError::NoError)
+            qDebug() << error.errorString();
+
+    QList<QSslError> expectedSslErrors;
+    expectedSslErrors.append(ignoreNOErrors);
+    reply->ignoreSslErrors(expectedSslErrors);
 
     // Whenever more data is received from the network,
     // this readyRead() signal is emitted
