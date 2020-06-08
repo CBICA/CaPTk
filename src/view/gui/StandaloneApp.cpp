@@ -39,8 +39,7 @@ std::string StandaloneApp::getStandaloneApp(QString appName) {
 
 		if(extractionStarted && !extractionFinished)
 		{
-			QMessageBox::information(this,tr("Extract"),"Extraction in progress");
-			this->close();
+			QMessageBox::information(NULL,tr("Extract"),"Extraction in progress");
 
 			return "";
 		}
