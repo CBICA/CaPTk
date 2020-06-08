@@ -386,8 +386,6 @@ fMainWindow::fMainWindow()
 
   auto lungAppList = " LungField Nodule Analysis";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
-  //std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule";
-  //std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule PerfusionDerivatives";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionPCA PerfusionDerivatives TrainingModule";
   
   std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
