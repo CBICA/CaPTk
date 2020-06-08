@@ -415,7 +415,7 @@ int main(int argc, char** argv)
       outputFiles_withoutOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_sri.nii.gz", "_" + modality + "_rai.nii.gz");
       outputFiles_withOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_sri.nii.gz", "_" + modality + "_rai.nii.gz");
 
-      fullCommand = " -rf " + atlasImage + " -ri LABEL 0.2vox "
+      fullCommand = " -rf " + inputReorientedFiles[modality] + " -ri LABEL 0.2vox "
         " -rm " + currentMaskToReorient + " " +
         outputFiles_withoutOrientationFix[modality] + " -r "
         + outputMatFiles["T1CE"] + ",-1";
