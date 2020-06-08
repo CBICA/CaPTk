@@ -861,7 +861,7 @@ public slots:
   /**
   \brief Call BraTS Pipeline application
   */
-  void CallDirectionalityEstimator(const std::string t1ceImage, const std::string t1Image, const std::string t2Image, const std::string flImage, const std::string outputDir);
+  void CallBraTSPipeline(const std::string t1ceImage, const std::string t1Image, const std::string t2Image, const std::string flImage, const std::string outputDir);
 
   /**
   \brief Call Histogram Matching module of ITK

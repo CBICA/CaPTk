@@ -8589,7 +8589,7 @@ void fMainWindow::CallLabelValuesChange(const std::string oldValues, const std::
   readMaskFile(tempFile);
 }
 
-void fMainWindow::CallDirectionalityEstimator(const std::string t1ceImage, const std::string t1Image, const std::string t2Image, const std::string flImage, const std::string outputDir)
+void fMainWindow::CallBraTSPipeline(const std::string t1ceImage, const std::string t1Image, const std::string t2Image, const std::string flImage, const std::string outputDir)
 {
   if (!t1ceImage.empty() && !t1Image.empty() && !t2Image.empty() && !flImage.empty() && !outputDir.empty())
   {
