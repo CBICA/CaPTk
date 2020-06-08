@@ -49,7 +49,6 @@ void ApplicationPreferences::SerializePreferences()
 	appSettings.setValue("Theme", this->m_Theme);
 	appSettings.endGroup();
 
-    qDebug() << " status = " << appSettings.status();
     cbica::Logging(loggerFile, "ApplicationPreferences::SerializePreferences status: " + QVariant::fromValue(appSettings.status()).toString().toStdString() );
 }
 
