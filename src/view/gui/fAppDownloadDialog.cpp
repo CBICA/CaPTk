@@ -29,15 +29,6 @@ fAppDownloadDialog::~fAppDownloadDialog()
 
 void fAppDownloadDialog::CancelButtonPressed()
 {
-    ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
-    ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
-    ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
-    ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
-    ApplicationPreferences::GetInstance()->SerializePreferences();
-    ApplicationPreferences::GetInstance()->DisplayPreferences();
-
-    // emit cancelDownload();
-
     this->close();
 }
 
@@ -51,26 +42,13 @@ void fAppDownloadDialog::ConfirmButtonPressed()
 
     ApplicationPreferences::GetInstance()->DisplayPreferences();
 
-
-    if(extractionFinished)
-    {
-        QMessageBox::information(this,tr("Download"),"Already Downloaded");
-        this->close();
-
-    }
-    else if(downloadStarted && !downloadFinished)
+    if(downloadStarted && !downloadFinished)
     {
         QMessageBox::information(this,tr("Download"),"Download in progress");
         this->close();
 
     }
-    else if(extractionStarted && !extractionFinished)
-    {
-        QMessageBox::information(this,tr("Extract"),"Extraction in progress");
-        this->close();
-
-    }
-    else
+    else if (!downloadStarted)
     {
         setupDownload(this);
 
@@ -237,7 +215,7 @@ void fAppDownloadDialog::httpDownloadFinished()
     ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("true").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
     ApplicationPreferences::GetInstance()->DisplayPreferences();
-    
+
     emit doneDownload(fullPath, extractPath);
 }
 
