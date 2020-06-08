@@ -12,13 +12,13 @@
 //
 // License Agreement: https://www.med.upenn.edu/sbia/software-agreement.html
 ///////////////////////////////////////////////////////////////////////////////////////
-
-#ifndef _fBraTSSegmentation_h_
-#define _fBraTSSegmentation_h_
+#pragma once
 
 
 //#include "CAPTk.h"
 #include "ui_fBraTSSegmentation.h"
+
+#include <map>
 
 /**
 \class fBraTSSegmentation
@@ -32,12 +32,11 @@ class fBraTSSegmentation : public QDialog, private Ui::fBraTSSegmentation
 public:
   fBraTSSegmentation();
   ~fBraTSSegmentation();
-  int mode;
 
   void SetCurrentImagePath(const QString &inputPath)
   {
     mInputPathName = inputPath;
-    outputImageName->setText(mInputPathName + "histoMatch_output.nii.gz");
+    //outputImageName->setText(mInputPathName + "/output");
   }
 
   QString mInputPathName;
@@ -47,13 +46,19 @@ public:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
 
-  void OpenReferenceImage();
-  void OpenInputImage();
-  void SelectOutputImage();
+  void OpenInputT1CEImage();
+  void OpenInputT1Image();
+  void OpenInputT2Image();
+  void OpenInputFLImage();
+  void SelectOutputDirectory();
 
 signals:
-  void RunHistogramMatching(const std::string referenceFile, const std::string inputImageFile, const std::string outputImageFile);
+  void RunBraTSPipeline(
+    const std::string inputT1CEImageFile, 
+    const std::string inputT1ImageFile,
+    const std::string inputT2ImageFile,
+    const std::string inputFLImageFile,
+    const std::string outputImageFile
+  );
 };
 
-
-#endif
