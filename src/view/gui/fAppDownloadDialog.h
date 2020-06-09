@@ -26,6 +26,8 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <QSslError>
+#include <QList>
 
 /**
 \class fAppDownloadDialog
@@ -56,6 +58,7 @@ public:
   bool httpRequestAborted;
   qint64 fileSize;
   QString qInputLink;
+  QList<QSslError> error;
 
   void SetPaths(std::string inputPath)
   {

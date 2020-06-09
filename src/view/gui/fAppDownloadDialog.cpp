@@ -6,8 +6,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
-#include <QSslError>
-#include <QList>
 #include <QSslConfiguration>
 
 #include "fAppDownloadDialog.h"
@@ -116,6 +114,9 @@ void fAppDownloadDialog::onIgnoreSSLErrors(QNetworkReply *rep, QList<QSslError> 
     QMessageBox::information(this,tr("SSL"),"Skip SSL");
 
     rep->ignoreSslErrors(error);  
+
+    this->error = error;
+    reply->ignoreSslErrors(error);  
 }  
 
 // This will be called when download button is clicked
@@ -126,15 +127,16 @@ void fAppDownloadDialog::startRequest(QUrl url)
     // and returns a new QNetworkReply object
     // opened for reading which emits
     // the readyRead() signal whenever new data arrives.
-    QSslConfiguration conf = reply->sslConfiguration();
-    conf.setPeerVerifyMode(QSslSocket::VerifyNone);
-    reply->setSslConfiguration(conf);
+    // QSslConfiguration conf = &reply.sslConfiguration();
+    // conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+    // reply->setSslConfiguration(conf);
 
     reply = manager->get(QNetworkRequest(url));
+    reply->ignoreSslErrors(this->error);  
     // reply->ignoreSslErrors(expectedSslErrors);
-    conf = reply.sslConfiguration();
-    conf.setPeerVerifyMode(QSslSocket::VerifyNone);
-    reply.setSslConfiguration(conf);
+    // conf = &reply.sslConfiguration();
+    // conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+    // reply.setSslConfiguration(conf);
 
     // Whenever more data is received from the network,
     // this readyRead() signal is emitted
