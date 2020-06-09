@@ -63,9 +63,10 @@ void fTrainingSimulator::ConfirmButtonPressed()
     ShowErrorMessage("Please select at least one of the given two options: Linear, RBF.");
     return;
   }
-  if (mCrossValidation->isChecked() == false && mSplitTrainTest->isChecked() == false)
+  if (mCrossValidation->isChecked() == false && mSplitTrainTest->isChecked() == false
+      && mSplitTrain->isChecked() == false && mSplitTest->isChecked() == false)
   {
-    ShowErrorMessage("Please select at least one of the given two options: CrossValidation, TrainTest.");
+    ShowErrorMessage("Please select at least one of the given options: CrossValidation, TrainTest, Split Train, Split Test");
     return;
   }
   if (mCrossValidation->isChecked() == true && cvValue->text().isEmpty())
@@ -76,6 +77,11 @@ void fTrainingSimulator::ConfirmButtonPressed()
   if (mSplitTrainTest->isChecked() == true && ttValue->text().isEmpty())
   {
     ShowErrorMessage("Please select the size of training dataset.");
+    return;
+  }
+  if (mSplitTest->isChecked() == true && mSplitModelDirectory->text().isEmpty())
+  {
+    ShowErrorMessage("Please provide a model directory to use for testing.");
     return;
   }
 
