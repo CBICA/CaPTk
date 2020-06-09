@@ -137,7 +137,7 @@ void fAppDownloadDialog::startRequest(QUrl url)
     // reply->ignoreSslErrors(expectedSslErrors);
     // conf = &reply.sslConfiguration();
     // conf.setPeerVerifyMode(QSslSocket::VerifyNone);
-    reply.setSslConfiguration(conf);
+    reply.setSslConfiguration(sslConf);
 
     // Whenever more data is received from the network,
     // this readyRead() signal is emitted
