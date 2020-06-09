@@ -54,10 +54,6 @@ void fAppDownloadDialog::ConfirmButtonPressed()
         setupDownload(this);
 
         connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
-        
-        QSslConfiguration sslConf = QSslConfiguration::defaultConfiguration();
-        sslConf.setPeerVerifyMode(QSslSocket::VerifyNone);
-        QSslConfiguration::setDefaultConfiguration(sslConf);
 
         manager = new QNetworkAccessManager(this);
         connect(manager,SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),this,SLOT(onIgnoreSSLErrors(QNetworkReply*,QList<QSslError>)));  
@@ -139,8 +135,11 @@ void fAppDownloadDialog::startRequest(QUrl url)
     // &reply.setSslConfiguration(sslConf);
     // &reply.ignoreSslErrors(this->error);  
 
+    reply->ignoreSslErrors();
     reply = manager->get(QNetworkRequest(url));
+    reply->ignoreSslErrors();
     connect(reply,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(onIgnoreSSLErrors(QList<QSslError>)));  
+
 
     // &reply.ignoreSslErrors(this->error);  
     // // reply->ignoreSslErrors(expectedSslErrors);
