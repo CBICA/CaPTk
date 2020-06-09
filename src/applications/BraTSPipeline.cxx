@@ -399,65 +399,65 @@ int main(int argc, char** argv)
     finalBrainTumorMask
     );
 
-  /// [7] Put masks back in patient space
-  std::vector< std::string > masksToReorient;
-  masksToReorient.push_back(finalBrainMask);
-  masksToReorient.push_back(finalBrainTumorMask);
+  ///// [7] Put masks back in patient space
+  //std::vector< std::string > masksToReorient;
+  //masksToReorient.push_back(finalBrainMask);
+  //masksToReorient.push_back(finalBrainTumorMask);
 
-  for (size_t i = 0; i < masksToReorient.size(); i++)
-  {
-    auto currentMaskToReorient = masksToReorient[i];
+  //for (size_t i = 0; i < masksToReorient.size(); i++)
+  //{
+  //  auto currentMaskToReorient = masksToReorient[i];
 
-    for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
-    {
-      auto modality = it->first;
+  //  for (auto it = inputFiles.begin(); it != inputFiles.end(); it++)
+  //  {
+  //    auto modality = it->first;
 
-      outputFiles_withoutOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_sri.nii.gz", "_" + modality + "_rai.nii.gz");
-      outputFiles_withOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_sri.nii.gz", "_" + modality + "_raw.nii.gz");
+  //    outputFiles_withoutOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_sri.nii.gz", "_" + modality + "_rai.nii.gz");
+  //    outputFiles_withOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_sri.nii.gz", "_" + modality + "_raw.nii.gz");
 
-      fullCommand = " -rf " + inputReorientedFiles[modality] + " -ri LABEL 0.2vox "
-        " -rm " + currentMaskToReorient + " " +
-        outputFiles_withoutOrientationFix[modality] + " -r "
-        + outputMatFiles["T1CE"] + ",-1";
+  //    fullCommand = " -rf " + inputReorientedFiles[modality] + " -ri LABEL 0.2vox "
+  //      " -rm " + currentMaskToReorient + " " +
+  //      outputFiles_withoutOrientationFix[modality] + " -r "
+  //      + outputMatFiles["T1CE"] + ",-1";
 
-      if (modality != "T1CE")
-      {
-        fullCommand += " " + outputMatFiles[modality] + ",-1"; // other modalities are co-registered to T1CE
-      }
+  //    if (modality != "T1CE")
+  //    {
+  //      fullCommand += " " + outputMatFiles[modality] + ",-1"; // other modalities are co-registered to T1CE
+  //    }
 
-      if (debug)
-      {
-        std::cout << "Generating image for brain mask registered to re-oriented input.\n";
-        std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
-      }
+  //    if (debug)
+  //    {
+  //      std::cout << "Generating image for brain mask registered to re-oriented input.\n";
+  //      std::cout << "Greedy command: " << greedyPathAndDim + fullCommand << "\n";
+  //    }
 
-      if (!cbica::exists(outputFiles_withoutOrientationFix[modality]))
-      {
-        if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
-        {
-          std::cerr << "Something went wrong when applying registration matrix to generate "
-            << modality << " image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
-          return EXIT_FAILURE;
-        }
-      }
+  //    if (!cbica::exists(outputFiles_withoutOrientationFix[modality]))
+  //    {
+  //      if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
+  //      {
+  //        std::cerr << "Something went wrong when applying registration matrix to generate "
+  //          << modality << " image in SRI atlas space, please re-try or contact sofware@cbica.upenn.edu.\n";
+  //        return EXIT_FAILURE;
+  //      }
+  //    }
 
-      // from re-oriented brainMask, use inputModalities_orientation to get back to patient orientation
+  //    // from re-oriented brainMask, use inputModalities_orientation to get back to patient orientation
 
-      if (debug)
-      {
-        std::cout << "Re-orienting mask from LPS to original patient space.\n";
-      }
+  //    if (debug)
+  //    {
+  //      std::cout << "Re-orienting mask from LPS to original patient space.\n";
+  //    }
 
-      if (!cbica::exists(outputFiles_withOrientationFix[modality]))
-      {
-        cbica::WriteImage< ImageType >(
-          cbica::GetImageOrientation< ImageType >(
-            cbica::ReadImage< ImageType >(outputFiles_withoutOrientationFix[modality]), // read mask generated in previous step
-            inputModalities_orientation[modality]).second, // re-orient to original space
-          outputFiles_withOrientationFix[modality]); // write to file
-      }
-    } // end modality loop
-  } // end masks loop
+  //    if (!cbica::exists(outputFiles_withOrientationFix[modality]))
+  //    {
+  //      cbica::WriteImage< ImageType >(
+  //        cbica::GetImageOrientation< ImageType >(
+  //          cbica::ReadImage< ImageType >(outputFiles_withoutOrientationFix[modality]), // read mask generated in previous step
+  //          inputModalities_orientation[modality]).second, // re-orient to original space
+  //        outputFiles_withOrientationFix[modality]); // write to file
+  //    }
+  //  } // end modality loop
+  //} // end masks loop
   
   std::cout << "Finished, please perform manual quality-check of generated brain mask before applying to input images.\n";
 
