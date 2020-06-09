@@ -134,19 +134,19 @@ void fAppDownloadDialog::startRequest(QUrl url)
     // and returns a new QNetworkReply object
     // opened for reading which emits
     // the readyRead() signal whenever new data arrives.
-    QSslConfiguration sslConf = QSslConfiguration::defaultConfiguration();
-    sslConf.setPeerVerifyMode(QSslSocket::VerifyNone);
-    &reply.setSslConfiguration(sslConf);
-    &reply.ignoreSslErrors(this->error);  
+    // QSslConfiguration sslConf = QSslConfiguration::defaultConfiguration();
+    // sslConf.setPeerVerifyMode(QSslSocket::VerifyNone);
+    // &reply.setSslConfiguration(sslConf);
+    // &reply.ignoreSslErrors(this->error);  
 
     reply = manager->get(QNetworkRequest(url));
     connect(reply,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(onIgnoreSSLErrors(QList<QSslError>)));  
 
-    &reply.ignoreSslErrors(this->error);  
-    // reply->ignoreSslErrors(expectedSslErrors);
-    conf = &reply.sslConfiguration();
-    conf.setPeerVerifyMode(QSslSocket::VerifyNone);
-    &reply.setSslConfiguration(conf);
+    // &reply.ignoreSslErrors(this->error);  
+    // // reply->ignoreSslErrors(expectedSslErrors);
+    // conf = &reply.sslConfiguration();
+    // conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+    // &reply.setSslConfiguration(conf);
 
     // Whenever more data is received from the network,
     // this readyRead() signal is emitted
