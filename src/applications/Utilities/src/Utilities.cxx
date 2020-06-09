@@ -1324,8 +1324,8 @@ int main(int argc, char** argv)
   }
   else if (parser.isPresent("lsb"))
   {
-  requestedAlgorithm = LabelSimilarityBraTS;
-  parser.getParameterValue("lsb", referenceMaskForSimilarity);
+    requestedAlgorithm = LabelSimilarityBraTS;
+    parser.getParameterValue("lsb", referenceMaskForSimilarity);
   }
   else if (parser.isPresent("hd"))
   {
