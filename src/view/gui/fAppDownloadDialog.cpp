@@ -109,13 +109,20 @@ void fAppDownloadDialog::ConfirmButtonPressed()
     }
 }
 
-void fAppDownloadDialog::onIgnoreSSLErrors(QNetworkReply *rep, QList<QSslError> error)  
+void fAppDownloadDialog::onIgnoreSSLErrors(QNetworkReply *rep, QList<QSslError> &error)  
 {  
     QMessageBox::information(this,tr("SSL"),"Skip SSL");
 
     rep->ignoreSslErrors(error);  
 
     this->error = error;
+    reply->ignoreSslErrors(error);  
+}  
+
+void fAppDownloadDialog::onIgnoreSSLErrors(QList<QSslError> &error)  
+{  
+    QMessageBox::information(this,tr("SSL"),"Skip SSL");
+
     reply->ignoreSslErrors(error);  
 }  
 
@@ -129,15 +136,17 @@ void fAppDownloadDialog::startRequest(QUrl url)
     // the readyRead() signal whenever new data arrives.
     QSslConfiguration sslConf = QSslConfiguration::defaultConfiguration();
     sslConf.setPeerVerifyMode(QSslSocket::VerifyNone);
-    reply->setSslConfiguration(sslConf);
-    reply->ignoreSslErrors(this->error);  
+    &reply.setSslConfiguration(sslConf);
+    &reply.ignoreSslErrors(this->error);  
 
     reply = manager->get(QNetworkRequest(url));
-    reply->ignoreSslErrors(this->error);  
+    connect(reply,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(onIgnoreSSLErrors(QList<QSslError>)));  
+
+    &reply.ignoreSslErrors(this->error);  
     // reply->ignoreSslErrors(expectedSslErrors);
-    // conf = &reply.sslConfiguration();
-    // conf.setPeerVerifyMode(QSslSocket::VerifyNone);
-    reply.setSslConfiguration(sslConf);
+    conf = &reply.sslConfiguration();
+    conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+    &reply.setSslConfiguration(conf);
 
     // Whenever more data is received from the network,
     // this readyRead() signal is emitted
