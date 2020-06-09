@@ -306,7 +306,7 @@ int main(int argc, char** argv)
 
   auto deepMedicExe = getApplicationPath("DeepMedic");
 
-  auto brainMaskFile = outputDir + "/dmOut_skull/brainMask_sri.nii.gz";
+  auto brainMaskFile = outputDir + "/dmOut_skull/brainMask_SRI.nii.gz";
 
   if (!cbica::exists(brainMaskFile))
   {
@@ -338,14 +338,14 @@ int main(int argc, char** argv)
   // variables to store outputs in patient space
   std::map< std::string, std::string > outputFiles_withoutOrientationFix, outputFiles_withOrientationFix;
 
-  auto finalBrainMask = cbica::normalizePath(outputDir + "/brainMask_sri.nii.gz");
+  auto finalBrainMask = cbica::normalizePath(outputDir + "/brainMask_SRI.nii.gz");
   cbica::WriteImage< TImageType >(
     cbica::ReadImage< TImageType >(brainMaskFile),
     finalBrainMask
     );
   
   /// [6] Brain Tumor Segmentation
-  auto brainTumorMaskFile = outputDir + "/dmOut_tumor/tumors_sri.nii.gz";
+  auto brainTumorMaskFile = outputDir + "/dmOut_tumor/tumors_SRI.nii.gz";
 
   if (!cbica::exists(brainTumorMaskFile))
   {
@@ -393,7 +393,7 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  auto finalBrainTumorMask = cbica::normalizePath(outputDir + "/brainTumorMask_sri.nii.gz");
+  auto finalBrainTumorMask = cbica::normalizePath(outputDir + "/brainTumorMask_SRI.nii.gz");
   cbica::WriteImage< TImageType >(
     cbica::ReadImage< TImageType >(brainTumorMaskFile),
     finalBrainTumorMask
@@ -412,8 +412,8 @@ int main(int argc, char** argv)
   //  {
   //    auto modality = it->first;
 
-  //    outputFiles_withoutOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_sri.nii.gz", "_" + modality + "_rai.nii.gz");
-  //    outputFiles_withOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_sri.nii.gz", "_" + modality + "_raw.nii.gz");
+  //    outputFiles_withoutOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_SRI.nii.gz", "_" + modality + "_rai.nii.gz");
+  //    outputFiles_withOrientationFix[modality] = cbica::replaceString(currentMaskToReorient, "_SRI.nii.gz", "_" + modality + "_raw.nii.gz");
 
   //    fullCommand = " -rf " + inputReorientedFiles[modality] + " -ri LABEL 0.2vox "
   //      " -rm " + currentMaskToReorient + " " +
