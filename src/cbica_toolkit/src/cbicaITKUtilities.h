@@ -1931,6 +1931,7 @@ namespace cbica
       }
 
       returnMap["Hausdorff95_" + labelString] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
+      returnMap["Hausdorff99_" + labelString] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
     }
 
     return returnMap;
