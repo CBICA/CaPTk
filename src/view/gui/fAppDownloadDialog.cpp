@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QSslError>
 #include <QList>
+#include <QSslConfiguration>
 
 #include "fAppDownloadDialog.h"
 #include "CaPTkGUIUtils.h"
@@ -55,6 +56,10 @@ void fAppDownloadDialog::ConfirmButtonPressed()
         setupDownload(this);
 
         connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
+        
+        QSslConfiguration sslConf = QSslConfiguration::defaultConfiguration();
+        sslConf.setPeerVerifyMode(QSslSocket::VerifyNone);
+        QSslConfiguration::setDefaultConfiguration(sslConf);
 
         manager = new QNetworkAccessManager(this);
         connect(manager,SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),this,SLOT(onIgnoreSSLErrors(QNetworkReply*,QList<QSslError>)));  
@@ -108,6 +113,8 @@ void fAppDownloadDialog::ConfirmButtonPressed()
 
 void fAppDownloadDialog::onIgnoreSSLErrors(QNetworkReply *rep, QList<QSslError> error)  
 {  
+    QMessageBox::information(this,tr("SSL"),"Skip SSL");
+
     rep->ignoreSslErrors(error);  
 }  
 
