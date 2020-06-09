@@ -111,8 +111,9 @@ struct NonNativeApp
 */
 inline int guessImageType(const std::string &fileName)
 {
+	std::string basename = cbica::getFilenameBase(fileName);
   int ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
-  std::string fileName_wrap = fileName;
+  std::string fileName_wrap = basename;
   std::transform(fileName_wrap.begin(), fileName_wrap.end(), fileName_wrap.begin(), ::tolower);
   if ((fileName_wrap.find("_t1ce") != std::string::npos) || (fileName_wrap.find("_t1-gad") != std::string::npos) ||
     (fileName_wrap.find("_t1-ce") != std::string::npos) || (fileName_wrap.find("_t1-gd") != std::string::npos) ||
