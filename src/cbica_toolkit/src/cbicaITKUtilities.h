@@ -1792,23 +1792,24 @@ namespace cbica
     auto uniqueLabels = GetUniqueValuesInImage< TImageType >(inputLabel_1);
     auto uniqueLabelsRef = GetUniqueValuesInImage< TImageType >(inputLabel_2);
 
-    // sanity check
-    if (uniqueLabels.size() != uniqueLabelsRef.size())
-    {
-      std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
-      return returnMap;
-    }
-    else
-    {
-      for (size_t i = 0; i < uniqueLabels.size(); i++)
-      {
-        if (uniqueLabels[i] != uniqueLabelsRef[i])
-        {
-          std::cerr << "The label values in input and reference image are not consistent.\n";
-          return returnMap;
-        }
-      }
-    }
+    ///// this is not needed as we need to generate stats for all the BraTS values regardless
+    //// sanity check
+    //if (uniqueLabels.size() != uniqueLabelsRef.size())
+    //{
+    //  std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
+    //  return returnMap;
+    //}
+    //else
+    //{
+    //  for (size_t i = 0; i < uniqueLabels.size(); i++)
+    //  {
+    //    if (uniqueLabels[i] != uniqueLabelsRef[i])
+    //    {
+    //      std::cerr << "The label values in input and reference image are not consistent.\n";
+    //      return returnMap;
+    //    }
+    //  }
+    //}
 
     // remove background
     uniqueLabels.erase(uniqueLabels.begin());
@@ -1822,14 +1823,14 @@ namespace cbica
     std::vector< int > missingLabels, missingLabelsRef;
 
     // check brats labels and populate missing labels to 
-    for (size_t i = 0; i < uniqueLabels.size(); i++)
+    for (size_t i = 0; i < bratsValues.size(); i++)
     {
-      if (uniqueLabels[i] != bratsValues[i])
+      if (std::find(uniqueLabels.begin(), uniqueLabels.end(), bratsValues[i]) == uniqueLabels.end())
       {
         std::cerr << "Missing BraTS label in Label_1: " << bratsValues[i] << "\n";
         missingLabels.push_back(bratsValues[i]);
       }
-      if (uniqueLabelsRef[i] != bratsValues[i])
+      if (std::find(uniqueLabelsRef.begin(), uniqueLabelsRef.end(), bratsValues[i]) == uniqueLabelsRef.end())
       {
         std::cerr << "Missing BraTS label in Label_2: " << bratsValues[i] << "\n";
         missingLabelsRef.push_back(bratsValues[i]);
