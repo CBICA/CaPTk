@@ -1124,7 +1124,7 @@ jobs:
       displayName: Uploading to NITRC 
       condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
 
-- job: 'Linux_SelfHost_CentOS_7'
+- job: 'Linux_SelfHost_CentOS7'
   displayName: "Self-hosted agent on CentOS 7"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
