@@ -1250,14 +1250,14 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Linux_ubuntu1604'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_centos7'
         continueOnError: true
 
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Linux_ubuntu1604'
+        artifactName: '$(Build.DefinitionName)_installer_Linux_centos7'
         downloadPath: '$(System.ArtifactsDirectory)'
         continueOnError: true
 
