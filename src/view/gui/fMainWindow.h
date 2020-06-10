@@ -63,6 +63,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
 #include "fBiasCorrectionDialog.h"
+#include "fBraTSSegmentation.h"
 
 #include <atomic>
 
@@ -262,6 +263,7 @@ private:
   fHistoMatcher histoMatchPanel;
   fDeepMedicNormalizer deepMedicNormPanel;
   fWhiteStripeObj whiteStripeNormalizer;
+  fBraTSSegmentation bratsPipelineDialog;
   fDirectionalityDialog directionalityEstimator;
   PreferencesDialog *preferenceDialog;
   
@@ -857,6 +859,11 @@ public slots:
   void CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile);
 
   /**
+  \brief Call BraTS Pipeline application
+  */
+  void CallBraTSPipeline(const std::string t1ceImage, const std::string t1Image, const std::string t2Image, const std::string flImage, const std::string outputDir);
+
+  /**
   \brief Call Histogram Matching module of ITK
   */
   void CallLabelValuesChange(const std::string oldValues, const std::string newValues);
@@ -1430,6 +1437,9 @@ public slots:
 
   //! Preprocessing for mammogram preprocessing
   void ImageMamogramPreprocess();
+
+  //! BraTS Pipeline
+  void ImageBraTSPipeline();
 
   //! Preprocessing for bias correction
   void ImageBiasCorrection();
