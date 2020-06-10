@@ -740,6 +740,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 		-# Subject_IDn
       
 <b>USAGE:</b>
+\cond DOXYGEN_WILL_EXCLUDE_THIS_CONDITIONAL_BLOCK
 - Train New Model: 
 	-# "Select Subjects". Select the input directory that follows the folder structure described above.
 	-# "Output". Select the folder where the trained model will be saved.
@@ -748,6 +749,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 \verbatim
 ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInputDirectory -o C:/EGFRvIIIInputModel
 \endverbatim
+\endcond
 
 - Use Existing Model
 	-# "Model Directory". Choose the directory of a saved model.

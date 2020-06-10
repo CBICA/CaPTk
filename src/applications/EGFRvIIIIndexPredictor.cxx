@@ -205,10 +205,12 @@ int main(int argc, char **argv)
 	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models", "Penn Model: " + getAppropriateDownloadLink("EGFRvIIISVMIndex", "Model"));
 	parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
 	parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  //parser.exampleUsage("EGFRvIIIIndexPredictor -i <input dir> -t 0 -o <output dir>");
-  parser.addExampleUsage("-t 0 -i C:/properly/formatted/inputDir -o C:/outputDir", "Trains a new model based on the samples in inputDir");
-  parser.addExampleUsage("-t 1 -i C:/input -m C:/model -o C:/output", "Tests an existing model for inputs in 'C:/input' based on 'C:/model' ");
-  parser.addApplicationDescription("EGFRvIII Index Training and Prediction application");
+	//parser.exampleUsage("EGFRvIIIIndexPredictor -i <input dir> -t 0 -o <output dir>");
+  
+	// Training is disabled. Uncomment the below line if re-enabling. 
+	//parser.addExampleUsage("-t 0 -i C:/properly/formatted/inputDir -o C:/outputDir", "Trains a new model based on the samples in inputDir");
+	parser.addExampleUsage("-t 1 -i C:/input -m C:/model -o C:/output", "Tests an existing model for inputs in 'C:/input' based on 'C:/model' ");
+	parser.addApplicationDescription("EGFRvIII Index Prediction application");
 
 	// parameters to get from the command line
 	cbica::Logging logger;
@@ -217,7 +219,7 @@ int main(int argc, char **argv)
 
 	int tempPosition;
 	std::string inputDirectoryName, modelDirectoryName, outputDirectoryName, toWrite;
-	int applicationType;
+	int applicationType = CAPTK::MachineLearningApplicationSubtype::TESTING;
 	if (parser.compareParameter("L", tempPosition))
 	{
 		loggerFile = argv[tempPosition + 1];
@@ -245,6 +247,12 @@ int main(int argc, char **argv)
 	if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING && modelDirectoryName=="")
 	{
 		std::cout << "Please specify a directory having model file."<<std::endl;
+		return EXIT_FAILURE;
+	}
+	// Explicitly disable training.
+	if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
+	{
+		std::cout << "Training is not currently available for this application. " << std::endl;
 		return EXIT_FAILURE;
 	}
 	std::cout << "Input directory name:" << inputDirectoryName<<std::endl;
