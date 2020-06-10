@@ -387,7 +387,7 @@ fMainWindow::fMainWindow()
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionPCA PerfusionDerivatives TrainingModule";
   
-  std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
+  std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain BraTSPipeline";
 #ifndef __APPLE__
   preProcessingAlgos += " breastNormalize";
 #endif
@@ -792,7 +792,12 @@ fMainWindow::fMainWindow()
     {
       vectorOfPreprocessingActionsAndNames[i].action->setText("Mammogram Preprocessing");
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageMamogramPreprocess()));
-    }
+    } 
+    else if (vectorOfPreprocessingActionsAndNames[i].name.find("BraTSPipeline") != std::string::npos)
+    {
+      vectorOfPreprocessingActionsAndNames[i].action->setText("BraTS Pipeline");
+      connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageBraTSPipeline()));
+    } 
   }
 
   // add a single function for all preprocessing steps, this function will check for the specific names and then initiate that algorithm
@@ -866,6 +871,7 @@ fMainWindow::fMainWindow()
   connect(&histoMatchPanel, SIGNAL(RunHistogramMatching(const std::string, const std::string, const std::string)), this, SLOT(CallImageHistogramMatching(const std::string, const std::string, const std::string)));
   connect(&deepMedicNormPanel, SIGNAL(RunDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)), this, SLOT(CallImageDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)));
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
+  connect(&bratsPipelineDialog, SIGNAL(RunBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)));
 
   connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(std::string, std::string, std::string)), this, SLOT(PCAEstimateOnExistingModel(const std::string &, const std::string &, const std::string &)));
   connect(&pcaPanel, SIGNAL(TrainNewPCAModel(std::string, std::string)), this, SLOT(TrainNewPCAModelOnGivenData(const std::string &, const std::string &)));
@@ -7205,6 +7211,13 @@ void fMainWindow::ImageDenoising()
   }
 }
 
+void fMainWindow::ImageBraTSPipeline()
+{
+  // open a simple dialog box with reference image, input and output
+  bratsPipelineDialog.SetCurrentImagePath(mInputPathName);
+  bratsPipelineDialog.exec();
+}
+
 void fMainWindow::ImageMamogramPreprocess()
 {
   auto items = m_imagesTable->selectedItems();
@@ -8580,6 +8593,49 @@ void fMainWindow::CallLabelValuesChange(const std::string oldValues, const std::
   std::string tempFile = m_tempFolderLocation + "/mask_changedValues.nii.gz";
   cbica::WriteImage< ImageTypeFloat3D >(output, tempFile);
   readMaskFile(tempFile);
+}
+
+void fMainWindow::CallBraTSPipeline(const std::string t1ceImage, const std::string t1Image, const std::string t2Image, const std::string flImage, const std::string outputDir)
+{
+  if (!t1ceImage.empty() && !t1Image.empty() && !t2Image.empty() && !flImage.empty() && !outputDir.empty())
+  {
+    auto bratsPipelineExe = getApplicationPath("BraTSPipeline");
+    if (!cbica::exists(bratsPipelineExe))
+    {
+      ShowErrorMessage("Could not find the BraTSPipeline executable");
+      return;
+    }
+    
+    QStringList args;
+    args << "-t1" << t1Image.c_str() << 
+      "-t1c" << t1ceImage.c_str() << 
+      "-t2" << t2Image.c_str() << 
+      "-fl" << flImage.c_str() << 
+      "-o" << outputDir.c_str();
+
+    QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application",
+      "BraTS Pipeline takes ~30 minutes to run, during which CaPTk will not be responsive; press OK to continue...",
+      QMessageBox::Ok | QMessageBox::Cancel);
+    box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
+    box->setWindowModality(Qt::NonModal);
+    QCoreApplication::processEvents();
+    if (box->exec() == QMessageBox::Ok)
+    {
+      updateProgress(5, "Starting BraTS Pipeline");
+
+      if (startExternalProcess(bratsPipelineExe.c_str(), args) != 0)
+      {
+        ShowErrorMessage("BraTS Pipeline returned with exit code != 0");
+        updateProgress(0, "");
+        return;
+      }
+    }
+  }
+  else
+  {
+    ShowErrorMessage("All input images need to be provided for BraTS Pipeline to run.");
+    return;
+  }
 }
 
 void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile)
