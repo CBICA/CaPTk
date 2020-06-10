@@ -16,10 +16,10 @@ int main(int argc, char** argv)
   cbica::CmdParser parser(argc, argv, "SBRT_Analysis");
   parser.addRequiredParameter("i", "inputImage", cbica::Parameter::FILE, "none", "Absolute path of PET image", "For example pet.nii.gz");
   parser.addRequiredParameter("m", "maskImage", cbica::Parameter::FILE, "none", "Absolute path of mask image", "For example mask.nii.gz");
-  parser.addRequiredParameter("l", "label", cbica::Parameter::INTEGER, "none", "Label value of the ROI", "For example 2");
+  parser.addOptionalParameter("l", "label", cbica::Parameter::INTEGER, "none", "Label value of the ROI", "For example 2");
   parser.addOptionalParameter("o", "outputFile", cbica::Parameter::FILE, "none", "Absolute path and basename of output file (without extension)", "For example radiomic_feature");
   parser.addOptionalParameter("L", "logFile", cbica::Parameter::FILE, "none", "Absolute path of log file", "For example log_file.txt");
-  parser.addOptionalParameter("D", "Directory", cbica::Parameter::DIRECTORY, "none", "Absolute path of model directory", "For example C:/Model");
+  parser.addRequiredParameter("D", "Directory", cbica::Parameter::DIRECTORY, "none", "Absolute path of model directory", "For example C:/Model");
   parser.addExampleUsage("-i C:/PET.nii.gz -m C:/mask.nii.gz -l 1",
     "This will calculate and display the predicted risks for survival and nodal failure");
   parser.addApplicationDescription("This application does automatic prediction of risks for survival and nodal failure.");
@@ -76,9 +76,9 @@ int main(int argc, char** argv)
   std::string metaName = modelDir + "/meta_fea_proj.txt";
   std::string projName = modelDir + "/triFac_res_cpp_kc3_kr5_pet_cox_coeff_train_all.txt";
 
-  if (inputFileName.empty() || maskName.empty())
+  if (inputFileName.empty() || maskName.empty() || modelDir.empty())
   {
-	  std::cout << "PET and Mask images need to be loaded for SBRT Analysis." << std::endl;
+	  std::cout << "PET image, mask image and model directory need to be loaded for SBRT Analysis." << std::endl;
 	  return 0;
   }
   if (guessImageType(inputFileName) != CAPTK::ImageModalityType::IMAGE_TYPE_PET)
