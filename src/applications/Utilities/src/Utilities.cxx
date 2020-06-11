@@ -791,13 +791,19 @@ int algorithmsRunner()
     {
       for (const auto &label : stats)
       {
+        bool labelPicked = false;
         for (const auto &metric : label.second)
         {
           if (!metricsDone)
           {
             headers += "," + metric.first;
           }
-          labelsMetricsAndValues += label.first + "," + std::to_string(metric.second);
+          if (!labelPicked)
+          {
+            labelsMetricsAndValues += label.first;
+            labelPicked = true;
+          }
+          labelsMetricsAndValues += "," + std::to_string(metric.second);
         }
         labelsMetricsAndValues += "\n";
         if (!metricsDone)
