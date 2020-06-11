@@ -4332,6 +4332,14 @@ void fMainWindow::RecurrenceEstimateOnExistingModel(const std::string &modeldire
     help_contextual("Glioblastoma_Recurrence.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (inputdirectory.empty())
   {
     ShowErrorMessage("Please provide path of a directory having input images");
@@ -4395,6 +4403,14 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
     help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (!cbica::isDir(outputdirectory))
   {
     if (!cbica::createDir(outputdirectory))
@@ -4431,6 +4447,14 @@ void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, 
     ShowErrorMessage("Please provide path of a directory having PCA model");
     //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (inputdirectory.empty())
   {
@@ -4790,6 +4814,14 @@ void fMainWindow::CallForSurvivalPredictionOnExistingModelFromMain(const std::st
     help_contextual("Glioblastoma_Survival.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (!(cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.csv") || cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.xml"))
     || !(cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.csv") || cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.xml"))
     || !cbica::fileExists(modeldirectory + "/Survival_ZScore_Std.csv") || !cbica::fileExists(modeldirectory + "/Survival_ZScore_Mean.csv"))
@@ -4931,6 +4963,14 @@ void fMainWindow::CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::st
     ShowErrorMessage("The given SVM model directory does not exist");
     help_contextual("Glioblastoma_EGFRvIII.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (!(cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.csv") || cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.xml"))
     || !cbica::fileExists(modeldirectory + "/EGFRvIII_ZScore_Std.csv") || !cbica::fileExists(modeldirectory + "/EGFRvIII_ZScore_Mean.csv"))
@@ -6271,11 +6311,19 @@ void fMainWindow::ApplicationSBRTAnalysis()
 	  std::string oname;
 	  int outputFea = 0;
 	  std::string logName;
-	  std::string modelDir;
+	  std::string modelDir = analysisPanel.mInputPathName.toStdString();
 
 	  std::string metaName = analysisPanel.mInputPathName.toStdString() + "/meta_fea_proj.txt";
 	  std::string projName = analysisPanel.mInputPathName.toStdString() + "/triFac_res_cpp_kc3_kr5_pet_cox_coeff_train_all.txt";
 
+      if (cbica::isFile(modelDir + "/VERSION.yaml"))
+      {
+          if (!cbica::IsCompatible(modelDir + "/VERSION.yaml"))
+          {
+              ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+              return;
+          }
+      }
 	  if (cbica::fileExists(metaName) == false ||
 		  cbica::fileExists(projName) == false)
 	  {
@@ -9953,6 +10001,14 @@ void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const
     ShowErrorMessage("The given SVM model directory does not exist");
     help_contextual("Glioblastoma_MolecularSubtype.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (!cbica::fileExists(modeldirectory + "/ProneuralModelFile.xml") || !cbica::fileExists(modeldirectory + "/NeuralModelFile.xml") ||
     !cbica::fileExists(modeldirectory + "/MessenchymalModelFile.xml") || !cbica::fileExists(modeldirectory + "/ClassicalModelFile.xml") ||
