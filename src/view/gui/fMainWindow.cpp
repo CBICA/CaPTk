@@ -4332,6 +4332,14 @@ void fMainWindow::RecurrenceEstimateOnExistingModel(const std::string &modeldire
     help_contextual("Glioblastoma_Recurrence.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (inputdirectory.empty())
   {
     ShowErrorMessage("Please provide path of a directory having input images");
@@ -4395,6 +4403,14 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
     help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (!cbica::isDir(outputdirectory))
   {
     if (!cbica::createDir(outputdirectory))
@@ -4431,6 +4447,14 @@ void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, 
     ShowErrorMessage("Please provide path of a directory having PCA model");
     //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (inputdirectory.empty())
   {
@@ -4790,6 +4814,14 @@ void fMainWindow::CallForSurvivalPredictionOnExistingModelFromMain(const std::st
     help_contextual("Glioblastoma_Survival.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (!(cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.csv") || cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.xml"))
     || !(cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.csv") || cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.xml"))
     || !cbica::fileExists(modeldirectory + "/Survival_ZScore_Std.csv") || !cbica::fileExists(modeldirectory + "/Survival_ZScore_Mean.csv"))
@@ -4931,6 +4963,14 @@ void fMainWindow::CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::st
     ShowErrorMessage("The given SVM model directory does not exist");
     help_contextual("Glioblastoma_EGFRvIII.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (!(cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.csv") || cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.xml"))
     || !cbica::fileExists(modeldirectory + "/EGFRvIII_ZScore_Std.csv") || !cbica::fileExists(modeldirectory + "/EGFRvIII_ZScore_Mean.csv"))
@@ -6261,79 +6301,78 @@ void fMainWindow::ApplicationSBRTAnalysis()
   }
 
   analysisPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["LungCancer"]["Model"].as<std::string>());
-  analysisPanel.exec();
+  int result = analysisPanel.exec();
 
-  std::string inputFileName;
-  std::string maskName;
-  int roiLabel = 1;
-  std::string oname;
-  int outputFea = 0;
-  std::string logName;
-  std::string modelDir;
-
-  std::string metaName = analysisPanel.mInputPathName.toStdString() + "/meta_fea_proj.txt";
-  std::string projName = analysisPanel.mInputPathName.toStdString() + "/triFac_res_cpp_kc3_kr5_pet_cox_coeff_train_all.txt";
-
-  if (cbica::fileExists(metaName) == false ||
-    cbica::fileExists(projName) == false)
+  if (result == QDialog::Accepted)
   {
-    ShowErrorMessage("Model files not found. Please re-select the directory containing model files.", this);
-    return;
+	  std::string inputFileName;
+	  std::string maskName;
+	  int roiLabel = 1;
+	  std::string oname;
+	  int outputFea = 0;
+	  std::string logName;
+	  std::string modelDir = analysisPanel.mInputPathName.toStdString();
+
+	  std::string metaName = analysisPanel.mInputPathName.toStdString() + "/meta_fea_proj.txt";
+	  std::string projName = analysisPanel.mInputPathName.toStdString() + "/triFac_res_cpp_kc3_kr5_pet_cox_coeff_train_all.txt";
+
+      if (cbica::isFile(modelDir + "/VERSION.yaml"))
+      {
+          if (!cbica::IsCompatible(modelDir + "/VERSION.yaml"))
+          {
+              ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+              return;
+          }
+      }
+	  if (cbica::fileExists(metaName) == false ||
+		  cbica::fileExists(projName) == false)
+	  {
+		  ShowErrorMessage("Model files not found. Please re-select the directory containing model files.", this);
+		  return;
+	  }
+
+	  cbica::WriteImage< ImageTypeFloat3D >(getMaskImage(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
+	  cbica::Logging(loggerFile, "written temp mask");
+	  auto loadedMaskFile = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
+
+	  //! calling algorithm
+	  SBRT_Analysis< float, ImageTypeFloat3D::ImageDimension > anaObject;
+
+	  if (!logName.empty())
+	  {
+		  anaObject.SetLogger(logName);
+	  }
+
+	  inputFileName = petImageFile;
+	  maskName = loadedMaskFile;
+
+	  anaObject.SetParameters(roiLabel);
+
+	  updateProgress(20, "Initializing");
+	  anaObject.Initialization(inputFileName, maskName);
+	  cbica::Logging(loggerFile, "SBRT Analysis Initialization complete");
+
+	  updateProgress(50, "Feature Extraction");
+	  anaObject.FeaExtraction();
+	  cbica::Logging(loggerFile, "SBRT Analysis Feature Extraction complete");
+
+	  updateProgress(100, "Risk prediction");
+	  anaObject.GetPredictedRisk(metaName, projName);
+	  cbica::Logging(loggerFile, "SBRT Analysis Risk Prediction complete");
+
+	  if (outputFea == 1)
+	  {
+		  anaObject.OutputFeature(oname);
+	  }
+
+	  updateProgress(0, ""); //! reset progress bar
+
+	  QString msgStr = QString("Predicted Risk (Survival): %1\nPredicted Risk(Nodal Failure): %2").arg(anaObject.GetSurivalRisk())
+		  .arg(anaObject.GetNodalFailureRisk());
+	  QMessageBox::information(this, "Predicted Risk", msgStr, QMessageBox::Ok);
   }
-
-  //! Following image flip is needed to correct the image orientation issue
-  typedef itk::FlipImageFilter< ImageType> FlipType;
-  FlipType::Pointer flip = FlipType::New();
-  FlipType::FlipAxesArrayType flipAxesSet;
-
-  flipAxesSet[0] = 0;
-  flipAxesSet[1] = -1;
-  flipAxesSet[2] = 0;
-
-  flip->SetFlipAxes(flipAxesSet);
-  flip->FlipAboutOriginOff();
-  flip->SetInput(getMaskImage());
-  flip->Update();
-
-  cbica::WriteImage< ImageTypeFloat3D >(flip->GetOutput(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
-  cbica::Logging(loggerFile, "written temp mask");
-  auto loadedMaskFile = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
-
-  //! calling algorithm
-  SBRT_Analysis< float, ImageTypeFloat3D::ImageDimension > anaObject;
-
-  if (!logName.empty())
-  {
-    anaObject.SetLogger(logName);
-  }
-
-  inputFileName = petImageFile;
-  maskName = loadedMaskFile;
-
-  anaObject.SetParameters(roiLabel);
-
-  updateProgress(20, "Initializing");
-  anaObject.Initialization(inputFileName, maskName);
-  cbica::Logging(loggerFile, "SBRT Analysis Initialization complete");
-
-  updateProgress(50, "Feature Extraction");
-  anaObject.FeaExtraction();
-  cbica::Logging(loggerFile, "SBRT Analysis Feature Extraction complete");
-
-  updateProgress(100, "Risk prediction");
-  anaObject.GetPredictedRisk(metaName, projName);
-  cbica::Logging(loggerFile, "SBRT Analysis Risk Prediction complete");
-
-  if (outputFea == 1)
-  {
-    anaObject.OutputFeature(oname);
-  }
-
-  updateProgress(0, ""); //! reset progress bar
-
-  QString msgStr = QString("Predicted Risk (Survival): %1\nPredicted Risk(Nodal Failure): %2").arg(anaObject.GetSurivalRisk())
-    .arg(anaObject.GetNodalFailureRisk());
-  QMessageBox::information(this, "Predicted Risk", msgStr, QMessageBox::Ok);
+  else
+	  cbica::Logging(loggerFile, "ApplicationSBRTAnalysis Canceled");
 
   cbica::Logging(loggerFile, "Exiting ApplicationSBRTAnalysis ");
 }
@@ -9962,6 +10001,14 @@ void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const
     ShowErrorMessage("The given SVM model directory does not exist");
     help_contextual("Glioblastoma_MolecularSubtype.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (!cbica::fileExists(modeldirectory + "/ProneuralModelFile.xml") || !cbica::fileExists(modeldirectory + "/NeuralModelFile.xml") ||
     !cbica::fileExists(modeldirectory + "/MessenchymalModelFile.xml") || !cbica::fileExists(modeldirectory + "/ClassicalModelFile.xml") ||
