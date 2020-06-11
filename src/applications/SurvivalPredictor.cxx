@@ -265,6 +265,14 @@ int main(int argc, char **argv)
 			std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
 			return EXIT_FAILURE;
 		}
+		if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))
+		{
+			if (!cbica::IsCompatible(modelDirectoryName + "/VERSION.yaml"))
+			{
+				std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+				return EXIT_FAILURE;
+			}
+		}
 		SurvivalPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
 	}
 	else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)

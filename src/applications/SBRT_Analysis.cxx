@@ -86,6 +86,14 @@ int main(int argc, char** argv)
 	  std::cout << "Only PET image need to be loaded for SBRT Analysis along with mask." << std::endl;
 	  return 0;
   }
+  if (cbica::isFile(modelDir + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modelDir + "/VERSION.yaml"))
+      {
+          std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+          return EXIT_FAILURE;
+      }
+  }
   
   SBRT_Analysis< float, imageDimension > anaObject;
 
