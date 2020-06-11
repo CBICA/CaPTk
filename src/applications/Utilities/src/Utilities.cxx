@@ -800,8 +800,11 @@ int algorithmsRunner()
           labelsMetricsAndValues += label.first + "," + std::to_string(metric.second);
         }
         labelsMetricsAndValues += "\n";
-        headers += "\n";
-        metricsDone = true;
+        if (!metricsDone)
+        {
+          headers += "\n";
+          metricsDone = true;
+        }
       }
       // write to file
       std::ofstream output;
