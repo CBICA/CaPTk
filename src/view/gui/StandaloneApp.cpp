@@ -62,7 +62,7 @@ void StandaloneApp::appDownload()
 	#endif
 
 	std::string downloadLink = m_appDownloadConfigs["apps"][this->m_AppName.toStdString()][linkyml].as<std::string>();
-
+	
 	appDownloadDialog.SetPaths(downloadFolder);
 	appDownloadDialog.SetDownloadLink(downloadLink);
 	appDownloadDialog.exec();

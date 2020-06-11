@@ -164,18 +164,18 @@ jobs:
     #     rm -rf testing
     #   displayName: 'Performing the Tests'
 
-    - script: |
-        cd bin
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-        cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
-        rm -rf install_manifest.txt
-        setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
-        setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
-        cmake --build . --target PACKAGE --config Release
+    # - script: |
+    #     cd bin
+    #     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+    #     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="./install" -DCMAKE_CONFIGURATION_TYPES="Release" -DCAPTK_DISABLE_CWL=ON -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
+    #     rm -rf install_manifest.txt
+    #     setx PATH "%PATH%;$(Build.SourcesDirectory)/bin/qt/5.12.1/bin"
+    #     setx CMAKE_PREFIX_PATH "%CMAKE_PREFIX_PATH%;$(Build.SourcesDirectory)/bin/ITK-build;$(Build.SourcesDirectory)/bin/DCMTK-build;$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5"
+    #     cmake --build . --target PACKAGE --config Release
 
-        ls -lt *_Installer.*
+    #     ls -lt *_Installer.*
 
-      displayName: 'Package CaPTk'
+    #   displayName: 'Package CaPTk'
 
     # - bash: |
     #     # str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'ƒ
@@ -227,16 +227,16 @@ jobs:
     # # #     rm -rf bin_windows
     # # #   displayName: 'Zipping bin'
 
-    - bash: |
+    # - bash: |
         
-        rm -rf src
-        rm -rf docs*
-        rm -rf data
-        rm -rf install_manifest.txt
-        rm -rf CMakeLists.txt
-        rm -rf bin
+    #     rm -rf src
+    #     rm -rf docs*
+    #     rm -rf data
+    #     rm -rf install_manifest.txt
+    #     rm -rf CMakeLists.txt
+    #     rm -rf bin
 
-      displayName: 'Freeing Space'
+    #   displayName: 'Freeing Space'
 
     # # - powershell: |
     # #     get-psdrive | Where Free*
@@ -246,18 +246,18 @@ jobs:
 
     # #   displayName: 'Disk space check'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_Windows'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_Windows'
-        continueOnError: true
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     buildType: 'current'
+    #     downloadType: 'single'
+    #     artifactName: '$(Build.DefinitionName)_installer_Windows'
+    #     continueOnError: true
+    #     downloadPath: '$(System.ArtifactsDirectory)'
 
     # - task: CopyFilesOverSSH@0
     #   inputs:

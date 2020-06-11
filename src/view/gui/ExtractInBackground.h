@@ -6,8 +6,6 @@
 #include <QFile>
 #include <QDebug>
 
-#include "CaPTkUtils.h"
-#include "CaPTkGUIUtils.h"
 #include "QZipReader.h"
 #include "ApplicationPreferences.h"
 

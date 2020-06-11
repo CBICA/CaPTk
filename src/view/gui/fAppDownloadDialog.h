@@ -19,15 +19,16 @@
 
 //#include "CAPTk.h"
 #include "ui_fAppDownloadDialog.h"
+#include <QDialog>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
+#include <QProgressDialog>
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
-#include <QSslError>
-#include <QList>
+#include <QMessageBox>
 
 /**
 \class fAppDownloadDialog
@@ -58,7 +59,6 @@ public:
   bool httpRequestAborted;
   qint64 fileSize;
   QString qInputLink;
-  QList<QSslError> error;
 
   void SetPaths(std::string inputPath)
   {
@@ -78,10 +78,6 @@ public slots:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
 
-  void onIgnoreSSLErrors(QNetworkReply* rep,QList<QSslError> &error);  
-
-  void onIgnoreSSLErrors(QList<QSslError> &error);  
-
   // slot for readyRead() signal
   void httpReadyRead();
 
@@ -95,8 +91,6 @@ public slots:
 
 signals:
   void doneDownload(QString fullPath, QString extractPath);
-  // void startDownload();
-  // void cancelDownload();
 };
 
 #endif
