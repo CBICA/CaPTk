@@ -141,6 +141,13 @@ int main(int argc, char **argv)
     {
       std::cout << "The model files PCA_PERF.csv and Mean_PERF.csv do not exist in the model directory:" <<  modelDirectoryName << std::endl;
       return EXIT_FAILURE;
+    if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))
+    {
+        if (!cbica::IsCompatible(modelDirectoryName + "/VERSION.yaml"))
+        {
+            std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+            return EXIT_FAILURE;
+        }
     }
     object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
   }
