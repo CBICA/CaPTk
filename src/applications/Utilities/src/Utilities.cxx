@@ -783,10 +783,42 @@ int algorithmsRunner()
 
     auto stats = cbica::GetBraTSLabelStatistics< DefaultImageType >(inputImage, referenceImage);
 
-    std::cout << "Metric,Value\n";
-    for (const auto &stat : stats)
+    std::string headers = "Labels", labelsMetricsAndValues;
+    bool metricsDone = false;
+
+    auto temp = stats.size();
+    if (!outputImageFile.empty())
     {
-      std::cout << stat.first << "," << stat.second << "\n";
+      for (const auto &label : stats)
+      {
+        for (const auto &metric : label.second)
+        {
+          if (!metricsDone)
+          {
+            headers += "," + metric.first;
+          }
+          labelsMetricsAndValues += label.first + "," + std::to_string(metric.second);
+        }
+        labelsMetricsAndValues += "\n";
+        headers += "\n";
+        metricsDone = true;
+      }
+      // write to file
+      std::ofstream output;
+      output.open(outputImageFile.c_str());
+      output << headers << labelsMetricsAndValues;
+      output.close();
+    }
+    else
+    {
+      std::cout << "Label,Metric,Value\n";
+      for (const auto &label : stats)
+      {
+        for (const auto &metric : label.second)
+        {
+          std::cout << label.first << "," << metric.first << "," << metric.second << "\n";
+        }
+      }
     }
 
     return EXIT_SUCCESS;
