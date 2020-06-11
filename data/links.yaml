@@ -10,7 +10,7 @@ inputs:
     Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/All.zip
   EGFRvIIISVMIndex:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIISVMIndex.zip
-    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/EGFRvIIIIndexPredictor.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/EGFRvIIIIndexPredictor_Model.zip
   EGFRvIIISurrogateIndex:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIISurrogateIndex.zip
     Model: N.A.
@@ -25,16 +25,16 @@ inputs:
     Model: N.A.
   RecurrenceEstimator:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/RecurrenceEstimator.zip
-    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip
   PseudoProgressionEstimator:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PseudoProgressionEstimator.zip
-    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/PseudoProgressionEstimator.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/PseudoProgressionEstimator_Model.zip
   SurvivalPredictor:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/SurvivalPredictor.zip
-    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/SurvivalPredictor.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/SurvivalPredictor_Model.zip
   MolecularSubtypePredictor:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/MolecularSubtypePredictor.zip
-    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/MolecularSubtypePredictor.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/MolecularSubtypePredictor_Model.zip
   PerfusionDerivatives:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PerfusionDerivatives.zip
     Model: N.A.
@@ -49,7 +49,7 @@ inputs:
     Model: N.A.
   LungCancer:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/LungCancer.zip
-    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/SBRT.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/LungCancer_Model.zip
   LIBRA:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/LIBRA.zip
     Model: N.A.
