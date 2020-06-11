@@ -1150,16 +1150,17 @@ ${CaPTk_InstallDir}/bin/SBRT_Nodule.exe -p C:/PET.nii.gz -c C:/CT.nii.gz -m C:/m
 <b>Step 3: Prognostic Modeling</b>
   -# Load the required PET image.
   -# Load the required nodule mask generated from step 2.
+  -# Supply the model directory. Note: A model trained on PENN data can be downloaded from ftp://www.nitrc.org/home/groups/captk/downloads/models/SBRT.zip
   -# Launch the modeling step using 'Applications -> <b>Prognostic Modeling</b>' menu.
   -# The predicted risks for survival and nodal failure are automatically calculated and displayed.[Note: The prediction models were obtained based on PET images with spatial resolution 4mm x 4mm x 4mm.]
   - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
     - The following command will calculate and print the predicted risks regarding survival and nodal failure:
 \verbatim
-${CaPTk_InstallDir}/bin/SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1
+${CaPTk_InstallDir}/bin/SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1 -D C:/Model
 \endverbatim
     - The following command will calculate and print the predicted risks regarding survival and nodal failure, it will also save the radiomic features used for the prediction into the assigned file:
 \verbatim
-${CaPTk_InstallDir}/bin/SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1 -o C:/outputFile
+${CaPTk_InstallDir}/bin/SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 1 -o C:/outputFile -D C:/Model
 \endverbatim
 
 --------

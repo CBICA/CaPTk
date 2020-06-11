@@ -11,11 +11,6 @@
 
 #include <map>
 
-std::map< std::string, std::string > inputFiles;
-
-std::string outputDir;
-
-bool debug = true, intermediateFiles = true;
 
 int main(int argc, char** argv)
 {
@@ -26,6 +21,8 @@ int main(int argc, char** argv)
   parser.addRequiredParameter("t2", "t2Image", cbica::Parameter::STRING, "Input Image (DICOM or NIfTI)", "Input structural T2-weighted contrast image");
   parser.addRequiredParameter("fl", "flImage", cbica::Parameter::STRING, "Input Image (DICOM or NIfTI)", "Input structural FLAIR contrast image");
   parser.addRequiredParameter("o", "outputDir", cbica::Parameter::DIRECTORY, "Directory", "Output directory for final output");
+  parser.addOptionalParameter("s", "skullStrip", cbica::Parameter::BOOLEAN, "0 or 1", "Flag whether to skull strip or not", "Defaults to 1", "This uses DeepMedic: https://cbica.github.io/CaPTk/seg_DL.html");
+  parser.addOptionalParameter("b", "brainTumor", cbica::Parameter::BOOLEAN, "0 or 1", "Flag whether to segment brain tumors or not", "Defaults to 1", "This uses DeepMedic: https://cbica.github.io/CaPTk/seg_DL.html");
   parser.addOptionalParameter("d", "debug", cbica::Parameter::BOOLEAN, "0 or 1", "Print debugging information", "Defaults to 1");
   parser.addOptionalParameter("i", "interFiles", cbica::Parameter::BOOLEAN, "0 or 1", "Save intermediate files", "Defaults to 1");
 
@@ -33,6 +30,12 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-t1c C:/input/t1ce.nii.gz -t1 C:/input/t1.nii.gz -t2 C:/input/t2.nii.gz -fl C:/input/flair.nii.gz -o C:/input/output", "Run full BraTS pipeline for specified (raw) NIfTI images");
 
   parser.addApplicationDescription("This application performs the BraTS challenge preprocessing pipeline. Please delete contents of output directory or fresh run.");
+
+  std::map< std::string, std::string > inputFiles;
+
+  std::string outputDir;
+
+  bool debug = true, intermediateFiles = true, skullStrip = true, brainTumor = true;
 
   parser.getParameterValue("t1c", inputFiles["T1CE"]);
   parser.getParameterValue("t1", inputFiles["T1"]);
@@ -45,6 +48,14 @@ int main(int argc, char** argv)
     cbica::createDir(outputDir);
   }
 
+  if (parser.isPresent("s"))
+  {
+    parser.getParameterValue("s", skullStrip);
+  }
+  if (parser.isPresent("b"))
+  {
+    parser.getParameterValue("b", brainTumor);
+  }
   if (parser.isPresent("d"))
   {
     parser.getParameterValue("d", debug);
@@ -298,106 +309,114 @@ int main(int argc, char** argv)
     } // end modality check
   } // end modality loop
 
-  /// [5] Skull-stripping using DeepMedic
-  if (debug)
-  {
-    std::cout << "Starting skull-stripping using DeepMedic.\n";
-  }
-
+  // variables that are used later on
+  auto finalBrainMask = cbica::normalizePath(outputDir + "/brainMask_SRI.nii.gz");
   auto deepMedicExe = getApplicationPath("DeepMedic");
-
   auto brainMaskFile = outputDir + "/dmOut_skull/brainMask_SRI.nii.gz";
 
-  if (!cbica::exists(brainMaskFile))
+  if (skullStrip)
   {
-    fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ " +
-      "-t1c " + outputRegisteredImages["T1CE"] + " -t1 " +
-      outputRegisteredImages["T1"] + " -t2 " +
-      outputRegisteredImages["T2"] + " -fl " +
-      outputRegisteredImages["FL"] + " -o " +
-      brainMaskFile;
-
+    /// [5] Skull-stripping using DeepMedic
     if (debug)
     {
-      std::cout << "Command for DeepMedic: " << deepMedicExe + fullCommand << "\n";
+      std::cout << "Starting skull-stripping using DeepMedic.\n";
     }
 
-    if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
+
+
+    if (!cbica::exists(brainMaskFile))
     {
-      std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
-      return EXIT_FAILURE;
-    }
-  } // end brainMask check
+      fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ " +
+        "-t1c " + outputRegisteredImages["T1CE"] + " -t1 " +
+        outputRegisteredImages["T1"] + " -t2 " +
+        outputRegisteredImages["T2"] + " -fl " +
+        outputRegisteredImages["FL"] + " -o " +
+        brainMaskFile;
 
-  if (!cbica::exists(brainMaskFile))
-  {
-    std::cerr << "Brain Mask was not written, cannot proceed.\n";
-    return EXIT_FAILURE;
-  }
-
-  // variables to store outputs in patient space
-  std::map< std::string, std::string > outputFiles_withoutOrientationFix, outputFiles_withOrientationFix;
-
-  auto finalBrainMask = cbica::normalizePath(outputDir + "/brainMask_SRI.nii.gz");
-  cbica::WriteImage< TImageType >(
-    cbica::ReadImage< TImageType >(brainMaskFile),
-    finalBrainMask
-    );
-  
-  /// [6] Brain Tumor Segmentation
-  auto brainTumorMaskFile = outputDir + "/dmOut_tumor/tumors_SRI.nii.gz";
-
-  if (!cbica::exists(brainTumorMaskFile))
-  {
-    // iterate over outputRegisteredMaskedImages
-    for (auto it = outputRegisteredMaskedImages.begin(); it != outputRegisteredMaskedImages.end(); it++)
-    {
-      auto modality = it->first;
-      auto maskFilter = itk::MaskImageFilter< ImageType, ImageType >::New();
-      maskFilter->SetInput(cbica::ReadImage< ImageType >(outputRegisteredImages[modality]));
-      maskFilter->SetMaskImage(cbica::ReadImage< TImageType >(finalBrainMask));
-      try
+      if (debug)
       {
-        maskFilter->Update();
+        std::cout << "Command for DeepMedic: " << deepMedicExe + fullCommand << "\n";
       }
-      catch (const std::exception& e)
+
+      if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
       {
-        std::cerr << "Something went wrong when applying the brain mask to modality '" 
-          << modality << "': " << e.what();
+        std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
         return EXIT_FAILURE;
       }
-      cbica::WriteImage< ImageType >(maskFilter->GetOutput(), it->second); // write the masked image 
-    }
-    fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/brainTumorSegmentation/ " +
-      "-t1c " + outputRegisteredMaskedImages["T1CE"] + " -t1 " +
-      outputRegisteredMaskedImages["T1"] + " -t2 " +
-      outputRegisteredMaskedImages["T2"] + " -fl " +
-      outputRegisteredMaskedImages["FL"] + " -m " + finalBrainMask + 
-      " -o " + brainTumorMaskFile;
+    } // end brainMask check
 
-    if (debug)
+    if (!cbica::exists(brainMaskFile))
     {
-      std::cout << "Command for DeepMedic: " << deepMedicExe + fullCommand << "\n";
-    }
-
-    if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
-    {
-      std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
+      std::cerr << "Brain Mask was not written, cannot proceed.\n";
       return EXIT_FAILURE;
     }
-  } // end brainTumorMaskFile check
 
-  if (!cbica::exists(brainTumorMaskFile))
-  {
-    std::cerr << "Brain Tumor Mask was not written, cannot proceed.\n";
-    return EXIT_FAILURE;
+    // variables to store outputs in patient space
+    std::map< std::string, std::string > outputFiles_withoutOrientationFix, outputFiles_withOrientationFix;
+
+    cbica::WriteImage< TImageType >(
+      cbica::ReadImage< TImageType >(brainMaskFile),
+      finalBrainMask
+      );
   }
 
-  auto finalBrainTumorMask = cbica::normalizePath(outputDir + "/brainTumorMask_SRI.nii.gz");
-  cbica::WriteImage< TImageType >(
-    cbica::ReadImage< TImageType >(brainTumorMaskFile),
-    finalBrainTumorMask
-    );
+  if (brainTumor)
+  {
+    /// [6] Brain Tumor Segmentation
+    auto brainTumorMaskFile = outputDir + "/dmOut_tumor/tumors_SRI.nii.gz";
+
+    if (!cbica::exists(brainTumorMaskFile))
+    {
+      // iterate over outputRegisteredMaskedImages
+      for (auto it = outputRegisteredMaskedImages.begin(); it != outputRegisteredMaskedImages.end(); it++)
+      {
+        auto modality = it->first;
+        auto maskFilter = itk::MaskImageFilter< ImageType, ImageType >::New();
+        maskFilter->SetInput(cbica::ReadImage< ImageType >(outputRegisteredImages[modality]));
+        maskFilter->SetMaskImage(cbica::ReadImage< TImageType >(finalBrainMask));
+        try
+        {
+          maskFilter->Update();
+        }
+        catch (const std::exception& e)
+        {
+          std::cerr << "Something went wrong when applying the brain mask to modality '"
+            << modality << "': " << e.what();
+          return EXIT_FAILURE;
+        }
+        cbica::WriteImage< ImageType >(maskFilter->GetOutput(), it->second); // write the masked image 
+      }
+      fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/brainTumorSegmentation/ " +
+        "-t1c " + outputRegisteredMaskedImages["T1CE"] + " -t1 " +
+        outputRegisteredMaskedImages["T1"] + " -t2 " +
+        outputRegisteredMaskedImages["T2"] + " -fl " +
+        outputRegisteredMaskedImages["FL"] + " -m " + finalBrainMask +
+        " -o " + brainTumorMaskFile;
+
+      if (debug)
+      {
+        std::cout << "Command for DeepMedic: " << deepMedicExe + fullCommand << "\n";
+      }
+
+      if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
+      {
+        std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
+        return EXIT_FAILURE;
+      }
+    } // end brainTumorMaskFile check
+
+    if (!cbica::exists(brainTumorMaskFile))
+    {
+      std::cerr << "Brain Tumor Mask was not written, cannot proceed.\n";
+      return EXIT_FAILURE;
+    }
+
+    auto finalBrainTumorMask = cbica::normalizePath(outputDir + "/brainTumorMask_SRI.nii.gz");
+    cbica::WriteImage< TImageType >(
+      cbica::ReadImage< TImageType >(brainTumorMaskFile),
+      finalBrainTumorMask
+      );
+  }
 
   ///// [7] Put masks back in patient space
   //std::vector< std::string > masksToReorient;
