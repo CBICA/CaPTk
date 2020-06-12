@@ -33,11 +33,11 @@ var NAVTREE =
       [ "Image Visualization", "Getting_Started.html#gs_imageVisualization", null ],
       [ "Tab Docking", "Getting_Started.html#gs_tabDocking", null ],
       [ "Coordinate definition (Seed-point initialization)", "Getting_Started.html#gs_seedpoints", [
-        [ "Bug Tracker and Feature Request", "index.html#autotoc_md119", null ],
-        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md120", null ],
-        [ "Supporting Grant", "index.html#autotoc_md121", null ],
-        [ "Disclaimer", "index.html#autotoc_md122", null ],
-        [ "Contact", "index.html#autotoc_md123", null ],
+        [ "Bug Tracker and Feature Request", "index.html#autotoc_md120", null ],
+        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md121", null ],
+        [ "Supporting Grant", "index.html#autotoc_md122", null ],
+        [ "Disclaimer", "index.html#autotoc_md123", null ],
+        [ "Contact", "index.html#autotoc_md124", null ],
         [ "Tumor Points", "Getting_Started.html#gs_seedpoints_tumor", null ],
         [ "Tissue Points", "Getting_Started.html#gs_seedpoints_tissue", null ]
       ] ],
