@@ -49,7 +49,6 @@ void ApplicationPreferences::SerializePreferences()
 	appSettings.setValue("Theme", this->m_Theme);
 	appSettings.endGroup();
 
-<<<<<<< HEAD
     appSettings.beginGroup("User-Installed-Applications");
     appSettings.beginGroup("Libra");
     appSettings.setValue("Libra_Download_Started",this->m_LibraDownloadStarted);
@@ -61,9 +60,7 @@ void ApplicationPreferences::SerializePreferences()
 
     qDebug() << " status = " << appSettings.status();
     //cbica::Logging(loggerFile, "ApplicationPreferences::SerializePreferences status: " + QVariant::fromValue(appSettings.status()).toString().toStdString() );
-=======
     cbica::Logging(loggerFile, "ApplicationPreferences::SerializePreferences status: " + QVariant::fromValue(appSettings.status()).toString().toStdString() );
->>>>>>> 689b7d013a18265be3b72ebfcefcff12086382ee
 }
 
 void ApplicationPreferences::DeSerializePreferences()
