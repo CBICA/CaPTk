@@ -63,7 +63,6 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
 #include "fBiasCorrectionDialog.h"
-#include "fAppDownloadDialog.h"
 
 #include <atomic>
 
@@ -273,8 +272,6 @@ private:
   fBottomImageInfoTip *infoPanel;
   fTumorPanel *tumorPanel;
 
-  fAppDownloadDialog appDownloadDialog;
-
   //-------------menu-----------
   QMenuBar *menubar;
   QMenu* menuFile;
@@ -341,7 +338,6 @@ private:
   QHBoxLayout* bottomLayout;
     
   YAML::Node m_downloadLinks; //! structure to save download links
-  YAML::Node m_appDownloadConfigs; //! structure to for app decoupling
 
   /**
   \struct ActionAndName
@@ -950,17 +946,7 @@ public slots:
   {
     m_skipTutorialOnNextRun = flag;
   }
-
-  /**
-  \brief For apps decoupling
-  */
-  std::string getStandaloneApps(std::string appName);
-  void appDownload(std::string currentApp);
-  void startDownload(QString appName);
-  void cancelDownload(QString appName);
-  void startUnzip(QString fullPath, QString extractPath, QString appName);
-  void doneUnzip(QString appName);
-
+ 
   /**
   \brief Help for downloading Sample Data
   */

@@ -72,8 +72,7 @@
 
 #include <QFile>
 
-// #include "QZipReader.h"
-#include "StandaloneApps.h"
+#include "StandaloneApp.h"
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
@@ -171,7 +170,6 @@ fMainWindow::fMainWindow()
   setupUi(this);
 
   m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
-  m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/appsDownloadConfigs.yaml");
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -1140,134 +1138,6 @@ void fMainWindow::about()
 #if CAPTK_PACKAGE_PROJECT
   mHelpTutorial.exec();
 #endif
-}
-
-std::string fMainWindow::getStandaloneApps(std::string appName) {
-  std::string scriptToCall = getApplicationDownloadPath(appName);
-
-  StandaloneApps* stlapps = StandaloneApps::GetInstance();
-
-  stlapps->RetreiveAppSetting(QString::fromStdString(appName));
-  stlapps->Debug("Function call");
-
-  if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Start")) { // if download is not started
-    if (scriptToCall.empty()) { // app not found or delete after extraction
-      stlapps->StoreAppSetting("", "", QString::fromStdString(appName));
-    }
-
-    if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Done") { // if extraction finished
-      scriptToCall = getApplicationDownloadPath(appName);
-
-      stlapps->RetreiveAppSetting(QString::fromStdString(appName));
-      stlapps->Debug("Path Set");
-
-      return scriptToCall;
-    }
-    else if (stlapps->GetAction() == "Extract" && stlapps->GetStatus() == "Start") { // if extraction finished
-      ShowErrorMessage("The application is being installed");
-      updateProgress(50, "Extracting " + appName);
-      return "";
-    }
-    else if (!(stlapps->GetAction() == "Download" && stlapps->GetStatus() == "Done")) { // if download is never started or not done before
-      appDownload(appName);
-      
-      return "";
-    } 
-  } 
-  else { // download already started
-    ShowErrorMessage("The application is being downloaded");
-    return "";
-  }
-}
-
-void fMainWindow::appDownload(std::string appName)
-{
-  std::string linkyml = "";
-
-#ifdef _WIN32
-  linkyml = "Windows";
-#elif __APPLE__
-  linkyml = "macOS";
-#else
-  linkyml = "Linux";
-#endif
-
-  std::string downloadLink = m_appDownloadConfigs["apps"][appName][linkyml].as<std::string>();
-
-  // ShowErrorMessage(downloadLink);
-
-  appDownloadDialog.SetPaths(downloadFolder, appName);
-  appDownloadDialog.SetDownloadLink(downloadLink);
-  appDownloadDialog.exec();
-
-  connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString, QString)), this, SLOT(startUnzip(QString, QString, QString))); 
-  connect( &appDownloadDialog, SIGNAL(startDownload(QString)), this, SLOT(startDownload(QString)));    
-  connect( &appDownloadDialog, SIGNAL(cancelDownload(QString)), this, SLOT(cancelDownload(QString)));    
-}
-
-void fMainWindow::startDownload(QString appName) {
-  StandaloneApps* stlapps = StandaloneApps::GetInstance();
-
-  stlapps->RetreiveAppSetting(appName);
-  stlapps->Debug("Download Start");
-
-  stlapps->StoreAppSetting("Download", "Start", appName);
-}
-
-void fMainWindow::cancelDownload(QString appName) 
-{
-  StandaloneApps* stlapps = StandaloneApps::GetInstance();
-
-  stlapps->RetreiveAppSetting(appName);
-  stlapps->Debug("Cancel Download");
-
-  stlapps->StoreAppSetting("", "", appName);
-}
-
-void fMainWindow::startUnzip(QString fullPath, QString extractPath, QString appName) 
-{
-  if (cbica::isFile(fullPath.toStdString())) {
-    StandaloneApps* stlapps = StandaloneApps::GetInstance();
-
-    stlapps->RetreiveAppSetting(appName);
-    stlapps->Debug("Done download");
-
-    stlapps->StoreAppSetting("Download", "Done", appName);
-
-    updateProgress(50, "Extracting " + appName.toStdString());
-    ASyncExtract* asyncExtract = new ASyncExtract();
-
-    connect(asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip(QString)));
-    connect(asyncExtract, &ASyncExtract::finished, asyncExtract, &QObject::deleteLater);
-
-    asyncExtract->setFullPath(fullPath);
-    asyncExtract->setExtractPath(extractPath);
-    asyncExtract->setAppName(appName);
-
-    asyncExtract->start();
-  }
-}
-
-void fMainWindow::doneUnzip(QString appName) {
-  StandaloneApps* stlapps = StandaloneApps::GetInstance();
-
-  if (getApplicationDownloadPath(appName.toStdString()).empty()) {
-
-    updateProgress(0, "Extracting " + appName.toStdString() + " failed");
-
-    // ShowErrorMessage("Installation failed. Please re-run installtion.");
-    stlapps->RetreiveAppSetting(appName);
-    stlapps->Debug("Extraction failed");
-
-    stlapps->StoreAppSetting("", "", appName);
-  }
-  else {
-    updateProgress(100, "Extracting " + appName.toStdString() + " done");
-
-    stlapps->RetreiveAppSetting(appName);
-    stlapps->Debug("Extraction done");
-    stlapps->StoreAppSetting("Extract", "Done", appName);
-  }
 }
 
 void fMainWindow::help_Interactions()
@@ -6014,7 +5884,12 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
+<<<<<<< HEAD
   std::string scriptToCall = getStandaloneApps("libra");
+=======
+  StandaloneApp* standaloneapp = new StandaloneApp();
+  std::string scriptToCall = standaloneapp->getStandaloneApp("libra");
+>>>>>>> 408dfc8a33430659149e7ea04ba8dc3f0715ea56
   if (scriptToCall.empty()) {
     return;
   }
@@ -6118,7 +5993,12 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
+<<<<<<< HEAD
   std::string scriptToCall = getStandaloneApps("libra");
+=======
+  StandaloneApp* standaloneapp = new StandaloneApp();
+  std::string scriptToCall = standaloneapp->getStandaloneApp("libra");
+>>>>>>> 408dfc8a33430659149e7ea04ba8dc3f0715ea56
   if (scriptToCall.empty()) {
     return;
   }
@@ -6176,7 +6056,8 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  std::string scriptToCall = getStandaloneApps("libra");
+  StandaloneApp* standaloneapp = new StandaloneApp();
+  std::string scriptToCall = standaloneapp->getStandaloneApp("libra");
   if (scriptToCall.empty()) {
     return;
   }
