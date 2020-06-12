@@ -45,6 +45,8 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include "itkBSplineInterpolateImageFunction.h"
 #include "itkNearestNeighborInterpolateImageFunction.h"
 #include "itkLabelOverlapMeasuresImageFilter.h"
+#include "itkGaussianInterpolateImageFunction.h"
+#include "itkLabelImageGaussianInterpolateImageFunction.h"
 //#include "itkWindowedSincInterpolateImageFunction.h"
 
 #include "itkTestingComparisonImageFilter.h"
@@ -1402,6 +1404,23 @@ namespace cbica
       else
       {
         auto interpolatorFunc = itk::NearestNeighborInterpolateImageFunction< TImageType, double >::New();
+        resampler->SetInterpolator(interpolatorFunc);
+      }
+    }
+    else if (interpolator_wrap.find("gaussian") != std::string::npos)
+    {
+      // if gaussian label is found, do something special
+      if (interpolator_wrap.find("gaussianlabel") != std::string::npos)
+      {
+        // use defaults
+        auto interpolatorFunc = itk::LabelImageGaussianInterpolateImageFunction < TImageType >::New();
+        resampler->SetInterpolator(interpolatorFunc);
+
+      }
+      else
+      {
+        // use defaults
+        auto interpolatorFunc = itk::GaussianInterpolateImageFunction< TImageType >::New();
         resampler->SetInterpolator(interpolatorFunc);
       }
     }
