@@ -36,10 +36,10 @@ More details are available from our repository's [Insights page](https://github.
 
 ## Collaborators:
 
-- [Mark Bergman](https://www.med.upenn.edu/sbia/mbergman.html)
+- [Mark Bergman](https://www.med.upenn.edu/cbica/sbia/mbergman.html)
 - [Chiharu Sako](https://www.med.upenn.edu/cbica/aibil/sako.html)
 - Siddhesh P. Thakur
-- [Hamed Akbari](https://www.med.upenn.edu/sbia/hakbari.html)
+- [Hamed Akbari](https://www.med.upenn.edu/cbica/aibil/hakbari.html)
 - [Aristeidis Sotiras](http://www.asotiras.com/)
 - [Omid Haji Maghsoudi](https://www.med.upenn.edu/cbica/cbig/omid.html)
 - [Rhea Chitalia](https://www.med.upenn.edu/cbica/rhea-chitalia.html)
