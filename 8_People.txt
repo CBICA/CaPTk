@@ -37,6 +37,8 @@ More details are available from our repository's [Insights page](https://github.
 ## Collaborators:
 
 - [Mark Bergman](https://www.med.upenn.edu/sbia/mbergman.html)
+- [Chiharu Sako](https://www.med.upenn.edu/cbica/aibil/sako.html)
+- Siddhesh P. Thakur
 - [Hamed Akbari](https://www.med.upenn.edu/sbia/hakbari.html)
 - [Aristeidis Sotiras](http://www.asotiras.com/)
 - [Rhea Chitalia](https://www.pennmedicine.org/departments-and-centers/department-of-radiology/radiology-research/labs-and-centers/biomedical-imaging-informatics/cbig-computational-breast-imaging-group/cbig-meet-our-team/rhea-chitalia-bse)
