@@ -40,7 +40,7 @@ std::string StandaloneApp::getStandaloneApp(QString appName) {
 
 		if(extractionStarted && !extractionFinished)
 		{
-			QMessageBox::information(NULL,tr("Extract"),"Extraction in progress");
+			QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
 
 			return "";
 		}
@@ -91,7 +91,7 @@ void StandaloneApp::doneUnzip() {
 
 	if (getApplicationDownloadPath(this->m_AppName.toStdString()).empty()) {
 
-		QMessageBox::information(NULL,tr("Extraction"),"Extraction failed");
+		QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
 		// qDebug() << "Extraction failed" << endl;
 		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
@@ -101,7 +101,7 @@ void StandaloneApp::doneUnzip() {
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
 	}
 	else {
-		QMessageBox::information(NULL, tr("Extraction"),"Extraction done");
+		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 		// qDebug() << "Extraction done" << endl;
 
 		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
