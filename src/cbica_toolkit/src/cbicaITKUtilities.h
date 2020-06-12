@@ -1784,10 +1784,14 @@ namespace cbica
   \return Map of various statistics and corresponding values
   */
   template < typename TImageType = ImageTypeFloat3D >
-  std::map< std::string, double > GetBraTSLabelStatistics(const typename TImageType::Pointer inputLabel_1,
+  std::map< std::string, std::map< std::string, double > > GetBraTSLabelStatistics(const typename TImageType::Pointer inputLabel_1,
     const typename TImageType::Pointer inputLabel_2)
   {
-    std::map< std::string, double > returnMap;
+    // return variable
+    std::map< std::string, // the label string
+      std::map< std::string, // the metric
+      double > > // the value
+      returnMap;
 
     auto uniqueLabels = GetUniqueValuesInImage< TImageType >(inputLabel_1);
     auto uniqueLabelsRef = GetUniqueValuesInImage< TImageType >(inputLabel_2);
@@ -1916,22 +1920,22 @@ namespace cbica
       similarityFilter->SetTargetImage(imageToCompare_2);
       similarityFilter->Update();
 
-      returnMap["Overlap_" + labelString] = similarityFilter->GetTotalOverlap();
-      returnMap["Jaccard_" + labelString] = similarityFilter->GetUnionOverlap();
-      returnMap["DICE_" + labelString] = similarityFilter->GetMeanOverlap();
-      returnMap["VolumeSimilarity_" + labelString] = similarityFilter->GetVolumeSimilarity();
-      returnMap["FalseNegativeError_" + labelString] = similarityFilter->GetFalseNegativeError();
-      returnMap["FalsePositiveError_" + labelString] = similarityFilter->GetFalsePositiveError();
+      returnMap[labelString]["Overlap"] = similarityFilter->GetTotalOverlap();
+      returnMap[labelString]["Jaccard"] = similarityFilter->GetUnionOverlap();
+      returnMap[labelString]["DICE"] = similarityFilter->GetMeanOverlap();
+      returnMap[labelString]["VolumeSimilarity"] = similarityFilter->GetVolumeSimilarity();
+      returnMap[labelString]["FalseNegativeError"] = similarityFilter->GetFalseNegativeError();
+      returnMap[labelString]["FalsePositiveError"] = similarityFilter->GetFalsePositiveError();
 
       auto temp_roc = GetSensitivityAndSpecificity< TImageType >(imageToCompare_1, imageToCompare_2);
 
       for (const auto &metric : temp_roc)
       {
-        returnMap[metric.first + "_" + labelString] = metric.second;
+        returnMap[labelString][metric.first] = metric.second;
       }
 
-      returnMap["Hausdorff95_" + labelString] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
-      returnMap["Hausdorff99_" + labelString] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
+      returnMap[labelString]["Hausdorff95"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
+      returnMap[labelString]["Hausdorff99"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
     }
 
     return returnMap;
