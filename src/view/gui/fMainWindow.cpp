@@ -4536,20 +4536,36 @@ void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputFileName, c
   } 
   //put the data in respective vectors
   std::vector< std::string > patient_ids, image_paths, atlas_labels;
+  std::vector<int> image_available;
   for (int j = 1; j < allRows.size(); j++)
   {
+    int patient_id_index = -1;
+    int images_index = -1;
+    int atlas_labels_index = -1;
     for (size_t k = 0; k < allRows[0].size(); k++)
     {
       auto check_wrap = allRows[0][k];
       std::transform(check_wrap.begin(), check_wrap.end(), check_wrap.begin(), ::tolower);
-
       if (check_wrap == "patient_ids")
-        patient_ids.push_back(allRows[j][k]);
+        patient_id_index = k;
       else if (check_wrap == "images")
-        image_paths.push_back(allRows[j][k]);
+        images_index = k;
       else if (check_wrap == "atlas_labels")
-        atlas_labels.push_back(allRows[j][k]);
+        atlas_labels_index = k;
     }
+    if (!cbica::fileExists(allRows[j][images_index]))
+    {
+      std::cout << "Image does not exist: " << allRows[j][images_index] << std::endl;
+      continue;
+    }
+    image_paths.push_back(allRows[j][images_index]);
+    patient_ids.push_back(allRows[j][patient_id_index]);
+    atlas_labels.push_back(allRows[j][atlas_labels_index]);
+  }
+  if (image_paths.size() == 0)
+  {
+    ShowErrorMessage("The given data in the .csv file does not exist.", this);
+    return;
   }
 
   // sanity check to make sure that all patient ids have corresponding atlas numbers and paths
