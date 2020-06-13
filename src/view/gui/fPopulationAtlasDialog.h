@@ -46,7 +46,7 @@ public slots:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
   void OpenOutputDirectory();
-  void OpeninputFile();
+  void OpenInputFile();
   void OpenInputAtlasFile();
 
 signals:

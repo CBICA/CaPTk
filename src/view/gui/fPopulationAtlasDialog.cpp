@@ -14,7 +14,7 @@ fPopulationAtlasDialog::fPopulationAtlasDialog()
   //this->setFixedHeight(300);
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
-  connect(inputfileButton, SIGNAL(clicked()), this, SLOT(OpeninputfileFile()));
+  connect(inputfileButton, SIGNAL(clicked()), this, SLOT(OpenInputFile()));
   connect(inputAtlasButton, SIGNAL(clicked()), this, SLOT(OpenInputAtlasFile()));
   connect(outputdirectoryButton, SIGNAL(clicked()), this, SLOT(OpenOutputDirectory()));
 }
@@ -78,7 +78,7 @@ void fPopulationAtlasDialog::OpenOutputDirectory()
     outputdirectoryName->setText(directory);
 }
 
-void fPopulationAtlasDialog::OpeninputFile()
+void fPopulationAtlasDialog::OpenInputFile()
 {
   auto file = getExistingFile(this, mInputPathName, "Labels (*.csv)");
 
