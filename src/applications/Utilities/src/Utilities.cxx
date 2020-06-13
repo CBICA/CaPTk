@@ -783,10 +783,51 @@ int algorithmsRunner()
 
     auto stats = cbica::GetBraTSLabelStatistics< DefaultImageType >(inputImage, referenceImage);
 
-    std::cout << "Metric,Value\n";
-    for (const auto &stat : stats)
+    std::string headers = "Labels", labelsMetricsAndValues;
+    bool metricsDone = false;
+
+    auto temp = stats.size();
+    if (!outputImageFile.empty())
     {
-      std::cout << stat.first << "," << stat.second << "\n";
+      for (const auto &label : stats)
+      {
+        bool labelPicked = false;
+        for (const auto &metric : label.second)
+        {
+          if (!metricsDone)
+          {
+            headers += "," + metric.first;
+          }
+          if (!labelPicked)
+          {
+            labelsMetricsAndValues += label.first;
+            labelPicked = true;
+          }
+          labelsMetricsAndValues += "," + std::to_string(metric.second);
+        }
+        labelsMetricsAndValues += "\n";
+        if (!metricsDone)
+        {
+          headers += "\n";
+          metricsDone = true;
+        }
+      }
+      // write to file
+      std::ofstream output;
+      output.open(outputImageFile.c_str());
+      output << headers << labelsMetricsAndValues;
+      output.close();
+    }
+    else
+    {
+      std::cout << "Label,Metric,Value\n";
+      for (const auto &label : stats)
+      {
+        for (const auto &metric : label.second)
+        {
+          std::cout << label.first << "," << metric.first << "," << metric.second << "\n";
+        }
+      }
     }
 
     return EXIT_SUCCESS;
@@ -1324,8 +1365,8 @@ int main(int argc, char** argv)
   }
   else if (parser.isPresent("lsb"))
   {
-  requestedAlgorithm = LabelSimilarityBraTS;
-  parser.getParameterValue("lsb", referenceMaskForSimilarity);
+    requestedAlgorithm = LabelSimilarityBraTS;
+    parser.getParameterValue("lsb", referenceMaskForSimilarity);
   }
   else if (parser.isPresent("hd"))
   {
