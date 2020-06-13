@@ -84,7 +84,7 @@ Informatics Technology Initiative (NIfTI) file format.
 	-# Click on "Confirm".
   -# This can also be used from the command line:
 \verbatim
-${CaPTk_InstallDir}/bin/Utlities.exe -i C:/test/dicomFolderWithSingleSubject -o C:/PathToOutputFolder/result.nii.gz -d2n 
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/dicomFolderWithSingleSubject -o C:/PathToOutputFolder/result.nii.gz -d2n 
 \endverbatim
 
 --------
@@ -1332,6 +1332,7 @@ This is a command line executable containing the following functionalities:
 - Transform coordinates from world to image and vice-versa
 - Label similarity Metrics between 2 label images
 - Hausdorff Distance between 2 label images
+- Collect information from all images in a directory and put it in CSV
 
 For a full list of available applications and examples, please use the command: 
 \verbatim
