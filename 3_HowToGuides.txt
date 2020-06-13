@@ -888,12 +888,13 @@ This application facilitates the users to generate population atlases for patien
 
 <b>USAGE:</b>
 	-# Launch the Population Atlases application using the 'Applications -> Population Atlas' menu option.
-	-# Specify the Input batch file (e.g., Data_of_multiple_patients), Atlas file, and Output directories.
+	-# Specify the Input batch file (e.g., Data_of_multiple_patients) in .csv format, Atlas file with delineated region-of-interests in .nii.gz format, and Output directories.
 	-# Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window. 
-    -# The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory. 	
+    -# The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory. 
+	-# The output atlases can be overlayed on the Jacobs atlas (jakob_stripped_with_cere_lps_256256128.nii.gz) given in the corresponding sample data folder.  
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -a C:/AtlasFile -o C:/populationAtlasesOutput
+${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/LabelsFile -a C:/AtlasFile -o C:/populationAtlasesOutput
 \endverbatim
 
 --------
