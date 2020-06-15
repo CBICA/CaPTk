@@ -2174,7 +2174,8 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
     //check crossvalidated performance after adding the current feature
     double bestCV = 0;
     double bestC = 1;
-    double bestG = 1 / currentFeatureSet.Cols();
+    double numerator = 1;
+    double bestG = numerator / ((double)currentFeatureSet.Cols());
     if (optimizationtype == 1)
     {
       if (classifiertype == 2)

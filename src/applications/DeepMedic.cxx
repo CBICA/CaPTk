@@ -480,7 +480,7 @@ int main(int argc, char **argv)
   if (!cbica::getFilenameExtension(outputDirectory, false).empty())
   {
     outputFile = outputDirectory;
-    outputDirectory = cbica::getFilenamePath(outputFile);
+    outputDirectory = cbica::getFilenamePath(outputFile, false);
   }
 
   if (parser.isPresent("m"))

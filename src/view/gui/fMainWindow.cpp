@@ -387,7 +387,7 @@ fMainWindow::fMainWindow()
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionPCA PerfusionDerivatives TrainingModule";
   
-  std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
+  std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain BraTSPipeline";
 #ifndef __APPLE__
   preProcessingAlgos += " breastNormalize";
 #endif
@@ -792,7 +792,12 @@ fMainWindow::fMainWindow()
     {
       vectorOfPreprocessingActionsAndNames[i].action->setText("Mammogram Preprocessing");
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageMamogramPreprocess()));
-    }
+    } 
+    else if (vectorOfPreprocessingActionsAndNames[i].name.find("BraTSPipeline") != std::string::npos)
+    {
+      vectorOfPreprocessingActionsAndNames[i].action->setText("BraTS Pipeline");
+      connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageBraTSPipeline()));
+    } 
   }
 
   // add a single function for all preprocessing steps, this function will check for the specific names and then initiate that algorithm
@@ -866,6 +871,7 @@ fMainWindow::fMainWindow()
   connect(&histoMatchPanel, SIGNAL(RunHistogramMatching(const std::string, const std::string, const std::string)), this, SLOT(CallImageHistogramMatching(const std::string, const std::string, const std::string)));
   connect(&deepMedicNormPanel, SIGNAL(RunDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)), this, SLOT(CallImageDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)));
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
+  connect(&bratsPipelineDialog, SIGNAL(RunBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)));
 
   connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(std::string, std::string, std::string)), this, SLOT(PCAEstimateOnExistingModel(const std::string &, const std::string &, const std::string &)));
   connect(&pcaPanel, SIGNAL(TrainNewPCAModel(std::string, std::string)), this, SLOT(TrainNewPCAModelOnGivenData(const std::string &, const std::string &)));
@@ -4326,6 +4332,14 @@ void fMainWindow::RecurrenceEstimateOnExistingModel(const std::string &modeldire
     help_contextual("Glioblastoma_Recurrence.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (inputdirectory.empty())
   {
     ShowErrorMessage("Please provide path of a directory having input images");
@@ -4389,6 +4403,14 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
     help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (!cbica::isDir(outputdirectory))
   {
     if (!cbica::createDir(outputdirectory))
@@ -4425,6 +4447,14 @@ void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, 
     ShowErrorMessage("Please provide path of a directory having PCA model");
     //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (inputdirectory.empty())
   {
@@ -4506,20 +4536,36 @@ void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputFileName, c
   } 
   //put the data in respective vectors
   std::vector< std::string > patient_ids, image_paths, atlas_labels;
+  std::vector<int> image_available;
   for (int j = 1; j < allRows.size(); j++)
   {
+    int patient_id_index = -1;
+    int images_index = -1;
+    int atlas_labels_index = -1;
     for (size_t k = 0; k < allRows[0].size(); k++)
     {
       auto check_wrap = allRows[0][k];
       std::transform(check_wrap.begin(), check_wrap.end(), check_wrap.begin(), ::tolower);
-
       if (check_wrap == "patient_ids")
-        patient_ids.push_back(allRows[j][k]);
+        patient_id_index = k;
       else if (check_wrap == "images")
-        image_paths.push_back(allRows[j][k]);
+        images_index = k;
       else if (check_wrap == "atlas_labels")
-        atlas_labels.push_back(allRows[j][k]);
+        atlas_labels_index = k;
     }
+    if (!cbica::fileExists(allRows[j][images_index]))
+    {
+      std::cout << "Image does not exist: " << allRows[j][images_index] << std::endl;
+      continue;
+    }
+    image_paths.push_back(allRows[j][images_index]);
+    patient_ids.push_back(allRows[j][patient_id_index]);
+    atlas_labels.push_back(allRows[j][atlas_labels_index]);
+  }
+  if (image_paths.size() == 0)
+  {
+    ShowErrorMessage("The given data in the .csv file does not exist.", this);
+    return;
   }
 
   // sanity check to make sure that all patient ids have corresponding atlas numbers and paths
@@ -4784,6 +4830,14 @@ void fMainWindow::CallForSurvivalPredictionOnExistingModelFromMain(const std::st
     help_contextual("Glioblastoma_Survival.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (!(cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.csv") || cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.xml"))
     || !(cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.csv") || cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.xml"))
     || !cbica::fileExists(modeldirectory + "/Survival_ZScore_Std.csv") || !cbica::fileExists(modeldirectory + "/Survival_ZScore_Mean.csv"))
@@ -4925,6 +4979,14 @@ void fMainWindow::CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::st
     ShowErrorMessage("The given SVM model directory does not exist");
     help_contextual("Glioblastoma_EGFRvIII.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (!(cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.csv") || cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.xml"))
     || !cbica::fileExists(modeldirectory + "/EGFRvIII_ZScore_Std.csv") || !cbica::fileExists(modeldirectory + "/EGFRvIII_ZScore_Mean.csv"))
@@ -6265,11 +6327,19 @@ void fMainWindow::ApplicationSBRTAnalysis()
 	  std::string oname;
 	  int outputFea = 0;
 	  std::string logName;
-	  std::string modelDir;
+	  std::string modelDir = analysisPanel.mInputPathName.toStdString();
 
 	  std::string metaName = analysisPanel.mInputPathName.toStdString() + "/meta_fea_proj.txt";
 	  std::string projName = analysisPanel.mInputPathName.toStdString() + "/triFac_res_cpp_kc3_kr5_pet_cox_coeff_train_all.txt";
 
+      if (cbica::isFile(modelDir + "/VERSION.yaml"))
+      {
+          if (!cbica::IsCompatible(modelDir + "/VERSION.yaml"))
+          {
+              ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+              return;
+          }
+      }
 	  if (cbica::fileExists(metaName) == false ||
 		  cbica::fileExists(projName) == false)
 	  {
@@ -7187,6 +7257,13 @@ void fMainWindow::ImageDenoising()
       updateProgress(0, "Error in Susan noise removal!!");
     }
   }
+}
+
+void fMainWindow::ImageBraTSPipeline()
+{
+  // open a simple dialog box with reference image, input and output
+  bratsPipelineDialog.SetCurrentImagePath(mInputPathName);
+  bratsPipelineDialog.exec();
 }
 
 void fMainWindow::ImageMamogramPreprocess()
@@ -8566,6 +8643,49 @@ void fMainWindow::CallLabelValuesChange(const std::string oldValues, const std::
   readMaskFile(tempFile);
 }
 
+void fMainWindow::CallBraTSPipeline(const std::string t1ceImage, const std::string t1Image, const std::string t2Image, const std::string flImage, const std::string outputDir)
+{
+  if (!t1ceImage.empty() && !t1Image.empty() && !t2Image.empty() && !flImage.empty() && !outputDir.empty())
+  {
+    auto bratsPipelineExe = getApplicationPath("BraTSPipeline");
+    if (!cbica::exists(bratsPipelineExe))
+    {
+      ShowErrorMessage("Could not find the BraTSPipeline executable");
+      return;
+    }
+    
+    QStringList args;
+    args << "-t1" << t1Image.c_str() << 
+      "-t1c" << t1ceImage.c_str() << 
+      "-t2" << t2Image.c_str() << 
+      "-fl" << flImage.c_str() << 
+      "-o" << outputDir.c_str();
+
+    QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application",
+      "BraTS Pipeline takes ~30 minutes to run, during which CaPTk will not be responsive; press OK to continue...",
+      QMessageBox::Ok | QMessageBox::Cancel);
+    box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
+    box->setWindowModality(Qt::NonModal);
+    QCoreApplication::processEvents();
+    if (box->exec() == QMessageBox::Ok)
+    {
+      updateProgress(5, "Starting BraTS Pipeline");
+
+      if (startExternalProcess(bratsPipelineExe.c_str(), args) != 0)
+      {
+        ShowErrorMessage("BraTS Pipeline returned with exit code != 0");
+        updateProgress(0, "");
+        return;
+      }
+    }
+  }
+  else
+  {
+    ShowErrorMessage("All input images need to be provided for BraTS Pipeline to run.");
+    return;
+  }
+}
+
 void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile)
 {
   if (!referenceImage.empty() && !inputImageFile.empty() && !outputImageFile.empty())
@@ -9897,6 +10017,14 @@ void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const
     ShowErrorMessage("The given SVM model directory does not exist");
     help_contextual("Glioblastoma_MolecularSubtype.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (!cbica::fileExists(modeldirectory + "/ProneuralModelFile.xml") || !cbica::fileExists(modeldirectory + "/NeuralModelFile.xml") ||
     !cbica::fileExists(modeldirectory + "/MessenchymalModelFile.xml") || !cbica::fileExists(modeldirectory + "/ClassicalModelFile.xml") ||

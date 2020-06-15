@@ -1784,31 +1784,36 @@ namespace cbica
   \return Map of various statistics and corresponding values
   */
   template < typename TImageType = ImageTypeFloat3D >
-  std::map< std::string, double > GetBraTSLabelStatistics(const typename TImageType::Pointer inputLabel_1,
+  std::map< std::string, std::map< std::string, double > > GetBraTSLabelStatistics(const typename TImageType::Pointer inputLabel_1,
     const typename TImageType::Pointer inputLabel_2)
   {
-    std::map< std::string, double > returnMap;
+    // return variable
+    std::map< std::string, // the label string
+      std::map< std::string, // the metric
+      double > > // the value
+      returnMap;
 
     auto uniqueLabels = GetUniqueValuesInImage< TImageType >(inputLabel_1);
     auto uniqueLabelsRef = GetUniqueValuesInImage< TImageType >(inputLabel_2);
 
-    // sanity check
-    if (uniqueLabels.size() != uniqueLabelsRef.size())
-    {
-      std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
-      return returnMap;
-    }
-    else
-    {
-      for (size_t i = 0; i < uniqueLabels.size(); i++)
-      {
-        if (uniqueLabels[i] != uniqueLabelsRef[i])
-        {
-          std::cerr << "The label values in input and reference image are not consistent.\n";
-          return returnMap;
-        }
-      }
-    }
+    ///// this is not needed as we need to generate stats for all the BraTS values regardless
+    //// sanity check
+    //if (uniqueLabels.size() != uniqueLabelsRef.size())
+    //{
+    //  std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
+    //  return returnMap;
+    //}
+    //else
+    //{
+    //  for (size_t i = 0; i < uniqueLabels.size(); i++)
+    //  {
+    //    if (uniqueLabels[i] != uniqueLabelsRef[i])
+    //    {
+    //      std::cerr << "The label values in input and reference image are not consistent.\n";
+    //      return returnMap;
+    //    }
+    //  }
+    //}
 
     // remove background
     uniqueLabels.erase(uniqueLabels.begin());
@@ -1822,14 +1827,14 @@ namespace cbica
     std::vector< int > missingLabels, missingLabelsRef;
 
     // check brats labels and populate missing labels to 
-    for (size_t i = 0; i < uniqueLabels.size(); i++)
+    for (size_t i = 0; i < bratsValues.size(); i++)
     {
-      if (uniqueLabels[i] != bratsValues[i])
+      if (std::find(uniqueLabels.begin(), uniqueLabels.end(), bratsValues[i]) == uniqueLabels.end())
       {
         std::cerr << "Missing BraTS label in Label_1: " << bratsValues[i] << "\n";
         missingLabels.push_back(bratsValues[i]);
       }
-      if (uniqueLabelsRef[i] != bratsValues[i])
+      if (std::find(uniqueLabelsRef.begin(), uniqueLabelsRef.end(), bratsValues[i]) == uniqueLabelsRef.end())
       {
         std::cerr << "Missing BraTS label in Label_2: " << bratsValues[i] << "\n";
         missingLabelsRef.push_back(bratsValues[i]);
@@ -1915,21 +1920,22 @@ namespace cbica
       similarityFilter->SetTargetImage(imageToCompare_2);
       similarityFilter->Update();
 
-      returnMap["Overlap_" + labelString] = similarityFilter->GetTotalOverlap();
-      returnMap["Jaccard_" + labelString] = similarityFilter->GetUnionOverlap();
-      returnMap["DICE_" + labelString] = similarityFilter->GetMeanOverlap();
-      returnMap["VolumeSimilarity_" + labelString] = similarityFilter->GetVolumeSimilarity();
-      returnMap["FalseNegativeError_" + labelString] = similarityFilter->GetFalseNegativeError();
-      returnMap["FalsePositiveError_" + labelString] = similarityFilter->GetFalsePositiveError();
+      returnMap[labelString]["Overlap"] = similarityFilter->GetTotalOverlap();
+      returnMap[labelString]["Jaccard"] = similarityFilter->GetUnionOverlap();
+      returnMap[labelString]["DICE"] = similarityFilter->GetMeanOverlap();
+      returnMap[labelString]["VolumeSimilarity"] = similarityFilter->GetVolumeSimilarity();
+      returnMap[labelString]["FalseNegativeError"] = similarityFilter->GetFalseNegativeError();
+      returnMap[labelString]["FalsePositiveError"] = similarityFilter->GetFalsePositiveError();
 
       auto temp_roc = GetSensitivityAndSpecificity< TImageType >(imageToCompare_1, imageToCompare_2);
 
       for (const auto &metric : temp_roc)
       {
-        returnMap[metric.first + "_" + labelString] = metric.second;
+        returnMap[labelString][metric.first] = metric.second;
       }
 
-      returnMap["Hausdorff95_" + labelString] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
+      returnMap[labelString]["Hausdorff95"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
+      returnMap[labelString]["Hausdorff99"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
     }
 
     return returnMap;

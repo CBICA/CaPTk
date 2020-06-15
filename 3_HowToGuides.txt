@@ -12,6 +12,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
   - [N4 Bias Correction (ITK filter)](preprocessing_bias.html)
   - [Histogram Matching](preprocessing_histoMatch.html)
   - [Z-Score Normalization](preprocessing_zScoreNorm.html)
+  - [BraTS Preprocessing Pipeline](preprocessing_brats.html)
 - \subpage ht_Segmentation "Segmentation"
   - [Interactive Machine Learning based - Utilizing Geodesic Distance Transform and SVM](seg_GeoTrain.html)
   - [ITK-SNAP](seg_SNAP.html)
@@ -57,6 +58,7 @@ The following applications can be called from the GUI:
 - \subpage preprocessing_bias "Bias Correction (ITK filter)"
 - \subpage preprocessing_histoMatch "Histogram Matching"
 - \subpage preprocessing_zScoreNorm "Z-Score Normalization"
+- \subpage preprocessing_brats "BraTS Preprocessing Pipeline"
 
 For a full list of available applications and examples, please use the command: 
 
@@ -82,7 +84,7 @@ Informatics Technology Initiative (NIfTI) file format.
 	-# Click on "Confirm".
   -# This can also be used from the command line:
 \verbatim
-${CaPTk_InstallDir}/bin/Utlities.exe -i C:/test/dicomFolderWithSingleSubject -o C:/PathToOutputFolder/result.nii.gz -d2n 
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/dicomFolderWithSingleSubject -o C:/PathToOutputFolder/result.nii.gz -d2n 
 \endverbatim
 
 --------
@@ -225,6 +227,42 @@ ${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/input.nii.gz -m C:/test/inp
 Reference:
 
 -# T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010. DOI:10.1002/hbm.20906
+
+*/
+
+/**
+\page preprocessing_brats BraTS Preprocessing Pipeline
+
+<b>REQUIREMENTS:</b>
+	-# 4 structural MRI images (T1, T1CE, T2, FLAIR)
+
+<b>USAGE:</b>
+
+This CLI-only application takes 4 structural brain MRIs as input and performs the following steps [1-3]:
+
+-# Re-orientation to LPS/RAI
+-# [N4 Bias correction](preprocessing_bias.html)
+-# [Co-registration](preprocessing_reg.html) to T1CE
+-# [Registration](preprocessing_reg.html) to SRI-24 atlas [4]
+-# Apply registration to re-oriented image to maximize image fidelity
+-# [Skull-stripping](seg_DL.html)
+-# Put extracted brain mask back to original patient space 
+
+Example command:
+\verbatim
+${CaPTk_InstallDir}/bin/BraTSPipeline.exe -t1 C:/test/t1.nii.gz -t1c C:/test/t1ce.nii.gz -t2 C:/test/t2.nii.gz -fl C:/test/flair.nii.gz -o C:/test/outputDir 
+\endverbatim
+
+<b>NOTE</b>: This applications takes ~30 minutes to finish on an 8-core Intel i7 with 16GB of RAM.
+
+--------
+
+Reference:
+
+-# B. H. Menze, A. Jakab, S. Bauer, J. Kalpathy-Cramer, K. Farahani, J. Kirby, et al. "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)", IEEE Transactions on Medical Imaging 34(10), 1993-2024 (2015) DOI: 10.1109/TMI.2014.2377694
+-# S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J.S. Kirby, et al., "Advancing The Cancer Genome Atlas glioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data, 4:170117 (2017) DOI: 10.1038/sdata.2017.117
+-# S. Bakas, M. Reyes, A. Jakab, S. Bauer, M. Rempfler, A. Crimi, et al., "Identifying the Best Machine Learning Algorithms for Brain Tumor Segmentation, Progression Assessment, and Overall Survival Prediction in the BRATS Challenge", arXiv preprint arXiv:1811.02629 (2018)
+-# T.Rohlfing, N.M.Zahr, E.V.Sullivan,A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human brain mapping, 31(5), pp.798-819. (2010)
 
 */
 
@@ -740,6 +778,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 		-# Subject_IDn
       
 <b>USAGE:</b>
+\cond DOXYGEN_WILL_EXCLUDE_THIS_CONDITIONAL_BLOCK
 - Train New Model: 
 	-# "Select Subjects". Select the input directory that follows the folder structure described above.
 	-# "Output". Select the folder where the trained model will be saved.
@@ -748,6 +787,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 \verbatim
 ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInputDirectory -o C:/EGFRvIIIInputModel
 \endverbatim
+\endcond
 
 - Use Existing Model
 	-# "Model Directory". Choose the directory of a saved model.
@@ -850,12 +890,13 @@ This application facilitates the users to generate population atlases for patien
 
 <b>USAGE:</b>
 	-# Launch the Population Atlases application using the 'Applications -> Population Atlas' menu option.
-	-# Specify the Input batch file (e.g., Data_of_multiple_patients), Atlas file, and Output directories.
+	-# Specify the Input batch file (e.g., Data_of_multiple_patients) in .csv format, Atlas file with delineated region-of-interests in .nii.gz format, and Output directories.
 	-# Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window. 
-    -# The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory. 	
+    -# The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory. 
+	-# The output atlases can be overlayed on the Jacobs atlas (jakob_stripped_with_cere_lps_256256128.nii.gz) given in the corresponding sample data folder.  
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -a C:/AtlasFile -o C:/populationAtlasesOutput
+${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/LabelsFile -a C:/AtlasFile -o C:/populationAtlasesOutput
 \endverbatim
 
 --------
@@ -1291,6 +1332,7 @@ This is a command line executable containing the following functionalities:
 - Transform coordinates from world to image and vice-versa
 - Label similarity Metrics between 2 label images
 - Hausdorff Distance between 2 label images
+- Collect information from all images in a directory and put it in CSV
 
 For a full list of available applications and examples, please use the command: 
 \verbatim

@@ -54,6 +54,7 @@ SET( GUI
   AppearancePage
   CaPTkDockWidget
   fBiasCorrectionDialog
+  fBraTSSegmentation
   #fSegmentationPanel
   #fHelpAppDialog
 )
