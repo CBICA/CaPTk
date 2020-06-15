@@ -79,7 +79,7 @@ public:
 
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, bool rcbv, bool psr, bool ph, const double TE, const std::string outputdirectory);
+  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, bool rcbv, bool psr, bool ph, /*const double TE, */const std::string outputdirectory);
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, int start, int end);
@@ -88,7 +88,7 @@ public:
   typename ImageType::Pointer CalculatePH(typename PerfusionImageType::Pointer perfImagePointerNifti);
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  typename ImageType::Pointer CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti, const double TE);
+  typename ImageType::Pointer CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti/*, const double TE*/);
 
   template< class ImageType, class PerfusionImageType>
   typename ImageType::Pointer CalculateSignalRecovery(typename PerfusionImageType::Pointer perfImagePointerNifti);
@@ -149,7 +149,7 @@ bool PerfusionDerivatives::IsPerfusionQualityGood(typename PerfusionImageType::P
 }
 
 template< class ImageType, class PerfusionImageType >
-std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string perfusionFile, bool rcbv, bool psr, bool ph, const double TE, const std::string outputdirectory)
+std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string perfusionFile, bool rcbv, bool psr, bool ph, /*const double TE, */const std::string outputdirectory)
 {
   std::vector<typename ImageType::Pointer> perfusionDerivatives;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
@@ -190,7 +190,7 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
       perfusionDerivatives[1] = this->CalculatePH<ImageType, PerfusionImageType>(SecondCopyImage);
 
     if (rcbv == true)
-      perfusionDerivatives[2] = this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti, TE);
+      perfusionDerivatives[2] = this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti/*, TE*/);
   }
   catch (const std::exception& e1)
   {
@@ -419,7 +419,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePH(typename Perfusion
 }
 
 template< class ImageType, class PerfusionImageType >
-typename ImageType::Pointer PerfusionDerivatives::CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti,double EchoTime)
+typename ImageType::Pointer PerfusionDerivatives::CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti/*,double EchoTime*/)
 {
 	typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
   //6th time-point is used here considering the fact that perfusion signal becomes stable at this point. might replace with percentage in future
