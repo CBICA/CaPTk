@@ -19,9 +19,10 @@ See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 #include "cbicaUtilities.h"
 #include "cbicaLogging.h"
 #include "CaPTkDefines.h"
+#include "CaPTkUtils.h"
 #include "itkExtractImageFilter.h"
 #include "DicomMetadataReader.h"
-
+#include "cbicaITKSafeImageIO.h"
 #ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
 #endif
