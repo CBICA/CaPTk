@@ -101,14 +101,13 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   typename ImageType::Pointer t1ceImagePointer;
   try
   {
-    perfImagePointerNifti = mNiftiLocalPtr.Read4DNiftiImage(perfusionFile);
+    perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(perfusionFile);
   }
   catch (const std::exception& e1)
   {
     logger.WriteError("Unable to open the given DSC-MRI file. Error code : " + std::string(e1.what()));
     return PerfusionAlignment;
   }
-
   try
   {
     t1ceImagePointer = cbica::ReadImage< ImageType >(t1ceFile);
@@ -218,8 +217,6 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
       }
       PerfusionAlignment.push_back(NewImage);
     }
-    ////resampling image 
-    //cbica::WriteImage<PerfusionImageType>(output, "E:/revised_perf.nii.gz");
   }
   catch (const std::exception& e1)
   {
@@ -625,8 +622,7 @@ template< class ImageType, class PerfusionImageType >
 std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask, int start, int end)
 {
   std::vector<double> AverageCurve;
-	typename ImageType::Pointer outputImage = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
-
+  typename ImageType::Pointer outputImage = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[0];
 	ImageTypeFloat4D::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
   for (unsigned int volumes = 0; volumes < region.GetSize()[3]; volumes++)
   {
@@ -658,7 +654,7 @@ std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename Pe
 template< class ImageType, class PerfusionImageType >
 typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, int start, int end)
 {
-  typename ImageType::Pointer outputImage = GetOneImageVolume<ImageType, PerfusionImageType>(perfImagePointerNifti, 0);
+  typename ImageType::Pointer outputImage = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[0];
 
   int no_of_slices = end - start + 1;
   ImageTypeFloat4D::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
