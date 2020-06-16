@@ -625,8 +625,11 @@ namespace cbica
     {
       if (!fileExists(filename))
       {
-        std::cerr << "[getFilenameBase()] Supplied file name'" << filename << "'wasn't found.\n";
-        exit(EXIT_FAILURE);
+        if (!isDir(filename))
+        {
+          std::cerr << "[getFilenameBase()] Supplied file name'" << filename << "'wasn't found.\n";
+          exit(EXIT_FAILURE);
+        }
       }
     }
     std::string path, base, ext;
