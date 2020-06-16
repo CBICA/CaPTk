@@ -5,13 +5,13 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.nonRelease.20200603.ef0894a7" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.nonRelease.20200608.fcf581a7" ref="index.html">
         <section title="Overview" ref="index.html">
-          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md118" />
-          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md119" />
-          <section title="Supporting Grant" ref="index.html#autotoc_md120" />
-          <section title="Disclaimer" ref="index.html#autotoc_md121" />
-          <section title="Contact" ref="index.html#autotoc_md122" />
+          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md119" />
+          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md120" />
+          <section title="Supporting Grant" ref="index.html#autotoc_md121" />
+          <section title="Disclaimer" ref="index.html#autotoc_md122" />
+          <section title="Contact" ref="index.html#autotoc_md123" />
         </section>
       </section>
       <section title="Getting Started" ref="Getting_Started.html">
@@ -79,8 +79,9 @@
           <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
           <section title="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
           <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
+          <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
           <section title="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html">
-            <section title="-# H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O&apos;Rourke, C.Davatzikos, &quot;Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity&quot;, Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458" ref="PCA_Extraction.html#autotoc_md55" />
+            <section title="-# H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O&apos;Rourke, C.Davatzikos, &quot;Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity&quot;, Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458" ref="PCA_Extraction.html#autotoc_md56" />
           </section>
         </section>
         <section title="Miscellaneous: Training Module" ref="Training_Module.html" />
@@ -114,45 +115,45 @@
       </section>
     </section>
     <section title="Download Instructions" ref="Download.html">
-      <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:" ref="Download.html#autotoc_md80" />
+      <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:" ref="Download.html#autotoc_md81" />
     </section>
-    <section title="License" ref="Download.html#autotoc_md82" />
+    <section title="License" ref="Download.html#autotoc_md83" />
   </section>
 </section>
 <section title="Installation Instructions" ref="Installation.html">
-  <section title="Windows" ref="Installation.html#autotoc_md86" />
-  <section title="Linux" ref="Installation.html#autotoc_md87" />
-  <section title="macOS" ref="Installation.html#autotoc_md88" />
+  <section title="Windows" ref="Installation.html#autotoc_md87" />
+  <section title="Linux" ref="Installation.html#autotoc_md88" />
+  <section title="macOS" ref="Installation.html#autotoc_md89" />
 </section>
 </section>
 <section title="Changelog: Release Notes" ref="ReleaseNotes.html">
-<section title="Known Issues" ref="ReleaseNotes.html#autotoc_md92" />
-<section title="Older Versions" ref="ReleaseNotes.html#autotoc_md93">
-  <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md94" />
-  <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md95" />
-  <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md96" />
-  <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md97" />
-  <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md98" />
-  <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md99" />
-  <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md100" />
-  <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md101" />
-  <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md102" />
-  <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md103" />
-  <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md104" />
-  <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md105" />
-  <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md106" />
-  <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md107" />
-  <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md108" />
-  <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md109" />
-  <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md110" />
-  <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md111" />
+<section title="Known Issues" ref="ReleaseNotes.html#autotoc_md93" />
+<section title="Older Versions" ref="ReleaseNotes.html#autotoc_md94">
+  <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md95" />
+  <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md96" />
+  <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md97" />
+  <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md98" />
+  <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md99" />
+  <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md100" />
+  <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md101" />
+  <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md102" />
+  <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md103" />
+  <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md104" />
+  <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md105" />
+  <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md106" />
+  <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md107" />
+  <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md108" />
+  <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md109" />
+  <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md110" />
+  <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md111" />
+  <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md112" />
 </section>
 </section>
 </section>
 <section title="People (Credits)" ref="People.html">
-<section title="Advisors:" ref="People.html#autotoc_md115" />
-<section title="Developers:" ref="People.html#autotoc_md116" />
-<section title="Collaborators:" ref="People.html#autotoc_md117" />
+<section title="Advisors:" ref="People.html#autotoc_md116" />
+<section title="Developers:" ref="People.html#autotoc_md117" />
+<section title="Collaborators:" ref="People.html#autotoc_md118" />
 </section>
 </section>
 </section>
@@ -190,6 +191,7 @@
       <keyword name="Breast Cancer: Breast Segmentation" id="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
       <keyword name="Lung Cancer: Radiomics Analysis of Lung Cancer" id="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
       <keyword name="Miscellaneous: Diffusion Derivatives" id="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
+      <keyword name="Miscellaneous: Perfusion Derivatives" id="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
       <keyword name="Miscellaneous: PCA Volume Extraction" id="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
       <keyword name="Miscellaneous: Training Module" id="Miscellaneous: Training Module" ref="Training_Module.html" />
       <keyword name="Utilities (CLI only)" id="Utilities (CLI only)" ref="ht_utilities.html" />
@@ -252,6 +254,7 @@
       <file>BreastCancer_breastSegmentation.html</file>
       <file>LungCancer_SBRT.html</file>
       <file>Diffusion_Derivatives.html</file>
+      <file>Perfusion_Derivatives.html</file>
       <file>PCA_Extraction.html</file>
       <file>Training_Module.html</file>
       <file>ht_utilities.html</file>
@@ -263,8 +266,6 @@
       <file>Installation.html</file>
       <file>ReleaseNotes.html</file>
       <file>People.html</file>
-      <file>graph_legend.png</file>
-      <file>graph_legend.html</file>
       <file>index.html</file>
       <file>pages.html</file>
     </files>
