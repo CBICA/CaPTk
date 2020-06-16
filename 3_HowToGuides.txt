@@ -84,7 +84,7 @@ Informatics Technology Initiative (NIfTI) file format.
 	-# Click on "Confirm".
   -# This can also be used from the command line:
 \verbatim
-${CaPTk_InstallDir}/bin/Utlities.exe -i C:/test/dicomFolderWithSingleSubject -o C:/PathToOutputFolder/result.nii.gz -d2n 
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/dicomFolderWithSingleSubject -o C:/PathToOutputFolder/result.nii.gz -d2n 
 \endverbatim
 
 --------
@@ -778,6 +778,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 		-# Subject_IDn
       
 <b>USAGE:</b>
+\cond DOXYGEN_WILL_EXCLUDE_THIS_CONDITIONAL_BLOCK
 - Train New Model: 
 	-# "Select Subjects". Select the input directory that follows the folder structure described above.
 	-# "Output". Select the folder where the trained model will be saved.
@@ -786,6 +787,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 \verbatim
 ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInputDirectory -o C:/EGFRvIIIInputModel
 \endverbatim
+\endcond
 
 - Use Existing Model
 	-# "Model Directory". Choose the directory of a saved model.
@@ -1330,6 +1332,7 @@ This is a command line executable containing the following functionalities:
 - Transform coordinates from world to image and vice-versa
 - Label similarity Metrics between 2 label images
 - Hausdorff Distance between 2 label images
+- Collect information from all images in a directory and put it in CSV
 
 For a full list of available applications and examples, please use the command: 
 \verbatim
