@@ -7,8 +7,8 @@ int main(int argc, char **argv)
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionAlignment");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DSC-MRI image.");
   parser.addRequiredParameter("c", "t1ce file", cbica::Parameter::STRING, "", "The input T1 post-weighted image.");
-  parser.addRequiredParameter("b", "dicom file", cbica::Parameter::STRING, "", "The number of time-points before the drop.");
-  parser.addRequiredParameter("a", "dicom file", cbica::Parameter::STRING, "", "The number of time-points after the drop.");
+  parser.addRequiredParameter("b", "time-points before drop", cbica::Parameter::STRING, "", "The number of time-points before the drop.");
+  parser.addRequiredParameter("a", "time-points after drop", cbica::Parameter::STRING, "", "The number of time-points after the drop.");
   parser.addRequiredParameter("e", "echo time", cbica::Parameter::FLOAT, "", "Echo time.");
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
