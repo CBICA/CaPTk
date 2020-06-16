@@ -57,6 +57,12 @@ enum AvailableAlgorithms
   Hausdorff
 };
 
+//! properties that can be collected
+enum AllInfo
+{
+  Spacing, Size, Origin
+};
+
 int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator = "LINEAR", dicomSegJSON, orientationDesired, coordinateToTransform, referenceMaskForSimilarity;
@@ -70,9 +76,139 @@ float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, th
 float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0;
 int joinedImage2stackedAxis;
 
-bool uniqueValsSort = true, boundingBoxIsotropic = true;
+bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true;
+
+std::string collectInfoFile, collectInfoFileExt, collectInfoProps = "0,1";
 
 using MatrixType = vnl_matrix<double>;
+
+//! collects image information defined in AllInfo and writes to file 
+void CollectImageInfo(std::vector< int > requestedInfoVector)
+{  
+  std::string outputToWrite, propertyToWrite;
+  // set up required folders
+  std::vector< std::string > subDirsInInput = { inputImageFile };
+  if (collectInfoRecurse)
+  {
+    auto temp = cbica::subdirectoriesInDirectory(inputImageFile, collectInfoRecurse, true);
+    subDirsInInput.insert(subDirsInInput.end(), temp.begin(), temp.end());
+  }
+
+  std::vector< int > imageDimensions;
+
+  // loop through all requested directories
+  for (size_t i = 0; i < subDirsInInput.size(); i++)
+  {
+    auto allFilesInCurrentDir = cbica::filesInDirectory(cbica::normPath(subDirsInInput[i]));
+
+    // loop through all files
+    for (size_t j = 0; j < allFilesInCurrentDir.size(); j++)
+    {
+      auto currentExt = cbica::getFilenameExtension(allFilesInCurrentDir[j]);
+      if ((!collectInfoFile.empty() && (allFilesInCurrentDir[j].find(collectInfoFile) != std::string::npos)) ||
+        collectInfoFile.empty())
+      {
+        if (((collectInfoFileExt == "noExt") && currentExt.empty()) ||
+          (collectInfoFileExt == currentExt))
+        {
+          auto imageInfo = cbica::ImageInfo(allFilesInCurrentDir[j]);
+
+          imageDimensions.push_back(imageInfo.GetImageDimensions());
+
+          outputToWrite += allFilesInCurrentDir[j];
+
+          for (size_t p = 0; p < requestedInfoVector.size(); p++)
+          {
+            switch (p)
+            {
+            case Spacing:
+            {
+              auto temp = imageInfo.GetImageSpacings();
+              std::string temp_string = std::to_string(temp[0]);
+              for (size_t d = 1; d < temp.size(); d++)
+              {
+                temp_string += "," + std::to_string(temp[d]);
+              }
+              outputToWrite += "," + temp_string;
+              break;
+            }
+            case Size:
+            {
+              auto temp = imageInfo.GetImageSize();
+              std::string temp_string = std::to_string(temp[0]);
+              for (size_t d = 1; d < temp.size(); d++)
+              {
+                temp_string += "," + std::to_string(temp[d]);
+              }
+              outputToWrite += "," + temp_string;
+              break;
+            }
+            case Origin:
+            {
+              auto temp = imageInfo.GetImageOrigins();
+              std::string temp_string = std::to_string(temp[0]);
+              for (size_t d = 1; d < temp.size(); d++)
+              {
+                temp_string += "," + std::to_string(temp[d]);
+              }
+              outputToWrite += "," + temp_string;
+              break;
+            }
+            default:
+              break;
+            } // end switch-case
+          } // end requestedInfoVector for-loop     
+          outputToWrite += "\n";
+        } // end extension check
+      } // end file-pattern check
+    } // end files-loop
+  } // end dirs-loop
+
+  auto maxDimension = std::max_element(imageDimensions.begin(), imageDimensions.end());
+
+  for (size_t p = 0; p < requestedInfoVector.size(); p++)
+  {
+    for (size_t d = 0; d < *maxDimension; d++)
+    {
+      switch (p)
+      {
+      case Spacing:
+      {
+        propertyToWrite += ",Spacing_" + std::to_string(d);
+        break;
+      }
+      case Size:
+      {
+        propertyToWrite += ",Size_" + std::to_string(d);
+        break;
+      }
+      case Origin:
+      {
+        propertyToWrite += ",Origin_" + std::to_string(d);
+        break;
+      }
+      default:
+        break;
+      } // end switch-case
+    } // end dimension for-loop
+  } // end requestedInfoVector for-loop
+
+  propertyToWrite.erase(propertyToWrite.begin());
+
+  if (!outputToWrite.empty())
+  {
+    std::ofstream myfile(outputImageFile);
+    if (myfile.is_open())
+    {
+      myfile << "File," << propertyToWrite << "\n" << outputToWrite;
+      myfile.close();
+    }
+    else
+    {
+      std::cerr << "Unable to open file '" << outputImageFile << "' to write.\n";
+    }
+  }
+}
 
 MatrixType ReadBvecFile(std::string filename)
 {
@@ -987,6 +1123,10 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
   parser.addOptionalParameter("lsb", "lSimilarityBrats", cbica::Parameter::FILE, "NIfTI Reference", "Calculate BraTS similarity measures for 2 brain labels", "Pass the reference map after '-lsb' and the comparison will be done with '-i'", "Assumed labels in image are '1,2,4' and missing labels will be populate with '0'");
   parser.addOptionalParameter("hd", "hausdorffDist", cbica::Parameter::FILE, "NIfTI Reference", "Calculate the Hausdorff Distance for the input image and", "the one passed after '-hd'");
+  parser.addOptionalParameter("co", "collectInfo", cbica::Parameter::BOOLEAN, "Dir with read", "Collects information about all images in input directory", "Input directory passed using '-i'", "Recursion defined using '-co 1'", "Output CSV passed using '-o'");
+  parser.addOptionalParameter("cF", "collectFileName", cbica::Parameter::STRING, "File pattern", "The file pattern to check for in every file when collecting information", "Defaults to check all");
+  parser.addOptionalParameter("cFE", "collectFileExt", cbica::Parameter::STRING, "File extension", "The file extension to check for in every file when collecting information", "Defaults to check all");
+  parser.addOptionalParameter("cP", "collectProperties", cbica::Parameter::STRING, "0-2", "Requested image property", "0: spacings, 1: size, 2: origin", "Defaults to 0", "Defaults to '-cP" + collectInfoProps + "'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -1004,6 +1144,7 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR", "Calculates an anisotropic image from the input with spacing '1.0' in x, '2.0' in y and '3.0' in z using linear interpolation");
   parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR", "Calculates an isotropic image from the input with spacing from the reference image using linear interpolation");
   parser.addExampleUsage("-i C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz", "Calculates Total/Union/Mean Overlap (different DICE coefficients), Volume Similarity, False Positive/Negative Error for all labels");
+  parser.addExampleUsage("-i C:/test/inputDirectory -o C:/test/inputDirectoryProperties.csv -co 1 -cF volume -cFE .nii.gz -cP 0,1", "From specified input directory, spacing & size of files with names containing 'volume' with extension '.nii.gz' is collected recursively");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
   
@@ -1372,6 +1513,29 @@ int main(int argc, char** argv)
   {
     requestedAlgorithm = Hausdorff;
     parser.getParameterValue("hd", referenceMaskForSimilarity);
+  }
+  else if (parser.isPresent("co"))
+  {
+    parser.getParameterValue("co", collectInfoRecurse);
+    if (parser.isPresent("cF"))
+    {
+      parser.getParameterValue("cF", collectInfoFile);
+    }
+    if (parser.isPresent("cFE"))
+    {
+      parser.getParameterValue("cFE", collectInfoFileExt);
+    }
+    if (parser.isPresent("cP"))
+    {
+      parser.getParameterValue("cP", collectInfoProps);
+    }
+    auto temp = cbica::stringSplit(collectInfoProps, ",");
+    std::vector< int > requestedProps;
+    for (size_t p = 0; p < temp.size(); p++)
+    {
+      requestedProps.push_back(std::atoi(temp[p].c_str()));
+    }
+    CollectImageInfo(requestedProps);
   }
   
   // this doesn't need any template initialization
