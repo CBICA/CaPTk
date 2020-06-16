@@ -13,29 +13,23 @@ See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 
 */
 
-
 #ifndef _PerfusionAlignment_h_
 #define _PerfusionAlignment_h_
 
 #include "cbicaUtilities.h"
-#include "FeatureReductionClass.h"
-//#include "CaPTk.h"
 #include "cbicaLogging.h"
 #include "CaPTkDefines.h"
 #include "itkExtractImageFilter.h"
-#include "NiftiDataManager.h"
 #include "DicomMetadataReader.h"
 
 #ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
 #endif
 
-
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
 #include "spline.h"
-
 
 /**
 \class PerfusionAlignment
@@ -61,8 +55,6 @@ public:
   //! Default destructor
   ~PerfusionAlignment() {};
   
-  NiftiDataManager mNiftiLocalPtr;
-
   //This function calculates characteristics of a given DSC-MRI curve
   void GetParametersFromTheCurve(std::vector<double> curve, double &base, double&drop, double &maxval, double &minval);
 
@@ -84,9 +76,6 @@ public:
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, int start, int end);
 
-  //This function returns 3D image volume of 4D DSC-MRI image specified by the index parameter
-  template< class ImageType, class PerfusionImageType>
-  typename ImageType::Pointer GetOneImageVolume(typename PerfusionImageType::Pointer perfImagePointerNifti, int index);
 };
 
 template< class ImageType, class PerfusionImageType >
@@ -220,32 +209,6 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     return PerfusionAlignment;
   }
   return PerfusionAlignment;
-}
-
-template< class ImageType, class PerfusionImageType>
-typename ImageType::Pointer PerfusionAlignment::GetOneImageVolume(typename PerfusionImageType::Pointer perfImagePointerNifti, int index)
-{
-  typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
-  typename PerfusionImageType::IndexType regionIndex;
-  typename PerfusionImageType::SizeType regionSize;
-  regionSize[0] = region.GetSize()[0];
-  regionSize[1] = region.GetSize()[1];
-  regionSize[2] = region.GetSize()[2];
-  regionSize[3] = 0;
-  regionIndex[0] = 0;
-  regionIndex[1] = 0;
-  regionIndex[2] = 0;
-  regionIndex[3] = index;
-  typename PerfusionImageType::RegionType desiredRegion(regionIndex, regionSize);
-
-  typedef itk::ExtractImageFilter< PerfusionImageType, ImageType > FilterType;
-  typename FilterType::Pointer filter = FilterType::New();
-  filter->SetExtractionRegion(desiredRegion);
-  filter->SetInput(perfImagePointerNifti);
-
-  filter->SetDirectionCollapseToIdentity(); // This is required.
-  filter->Update();
-  return filter->GetOutput();
 }
 
 template< class ImageType, class PerfusionImageType >
