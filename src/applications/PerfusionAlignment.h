@@ -66,7 +66,7 @@ public:
 
   //This is the main function of PerfusionAlignment class that is called from .cxx file with all the required parameters.  
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, std::string dicomFile, std::string t1ceFile, int pointsbeforedrop, int pointsafterdrop, std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,const double echotime);
+  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, std::string t1ceFile, int pointsbeforedrop, int pointsafterdrop, std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,const double echotime);
 
 //This function calculates average 3D image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType, class PerfusionImageType >
@@ -79,7 +79,7 @@ public:
 };
 
 template< class ImageType, class PerfusionImageType >
-std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, std::string dicomFile, std::string t1ceFile, int pointsbeforedrop,int pointsafterdrop,std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,const double echotime)
+std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, std::string t1ceFile, int pointsbeforedrop,int pointsafterdrop,std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,const double echotime)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
@@ -103,7 +103,6 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     return PerfusionAlignment;
   }
 
-
   try
   {
     //get original curve
@@ -111,7 +110,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     std::vector<double> averagecurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
     OriginalCurve = averagecurve;
     //read dicom to get values of tags 
-    std::string timeinseconds = ReadMetaDataTags(dicomFile, "0018|0080");
+    //std::string timeinseconds = ReadMetaDataTags(dicomFile, "0018|0080");
     typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
 
     ////get interpolated curve
