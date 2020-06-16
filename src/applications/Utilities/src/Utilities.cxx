@@ -783,10 +783,51 @@ int algorithmsRunner()
 
     auto stats = cbica::GetBraTSLabelStatistics< DefaultImageType >(inputImage, referenceImage);
 
-    std::cout << "Metric,Value\n";
-    for (const auto &stat : stats)
+    std::string headers = "Labels", labelsMetricsAndValues;
+    bool metricsDone = false;
+
+    auto temp = stats.size();
+    if (!outputImageFile.empty())
     {
-      std::cout << stat.first << "," << stat.second << "\n";
+      for (const auto &label : stats)
+      {
+        bool labelPicked = false;
+        for (const auto &metric : label.second)
+        {
+          if (!metricsDone)
+          {
+            headers += "," + metric.first;
+          }
+          if (!labelPicked)
+          {
+            labelsMetricsAndValues += label.first;
+            labelPicked = true;
+          }
+          labelsMetricsAndValues += "," + std::to_string(metric.second);
+        }
+        labelsMetricsAndValues += "\n";
+        if (!metricsDone)
+        {
+          headers += "\n";
+          metricsDone = true;
+        }
+      }
+      // write to file
+      std::ofstream output;
+      output.open(outputImageFile.c_str());
+      output << headers << labelsMetricsAndValues;
+      output.close();
+    }
+    else
+    {
+      std::cout << "Label,Metric,Value\n";
+      for (const auto &label : stats)
+      {
+        for (const auto &metric : label.second)
+        {
+          std::cout << label.first << "," << metric.first << "," << metric.second << "\n";
+        }
+      }
     }
 
     return EXIT_SUCCESS;
@@ -939,8 +980,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("thO", "threshOtsu", cbica::Parameter::BOOLEAN, "0-1", "Whether to do Otsu threshold", "Generates a binary image which has been thresholded using Otsu", "Use '-tOI' to set Outside and Inside Values", "Optional mask to localize Otsu search area");
   parser.addOptionalParameter("tBn", "thrshBinary", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensity BELOW and ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Default for OUTSIDE_VALUE=0");
   parser.addOptionalParameter("tOI", "threshOutIn", cbica::Parameter::STRING, "Outside_Value,Inside_Value", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
-  parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-i2w 10,20,30'");
-  parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
+  parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-i2w 10,20,30'");
+  parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
   parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
   parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
@@ -989,29 +1030,28 @@ int main(int argc, char** argv)
   {
     requestedAlgorithm = Dicom2Nifti;
 
-	// check if the Nifti output filename has been specified?
-	if (parser.isPresent("o"))
-	{
-		parser.getParameterValue("o", outputImageFile);
-	}
-	else
-	{
-		std::cerr << "DICOM2Nifti conversion requested but the output Nifti filename was not found. Please use the '-o' parameter.\n";
-		return EXIT_FAILURE;
-	}
+	  // check if the Nifti output filename has been specified?
+	  if (parser.isPresent("o"))
+	  {
+		  parser.getParameterValue("o", outputImageFile);
+	  }
+	  else
+	  {
+		  std::cerr << "DICOM2Nifti conversion requested but the output Nifti filename was not found. Please use the '-o' parameter.\n";
+		  return EXIT_FAILURE;
+	  }
 
-	// check if the Dicom input has been specified?
-	if (parser.isPresent("i"))
-	{
-		parser.getParameterValue("i", inputImageFile);
-	}
-	else
-	{
-		std::cerr << "DICOM2Nifti conversion requested but the input Dicom data was not found. Please use the '-i' parameter.\n";
-		return EXIT_FAILURE;
-	}
+	  // check if the Dicom input has been specified?
+	  if (parser.isPresent("i"))
+	  {
+		  parser.getParameterValue("i", inputImageFile);
+	  }
+	  else
+	  {
+		  std::cerr << "DICOM2Nifti conversion requested but the input Dicom data was not found. Please use the '-i' parameter.\n";
+		  return EXIT_FAILURE;
+	  }
     parser.getParameterValue("d2n", targetImageFile);
-
   }
   else if (parser.isPresent("n2d"))
   {
@@ -1325,15 +1365,15 @@ int main(int argc, char** argv)
   }
   else if (parser.isPresent("lsb"))
   {
-  requestedAlgorithm = LabelSimilarityBraTS;
-  parser.getParameterValue("lsb", referenceMaskForSimilarity);
+    requestedAlgorithm = LabelSimilarityBraTS;
+    parser.getParameterValue("lsb", referenceMaskForSimilarity);
   }
   else if (parser.isPresent("hd"))
   {
     requestedAlgorithm = Hausdorff;
     parser.getParameterValue("hd", referenceMaskForSimilarity);
   }
-
+  
   // this doesn't need any template initialization
   if (requestedAlgorithm == SanityCheck)
   {
@@ -1349,6 +1389,11 @@ int main(int argc, char** argv)
     }
   }
 
+  if (cbica::isDir(inputImageFile))
+  {
+    std::cerr << "Please pass the first file in the DICOM series as input.\n";
+    return EXIT_FAILURE;
+  }
   if (!cbica::isFile(inputImageFile))
   {
     std::cerr << "Input file '" << inputImageFile << "' not found.\n";

@@ -29,15 +29,22 @@ fSBRTAnalysisDialog::~fSBRTAnalysisDialog()
 
 void fSBRTAnalysisDialog::OnOKButtonClicked()
 {
-  if (!modelDirLineEdit->text().isEmpty())
-  {
-    if (cbica::directoryExists(modelDirLineEdit->text().toStdString()) == false)
-    {
-      ShowErrorMessage("model directory does not exist.");
-      return;
-    }
-  }
-  this->close();
+	QString selectedModelDir = modelDirLineEdit->text();
+	if (selectedModelDir.isEmpty())
+	{
+		//model directory is not select ( field empty )
+		ShowErrorMessage("Please select model directory.");
+	}
+	else if (cbica::directoryExists(selectedModelDir.toStdString()))
+	{
+		//directory is selected and exists
+		this->accept();
+	}
+	else
+	{
+		//check directory
+		ShowErrorMessage("Please check the model directory you selected.");
+	}
 }
 
 void fSBRTAnalysisDialog::OnURLClicked(const QString&)
@@ -98,5 +105,5 @@ void fSBRTAnalysisDialog::OnSelectModelBtnClicked()
 
 void fSBRTAnalysisDialog::OnCancelButtonClicked()
 {
-  this->close();
+  this->reject();
 }
