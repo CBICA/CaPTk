@@ -51,7 +51,7 @@ public:
   void SelectInputImage();
 
 signals:
-  void RunPerfusionMeasuresCalculation(c/*onst double TE,*/ const bool rcbv, const bool psr,const bool ph, const std::string inputfile,  std::string outputFolder);
+  void RunPerfusionMeasuresCalculation(/*const double TE,*/ const bool rcbv, const bool psr,const bool ph, const std::string inputfile,  std::string outputFolder);
 };
 
 
