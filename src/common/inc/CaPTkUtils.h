@@ -9,6 +9,7 @@
 #include "CaPTkEnums.h"
 #include "CaPTkDefines.h"
 #include "cbicaLogging.h"
+#include "cbicaUtilities.h"
 
 // For getting the total amount of installed ram
 #ifdef _WIN32
@@ -111,7 +112,7 @@ struct NonNativeApp
 */
 inline int guessImageType(const std::string &fileName)
 {
-	std::string basename = cbica::getFilenameBase(fileName);
+	std::string basename = cbica::getFilenameBase(fileName, false); // don't check the file for existence
   int ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
   std::string fileName_wrap = basename;
   std::transform(fileName_wrap.begin(), fileName_wrap.end(), fileName_wrap.begin(), ::tolower);
