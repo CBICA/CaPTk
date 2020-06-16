@@ -538,7 +538,7 @@ jobs:
   cancelTimeoutInMinutes: 300
 
   pool:
-    vmImage: 'MacOS-10.13'
+    vmImage: 'MacOS-10.14'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
@@ -1129,7 +1129,7 @@ jobs:
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool: 'macOS_10.14'
+  pool: 'macOS_10.13'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
