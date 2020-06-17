@@ -42,8 +42,6 @@ public:
 
   QString mInputPathName;
   QString mInputT1cePathName;
-  QString mInputDicomPathName;
-
   QString mOutputPathName;
 
 
@@ -53,10 +51,9 @@ public:
   void SelectOutputImage();
   void SelectInputImage();
   void SelectT1ceInputImage();
-  void SelectDicomInputImage();
 
 signals:
-  void RunPerfusionAlignmentCalculation(double echotime, int before,int after, const std::string inputfile, const std::string inputt1cefile, const std::string inputdicomfile, std::string outputFolder);
+  void RunPerfusionAlignmentCalculation(double echotime, int before,int after, const std::string inputfile, const std::string inputt1cefile, std::string outputFolder);
 };
 
 
