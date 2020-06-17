@@ -942,15 +942,22 @@ int algorithmsRunner()
           std::string metric_second;
           if (std::isnan(metric.second))
           {
-            metric_second = "nan";
+            metric_second = "NaN";
           }
           else if (std::isinf(metric.second))
           {
-            metric_second = "inf";
+            metric_second = "INF";
           }
           else
           {
-            metric_second = std::to_string(metric.second);
+            if (metric.second > 10e100)
+            {
+              metric_second = "INF";
+            }
+            else
+            {
+              metric_second = std::to_string(metric.second);
+            }
           }
           labelsMetricsAndValues += "," + metric_second;
         }
@@ -977,15 +984,22 @@ int algorithmsRunner()
           std::string metric_second;
           if (std::isnan(metric.second))
           {
-            metric_second = "nan";
+            metric_second = "NaN";
           }
           else if (std::isinf(metric.second))
           {
-            metric_second = "inf";
+            metric_second = "INF";
           }
           else
           {
-            metric_second = std::to_string(metric.second);
+            if (metric.second > 10e100)
+            {
+              metric_second = "INF";
+            }
+            else
+            {
+              metric_second = std::to_string(metric.second);
+            }
           }
           std::cout << label.first << "," << metric.first << "," << metric_second << "\n";
         }
