@@ -939,7 +939,20 @@ int algorithmsRunner()
             labelsMetricsAndValues += label.first;
             labelPicked = true;
           }
-          labelsMetricsAndValues += "," + std::to_string(metric.second);
+          std::string metric_second;
+          if (std::isnan(metric.second))
+          {
+            metric_second = "nan";
+          }
+          else if (std::isinf(metric.second))
+          {
+            metric_second = "inf";
+          }
+          else
+          {
+            metric_second = std::to_string(metric.second)
+          }
+          labelsMetricsAndValues += "," + metric_second;
         }
         labelsMetricsAndValues += "\n";
         if (!metricsDone)
@@ -961,7 +974,20 @@ int algorithmsRunner()
       {
         for (const auto &metric : label.second)
         {
-          std::cout << label.first << "," << metric.first << "," << metric.second << "\n";
+          std::string metric_second;
+          if (std::isnan(metric.second))
+          {
+            metric_second = "nan";
+          }
+          else if (std::isinf(metric.second))
+          {
+            metric_second = "inf";
+          }
+          else
+          {
+            metric_second = std::to_string(metric.second)
+          }
+          std::cout << label.first << "," << metric.first << "," << metric_second << "\n";
         }
       }
     }
