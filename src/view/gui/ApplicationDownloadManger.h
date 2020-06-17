@@ -1,5 +1,5 @@
-#ifndef StandaloneApp_H
-#define StandaloneApp_H
+#ifndef ApplicationDownloadManager_H
+#define ApplicationDownloadManager_H
 
 #include <QObject>
 #include <QMutex>
@@ -7,29 +7,29 @@
 #include "fAppDownloadDialog.h"
 #include "yaml-cpp/node/node.h"
 
-class StandaloneApp : public QObject
+class ApplicationDownloadManager : public QObject
 {
 	Q_OBJECT
 
 public:
 	//! constructor/desctrucor
-	StandaloneApp() = default;
-	~StandaloneApp() = default;
+	ApplicationDownloadManager() = default;
+	~ApplicationDownloadManager() = default;
 
 	//! setters/getters
 	void SetName(QString appName);
 	QString GetName() const;
 
-	std::string getStandaloneApp(QString appName);
+	std::string getApplicationDownloadManager(QString appName);
 
 private:
 
-	Q_DISABLE_COPY(StandaloneApp)
+	Q_DISABLE_COPY(ApplicationDownloadManager)
 
 	fAppDownloadDialog appDownloadDialog;
 	QString m_AppName;
 	
-	YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/appsDownloadConfigs.yaml");
+	YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
 
 	void appDownload();
 

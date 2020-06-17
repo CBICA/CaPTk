@@ -1,4 +1,4 @@
-#include "StandaloneApp.h"
+#include "ApplicationDownloadManager.h"
 
 #include <QSettings>
 #include <QFile>
@@ -11,17 +11,17 @@
 #include "ApplicationPreferences.h"
 #include "ExtractInBackground.h"
 
-void StandaloneApp::SetName(QString appName)
+void ApplicationDownloadManager::SetName(QString appName)
 {
 	this->m_AppName = appName;
 }
 
-QString StandaloneApp::GetName() const
+QString ApplicationDownloadManager::GetName() const
 {
 	return m_AppName;
 }
 
-std::string StandaloneApp::getStandaloneApp(QString appName) {
+std::string ApplicationDownloadManager::getApplicationDownloadManager(QString appName) {
 	this->m_AppName = appName;
 
 	std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
@@ -49,7 +49,7 @@ std::string StandaloneApp::getStandaloneApp(QString appName) {
 	return scriptToCall;
 }
 
-void StandaloneApp::appDownload()
+void ApplicationDownloadManager::appDownload()
 {
 	std::string linkyml = "";
 
@@ -61,7 +61,7 @@ void StandaloneApp::appDownload()
 	linkyml = "Linux";
 	#endif
 
-	std::string downloadLink = m_appDownloadConfigs["apps"][this->m_AppName.toStdString()][linkyml].as<std::string>();
+	std::string downloadLink = m_appDownloadConfigs["appsDownload"][this->m_AppName.toStdString()][linkyml].as<std::string>();
 	
 	appDownloadDialog.SetPaths(downloadFolder);
 	appDownloadDialog.SetDownloadLink(downloadLink);
@@ -70,7 +70,7 @@ void StandaloneApp::appDownload()
 	connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(startUnzip(QString, QString)));   
 }
 
-void StandaloneApp::startUnzip(QString fullPath, QString extractPath) 
+void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPath) 
 {
 	if (cbica::isFile(fullPath.toStdString())) {
 
@@ -87,7 +87,7 @@ void StandaloneApp::startUnzip(QString fullPath, QString extractPath)
 	}
 }
 
-void StandaloneApp::doneUnzip() {
+void ApplicationDownloadManager::doneUnzip() {
 
 	if (getApplicationDownloadPath(this->m_AppName.toStdString()).empty()) {
 

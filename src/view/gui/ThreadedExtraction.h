@@ -12,29 +12,7 @@
 class ExtractInBackground : public QThread
 {
 	Q_OBJECT
-	void run() override {
-		ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("true").toString());
-
-		if (QFile::exists(this->fullPath))
-		{
-			QZipReader zr(this->fullPath);
-			bool ret = zr.extractAll(this->extractPath);
-
-			if(ret)
-			{
-				//after extraction remove the zip
-				bool successfullyremoved = QFile::remove(this->fullPath.toStdString().c_str());
-			}
-		}
-
-		qDebug() << "Extraction done in background" << this->fullPath << endl;
-
-		//serialize only once
-		ApplicationPreferences::GetInstance()->SerializePreferences();
-		ApplicationPreferences::GetInstance()->DisplayPreferences();
-
-		emit resultReady(this->appName);
-	}	
+	void run() override;
 
 public:
 	ExtractInBackground() = default;

@@ -1,5 +1,8 @@
 #include <QDialog>
 
+#include <CaPTkDefines.h>
+#include "CaPTkUtils.h"
+
 #include "fAppDownloadDialog.h"
 #include "ApplicationPreferences.h"
 
@@ -26,8 +29,19 @@ void fAppDownloadDialog::CancelButtonPressed()
 void fAppDownloadDialog::ConfirmButtonPressed()
 {
     ApplicationPreferences::GetInstance()->DeSerializePreferences();
-    bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
     bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
+
+    if (downloadFinished) { // if download is done but file is not found and extraction progress is not picked up then reset
+        ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SerializePreferences();
+    }
+
+    ApplicationPreferences::GetInstance()->DeSerializePreferences();
+    bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
+    downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
     bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
     bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
 
