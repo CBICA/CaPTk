@@ -1,12 +1,12 @@
 #include "ThreadedExtraction.h"
 
 void ThreadedExtraction::run() {
-   ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("true").toString());
-   ApplicationPreferences::GetInstance()->SerializePreferences();
-   ApplicationPreferences::GetInstance()->DisplayPreferences();
-
    if (QFile::exists(this->fullPath))
    {
+      ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("true").toString());
+      ApplicationPreferences::GetInstance()->SerializePreferences();
+      ApplicationPreferences::GetInstance()->DisplayPreferences();
+      
       QZipReader zr(this->fullPath);
       bool ret = zr.extractAll(this->extractPath);
 

@@ -47,13 +47,7 @@ void fAppDownloadDialog::ConfirmButtonPressed()
 
     ApplicationPreferences::GetInstance()->DisplayPreferences();
 
-    if(downloadStarted && !downloadFinished)
-    {
-        QMessageBox::information(this,tr("Download"),"Download in progress");
-        this->close();
-
-    }
-    else if (!downloadStarted)
+    if (!downloadStarted)
     {
         setupDownload(this);
 

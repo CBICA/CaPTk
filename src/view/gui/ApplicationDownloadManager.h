@@ -20,7 +20,7 @@ public:
 	void SetName(QString appName);
 	QString GetName() const;
 
-	std::string getApplicationDownloadManager(QString appName);
+	std::string getApplication(QString appName);
 
 private:
 
@@ -36,6 +36,9 @@ private:
 private slots:
 	void startUnzip(QString fullPath, QString extractPath);
 	void doneUnzip();
+
+signals:
+	void updateProgress(int progress, std::string message, int max);
 };
 
 #endif 

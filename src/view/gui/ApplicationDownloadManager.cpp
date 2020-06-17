@@ -21,12 +21,24 @@ QString ApplicationDownloadManager::GetName() const
 	return m_AppName;
 }
 
-std::string ApplicationDownloadManager::getApplicationDownloadManager(QString appName) {
+std::string ApplicationDownloadManager::getApplication(QString appName) {
 	this->m_AppName = appName;
 
 	std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
 
 	if (scriptToCall.empty()) {
+		ApplicationPreferences::GetInstance()->DeSerializePreferences();
+		bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
+		bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
+		ApplicationPreferences::GetInstance()->DisplayPreferences();
+
+		if(downloadStarted && !downloadFinished)
+		{
+			QMessageBox::information(&appDownloadDialog,tr("Download"),"Download in progress");
+			this->close();
+			return "";
+		}
+
 		appDownload();
 		
 		return "";
@@ -35,7 +47,6 @@ std::string ApplicationDownloadManager::getApplicationDownloadManager(QString ap
 		ApplicationPreferences::GetInstance()->DeSerializePreferences();
 		bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
 		bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
-
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
 
 		if(extractionStarted && !extractionFinished)
@@ -84,6 +95,8 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 		asyncExtract->setAppName(this->m_AppName);
 
 		asyncExtract->start();
+
+		emit updateProgress(50, "Installing " + this->m_AppName.toStdString(), 100);
 	}
 }
 
@@ -99,6 +112,9 @@ void ApplicationDownloadManager::doneUnzip() {
 		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SerializePreferences();
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
+		
+		emit updateProgress(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
+
 	}
 	else {
 		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
@@ -107,5 +123,8 @@ void ApplicationDownloadManager::doneUnzip() {
 		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
 		ApplicationPreferences::GetInstance()->SerializePreferences();
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
+		
+		emit updateProgress(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
+
 	}
 }
