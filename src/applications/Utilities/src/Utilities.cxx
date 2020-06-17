@@ -950,7 +950,7 @@ int algorithmsRunner()
           }
           else
           {
-            metric_second = std::to_string(metric.second)
+            metric_second = std::to_string(metric.second);
           }
           labelsMetricsAndValues += "," + metric_second;
         }
@@ -985,7 +985,7 @@ int algorithmsRunner()
           }
           else
           {
-            metric_second = std::to_string(metric.second)
+            metric_second = std::to_string(metric.second);
           }
           std::cout << label.first << "," << metric.first << "," << metric_second << "\n";
         }
