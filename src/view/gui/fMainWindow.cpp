@@ -881,7 +881,7 @@ fMainWindow::fMainWindow()
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
-  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string, const std::string, const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string,  const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string,  const std::string)));
 
 
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -8841,7 +8841,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 }
 
 
-void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder)
+void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
@@ -8853,17 +8853,13 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
     ShowErrorMessage("Input T1ce Image passed is not a valid file, please re-check", this);
     return;
   }
-  if (!cbica::isFile(inputdicomfilename))
-  {
-    ShowErrorMessage("Input Dicom Image passed is not a valid file, please re-check", this);
-    return;
-  }
+
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionAlignment objPerfusion;
 
   std::vector<double> OriginalCurve, RevisedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, inputdicomfilename, inputt1cefilename, before, after, OriginalCurve, RevisedCurve,echotime);
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename,  inputt1cefilename, before, after, OriginalCurve, RevisedCurve,echotime);
   for (int index = 0; index < PerfusionAlignment.size(); index++)
   {
     std::cout << "Writing time-point: " << index + 1 << "/" << PerfusionAlignment.size() << std::endl;
@@ -9596,13 +9592,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string filePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
           t1ceFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
           t1FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
           t2FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
       }
     }
@@ -9616,13 +9612,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string extension = cbica::getFilenameExtension(filePath, false);
         filePath_lower = filePath;
         std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
           && isExtensionSupported(extension))
           rcbvFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
           && isExtensionSupported(extension))
           psrFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
           && isExtensionSupported(extension))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
@@ -9636,13 +9632,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
@@ -9700,10 +9696,10 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
       std::string extension = cbica::getFilenameExtension(filePath, false);
       filePath_lower = filePath;
       std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-      if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG)
+      if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG)
         && isExtensionSupported(extension))
         labelPath = subjectPath + "/" + files[i];
-      else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+      else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
         && isExtensionSupported(extension))
         perfFilePath = subjectPath + "/SEGMENTATION" + "/" + files[i];
     }
@@ -9769,7 +9765,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
       {
         std::string filePath = subjectPath + "/SEGMENTATION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && isExtensionSupported(extension))
           labelPath = subjectPath + "/SEGMENTATION/" + files[i];
       }
     }
@@ -9780,7 +9776,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
       {
         std::string filePath = subjectPath + "/PERFUSION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION) && isExtensionSupported(extension))
           perfFilePath = subjectPath + "/PERFUSION/" + files[i];
       }
     }
@@ -9792,13 +9788,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/CONVENTIONAL/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
           t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
           t1FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
           t2FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
       }
     }
@@ -9812,13 +9808,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
@@ -9907,7 +9903,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
       {
         std::string filePath = subjectPath + "/SEGMENTATION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && isExtensionSupported(extension))
           labelPath = subjectPath + "/SEGMENTATION/" + files[i];
         else if ((files[i].find("atlas") != std::string::npos) && isExtensionSupported(extension))
           atlasPath = subjectPath + "/SEGMENTATION/" + files[i];
@@ -9922,16 +9918,16 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string extension = cbica::getFilenameExtension(filePath, false);
         filePath_lower = filePath;
         std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
           && isExtensionSupported(extension))
           rcbvFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
           && isExtensionSupported(extension))
           psrFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
           && isExtensionSupported(extension))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
           && isExtensionSupported(extension))
           perfFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
@@ -9944,13 +9940,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/CONVENTIONAL/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
           t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
           t1FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
           t2FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
       }
     }
@@ -9964,13 +9960,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
