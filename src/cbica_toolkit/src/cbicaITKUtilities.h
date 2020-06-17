@@ -70,6 +70,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
+#include "itkStatisticsImageFilter.h"
 
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 //unsigned int RmsCounter = 0;
@@ -1935,7 +1936,10 @@ namespace cbica
       {
         returnMap[labelString][metric.first] = metric.second;
       }
-      
+
+      /// not used till implementation gets standardized
+      //returnMap[labelString]["Hausdorff95"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
+      //returnMap[labelString]["Hausdorff99"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
       bool hausdorffFound = true;
       std::string hausdorffExe = cbica::getExecutablePath() + "/Hausdorff95"
 #if WIN32
@@ -1955,36 +1959,53 @@ namespace cbica
           hausdorffFound = false;
         }
       }
-      
-      if(hausdorffFound)
+
+      if (hausdorffFound)
       {
-        auto tempDir = cbica::createTmpDir();
-        auto file_1 = tempDir + "/mask_1.nii.gz";
-        auto file_2 = tempDir + "/mask_2.nii.gz";
-        auto writer = /*typename*/ itk::ImageFileWriter< TImageType >::New();
-        writer->SetInput(imageToCompare_1);
-        writer->SetFileName(file_1);
-        try
+        // in case one of the labels is missing, just put something
+        auto stats_1 = itk::StatisticsImageFilter< TImageType >::New();
+        stats_1->SetInput(imageToCompare_1);
+        stats_1->Update();
+        auto max_1 = stats_1->GetMaximum();
+        auto stats_2 = itk::StatisticsImageFilter< TImageType >::New();
+        stats_2->SetInput(imageToCompare_2);
+        stats_2->Update();
+        auto max_2 = stats_2->GetMaximum();
+
+        if ((max_1 == 0) || (max_2 == 0))
         {
-          writer->Write();
+          // this is the case where one of the labels is missing
+          returnMap[labelString]["Hausdorff95"] = NAN;
         }
-        catch (itk::ExceptionObject &e)
+        else
         {
-          std::cerr << "Error occurred while trying to write the image '" << file_1 << "': " << e.what() << "\n";
-        }
-        writer->SetInput(imageToCompare_2);
-        writer->SetFileName(file_2);
-        try
-        {
-          writer->Write();
-        }
-        catch (itk::ExceptionObject &e)
-        {
-          std::cerr << "Error occurred while trying to write the image '" << file_2 << "': " << e.what() << "\n";
-        }
-        std::array<char, 128> buffer;
-        std::string result;
-        FILE *pPipe;
+          auto tempDir = cbica::createTmpDir();
+          auto file_1 = tempDir + "/mask_1.nii.gz";
+          auto file_2 = tempDir + "/mask_2.nii.gz";
+          auto writer = itk::ImageFileWriter< TImageType >::New();
+          writer->SetInput(imageToCompare_1);
+          writer->SetFileName(file_1);
+          try
+          {
+            writer->Write();
+          }
+          catch (itk::ExceptionObject &e)
+          {
+            std::cerr << "Error occurred while trying to write the image '" << file_1 << "': " << e.what() << "\n";
+          }
+          writer->SetInput(imageToCompare_2);
+          writer->SetFileName(file_2);
+          try
+          {
+            writer->Write();
+          }
+          catch (itk::ExceptionObject &e)
+          {
+            std::cerr << "Error occurred while trying to write the image '" << file_2 << "': " << e.what() << "\n";
+          }
+          std::array<char, 128> buffer;
+          std::string result;
+          FILE *pPipe;
 #if WIN32
 #define POPEN _popen
 #define PCLOSE _pclose
@@ -1992,24 +2013,23 @@ namespace cbica
 #define POPEN popen
 #define PCLOSE pclose
 #endif
-        pPipe = POPEN((hausdorffExe + " -gt " + file_1 + " -m " + file_2).c_str(), "r");
-        if (!pPipe)
-        {
-          std::cerr << "Couldn't start command.\n";
+          pPipe = POPEN((hausdorffExe + " -gt " + file_1 + " -m " + file_2).c_str(), "r");
+          if (!pPipe)
+          {
+            std::cerr << "Couldn't start command.\n";
+          }
+          while (fgets(buffer.data(), 128, pPipe) != NULL)
+          {
+            result += buffer.data();
+          }
+          auto returnCode = PCLOSE(pPipe);
+          // remove "\n"
+          result.pop_back();
+          result.pop_back();
+          returnMap[labelString]["Hausdorff95"] = std::atof(result.c_str());
+          cbica::deleteDir(tempDir);
         }
-        while (fgets(buffer.data(), 128, pPipe) != NULL)
-        {
-          result += buffer.data();
-        }
-        auto returnCode = PCLOSE(pPipe);
-        // remove "\n"
-        result.pop_back();
-        result.pop_back();
-        returnMap[labelString]["Hausdorff95"] = std::atof(result.c_str());
-        cbica::deleteDir(tempDir);
-      }
-      //returnMap[labelString]["Hausdorff95"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
-      //returnMap[labelString]["Hausdorff99"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
+      } // end hausdorff found
     }
 
     return returnMap;
