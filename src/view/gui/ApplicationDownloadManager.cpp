@@ -9,7 +9,7 @@
 #include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
 #include "ApplicationPreferences.h"
-#include "ExtractInBackground.h"
+#include "ThreadedExtraction.h"
 
 void ApplicationDownloadManager::SetName(QString appName)
 {
@@ -74,10 +74,10 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 {
 	if (cbica::isFile(fullPath.toStdString())) {
 
-		ExtractInBackground* asyncExtract = new ExtractInBackground();
+		ThreadedExtraction* asyncExtract = new ThreadedExtraction();
 
 		connect(asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip()));
-		connect(asyncExtract, &ExtractInBackground::finished, asyncExtract, &QObject::deleteLater);
+		connect(asyncExtract, &ThreadedExtraction::finished, asyncExtract, &QObject::deleteLater);
 
 		asyncExtract->setFullPath(fullPath);
 		asyncExtract->setExtractPath(extractPath);

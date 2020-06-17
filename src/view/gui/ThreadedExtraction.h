@@ -9,14 +9,14 @@
 #include "QZipReader.h"
 #include "ApplicationPreferences.h"
 
-class ExtractInBackground : public QThread
+class ThreadedExtraction : public QThread
 {
 	Q_OBJECT
 	void run() override;
 
 public:
-	ExtractInBackground() = default;
-	~ExtractInBackground() = default;
+	ThreadedExtraction() = default;
+	~ThreadedExtraction() = default;
 
 	void setFullPath(QString fullPath) {
 		this->fullPath = fullPath;
@@ -31,7 +31,7 @@ public:
 	}
 
 private:
-	Q_DISABLE_COPY(ExtractInBackground)
+	Q_DISABLE_COPY(ThreadedExtraction)
 
 	QString fullPath;
 	QString extractPath;
