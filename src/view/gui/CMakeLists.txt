@@ -78,6 +78,7 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/OutputInteractorStyleNavigator.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ASyncAppManager.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ThreadedExtraction.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ThreadedExtraction.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/CheckOpenGLVersion.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/CheckOpenGLVersion.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/PreferencesDialog.h"
