@@ -1717,7 +1717,7 @@ namespace cbica
     returnMap["Overlap_Overall"] = similarityFilter->GetTotalOverlap();
     //std::cout << "=== Entire Masked Area ===\n";
     returnMap["Jaccard_Overall"] = similarityFilter->GetUnionOverlap();
-    returnMap["DICE_Overall"] = similarityFilter->GetMeanOverlap();
+    returnMap["Dice_Overall"] = similarityFilter->GetMeanOverlap();
     returnMap["VolumeSimilarity_Overall"] = similarityFilter->GetVolumeSimilarity();
     returnMap["FalseNegativeError_Overall"] = similarityFilter->GetFalseNegativeError();
     returnMap["FalsePositiveError_Overall"] = similarityFilter->GetFalsePositiveError();
@@ -1731,7 +1731,7 @@ namespace cbica
         auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
         returnMap["Overlap_Label" + uniqueLabels_string] = similarityFilter->GetTargetOverlap(uniqueLabels[i]);
         returnMap["Jaccard_Label" + uniqueLabels_string] = similarityFilter->GetUnionOverlap(uniqueLabels[i]);
-        returnMap["DICE_Label" + uniqueLabels_string] = similarityFilter->GetMeanOverlap(uniqueLabels[i]);
+        returnMap["Dice_Label" + uniqueLabels_string] = similarityFilter->GetMeanOverlap(uniqueLabels[i]);
         returnMap["VolumeSimilarity_Label" + uniqueLabels_string] = similarityFilter->GetVolumeSimilarity(uniqueLabels[i]);
         returnMap["FalseNegativeError_Label" + uniqueLabels_string] = similarityFilter->GetFalseNegativeError(uniqueLabels[i]);
         returnMap["FalsePositiveError_Label" + uniqueLabels_string] = similarityFilter->GetFalsePositiveError(uniqueLabels[i]);
@@ -1922,7 +1922,7 @@ namespace cbica
 
       returnMap[labelString]["Overlap"] = similarityFilter->GetTotalOverlap();
       returnMap[labelString]["Jaccard"] = similarityFilter->GetUnionOverlap();
-      returnMap[labelString]["DICE"] = similarityFilter->GetMeanOverlap();
+      returnMap[labelString]["Dice"] = similarityFilter->GetMeanOverlap();
       returnMap[labelString]["VolumeSimilarity"] = similarityFilter->GetVolumeSimilarity();
       returnMap[labelString]["FalseNegativeError"] = similarityFilter->GetFalseNegativeError();
       returnMap[labelString]["FalsePositiveError"] = similarityFilter->GetFalsePositiveError();
