@@ -282,15 +282,12 @@ void algorithmRunner()
     {
       std::cout << "=== Starting P1P2Normalize.\n";
 
-      P1P2Normalizer< TImageType > normalizer;
-      normalizer.SetInputImage(t1cImg);
-      t1cImg = normalizer.GetOutput();
-      normalizer.SetInputImage(t1Img);
-      t1Img = normalizer.GetOutput();
-      normalizer.SetInputImage(t2Img);
-      t2Img = normalizer.GetOutput();
-      normalizer.SetInputImage(flImg);
-      flImg = normalizer.GetOutput();
+      for (size_t i = 0; i < inputImages.size(); i++)
+      {
+        P1P2Normalizer< TImageType > normalizer;
+        normalizer.SetInputImage(inputImages[i]);
+        inputImages[i] = normalizer.GetOutput();
+      }
       std::cout << "=== Done.\n";
     }
   }
