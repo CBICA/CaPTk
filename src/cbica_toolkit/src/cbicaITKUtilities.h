@@ -17,7 +17,6 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include <algorithm>
 #include <functional>
 #include <cmath>
-#include <array>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -1934,60 +1933,7 @@ namespace cbica
       {
         returnMap[labelString][metric.first] = metric.second;
       }
-      
-      bool hausdorffFound = true;
-      std::string hausdorffExe = cbica::getExecutablePath() + "/Hausdorff95"
-#if WIN32
-        + ".exe"
-#endif
-        ;
-      if (!cbica::isFile(hausdorffExe))
-      {
-        hausdorffExe = cbica::getExecutablePath() + "../hausdorff95/Hausdorff95"
-#if WIN32
-          + ".exe"
-#endif
-          ;
-        if (!cbica::isFile(hausdorffExe))
-        {
-          std::cerr << "Could not find Hausdorff95 executable, so not computing this metric.\n";
-          hausdorffFound = false;
-        }
-      }
-      
-      if(hausdorffFound)
-      {
-        auto tempDir = cbica::createTmpDir();
-        auto file_1 = tempDir + "/mask_1.nii.gz";
-        auto file_2 = tempDir + "/mask_2.nii.gz";
-        cbica::WriteImage< TImageType >(imageToCompare_1, file_1);
-        cbica::WriteImage< TImageType >(imageToCompare_2, file_2);
-        std::array<char, 128> buffer;
-        std::string result;
-        FILE *pPipe;
-#if WIN32
-#define POPEN _popen
-#define PCLOSE _pclose
-#else
-#define POPEN popen
-#define PCLOSE pclose
-#endif
-        pPipe = POPEN((hausdorffExe + " -gt " + file_1 + " -m " + file_2).c_str(), "r");
-        if (!pPipe)
-        {
-          std::cerr << "Couldn't start command.\n";
-        }
-        while (fgets(buffer.data(), 128, pPipe) != NULL)
-        {
-          result += buffer.data();
-        }
-        auto returnCode = PCLOSE(pPipe);
-        // remove "\n"
-        result.pop_back();
-        result.pop_back();
-        returnMap[labelString]["Hausdorff95"] = std::atof(result.c_str());
-        cbica::deleteDir(tempDir);
-      }
+
       //returnMap[labelString]["Hausdorff95"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
       //returnMap[labelString]["Hausdorff99"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
     }
