@@ -7769,23 +7769,36 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     QStringList args;
     args << "-md" << modelDirectory.c_str() << "-o" << outputDirectory.c_str();
 
-    if (!file_t1.empty())
+    // parsing the modality-agnostic case
+    auto modelDir_lower = modelDirectory;
+    std::transform(modelDir_lower.begin(), modelDir_lower.end(), modelDir_lower.begin(), ::tolower);
+    if (modelDir_lower.find("modalityagnostic") != std::string::npos)
     {
-      files_forCommand += file_t1 + ",";
+      // we only want to pick up a single modality, in this case, so the first one loaded is picked
+      // order of preference is t1, t1ce, t2, fl
+      if (!file_t1.empty())
+      {
+        files_forCommand += file_t1 + ",";
+      }
+      else if (!file_t1ce.empty())
+      {
+        files_forCommand += file_t1ce + ",";
+      }
+      else if (!file_t2.empty())
+      {
+        files_forCommand += file_t2 + ",";
+      }
+      else if (!file_flair.empty())
+      {
+        files_forCommand += file_flair + ",";
+      }
     }
-    if (!file_t1ce.empty())
+    else
     {
-      files_forCommand += file_t1ce + ",";
+      files_forCommand = file_t1 + "," + file_t1ce + "," + file_t2 + "," + file_flair + ",";
     }
-    if (!file_t2.empty())
-    {
-      files_forCommand += file_t2 + ",";
-    }
-    if (!file_flair.empty())
-    {
-      files_forCommand += file_flair + ",";
-    }
-    files_forCommand.pop_back();
+    files_forCommand.pop_back(); // last "," removed
+
     args << "-i" << files_forCommand.c_str() << "-o" << outputDirectory.c_str();
 
     if (!file_mask.empty())
