@@ -358,8 +358,8 @@ void algorithmRunner()
   cbica::WriteImage< TImageType >(t2Img, file_t2Norm);
   cbica::WriteImage< TImageType >(flImg, file_flNorm);
 
-  auto dmExe = getApplicationPath("deepMedicInference");
-  //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicInference.exe";
+  auto dmExe = getApplicationPath("deepMedicRun");
+  //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicRun.exe";
 
 #ifdef _WIN32
   SetCurrentDirectory(cbica::getFilenamePath(dmExe).c_str());
