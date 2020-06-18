@@ -442,10 +442,11 @@ int main(int argc, char **argv)
 {
   cbica::CmdParser parser(argc, argv, "DeepMedic");
 
-  parser.addRequiredParameter("t1c", "T1CE", cbica::Parameter::FILE, "", "The input T1CE or T1Gd image file.");
-  parser.addRequiredParameter("t1", "T1", cbica::Parameter::FILE, "", "The input T1 image file.");
-  parser.addRequiredParameter("fl", "FLAIR", cbica::Parameter::FILE, "", "The input T2-FLAIR image file.");
-  parser.addRequiredParameter("t2", "T2", cbica::Parameter::FILE, "", "The input T2 image file.");
+  parser.addRequiredParameter("i", "inputImages", cbica::Parameter::STRING, "NIfTI files", "Input images provided in a comma-separated manner", "Should be in the same order as trained model", "Example: '-i /path/t1.nii.gz,/path/t1c.nii.gz'");
+  //parser.addRequiredParameter("t1c", "T1CE", cbica::Parameter::FILE, "", "The input T1CE or T1Gd image file.");
+  //parser.addRequiredParameter("t1", "T1", cbica::Parameter::FILE, "", "The input T1 image file.");
+  //parser.addRequiredParameter("fl", "FLAIR", cbica::Parameter::FILE, "", "The input T2-FLAIR image file.");
+  //parser.addRequiredParameter("t2", "T2", cbica::Parameter::FILE, "", "The input T2 image file.");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "", "The Optional input mask file.", "This is needed for normalization only");
   parser.addRequiredParameter("md", "modelDir", cbica::Parameter::DIRECTORY, "", "The trained model to use", "See examples in '${CaPTk_installDir}/data/deepMedic/saved_models'");
   parser.addRequiredParameter("o", "output", cbica::Parameter::DIRECTORY, "", "The output directory");
@@ -456,8 +457,8 @@ int main(int argc, char **argv)
 
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   parser.addApplicationDescription("This is a Deep Learning based inference engine based on DeepMedic (see documentation for details)");
-  parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping", "This does a skull stripping of the input structural data");
-  parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/brainTumorSegmentation", "This does a tumor segmentation of the input structural data");
+  parser.addExampleUsage("-i c:/t1.nii.gz,c:/t1gc.nii.gz,c:/t2.nii.gz,c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping", "This does a skull stripping of the input structural data");
+  parser.addExampleUsage("-i c:/t1.nii.gz,c:/t1gc.nii.gz,c:/t2.nii.gz,c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/brainTumorSegmentation", "This does a tumor segmentation of the input structural data");
 
   // parameters to get from the command line
   cbica::Logging logger;
