@@ -557,8 +557,6 @@ int main(int argc, char **argv)
     std::cerr << "Could not find the image file '" << inputImageFilesVector[0] << "' in the filesystem.\n";
     return EXIT_FAILURE;
   }
-  auto imageInfo = cbica::ImageInfo(inputImageFilesVector[0]);
-
   // perform sanity checks of input images only if multiple images are passed
   if (inputImageFilesVector.size() > 1)
   {
@@ -580,6 +578,8 @@ int main(int argc, char **argv)
       return EXIT_FAILURE;
     }
   }
+
+  auto imageInfo = cbica::ImageInfo(inputImageFilesVector[0]);
 
   switch (imageInfo.GetImageDimensions())
   {
