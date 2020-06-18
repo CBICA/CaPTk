@@ -55,7 +55,6 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "cbicaUtilities.h"
 #include "cbicaITKImageInfo.h"
-#include "cbicaITKSafeImageIO.h"
 
 #include "HausdorffDistance.h"
 
