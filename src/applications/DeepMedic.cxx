@@ -365,6 +365,8 @@ void algorithmRunner()
   SetCurrentDirectory(cbica::getFilenamePath(dmExe).c_str());
 #endif
 
+  // order for 4-modality applications: t1,t1c,t2,fl
+
   auto fullCommand = dmExe +
     " -t1 " + file_t1Norm +
     " -t1c " + file_t1ceNorm +
