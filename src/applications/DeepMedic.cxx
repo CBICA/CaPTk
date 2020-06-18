@@ -138,7 +138,7 @@ void algorithmRunner()
   }
   else
   {
-    std::cout << "Using non-CaPTk approved model at user's own risk.\n";
+    std::cout << "!!! WARNING: Using non-CaPTk approved model at user's own risk...\n";
   }
   
   auto filesInDir = cbica::filesInDirectory(modelDirName);
