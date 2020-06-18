@@ -1961,27 +1961,8 @@ namespace cbica
         auto tempDir = cbica::createTmpDir();
         auto file_1 = tempDir + "/mask_1.nii.gz";
         auto file_2 = tempDir + "/mask_2.nii.gz";
-        auto writer = /*typename*/ itk::ImageFileWriter< TImageType >::New();
-        writer->SetInput(imageToCompare_1);
-        writer->SetFileName(file_1);
-        try
-        {
-          writer->Write();
-        }
-        catch (itk::ExceptionObject &e)
-        {
-          std::cerr << "Error occurred while trying to write the image '" << file_1 << "': " << e.what() << "\n";
-        }
-        writer->SetInput(imageToCompare_2);
-        writer->SetFileName(file_2);
-        try
-        {
-          writer->Write();
-        }
-        catch (itk::ExceptionObject &e)
-        {
-          std::cerr << "Error occurred while trying to write the image '" << file_2 << "': " << e.what() << "\n";
-        }
+        cbica::WriteImage< TImageType >(imageToCompare_1, file_1);
+        cbica::WriteImage< TImageType >(imageToCompare_2, file_2);
         std::array<char, 128> buffer;
         std::string result;
         FILE *pPipe;
