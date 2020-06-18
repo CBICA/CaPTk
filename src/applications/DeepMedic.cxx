@@ -254,7 +254,10 @@ void algorithmRunner()
         statsCalculator->Update();
         if (statsCalculator->GetMean() != 0)
         {
-          std::cout << "== Starting Normalization of image '" << i << "'.\n";
+          if (debugMode)
+          {
+            std::cout << "== Starting Normalization of image '" << i << "'.\n";
+          }
           ZScoreNormalizer< TImageType > normalizer;
           normalizer.SetInputImage(inputImages[i]);
           if (maskProvided)
@@ -265,7 +268,11 @@ void algorithmRunner()
           normalizer.SetQuantiles(quantLower, quantUpper);
           normalizer.Update();
           inputImages[i] = normalizer.GetOutput();
-          std::cout << "== Done.\n";
+
+          if (debugMode)
+          {
+            std::cout << "== Done.\n";
+          }
         }
       }
       std::cout << "=== Done.\n";
