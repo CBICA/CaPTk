@@ -7766,7 +7766,7 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
 
     QStringList args;
     args << "-md" << modelDirectory.c_str()
-      << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
+      << "-i" << (file_t1 + "," + file_t1ce + "," + file_t2 + "," + file_flair).c_str() << "-o" << outputDirectory.c_str();
 
     if (!file_mask.empty())
     {
