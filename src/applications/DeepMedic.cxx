@@ -475,6 +475,16 @@ int main(int argc, char **argv)
     parser.getParameterValue("d", debugMode);
   }
   parser.getParameterValue("i", inputImageFiles);
+  inputImageFilesVector = cbica::stringSplit(inputImageFiles, ",");
+  if (inputImageFilesVector.size() == 1)
+  {
+    // just in case the user passes input files with a different delimiter
+    inputImageFilesVector = cbica::stringSplit(inputImageFiles, "|");
+    if (inputImageFilesVector.size() == 1)
+    {
+      // at this point, we assume the user wants to pass a single image and proceed
+    }
+  }
 
   parser.getParameterValue("o", outputDirectory);  
   // sanity check in case the user has passed a file
