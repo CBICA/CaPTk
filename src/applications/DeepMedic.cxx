@@ -319,8 +319,6 @@ void algorithmRunner()
       cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile_temp);
     }
     
-    outputImage_temp = cbica::ReadImage< TImageType >(outputImageFile_temp);
-
     if (!outputFile.empty())
     {
       cbica::WriteImage< TImageType >(
