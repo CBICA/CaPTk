@@ -292,7 +292,7 @@ void algorithmRunner()
     }
   }
 
-  if (inferenceType <= SkullStripping)
+  if (inferenceType <= SkullStripping) // this is present as a sanity check in case we design a model that does not use isotropic resampling, which is unlikely at this point
   {
     if (resamplingRes > 0)
     {
