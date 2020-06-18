@@ -258,7 +258,7 @@ void algorithmRunner()
   files_forCommand.pop_back(); // remove last ","
 
   auto dmExe = getApplicationPath("deepMedicInference");
-  //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicRun.exe";
+  //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicRun.exe"; // FOR DEBUGGING ONLY //
 
 #ifdef _WIN32
   SetCurrentDirectory(cbica::getFilenamePath(dmExe).c_str());
