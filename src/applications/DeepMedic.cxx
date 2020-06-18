@@ -310,14 +310,14 @@ void algorithmRunner()
   cbica::createDir(outputDirectory);
   std::cout << "Starting DeepMedic Segmentation.\n";
 
-  std::string file_t1ceNorm = cbica::normPath(outputDirectory + "/t1ce_normalized.nii.gz"),
-    file_t1Norm = cbica::normPath(outputDirectory + "/t1_normalized.nii.gz"),
-    file_t2Norm = cbica::normPath(outputDirectory + "/t2_normalized.nii.gz"),
-    file_flNorm = cbica::normPath(outputDirectory + "/fl_normalized.nii.gz");
-  cbica::WriteImage< TImageType >(t1cImg, file_t1ceNorm);
-  cbica::WriteImage< TImageType >(t1Img, file_t1Norm);
-  cbica::WriteImage< TImageType >(t2Img, file_t2Norm);
-  cbica::WriteImage< TImageType >(flImg, file_flNorm);
+  std::vector< std::string > file_inputNormalized;
+  file_inputNormalized.resize(inputImages.size());
+
+  for (size_t i = 0; i < inputImages.size(); i++)
+  {
+    file_inputNormalized[i] = cbica::normPath(outputDirectory + "/" + std::to_string(i) + "_normalized.nii.gz");
+    cbica::WriteImage< TImageType >(inputImages[i], file_inputNormalized[i]);
+  }
 
   auto dmExe = getApplicationPath("deepMedicInference");
   //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicRun.exe";
