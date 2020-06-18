@@ -485,7 +485,7 @@ int main(int argc, char **argv)
       // at this point, we assume the user wants to pass a single image and proceed
     }
   }
-
+  
   parser.getParameterValue("o", outputDirectory);  
   // sanity check in case the user has passed a file
   if (!cbica::getFilenameExtension(outputDirectory, false).empty())
@@ -552,27 +552,24 @@ int main(int argc, char **argv)
     parser.getParameterValue("t", inferenceType);
   }
 
-  auto imageInfo = cbica::ImageInfo(inputT1ce);
-  
-  if (!cbica::ImageSanityCheck(inputT1, inputT1ce))
-  {
-    std::cerr << "T1 and T1CE images are in inconsistent spaces, please register them before trying.\n";
-    return EXIT_FAILURE;
-  }
-  if (!cbica::ImageSanityCheck(inputT2, inputT1ce))
-  {
-    std::cerr << "T2 and T1CE images are in inconsistent spaces, please register them before trying.\n";
-    return EXIT_FAILURE;
-  }
-  if (!cbica::ImageSanityCheck(inputFlair, inputT1ce))
-  {
-    std::cerr << "T2-Flair and T1CE images are in inconsistent spaces, please register them before trying.\n";
-    return EXIT_FAILURE;
-  }
+  auto imageInfo = cbica::ImageInfo(inputImageFilesVector[0]);
 
+  // perform sanity checks of input images only if multiple images are passed
+  if (inputImageFilesVector.size() > 1)
+  {
+    for (size_t i = 1; i < inputImageFilesVector.size(); i++)
+    {
+      if (!cbica::ImageSanityCheck(inputImageFilesVector[0], inputImageFilesVector[i]))
+      {
+        std::cerr << "The first image file '" << inputImageFilesVector[0] << "' has different physical dimensions with '" << inputImageFilesVector[i] << "', please register them before trying again.\n";
+        return EXIT_FAILURE;
+      }
+    }
+  }
+  
   if (maskProvided)
   {
-    if(!cbica::ImageSanityCheck(inputT1ce, inputMaskName))
+    if(!cbica::ImageSanityCheck(inputImageFilesVector[0], inputMaskName))
     {
       std::cerr << "The input image(s) and mask are in inconsistent spaces, please register them before trying.\n";
       return EXIT_FAILURE;
