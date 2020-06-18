@@ -72,7 +72,7 @@
 
 #include <QFile>
 
-#include "StandaloneApp.h"
+#include "ApplicationDownloadManager.h"
 
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
@@ -5913,8 +5913,11 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  StandaloneApp* standaloneapp = new StandaloneApp();
-  std::string scriptToCall = standaloneapp->getStandaloneApp("libra");
+  ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
+  std::string scriptToCall = standaloneapp->getApplication("libra");
+
+  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+
   if (scriptToCall.empty()) {
     return;
   }
@@ -6018,8 +6021,11 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  StandaloneApp* standaloneapp = new StandaloneApp();
-  std::string scriptToCall = standaloneapp->getStandaloneApp("libra");
+  ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
+  std::string scriptToCall = standaloneapp->getApplication("libra");
+
+  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+
   if (scriptToCall.empty()) {
     return;
   }
@@ -6077,8 +6083,11 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  StandaloneApp* standaloneapp = new StandaloneApp();
-  std::string scriptToCall = standaloneapp->getStandaloneApp("libra");
+  ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
+  std::string scriptToCall = standaloneapp->getApplication("libra");
+
+  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+
   if (scriptToCall.empty()) {
     return;
   }
