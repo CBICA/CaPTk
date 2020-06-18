@@ -19,12 +19,12 @@ See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 
 #include "cbicaUtilities.h"
 #include "FeatureReductionClass.h"
-//#include "CaPTk.h"
+#include "itkExtractImageFilter.h"
 #include "cbicaLogging.h"
 #include "CaPTkDefines.h"
-#include "itkExtractImageFilter.h"
-#include "NiftiDataManager.h"
 #include "CaPTkUtils.h"
+#include "cbicaITKSafeImageIO.h"
+
 
 #ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
@@ -75,7 +75,6 @@ public:
 
   //! Default destructor
   ~PerfusionDerivatives() {};
-  NiftiDataManager mNiftiLocalPtr;
 
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
