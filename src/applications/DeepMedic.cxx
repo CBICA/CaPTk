@@ -333,10 +333,7 @@ void algorithmRunner()
   // order for 4-modality applications: t1,t1c,t2,fl
 
   auto fullCommand = dmExe +
-    " -t1 " + file_t1Norm +
-    " -t1c " + file_t1ceNorm +
-    " -t2 " + file_t2Norm +
-    " -fl " + file_flNorm +
+    " -i " + files_forCommand +
     " -model " + cbica::normPath(modelDirName + "/modelConfig.txt") +
     " -load " + cbica::normPath(modelDirName + "/model.ckpt") +
     " -test " + cbica::normPath(getCaPTkDataDir() + "/deepMedic/configFiles/testApiConfig.txt") +
