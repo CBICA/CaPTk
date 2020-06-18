@@ -312,12 +312,16 @@ void algorithmRunner()
 
   std::vector< std::string > file_inputNormalized;
   file_inputNormalized.resize(inputImages.size());
+  std::string files_forCommand;
 
   for (size_t i = 0; i < inputImages.size(); i++)
   {
     file_inputNormalized[i] = cbica::normPath(outputDirectory + "/" + std::to_string(i) + "_normalized.nii.gz");
     cbica::WriteImage< TImageType >(inputImages[i], file_inputNormalized[i]);
+    files_forCommand += file_inputNormalized[i] + ",";
   }
+
+  files_forCommand.pop_back(); // remove last ","
 
   auto dmExe = getApplicationPath("deepMedicInference");
   //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicRun.exe";
