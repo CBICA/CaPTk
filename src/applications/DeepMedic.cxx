@@ -375,19 +375,19 @@ void algorithmRunner()
     
     outputImage_temp = cbica::ReadImage< TImageType >(outputImageFile_temp);
 
-    {
-      std::cout << "== Starting resampling of output segmentation back to patient space.\n";
-      auto t1cImg_original = cbica::ReadImage< TImageType >(inputT1ce);
-      auto resampledMask = cbica::ResampleImage< TImageType >(outputImage_temp,
-        t1cImg_original->GetSpacing(),
-        t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
-      cbica::WriteImage< TImageType >(
-        resampledMask,
-        outputImageFile_temp
-        );
-      std::cout << "== Done.\n";
-    }
-    
+    //{
+    //  std::cout << "== Starting resampling of output segmentation back to patient space.\n";
+    //  auto t1cImg_original = cbica::ReadImage< TImageType >(inputT1ce);
+    //  auto resampledMask = cbica::ResampleImage< TImageType >(outputImage_temp,
+    //    t1cImg_original->GetSpacing(),
+    //    t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
+    //  cbica::WriteImage< TImageType >(
+    //    resampledMask,
+    //    outputImageFile_temp
+    //    );
+    //  std::cout << "== Done.\n";
+    //}
+    //
     if (!outputFile.empty())
     {
       cbica::WriteImage< TImageType >(
