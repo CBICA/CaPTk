@@ -20,7 +20,8 @@
 
 //#include "CAPTk.h"
 
-std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, modelDirName, inputBVecName, outputDirectory, outputFile, loggerFileIn;
+std::string inputImageFiles, inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, modelDirName, inputBVecName, outputDirectory, outputFile, loggerFileIn;
+std::vector< std::string > inputImageFilesVector;
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;
 bool maskProvided = false, debugMode = false, enableNormalization = true;
 int inferenceType = 0;
@@ -473,10 +474,7 @@ int main(int argc, char **argv)
   {
     parser.getParameterValue("d", debugMode);
   }
-  parser.getParameterValue("t1c", inputT1ce);
-  parser.getParameterValue("t1", inputT1);
-  parser.getParameterValue("t2", inputT2);
-  parser.getParameterValue("fl", inputFlair);
+  parser.getParameterValue("i", inputImageFiles);
 
   parser.getParameterValue("o", outputDirectory);  
   // sanity check in case the user has passed a file
