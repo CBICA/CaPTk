@@ -35,7 +35,6 @@ std::string ApplicationDownloadManager::getApplication(QString appName) {
 		if(downloadStarted && !downloadFinished)
 		{
 			QMessageBox::information(&appDownloadDialog,tr("Download"),"Download in progress");
-			this->close();
 			return "";
 		}
 
