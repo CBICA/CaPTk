@@ -273,7 +273,10 @@ void algorithmRunner()
     " -test " + cbica::normPath(getCaPTkDataDir() + "/deepMedic/configFiles/testApiConfig.txt") +
     " -o " + outputDirectory;
 
-  std::cout << "Running the following command:\n" << fullCommand << "\n";
+  if (debugMode)
+  {
+    std::cout << "Running the following command:\n" << fullCommand << "\n";
+  }
 
   if (std::system(fullCommand.c_str()) != 0)
   {
@@ -287,7 +290,10 @@ void algorithmRunner()
     auto outputImage_temp = cbica::ReadImage< TImageType >(outputImageFile_temp);
     if (inferenceType == SkullStripping)
     {
-      std::cout << "=== Performing hole-filling operation for skull stripping.\n";
+      if (debugMode)
+      {
+        std::cout << "=== Performing hole-filling operation for skull stripping.\n";
+      }
       auto outputImageWithHoles = outputImage_temp;
 
       auto holeFiller = itk::BinaryFillholeImageFilter< TImageType >::New();
@@ -297,11 +303,17 @@ void algorithmRunner()
       holeFiller->Update();
 
       cbica::WriteImage< TImageType >(holeFiller->GetOutput(), outputImageFile_temp);
-      std::cout << "=== Done.\n";
+      if (debugMode)
+      {
+        std::cout << "=== Done.\n";
+      }
     }
     else if (inferenceType == TumorSegmentation)
     {
-      std::cout << "=== Changing the output label value from '3' to '4' for BraTS consistency.\n";
+      if (debugMode)
+      {
+        std::cout << "=== Changing the output label value from '3' to '4' for BraTS consistency.\n";
+      }
       auto outputImageWithNewValues = cbica::ChangeImageValues< TImageType >(outputImage_temp, "3", "4");
 
       cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile_temp);
