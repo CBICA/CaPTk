@@ -150,11 +150,15 @@ void algorithmRunner()
     }
   }
 
-  auto t1cImg = cbica::ReadImage< TImageType >(inputT1ce);
-  auto t1Img = cbica::ReadImage< TImageType >(inputT1);
-  auto t2Img = cbica::ReadImage< TImageType >(inputT2);
-  auto flImg = cbica::ReadImage< TImageType >(inputFlair);
-  auto maskImage = cbica::CreateImage< TImageType >(t1cImg);
+  std::vector< typename TImageType::Pointer > inputImages;
+  inputImages.resize(inputImageFilesVector.size());
+
+  for (size_t i = 0; i < inputImageFilesVector.size(); i++)
+  {
+    inputImages[i] = cbica::ReadImage< TImageType >(inputImageFilesVector[i]);
+  }
+
+  auto maskImage = cbica::CreateImage< TImageType >(inputImages[0]);
 
   if (maskProvided)
   {
