@@ -939,7 +939,27 @@ int algorithmsRunner()
             labelsMetricsAndValues += label.first;
             labelPicked = true;
           }
-          labelsMetricsAndValues += "," + std::to_string(metric.second);
+          std::string metric_second;
+          if (std::isnan(metric.second))
+          {
+            metric_second = "NaN";
+          }
+          else if (std::isinf(metric.second))
+          {
+            metric_second = "INF";
+          }
+          else
+          {
+            if (metric.second > 10e100)
+            {
+              metric_second = "INF";
+            }
+            else
+            {
+              metric_second = std::to_string(metric.second);
+            }
+          }
+          labelsMetricsAndValues += "," + metric_second;
         }
         labelsMetricsAndValues += "\n";
         if (!metricsDone)
@@ -961,7 +981,27 @@ int algorithmsRunner()
       {
         for (const auto &metric : label.second)
         {
-          std::cout << label.first << "," << metric.first << "," << metric.second << "\n";
+          std::string metric_second;
+          if (std::isnan(metric.second))
+          {
+            metric_second = "NaN";
+          }
+          else if (std::isinf(metric.second))
+          {
+            metric_second = "INF";
+          }
+          else
+          {
+            if (metric.second > 10e100)
+            {
+              metric_second = "INF";
+            }
+            else
+            {
+              metric_second = std::to_string(metric.second);
+            }
+          }
+          std::cout << label.first << "," << metric.first << "," << metric_second << "\n";
         }
       }
     }
