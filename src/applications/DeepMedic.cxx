@@ -175,70 +175,71 @@ void algorithmRunner()
     inferenceType = 1;
   }
 
-  // per-patient registration
-  auto greedyExe = getApplicationPath("GreedyRegistration");
-  if (!cbica::ImageSanityCheck< TImageType >(t1cImg, maskImage))
-  {
-    auto tempFile_input = outputDirectory + "/maskToT1gd_input.nii.gz";
-    auto tempFile = outputDirectory + "/maskToT1gd.nii.gz";
-    cbica::WriteImage< TImageType >(maskImage, tempFile_input);
-    auto greedyCommand = greedyExe +
-      " -i " + tempFile_input +
-      " -f " + inputT1ce +
-      " -t " + outputDirectory + "/tempMatrix.mat" +
-      " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
-      ;
+  /////// the registration is never invoked as sanity checking is done beforehand
+  //// per-patient registration
+  //auto greedyExe = getApplicationPath("GreedyRegistration");
+  //if (!cbica::ImageSanityCheck< TImageType >(t1cImg, maskImage))
+  //{
+  //  auto tempFile_input = outputDirectory + "/maskToT1gd_input.nii.gz";
+  //  auto tempFile = outputDirectory + "/maskToT1gd.nii.gz";
+  //  cbica::WriteImage< TImageType >(maskImage, tempFile_input);
+  //  auto greedyCommand = greedyExe +
+  //    " -i " + tempFile_input +
+  //    " -f " + inputT1ce +
+  //    " -t " + outputDirectory + "/tempMatrix.mat" +
+  //    " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
+  //    ;
 
-    std::cout << "== Starting per-subject registration of Mask to T1-Ce using Greedy.\n";
-    std::system(greedyCommand.c_str());
-    maskImage = cbica::ReadImage< TImageType >(tempFile);
-    std::cout << "== Done.\n";
-  }
-  if (!cbica::ImageSanityCheck< TImageType >(t1cImg, t1Img))
-  {
-    auto tempFile = outputDirectory + "/T1ToT1gd.nii.gz";
-    auto greedyCommand = greedyExe +
-      " -i " + inputT1 +
-      " -f " + inputT1ce +
-      " -t " + outputDirectory + "/tempMatrix.mat" +
-      " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
-      ;
+  //  std::cout << "== Starting per-subject registration of Mask to T1-Ce using Greedy.\n";
+  //  std::system(greedyCommand.c_str());
+  //  maskImage = cbica::ReadImage< TImageType >(tempFile);
+  //  std::cout << "== Done.\n";
+  //}
+  //if (!cbica::ImageSanityCheck< TImageType >(t1cImg, t1Img))
+  //{
+  //  auto tempFile = outputDirectory + "/T1ToT1gd.nii.gz";
+  //  auto greedyCommand = greedyExe +
+  //    " -i " + inputT1 +
+  //    " -f " + inputT1ce +
+  //    " -t " + outputDirectory + "/tempMatrix.mat" +
+  //    " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
+  //    ;
 
-    std::cout << "== Starting per-subject registration of T1 to T1-Ce using Greedy.\n";
-    std::system(greedyCommand.c_str());
-    t1Img = cbica::ReadImage< TImageType >(tempFile);
-    std::cout << "== Done.\n";
-  }
-  if (!cbica::ImageSanityCheck< TImageType >(t1cImg, t2Img))
-  {
-    auto tempFile = outputDirectory + "/T2ToT1gd.nii.gz";
-    auto greedyCommand = greedyExe +
-      " -i " + inputT2 +
-      " -f " + inputT1ce +
-      " -t " + outputDirectory + "/tempMatrix.mat" +
-      " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
-      ;
+  //  std::cout << "== Starting per-subject registration of T1 to T1-Ce using Greedy.\n";
+  //  std::system(greedyCommand.c_str());
+  //  t1Img = cbica::ReadImage< TImageType >(tempFile);
+  //  std::cout << "== Done.\n";
+  //}
+  //if (!cbica::ImageSanityCheck< TImageType >(t1cImg, t2Img))
+  //{
+  //  auto tempFile = outputDirectory + "/T2ToT1gd.nii.gz";
+  //  auto greedyCommand = greedyExe +
+  //    " -i " + inputT2 +
+  //    " -f " + inputT1ce +
+  //    " -t " + outputDirectory + "/tempMatrix.mat" +
+  //    " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
+  //    ;
 
-    std::cout << "== Starting per-subject registration of T2 to T1-Ce using Greedy.\n";
-    std::system(greedyCommand.c_str());
-    t2Img = cbica::ReadImage< TImageType >(tempFile);
-    std::cout << "== Done.\n";
-  }
-  if (!cbica::ImageSanityCheck< TImageType >(t1cImg, flImg))
-  {
-    auto tempFile = outputDirectory + "/FLToT1gd.nii.gz";
-    auto greedyCommand = greedyExe +
-      " -i " + inputFlair +
-      " -f " + inputT1ce +
-      " -t " + outputDirectory + "/tempMatrix.mat" +
-      " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
-      ;
+  //  std::cout << "== Starting per-subject registration of T2 to T1-Ce using Greedy.\n";
+  //  std::system(greedyCommand.c_str());
+  //  t2Img = cbica::ReadImage< TImageType >(tempFile);
+  //  std::cout << "== Done.\n";
+  //}
+  //if (!cbica::ImageSanityCheck< TImageType >(t1cImg, flImg))
+  //{
+  //  auto tempFile = outputDirectory + "/FLToT1gd.nii.gz";
+  //  auto greedyCommand = greedyExe +
+  //    " -i " + inputFlair +
+  //    " -f " + inputT1ce +
+  //    " -t " + outputDirectory + "/tempMatrix.mat" +
+  //    " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
+  //    ;
 
-    std::cout << "== Starting per-subject registration of T2-Flair to T1-Ce using Greedy.\n";
-    std::system(greedyCommand.c_str());
-    flImg = cbica::ReadImage< TImageType >(tempFile);
-    std::cout << "== Done.\n";
-  }
+  //  std::cout << "== Starting per-subject registration of T2-Flair to T1-Ce using Greedy.\n";
+  //  std::system(greedyCommand.c_str());
+  //  flImg = cbica::ReadImage< TImageType >(tempFile);
+  //  std::cout << "== Done.\n";
+  //}
 
   if (enableNormalization)
   {
