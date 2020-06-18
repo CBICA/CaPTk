@@ -189,7 +189,7 @@ void algorithmRunner()
   //    " -t " + outputDirectory + "/tempMatrix.mat" +
   //    " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
   //    ;
-
+  //
   //  std::cout << "== Starting per-subject registration of Mask to T1-Ce using Greedy.\n";
   //  std::system(greedyCommand.c_str());
   //  maskImage = cbica::ReadImage< TImageType >(tempFile);
@@ -204,7 +204,7 @@ void algorithmRunner()
   //    " -t " + outputDirectory + "/tempMatrix.mat" +
   //    " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
   //    ;
-
+  //
   //  std::cout << "== Starting per-subject registration of T1 to T1-Ce using Greedy.\n";
   //  std::system(greedyCommand.c_str());
   //  t1Img = cbica::ReadImage< TImageType >(tempFile);
@@ -219,7 +219,7 @@ void algorithmRunner()
   //    " -t " + outputDirectory + "/tempMatrix.mat" +
   //    " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
   //    ;
-
+  //
   //  std::cout << "== Starting per-subject registration of T2 to T1-Ce using Greedy.\n";
   //  std::system(greedyCommand.c_str());
   //  t2Img = cbica::ReadImage< TImageType >(tempFile);
@@ -234,7 +234,7 @@ void algorithmRunner()
   //    " -t " + outputDirectory + "/tempMatrix.mat" +
   //    " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
   //    ;
-
+  //
   //  std::cout << "== Starting per-subject registration of T2-Flair to T1-Ce using Greedy.\n";
   //  std::system(greedyCommand.c_str());
   //  flImg = cbica::ReadImage< TImageType >(tempFile);
