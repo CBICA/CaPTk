@@ -17,6 +17,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include <algorithm>
 #include <functional>
 #include <cmath>
+#include <array>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -2002,7 +2003,7 @@ namespace cbica
           {
             std::cerr << "Error occurred while trying to write the image '" << file_2 << "': " << e.what() << "\n";
           }
-          std::array<char, 128> buffer;
+          std::array< char, 128> buffer;
           std::string result;
           FILE *pPipe;
 #if WIN32
