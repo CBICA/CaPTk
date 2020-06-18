@@ -90,11 +90,11 @@ int main(int argc, char **argv)
   if (perfusionDerivatives.size() > 0)
   {
     if (psrPresent==1)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[0], outputDirectoryName + "/PSR.nii.gz");
+      cbica::WriteImage<ImageTypeFloat3D>(perfusionDerivatives[0], outputDirectoryName + "/PSR.nii.gz");
     if (phPresent==1)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[1], outputDirectoryName + "/PH.nii.gz");
+      cbica::WriteImage<ImageTypeFloat3D>(perfusionDerivatives[1], outputDirectoryName + "/PH.nii.gz");
     if (rcbvPresent==1)
-      cbica::WriteImage< ImageTypeFloat3D >(perfusionDerivatives[2], outputDirectoryName + "/ap-RCBV.nii.gz");
+      cbica::WriteImage<ImageTypeFloat3D>(perfusionDerivatives[2], outputDirectoryName + "/ap-RCBV.nii.gz");
     std::cout << "Perfusion derivatives written to the specified location." << std::endl;
   }
   std::cout << "Finished successfully.\n";
