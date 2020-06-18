@@ -246,77 +246,27 @@ void algorithmRunner()
     if (inferenceType == TumorSegmentation)
     {
       std::cout << "=== Checking and rectifying (z-score) normalization status.\n";
-      auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
-      statsCalculator->SetInput(t1cImg);
-      statsCalculator->Update();
-      if (statsCalculator->GetMean() != 0)
-      {
-        std::cout << "== Starting Normalization of T1CE image.\n";
-        ZScoreNormalizer< TImageType > normalizer;
-        normalizer.SetInputImage(t1cImg);
-        if (maskProvided)
-        {
-          normalizer.SetInputMask(maskImage);
-        }
-        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-        normalizer.SetQuantiles(quantLower, quantUpper);
-        normalizer.Update();
-        t1cImg = normalizer.GetOutput();
-        std::cout << "== Done.\n";
-      }
 
-      statsCalculator->SetInput(t1Img);
-      statsCalculator->Update();
-      if (statsCalculator->GetMean() != 0)
+      for (size_t i = 0; i < inputImages.size(); i++)
       {
-        std::cout << "== Starting Normalization of T1 image.\n";
-        ZScoreNormalizer< TImageType > normalizer;
-        normalizer.SetInputImage(t1Img);
-        if (maskProvided)
+        auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+        statsCalculator->SetInput(inputImages[i]);
+        statsCalculator->Update();
+        if (statsCalculator->GetMean() != 0)
         {
-          normalizer.SetInputMask(maskImage);
+          std::cout << "== Starting Normalization of image '" << i << "'.\n";
+          ZScoreNormalizer< TImageType > normalizer;
+          normalizer.SetInputImage(inputImages[i]);
+          if (maskProvided)
+          {
+            normalizer.SetInputMask(maskImage);
+          }
+          normalizer.SetCutoffs(cutOffLower, cutOffUpper);
+          normalizer.SetQuantiles(quantLower, quantUpper);
+          normalizer.Update();
+          inputImages[i] = normalizer.GetOutput();
+          std::cout << "== Done.\n";
         }
-        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-        normalizer.SetQuantiles(quantLower, quantUpper);
-        normalizer.Update();
-        t1Img = normalizer.GetOutput();
-        std::cout << "== Done.\n";
-      }
-
-      statsCalculator->SetInput(t2Img);
-      statsCalculator->Update();
-      if (statsCalculator->GetMean() != 0)
-      {
-        std::cout << "== Starting Normalization of T2 image.\n";
-        ZScoreNormalizer< TImageType > normalizer;
-        normalizer.SetInputImage(t2Img);
-        if (maskProvided)
-        {
-          normalizer.SetInputMask(maskImage);
-        }
-        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-        normalizer.SetQuantiles(quantLower, quantUpper);
-        normalizer.Update();
-        t2Img = normalizer.GetOutput();
-        std::cout << "== Done.\n";
-      }
-
-      statsCalculator->SetInput(flImg);
-      statsCalculator->Update();
-      if (statsCalculator->GetMean() != 0)
-      {
-        std::cout << "== Starting Normalization of T2-Flair image.\n";
-        ZScoreNormalizer< TImageType > normalizer;
-        normalizer.SetInputImage(flImg);
-        if (maskProvided)
-        {
-          normalizer.SetInputMask(maskImage);
-        }
-        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-        normalizer.SetQuantiles(quantLower, quantUpper);
-        normalizer.Update();
-        flImg = normalizer.GetOutput();
-        std::cout << "== Done.\n";
       }
       std::cout << "=== Done.\n";
     }
