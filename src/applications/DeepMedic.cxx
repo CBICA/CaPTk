@@ -297,10 +297,11 @@ void algorithmRunner()
     if (resamplingRes > 0)
     {
       std::cout << "=== Starting resampling of images to isotropic resolution.\n";
-      t1cImg = cbica::ResampleImage< TImageType >(t1cImg, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
-      t1Img = cbica::ResampleImage< TImageType >(t1Img, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
-      flImg = cbica::ResampleImage< TImageType >(flImg, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
-      t2Img = cbica::ResampleImage< TImageType >(t2Img, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
+
+      for (size_t i = 0; i < inputImages.size(); i++)
+      {
+        inputImages[i] = cbica::ResampleImage< TImageType >(inputImages[i], resamplingRes);
+      }
       maskImage = cbica::ResampleImage< TImageType >(maskImage, resamplingRes, "Nearest"); // default is linear resampling to isotropic resolution of 1.0
       std::cout << "=== Done.\n";
     }
