@@ -20,7 +20,7 @@
 
 //#include "CAPTk.h"
 
-std::string inputImageFiles, inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, modelDirName, inputBVecName, outputDirectory, outputFile, loggerFileIn;
+std::string inputImageFiles, inputMaskName, modelDirName, outputDirectory, outputFile, loggerFileIn;
 std::vector< std::string > inputImageFilesVector;
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;
 bool maskProvided = false, debugMode = false, enableNormalization = true;
