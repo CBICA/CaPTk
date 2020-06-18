@@ -5916,7 +5916,7 @@ void fMainWindow::ApplicationLIBRABatch()
   ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
   std::string scriptToCall = standaloneapp->getApplication("libra");
 
-  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int));
+  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;
@@ -6024,7 +6024,7 @@ void fMainWindow::ApplicationBreastSegmentation()
   ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
   std::string scriptToCall = standaloneapp->getApplication("libra");
 
-  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int));
+  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;
@@ -6086,7 +6086,7 @@ void fMainWindow::ApplicationLIBRASingle()
   ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
   std::string scriptToCall = standaloneapp->getApplication("libra");
 
-  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int));
+  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;
