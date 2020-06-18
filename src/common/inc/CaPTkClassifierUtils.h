@@ -192,15 +192,12 @@ inline VectorDouble testOpenCVSVM(const VariableSizeMatrixType &testingData, con
 
   VectorDouble returnVecScore;
   VectorDouble returnVecLabel;
-  //VariableSizeMatrixType returnMat;
-  //returnMat.SetSize(testingData.Rows(), 1);
-  //returnVec.resize(testingData.Rows());
-  cv::Mat testingDataMat = cv::Mat::zeros(testingData.Rows(), testingData.Cols() - 1, CV_32FC1), outputProbs;
+  cv::Mat testingDataMat = cv::Mat::zeros(testingData.Rows(), testingData.Cols(), CV_32FC1), outputProbs;
 
   // fast cv::Mat access
-  for (unsigned int i = 0; i < testingData.Rows(); ++i)
+  for (unsigned int i = 0; i < testingData.Rows(); i++)
   {
-    for (unsigned int j = 0; j < testingData.Cols(); ++j)
+    for (unsigned int j = 0; j < testingData.Cols(); j++)
     {
       testingDataMat.ptr< float >(i)[j] = testingData(i, j);
     }
