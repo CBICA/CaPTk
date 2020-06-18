@@ -7705,6 +7705,8 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
 
   auto modelConfigFile = modelDirectory + "/modelConfig.txt",
     modelCkptFile = modelDirectory + "/model.ckpt";
+  
+  std::string files_forCommand;
 
   int progressBar = 0;
   for (size_t i = 0; i < mSlicerManagers.size(); i++)
@@ -7765,8 +7767,26 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     }
 
     QStringList args;
-    args << "-md" << modelDirectory.c_str()
-      << "-i" << (file_t1 + "," + file_t1ce + "," + file_t2 + "," + file_flair).c_str() << "-o" << outputDirectory.c_str();
+    args << "-md" << modelDirectory.c_str() << "-o" << outputDirectory.c_str();
+
+    if (!file_t1.empty())
+    {
+      files_forCommand += file_t1 + ",";
+    }
+    if (!file_t1ce.empty())
+    {
+      files_forCommand += file_t1ce + ",";
+    }
+    if (!file_t2.empty())
+    {
+      files_forCommand += file_t2 + ",";
+    }
+    if (!file_flair.empty())
+    {
+      files_forCommand += file_flair + ",";
+    }
+    files_forCommand.pop_back();
+    args << "-i" << files_forCommand.c_str() << "-o" << outputDirectory.c_str();
 
     if (!file_mask.empty())
     {
