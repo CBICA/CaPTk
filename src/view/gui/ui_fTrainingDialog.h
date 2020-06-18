@@ -46,13 +46,13 @@ public:
   QGroupBox *inputGroupBox;
   QGridLayout *inputGridLayout;
 
-  QLabel		*inputImageLabel;
-  QLineEdit	*inputImageName;
-  QPushButton *inputImageButton;
+  QLabel		*inputFeaturesLabel;
+  QLineEdit	*inputFeaturesName;
+  QPushButton *inputFeaturesButton;
 
-  QLabel		*inputMaskLabel;
-  QLineEdit	*inputMaskName;
-  QPushButton *inputMaskButton;
+  QLabel		*inputTargetLabel;
+  QLineEdit	*inputTargetName;
+  QPushButton *inputTargetButton;
 
 
   QGroupBox	*outputGroupBox;
@@ -62,9 +62,9 @@ public:
   QGridLayout *confirmGridLayout;
 
 
-  QLineEdit	*outputImageName;
-  QLabel		*outputImageLabel;
-  QPushButton *outputImageButton;
+  QLineEdit	*outputDirectoryName;
+  QLabel		*outputDirectoryLabel;
+  QPushButton *outputDirectoryButton;
   QPushButton *mSplitModelDirectoryButton;
 
   QPushButton *confirmButton;
@@ -72,6 +72,9 @@ public:
 
   QRadioButton *mLinearKernel;
   QRadioButton *mRBFKernel;
+  QRadioButton *mSVMFFS;
+  QRadioButton *mESFS;
+
   QRadioButton *mCrossValidation;
   QRadioButton *mSplitTrainTest;
   QRadioButton *mSplitTrain;
@@ -85,12 +88,19 @@ public:
   QFrame *configurationFrame;
 
   QGroupBox	*classifierGroupBox;
+  QGroupBox	*fsGroupBox;
+
   QGroupBox	*configurationGroupBox;
   QGridLayout *classifierGridLayout;
+  QGridLayout *fsGridLayout;
   QGridLayout *configurationGridLayout;
 
+  QLabel		*cvLabel;
+  QLabel		*ttLabel;
   QLineEdit	*cvValue;
   QLineEdit	*ttValue;
+
+  QLabel    *mSplitModelDirectoryLabel;
   QLineEdit	*mSplitModelDirectory;
 
   void setupUi(QDialog *fTrainingSimulator)
@@ -117,34 +127,34 @@ public:
     inputGridLayout = new QGridLayout(inputGroupBox);
     inputGridLayout->setObjectName(QString::fromUtf8("inputGridLayout"));
 
-    inputImageLabel = new QLabel(inputGroupBox);
-    sizePolicy.setHeightForWidth(inputImageLabel->sizePolicy().hasHeightForWidth());
-    inputImageLabel->setSizePolicy(sizePolicy);
+    inputFeaturesLabel = new QLabel(inputGroupBox);
+    sizePolicy.setHeightForWidth(inputFeaturesLabel->sizePolicy().hasHeightForWidth());
+    inputFeaturesLabel->setSizePolicy(sizePolicy);
 
-    inputImageName = new QLineEdit("");
-    inputImageName->setObjectName(QString::fromUtf8("inputImageName"));
-    sizePolicy.setHeightForWidth(inputImageName->sizePolicy().hasHeightForWidth());
-    inputImageName->setSizePolicy(sizePolicy);
-    inputImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputFeaturesName = new QLineEdit("");
+    inputFeaturesName->setObjectName(QString::fromUtf8("inputFeaturesName"));
+    sizePolicy.setHeightForWidth(inputFeaturesName->sizePolicy().hasHeightForWidth());
+    inputFeaturesName->setSizePolicy(sizePolicy);
+    inputFeaturesName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-    inputImageButton = new QPushButton(inputGroupBox);
-    inputImageButton->setObjectName(QString::fromUtf8("inputImageButton"));
-    inputImageButton->setText(QString("Browse"));
+    inputFeaturesButton = new QPushButton(inputGroupBox);
+    inputFeaturesButton->setObjectName(QString::fromUtf8("inputFeaturesButton"));
+    inputFeaturesButton->setText(QString("Browse"));
 
 
-    inputMaskLabel = new QLabel(inputGroupBox);
-    sizePolicy.setHeightForWidth(inputMaskLabel->sizePolicy().hasHeightForWidth());
-    inputMaskLabel->setSizePolicy(sizePolicy);
+    inputTargetLabel = new QLabel(inputGroupBox);
+    sizePolicy.setHeightForWidth(inputTargetLabel->sizePolicy().hasHeightForWidth());
+    inputTargetLabel->setSizePolicy(sizePolicy);
 
-    inputMaskName = new QLineEdit("");
-    inputMaskName->setObjectName(QString::fromUtf8("inputMaskName"));
-    sizePolicy.setHeightForWidth(inputMaskName->sizePolicy().hasHeightForWidth());
-    inputMaskName->setSizePolicy(sizePolicy);
-    inputMaskName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputTargetName = new QLineEdit("");
+    inputTargetName->setObjectName(QString::fromUtf8("inputTargetName"));
+    sizePolicy.setHeightForWidth(inputTargetName->sizePolicy().hasHeightForWidth());
+    inputTargetName->setSizePolicy(sizePolicy);
+    inputTargetName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-    inputMaskButton = new QPushButton(inputGroupBox);
-    inputMaskButton->setObjectName(QString::fromUtf8("inputMaskButton"));
-    inputMaskButton->setText(QString("Browse"));
+    inputTargetButton = new QPushButton(inputGroupBox);
+    inputTargetButton->setObjectName(QString::fromUtf8("inputTargetButton"));
+    inputTargetButton->setText(QString("Browse"));
 
     //inputGridLayout->addWidget(classifierGroup(), 0, 0);
     //inputGridLayout->addWidget(configurationGroup(), 1, 0);
@@ -161,11 +171,31 @@ public:
     classifierGridLayout->addWidget(mLinearKernel, 0, 0, 1, 1);
     classifierGridLayout->addWidget(mRBFKernel, 0, 1, 1, 1);
 
+    fsGroupBox = new QGroupBox(fTrainingSimulator);
+    fsGroupBox->setTitle(QString::fromStdString("Feature selection"));
+    fsGridLayout = new QGridLayout(fsGroupBox);
+    fsGridLayout->setObjectName(QString::fromUtf8("fsGridLayout"));
+    mSVMFFS = new QRadioButton("SVM: Forward feature selection");
+    mSVMFFS->setEnabled(true);
+    mESFS = new QRadioButton("Effect Size feature selection");
+    mESFS->setEnabled(true);
+    fsGridLayout->addWidget(mSVMFFS, 0, 0, 1, 1);
+    fsGridLayout->addWidget(mESFS, 0, 1, 1, 1);
 
     configurationGroupBox = new QGroupBox(fTrainingSimulator);
     configurationGroupBox->setTitle(QString::fromStdString("Configuration"));
     configurationGridLayout = new QGridLayout(configurationGroupBox);
     configurationGridLayout->setObjectName(QString::fromUtf8("configurationGridLayout"));
+    cvLabel = new QLabel(configurationGroupBox);
+    sizePolicy.setHeightForWidth(cvLabel->sizePolicy().hasHeightForWidth());
+    cvLabel->setSizePolicy(sizePolicy);
+    ttLabel = new QLabel(configurationGroupBox);
+    sizePolicy.setHeightForWidth(ttLabel->sizePolicy().hasHeightForWidth());
+    ttLabel->setSizePolicy(sizePolicy);
+    mSplitModelDirectoryLabel = new QLabel(configurationGroupBox);
+    sizePolicy.setHeightForWidth(mSplitModelDirectoryLabel->sizePolicy().hasHeightForWidth());
+    mSplitModelDirectoryLabel->setSizePolicy(sizePolicy);
+
     mCrossValidation = new QRadioButton("CrossValidation");
     mCrossValidation->setEnabled(true);
     mSplitTrainTest = new QRadioButton("Split TrainTest");
@@ -174,7 +204,6 @@ public:
     mSplitTrain->setEnabled(true);
     mSplitTest = new QRadioButton("Split Test");
     mSplitTest->setEnabled(true);
-
 
     cvValue = new QLineEdit("");
     cvValue->setObjectName(QString::fromUtf8("cvValue"));
@@ -197,26 +226,29 @@ public:
     mSplitModelDirectoryButton->setObjectName(QString::fromUtf8("mSplitModelDirectoryButton"));
     mSplitModelDirectoryButton->setText(QString("Browse"));
 
-
-
     configurationGridLayout->addWidget(mCrossValidation, 0, 0, 1, 1);
-    configurationGridLayout->addWidget(cvValue, 0, 1, 1, 1);
-    configurationGridLayout->addWidget(mSplitTrainTest, 0, 2, 1, 1);
-    configurationGridLayout->addWidget(ttValue, 0, 3, 1, 1);
-    configurationGridLayout->addWidget(mSplitTrain, 0, 4, 1, 1);
-    configurationGridLayout->addWidget(mSplitTest, 0, 5, 1, 1);
-    configurationGridLayout->addWidget(mSplitModelDirectory, 0, 6, 1, 1);
-    configurationGridLayout->addWidget(mSplitModelDirectoryButton, 0, 7, 1, 1);
+    configurationGridLayout->addWidget(cvLabel, 0, 1, 1, 1);
+    configurationGridLayout->addWidget(cvValue, 0, 2, 1, 1);
+
+    configurationGridLayout->addWidget(mSplitTrainTest, 1,0, 1, 1);
+    configurationGridLayout->addWidget(ttLabel, 1,1, 1, 1);
+    configurationGridLayout->addWidget(ttValue, 1, 2, 1, 1);
+
+    configurationGridLayout->addWidget(mSplitTrain, 2,0, 1, 1);
+    configurationGridLayout->addWidget(mSplitTest, 3,0, 1, 1);
+    configurationGridLayout->addWidget(mSplitModelDirectoryLabel, 3, 1, 1, 1);
+    configurationGridLayout->addWidget(mSplitModelDirectory, 3,2, 1, 1);
+    configurationGridLayout->addWidget(mSplitModelDirectoryButton, 3,3, 1, 1);
 
 
 
-    inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
-    inputGridLayout->addWidget(inputImageName, 0, 1, 1, 1);
-    inputGridLayout->addWidget(inputImageButton, 0, 2, 1, 1);
+    inputGridLayout->addWidget(inputFeaturesLabel, 0, 0, 1, 1);
+    inputGridLayout->addWidget(inputFeaturesName, 0, 1, 1, 1);
+    inputGridLayout->addWidget(inputFeaturesButton, 0, 2, 1, 1);
 
-    inputGridLayout->addWidget(inputMaskLabel, 1, 0, 1, 1);
-    inputGridLayout->addWidget(inputMaskName, 1, 1, 1, 1);
-    inputGridLayout->addWidget(inputMaskButton, 1, 2, 1, 1);
+    inputGridLayout->addWidget(inputTargetLabel, 1, 0, 1, 1);
+    inputGridLayout->addWidget(inputTargetName, 1, 1, 1, 1);
+    inputGridLayout->addWidget(inputTargetButton, 1, 2, 1, 1);
 
 
     // output
@@ -225,19 +257,19 @@ public:
     outputGridLayout = new QGridLayout(outputGroupBox);
     outputGridLayout->setObjectName(QString::fromUtf8("outputGridLayout"));
 
-    //outputImageLabel = new QLabel(outputGroupBox);
-    //sizePolicy.setHeightForWidth(outputImageLabel->sizePolicy().hasHeightForWidth());
-    //outputImageLabel->setSizePolicy(sizePolicy);
+    //outputDirectoryLabel = new QLabel(outputGroupBox);
+    //sizePolicy.setHeightForWidth(outputDirectoryLabel->sizePolicy().hasHeightForWidth());
+    //outputDirectoryLabel->setSizePolicy(sizePolicy);
 
-    outputImageName = new QLineEdit("");
-    outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
-    sizePolicy.setHeightForWidth(outputImageName->sizePolicy().hasHeightForWidth());
-    outputImageName->setSizePolicy(sizePolicy);
-    outputImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    outputDirectoryName = new QLineEdit("");
+    outputDirectoryName->setObjectName(QString::fromUtf8("outputDirectoryName"));
+    sizePolicy.setHeightForWidth(outputDirectoryName->sizePolicy().hasHeightForWidth());
+    outputDirectoryName->setSizePolicy(sizePolicy);
+    outputDirectoryName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-    outputImageButton = new QPushButton(outputGroupBox);
-    outputImageButton->setObjectName(QString::fromUtf8("outputImageButton"));
-    outputImageButton->setText(QString("Browse"));
+    outputDirectoryButton = new QPushButton(outputGroupBox);
+    outputDirectoryButton->setObjectName(QString::fromUtf8("outputDirectoryButton"));
+    outputDirectoryButton->setText(QString("Browse"));
 
     longRunningWarning = new QLabel(outputGroupBox);
     sizePolicy.setHeightForWidth(longRunningWarning->sizePolicy().hasHeightForWidth());
@@ -245,9 +277,9 @@ public:
     longRunningWarning->setAlignment(Qt::AlignRight);
     longRunningWarning->setText("NOTE: CaPTk will not let you interact with the UI while this application runs.");
 
-    //outputGridLayout->addWidget(outputImageLabel, 0, 0, 1, 1);
-    outputGridLayout->addWidget(outputImageName, 0, 0, 1, 1);
-    outputGridLayout->addWidget(outputImageButton, 0, 1, 1, 1);
+    //outputGridLayout->addWidget(outputDirectoryLabel, 0, 0, 1, 1);
+    outputGridLayout->addWidget(outputDirectoryName, 0, 0, 1, 1);
+    outputGridLayout->addWidget(outputDirectoryButton, 0, 1, 1, 1);
     outputGridLayout->addWidget(longRunningWarning, 1, 0, 1, 2);
 
     confirmGroupBox = new QGroupBox(fTrainingSimulator);
@@ -266,9 +298,10 @@ public:
 
     gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);
     gridLayout->addWidget(classifierGroupBox, 2, 0, 1, 2);
-    gridLayout->addWidget(configurationGroupBox, 3, 0, 1, 2);
-    gridLayout->addWidget(outputGroupBox, 4, 0, 1, 2);
-    gridLayout->addWidget(confirmGroupBox, 5, 0, 1, 2);
+    gridLayout->addWidget(fsGroupBox, 3, 0, 1, 2);
+    gridLayout->addWidget(configurationGroupBox, 4, 0, 1, 2);
+    gridLayout->addWidget(outputGroupBox, 5, 0, 1, 2);
+    gridLayout->addWidget(confirmGroupBox, 6, 0, 1, 2);
 
     retranslateUi(fTrainingSimulator);
 
@@ -281,8 +314,14 @@ public:
     fTrainingSimulator->setWindowTitle(QApplication::translate("fTrainingSimulator", "Training Module", 0));
     confirmButton->setText(QApplication::translate("fTrainingSimulator", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fTrainingSimulator", "Cancel", 0));
-    inputImageLabel->setText(QApplication::translate("fTrainingSimulator", "Features File:", 0));
-    inputMaskLabel->setText(QApplication::translate("fTrainingSimulator", "Target File:", 0));
+    inputFeaturesLabel->setText(QApplication::translate("fTrainingSimulator", "Features File:", 0));
+    inputTargetLabel->setText(QApplication::translate("fTrainingSimulator", "Target File:", 0));
+    cvLabel->setText(QApplication::translate("fTrainingSimulator", "No. of folds:", 0));
+    ttLabel->setText(QApplication::translate("fTrainingSimulator", "No. of training samples:", 0));
+    mSplitModelDirectoryLabel->setText(QApplication::translate("fTrainingSimulator", "Model directory:", 0));
+
+
+
   } // retranslateUi
 };
 
