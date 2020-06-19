@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QProgressDialog>
 
 #include "fAppDownloadDialog.h"
 #include "yaml-cpp/node/node.h"
@@ -15,13 +16,15 @@ public:
 	//! constructor/desctrucor
 	ApplicationDownloadManager() = default;
 	~ApplicationDownloadManager() = default;
+	
+	QProgressDialog *extractProgressDialog;
 
 	//! setters/getters
 	void SetName(QString appName);
 	QString GetName() const;
 
 	std::string getApplication(QString appName);
-	std::string getApplicationCLI(QString appName);
+	// std::string getApplicationCLI(QString appName);
 
 private:
 
