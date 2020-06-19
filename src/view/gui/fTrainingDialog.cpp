@@ -14,15 +14,79 @@ fTrainingSimulator::fTrainingSimulator()
 
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
-  connect(inputImageButton, SIGNAL(clicked()), this, SLOT(OpenInputImage()));
-  connect(inputMaskButton, SIGNAL(clicked()), this, SLOT(OpenInputMaskImage()));
-  connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputImage()));
+  connect(inputFeaturesButton, SIGNAL(clicked()), this, SLOT(OpenInputImage()));
+  connect(inputTargetButton, SIGNAL(clicked()), this, SLOT(OpenInputMaskImage()));
+  connect(outputDirectoryButton, SIGNAL(clicked()), this, SLOT(SelectOutputImage()));
   connect(mSplitModelDirectoryButton, SIGNAL(clicked()), this, SLOT(SelectSplitModelDirectory()));
-  
+
+  connect(mCrossValidation, SIGNAL(toggled(bool)), this, SLOT(CrossValidationRadioButtonChecked()));
+  connect(mSplitTrainTest, SIGNAL(toggled(bool)), this, SLOT(TrainTestRadioButtonChecked()));
+  connect(mSplitTrain, SIGNAL(toggled(bool)), this, SLOT(TrainRadioButtonChecked()));
+  connect(mSplitTest, SIGNAL(toggled(bool)), this, SLOT(TestRadioButtonChecked()));
+
+  ttLabel->setEnabled(false);
+  cvLabel->setEnabled(false);
+  mSplitModelDirectoryLabel->setEnabled(false);
+  ttValue->setEnabled(false);
+  cvValue->setEnabled(false);
+  mSplitModelDirectory->setEnabled(false);
+  mSplitModelDirectoryButton->setEnabled(false);
 
 }
 fTrainingSimulator::~fTrainingSimulator()
 {
+}
+void fTrainingSimulator::CrossValidationRadioButtonChecked()
+{
+  if (mCrossValidation->isChecked())
+  {
+    cvLabel->setEnabled(true);
+    cvValue->setEnabled(true);
+    ttLabel->setEnabled(false);
+    mSplitModelDirectoryLabel->setEnabled(false);
+    ttValue->setEnabled(false);
+    mSplitModelDirectory->setEnabled(false);
+    mSplitModelDirectoryButton->setEnabled(false);
+  }
+}
+void fTrainingSimulator::SplitTrainTestRadioButtonChecked()
+{
+  if (mSplitTrainTest->isChecked())
+  {
+    cvLabel->setEnabled(false);
+    cvValue->setEnabled(false);
+    ttLabel->setEnabled(true);
+    ttValue->setEnabled(true);
+    mSplitModelDirectoryLabel->setEnabled(false);
+    mSplitModelDirectory->setEnabled(false);
+    mSplitModelDirectoryButton->setEnabled(false);
+  }
+}
+void fTrainingSimulator::SplitTrainRadioButtonChecked()
+{
+  if (mSplitTrain->isChecked())
+  {
+    cvLabel->setEnabled(false);
+    cvValue->setEnabled(false);
+    ttLabel->setEnabled(false);
+    ttValue->setEnabled(false);
+    mSplitModelDirectoryLabel->setEnabled(false);
+    mSplitModelDirectory->setEnabled(false);
+    mSplitModelDirectoryButton->setEnabled(false);
+  }
+}
+void fTrainingSimulator::SplitTestRadioButtonChecked()
+{
+  if (mSplitTest->isChecked())
+  {
+    cvLabel->setEnabled(false);
+    cvValue->setEnabled(false);
+    ttLabel->setEnabled(false);
+    ttValue->setEnabled(false);
+    mSplitModelDirectoryLabel->setEnabled(true);
+    mSplitModelDirectory->setEnabled(true);
+    mSplitModelDirectoryButton->setEnabled(true);
+  }
 }
 void fTrainingSimulator::CancelButtonPressed()
 {
@@ -30,83 +94,108 @@ void fTrainingSimulator::CancelButtonPressed()
 }
 void fTrainingSimulator::ConfirmButtonPressed()
 {
-  auto inputImageName_string = inputImageName->text().toStdString();
-  auto outputImageName_string = outputImageName->text().toStdString();
-
-  if ((inputImageName->text().isEmpty()))
+  if ((inputFeaturesName->text().isEmpty()))
   {
     ShowErrorMessage("Please select the features file.", this);
     return;
   }
-  if ((inputMaskName->text().isEmpty()))
-  {
-    ShowErrorMessage("Please select the target file.", this);
-    return;
-  }
-  if (!cbica::isFile(inputImageName->text().toStdString()))
+  if (!cbica::isFile(inputFeaturesName->text().toStdString()))
   {
     ShowErrorMessage("The specified feature file does not exist.", this);
     return;
   }
-  if (!cbica::isFile(inputMaskName->text().toStdString()))
-  {
-    ShowErrorMessage("The specified target file does not exist.", this);
-    return;
-  }
-  if (outputImageName->text().isEmpty())
+  if (outputDirectoryName->text().isEmpty())
   {
     ShowErrorMessage("Please specify the output directory.", this);
     return;
   }
-  if (mLinearKernel->isChecked() == false && mRBFKernel->isChecked() == false)
+
+  if (mCrossValidation->isChecked() == false &&
+      mSplitTrainTest->isChecked() == false &&
+      mSplitTrain->isChecked() == false &&
+      mSplitTest->isChecked() == false)
   {
-    ShowErrorMessage("Please select at least one of the given two options: Linear, RBF.");
-    return;
-  }
-  if (mCrossValidation->isChecked() == false && mSplitTrainTest->isChecked() == false)
-  {
-    ShowErrorMessage("Please select at least one of the given two options: CrossValidation, TrainTest.");
-    return;
-  }
-  if (mCrossValidation->isChecked() == true && cvValue->text().isEmpty())
-  {
-    ShowErrorMessage("Please select the # of folds.");
-    return;
-  }
-  if (mSplitTrainTest->isChecked() == true && ttValue->text().isEmpty())
-  {
-    ShowErrorMessage("Please select the size of training dataset.");
+    ShowErrorMessage("Please select at least one of the given four options: CrossValidation, TrainTest, Train only, and Test only.");
     return;
   }
 
+  if (mSplitTrain->isChecked() == true |
+    mSplitTrainTest->isChecked() == true |
+    mCrossValidation->isChecked() == true)
+  {
+    //error checks applied to the three configurations
+    if (inputTargetName->text().isEmpty())
+    {
+      ShowErrorMessage("Please select the target file.", this);
+      return;
+    }
+    if (!cbica::isFile(inputTargetName->text().toStdString()))
+    {
+      ShowErrorMessage("The specified target file does not exist.", this);
+      return;
+    }
+    if (mLinearKernel->isChecked() == false && mRBFKernel->isChecked() == false)
+    {
+      ShowErrorMessage("Please select at least one of the given two classifiers: Linear, RBF.");
+      return;
+    }
+    //error checks applied to the individual configurations
+    if (mCrossValidation->isChecked() == true && cvValue->text().isEmpty())
+    {
+      ShowErrorMessage("Please select the # of folds.");
+      return;
+    }
+    if (mSplitTrainTest->isChecked() == true && ttValue->text().isEmpty())
+    {
+      ShowErrorMessage("Please select the size of training dataset.");
+      return;
+    }
+  }
+  else if (mSplitTest->isChecked() == true)
+  {
+    if (mSplitModelDirectory->text().isEmpty())
+    {
+      ShowErrorMessage("The model directory field is empty.", this);
+      return;
+    }
+    else if(!cbica::isDir(mSplitModelDirectory->text().toStdString()))
+    {
+      ShowErrorMessage("The specified model directory does not exist.", this);
+      return;
+    }
+  }
 
-  int classifier = 0;
-  int configuration = 0;
-  int folds = 0;
+  int classifier=0;
+  int configuration=0;
+  int folds=0;
+  std::string modelpath ="";
 
   if (mLinearKernel->isChecked())
     classifier = 1;
   else
     classifier = 2;
+
   if (mCrossValidation->isChecked())
   {
-    configuration = 1;
+    configuration = CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV;
     folds = cvValue->text().toInt();
   }
   else if (mSplitTrainTest->isChecked())
   {
-    configuration = 2;
+    configuration = CAPTK::ClassificationConfigurationType::CONF_TYPE_DOUBLE;
     folds = ttValue->text().toInt();
   }
   else if (mSplitTrain->isChecked())
   {
-    configuration = 3;
+    configuration = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN;
   }
   else
-    configuration = 4;
+  {
+    configuration = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TEST;
+    modelpath = mSplitModelDirectory->text().toStdString();
+  }
 
-
-  emit RunTrainingSimulation(mInputPathName.toStdString(), mInputMaskName.toStdString(), mOutputPathName.toStdString(),mModelDirectoryName.toStdString(), classifier, configuration, folds);
+  emit RunTrainingSimulation(mInputFeaturesName.toStdString(), mInputTargetName.toStdString(), mOutputPathName.toStdString(),mModelDirectoryName.toStdString(), classifier, configuration, folds);
   this->close();
 }
 
@@ -115,25 +204,25 @@ void fTrainingSimulator::ConfirmButtonPressed()
 void fTrainingSimulator::OpenInputImage()
 {
   QString extension_string = QString::fromStdString("CSV files: (*.csv)");
-  auto inputImage = getExistingFile(this, mInputPathName,extension_string);
+  auto inputImage = getExistingFile(this, mInputFeaturesName,extension_string);
   if (inputImage.isNull() || inputImage.isEmpty())
     return;
   else
-    inputImageName->setText(inputImage);
+    inputFeaturesName->setText(inputImage);
 
-  mInputPathName = inputImage;
+  mInputFeaturesName = inputImage;
 }
 
 void fTrainingSimulator::OpenInputMaskImage()
 {
   QString extension_string = QString::fromStdString("CSV files: (*.csv)");
-  auto inputImage = getExistingFile(this, mInputPathName, extension_string);
+  auto inputImage = getExistingFile(this, mInputTargetName, extension_string);
   if (inputImage.isNull() || inputImage.isEmpty())
     return;
   else
-    inputMaskName->setText(inputImage);
+    inputTargetName->setText(inputImage);
 
-  mInputMaskName = inputImage;
+  mInputTargetName = inputImage;
 }
 
 
@@ -143,14 +232,14 @@ void fTrainingSimulator::SelectOutputImage()
   if (directory.isNull())
     return;
   else
-    outputImageName->setText(directory);
+    outputDirectoryName->setText(directory);
 
   mOutputPathName = directory;
 }
 
 void fTrainingSimulator::SelectSplitModelDirectory()
 {
-  QString directory = getExistingDirectory(this, mInputPathName);
+  QString directory = getExistingDirectory(this, mModelDirectoryName);
   if (directory.isNull())
     return;
   else

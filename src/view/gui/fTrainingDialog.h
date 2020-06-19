@@ -17,7 +17,7 @@
 #define _fTrainingDialog_h_
 
 
-//#include "CAPTk.h"
+#include "CaPTkEnums.h"
 #include "ui_fTrainingDialog.h"
 
 /**
@@ -36,13 +36,13 @@ public:
 
   void SetCurrentImagePath(const QString &inputPath)
   {
-    mInputPathName = inputPath;
-    outputImageName->setText(mInputPathName);
+    mInputFeaturesName = inputPath;
+    outputDirectoryName->setText(mInputFeaturesName);
   }
 
   QString mModelDirectoryName;
-  QString mInputPathName;
-  QString mInputMaskName;
+  QString mInputFeaturesName;
+  QString mInputTargetName;
   QString mInputBValName;
   QString mInputBVecName;
   QString mOutputPathName;
@@ -56,6 +56,10 @@ public slots:
   void OpenInputMaskImage();
   void SelectOutputImage();
   void SelectSplitModelDirectory();
+  void CrossValidationRadioButtonChecked();
+  void SplitTrainTestRadioButtonChecked();
+  void SplitTrainRadioButtonChecked();
+  void SplitTestRadioButtonChecked(); 
 
 signals:
   void RunTrainingSimulation(const std::string inputImageFile, const std::string inputMaskFile, const std::string outputFolder, const std::string modelFolder, int classifier,int configuration,int folds);

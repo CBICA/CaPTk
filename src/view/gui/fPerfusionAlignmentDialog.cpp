@@ -1,8 +1,5 @@
 #include "fPerfusionAlignmentDialog.h"
-//#include "fProgressDialog.h"
-//#include "CAPTk.h"
 #include "CaPTkGUIUtils.h"
-
 #include "cbicaITKUtilities.h"
 
 fPerfusionAligner::fPerfusionAligner()
@@ -17,8 +14,6 @@ fPerfusionAligner::fPerfusionAligner()
   connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputImage()));
   connect(inputImageButton, SIGNAL(clicked()), this, SLOT(SelectInputImage()));
   connect(inputT1ceImageButton, SIGNAL(clicked()), this, SLOT(SelectT1ceInputImage()));
-  connect(inputDicomImageButton, SIGNAL(clicked()), this, SLOT(SelectDicomInputImage()));
-
 }
 fPerfusionAligner::~fPerfusionAligner()
 {
@@ -37,11 +32,6 @@ void fPerfusionAligner::ConfirmButtonPressed()
   if ((inputT1ceImageName->text().isEmpty()))
   {
     ShowErrorMessage("Please specify the T1ce Image.");
-    return;
-  }
-  if ((inputDicomImageName->text().isEmpty()))
-  {
-    ShowErrorMessage("Please specify the Dicom file.");
     return;
   }
   if ((inputBeforePointsLabel->text().isEmpty()))
@@ -64,7 +54,7 @@ void fPerfusionAligner::ConfirmButtonPressed()
     ShowErrorMessage("Please specify the output folder.");
     return;
   }
-  emit RunPerfusionAlignmentCalculation(inputEchoTimeName->text().toInt(),inputBeforePointsName->text().toInt(), inputAfterPointsName->text().toInt(), mInputPathName.toStdString(), mInputT1cePathName.toStdString(), mInputDicomPathName.toStdString(), mOutputPathName.toStdString());
+  emit RunPerfusionAlignmentCalculation(inputEchoTimeName->text().toInt(),inputBeforePointsName->text().toInt(), inputAfterPointsName->text().toInt(), mInputPathName.toStdString(), mInputT1cePathName.toStdString(), mOutputPathName.toStdString());
 
   this->close();
 }
@@ -90,18 +80,6 @@ void fPerfusionAligner::SelectInputImage()
 
 	mInputPathName = inputImage;
 }
-
-void fPerfusionAligner::SelectDicomInputImage()
-{
-  auto inputImage = getExistingFile(this, mInputDicomPathName);
-  if (inputImage.isNull() || inputImage.isEmpty())
-    return;
-  else
-    inputDicomImageName->setText(inputImage);
-
-  mInputDicomPathName = inputImage;
-}
-
 void fPerfusionAligner::SelectT1ceInputImage()
 {
   auto inputT1ceImage = getExistingFile(this, mInputT1cePathName);
