@@ -32,7 +32,7 @@ private:
 	
 	YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
 
-	void appDownload();
+	void appDownload(bool isCLI);
 
 private slots:
 	void startUnzip(QString fullPath, QString extractPath);
