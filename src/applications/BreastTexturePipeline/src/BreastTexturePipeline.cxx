@@ -105,7 +105,6 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  // auto libraPath = findRelativeApplicationPath("libra");
   ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
   std::string libraPath = standaloneapp->getApplicationCLI("libra");
 
