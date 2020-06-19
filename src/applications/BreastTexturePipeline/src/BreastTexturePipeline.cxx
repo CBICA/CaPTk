@@ -8,7 +8,7 @@
 
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
-#include "ApplicationDownloadManager.h"
+// #include "ApplicationDownloadManager.h"
 
 std::string inputImageFile, outputDir;
 
@@ -105,12 +105,13 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
-  std::string libraPath = standaloneapp->getApplicationCLI("libra");
+  auto libraPath = findRelativeApplicationPath("libra");
+  // ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
+  // std::string libraPath = standaloneapp->getApplicationCLI("libra");
 
-  if (libraPath.empty()) {
-    return;
-  }
+  // if (libraPath.empty()) {
+  //   return;
+  // }
 
   //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
   cbica::createDir(outputDir + "/temp");
