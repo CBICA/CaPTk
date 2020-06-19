@@ -758,7 +758,7 @@ namespace cbica
   {
     if (cbica::isDir(dicomImageReferenceDir))
     {
-      typedef itk::Image< int, ComputedImageType::ImageDimension > DicomImageType;
+      using DicomImageType = itk::Image< int, ComputedImageType::ImageDimension >;
 
       // sanity check for reference dicom and nifti
       auto referenceDicom = ReadImage< DicomImageType >(dicomImageReferenceDir);
