@@ -1,3 +1,11 @@
+# Schedule a build for every midnight Eastern time. This is visible to the pipeline as Build.Reason
+schedules:
+- cron: "0 4 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master
+
 trigger:
   batch: true
   branches:
@@ -943,7 +951,7 @@ jobs:
         overwrite: true
         continueOnError: true
       displayName: Uploading to NITRC
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
 
 - job: 'Linux_SelfHost'
   displayName: "Self-hosted agent on Ubuntu 16.04"
@@ -1118,7 +1126,7 @@ jobs:
         overwrite: true
         continueOnError: true
       displayName: Uploading to NITRC 
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
 
 - job: 'macOS_SelfHost'
   displayName: "Self-hosted agent on macOS 10.14"
@@ -1303,4 +1311,4 @@ jobs:
         overwrite: true
         continueOnError: true
       displayName: Uploading to NITRC
-      condition: eq(variables['Build.DefinitionName'], 'CBICA.CaPTk')
+      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
