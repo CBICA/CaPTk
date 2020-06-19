@@ -21,6 +21,7 @@ public:
 	QString GetName() const;
 
 	std::string getApplication(QString appName);
+	std::string getApplicationCLI(QString appName);
 
 private:
 

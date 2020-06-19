@@ -28,6 +28,10 @@ void fAppDownloadDialog::CancelButtonPressed()
 
 void fAppDownloadDialog::ConfirmButtonPressed()
 {
+    initDownload();
+}
+
+void fAppDownloadDialog::initDownload() {
     ApplicationPreferences::GetInstance()->DeSerializePreferences();
     bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
 
@@ -101,7 +105,6 @@ void fAppDownloadDialog::ConfirmButtonPressed()
         this->close();
     }
 }
-
 
 // This will be called when download button is clicked
 void fAppDownloadDialog::startRequest(QUrl url)

@@ -38,7 +38,8 @@ std::string ApplicationDownloadManager::getApplication(QString appName) {
 			return "";
 		}
 
-		appDownload();
+		bool isCLI = false;
+		appDownload(isCLI);
 		
 		return "";
 	}
@@ -59,7 +60,46 @@ std::string ApplicationDownloadManager::getApplication(QString appName) {
 	return scriptToCall;
 }
 
-void ApplicationDownloadManager::appDownload()
+std::string ApplicationDownloadManager::getApplicationCLI(QString appName) {
+	this->m_AppName = appName;
+
+	std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
+
+	if (scriptToCall.empty()) {
+		ApplicationPreferences::GetInstance()->DeSerializePreferences();
+		bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
+		bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
+		ApplicationPreferences::GetInstance()->DisplayPreferences();
+
+		if(downloadStarted && !downloadFinished)
+		{
+			QMessageBox::information(&appDownloadDialog,tr("Download"),"Download in progress");
+			return "";
+		}
+
+		bool isCLI = true;
+		appDownload(isCLI);
+		
+		return "";
+	}
+	else {
+		ApplicationPreferences::GetInstance()->DeSerializePreferences();
+		bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
+		bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
+		ApplicationPreferences::GetInstance()->DisplayPreferences();
+
+		if(extractionStarted && !extractionFinished)
+		{
+			QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
+
+			return "";
+		}
+	}
+
+	return scriptToCall;
+}
+
+void ApplicationDownloadManager::appDownload(bool isCLI)
 {
 	std::string linkyml = "";
 
@@ -75,7 +115,12 @@ void ApplicationDownloadManager::appDownload()
 	
 	appDownloadDialog.SetPaths(downloadFolder);
 	appDownloadDialog.SetDownloadLink(downloadLink);
-	appDownloadDialog.exec();
+	if (isCLI) {
+		appDownloadDialog.initDownload();
+	}
+	else {
+		appDownloadDialog.exec();
+	}
 
 	connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(startUnzip(QString, QString)));   
 }
