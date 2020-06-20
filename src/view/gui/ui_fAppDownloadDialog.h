@@ -32,7 +32,7 @@ public:
   QPushButton *confirmButton;
   QPushButton *cancelButton;
 
-  QProgressDialog *progressDialog;
+  QProgressDialog *downloadProgressDialog;
 
   void setupUi(QDialog *fAppDownloadDialog)
   {
@@ -48,6 +48,7 @@ public:
     sizePolicy.setHeightForWidth(fAppDownloadDialog->sizePolicy().hasHeightForWidth());
     fAppDownloadDialog->setSizePolicy(sizePolicy);
     fAppDownloadDialog->setMinimumSize(QSize(0, 0));
+    fAppDownloadDialog->setMaximumSize(QSize(100, 100));
 
     //--------------------------------------------------------------------
     gridLayout = new QGridLayout(fAppDownloadDialog);
@@ -78,8 +79,8 @@ public:
   } // setupUi
 
   void setupDownload(QDialog *fAppDownloadDialog) {
-    progressDialog = new QProgressDialog(fAppDownloadDialog);
-    progressDialog->setObjectName(QString::fromUtf8("ProgressDialog"));
+    downloadProgressDialog = new QProgressDialog(fAppDownloadDialog);
+    downloadProgressDialog->setObjectName(QString::fromUtf8("ProgressDialog"));
   }
 
   void retranslateUi(QDialog *fAppDownloadDialog)

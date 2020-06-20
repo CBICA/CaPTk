@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QProgressDialog>
 
 #include "fAppDownloadDialog.h"
 #include "yaml-cpp/node/node.h"
@@ -15,12 +16,15 @@ public:
 	//! constructor/desctrucor
 	ApplicationDownloadManager() = default;
 	~ApplicationDownloadManager() = default;
+	
+	QProgressDialog *extractProgressDialog;
 
 	//! setters/getters
 	void SetName(QString appName);
 	QString GetName() const;
 
 	std::string getApplication(QString appName);
+	// std::string getApplicationCLI(QString appName);
 
 private:
 
@@ -31,7 +35,7 @@ private:
 	
 	YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
 
-	void appDownload();
+	void appDownload(bool isCLI);
 
 private slots:
 	void startUnzip(QString fullPath, QString extractPath);

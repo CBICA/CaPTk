@@ -72,6 +72,7 @@ public:
     url.setUrl(qInputLink);
   }
 
+  void initDownload();
   void startRequest(QUrl url);
 
 public slots:

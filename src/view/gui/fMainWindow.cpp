@@ -5913,10 +5913,10 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
-  std::string scriptToCall = standaloneapp->getApplication("libra");
+  ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+  std::string scriptToCall = appDownloadMngr->getApplication("libra");
 
-  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  // connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;
@@ -6021,10 +6021,10 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
-  std::string scriptToCall = standaloneapp->getApplication("libra");
+  ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+  std::string scriptToCall = appDownloadMngr->getApplication("libra");
 
-  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  // connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;
@@ -6083,10 +6083,10 @@ void fMainWindow::ApplicationLIBRASingle()
 
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
-  ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
-  std::string scriptToCall = standaloneapp->getApplication("libra");
+  ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+  std::string scriptToCall = appDownloadMngr->getApplication("libra");
 
-  connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  // connect(standaloneapp, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;

@@ -28,6 +28,10 @@ void fAppDownloadDialog::CancelButtonPressed()
 
 void fAppDownloadDialog::ConfirmButtonPressed()
 {
+    initDownload();
+}
+
+void fAppDownloadDialog::initDownload() {
     ApplicationPreferences::GetInstance()->DeSerializePreferences();
     bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
 
@@ -51,7 +55,7 @@ void fAppDownloadDialog::ConfirmButtonPressed()
     {
         setupDownload(this);
 
-        connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
+        connect(downloadProgressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
 
         manager = new QNetworkAccessManager(this);
 
@@ -91,8 +95,8 @@ void fAppDownloadDialog::ConfirmButtonPressed()
         ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("true").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
         ApplicationPreferences::GetInstance()->DisplayPreferences();
-        progressDialog->setWindowTitle(tr("HTTP"));
-        progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
+        downloadProgressDialog->setWindowTitle(tr("HTTP"));
+        downloadProgressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
         
         // emit startDownload();
 
@@ -101,7 +105,6 @@ void fAppDownloadDialog::ConfirmButtonPressed()
         this->close();
     }
 }
-
 
 // This will be called when download button is clicked
 void fAppDownloadDialog::startRequest(QUrl url)
@@ -145,8 +148,8 @@ void fAppDownloadDialog::updateDownloadProgress(qint64 bytesRead, qint64 totalBy
     if (httpRequestAborted)
         return;
 
-    progressDialog->setMaximum(totalBytes);
-    progressDialog->setValue(bytesRead);
+    downloadProgressDialog->setMaximum(totalBytes);
+    downloadProgressDialog->setValue(bytesRead);
 }
 
 // When download finished or canceled, this will be called
@@ -161,7 +164,7 @@ void fAppDownloadDialog::httpDownloadFinished()
             file = 0;
         }
         reply->deleteLater();
-        progressDialog->hide();
+        downloadProgressDialog->hide();
 
         ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
         ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
@@ -176,7 +179,7 @@ void fAppDownloadDialog::httpDownloadFinished()
     }
 
     // download finished normally
-    progressDialog->hide();
+    downloadProgressDialog->hide();
     file->flush();
     file->close();
 
