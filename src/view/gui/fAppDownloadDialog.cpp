@@ -96,7 +96,7 @@ void fAppDownloadDialog::initDownload() {
         ApplicationPreferences::GetInstance()->SerializePreferences();
         ApplicationPreferences::GetInstance()->DisplayPreferences();
         downloadProgressDialog->setWindowTitle(tr("HTTP"));
-        downloadProgressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
+        downloadProgressDialog->setLabelText(tr("Downloading %1").arg(fileName));
         
         // emit startDownload();
 

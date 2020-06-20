@@ -142,7 +142,7 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 
 		extractProgressDialog = new QProgressDialog(&appDownloadDialog);
     	extractProgressDialog->setObjectName(QString::fromUtf8("ProgressDialog"));
-		extractProgressDialog->setLabelText(tr("Extracting ").arg(this->m_AppName));
+		extractProgressDialog->setLabelText(tr("Extracting %1").arg(this->m_AppName));
 		extractProgressDialog->setRange(0, 0);
 		extractProgressDialog->setCancelButton(0);
 		// emit updateProgress(50, "Installing " + this->m_AppName.toStdString(), 100);
