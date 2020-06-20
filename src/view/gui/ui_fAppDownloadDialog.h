@@ -48,6 +48,7 @@ public:
     sizePolicy.setHeightForWidth(fAppDownloadDialog->sizePolicy().hasHeightForWidth());
     fAppDownloadDialog->setSizePolicy(sizePolicy);
     fAppDownloadDialog->setMinimumSize(QSize(0, 0));
+    fAppDownloadDialog->setMaximumSize(QSize(100, 100));
 
     //--------------------------------------------------------------------
     gridLayout = new QGridLayout(fAppDownloadDialog);
