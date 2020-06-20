@@ -8,7 +8,6 @@
 
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
-// #include "ApplicationDownloadManager.h"
 
 std::string inputImageFile, outputDir;
 
@@ -44,7 +43,7 @@ std::string findRelativeApplicationPath(const std::string appName)
 
   if (!cbica::isFile(appName_path))
   {
-    std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
+    // std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
     exit(EXIT_FAILURE);
   }
   return appName_path;
@@ -106,12 +105,6 @@ int algorithmsRunner()
   }
 
   auto libraPath = findRelativeApplicationPath("libra");
-  // ApplicationDownloadManager* standaloneapp = new ApplicationDownloadManager();
-  // std::string libraPath = standaloneapp->getApplicationCLI("libra");
-
-  // if (libraPath.empty()) {
-  //   return;
-  // }
 
   //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
   cbica::createDir(outputDir + "/temp");
