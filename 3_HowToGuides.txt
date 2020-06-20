@@ -41,7 +41,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
 
 Notes:
 
-- Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>original</b></a> and <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvgCOfo_LLhAwFRNlpsBfjFx"><b>ITCR 2020</b></a> CaPTk Playlists.
+- Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>original</b></a> and <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/playlist?list=PLXdcXDD5czvgCOfo_LLhAwFRNlpsBfjFx"><b>ITCR 2020</b></a> CaPTk Playlists.
 - All applications are available as command-line applications (use parameter "-h" for detailed help messages).
 
 --------
