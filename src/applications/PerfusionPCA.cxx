@@ -119,6 +119,7 @@ int main(int argc, char **argv)
       std::cout << "The output directory can not be created:" << outputDirectoryName << std::endl;
     return EXIT_FAILURE;
   }
+
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputFileName);
 
   if (QualifiedSubjects.size() == 0)
@@ -134,6 +135,11 @@ int main(int argc, char **argv)
     if (!cbica::directoryExists(modelDirectoryName))
     {
       std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
+      return EXIT_FAILURE;
+    }
+    if (!cbica::fileExists(modelDirectoryName +"/PCA_PERF.csv") || !cbica::fileExists(modelDirectoryName + "/Mean_PERF.csv"))
+    {
+      std::cout << "The model files PCA_PERF.csv and Mean_PERF.csv do not exist in the model directory:" <<  modelDirectoryName << std::endl;
       return EXIT_FAILURE;
     }
     if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))

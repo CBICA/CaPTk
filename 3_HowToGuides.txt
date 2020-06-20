@@ -84,7 +84,7 @@ Informatics Technology Initiative (NIfTI) file format.
 	-# Click on "Confirm".
   -# This can also be used from the command line:
 \verbatim
-${CaPTk_InstallDir}/bin/Utlities.exe -i C:/test/dicomFolderWithSingleSubject -o C:/PathToOutputFolder/result.nii.gz -d2n 
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/dicomFolderWithSingleSubject -o C:/PathToOutputFolder/result.nii.gz -d2n 
 \endverbatim
 
 --------
@@ -361,8 +361,11 @@ References:
 
 For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping [3]. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the preprocessing).
 
-<b> REQUIREMENTS:</b>
-The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.
+<b> REQUIREMENTS:</b> 
+- For tumor segmentation model and multi-4 skull-stripping model:
+	- The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.
+- For modality-agnostic skull-stripping model:
+	- A single structural MRI modality (can be either T1, T1-Gd, T2 or T2-FLAIR).
 
 <b> USAGE:</b>
 	-# Load the images that you want to segment in CaPTk.
@@ -372,7 +375,7 @@ The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are 
   -# Click on 'Applications' -> 'Brain Tumor Segmentation' or 'Skull Stripping'
   -# This can also be used from the command line:
 \verbatim
-${CaPTk_InstallDir}/bin/DeepMedic.exe -md ${CaPTk_InstallDir}/data/deepMedic/saved_models/brainTumorSegmentation -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -m C:/data/optionalMask.nii.gz -o C:/data/outputSegmentation.nii.gz
+${CaPTk_InstallDir}/bin/DeepMedic.exe -md ${CaPTk_InstallDir}/data/deepMedic/saved_models/brainTumorSegmentation -i C:/data/t1.nii.gz,C:/data/t1ce.nii.gz,C:/data/t2.nii.gz,C:/data/fl.nii.gz -m C:/data/optionalMask.nii.gz -o C:/data/outputSegmentation.nii.gz
 \endverbatim
 <br>
 
@@ -778,6 +781,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 		-# Subject_IDn
       
 <b>USAGE:</b>
+\cond DOXYGEN_WILL_EXCLUDE_THIS_CONDITIONAL_BLOCK
 - Train New Model: 
 	-# "Select Subjects". Select the input directory that follows the folder structure described above.
 	-# "Output". Select the folder where the trained model will be saved.
@@ -786,6 +790,7 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 \verbatim
 ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 0 -i C:/EGFRvIIIInputDirectory -o C:/EGFRvIIIInputModel
 \endverbatim
+\endcond
 
 - Use Existing Model
 	-# "Model Directory". Choose the directory of a saved model.
@@ -888,12 +893,13 @@ This application facilitates the users to generate population atlases for patien
 
 <b>USAGE:</b>
 	-# Launch the Population Atlases application using the 'Applications -> Population Atlas' menu option.
-	-# Specify the Input batch file (e.g., Data_of_multiple_patients), Atlas file, and Output directories.
+	-# Specify the Input batch file (e.g., Data_of_multiple_patients) in .csv format, Atlas file with delineated region-of-interests in .nii.gz format, and Output directories.
 	-# Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window. 
-    -# The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory. 	
+    -# The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory. 
+	-# The output atlases can be overlayed on the Jacobs atlas (jakob_stripped_with_cere_lps_256256128.nii.gz) given in the corresponding sample data folder.  
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
-${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -a C:/AtlasFile -o C:/populationAtlasesOutput
+${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/LabelsFile -a C:/AtlasFile -o C:/populationAtlasesOutput
 \endverbatim
 
 --------
@@ -1329,6 +1335,7 @@ This is a command line executable containing the following functionalities:
 - Transform coordinates from world to image and vice-versa
 - Label similarity Metrics between 2 label images
 - Hausdorff Distance between 2 label images
+- Collect information from all images in a directory and put it in CSV
 
 For a full list of available applications and examples, please use the command: 
 \verbatim

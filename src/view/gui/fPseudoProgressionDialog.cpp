@@ -115,17 +115,22 @@ void fPseudoProgressionDialog::ConfirmButtonPressed()
       ShowErrorMessage("Please specify the directory of SVM model.");
       return;
     }
-    if (cbica::isFile(svmModelFileName2->text().toStdString() + "/REC_SVM_Model.xml") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_SVM_Model.xml") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_ZScore_Mean.csv") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_ZScore_Std.csv") &&
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_SelectedFeatures.csv") &&
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/REC_SelectedFeatures.csv") &&
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_Others.csv") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_PERF.csv") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_Others.csv") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_PERF.csv"))
-      emit ExistingModelBasedPseudoprogressionEstimate(svmModelFileName2->text().toStdString(), testSubjectsDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString(), true, true, true, true);
+	if (cbica::isFile(svmModelFileName2->text().toStdString() + "/REC_SVM_Model.xml") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_SVM_Model.xml") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_ZScore_Mean.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_ZScore_Std.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_SelectedFeatures.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/REC_SelectedFeatures.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_Others.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_PERF.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_Others.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_PERF.csv"))
+	{
+		confirmButton->setText("In Progress...");
+		confirmButton->repaint(); // Necessary to get the button to refresh appearance before the next statement. update() is not sufficient.
+		emit ExistingModelBasedPseudoprogressionEstimate(svmModelFileName2->text().toStdString(), testSubjectsDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString(), true, true, true, true);
+		confirmButton->setText("Confirm");
+	}
     else
     {
       ShowErrorMessage("The specified directory does not have model files.");
@@ -133,7 +138,12 @@ void fPseudoProgressionDialog::ConfirmButtonPressed()
     }
   }
   else
-    emit TrainNewPseudoModel(existingMaskDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString(), true, true, true, true);
+  {
+	  confirmButton->setText("In Progress...");
+	  confirmButton->repaint(); // Necessary to get the button to refresh appearance before the next statement.  update() is not sufficient.
+	  emit TrainNewPseudoModel(existingMaskDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString(), true, true, true, true);
+	  confirmButton->setText("Confirm");
+  } 
   this->close();
 }
 
