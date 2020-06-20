@@ -313,6 +313,61 @@ FOREACH(subdir ${SUBDIRECTORIES})
     #  INSTALL(DIRECTORY "${SUBDIRPATH}/saved_models" DESTINATION data/deepMedic)
     #ENDIF()
 
+    ### this should be removed and put in with application decoupling
+    ## this is a TEMPORARY work-around until https://github.com/CBICA/CaPTk/pull/1043 is merged
+    SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/deepMedicInference_${PLATFORM_STRING}.zip" )
+    SET( FILENAME_TO_EXTRACT "deepMedicInference_${PLATFORM_STRING}")
+    SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
+    
+    SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/deepMedicInference )
+    
+    IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
+    
+      IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
+    
+        # do not re-download if the LFS fetch worked
+        IF(NOT EXISTS ${FILE_TO_EXTRACT})
+          # download exe from url
+          MESSAGE( STATUS "Downloading pre-compiled deepMedicInference" )
+          FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+          IF(NOT STATUS_CODE EQUAL 0)
+            MESSAGE(FATAL_ERROR "Failed to download Precompiled deepMedicInference. Status=${STATUS_CODE}")
+          ENDIF()
+        ENDIF()
+      ENDIF()
+    
+      FILE(MAKE_DIRECTORY ${DOWNLOADED_APPS_DIR})
+    
+      MESSAGE( STATUS "Extracting pre-compiled deepMedicInference" )
+      IF( EXISTS "${FILE_TO_EXTRACT}" )
+    
+        EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${FILE_TO_EXTRACT}
+          WORKING_DIRECTORY ${DOWNLOADED_APPS_DIR}
+          RESULT_VARIABLE RESULT_CODE
+        )
+    
+        IF(NOT RESULT_CODE EQUAL 0)
+          MESSAGE( WARNING "Extracting the pre-compiled deepMedicInference failed" )
+        ENDIF()
+    
+      ENDIF()
+    ENDIF()
+    
+    FILE(GLOB DMInferenceEXE "${DOWNLOADED_APPS_DIR}/*")
+    
+    IF(APPLE)
+    INSTALL(FILES ${DMInferenceEXE}
+      DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    )
+    ELSE()
+    INSTALL(FILES ${DMInferenceEXE}
+      DESTINATION bin
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    )
+    ENDIF()
+    ### this should be removed and put in with application decoupling
+
     IF(WIN32)
       INSTALL(FILES ${SUBDIRPATH}/deepMedicRun.exe
         DESTINATION bin

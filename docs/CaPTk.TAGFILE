@@ -78,6 +78,11 @@
     <filename>preprocessing_zScoreNorm.html</filename>
   </compound>
   <compound kind="page">
+    <name>preprocessing_brats</name>
+    <title>BraTS Preprocessing Pipeline</title>
+    <filename>preprocessing_brats.html</filename>
+  </compound>
+  <compound kind="page">
     <name>ht_Segmentation</name>
     <title>Segmentation</title>
     <filename>ht_Segmentation.html</filename>
