@@ -189,7 +189,7 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
       perfusionDerivatives[1] = this->CalculatePH<ImageType, PerfusionImageType>(SecondCopyImage);
 
     if (rcbv == true)
-      perfusionDerivatives[2] = this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti/*, TE*/);
+      perfusionDerivatives[2] = this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti);
   }
   catch (const std::exception& e1)
   {
