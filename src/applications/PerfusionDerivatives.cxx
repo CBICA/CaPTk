@@ -6,7 +6,6 @@ int main(int argc, char **argv)
 {
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionDerivatives");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DSC-MRI image.");
-  parser.addRequiredParameter("e", "echo time", cbica::Parameter::STRING, "", "The echo time in seconds.");
   parser.addRequiredParameter("p", "PSR", cbica::Parameter::STRING, "", "The Percent Signal Recovery image (1=YES, 0=NO, 1 (Default))");
   parser.addRequiredParameter("pH", "peakHeight", cbica::Parameter::STRING, "", "The Peak Height image (1=YES, 0=NO, 1 (Default))");
   parser.addRequiredParameter("r", "ap-RCBV", cbica::Parameter::STRING, "", "Automatially-extracted proxy to reletive cerebral volume image (1=YES, 0=NO, 1 (Default))");
@@ -27,7 +26,6 @@ int main(int argc, char **argv)
   int phPresent = 1;
   int rcbvPresent = 1;
 
-  double inputEchoName = 0;
   std::string inputFileName, outputDirectoryName;
 
   if (parser.compareParameter("L", tempPosition))
@@ -39,10 +37,6 @@ int main(int argc, char **argv)
   if (parser.compareParameter("i", tempPosition))
   {
     inputFileName = argv[tempPosition + 1];
-  }
-  if (parser.compareParameter("e", tempPosition))
-  {
-	  inputEchoName = atof(argv[tempPosition + 1]);
   }
   if (parser.compareParameter("p", tempPosition))
   {
@@ -84,7 +78,7 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
   PerfusionDerivatives objPerfusion;
-  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, rcbvPresent, psrPresent, phPresent, inputEchoName, outputDirectoryName);
+  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, rcbvPresent, psrPresent, phPresent, outputDirectoryName);
 
   //write perfusion derivatives
   if (perfusionDerivatives.size() > 0)
