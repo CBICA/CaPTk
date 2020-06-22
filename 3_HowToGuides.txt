@@ -1213,7 +1213,6 @@ The exact measurements comprise of the following:
 
 <b> REQUIREMENTS:</b>
   -# A single DSC-MRI image
-  -# The Echo Time corresponding to the given DSC-MRI scan
   -# System should have atleast 32GB RAM for calculating perfusion derivatives
 
 <b> USAGE:</b>
@@ -1222,7 +1221,7 @@ The exact measurements comprise of the following:
 	-# Press the "Confirm" button.
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
 \verbatim
-${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -e 1 -p 1 -r 1 -o C:/InputImage_output
+${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -p 1 -r 1 -o C:/InputImage_output
 \endverbatim
 
 --------

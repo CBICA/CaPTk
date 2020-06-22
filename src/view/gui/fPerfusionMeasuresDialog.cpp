@@ -35,11 +35,6 @@ void fPerfusionEstimator::ConfirmButtonPressed()
     ShowErrorMessage("Please specify the DSC-MRI Image.");
     return;
   }
-  if ((inputEchoName->text().isEmpty()))
-  {
-	  ShowErrorMessage("Please specify the Echo Time.");
-	  return;
-  }
   if (outputImageName->text().isEmpty())
   {
     ShowErrorMessage("Please specify the output folder.");
@@ -50,7 +45,7 @@ void fPerfusionEstimator::ConfirmButtonPressed()
     ShowErrorMessage("Please select at least one of the given three options: ap-rCBV, PH, PSR.");
     return;
   }
-  emit RunPerfusionMeasuresCalculation(inputEchoName->text().toDouble(), m_rcbv->isChecked(), m_psr->isChecked(), m_ph->isChecked(), mInputPathName.toStdString(), mOutputPathName.toStdString());
+  emit RunPerfusionMeasuresCalculation(m_rcbv->isChecked(), m_psr->isChecked(), m_ph->isChecked(), mInputPathName.toStdString(), mOutputPathName.toStdString());
 
   this->close();
 }
