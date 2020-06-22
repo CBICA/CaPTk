@@ -880,7 +880,7 @@ fMainWindow::fMainWindow()
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)));
 
-  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
+  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(/*const double, */const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(/*const double, */const bool, const bool, const bool, const std::string, const std::string)));
   connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string, const std::string, const std::string)));
 
 
@@ -8805,7 +8805,7 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
   msg = "Diffusion derivatives have been saved at the specified locations.";
   ShowMessage(msg.toStdString(), this);
 }
-void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
+void fMainWindow::CallPerfusionMeasuresCalculation(/*const double TE,*/ const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {

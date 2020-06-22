@@ -782,7 +782,7 @@ public slots:
   \param inputfile The input DSC-MRI image
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
+  void CallPerfusionMeasuresCalculation(/*const double TE,*/ const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
 
   /**
   \brief Call the Diffusion Measures application with the inputs
