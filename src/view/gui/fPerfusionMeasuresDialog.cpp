@@ -35,11 +35,11 @@ void fPerfusionEstimator::ConfirmButtonPressed()
     ShowErrorMessage("Please specify the DSC-MRI Image.");
     return;
   }
-  if ((inputEchoName->text().isEmpty()))
-  {
-	  ShowErrorMessage("Please specify the Echo Time.");
-	  return;
-  }
+  //if ((inputEchoName->text().isEmpty()))
+  //{
+	 // ShowErrorMessage("Please specify the Echo Time.");
+	 // return;
+  //}
   if (outputImageName->text().isEmpty())
   {
     ShowErrorMessage("Please specify the output folder.");
