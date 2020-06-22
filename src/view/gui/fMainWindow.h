@@ -770,7 +770,7 @@ public slots:
   \param inputdicomfilename The input DICOM slide
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder);
+  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, std::string outputFolder);
 
   /**
   \brief Call the Perfusion Measures application with the inputs
