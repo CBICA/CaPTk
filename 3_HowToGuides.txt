@@ -245,8 +245,8 @@ This CLI-only application takes 4 structural brain MRIs as input and performs th
 -# [Co-registration](preprocessing_reg.html) to T1CE
 -# [Registration](preprocessing_reg.html) to SRI-24 atlas [4]
 -# Apply registration to re-oriented image to maximize image fidelity
--# [Skull-stripping](seg_DL.html)
--# Put extracted brain mask back to original patient space 
+-# OPTIONAL: [Skull-stripping](seg_DL.html)
+-# OPTIONAL: [Tumor Segmentation](seg_DL.html)
 
 Example command:
 \verbatim
