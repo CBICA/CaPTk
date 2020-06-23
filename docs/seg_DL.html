@@ -79,6 +79,7 @@ $(document).ready(function(){initNavTree('seg_DL.html',''); initResizable(); });
 <li>Select the output folder.</li>
 <li>Click on 'Applications' -&gt; 'Brain Tumor Segmentation' or 'Skull Stripping'</li>
 <li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/DeepMedic.exe -md ${CaPTk_InstallDir}/data/deepMedic/saved_models/brainTumorSegmentation -i C:/data/t1.nii.gz,C:/data/t1ce.nii.gz,C:/data/t2.nii.gz,C:/data/fl.nii.gz -m C:/data/optionalMask.nii.gz -o C:/data/outputSegmentation.nii.gz
+${CaPTk_InstallDir}/bin/DeepMedic.exe -i c:/t1_withSkull.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping_modalityAgnostic # modality-agnostic skull-stripping
 </pre> <br  />
 </li>
 </ol>
