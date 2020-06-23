@@ -450,6 +450,7 @@ private:
       if (maskIter.Get() > 0)
       {
         imageIter.SetIndex(maskIter.GetIndex());
+        auto temp_imageIterGet = imageIter.Get();
         auto startIntensityIndex = holder.IntensityToIndex(static_cast<double>(imageIter.Get()));
 
         ////TBD
@@ -577,7 +578,10 @@ private:
             //}
             ////TBD
 
-            holder.m_Matrix(startIntensityIndex, steps - 1) += 1;
+            if (!vnl_math_isnan(startIntensityIndex) && !vnl_math_isinf(startIntensityIndex))
+            {
+              holder.m_Matrix(startIntensityIndex, steps - 1) += 1;
+            }
 
             ////TBD
             //if (steps > 0 && startIntensityIndex < 0 && estimateLargestRegion == 0) 
