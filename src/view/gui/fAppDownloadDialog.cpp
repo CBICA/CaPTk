@@ -55,7 +55,7 @@ void fAppDownloadDialog::initDownload() {
     {
         setupDownload(this);
 
-        connect(downloadProgressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
+        // connect(downloadProgressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
 
         manager = new QNetworkAccessManager(this);
 
@@ -95,8 +95,8 @@ void fAppDownloadDialog::initDownload() {
         ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("true").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
         ApplicationPreferences::GetInstance()->DisplayPreferences();
-        downloadProgressDialog->setWindowTitle(tr("HTTP"));
-        downloadProgressDialog->setLabelText(tr("Downloading %1").arg(fileName));
+        // downloadProgressDialog->setWindowTitle(tr("HTTP"));
+        // downloadProgressDialog->setLabelText(tr("Downloading %1").arg(fileName));
         
         // emit startDownload();
 
@@ -148,8 +148,9 @@ void fAppDownloadDialog::updateDownloadProgress(qint64 bytesRead, qint64 totalBy
     if (httpRequestAborted)
         return;
 
-    downloadProgressDialog->setMaximum(totalBytes);
-    downloadProgressDialog->setValue(bytesRead);
+    // downloadProgressDialog->setMaximum(totalBytes);
+    // downloadProgressDialog->setValue(bytesRead);
+	emit updateProgressDownload((int) ((qint64) ((readBytes * 100) / totalBytes)), "Downloading " + this->m_AppName.toStdString(), 100);
 }
 
 // When download finished or canceled, this will be called
@@ -164,7 +165,7 @@ void fAppDownloadDialog::httpDownloadFinished()
             file = 0;
         }
         reply->deleteLater();
-        downloadProgressDialog->hide();
+        // downloadProgressDialog->hide();
 
         ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
         ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
@@ -179,7 +180,7 @@ void fAppDownloadDialog::httpDownloadFinished()
     }
 
     // download finished normally
-    downloadProgressDialog->hide();
+    // downloadProgressDialog->hide();
     file->flush();
     file->close();
 
