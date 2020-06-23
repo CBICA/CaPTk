@@ -54,45 +54,45 @@ std::string findRelativeApplicationPath(const std::string appName)
   return appName_path;
 }
 
-// std::string findRelativeApplicationDownloadPath(const std::string appName)
-// {
-//   std::string winExt =
-// #if WIN32
-//     ".exe";
-// #else
-//     "";
-// #endif
+std::string findRelativeApplicationDownloadPath(const std::string appName)
+{
+  std::string winExt =
+#if WIN32
+    ".exe";
+#else
+    "";
+#endif
 
-//   if (appName.find("libra") != std::string::npos)
-//   {
-// #if WIN32
-//     winExt = ".bat";
-// #endif
-//   }
+  if (appName.find("libra") != std::string::npos)
+  {
+#if WIN32
+    winExt = ".bat";
+#endif
+  }
 
-//   auto appName_wrap = appName;
+  auto appName_wrap = appName;
 
-//   if (appName_wrap.find("libra") != std::string::npos)
-//   {
-// #if WIN32
-//     winExt = ".bat";
-// #elif linux
-//     appName_wrap = "bin/" + appName_wrap;
-//     winExt = "";
-// #endif
-//   }
+  if (appName_wrap.find("libra") != std::string::npos)
+  {
+#if WIN32
+    winExt = ".bat";
+#elif linux
+    appName_wrap = "bin/" + appName_wrap;
+    winExt = "";
+#endif
+  }
 
-//   auto fullPath = downloadFolder + appName + "/" + appName_wrap + winExt;
+  auto fullPath = downloadFolder + appName + "/" + appName_wrap + winExt;
 
-//   if (cbica::isFile(fullPath)) {
+  if (cbica::isFile(fullPath)) {
 
-//     return fullPath;
-//   }
-//   else {
-//     std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
-//     exit(EXIT_FAILURE);
-//   }
-// }
+    return fullPath;
+  }
+  else {
+    std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
+    exit(EXIT_FAILURE);
+  }
+}
 
 inline std::string getCaPTkDataDir()
 {

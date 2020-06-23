@@ -88,6 +88,9 @@ void ApplicationDownloadManager::appDownload(bool isCLI)
 }
 
 void ApplicationDownloadManager::updateProgress(int progress, std::string message, int max) {
+	
+	qDebug() << std::to_string(progress) << " " << std::to_string(max) << endl;
+
 	emit updateProgressDownload(progress, "Downloading " + this->m_AppName.toStdString(), max);
 }
 
