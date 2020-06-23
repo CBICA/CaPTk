@@ -53,14 +53,14 @@ public:
   {
     auto temp = std::floor((intensity - m_MinimumRange) / m_Stepsize);
 
-    //TBD
-    //if (std::floor((intensity - m_MinimumRange) / m_Stepsize) < -1) 
-    //{
-    //  auto blah = 1;
-    //}
-    //TBD
-
-    return std::floor((intensity - m_MinimumRange) / m_Stepsize);
+    if (vnl_math_isinf(temp) || vnl_math_isnan(temp))
+    {
+      return 0;
+    }
+    else
+    {
+      return temp;
+    }
   }
 
   double IndexToMinIntensity(int index)
@@ -578,10 +578,7 @@ private:
             //}
             ////TBD
 
-            if (!vnl_math_isnan(startIntensityIndex) && !vnl_math_isinf(startIntensityIndex))
-            {
-              holder.m_Matrix(startIntensityIndex, steps - 1) += 1;
-            }
+            holder.m_Matrix(startIntensityIndex, steps - 1) += 1;
 
             ////TBD
             //if (steps > 0 && startIntensityIndex < 0 && estimateLargestRegion == 0) 
