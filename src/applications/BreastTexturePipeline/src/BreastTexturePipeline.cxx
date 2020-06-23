@@ -10,7 +10,6 @@
 #include "FeatureExtraction.h"
 
 #include "CaPTkDefines.h"
-#include "CaPTkGUIUtils.h"
 #include <Urlmon.h>
 #include "yaml-cpp/node/node.h"
 
@@ -54,6 +53,46 @@ std::string findRelativeApplicationPath(const std::string appName)
   }
   return appName_path;
 }
+
+// std::string findRelativeApplicationDownloadPath(const std::string appName)
+// {
+//   std::string winExt =
+// #if WIN32
+//     ".exe";
+// #else
+//     "";
+// #endif
+
+//   if (appName.find("libra") != std::string::npos)
+//   {
+// #if WIN32
+//     winExt = ".bat";
+// #endif
+//   }
+
+//   auto appName_wrap = appName;
+
+//   if (appName_wrap.find("libra") != std::string::npos)
+//   {
+// #if WIN32
+//     winExt = ".bat";
+// #elif linux
+//     appName_wrap = "bin/" + appName_wrap;
+//     winExt = "";
+// #endif
+//   }
+
+//   auto fullPath = downloadFolder + appName + "/" + appName_wrap + winExt;
+
+//   if (cbica::isFile(fullPath)) {
+
+//     return fullPath;
+//   }
+//   else {
+//     std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
+//     exit(EXIT_FAILURE);
+//   }
+// }
 
 inline std::string getCaPTkDataDir()
 {
@@ -110,9 +149,7 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  // auto libraPath = findRelativeApplicationPath("libra");
-  auto libraPath = getApplicationDownloadPath("libra");
-  
+  auto libraPath = findRelativeApplicationPath("libra");  
 
   // if (libraPath.empty()) {
   //   std::cout << "Libra is not installed. Installing libra...\n";
