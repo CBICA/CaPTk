@@ -136,7 +136,7 @@ void ApplicationDownloadManager::doneUnzip() {
 
 	}
 	else {
-		extractProgressDialog->cancel();
+		// extractProgressDialog->cancel();
 		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 		// qDebug() << "Extraction done" << endl;
 
