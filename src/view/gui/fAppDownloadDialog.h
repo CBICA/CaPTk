@@ -91,7 +91,7 @@ public slots:
   void cancelDownload();
 
 signals:
-	void updateProgressDownload(int progress, std::string message, int max);
+	void updateProgress(int progress, std::string message, int max);
   void doneDownload(QString fullPath, QString extractPath);
 };
 

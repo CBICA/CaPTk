@@ -87,7 +87,7 @@ void ApplicationDownloadManager::appDownload(bool isCLI)
 	connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(startUnzip(QString, QString)));   
 }
 
-void ApplicationDownloadManager::updateProgressDownload(int progress, std::string message, int max) {
+void ApplicationDownloadManager::updateProgress(int progress, std::string message, int max) {
 	emit updateProgressDownload(progress, "Downloading " + this->m_AppName.toStdString(), max);
 }
 

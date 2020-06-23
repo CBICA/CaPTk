@@ -38,7 +38,7 @@ private:
 	void appDownload(bool isCLI);
 
 private slots:
-	void updateProgressDownload(int progress, std::string message, int max);
+	void updateProgress(int progress, std::string message, int max);
 	void startUnzip(QString fullPath, QString extractPath);
 	void doneUnzip();
 

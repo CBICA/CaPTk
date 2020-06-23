@@ -150,7 +150,7 @@ void fAppDownloadDialog::updateDownloadProgress(qint64 bytesRead, qint64 totalBy
 
     // downloadProgressDialog->setMaximum(totalBytes);
     // downloadProgressDialog->setValue(bytesRead);
-	emit updateProgressDownload((int) ((qint64) ((readBytes * 100) / totalBytes)), "Downloading " + this->m_AppName.toStdString(), 100);
+	emit updateProgress((int) ((qint64) ((bytesRead * 100) / totalBytes)), "Downloading " + this->m_AppName.toStdString(), 100);
 }
 
 // When download finished or canceled, this will be called
