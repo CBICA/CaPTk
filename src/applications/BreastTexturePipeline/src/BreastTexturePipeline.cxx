@@ -9,6 +9,12 @@
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
 
+#include "CaPTkDefines.h"
+#include "CaPTkGUIUtils.h"
+#include <Urlmon.h>
+#include "yaml-cpp/node/node.h"
+
+
 std::string inputImageFile, outputDir;
 
 bool debugMode;
@@ -43,7 +49,7 @@ std::string findRelativeApplicationPath(const std::string appName)
 
   if (!cbica::isFile(appName_path))
   {
-    // std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
+    std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
     exit(EXIT_FAILURE);
   }
   return appName_path;
@@ -104,7 +110,41 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  auto libraPath = findRelativeApplicationPath("libra");
+  // auto libraPath = findRelativeApplicationPath("libra");
+  auto libraPath = getApplicationDownloadPath("libra");
+  
+
+  // if (libraPath.empty()) {
+  //   std::cout << "Libra is not installed. Installing libra...\n";
+
+	//   YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+
+  //   std::string linkyml = "";
+
+  //   #ifdef _WIN32
+  //   linkyml = "Windows";
+  //   #elif __APPLE__
+  //   linkyml = "macOS";
+  //   #else
+  //   linkyml = "Linux";
+  //   #endif
+
+  //   std::string downloadLink = m_appDownloadConfigs["appsDownload"][this->m_AppName.toStdString()][linkyml].as<std::string>();
+
+  //   HRESULT res = URLDownloadToFile(NULL, downloadLink.c_str(), downloadFolder.c_str(), 0, NULL);
+
+  //   if(res == S_OK) {
+  //       std::cout << "Ok\n";
+  //   } else if(res == E_OUTOFMEMORY) {
+  //       std::cout << "Buffer length invalid, or insufficient memory\n";
+  //   } else if(res == INET_E_DOWNLOAD_FAILURE) {
+  //       std::cout << "URL is invalid\n";
+  //   } else {
+  //      std::cout <<"Other error: %d\n", res;
+  //   }
+
+  //   std::cout << "Done\n";
+  // }
 
   //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
   cbica::createDir(outputDir + "/temp");
