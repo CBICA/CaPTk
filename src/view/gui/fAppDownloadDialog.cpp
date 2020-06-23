@@ -62,6 +62,7 @@ void fAppDownloadDialog::initDownload() {
         // url = 
         QFileInfo fileInfo(url.path());
         QString fileName = fileInfo.fileName();
+        appName = fileName;
 
         if (fileName.isEmpty())
             fileName = "index.html";
@@ -150,7 +151,7 @@ void fAppDownloadDialog::updateDownloadProgress(qint64 bytesRead, qint64 totalBy
 
     // downloadProgressDialog->setMaximum(totalBytes);
     // downloadProgressDialog->setValue(bytesRead);
-	emit updateProgress((int) ((qint64) ((bytesRead * 100) / totalBytes)), "Downloading " + this->m_AppName.toStdString(), 100);
+	emit updateProgress((int) ((qint64) ((bytesRead * 100) / totalBytes)), "Downloading " + this->appName.toStdString(), 100);
 }
 
 // When download finished or canceled, this will be called
