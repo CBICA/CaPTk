@@ -960,9 +960,6 @@ public slots:
   */
   void help_Download(QAction* action);
 
-  //! Open the github issue tracker
-  void help_BugTracker();
-
   /**
   \brief open model library webpage
   */

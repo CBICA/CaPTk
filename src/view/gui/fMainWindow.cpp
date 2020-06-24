@@ -571,7 +571,6 @@ fMainWindow::fMainWindow()
   connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
   connect(actionHelp_Interactions, SIGNAL(triggered()), this, SLOT(help_Interactions()));
-  connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
@@ -1151,15 +1150,6 @@ void fMainWindow::help_Download(QAction* action)
   else
   {
     ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
-    return;
-  }
-}
-
-void fMainWindow::help_BugTracker()
-{
-  if (!openLink("https://github.com/CBICA/CaPTk/issues"))
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Bug Tracker");
     return;
   }
 }
