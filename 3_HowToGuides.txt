@@ -37,11 +37,11 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
   - [Miscellaneous: Diffusion Derivatives](Diffusion_Derivatives.html)
   - [Miscellaneous: Perfusion Derivatives](Perfusion_Derivatives.html)
   - [Miscellaneous: Principal Component Images Extraction](PCA_Extraction.html)
-- \subpage ht_utilities "Utilities (CLI only)": Collection of helper utilities such as resampling, thresholding, image information, casting, label statistics, etc.
+- \subpage ht_utilities "Utilities (CLI only)": Collection of helper utilities such as resampling, thresholding, image information, casting, label statistics, and more.
 
 Notes:
 
-- Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
+- Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>original</b></a> and <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/playlist?list=PLXdcXDD5czvgCOfo_LLhAwFRNlpsBfjFx"><b>ITCR 2020</b></a> CaPTk Playlists.
 - All applications are available as command-line applications (use parameter "-h" for detailed help messages).
 
 --------
@@ -245,8 +245,8 @@ This CLI-only application takes 4 structural brain MRIs as input and performs th
 -# [Co-registration](preprocessing_reg.html) to T1CE
 -# [Registration](preprocessing_reg.html) to SRI-24 atlas [4]
 -# Apply registration to re-oriented image to maximize image fidelity
--# [Skull-stripping](seg_DL.html)
--# Put extracted brain mask back to original patient space 
+-# OPTIONAL: [Skull-stripping](seg_DL.html)
+-# OPTIONAL: [Tumor Segmentation](seg_DL.html)
 
 Example command:
 \verbatim
@@ -376,6 +376,7 @@ For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can d
   -# This can also be used from the command line:
 \verbatim
 ${CaPTk_InstallDir}/bin/DeepMedic.exe -md ${CaPTk_InstallDir}/data/deepMedic/saved_models/brainTumorSegmentation -i C:/data/t1.nii.gz,C:/data/t1ce.nii.gz,C:/data/t2.nii.gz,C:/data/fl.nii.gz -m C:/data/optionalMask.nii.gz -o C:/data/outputSegmentation.nii.gz
+${CaPTk_InstallDir}/bin/DeepMedic.exe -i c:/t1_withSkull.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping_modalityAgnostic # modality-agnostic skull-stripping
 \endverbatim
 <br>
 
@@ -386,6 +387,8 @@ References:
 -# K.Kamnitsas, C.Ledig, V.F.J.Newcombe, J.P.Simpson, A.D.Kane, D.K.Menon, D.Rueckert, B.Glocker, "Efficient Multi-Scale 3D CNN with Fully Connected CRF for Accurate Brain Lesion Segmentation", Medical Image Analysis, 2016.
 -# K.Kamnitsas, L.Chen, C.Ledig, D.Rueckert, B.Glocker, "Multi-Scale 3D CNNs for segmentation of brain Lesions in multi-modal MRI", in proceeding of ISLES challenge, MICCAI 2015.
 -# S.P.Thakur, J.Doshi, S.Pati, S.M.Ha, C.Sako, S.Talbar, U.Kulkarni, C.Davatzikos, G.Erus, S.Bakas, "Skull-Stripping of Glioblastoma MRI Scans Using 3D Deep Learning", Springer - BrainLes 2019 - LNCS, Vol.11992, 57-68, 2020. DOI: 10.1007/978-3-030-46640-4_6
+-# S.P.Thakur, J.Doshi, S.Pati, S.M.Ha, C.Sako, S.Talbar, U.Kulkarni, C.Davatzikos, G.Erus, S.Bakas, "Brain Extraction on MRI Scans in Presence of Diffuse Glioma:
+Multi-institutional Performance Evaluation of Deep Learning Methods and Robust Modality-Agnostic Training", NeuroImage 2020 [Accepted]
 
 */
 
