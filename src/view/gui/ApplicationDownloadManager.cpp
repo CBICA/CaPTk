@@ -83,7 +83,7 @@ void ApplicationDownloadManager::appDownload(bool isCLI)
 		appDownloadDialog.exec();
 	}
 
-	connect( &appDownloadDialog, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgressDownload(int, std::string, int)));   
+	connect( &appDownloadDialog, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));   
 	connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(startUnzip(QString, QString)));   
 }
 
