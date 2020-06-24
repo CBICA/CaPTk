@@ -38,62 +38,31 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-
-#ifndef QZIPREADER_H
-#define QZIPREADER_H
+#ifndef QZIPWRITER_H
+#define QZIPWRITER_H
 
 #include <QtGlobal>
-
-#include <QDateTime>
-#include <QFile>
 #include <QString>
+#include <QFile>
 
-// QT_BEGIN_NAMESPACE
+class QZipWriterPrivate;
 
-class QZipReaderPrivate;
-
-class /* Q_GUI_EXPORT */ QZipReader : public QObject
+class /* Q_GUI_EXPORT */ QZipWriter
 {
-    Q_OBJECT
 public:
-    explicit QZipReader(const QString &fileName, QIODevice::OpenMode mode = QIODevice::ReadOnly );
+    explicit QZipWriter(const QString &fileName, QIODevice::OpenMode mode = (QIODevice::WriteOnly | QIODevice::Truncate) );
 
-    explicit QZipReader(QIODevice *device);
-    ~QZipReader();
+    explicit QZipWriter(QIODevice *device);
+    ~QZipWriter();
 
     QIODevice* device() const;
 
-    bool isReadable() const;
+    bool isWritable() const;
     bool exists() const;
-
-    struct /* Q_GUI_EXPORT */ FileInfo
-    {
-        FileInfo();
-        FileInfo(const FileInfo &other);
-        ~FileInfo();
-        FileInfo &operator=(const FileInfo &other);
-        bool isValid() const;
-        QString filePath;
-        uint isDir : 1;
-        uint isFile : 1;
-        uint isSymLink : 1;
-        QFile::Permissions permissions;
-        uint crc;
-        qint64 size;
-        QDateTime lastModified;
-        void *d;
-    };
-
-    QList<FileInfo> fileInfoList() const;
-    int count() const;
-
-    FileInfo entryInfoAt(int index) const;
-    QByteArray fileData(const QString &fileName) const;
-    bool extractAll(const QString &destinationDir) const;
 
     enum Status {
         NoError,
-        FileReadError,
+        FileWriteError,
         FileOpenError,
         FilePermissionsError,
         FileError
@@ -101,14 +70,30 @@ public:
 
     Status status() const;
 
+    enum CompressionPolicy {
+        AlwaysCompress,
+        NeverCompress,
+        AutoCompress
+    };
+
+    void setCompressionPolicy(CompressionPolicy policy);
+    CompressionPolicy compressionPolicy() const;
+
+    void setCreationPermissions(QFile::Permissions permissions);
+    QFile::Permissions creationPermissions() const;
+
+    void addFile(const QString &fileName, const QByteArray &data);
+
+    void addFile(const QString &fileName, QIODevice *device);
+
+    void addDirectory(const QString &dirName);
+
+    void addSymLink(const QString &fileName, const QString &destination);
+
     void close();
-
-signals:
-    void progress(int) const;
-
 private:
-    QZipReaderPrivate *d;
-    Q_DISABLE_COPY(QZipReader)
+    QZipWriterPrivate *d;
+    Q_DISABLE_COPY(QZipWriter)
 };
 
-#endif // QZIPREADER_H
+#endif // QZIPWRITER_H

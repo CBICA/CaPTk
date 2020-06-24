@@ -52,9 +52,8 @@
 
 class QZipReaderPrivate;
 
-class /* Q_GUI_EXPORT */ QZipReader : public QObject
+class /* Q_GUI_EXPORT */ QZipReader
 {
-    Q_OBJECT
 public:
     explicit QZipReader(const QString &fileName, QIODevice::OpenMode mode = QIODevice::ReadOnly );
 
@@ -102,9 +101,6 @@ public:
     Status status() const;
 
     void close();
-
-signals:
-    void progress(int) const;
 
 private:
     QZipReaderPrivate *d;

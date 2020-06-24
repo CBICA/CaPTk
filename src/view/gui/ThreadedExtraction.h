@@ -37,7 +37,11 @@ private:
 	QString extractPath;
 	QString appName;
 
+private slots:
+	void updateProgressSlot(int progress);
+
 signals:
+	void updateProgressSignal(int progress, std::string message, int max);
     void resultReady(QString appName);
 };
 

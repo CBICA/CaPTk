@@ -5932,8 +5932,8 @@ void fMainWindow::ApplicationLIBRABatch()
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   std::string scriptToCall = appDownloadMngr->getApplication("libra");
 
-  connect(appDownloadMngr, SIGNAL(updateProgressDownload(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
-  connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;
@@ -6041,8 +6041,8 @@ void fMainWindow::ApplicationBreastSegmentation()
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   std::string scriptToCall = appDownloadMngr->getApplication("libra");
 
-  connect(appDownloadMngr, SIGNAL(updateProgressDownload(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
-  connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;
@@ -6104,8 +6104,8 @@ void fMainWindow::ApplicationLIBRASingle()
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   std::string scriptToCall = appDownloadMngr->getApplication("libra");
 
-  connect(appDownloadMngr, SIGNAL(updateProgressDownload(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
-  connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;
