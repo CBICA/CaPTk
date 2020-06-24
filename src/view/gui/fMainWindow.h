@@ -312,6 +312,7 @@ private:
   QAction *actionSave_Images;
   QAction *actionAbout;
   QAction *actionExit;
+  QAction *actionModelLibrary;
 
   QAction *actionAppEGFR;
   QAction *actionAppRecurrence;
@@ -958,8 +959,14 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
+
   //! Open the github issue tracker
   void help_BugTracker();
+
+  /**
+  \brief open model library webpage
+  */
+  void OpenModelLibrary();
 
   /**
   \brief Get contextual help 
