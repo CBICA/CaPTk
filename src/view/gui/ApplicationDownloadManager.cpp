@@ -88,7 +88,10 @@ void ApplicationDownloadManager::appDownload(bool isCLI)
 }
 
 void ApplicationDownloadManager::updateProgressSlot(int progress, std::string message, int max) {
-	QMessageBox::information(&appDownloadDialog, tr("Info"), QString::fromStdString(message));
+	if (message.find("Download") == std::string::npos) {
+		QMessageBox::information(&appDownloadDialog, tr("Info"), QString::fromStdString(message));
+
+	}
 
 	emit updateProgressSignal(progress, message, max);
 }
