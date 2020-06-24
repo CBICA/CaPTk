@@ -51,8 +51,11 @@
 #include <QDir>
 #include <QtMath>
 
-//#include <zlib.h>
-#include <QtZlib/zlib.h>
+#ifdef __linux__ 
+    #include <zlib.h>
+#else 
+    #include <QtZlib/zlib.h>
+#endif
 
 // Zip standard version for archives handled by this API
 // (actually, the only basic support of this version is implemented but it is enough for now)
