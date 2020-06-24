@@ -361,8 +361,11 @@ References:
 
 For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping [3]. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the preprocessing).
 
-<b> REQUIREMENTS:</b>
-The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.
+<b> REQUIREMENTS:</b> 
+- For tumor segmentation model and multi-4 skull-stripping model:
+	- The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.
+- For modality-agnostic skull-stripping model:
+	- A single structural MRI modality (can be either T1, T1-Gd, T2 or T2-FLAIR).
 
 <b> USAGE:</b>
 	-# Load the images that you want to segment in CaPTk.
@@ -372,7 +375,7 @@ The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are 
   -# Click on 'Applications' -> 'Brain Tumor Segmentation' or 'Skull Stripping'
   -# This can also be used from the command line:
 \verbatim
-${CaPTk_InstallDir}/bin/DeepMedic.exe -md ${CaPTk_InstallDir}/data/deepMedic/saved_models/brainTumorSegmentation -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -m C:/data/optionalMask.nii.gz -o C:/data/outputSegmentation.nii.gz
+${CaPTk_InstallDir}/bin/DeepMedic.exe -md ${CaPTk_InstallDir}/data/deepMedic/saved_models/brainTumorSegmentation -i C:/data/t1.nii.gz,C:/data/t1ce.nii.gz,C:/data/t2.nii.gz,C:/data/fl.nii.gz -m C:/data/optionalMask.nii.gz -o C:/data/outputSegmentation.nii.gz
 \endverbatim
 <br>
 
@@ -1210,7 +1213,6 @@ The exact measurements comprise of the following:
 
 <b> REQUIREMENTS:</b>
   -# A single DSC-MRI image
-  -# The Echo Time corresponding to the given DSC-MRI scan
   -# System should have atleast 32GB RAM for calculating perfusion derivatives
 
 <b> USAGE:</b>
@@ -1219,7 +1221,7 @@ The exact measurements comprise of the following:
 	-# Press the "Confirm" button.
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
 \verbatim
-${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -e 1 -p 1 -r 1 -o C:/InputImage_output
+${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -p 1 -r 1 -o C:/InputImage_output
 \endverbatim
 
 --------

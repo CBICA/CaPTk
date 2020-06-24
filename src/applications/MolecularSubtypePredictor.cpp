@@ -112,11 +112,13 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
 	  return false;
   }
   //---------------------------------------------------------------------------
-  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 161);
+  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), MOLECULAR_NO_OF_FEATURES);
+  std::vector<std::string> patient_ids;
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
     std::cout << "Patient's data loaded:" << sid + 1 << std::endl;
     std::map< CAPTK::ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
+    patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
     try
     {
       ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
@@ -164,6 +166,28 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
 		return false;
     }
   }
+  std::string FeatureLabels[MOLECULAR_NO_OF_FEATURES] = { "Age","ET","NCR","ED","brain size","ET+NCR","(ET+NCR)/brain size","ED/brain size",
+    "Vent_Tumor_Dist","Vent_ED_Dist","Mean_ET_T1CE","STD_ET_T1CE","Mean_ET_T1","STD_ET_T1","Mean_ET_T2","STD_ET_T2","Mean_ET_Flair","STD_ET_Flair","Mean_ET_PH","STD_ET_PH","Mean_ET_PSR","STD_ET_PSR","Mean_ET_RCBV","STD_ET_RCBV","Mean_ET_FA","STD_ET_FA","Mean_ET_AX","STD_ET_AX","Mean_ET_RAD","STD_ET_RAD","Mean_ET_ADC","STD_ET_ADC",
+    "ET_T1CE_Bin1","ET_T1CE_Bin2","ED_T1CE_Bin1","ED_T1CE_Bin2","ED_T1CE_Bin3","ED_T1CE_Bin4","NCR_T1CE_Bin1","NCR_T1CE_Bin2",
+    "ET_T1_Bin1","ET_T1_Bin2","ED_T1_Bin1","ED_T1_Bin2","ED_T1_Bin3","ED_T1_Bin4","ED_T1_Bin5","ED_T1_Bin6","ED_T1_Bin7","ED_T1_Bin8","ED_T1_Bin9","NCR_T1_Bin1","NCR_T1_Bin2",
+    "ET_T2_Bin1","ET_T2_Bin2","ED_T2_Bin1","ED_T2_Bin2","ED_T2_Bin3","ED_T2_Bin4","ED_T2_Bin5","ED_T2_Bin6","ED_T2_Bin7","ED_T2_Bin8","ED_T2_Bin9","NCR_T2_Bin1","NCR_T2_Bin2",
+    "ET_Flair_Bin1","ET_Flair_Bin2","ET_Flair_Bin3","ED_Flair_Bin1","ED_Flair_Bin2","ED_Flair_Bin3","ED_Flair_Bin4","ED_Flair_Bin5","ED_Flair_Bin6","ED_Flair_Bin7","ED_Flair_Bin8","ED_Flair_Bin9","NCR_Flair_Bin1","NCR_Flair_Bin2","NCR_Flair_Bin3","NCR_Flair_Bin4","NCR_Flair_Bin5","NCR_Flair_Bin6","NCR_Flair_Bin7",
+    "ET_PH_Bin1","ET_PH_Bin2","ET_PH_Bin3","ED_PH_Bin1","ED_PH_Bin2","ED_PH_Bin3","ED_PH_Bin4","ED_PH_Bin5","ED_PH_Bin6","ED_PH_Bin7","ED_PH_Bin8","NCR_PH_Bin1","NCR_PH_Bin2","NCR_PH_Bin3",
+    "ET_PSR_Bin1","ET_PSR_Bin2","ET_PSR_Bin3","ET_PSR_Bin4","ED_PSR_Bin1","ED_PSR_Bin2","ED_PSR_Bin3","ED_PSR_Bin4","ED_PSR_Bin5","ED_PSR_Bin6","ED_PSR_Bin7","ED_PSR_Bin8","ED_PSR_Bin9","ED_PSR_Bin10","NCR_PSR_Bin1","NCR_PSR_Bin2","NCR_PSR_Bin3",
+    "ET_RCBV_Bin1","ET_RCBV_Bin2","ET_RCBV_Bin3","ED_RCBV_Bin1","ED_RCBV_Bin2","ED_RCBV_Bin3","NCR_RCBV_Bin1","NCR_RCBV_Bin2","NCR_RCBV_Bin3",
+    "ET_FA_Bin1","ET_FA_Bin2","ED_FA_Bin1","ED_FA_Bin2","NCR_FA_Bin1","NCR_FA_Bin2",
+    "ET_AX_Bin1","ET_AX_Bin2","ED_AX_Bin1","ED_AX_Bin2","NCR_AX_Bin1","NCR_AX_Bin2","NCR_AX_Bin3",
+    "ET_RAD_Bin1","ET_RAD_Bin2","ED_RAD_Bin1","ED_RAD_Bin2","NCR_RAD_Bin1","NCR_RAD_Bin2","NCR_RAD_Bin3",
+    "ET_ADC_Bin1","ET_ADC_Bin2","ED_ADC_Bin1","ED_ADC_Bin2","NCR_ADC_Bin1","NCR_ADC_Bin2","NCR_ADC_Bin3",
+    "Frontal","Temporal","Parietal","Basal G","Insula","CC_Fornix","Occipital","Cere","Brain stem" };
+
+  //write raw extracted features to a .csv file
+  std::vector<std::string> StringFeatureLabels;
+  for (int index = 0; index < MOLECULAR_NO_OF_FEATURES; index++)
+    StringFeatureLabels.push_back(FeatureLabels[index]);
+
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, StringFeatureLabels, outputdirectory + "/RawFeatures.csv");
+
   std::cout << std::endl << "Building model....." << std::endl;
   VariableSizeMatrixType scaledFeatureSet;
   scaledFeatureSet.SetSize(qualifiedsubjects.size(), 161);
@@ -176,6 +200,7 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
       if (std::isnan(scaledFeatureSet(i, j)))
         scaledFeatureSet(i, j) = 0;
 
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(scaledFeatureSet, patient_ids, StringFeatureLabels, outputdirectory + "/ScaledFeatures.csv");
 
   //VariableSizeMatrixType ScaledFeatureSetAfterAddingAge;
   //ScaledFeatureSetAfterAddingAge.SetSize(scaledFeatureSet.Rows(), scaledFeatureSet.Cols() + 1);
@@ -205,8 +230,8 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
   //  //}
   //
   ////-----------------------writing in files to compare results------------------------------
-  typedef vnl_matrix<double> MatrixType;
-  MatrixType data;
+  //typedef vnl_matrix<double> MatrixType;
+  //MatrixType data;
   //  //data.set_size(105, 169);
   //  //for (unsigned int i = 0; i < scaledFeatureSet.Rows(); i++)
   //  //{
@@ -229,20 +254,8 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
 
   try
   {
-	  data.set_size(161, 1); // TOCHECK - are these hard coded sizes fine?
-	  for (unsigned int i = 0; i < meanVector.Size(); i++)
-		  data(i, 0) = meanVector[i];
-	  typedef itk::CSVNumericObjectFileWriter<double, 161, 1> WriterTypeVector;
-	  WriterTypeVector::Pointer writerv = WriterTypeVector::New();
-	  writerv->SetFileName(outputdirectory + "/Molecular_ZScore_Mean.csv");
-	  writerv->SetInput(&data);
-	  writerv->Write();
-
-	  for (unsigned int i = 0; i < stdVector.Size(); i++)
-		  data(i, 0) = stdVector[i];
-	  writerv->SetFileName(outputdirectory + "/Molecular_ZScore_Std.csv");
-	  writerv->SetInput(&data);
-	  writerv->Write();
+    WriteCSVFiles(meanVector, outputdirectory + "/Molecular_ZScore_Mean.csv");
+    WriteCSVFiles(stdVector, outputdirectory + "/Molecular_ZScore_Std.csv");
   }
   catch (const std::exception& e1)
   {
@@ -464,16 +477,17 @@ VectorDouble MolecularSubtypePredictor::MolecularSubtypePredictionOnExistingMode
 	  return results;
   }
 
-
   //----------------------------------------------------
   VariableSizeMatrixType FeaturesOfAllSubjects;
-  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), 161);
-
+  FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), MOLECULAR_NO_OF_FEATURES);
+  std::vector<std::string> patient_ids;
   for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
   {
-    cout << "Subject No:" << sid << endl;
+
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[sid];
-	try
+    patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
+    cout << "Subject No:" << sid << " Name: "<<patient_ids[sid]<< endl;
+    try
 	{
     ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
     ImageType::Pointer AtlasImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS]));
@@ -516,76 +530,66 @@ VectorDouble MolecularSubtypePredictor::MolecularSubtypePredictionOnExistingMode
 	}
 
   }
-  //typedef vnl_matrix<double> MatrixType;
-  //MatrixType data;
-  //  data.set_size(105, 169);
-  //  for (unsigned int i = 0; i < FeaturesOfAllSubjects.Rows(); i++)
-  //  {
-  //	  for (unsigned int j = 0; j < FeaturesOfAllSubjects.Cols(); j++)
-  //    {
-  //		data(i, j) = FeaturesOfAllSubjects(i, j);
-  //    }
-  //  }
-  //  typedef itk::CSVNumericObjectFileWriter<double, 105, 169> WriterTypeMatrix;
-  //  WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();
-  //  writermatrix->SetFileName(outputdirectory + "/plainfeatures.csv");
-  //  writermatrix->SetInput(&data);
-  //  writermatrix->Write();  
 
+  std::string FeatureLabels[MOLECULAR_NO_OF_FEATURES] = { "Age","ET","NCR","ED","brain size","ET+NCR","(ET+NCR)/brain size","ED/brain size",
+    "Vent_Tumor_Dist","Vent_ED_Dist","Mean_ET_T1CE","STD_ET_T1CE","Mean_ET_T1","STD_ET_T1","Mean_ET_T2","STD_ET_T2","Mean_ET_Flair","STD_ET_Flair","Mean_ET_PH","STD_ET_PH","Mean_ET_PSR","STD_ET_PSR","Mean_ET_RCBV","STD_ET_RCBV","Mean_ET_FA","STD_ET_FA","Mean_ET_AX","STD_ET_AX","Mean_ET_RAD","STD_ET_RAD","Mean_ET_ADC","STD_ET_ADC",
+    "ET_T1CE_Bin1","ET_T1CE_Bin2","ED_T1CE_Bin1","ED_T1CE_Bin2","ED_T1CE_Bin3","ED_T1CE_Bin4","NCR_T1CE_Bin1","NCR_T1CE_Bin2",
+    "ET_T1_Bin1","ET_T1_Bin2","ED_T1_Bin1","ED_T1_Bin2","ED_T1_Bin3","ED_T1_Bin4","ED_T1_Bin5","ED_T1_Bin6","ED_T1_Bin7","ED_T1_Bin8","ED_T1_Bin9","NCR_T1_Bin1","NCR_T1_Bin2",
+    "ET_T2_Bin1","ET_T2_Bin2","ED_T2_Bin1","ED_T2_Bin2","ED_T2_Bin3","ED_T2_Bin4","ED_T2_Bin5","ED_T2_Bin6","ED_T2_Bin7","ED_T2_Bin8","ED_T2_Bin9","NCR_T2_Bin1","NCR_T2_Bin2",
+    "ET_Flair_Bin1","ET_Flair_Bin2","ET_Flair_Bin3","ED_Flair_Bin1","ED_Flair_Bin2","ED_Flair_Bin3","ED_Flair_Bin4","ED_Flair_Bin5","ED_Flair_Bin6","ED_Flair_Bin7","ED_Flair_Bin8","ED_Flair_Bin9","NCR_Flair_Bin1","NCR_Flair_Bin2","NCR_Flair_Bin3","NCR_Flair_Bin4","NCR_Flair_Bin5","NCR_Flair_Bin6","NCR_Flair_Bin7",
+    "ET_PH_Bin1","ET_PH_Bin2","ET_PH_Bin3","ED_PH_Bin1","ED_PH_Bin2","ED_PH_Bin3","ED_PH_Bin4","ED_PH_Bin5","ED_PH_Bin6","ED_PH_Bin7","ED_PH_Bin8","NCR_PH_Bin1","NCR_PH_Bin2","NCR_PH_Bin3",
+    "ET_PSR_Bin1","ET_PSR_Bin2","ET_PSR_Bin3","ET_PSR_Bin4","ED_PSR_Bin1","ED_PSR_Bin2","ED_PSR_Bin3","ED_PSR_Bin4","ED_PSR_Bin5","ED_PSR_Bin6","ED_PSR_Bin7","ED_PSR_Bin8","ED_PSR_Bin9","ED_PSR_Bin10","NCR_PSR_Bin1","NCR_PSR_Bin2","NCR_PSR_Bin3",
+    "ET_RCBV_Bin1","ET_RCBV_Bin2","ET_RCBV_Bin3","ED_RCBV_Bin1","ED_RCBV_Bin2","ED_RCBV_Bin3","NCR_RCBV_Bin1","NCR_RCBV_Bin2","NCR_RCBV_Bin3",
+    "ET_FA_Bin1","ET_FA_Bin2","ED_FA_Bin1","ED_FA_Bin2","NCR_FA_Bin1","NCR_FA_Bin2",
+    "ET_AX_Bin1","ET_AX_Bin2","ED_AX_Bin1","ED_AX_Bin2","NCR_AX_Bin1","NCR_AX_Bin2","NCR_AX_Bin3",
+    "ET_RAD_Bin1","ET_RAD_Bin2","ED_RAD_Bin1","ED_RAD_Bin2","NCR_RAD_Bin1","NCR_RAD_Bin2","NCR_RAD_Bin3",
+    "ET_ADC_Bin1","ET_ADC_Bin2","ED_ADC_Bin1","ED_ADC_Bin2","NCR_ADC_Bin1","NCR_ADC_Bin2","NCR_ADC_Bin3",
+    "Frontal","Temporal","Parietal","Basal G","Insula","CC_Fornix","Occipital","Cere","Brain stem" };
 
+  //write raw extracted features to a .csv file
+  std::vector<std::string> StringFeatureLabels;
+  for (int index = 0; index < MOLECULAR_NO_OF_FEATURES; index++)
+    StringFeatureLabels.push_back(FeatureLabels[index]);
 
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, StringFeatureLabels, outputdirectory + "/RawFeatures.csv");
+  
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
   for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
     for (unsigned int j = 0; j < ScaledTestingData.Cols(); j++)
       if (std::isnan(ScaledTestingData(i, j)))
         ScaledTestingData(i, j) = 0;
 
-  VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
-  ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
-  for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < ScaledTestingData.Cols(); j++)
-      ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
-    ScaledFeatureSetAfterAddingLabel(i, j) = 0;
-  }
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(ScaledTestingData, patient_ids, StringFeatureLabels, outputdirectory + "/ScaledFeatures.csv");
 
-  //for (unsigned int i = 0; i < ScaledFeatureSetAfterAddingLabel.Rows(); i++)
+  //VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
+  //ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
+  //for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
   //{
-  //	for (unsigned int j = 0; j < ScaledFeatureSetAfterAddingLabel.Cols(); j++)
-  //	{
-  //		data(i, j) = ScaledFeatureSetAfterAddingLabel(i, j);
-  //	}
+  //  unsigned int j = 0;
+  //  for (j = 0; j < ScaledTestingData.Cols(); j++)
+  //    ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
+  //  ScaledFeatureSetAfterAddingLabel(i, j) = 0;
   //}
-  //typedef itk::CSVNumericObjectFileWriter<double, 105, 169> WriterTypeMatrix;
-  //writermatrix->SetFileName(outputdirectory + "/scaledfeatures.csv");
-  //writermatrix->SetInput(&data);
-  //writermatrix->Write();
-
-
-
-
 
   //VariableSizeMatrixType SixModelSelectedFeatures = SelectSixMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
   //VariableSizeMatrixType EighteenModelSelectedFeatures = SelectEighteenMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
-
 
   try
   {
     std::ofstream myfile;
     myfile.open(outputdirectory + "/results.csv");
-    myfile << "Subject Name,Proneural Score, Neural Score, Mesenchymal Score, Classical Score, Predicted Subtype \n";
+    myfile << "Subject Name,Predicted Subtype \n";
 
-//    if (cbica::fileExists(modeldirectory + "/" + mProneuralTrainedFile) == true && cbica::fileExists(modeldirectory + "/" + mNeuralTrainedFile) == true && cbica::fileExists(modeldirectory + "/" + mMessenchymalTrainedFile) == true && cbica::fileExists(modeldirectory + "/" + mClassicalTrainedFile) == true)
- //   {
+   if (cbica::fileExists(modeldirectory + "/" + mProneuralTrainedFile) == true && cbica::fileExists(modeldirectory + "/" + mNeuralTrainedFile) == true && cbica::fileExists(modeldirectory + "/" + mMessenchymalTrainedFile) == true && cbica::fileExists(modeldirectory + "/" + mClassicalTrainedFile) == true)
+   {
       VectorDouble result_proneural;
       VectorDouble result_neural;
       VectorDouble result_classical;
       VectorDouble result_messenchymal;
-      result_proneural = testOpenCVSVM(ScaledFeatureSetAfterAddingLabel, modeldirectory + "/" + mProneuralTrainedFile);
-      result_neural = testOpenCVSVM(ScaledFeatureSetAfterAddingLabel, modeldirectory + "/" + mNeuralTrainedFile);
-      result_messenchymal = testOpenCVSVM(ScaledFeatureSetAfterAddingLabel, modeldirectory + "/" + mMessenchymalTrainedFile);
-      result_classical = testOpenCVSVM(ScaledFeatureSetAfterAddingLabel, modeldirectory + "/" + mClassicalTrainedFile);
+      result_proneural = testOpenCVSVM(ScaledTestingData, modeldirectory + "/" + mProneuralTrainedFile);
+      result_neural = testOpenCVSVM(ScaledTestingData, modeldirectory + "/" + mNeuralTrainedFile);
+      result_messenchymal = testOpenCVSVM(ScaledTestingData, modeldirectory + "/" + mMessenchymalTrainedFile);
+      result_classical = testOpenCVSVM(ScaledTestingData, modeldirectory + "/" + mClassicalTrainedFile);
 
       results = CombineEstimates(result_proneural, result_neural, result_messenchymal, result_classical);
       for (size_t i = 0; i < results.size(); i++)
@@ -602,10 +606,9 @@ VectorDouble MolecularSubtypePredictor::MolecularSubtypePredictionOnExistingMode
           subtype = "Classical";
         else
           subtype = "Unknown";
-        myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(result_proneural[i]) + "," + std::to_string(result_neural[i]) + "," + std::to_string(result_messenchymal[i]) + "," +
-          std::to_string(result_classical[i]) + +"," + subtype + "\n";
+        myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + subtype + "\n";
       }
-//    }
+    }
 
     myfile.close();
   }
