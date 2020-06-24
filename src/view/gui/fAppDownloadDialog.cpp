@@ -149,11 +149,10 @@ void fAppDownloadDialog::updateDownloadProgress(qint64 bytesRead, qint64 totalBy
     if (httpRequestAborted)
         return;
 
-    QMessageBox::information(this,tr("Download"),"Downloading");
-
     // downloadProgressDialog->setMaximum(totalBytes);
     // downloadProgressDialog->setValue(bytesRead);
-	emit updateProgress(bytesRead, "Downloading " + this->appName.toStdString(), totalBytes);
+    QString msg = "Downloading " + this->appName;
+	emit updateProgress((int) bytesRead, msg.toStdString(), (int) totalBytes);
 }
 
 // When download finished or canceled, this will be called

@@ -83,14 +83,13 @@ void ApplicationDownloadManager::appDownload(bool isCLI)
 		appDownloadDialog.exec();
 	}
 
-	connect( &appDownloadDialog, SIGNAL(updateProgressDownload(int, std::string, int)), this, SLOT(updateProgressDownload(int, std::string, int)));   
+	connect( &appDownloadDialog, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgressDownload(int, std::string, int)));   
 	connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(startUnzip(QString, QString)));   
 }
 
 void ApplicationDownloadManager::updateProgress(int progress, std::string message, int max) {
-	QMessageBox::information(&appDownloadDialog ,tr("Progress"), "Updating Progress");
 	qDebug() << QString::number(progress) << endl;
-	
+
 	emit updateProgressDownload(progress, "Downloading " + this->m_AppName.toStdString(), max);
 }
 
