@@ -230,7 +230,7 @@ ELSE()
   SET( PLATFORM_STRING "linux" )
 ENDIF()
 
-SET( FILENAME_TO_EXTRACT "precompiledApps")
+SET( FILENAME_TO_EXTRACT "binaries_${PLATFORM_STRING}")
 # SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps/${PLATFORM_STRING}.zip" )
 SET( DOWNLOAD_LINK "https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
 SET( LFS_FILE_TO_CHECK "${PROJECT_SOURCE_DIR}/binaries/precompiledApps/${PLATFORM_STRING}.zip" )
