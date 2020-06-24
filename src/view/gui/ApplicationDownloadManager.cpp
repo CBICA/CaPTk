@@ -88,8 +88,9 @@ void ApplicationDownloadManager::appDownload(bool isCLI)
 }
 
 void ApplicationDownloadManager::updateProgress(int progress, std::string message, int max) {
-	QMessageBox::information(&appDownloadDialog ,tr("Extract"),std::to_string(progress));
-
+	QMessageBox::information(&appDownloadDialog ,tr("Progress"), "Updating Progress");
+	qDebug() << QString::number(progress) << endl;
+	
 	emit updateProgressDownload(progress, "Downloading " + this->m_AppName.toStdString(), max);
 }
 
