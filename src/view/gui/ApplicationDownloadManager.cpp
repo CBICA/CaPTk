@@ -88,8 +88,7 @@ void ApplicationDownloadManager::appDownload(bool isCLI)
 }
 
 void ApplicationDownloadManager::updateProgress(int progress, std::string message, int max) {
-	
-	qDebug() << std::to_string(progress) << " " << std::to_string(max) << endl;
+	QMessageBox::information(&appDownloadDialog ,tr("Extract"),std::to_string(progress));
 
 	emit updateProgressDownload(progress, "Downloading " + this->m_AppName.toStdString(), max);
 }
@@ -126,7 +125,6 @@ void ApplicationDownloadManager::doneUnzip() {
 	if (getApplicationDownloadPath(this->m_AppName.toStdString()).empty()) {
 		
 		// extractProgressDialog->cancel();
-		QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
 		// qDebug() << "Extraction failed" << endl;
 		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
@@ -136,11 +134,10 @@ void ApplicationDownloadManager::doneUnzip() {
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
 		emit updateProgressExtract(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
-
+		QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
 	}
 	else {
 		// extractProgressDialog->cancel();
-		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 		// qDebug() << "Extraction done" << endl;
 
 		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
@@ -148,6 +145,6 @@ void ApplicationDownloadManager::doneUnzip() {
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
 		emit updateProgressExtract(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
-
+		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 	}
 }
