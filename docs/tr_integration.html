@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.nonRelease.20200612.b94a1af7</span>
+   &#160;<span id="projectnumber">1.8.0.Alpha2</span>
    </div>
   </td>
  </tr>
@@ -126,8 +126,13 @@ Build</h2>
 <p>Please follow commands below in a shell/terminal (e.g., Bash (<a href="http://www.gnu.org/software/bash/">http://www.gnu.org/software/bash/</a>)). They will configure and build CaPTk using GNU Make (<a href="http://www.gnu.org/software/make/">http://www.gnu.org/software/make/</a>). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface or from PowerShell.</p>
 <p>An example of the list of commands to run to compile CaPTk and its dependencies:</p>
 <pre class="fragment">git clone https://github.com/CBICA/CaPTk.git
-git lfs fetch --all # downloads all the precompiled binaries for different applications and Qt with the required installation options
 cd CaPTk
+mkdir bin
+cd bin
+#git lfs fetch --all # downloads all the precompiled binaries for different applications and Qt with the required installation options
+# change ${platform} to either windows, linux or macos (case sensitive)
+wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/${platform}.zip -O precompiledApps.zip 
+wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/${platform}.zip -O qt.zip
 git submodule update --init --recursive # this ensures all submodules are initialized and up-to-date
 mkdir build # this is where we will build all the binaries
 cd build
