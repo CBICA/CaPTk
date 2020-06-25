@@ -112,7 +112,7 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 
 		asyncExtract->start();
 
-		// QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction has started in the background and will take 10-15 minutes");
+		// QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction has started in the background");
 	}
 }
 
