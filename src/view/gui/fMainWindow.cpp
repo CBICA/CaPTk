@@ -197,6 +197,7 @@ fMainWindow::fMainWindow()
   actionHelp_Interactions = new QAction(this);
   actionAbout = new QAction(this);
   actionPreferences = new QAction(this);
+  actionModelLibrary = new QAction("Model Library",this);
 
   //---------------setting menu and status bar for the main window---------------
   this->setStatusBar(statusbar);
@@ -293,6 +294,7 @@ fMainWindow::fMainWindow()
   menuHelp->addAction(actionHelp_Interactions);
   menuDownload = menuHelp->addMenu("Sample Data");
   auto supportMenu = menuHelp->addMenu("Support Links");
+  menuHelp->addAction(this->actionModelLibrary);
   menuHelp->addAction(actionAbout);
 
   supportMenu->addAction(help_bugs);
@@ -569,11 +571,12 @@ fMainWindow::fMainWindow()
   connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
   connect(actionHelp_Interactions, SIGNAL(triggered()), this, SLOT(help_Interactions()));
-  connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
+
+  connect(actionModelLibrary, SIGNAL(triggered()), this, SLOT(OpenModelLibrary()));
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
@@ -1151,13 +1154,23 @@ void fMainWindow::help_Download(QAction* action)
   }
 }
 
-void fMainWindow::help_BugTracker()
+void fMainWindow::OpenModelLibrary()
 {
-  if (!openLink("https://github.com/CBICA/CaPTk/issues"))
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Bug Tracker");
-    return;
-  }
+	auto currentLink = m_downloadLinks["inputs"]["Model Library"]["Data"].as<std::string>();
+	if (!currentLink.empty() && (currentLink != "N.A."))
+	{
+		cbica::Logging(loggerFile, currentLink);
+		if (!openLink(currentLink))
+		{
+			ShowErrorMessage("CaPTk couldn't open the browser to open model library.", this);
+			return;
+		}
+	}
+	else
+	{
+		ShowErrorMessage("CaPTk couldn't open the link for the model library; please contact software@cbica.upenn.edu for details.", this);
+		return;
+	}
 }
 
 void fMainWindow::EnableThresholdOfMask()
