@@ -89,6 +89,7 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/QZipReader.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/QZipWriter.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/QZip.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationDownloadManager.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationDownloadManager.cpp"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"

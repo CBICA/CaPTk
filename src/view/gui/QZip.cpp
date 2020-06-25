@@ -49,9 +49,13 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
+#include <QtMath>
 
-//#include <zlib.h>
-#include <QtZlib/zlib.h>
+#ifdef __linux__ 
+    #include <zlib.h>
+#else 
+    #include <QtZlib/zlib.h>
+#endif
 
 // Zip standard version for archives handled by this API
 // (actually, the only basic support of this version is implemented but it is enough for now)
@@ -1050,6 +1054,11 @@ bool QZipReader::extractAll(const QString &destinationDir) const
 
     // create directories first
     QList<FileInfo> allFiles = fileInfoList();
+
+    //cbica addition starts
+    int archivesize = allFiles.size();
+    //cbica addition ends
+
     for (const auto& fi : allFiles) {
         const QString absPath = destinationDir + QDir::separator() + fi.filePath;
         if (fi.isDir) {
@@ -1079,6 +1088,10 @@ bool QZipReader::extractAll(const QString &destinationDir) const
         }
     }
 
+    //cbica addition starts
+    int counter = 0;
+    //cbica addition ends
+
     for (const auto& fi : allFiles) {
         const QString absPath = destinationDir + QDir::separator() + fi.filePath;
         if (fi.isFile) {
@@ -1089,7 +1102,16 @@ bool QZipReader::extractAll(const QString &destinationDir) const
             f.setPermissions(fi.permissions);
             f.close();
         }
+        //cbica addition starts
+        if(counter % 10 == 0)
+        {
+            int p = qCeil(100*counter/archivesize);
+            emit progress(p);
+        }
+        counter++;
     }
+    emit progress(100); // extraction done
+    //cbica addition ends
 
     return true;
 }

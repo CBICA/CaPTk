@@ -60,45 +60,6 @@ std::string ApplicationDownloadManager::getApplication(QString appName) {
 	return scriptToCall;
 }
 
-// std::string ApplicationDownloadManager::getApplicationCLI(QString appName) {
-// 	this->m_AppName = appName;
-
-// 	std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
-
-// 	if (scriptToCall.empty()) {
-// 		ApplicationPreferences::GetInstance()->DeSerializePreferences();
-// 		bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
-// 		bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
-// 		ApplicationPreferences::GetInstance()->DisplayPreferences();
-
-// 		if(downloadStarted && !downloadFinished)
-// 		{
-// 			QMessageBox::information(&appDownloadDialog,tr("Download"),"Download in progress");
-// 			return "";
-// 		}
-
-// 		bool isCLI = true;
-// 		appDownload(isCLI);
-		
-// 		return "";
-// 	}
-// 	else {
-// 		ApplicationPreferences::GetInstance()->DeSerializePreferences();
-// 		bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
-// 		bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
-// 		ApplicationPreferences::GetInstance()->DisplayPreferences();
-
-// 		if(extractionStarted && !extractionFinished)
-// 		{
-// 			QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
-
-// 			return "";
-// 		}
-// 	}
-
-// 	return scriptToCall;
-// }
-
 void ApplicationDownloadManager::appDownload(bool isCLI)
 {
 	std::string linkyml = "";
@@ -122,7 +83,15 @@ void ApplicationDownloadManager::appDownload(bool isCLI)
 		appDownloadDialog.exec();
 	}
 
+	connect( &appDownloadDialog, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgressSlot(int, std::string, int)));   
 	connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(startUnzip(QString, QString)));   
+}
+
+void ApplicationDownloadManager::updateProgressSlot(int progress, std::string message, int max) {
+	
+	// qDebug() << QString::fromStdString(message) << endl;
+
+	emit updateProgressSignal(progress, message, max);
 }
 
 void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPath) 
@@ -131,6 +100,7 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 
 		ThreadedExtraction* asyncExtract = new ThreadedExtraction();
 
+		connect(asyncExtract, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgressSlot(int, std::string, int))); 
 		connect(asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip()));
 		connect(asyncExtract, &ThreadedExtraction::finished, asyncExtract, &QObject::deleteLater);
 
@@ -138,14 +108,11 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 		asyncExtract->setExtractPath(extractPath);
 		asyncExtract->setAppName(this->m_AppName);
 
+		updateProgressSlot(0, "Installing " + this->m_AppName.toStdString(), 100);
+
 		asyncExtract->start();
 
-		extractProgressDialog = new QProgressDialog(&appDownloadDialog);
-    	extractProgressDialog->setObjectName(QString::fromUtf8("ProgressDialog"));
-		extractProgressDialog->setLabelText(tr("Extracting ").arg(this->m_AppName));
-		extractProgressDialog->setRange(0, 0);
-		extractProgressDialog->setCancelButton(0);
-		// emit updateProgress(50, "Installing " + this->m_AppName.toStdString(), 100);
+		// QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction has started in the background");
 	}
 }
 
@@ -153,8 +120,6 @@ void ApplicationDownloadManager::doneUnzip() {
 
 	if (getApplicationDownloadPath(this->m_AppName.toStdString()).empty()) {
 		
-		extractProgressDialog->cancel();
-		QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
 		// qDebug() << "Extraction failed" << endl;
 		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
@@ -163,19 +128,17 @@ void ApplicationDownloadManager::doneUnzip() {
 		ApplicationPreferences::GetInstance()->SerializePreferences();
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
-		// emit updateProgress(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
-
+		updateProgressSlot(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
+		QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
 	}
 	else {
-		extractProgressDialog->cancel();
-		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 		// qDebug() << "Extraction done" << endl;
 
 		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
 		ApplicationPreferences::GetInstance()->SerializePreferences();
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
-		// emit updateProgress(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
-
+		updateProgressSlot(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
+		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 	}
 }

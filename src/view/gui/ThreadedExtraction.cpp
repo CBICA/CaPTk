@@ -8,8 +8,10 @@ void ThreadedExtraction::run() {
       ApplicationPreferences::GetInstance()->DisplayPreferences();
       
       QZipReader zr(this->fullPath);
-      bool ret = zr.extractAll(this->extractPath);
+      connect(&zr,SIGNAL(progress(int)),this,SLOT(updateProgressSlot(int)));
 
+      bool ret = zr.extractAll(this->extractPath);
+      
       if(ret)
       {
          //after extraction remove the zip
@@ -17,7 +19,16 @@ void ThreadedExtraction::run() {
       }
    }
 
-   qDebug() << "Extraction done in background" << this->fullPath << endl;
+   // qDebug() << "Extraction done in background" << this->fullPath << endl;
 
    emit resultReady(this->appName);
 }	
+
+void ThreadedExtraction::updateProgressSlot(int progress) {
+   
+   QString msg = "Extracting " + this->appName;
+
+   // qDebug() << msg << endl;
+
+   emit updateProgressSignal(progress, msg.toStdString(), 100);
+}

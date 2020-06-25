@@ -17,8 +17,6 @@ public:
 	ApplicationDownloadManager() = default;
 	~ApplicationDownloadManager() = default;
 	
-	QProgressDialog *extractProgressDialog;
-
 	//! setters/getters
 	void SetName(QString appName);
 	QString GetName() const;
@@ -38,11 +36,13 @@ private:
 	void appDownload(bool isCLI);
 
 private slots:
+	void updateProgressSlot(int progress, std::string message, int max);
 	void startUnzip(QString fullPath, QString extractPath);
 	void doneUnzip();
 
 signals:
-	void updateProgress(int progress, std::string message, int max);
+	void updateProgressSignal(int progress, std::string message, int max);
+	// void updateProgressExtract(int progress, std::string message, int max);
 };
 
 #endif 
