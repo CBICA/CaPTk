@@ -28,7 +28,7 @@ void ThreadedExtraction::updateProgressSlot(int progress) {
    
    QString msg = "Extracting " + this->appName;
 
-   qDebug() << msg << endl;
+   // qDebug() << msg << endl;
 
    emit updateProgressSignal(progress, msg.toStdString(), 100);
 }
