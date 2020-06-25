@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.nonRelease.20200612.b94a1af7</span>
+   &#160;<span id="projectnumber">1.8.0.Alpha2</span>
    </div>
   </td>
  </tr>
@@ -71,14 +71,13 @@ $(document).ready(function(){initNavTree('Perfusion_Derivatives.html',''); initR
 <p><b>Note</b>: The ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.</p>
 <p><b> REQUIREMENTS:</b></p><ol type="1">
 <li>A single DSC-MRI image</li>
-<li>The Echo Time corresponding to the given DSC-MRI scan</li>
 <li>System should have atleast 32GB RAM for calculating perfusion derivatives</li>
 </ol>
 <p><b> USAGE:</b></p><ol type="1">
 <li>Launch the application from "Applications" -&gt; "Perfusion Derivatives".</li>
 <li>Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.</li>
 <li>Press the "Confirm" button.</li>
-<li>The extracted measurements will be saved at the specified location (~5 minutes). <pre class="fragment">${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -e 1 -p 1 -r 1 -o C:/InputImage_output
+<li>The extracted measurements will be saved at the specified location (~5 minutes). <pre class="fragment">${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -p 1 -r 1 -o C:/InputImage_output
 </pre></li>
 </ol>
 <hr  />

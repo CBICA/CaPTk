@@ -312,6 +312,7 @@ private:
   QAction *actionSave_Images;
   QAction *actionAbout;
   QAction *actionExit;
+  QAction *actionModelLibrary;
 
   QAction *actionAppEGFR;
   QAction *actionAppRecurrence;
@@ -782,7 +783,7 @@ public slots:
   \param inputfile The input DSC-MRI image
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
+  void CallPerfusionMeasuresCalculation(const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
 
   /**
   \brief Call the Diffusion Measures application with the inputs
@@ -958,8 +959,11 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
-  //! Open the github issue tracker
-  void help_BugTracker();
+
+  /**
+  \brief open model library webpage
+  */
+  void OpenModelLibrary();
 
   /**
   \brief Get contextual help 

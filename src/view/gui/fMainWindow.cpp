@@ -199,6 +199,7 @@ fMainWindow::fMainWindow()
   actionHelp_Interactions = new QAction(this);
   actionAbout = new QAction(this);
   actionPreferences = new QAction(this);
+  actionModelLibrary = new QAction("Model Library",this);
 
   //---------------setting menu and status bar for the main window---------------
   this->setStatusBar(statusbar);
@@ -295,6 +296,7 @@ fMainWindow::fMainWindow()
   menuHelp->addAction(actionHelp_Interactions);
   menuDownload = menuHelp->addMenu("Sample Data");
   auto supportMenu = menuHelp->addMenu("Support Links");
+  menuHelp->addAction(this->actionModelLibrary);
   menuHelp->addAction(actionAbout);
 
   supportMenu->addAction(help_bugs);
@@ -572,11 +574,12 @@ fMainWindow::fMainWindow()
   connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
   connect(actionHelp_Interactions, SIGNAL(triggered()), this, SLOT(help_Interactions()));
-  connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
+
+  connect(actionModelLibrary, SIGNAL(triggered()), this, SLOT(OpenModelLibrary()));
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
@@ -883,7 +886,7 @@ fMainWindow::fMainWindow()
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)));
 
-  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
+  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
   connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string,  const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string,  const std::string)));
 
 
@@ -1154,13 +1157,23 @@ void fMainWindow::help_Download(QAction* action)
   }
 }
 
-void fMainWindow::help_BugTracker()
+void fMainWindow::OpenModelLibrary()
 {
-  if (!openLink("https://github.com/CBICA/CaPTk/issues"))
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Bug Tracker");
-    return;
-  }
+	auto currentLink = m_downloadLinks["inputs"]["Model Library"]["Data"].as<std::string>();
+	if (!currentLink.empty() && (currentLink != "N.A."))
+	{
+		cbica::Logging(loggerFile, currentLink);
+		if (!openLink(currentLink))
+		{
+			ShowErrorMessage("CaPTk couldn't open the browser to open model library.", this);
+			return;
+		}
+	}
+	else
+	{
+		ShowErrorMessage("CaPTk couldn't open the link for the model library; please contact software@cbica.upenn.edu for details.", this);
+		return;
+	}
 }
 
 void fMainWindow::EnableThresholdOfMask()
@@ -8865,7 +8878,7 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
   msg = "Diffusion derivatives have been saved at the specified locations.";
   ShowMessage(msg.toStdString(), this);
 }
-void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
+void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
@@ -8875,7 +8888,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
-  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, TE,outputFolder);
+  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, outputFolder);
 
   if (perfusionDerivatives.size() == 0)
   {

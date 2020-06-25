@@ -5,6 +5,8 @@ inputs:
     Data: https://github.com/CBICA/CaPTk#downloads
   Bugs and Feature:
     Data: https://github.com/CBICA/CaPTk/issues/new/choose
+  Model Library:
+    Data: https://www.cbica.upenn.edu/CaPTk_Model_Library
   All:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/All.zip
     Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/All.zip
