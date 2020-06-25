@@ -10,7 +10,7 @@
 #include "FeatureExtraction.h"
 
 #include "CaPTkDefines.h"
-#include "CaPTkGUIUtils.h"
+#include <QDebug>
 // #include <Urlmon.h>
 #include "yaml-cpp/node/node.h"
 

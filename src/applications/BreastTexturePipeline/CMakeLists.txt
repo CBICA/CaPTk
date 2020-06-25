@@ -18,21 +18,6 @@ CAPTK_INITIAL_SETUP()
 
 INCLUDE_DIRECTORIES( ${CACHED_INCLUDE_DIRS} )
 
-SET (LIBNAME_CBICATK 
-    ${LIBNAME_CBICATK}
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Svg
-    Qt5::Widgets
-    Qt5::WebView
-    Qt5::WebEngine
-    Qt5::WebEngineCore
-    Qt5::WebEngineWidgets
-    Qt5::Concurrent
-    Qt5::Test
-    Qt5::Sql
-    Qt5::Network)
-
 CAPTK_ADD_EXECUTABLE( ${PROJECT_NAME} "${APPLICATION_SOURCES};${APPLICATION_DEPENDS}" ${LIBNAME_CBICATK} )
 
 ADD_DEPENDENCIES( ${PROJECT_NAME} ${LIBNAME_CBICATK} FeatureExtraction )

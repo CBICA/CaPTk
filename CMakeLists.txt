@@ -594,6 +594,22 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( LIBNAME_FeatureExtractor "${PROJECT_NAME}_FeatureExtractor" )
   SET( LIBNAME_CBICATK "${PROJECT_NAME}_CBICATK" )
 
+  SET (LIBNAME_CBICATK 
+    ${LIBNAME_CBICATK}
+    Qt5::Core
+    Qt5::Gui
+    Qt5::Svg
+    Qt5::Widgets
+    Qt5::WebView
+    Qt5::WebEngine
+    Qt5::WebEngineCore
+    Qt5::WebEngineWidgets
+    Qt5::Concurrent
+    Qt5::Test
+    Qt5::Sql
+    Qt5::Network
+    )
+
   # add all dependenciesO of ${application} to compilation
   FILE( GLOB 
     FEATURE_EXTRACTION_DEPENDS
@@ -633,18 +649,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${LIBNAME_CBICATK}
     ${ITK_LIBRARIES}
     ${OpenCV_LIBRARIES}
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Svg
-    Qt5::Widgets
-    Qt5::WebView
-    Qt5::WebEngine
-    Qt5::WebEngineCore
-    Qt5::WebEngineWidgets
-    Qt5::Concurrent
-    Qt5::Test
-    Qt5::Sql
-    Qt5::Network
   )
 
   ADD_DEPENDENCIES( ${LIBNAME_Applications} ${LIBNAME_GUI} ${LIBNAME_FeatureExtractor} )
@@ -662,18 +666,6 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${LIBNAME_CBICATK} 
     ${LIBNAME_Applications} 
     ${LIBNAME_FeatureExtractor} 
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Svg
-    Qt5::Widgets
-    Qt5::WebView
-    Qt5::WebEngine
-    Qt5::WebEngineCore
-    Qt5::WebEngineWidgets
-    Qt5::Concurrent
-    Qt5::Test
-    Qt5::Sql
-    Qt5::Network
   )
 
   # find stand-alone CMD applications
