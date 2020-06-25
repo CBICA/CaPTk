@@ -8,10 +8,10 @@ void ThreadedExtraction::run() {
       ApplicationPreferences::GetInstance()->DisplayPreferences();
       
       QZipReader zr(this->fullPath);
-      bool ret = zr.extractAll(this->extractPath);
-      
       connect(&zr,SIGNAL(progress(int)),this,SLOT(updateProgressSlot(int)));
 
+      bool ret = zr.extractAll(this->extractPath);
+      
       if(ret)
       {
          //after extraction remove the zip
