@@ -650,6 +650,18 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     ${LIBNAME_CBICATK} 
     ${LIBNAME_Applications} 
     ${LIBNAME_FeatureExtractor} 
+    Qt5::Core
+    Qt5::Gui
+    Qt5::Svg
+    Qt5::Widgets
+    Qt5::WebView
+    Qt5::WebEngine
+    Qt5::WebEngineCore
+    Qt5::WebEngineWidgets
+    Qt5::Concurrent
+    Qt5::Test
+    Qt5::Sql
+    Qt5::Network
   )
 
   # find stand-alone CMD applications

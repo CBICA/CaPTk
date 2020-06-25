@@ -10,6 +10,7 @@
 #include "FeatureExtraction.h"
 
 #include "CaPTkDefines.h"
+#include "CaPTkGUIUtils.h"
 // #include <Urlmon.h>
 #include "yaml-cpp/node/node.h"
 
