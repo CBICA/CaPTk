@@ -10,8 +10,8 @@
 #include "FeatureExtraction.h"
 
 #include "CaPTkDefines.h"
-#include <QDebug>
-// #include <Urlmon.h>
+#include "ApplicationPreferences.h"
+
 #include "yaml-cpp/node/node.h"
 
 
@@ -271,6 +271,9 @@ int algorithmsRunner()
 
 int main(int argc, char** argv)
 {
+  ApplicationPreferences::GetInstance()->DeSerializePreferences();
+  ApplicationPreferences::GetInstance()->DisplayPreferences();
+
   cbica::CmdParser parser(argc, argv);
 
   parser.addRequiredParameter("i", "inputImage", cbica::Parameter::FILE, "DICOM", "Input Image for processing");
