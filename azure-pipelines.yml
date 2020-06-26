@@ -852,7 +852,7 @@ jobs:
     - powershell: |
         cd bin
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -OutFile binaries_windows.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/windows.zip -OutFile binaries_windows.zip
       displayName: 'Moving LFS files to the appropriate location under bin and freeing up some space'
 
     # - script: |
