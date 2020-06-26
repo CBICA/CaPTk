@@ -1942,7 +1942,11 @@ namespace cbica
         returnMap[labelString][metric.first] = metric.second;
       }
 
-      if (std::isnan(returnMap[labelString]["Sensitivity"]) || std::isinf(returnMap[labelString]["Sensitivity"]))
+      if (std::isnan(returnMap[labelString]["Sensitivity"]))
+      {
+        returnMap[labelString]["Sensitivity"] = 0;
+      }
+      if (std::isinf(returnMap[labelString]["Sensitivity"]))
       {
         returnMap[labelString]["Sensitivity"] = 1;
       }
