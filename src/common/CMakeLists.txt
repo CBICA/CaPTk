@@ -28,8 +28,8 @@ SET( ${PROJECT_NAME}_SRCS
 )
 
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/inc
-  ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src
-  ${PROJECT_SOURCE_DIR}/src/applications/common_includes
+  ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src
+  ${CaPTk_SOURCE_DIR}/src/applications/common_includes
 )
 
 ADD_LIBRARY(
