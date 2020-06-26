@@ -1926,6 +1926,11 @@ namespace cbica
       returnMap[labelString]["Overlap"] = similarityFilter->GetTotalOverlap();
       returnMap[labelString]["Jaccard"] = similarityFilter->GetUnionOverlap();
       returnMap[labelString]["Dice"] = similarityFilter->GetMeanOverlap();
+      if (std::isinf(returnMap[labelString]["Dice"])) 
+      {
+        // this happens in the case where there is a label missing in both the reference and input annotations
+        returnMap[labelString]["Dice"] = 1;
+      }
       returnMap[labelString]["VolumeSimilarity"] = similarityFilter->GetVolumeSimilarity();
       returnMap[labelString]["FalseNegativeError"] = similarityFilter->GetFalseNegativeError();
       returnMap[labelString]["FalsePositiveError"] = similarityFilter->GetFalsePositiveError();
