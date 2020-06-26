@@ -1314,30 +1314,101 @@ ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.c
 /**
 \page ht_utilities Utilities (CLI only)
 
-This is a command line executable containing the following functionalities:
+This is a command line executable containing the following functionalities (with corresponding examples):
 - Resizing
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear
+	\endverbatim
 - Resampling
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0 -ri LINEAR
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR
+	\endverbatim
 - Image information
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -inf
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -inf
+	\endverbatim
 - Unique values in image
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -un
+	\endverbatim
 - Get smallest bounding box in mask (optional isotropic bounding box)
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -b C:/testMask.nii.gz -o C:/output.nii.gz
+	\endverbatim
 - Test 2 images
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -tb C:/test.nii.gz
+	\endverbatim
 - Create mask from threshold
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -cm 50,1000
+	\endverbatim
 - DICOM to NIfTI conversion
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -d2n
+	\endverbatim
 - NIfTI to DICOM & DICOM-Seg conversion
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/test_dicom/ -n2d C:/referenceDICOM/
+	\endverbatim
 - Re-orient image
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -or RAI
+	\endverbatim
 - Cast image to another pixel type
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_int.nii.gz -c int
+	\endverbatim
 - Thresholding:
   - Below
+		\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -thB 100
+		\endverbatim
   - Above
+		\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -thA 50
+		\endverbatim
   - Above & Below
+		\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100
+		\endverbatim
   - Otsu 
+		\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -thO 1
+		\endverbatim
   - Binary
+		\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100 -tBn
+		\endverbatim
 - Convert file formats
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test.mha
+	\endverbatim
 - Extract Image Series from Joined stack and vice-versa (4D <-> 3D)
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output -j2e 1
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/ -o C:/output.nii.gz -e2j 1.5
+	\endverbatim
 - Transform coordinates from world to image and vice-versa
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -i2w 10,10,30
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -w2i 10.5,10.1,30.6
+	\endverbatim
 - Label similarity Metrics between 2 label images
-- Hausdorff Distance between 2 label images
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz
+	\endverbatim
+- BraTS similarity Metrics between 2 label images
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -lsb C:/referenceMask.nii.gz
+	\endverbatim
 - Collect information from all images in a directory and put it in CSV
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputDirectory -o C:/test/inputDirectoryProperties.csv -co 1 -cF volume -cFE .nii.gz -cP 0,1
+	\endverbatim
 
 For a full list of available applications and examples, please use the command: 
 \verbatim
