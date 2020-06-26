@@ -1942,6 +1942,11 @@ namespace cbica
         returnMap[labelString][metric.first] = metric.second;
       }
 
+      if (std::isnan(returnMap[labelString]["Sensitivity"]) || std::isinf(returnMap[labelString]["Sensitivity"]))
+      {
+        returnMap[labelString]["Sensitivity"] = 1;
+      }
+
       /// not used till implementation gets standardized
       //returnMap[labelString]["Hausdorff95"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
       //returnMap[labelString]["Hausdorff99"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
