@@ -1397,11 +1397,11 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/ -o C:/output.nii.gz -e2j 1.5
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -i2w 10,10,30
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -w2i 10.5,10.1,30.6
 	\endverbatim
-- Label similarity Metrics between 2 label images
+- Label similarity Metrics between 2 label images: pure mathematical formulations are given as output
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz
 	\endverbatim
-- BraTS similarity Metrics between 2 label images
+- BraTS similarity Metrics between 2 label images: special considerations for metrics are done in this mode because output needs to be BraTS-compliant.
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -lsb C:/referenceMask.nii.gz
 	\endverbatim
