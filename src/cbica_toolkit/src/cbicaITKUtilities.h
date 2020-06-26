@@ -1942,9 +1942,24 @@ namespace cbica
         returnMap[labelString][metric.first] = metric.second;
       }
 
+      // in case one of the labels is missing, just put something
+      auto stats_1 = itk::StatisticsImageFilter< TImageType >::New();
+      stats_1->SetInput(imageToCompare_1);
+      stats_1->Update();
+      auto max_1 = stats_1->GetMaximum();
+      auto stats_2 = itk::StatisticsImageFilter< TImageType >::New();
+      stats_2->SetInput(imageToCompare_2);
+      stats_2->Update();
+      auto max_2 = stats_2->GetMaximum();
+
+      if ((max_1 == 0) && (max_2 == 0))
+      {
+        returnMap[labelString]["Sensitivity"] = 1;
+        returnMap[labelString]["Specificity"] = 1;
+      }
       if (std::isnan(returnMap[labelString]["Sensitivity"]))
       {
-        returnMap[labelString]["Sensitivity"] = 0;
+        returnMap[labelString]["Sensitivity"] = 1;
       }
       if (std::isinf(returnMap[labelString]["Sensitivity"]))
       {
@@ -1976,16 +1991,6 @@ namespace cbica
 
       if (hausdorffFound)
       {
-        // in case one of the labels is missing, just put something
-        auto stats_1 = itk::StatisticsImageFilter< TImageType >::New();
-        stats_1->SetInput(imageToCompare_1);
-        stats_1->Update();
-        auto max_1 = stats_1->GetMaximum();
-        auto stats_2 = itk::StatisticsImageFilter< TImageType >::New();
-        stats_2->SetInput(imageToCompare_2);
-        stats_2->Update();
-        auto max_2 = stats_2->GetMaximum();
-
         if ((max_1 == 0) || (max_2 == 0))
         {
           // this is the case where one of the labels is missing
