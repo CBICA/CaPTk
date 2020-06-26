@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.Alpha2" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.nonRelease.20200626.013f692f" ref="index.html">
         <section title="Overview" ref="index.html">
           <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md120" />
           <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md121" />
