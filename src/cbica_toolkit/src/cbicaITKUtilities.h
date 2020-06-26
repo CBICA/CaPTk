@@ -2051,10 +2051,18 @@ namespace cbica
         // in case a label is not defined, use the longest diagonal
         if (std::isnan(returnMap[labelString]["Hausdorff95"]) || std::isinf(returnMap[labelString]["Hausdorff95"]))
         {
-          auto size = imageToCompare_1->GetLargestPossibleRegion().GetSize();
-          auto diag_plane_squared = std::pow(size[0], 2) + std::pow(size[1], 2);
-          auto diag_cube = std::sqrt(std::pow(size[2], 2) + diag_plane_squared);
-          returnMap[labelString]["Hausdorff95"] = diag_cube;
+          // correct prediction for missing label
+          if ((max_1 == 0) && (max_2 == 0))
+          {
+            returnMap[labelString]["Hausdorff95"] = 0;
+          }
+          else
+          {
+            auto size = imageToCompare_1->GetLargestPossibleRegion().GetSize();
+            auto diag_plane_squared = std::pow(size[0], 2) + std::pow(size[1], 2);
+            auto diag_cube = std::sqrt(std::pow(size[2], 2) + diag_plane_squared);
+            returnMap[labelString]["Hausdorff95"] = diag_cube;
+          }
         }
       } // end hausdorff found
     }
