@@ -54,7 +54,6 @@ class QZipReaderPrivate;
 
 class /* Q_GUI_EXPORT */ QZipReader : public QObject
 {
-    Q_OBJECT
 public:
     explicit QZipReader(const QString &fileName, QIODevice::OpenMode mode = QIODevice::ReadOnly );
 
