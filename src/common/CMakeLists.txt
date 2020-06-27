@@ -9,22 +9,22 @@ SET( ${PROJECT_NAME}_HDRS
   ${PROJECT_SOURCE_DIR}/inc/CaPTkEnums.h
   ${PROJECT_SOURCE_DIR}/inc/CaPTkGUIUtils.h
   ${PROJECT_SOURCE_DIR}/inc/CaPTkUtils.h
-  ${PROJECT_SOURCE_DIR}/inc/ApplicationDownloadManager.h
+  # ${PROJECT_SOURCE_DIR}/inc/ApplicationDownloadManager.h
   ${PROJECT_SOURCE_DIR}/inc/ApplicationPreferences.h
   # ${PROJECT_SOURCE_DIR}/inc/fAppDownloadDialog.h
   # ${PROJECT_SOURCE_DIR}/inc/ui_fAppDownloadDialog.h
   ${PROJECT_SOURCE_DIR}/inc/QZipReader.h
   ${PROJECT_SOURCE_DIR}/inc/QZipWriter.h
-  ${PROJECT_SOURCE_DIR}/inc/ThreadedExtraction.h
+  # ${PROJECT_SOURCE_DIR}/inc/ThreadedExtraction.h
 )
 
 SET( ${PROJECT_NAME}_SRCS
   ${PROJECT_SOURCE_DIR}/src/CaPTkGUIUtils.cpp
-  ${PROJECT_SOURCE_DIR}/src/ApplicationDownloadManager.cpp
+  # ${PROJECT_SOURCE_DIR}/src/ApplicationDownloadManager.cpp
   ${PROJECT_SOURCE_DIR}/src/ApplicationPreferences.cpp
   # ${PROJECT_SOURCE_DIR}/src/fAppDownloadDialog.cpp
   ${PROJECT_SOURCE_DIR}/src/QZip.cpp
-  ${PROJECT_SOURCE_DIR}/src/ThreadedExtraction.cpp
+  # ${PROJECT_SOURCE_DIR}/src/ThreadedExtraction.cpp
 )
 
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/inc
