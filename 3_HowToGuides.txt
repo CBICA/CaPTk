@@ -119,6 +119,8 @@ References:
 -# P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI, Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127
 -# www.github.com/pyushkevich/greedy
 
+--------
+
 */
 
 
@@ -310,6 +312,8 @@ References:
 
 -# B.Gaonkar, L.Shu, G.Hermosillo, Y.Zhan, "Adaptive geodesic transform for segmentation of vertebrae on CT images", Proceedings Volume 9035, Medical Imaging 2014: Computer-Aided Diagnosis; 9035:16, 2014. DOI:10.1117/12.2043527.
 
+--------
+
 */
 
 
@@ -389,6 +393,8 @@ References:
 -# S.P.Thakur, J.Doshi, S.Pati, S.M.Ha, C.Sako, S.Talbar, U.Kulkarni, C.Davatzikos, G.Erus, S.Bakas, "Skull-Stripping of Glioblastoma MRI Scans Using 3D Deep Learning", Springer - BrainLes 2019 - LNCS, Vol.11992, 57-68, 2020. DOI: 10.1007/978-3-030-46640-4_6
 -# S.P.Thakur, J.Doshi, S.Pati, S.M.Ha, C.Sako, S.Talbar, U.Kulkarni, C.Davatzikos, G.Erus, S.Bakas, "Brain Extraction on MRI Scans in Presence of Diffuse Glioma:
 Multi-institutional Performance Evaluation of Deep Learning Methods and Robust Modality-Agnostic Training", NeuroImage 2020 [Accepted]
+
+--------
 
 */
 
@@ -530,6 +536,8 @@ References:
 
 -# L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127.
 
+--------
+
 */
 
 
@@ -555,9 +563,11 @@ NOTE: WhiteStripe uses the KernelFit library from Lentner (https://github.com/gl
 
 --------
 
-Reference:
+References:
 
 -# R.T.Shinohara, E.M.Sweeney, J.Goldsmith, N.Shiee, F.J.Mateen, P.A.Calabresi, S.Jarso, D.L.Pham, D.S.Reich, C.M.Crainiceanu, Australian Imaging Biomarkers Lifestyle Flagship Study of Ageing, Alzheimer's Disease Neuroimaging Initiative. "Statistical normalization techniques for magnetic resonance imaging", Neuroimage Clin. 6:9-19, 2014. DOI:10.1016/j.nicl.2014.08.008
+
+--------
 
 */
 
@@ -600,6 +610,8 @@ References:
 -# S.Bakas, H.Akbari, J.Pisapia, M.Rozycki, D.M.O'Rourke, C.Davatzikos. "Identification of Imaging Signatures of the Epidermal Growth Factor Receptor Variant III (EGFRvIII) in Glioblastoma", Neuro Oncol. 17(Suppl 5):v154, 2015. DOI:10.1093/neuonc/nov225.05
 -# S.Bakas, Z.A.Binder, H.Akbari, M.Martinez-Lage, M.Rozycki, J.J.D.Morrissette, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "Highly-expressed wild-type EGFR and EGFRvIII mutant glioblastomas have similar MRI signature, consistent with deep peritumoral infiltration", Neuro Oncol. 18(Suppl 6):vi125-vi126, 2016. DOI:10.1093/neuonc/now212.523
 -# S.Bakas, H.Akbari, J.Pisapia, M.Martinez-Lage, M.Rozycki, S.Rathore, N.Dahmane, D.M.O'Rourke, C.Davatzikos, "In vivo detection of EGFRvIII in glioblastoma via perfusion magnetic resonance imaging signature consistent with deep peritumoral infiltration: the phi-index", Clin Cancer Res. 23(16):4724-4734, 2017. DOI:10.1158/1078-0432.CCR-16-1871
+
+--------
 
 */
 
@@ -680,6 +692,8 @@ References:
 -# H.Akbari, L.Macyszyn, J.Pisapia, X.Da, M.Attiah, Y.Bi, S.Pal, R.Davuluri, L.Roccograndi, N.Dahmane, R.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos, "Survival Prediction in Glioblastoma Patients Using Multi-parametric MRI Biomarkers and Machine Learning Methods", American Society of Neuroradiology, O-525:2042-2044, 2015. (http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf)
 -# H.Akbari, L.Macyszyn, X.Da, M.Bilello, R.L.Wolf, M.Martinez-Lage, G.Biros, M.Alonso-Basanta, D.M.O'Rourke, C.Davatzikos. "Imaging Surrogates of Infiltration Obtained Via Multiparametric Imaging Pattern Analysis Predict Subsequent Location of Recurrence of Glioblastoma", Neurosurgery. 78(4):572-80, 2016. DOI:10.1227/NEU.0000000000001202
 
+--------
+
 */
   
 /**
@@ -740,9 +754,11 @@ ${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 1 -i C:/SurvivalInput -m C:/Sur
 
 --------
 
-Reference:
+References:
 
 -# L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016. DOI:10.1093/neuonc/nov127
+
+--------
 
 */
 
@@ -807,9 +823,11 @@ ${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInputDirec
 
 --------
 
-Reference:
+References:
 
 -# H. Akbari, S. Bakas, J.M. Pisapia, M.P. Nasrallah, M. Rozycki, M. Martinez-Lage, J.J.D. Morrissette, N. Dahmane, D.M.O’Rourke, C. Davatzikos. "In vivo evaluation of EGFRvIII mutation in primary glioblastoma patients via complex multiparametric MRI signature", Neuro Oncol. 20(8):1068-1079, 2018
+
+--------
 
 */
 
@@ -879,9 +897,11 @@ ${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/Pseudoprogress
 
 --------
 
-Reference:
+References:
 
 -# H.Akbari, S.Bakas, M.Martinez-Lage, M.Nasrallah, M.Rozycki, S.Rathore, G.Shukla, S.Mohan, M.Bilello, C.Davatzikos, "Quantitative radiomics and machine learning to distinguish true progression from pseudoprogression in patients with GBM", ASNR 56th Annual Meeting, 2018.
+
+--------
 
 */
   
@@ -907,9 +927,11 @@ ${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/LabelsFile -a C:/AtlasFile -
 
 --------
 
-Reference:
+References:
 
 -# M. Bilello, H. Akbari, X. Da, J.M.Pisapia, S.Mohan, R.L.Wolf, D.M.O'Rourke, M.Martinez-Lage, C.Davatzikos. "Population-based MRI atlases of spatial distribution are specific to patient and tumor characteristics in glioblastoma", Neuroimage Clin. 12:34-40, 2016. DOI:10.1016/j.nicl.2016.03.007
+
+--------
 
 */
 
@@ -964,6 +986,8 @@ References:
 -# R.S.Desikan, F.Segonne, B.Fischl, B.Quinn, B.Dickerson, D.Blacker, R.Buckner, A.Dale, R.Maguire, B.Hyman, M.Albert, R.Killiany, "An automated labeling system for subdividing the human cerebral cortex on MRI scans into gyral based regions of interest", NeuroImage. 31(3):968-80, 2006. DOI:10.1016/j.neuroimage.2006.01.021
 -# M.Jenkinson, C.F.Beckmann, T.E.J.Behrens, M.W.Woolrich, S.M.Smith, "FSL", Neuroimage. 62(2):782-790, 2012. DOI:10.1016/j.neuroimage.2011.09.015
 
+--------
+
 */
 
 
@@ -1004,7 +1028,7 @@ The following files are saved in the output folder:
 
 --------
 
-Reference
+References:
 
 -# M.E.Schweitzer, M.A.Stavarache, N.Petersen, S.Bakas, A.J.Tsiouris, C.Davatzikos, M.G.Kaplitt, M.M.Souweidane, "Modulation of Convection Enhanced Delivery (CED) distribution using Focused Ultrasound (FUS)", Neuro Oncol. 19(Suppl 6):vi272, 2017. DOI:10.1093/neuonc/nox168.1118
 
@@ -1054,9 +1078,11 @@ ${CaPTk_InstallDir}/bin/libra --input C:/inputDICOMDir --output C:/outputDir # l
 
 --------
 
-Reference:
+References:
 
 -# B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530
+
+--------
 
 */
 
@@ -1082,9 +1108,11 @@ ${CaPTk_InstallDir}/bin/BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/ou
 
 --------
 
-Reference:
+References:
 
 -# B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530
+
+--------
 
 */
 
@@ -1106,10 +1134,11 @@ This application uses LIBRA [1] to extract the breast region in the loaded image
 
 --------
 
-Reference:
+References:
 
 -# B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012. DOI:10.1118/1.4736530
 
+--------
 */
 
 
@@ -1174,9 +1203,11 @@ ${CaPTk_InstallDir}/bin/SBRT_Analysis.exe -i C:/PET.nii.gz -m C:/mask.nii.gz -l 
 
 --------
 
-Reference:
+References:
 
 -# H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.
+
+--------
 
 */
 
@@ -1248,19 +1279,20 @@ This application extracts the principal components from DSC-MRI scans as mention
 
 - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example commands:
   - The following command will train a new model based on the samples in the inputDir using 5 principal components:
-\verbatim
+	\verbatim
 ${CaPTk_InstallDir}/bin/PerfusionPCA.exe -t 0 -i C:/properly/formatted/inputDir -o C:/outputDir -n 5
-\endverbatim
+	\endverbatim
   - The following command will perform inference using an existing model for inputs in C:/input based on C:/modelDir using 5 principal components:
-\verbatim
+	\verbatim
 ${CaPTk_InstallDir}/bin/PerfusionPCA.exe -t 1 -i C:/properly/formatted/inputDir -m C:/inputModelDir -o C:/outputDir -n 5
-\endverbatim
+	\endverbatim
 
 --------
 
-Reference:
+References:
 
 -# H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014. DOI:10.1148/radiol.14132458
+
 --------
 */
 
@@ -1281,21 +1313,21 @@ Input features file (CSV) and a target label file (CSV).
 	-# The model or the predicted output, depending on the configuration, will be calculated and saved in the output directory.
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following formats:
     - K-Fold CrossValidation option:
-\verbatim
+		\verbatim
 ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 1 -k 10 
-\endverbatim
+		\endverbatim
     - Split Train-Test option:
-\verbatim
+		\verbatim
 ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 2 -k 40
-\endverbatim
+		\endverbatim
     - Train only option:
-\verbatim
+		\verbatim
 ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 3 -k 10
-\endverbatim
+		\endverbatim
     - Test only option:
-\verbatim
+		\verbatim
 ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 4 -k 10 -m C:/ModelDirectory
-\endverbatim
+		\endverbatim
     
 <b>c</b> is the classifier type (-c 1 for Linear SVM, -c 2 for RBF SVM)
 <b>n</b> is the configuration type (-n 1 for cross-validation, -n 2 for split train-test, -n 3 for training only, -n 4 for testing only)
