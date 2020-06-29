@@ -245,19 +245,33 @@ These are the keyboard shortcuts available on CaPTk:
 
 \section gs_utilities Utilities (Command-line only)
 
-To make pipeline construction using CaPTk easier, a bunch of utilities have been provided. They include 
+To make pipeline construction using CaPTk easier, a bunch of utilities have been provided:
+
 -# Resizing
--# DICOM conversion
--# Sanity checking
--# Image header information
+-# Resampling
+-# Image information
 -# Unique values in image
--# Changing pixel values. 
+-# Get smallest bounding box in mask (optional isotropic bounding box)
+-# Test 2 images
+-# Create mask from threshold
+-# DICOM to NIfTI conversion
+-# NIfTI to DICOM & DICOM-Seg conversion
+-# Re-orient image
+-# Cast image to another pixel type
+-# Thresholding:
+  - Below
+  - Above
+  - Above & Below
+  - Otsu 
+  - Binary
+-# Convert file formats
+-# Extract Image Series from Joined stack and vice-versa (4D <-> 3D)
+-# Transform coordinates from world to image and vice-versa
+-# Label similarity Metrics between 2 label images: pure mathematical formulations are given as output
+-# BraTS similarity Metrics between 2 label images: special considerations for metrics are done in this mode because output needs to be BraTS-compliant.
+-# Collect information from all images in a directory and put it in CSV
 
-For full details, run the command:
-
-\verbatim
-Utilities.exe -u
-\endverbatim
+For a full list of this functionality and more details, please see the corresponding [How-To page](ht_utilities.html).
 
 --------
 
