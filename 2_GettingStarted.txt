@@ -388,6 +388,7 @@ Detailed explanation of using the command line is available in the \ref How_To_G
 |     Windows    |                        7, 8, 10                        |        XP, Vista       |
 |      Linux     | Ubuntu 16.04, 18.04; Debian 9, CentOS 7 (source build) | Ubuntu 14.04; CentOS 6 |
 |      macOS     |                      10.13, 10.14                      |          10.12         |
+|     Docker     |                          N.A.                          |           N.A.         |
 
 \section gs_FAQ_2 What DICOM images are currently supported by CaPTk?
   
