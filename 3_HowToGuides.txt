@@ -12,7 +12,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
   - [N4 Bias Correction (ITK filter)](preprocessing_bias.html)
   - [Histogram Matching](preprocessing_histoMatch.html)
   - [Z-Score Normalization](preprocessing_zScoreNorm.html)
-  - [BraTS Preprocessing Pipeline](preprocessing_brats.html)
+  - [BraTS Pre-processing Pipeline](preprocessing_brats.html)
 - \subpage ht_Segmentation "Segmentation"
   - [Interactive Machine Learning based - Utilizing Geodesic Distance Transform and SVM](seg_GeoTrain.html)
   - [ITK-SNAP](seg_SNAP.html)
@@ -58,7 +58,7 @@ The following applications can be called from the GUI:
 - \subpage preprocessing_bias "Bias Correction (ITK filter)"
 - \subpage preprocessing_histoMatch "Histogram Matching"
 - \subpage preprocessing_zScoreNorm "Z-Score Normalization"
-- \subpage preprocessing_brats "BraTS Preprocessing Pipeline"
+- \subpage preprocessing_brats "BraTS Pre-processing Pipeline"
 
 For a full list of available applications and examples, please use the command: 
 
@@ -233,7 +233,7 @@ Reference:
 */
 
 /**
-\page preprocessing_brats BraTS Preprocessing Pipeline
+\page preprocessing_brats BraTS Pre-processing Pipeline
 
 <b>REQUIREMENTS:</b>
 	-# 4 structural MRI images (T1, T1CE, T2, FLAIR)
