@@ -305,10 +305,11 @@ Preprocessing.exe -u
 References:
 
 -# S.M.Smith, J.M.Brady, "SUSAN - a new approach to low level image processing", Int. J. Comput. Vis. 23(1):45-78, 1997. DOI:10.102A :1007963824710
--# N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee, "N4ITK: Improved N3 Bias Correction", IEEE Trans MeI maging. 29(6):1310-20, 2010. doi: 10.1109/TMI.2010.2046908
--# S.Bauer, L.P.Nolte, M.Reyes, "Skull-stripping for Tumor-bearing Brain Images", arXiv. abs/1204.0357, 2012.
--# L.G.Nyul, J.K.Udupa, X.Zhang, "New Variants of a Method of MRI Scale Standardization", IEEE Trans Med Imaging. 19(2):143-50, 2000D OI:10.1109/42.836373
--# P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI, Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127 
+-# N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee, "N4ITK: Improved N3 Bias Correction", IEEE Trans MeI maging. 29(6):1310-20, 2010. DOI: 10.1109/TMI.2010.2046908
+-# S.P.Thakur, J.Doshi, S.Pati, S.M.Ha, C.Sako, S.Talbar, U.Kulkarni, C.Davatzikos, G.Erus, S.Bakas, "Brain Extraction on MRI Scans in Presence of Diffuse Glioma:
+Multi-institutional Performance Evaluation of Deep Learning Methods and Robust Modality-Agnostic Training", NeuroImage 2020, DOI:10.1016/j.neuroimage.2020.117081
+-# L.G.Nyul, J.K.Udupa, X.Zhang, "New Variants of a Method of MRI Scale Standardization", IEEE Trans Med Imaging. 19(2):143-50, 2000, DOI:10.1109/42.836373
+-# P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI", Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127, DOI:10.1016/j.jalz.2016.06.205
 -# T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010. DOI:10.1002/hbm.20906 
 
 --------
