@@ -17,6 +17,14 @@ CaPTk is developed and maintained by the Center for Biomedical Image Computing a
 \image html 0_overview_resize.png "Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture"
 \image latex 0_overview_resize.png "Fig.1. Overview of all functions and applications of CaPTk, in its two-level architecture"
 
+## Bug Tracker and Feature Request
+ 
+We coordinate our bugs and feature requests via out GitHub page: https://github.com/CBICA/CaPTk/issues
+
+## Frequently Asked Questions (FAQ)
+
+Please see our [FAQ Section](gs_FAQ.html).
+
 ## Citations
 
 Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:
@@ -31,14 +39,6 @@ In addition, if the journal/conference where you submit your paper does not rest
 - S.Pati, S.Bakas, A.Sotiras, R.Kalarot, P.Sridharan, M.Bergman, S.Rathore, H.Akbari, P.Yushkevich, T.Shinohara, Y.Fan, D.Kontos, R.Verma, C.Davatzikos. "Cancer Imaging Phenomics Toolkit (CaPTk): A Radio(geno)mics Software Platform Leveraging Quantitative Imaging Analytics for Computational Oncology", 103rd Scientific Assembly and Annual Meeting of the Radiological Society of North America (RSNA), Nov.26-Dec.1, 2017, Chicago IL.
 - S.Pati, S.Rathore, R.Kalarot, P.Sridharan, M.Bergman, T.Shinohara, P.Yushkevich, Y.Fan, R.Verma, D.Kontos, C.Davatzikos. "Cancer and Phenomics Toolkit (CaPTk): A Software Suite for Computational Oncology and Radiomics", 102nd Scientific Assembly and Annual Meeting of the Radiological Society of North America (RSNA), Nov.27-Dec.2, 2016, Chicago IL. archive.rsna.org/2016/16014589.html
 
-
-## Bug Tracker and Feature Request
- 
-We coordinate our bugs and feature requests via out GitHub page: https://github.com/CBICA/CaPTk/issues
-
-## Frequently Asked Questions (FAQ)
-
-Please see our [FAQ Section](gs_FAQ.html).
 
 ## Supporting Grant
 This work is supported by the NIH/NCI/ITCR* grant U24-CA189523.
