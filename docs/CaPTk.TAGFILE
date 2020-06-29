@@ -79,7 +79,7 @@
   </compound>
   <compound kind="page">
     <name>preprocessing_brats</name>
-    <title>BraTS Preprocessing Pipeline</title>
+    <title>BraTS Pre-processing Pipeline</title>
     <filename>preprocessing_brats.html</filename>
   </compound>
   <compound kind="page">

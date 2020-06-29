@@ -55,7 +55,7 @@
           <section title="Bias Correction (ITK filter)" ref="preprocessing_bias.html" />
           <section title="Histogram Matching" ref="preprocessing_histoMatch.html" />
           <section title="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
-          <section title="BraTS Preprocessing Pipeline" ref="preprocessing_brats.html" />
+          <section title="BraTS Pre-processing Pipeline" ref="preprocessing_brats.html" />
         </section>
         <section title="Segmentation" ref="ht_Segmentation.html">
           <section title="Geodesic Training Segmentation" ref="seg_GeoTrain.html" />
@@ -167,7 +167,7 @@
       <keyword name="Bias Correction (ITK filter)" id="Bias Correction (ITK filter)" ref="preprocessing_bias.html" />
       <keyword name="Histogram Matching" id="Histogram Matching" ref="preprocessing_histoMatch.html" />
       <keyword name="Z-Scoring Normalization" id="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
-      <keyword name="BraTS Preprocessing Pipeline" id="BraTS Preprocessing Pipeline" ref="preprocessing_brats.html" />
+      <keyword name="BraTS Pre-processing Pipeline" id="BraTS Pre-processing Pipeline" ref="preprocessing_brats.html" />
       <keyword name="Segmentation" id="Segmentation" ref="ht_Segmentation.html" />
       <keyword name="Geodesic Training Segmentation" id="Geodesic Training Segmentation" ref="seg_GeoTrain.html" />
       <keyword name="Geodesic Distance Transform-based Segmentation" id="Geodesic Distance Transform-based Segmentation" ref="seg_Geodesic.html" />
