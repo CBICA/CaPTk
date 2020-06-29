@@ -1926,6 +1926,11 @@ namespace cbica
       returnMap[labelString]["Overlap"] = similarityFilter->GetTotalOverlap();
       returnMap[labelString]["Jaccard"] = similarityFilter->GetUnionOverlap();
       returnMap[labelString]["Dice"] = similarityFilter->GetMeanOverlap();
+      if (std::isinf(returnMap[labelString]["Dice"])) 
+      {
+        // this happens in the case where there is a label missing in both the reference and input annotations
+        returnMap[labelString]["Dice"] = 1;
+      }
       returnMap[labelString]["VolumeSimilarity"] = similarityFilter->GetVolumeSimilarity();
       returnMap[labelString]["FalseNegativeError"] = similarityFilter->GetFalseNegativeError();
       returnMap[labelString]["FalsePositiveError"] = similarityFilter->GetFalsePositiveError();
@@ -1935,6 +1940,30 @@ namespace cbica
       for (const auto &metric : temp_roc)
       {
         returnMap[labelString][metric.first] = metric.second;
+      }
+
+      // in case one of the labels is missing, just put something
+      auto stats_1 = itk::StatisticsImageFilter< TImageType >::New();
+      stats_1->SetInput(imageToCompare_1);
+      stats_1->Update();
+      auto max_1 = stats_1->GetMaximum();
+      auto stats_2 = itk::StatisticsImageFilter< TImageType >::New();
+      stats_2->SetInput(imageToCompare_2);
+      stats_2->Update();
+      auto max_2 = stats_2->GetMaximum();
+
+      if ((max_1 == 0) && (max_2 == 0))
+      {
+        returnMap[labelString]["Sensitivity"] = 1;
+        returnMap[labelString]["Specificity"] = 1;
+      }
+      if (std::isnan(returnMap[labelString]["Sensitivity"]))
+      {
+        returnMap[labelString]["Sensitivity"] = 1;
+      }
+      if (std::isinf(returnMap[labelString]["Sensitivity"]))
+      {
+        returnMap[labelString]["Sensitivity"] = 1;
       }
 
       /// not used till implementation gets standardized
@@ -1962,16 +1991,6 @@ namespace cbica
 
       if (hausdorffFound)
       {
-        // in case one of the labels is missing, just put something
-        auto stats_1 = itk::StatisticsImageFilter< TImageType >::New();
-        stats_1->SetInput(imageToCompare_1);
-        stats_1->Update();
-        auto max_1 = stats_1->GetMaximum();
-        auto stats_2 = itk::StatisticsImageFilter< TImageType >::New();
-        stats_2->SetInput(imageToCompare_2);
-        stats_2->Update();
-        auto max_2 = stats_2->GetMaximum();
-
         if ((max_1 == 0) || (max_2 == 0))
         {
           // this is the case where one of the labels is missing
@@ -2028,6 +2047,22 @@ namespace cbica
           result.pop_back();
           returnMap[labelString]["Hausdorff95"] = std::atof(result.c_str());
           cbica::deleteDir(tempDir);
+        }
+        // in case a label is not defined, use the longest diagonal
+        if (std::isnan(returnMap[labelString]["Hausdorff95"]) || std::isinf(returnMap[labelString]["Hausdorff95"]))
+        {
+          // correct prediction for missing label
+          if ((max_1 == 0) && (max_2 == 0))
+          {
+            returnMap[labelString]["Hausdorff95"] = 0;
+          }
+          else
+          {
+            auto size = imageToCompare_1->GetLargestPossibleRegion().GetSize();
+            auto diag_plane_squared = std::pow(size[0], 2) + std::pow(size[1], 2);
+            auto diag_cube = std::sqrt(std::pow(size[2], 2) + diag_plane_squared);
+            returnMap[labelString]["Hausdorff95"] = diag_cube;
+          }
         }
       } // end hausdorff found
     }
