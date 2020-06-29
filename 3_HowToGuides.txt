@@ -116,7 +116,7 @@ More usage options are available via the ```greedy``` command-line executable (s
 
 References:
 
--# P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI, Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127
+-# P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI", Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127, DOI:10.1016/j.jalz.2016.06.205
 -# www.github.com/pyushkevich/greedy
 
 --------
