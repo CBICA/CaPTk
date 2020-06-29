@@ -2,7 +2,7 @@
 
 \page Download Download Instructions
 
-Visit our <b>Download Page</b> hosted in NIH-supported NITRC (https://www.nitrc.org/frs/?group_id=1059), to download the CaPTk <b>source code</b> and <b>binaries</b>.
+Visit our <b>Download Page</b> hosted in NIH-supported NITRC (https://www.nitrc.org/frs/?group_id=1059), to download the CaPTk <b>binaries</b> and our GitHub page (https://github.com/CBICA/CaPTk) for the <b>source code</b>.
 
 CaPTk is currently distributed in the form of pre-compiled (executable) Windows, Linux (compiled on Ubuntu 16.04) and macOS (compiled on 10.13) installers with all dependencies integrated in the package.
 
