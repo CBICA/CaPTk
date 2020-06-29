@@ -6036,8 +6036,6 @@ void fMainWindow::ApplicationBreastSegmentation()
     return;
   }
 
-  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
-
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   std::string scriptToCall = appDownloadMngr->getApplication("libra", false);
 
@@ -6047,6 +6045,8 @@ void fMainWindow::ApplicationBreastSegmentation()
   if (scriptToCall.empty()) {
     return;
   }
+
+  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -6099,8 +6099,6 @@ void fMainWindow::ApplicationLIBRASingle()
     return;
   }
 
-  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
-
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   std::string scriptToCall = appDownloadMngr->getApplication("libra", false);
 
@@ -6110,6 +6108,8 @@ void fMainWindow::ApplicationLIBRASingle()
   if (scriptToCall.empty()) {
     return;
   }
+
+  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   if (cbica::fileExists(scriptToCall))
   {
