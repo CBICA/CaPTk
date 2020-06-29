@@ -898,10 +898,10 @@ jobs:
       displayName: 'Configure and compile CaPTk'
       continueOnError: true 
 
-    - powershell: |
-        cd bin/src
-        Get-ChildItem -Path ./ -Recurse
-      displayName: 'List dir'
+    # - powershell: |
+    #     cd bin/src
+    #     Get-ChildItem -Path ./ -Recurse
+    #   displayName: 'List dir'
 
     # - script: |
     #     cd bin
