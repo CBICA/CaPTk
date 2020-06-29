@@ -9,7 +9,6 @@
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
 
-#include "CaPTkGUIUtils.h"
 #include "ApplicationPreferences.h"
 #include "ApplicationDownloadManager.h"
 
@@ -110,6 +109,10 @@ int algorithmsRunner()
 
   auto libraPath = findRelativeApplicationPath("libra");
   //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
+  
+  // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+  // std::string libraPath = appDownloadMngr->getApplication("libra", false);
+
   cbica::createDir(outputDir + "/temp");
 
   std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile)

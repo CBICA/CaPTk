@@ -5930,7 +5930,7 @@ void fMainWindow::openDicomImages(QString dir)
 void fMainWindow::ApplicationLIBRABatch()
 {
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-  std::string scriptToCall = appDownloadMngr->getApplication("libra");
+  std::string scriptToCall = appDownloadMngr->getApplication("libra", false);
 
   connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
@@ -6039,7 +6039,7 @@ void fMainWindow::ApplicationBreastSegmentation()
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-  std::string scriptToCall = appDownloadMngr->getApplication("libra");
+  std::string scriptToCall = appDownloadMngr->getApplication("libra", false);
 
   connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
@@ -6102,7 +6102,7 @@ void fMainWindow::ApplicationLIBRASingle()
   updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-  std::string scriptToCall = appDownloadMngr->getApplication("libra");
+  std::string scriptToCall = appDownloadMngr->getApplication("libra", false);
 
   connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
