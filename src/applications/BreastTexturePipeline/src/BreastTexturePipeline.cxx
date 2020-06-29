@@ -111,8 +111,8 @@ int algorithmsRunner()
   auto libraPath = findRelativeApplicationPath("libra");
   //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
   
-  // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-  // std::string libraPath = appDownloadMngr->getApplication("libra", true);
+  ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+  std::string libraPath = appDownloadMngr->getApplication("libra", true);
 
   cbica::createDir(outputDir + "/temp");
 
