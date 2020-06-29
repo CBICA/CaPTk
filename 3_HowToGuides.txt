@@ -146,7 +146,7 @@ ${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/ima
 
 Reference:
 
--# S.M.Smith, J.M.Brady. "SUSAN-A new approach to low level image processing", International Journal of Computer Vision. 23(1):45-78, 1997.
+-# S.M.Smith, J.M.Brady. "SUSAN-A new approach to low level image processing", International Journal of Computer Vision. 23(1):45-78, 1997, DOI:10.1023/A:1007963824710
 
 */
 
