@@ -51,6 +51,9 @@ protected:
 	//! zoom to value
 	void SetZoom(int zoomValue);
 
+	// override dialog event to reload on show 
+	void showEvent(QShowEvent* event);
+
 signals:
 
 void skipTutorialOnNextRun(bool flag);
