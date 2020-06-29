@@ -5931,7 +5931,7 @@ void fMainWindow::ApplicationLIBRABatch()
 {
   // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   // std::string scriptToCall = appDownloadMngr->getApplication("libra");
-
+  std::string scriptToCall = "";
   // connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
@@ -6040,7 +6040,7 @@ void fMainWindow::ApplicationBreastSegmentation()
 
   // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   // std::string scriptToCall = appDownloadMngr->getApplication("libra");
-
+  std::string scriptToCall = "";
   // connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
@@ -6103,7 +6103,7 @@ void fMainWindow::ApplicationLIBRASingle()
 
   // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   // std::string scriptToCall = appDownloadMngr->getApplication("libra");
-
+  std::string scriptToCall = "";
   // connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
