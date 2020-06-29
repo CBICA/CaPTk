@@ -1917,6 +1917,16 @@ namespace cbica
       auto imageToCompare_1 = region.second;
       auto imageToCompare_2 = regionsToCompare_2[labelString];
 
+      // in case one of the labels is missing, just put something
+      auto stats_1 = itk::StatisticsImageFilter< TImageType >::New();
+      stats_1->SetInput(imageToCompare_1);
+      stats_1->Update();
+      auto max_1 = stats_1->GetMaximum();
+      auto stats_2 = itk::StatisticsImageFilter< TImageType >::New();
+      stats_2->SetInput(imageToCompare_2);
+      stats_2->Update();
+      auto max_2 = stats_2->GetMaximum();
+
       auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
 
       similarityFilter->SetSourceImage(imageToCompare_1);
@@ -1942,16 +1952,6 @@ namespace cbica
         returnMap[labelString][metric.first] = metric.second;
       }
 
-      // in case one of the labels is missing, just put something
-      auto stats_1 = itk::StatisticsImageFilter< TImageType >::New();
-      stats_1->SetInput(imageToCompare_1);
-      stats_1->Update();
-      auto max_1 = stats_1->GetMaximum();
-      auto stats_2 = itk::StatisticsImageFilter< TImageType >::New();
-      stats_2->SetInput(imageToCompare_2);
-      stats_2->Update();
-      auto max_2 = stats_2->GetMaximum();
-
       if ((max_1 == 0) && (max_2 == 0))
       {
         returnMap[labelString]["Sensitivity"] = 1;
@@ -1959,7 +1959,14 @@ namespace cbica
       }
       if (std::isnan(returnMap[labelString]["Sensitivity"]))
       {
-        returnMap[labelString]["Sensitivity"] = 1;
+        if (max_1 != max_2)
+        {
+          returnMap[labelString]["Sensitivity"] = 0;
+        }
+        else
+        {
+          returnMap[labelString]["Sensitivity"] = 1;
+        }
       }
       if (std::isinf(returnMap[labelString]["Sensitivity"]))
       {
