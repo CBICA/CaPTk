@@ -51,7 +51,7 @@ protected:
 	//! zoom to value
 	void SetZoom(int zoomValue);
 
-	// override dialog event to reload on show 
+	// override dialog show event to make sure content is displayed 
 	void showEvent(QShowEvent* event);
 
 signals:
