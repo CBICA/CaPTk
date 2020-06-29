@@ -35,9 +35,10 @@ var NAVTREE =
       [ "Coordinate definition (Seed-point initialization)", "Getting_Started.html#gs_seedpoints", [
         [ "Bug Tracker and Feature Request", "index.html#autotoc_md136", null ],
         [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md137", null ],
-        [ "Supporting Grant", "index.html#autotoc_md138", null ],
-        [ "Disclaimer", "index.html#autotoc_md139", null ],
-        [ "Contact", "index.html#autotoc_md140", null ],
+        [ "Citations", "index.html#autotoc_md138", null ],
+        [ "Supporting Grant", "index.html#autotoc_md139", null ],
+        [ "Disclaimer", "index.html#autotoc_md140", null ],
+        [ "Contact", "index.html#autotoc_md141", null ],
         [ "Tumor Points", "Getting_Started.html#gs_seedpoints_tumor", null ],
         [ "Tissue Points", "Getting_Started.html#gs_seedpoints_tissue", null ]
       ] ],
