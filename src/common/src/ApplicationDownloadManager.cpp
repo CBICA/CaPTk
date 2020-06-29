@@ -40,7 +40,7 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 			return "";
 		}
 
-		appDownload(isCLI);
+		appDownload();
 		
 		return "";
 	}
