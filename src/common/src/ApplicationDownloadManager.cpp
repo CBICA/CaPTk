@@ -23,6 +23,7 @@ QString ApplicationDownloadManager::GetName() const
 
 std::string ApplicationDownloadManager::getApplication(QString appName, bool isCLI) {
 	this->m_AppName = appName;
+	this->isCLI = isCLI;
 
 	std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
 
@@ -35,6 +36,7 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 		if(downloadStarted && !downloadFinished)
 		{
 			QMessageBox::information(&appDownloadDialog,tr("Download"),"Download in progress");
+
 			return "";
 		}
 
@@ -51,7 +53,7 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 		if(extractionStarted && !extractionFinished)
 		{
 			QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
-
+			
 			return "";
 		}
 	}
@@ -59,7 +61,7 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 	return scriptToCall;
 }
 
-void ApplicationDownloadManager::appDownload(bool isCLI)
+void ApplicationDownloadManager::appDownload()
 {
 	std::string linkyml = "";
 
@@ -75,7 +77,7 @@ void ApplicationDownloadManager::appDownload(bool isCLI)
 	
 	appDownloadDialog.SetPaths(downloadFolder);
 	appDownloadDialog.SetDownloadLink(downloadLink);
-	if (isCLI) {
+	if (this->isCLI) {
 		appDownloadDialog.initDownload();
 	}
 	else {

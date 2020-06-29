@@ -30,10 +30,11 @@ private:
 
 	fAppDownloadDialog appDownloadDialog;
 	QString m_AppName;
+	bool isCLI;
 	
 	YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
 
-	void appDownload(bool isCLI);
+	void appDownload();
 
 private slots:
 	void updateProgressSlot(int progress, std::string message, int max);
