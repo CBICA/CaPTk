@@ -21,7 +21,7 @@ QString ApplicationDownloadManager::GetName() const
 	return m_AppName;
 }
 
-std::string ApplicationDownloadManager::getApplication(QString appName) {
+std::string ApplicationDownloadManager::getApplication(QString appName, bool isCLI) {
 	this->m_AppName = appName;
 
 	std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
@@ -38,7 +38,6 @@ std::string ApplicationDownloadManager::getApplication(QString appName) {
 			return "";
 		}
 
-		bool isCLI = false;
 		appDownload(isCLI);
 		
 		return "";
