@@ -11,9 +11,7 @@
 
 #include "CaPTkDefines.h"
 #include "ApplicationPreferences.h"
-// #include "ApplicationDownloadManager.h"
-// #include "ThreadedExtraction.h"
-// #include "QZipReader.h"
+#include "ApplicationDownloadManager.h"
 #include "yaml-cpp/node/node.h"
 
 
