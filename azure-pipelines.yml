@@ -896,7 +896,6 @@ jobs:
         cmake --build . --target ALL_BUILD --config Release
         
       displayName: 'Configure and compile CaPTk'
-      continueOnError: true 
 
     # - powershell: |
     #     cd bin/src

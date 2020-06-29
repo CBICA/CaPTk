@@ -9,6 +9,7 @@
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
 
+#include "CaPTkGUIUtils.h"
 #include "ApplicationPreferences.h"
 #include "ApplicationDownloadManager.h"
 
@@ -52,35 +53,35 @@ std::string findRelativeApplicationPath(const std::string appName)
   return appName_path;
 }
 
-inline std::string getCaPTkDataDir()
-{
-  auto captk_currentApplicationPath = cbica::normPath(cbica::getExecutablePath());
-  if (debugMode)
-  {
-    std::cout << "Current Application Path: " << captk_currentApplicationPath << "\n";
-  }  
+// inline std::string getCaPTkDataDir()
+// {
+//   auto captk_currentApplicationPath = cbica::normPath(cbica::getExecutablePath());
+//   if (debugMode)
+//   {
+//     std::cout << "Current Application Path: " << captk_currentApplicationPath << "\n";
+//   }  
 
-  auto captk_dataDir = captk_currentApplicationPath + "../data/";
-  if (!cbica::exists(captk_dataDir))
-  {
-    captk_dataDir = captk_currentApplicationPath + "../../data/";
-    if (!cbica::exists(captk_dataDir))
-    {
-      captk_dataDir = captk_currentApplicationPath + "../Resources/data/";
-      if (!cbica::exists(captk_dataDir))
-      {
-        captk_dataDir = std::string(PROJECT_SOURCE_DIR) + "data/";
-        if (!cbica::exists(captk_dataDir))
-        {
-          std::cerr << "Data Directory not found. Please re-install CaPTk.\n";
-          return "";
-        }
-      }
-    }
-  }
+//   auto captk_dataDir = captk_currentApplicationPath + "../data/";
+//   if (!cbica::exists(captk_dataDir))
+//   {
+//     captk_dataDir = captk_currentApplicationPath + "../../data/";
+//     if (!cbica::exists(captk_dataDir))
+//     {
+//       captk_dataDir = captk_currentApplicationPath + "../Resources/data/";
+//       if (!cbica::exists(captk_dataDir))
+//       {
+//         captk_dataDir = std::string(PROJECT_SOURCE_DIR) + "data/";
+//         if (!cbica::exists(captk_dataDir))
+//         {
+//           std::cerr << "Data Directory not found. Please re-install CaPTk.\n";
+//           return "";
+//         }
+//       }
+//     }
+//   }
 
-  return cbica::normPath(captk_dataDir);
-}
+//   return cbica::normPath(captk_dataDir);
+// }
 
 //template< class TImageType >
 int algorithmsRunner()
