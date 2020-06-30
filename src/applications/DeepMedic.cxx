@@ -20,7 +20,8 @@
 
 //#include "CAPTk.h"
 
-std::string inputT1ce, inputT1, inputT2, inputFlair, inputMaskName, modelDirName, inputBVecName, outputDirectory, outputFile, loggerFileIn;
+std::string inputImageFiles, inputMaskName, modelDirName, outputDirectory, outputFile, loggerFileIn;
+std::vector< std::string > inputImageFilesVector;
 float quantLower = 5, quantUpper = 95, cutOffLower = 3, cutOffUpper = 3;
 bool maskProvided = false, debugMode = false, enableNormalization = true;
 int inferenceType = 0;
@@ -137,7 +138,7 @@ void algorithmRunner()
   }
   else
   {
-    std::cout << "Using non-CaPTk approved model at user's own risk.\n";
+    std::cout << "!!! WARNING: Using non-CaPTk approved model at user's own risk...\n";
   }
   
   auto filesInDir = cbica::filesInDirectory(modelDirName);
@@ -149,11 +150,15 @@ void algorithmRunner()
     }
   }
 
-  auto t1cImg = cbica::ReadImage< TImageType >(inputT1ce);
-  auto t1Img = cbica::ReadImage< TImageType >(inputT1);
-  auto t2Img = cbica::ReadImage< TImageType >(inputT2);
-  auto flImg = cbica::ReadImage< TImageType >(inputFlair);
-  auto maskImage = cbica::CreateImage< TImageType >(t1cImg);
+  std::vector< typename TImageType::Pointer > inputImages;
+  inputImages.resize(inputImageFilesVector.size());
+
+  for (size_t i = 0; i < inputImageFilesVector.size(); i++)
+  {
+    inputImages[i] = cbica::ReadImage< TImageType >(inputImageFilesVector[i]);
+  }
+
+  auto maskImage = cbica::CreateImage< TImageType >(inputImages[0]);
 
   if (maskProvided)
   {
@@ -170,147 +175,39 @@ void algorithmRunner()
     inferenceType = 1;
   }
 
-  // per-patient registration
-  auto greedyExe = getApplicationPath("GreedyRegistration");
-  if (!cbica::ImageSanityCheck< TImageType >(t1cImg, maskImage))
-  {
-    auto tempFile_input = outputDirectory + "/maskToT1gd_input.nii.gz";
-    auto tempFile = outputDirectory + "/maskToT1gd.nii.gz";
-    cbica::WriteImage< TImageType >(maskImage, tempFile_input);
-    auto greedyCommand = greedyExe +
-      " -i " + tempFile_input +
-      " -f " + inputT1ce +
-      " -t " + outputDirectory + "/tempMatrix.mat" +
-      " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
-      ;
-
-    std::cout << "== Starting per-subject registration of Mask to T1-Ce using Greedy.\n";
-    std::system(greedyCommand.c_str());
-    maskImage = cbica::ReadImage< TImageType >(tempFile);
-    std::cout << "== Done.\n";
-  }
-  if (!cbica::ImageSanityCheck< TImageType >(t1cImg, t1Img))
-  {
-    auto tempFile = outputDirectory + "/T1ToT1gd.nii.gz";
-    auto greedyCommand = greedyExe +
-      " -i " + inputT1 +
-      " -f " + inputT1ce +
-      " -t " + outputDirectory + "/tempMatrix.mat" +
-      " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
-      ;
-
-    std::cout << "== Starting per-subject registration of T1 to T1-Ce using Greedy.\n";
-    std::system(greedyCommand.c_str());
-    t1Img = cbica::ReadImage< TImageType >(tempFile);
-    std::cout << "== Done.\n";
-  }
-  if (!cbica::ImageSanityCheck< TImageType >(t1cImg, t2Img))
-  {
-    auto tempFile = outputDirectory + "/T2ToT1gd.nii.gz";
-    auto greedyCommand = greedyExe +
-      " -i " + inputT2 +
-      " -f " + inputT1ce +
-      " -t " + outputDirectory + "/tempMatrix.mat" +
-      " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
-      ;
-
-    std::cout << "== Starting per-subject registration of T2 to T1-Ce using Greedy.\n";
-    std::system(greedyCommand.c_str());
-    t2Img = cbica::ReadImage< TImageType >(tempFile);
-    std::cout << "== Done.\n";
-  }
-  if (!cbica::ImageSanityCheck< TImageType >(t1cImg, flImg))
-  {
-    auto tempFile = outputDirectory + "/FLToT1gd.nii.gz";
-    auto greedyCommand = greedyExe +
-      " -i " + inputFlair +
-      " -f " + inputT1ce +
-      " -t " + outputDirectory + "/tempMatrix.mat" +
-      " -o " + tempFile + " -reg -trf -a -m MI -n 100x50x5"
-      ;
-
-    std::cout << "== Starting per-subject registration of T2-Flair to T1-Ce using Greedy.\n";
-    std::system(greedyCommand.c_str());
-    flImg = cbica::ReadImage< TImageType >(tempFile);
-    std::cout << "== Done.\n";
-  }
-
   if (enableNormalization)
   {
     if (inferenceType == TumorSegmentation)
     {
       std::cout << "=== Checking and rectifying (z-score) normalization status.\n";
-      auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
-      statsCalculator->SetInput(t1cImg);
-      statsCalculator->Update();
-      if (statsCalculator->GetMean() != 0)
-      {
-        std::cout << "== Starting Normalization of T1CE image.\n";
-        ZScoreNormalizer< TImageType > normalizer;
-        normalizer.SetInputImage(t1cImg);
-        if (maskProvided)
-        {
-          normalizer.SetInputMask(maskImage);
-        }
-        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-        normalizer.SetQuantiles(quantLower, quantUpper);
-        normalizer.Update();
-        t1cImg = normalizer.GetOutput();
-        std::cout << "== Done.\n";
-      }
 
-      statsCalculator->SetInput(t1Img);
-      statsCalculator->Update();
-      if (statsCalculator->GetMean() != 0)
+      for (size_t i = 0; i < inputImages.size(); i++)
       {
-        std::cout << "== Starting Normalization of T1 image.\n";
-        ZScoreNormalizer< TImageType > normalizer;
-        normalizer.SetInputImage(t1Img);
-        if (maskProvided)
+        auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+        statsCalculator->SetInput(inputImages[i]);
+        statsCalculator->Update();
+        if (statsCalculator->GetMean() != 0)
         {
-          normalizer.SetInputMask(maskImage);
-        }
-        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-        normalizer.SetQuantiles(quantLower, quantUpper);
-        normalizer.Update();
-        t1Img = normalizer.GetOutput();
-        std::cout << "== Done.\n";
-      }
+          if (debugMode)
+          {
+            std::cout << "== Starting Normalization of image '" << i << "'.\n";
+          }
+          ZScoreNormalizer< TImageType > normalizer;
+          normalizer.SetInputImage(inputImages[i]);
+          if (maskProvided)
+          {
+            normalizer.SetInputMask(maskImage);
+          }
+          normalizer.SetCutoffs(cutOffLower, cutOffUpper);
+          normalizer.SetQuantiles(quantLower, quantUpper);
+          normalizer.Update();
+          inputImages[i] = normalizer.GetOutput();
 
-      statsCalculator->SetInput(t2Img);
-      statsCalculator->Update();
-      if (statsCalculator->GetMean() != 0)
-      {
-        std::cout << "== Starting Normalization of T2 image.\n";
-        ZScoreNormalizer< TImageType > normalizer;
-        normalizer.SetInputImage(t2Img);
-        if (maskProvided)
-        {
-          normalizer.SetInputMask(maskImage);
+          if (debugMode)
+          {
+            std::cout << "== Done.\n";
+          }
         }
-        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-        normalizer.SetQuantiles(quantLower, quantUpper);
-        normalizer.Update();
-        t2Img = normalizer.GetOutput();
-        std::cout << "== Done.\n";
-      }
-
-      statsCalculator->SetInput(flImg);
-      statsCalculator->Update();
-      if (statsCalculator->GetMean() != 0)
-      {
-        std::cout << "== Starting Normalization of T2-Flair image.\n";
-        ZScoreNormalizer< TImageType > normalizer;
-        normalizer.SetInputImage(flImg);
-        if (maskProvided)
-        {
-          normalizer.SetInputMask(maskImage);
-        }
-        normalizer.SetCutoffs(cutOffLower, cutOffUpper);
-        normalizer.SetQuantiles(quantLower, quantUpper);
-        normalizer.Update();
-        flImg = normalizer.GetOutput();
-        std::cout << "== Done.\n";
       }
       std::cout << "=== Done.\n";
     }
@@ -319,28 +216,26 @@ void algorithmRunner()
     {
       std::cout << "=== Starting P1P2Normalize.\n";
 
-      P1P2Normalizer< TImageType > normalizer;
-      normalizer.SetInputImage(t1cImg);
-      t1cImg = normalizer.GetOutput();
-      normalizer.SetInputImage(t1Img);
-      t1Img = normalizer.GetOutput();
-      normalizer.SetInputImage(t2Img);
-      t2Img = normalizer.GetOutput();
-      normalizer.SetInputImage(flImg);
-      flImg = normalizer.GetOutput();
+      for (size_t i = 0; i < inputImages.size(); i++)
+      {
+        P1P2Normalizer< TImageType > normalizer;
+        normalizer.SetInputImage(inputImages[i]);
+        inputImages[i] = normalizer.GetOutput();
+      }
       std::cout << "=== Done.\n";
     }
   }
 
-  if (inferenceType <= SkullStripping)
+  if (inferenceType <= SkullStripping) // this is present as a sanity check in case we design a model that does not use isotropic resampling, which is unlikely at this point
   {
     if (resamplingRes > 0)
     {
       std::cout << "=== Starting resampling of images to isotropic resolution.\n";
-      t1cImg = cbica::ResampleImage< TImageType >(t1cImg, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
-      t1Img = cbica::ResampleImage< TImageType >(t1Img, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
-      flImg = cbica::ResampleImage< TImageType >(flImg, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
-      t2Img = cbica::ResampleImage< TImageType >(t2Img, resamplingRes); // default is linear resampling to isotropic resolution of 1.0
+
+      for (size_t i = 0; i < inputImages.size(); i++)
+      {
+        inputImages[i] = cbica::ResampleImage< TImageType >(inputImages[i], resamplingRes);
+      }
       maskImage = cbica::ResampleImage< TImageType >(maskImage, resamplingRes, "Nearest"); // default is linear resampling to isotropic resolution of 1.0
       std::cout << "=== Done.\n";
     }
@@ -349,33 +244,39 @@ void algorithmRunner()
   cbica::createDir(outputDirectory);
   std::cout << "Starting DeepMedic Segmentation.\n";
 
-  std::string file_t1ceNorm = cbica::normPath(outputDirectory + "/t1ce_normalized.nii.gz"),
-    file_t1Norm = cbica::normPath(outputDirectory + "/t1_normalized.nii.gz"),
-    file_t2Norm = cbica::normPath(outputDirectory + "/t2_normalized.nii.gz"),
-    file_flNorm = cbica::normPath(outputDirectory + "/fl_normalized.nii.gz");
-  cbica::WriteImage< TImageType >(t1cImg, file_t1ceNorm);
-  cbica::WriteImage< TImageType >(t1Img, file_t1Norm);
-  cbica::WriteImage< TImageType >(t2Img, file_t2Norm);
-  cbica::WriteImage< TImageType >(flImg, file_flNorm);
+  std::vector< std::string > file_inputNormalized;
+  file_inputNormalized.resize(inputImages.size());
+  std::string files_forCommand;
 
-  auto dmExe = getApplicationPath("deepMedicRun");
-  //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicRun.exe";
+  for (size_t i = 0; i < inputImages.size(); i++)
+  {
+    file_inputNormalized[i] = cbica::normPath(outputDirectory + "/" + std::to_string(i) + "_normalized.nii.gz");
+    cbica::WriteImage< TImageType >(inputImages[i], file_inputNormalized[i]);
+    files_forCommand += file_inputNormalized[i] + ",";
+  }
+
+  files_forCommand.pop_back(); // remove last ","
+
+  auto dmExe = getApplicationPath("deepMedicInference");
+  //std::string dmExe = "C:/Projects/CaPTk_myFork/src/applications/individualApps/deepmedic/deepMedicRun.exe"; // FOR DEBUGGING ONLY //
 
 #ifdef _WIN32
   SetCurrentDirectory(cbica::getFilenamePath(dmExe).c_str());
 #endif
 
+  // order for 4-modality applications: t1,t1c,t2,fl
+
   auto fullCommand = dmExe +
-    " -t1 " + file_t1Norm +
-    " -t1c " + file_t1ceNorm +
-    " -t2 " + file_t2Norm +
-    " -fl " + file_flNorm +
+    " -i " + files_forCommand +
     " -model " + cbica::normPath(modelDirName + "/modelConfig.txt") +
     " -load " + cbica::normPath(modelDirName + "/model.ckpt") +
     " -test " + cbica::normPath(getCaPTkDataDir() + "/deepMedic/configFiles/testApiConfig.txt") +
     " -o " + outputDirectory;
 
-  std::cout << "Running the following command:\n" << fullCommand << "\n";
+  if (debugMode)
+  {
+    std::cout << "Running the following command:\n" << fullCommand << "\n";
+  }
 
   if (std::system(fullCommand.c_str()) != 0)
   {
@@ -389,7 +290,10 @@ void algorithmRunner()
     auto outputImage_temp = cbica::ReadImage< TImageType >(outputImageFile_temp);
     if (inferenceType == SkullStripping)
     {
-      std::cout << "=== Performing hole-filling operation for skull stripping.\n";
+      if (debugMode)
+      {
+        std::cout << "=== Performing hole-filling operation for skull stripping.\n";
+      }
       auto outputImageWithHoles = outputImage_temp;
 
       auto holeFiller = itk::BinaryFillholeImageFilter< TImageType >::New();
@@ -399,29 +303,20 @@ void algorithmRunner()
       holeFiller->Update();
 
       cbica::WriteImage< TImageType >(holeFiller->GetOutput(), outputImageFile_temp);
-      std::cout << "=== Done.\n";
+      if (debugMode)
+      {
+        std::cout << "=== Done.\n";
+      }
     }
     else if (inferenceType == TumorSegmentation)
     {
-      std::cout << "=== Changing the output label value from '3' to '4' for BraTS consistency.\n";
+      if (debugMode)
+      {
+        std::cout << "=== Changing the output label value from '3' to '4' for BraTS consistency.\n";
+      }
       auto outputImageWithNewValues = cbica::ChangeImageValues< TImageType >(outputImage_temp, "3", "4");
 
       cbica::WriteImage< TImageType >(outputImageWithNewValues, outputImageFile_temp);
-    }
-    
-    outputImage_temp = cbica::ReadImage< TImageType >(outputImageFile_temp);
-
-    {
-      std::cout << "== Starting resampling of output segmentation back to patient space.\n";
-      auto t1cImg_original = cbica::ReadImage< TImageType >(inputT1ce);
-      auto resampledMask = cbica::ResampleImage< TImageType >(outputImage_temp,
-        t1cImg_original->GetSpacing(),
-        t1cImg_original->GetLargestPossibleRegion().GetSize(), "nearest");
-      cbica::WriteImage< TImageType >(
-        resampledMask,
-        outputImageFile_temp
-        );
-      std::cout << "== Done.\n";
     }
     
     if (!outputFile.empty())
@@ -440,10 +335,7 @@ int main(int argc, char **argv)
 {
   cbica::CmdParser parser(argc, argv, "DeepMedic");
 
-  parser.addRequiredParameter("t1c", "T1CE", cbica::Parameter::FILE, "", "The input T1CE or T1Gd image file.");
-  parser.addRequiredParameter("t1", "T1", cbica::Parameter::FILE, "", "The input T1 image file.");
-  parser.addRequiredParameter("fl", "FLAIR", cbica::Parameter::FILE, "", "The input T2-FLAIR image file.");
-  parser.addRequiredParameter("t2", "T2", cbica::Parameter::FILE, "", "The input T2 image file.");
+  parser.addRequiredParameter("i", "inputImages", cbica::Parameter::STRING, "NIfTI files", "Input images provided in a comma-separated manner", "Should be in the same order as trained model", "Example: '-i /path/t1.nii.gz,/path/t1c.nii.gz'");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::FILE, "", "The Optional input mask file.", "This is needed for normalization only");
   parser.addRequiredParameter("md", "modelDir", cbica::Parameter::DIRECTORY, "", "The trained model to use", "See examples in '${CaPTk_installDir}/data/deepMedic/saved_models'");
   parser.addRequiredParameter("o", "output", cbica::Parameter::DIRECTORY, "", "The output directory");
@@ -451,11 +343,13 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: " + std::to_string(quantLower) + "," + std::to_string(quantUpper));
   parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: " + std::to_string(cutOffLower) + "," + std::to_string(cutOffUpper));
   parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::FLOAT, "0-10", "[Resample] Isotropic resampling resolution to change to", "Defaults to " + std::to_string(resamplingRes), "If '0' is passed, no resampling is done.");
+  parser.addOptionalParameter("d", "debugModel", cbica::Parameter::BOOLEAN, "0-1", "Enable/disable debug mode for extra information on console");
 
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   parser.addApplicationDescription("This is a Deep Learning based inference engine based on DeepMedic (see documentation for details)");
-  parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping", "This does a skull stripping of the input structural data");
-  parser.addExampleUsage("-t1 c:/t1.nii.gz -t1c c:/t1gc.nii.gz -t2 c:/t2.nii.gz -fl c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/brainTumorSegmentation", "This does a tumor segmentation of the input structural data");
+  parser.addExampleUsage("-i c:/t1.nii.gz,c:/t1gc.nii.gz,c:/t2.nii.gz,c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/brainTumorSegmentation", "This does a tumor segmentation of the input structural data");
+  parser.addExampleUsage("-i c:/t1.nii.gz,c:/t1gc.nii.gz,c:/t2.nii.gz,c:/fl.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping", "This does a skull stripping of the input structural data");
+  parser.addExampleUsage("-i c:/t1_withSkull.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping_modalityAgnostic", "This does a skull-stripping using a single modality (can use either T1,T2-Gd,T2 or Flair)");
 
   // parameters to get from the command line
   cbica::Logging logger;
@@ -470,11 +364,18 @@ int main(int argc, char **argv)
   {
     parser.getParameterValue("d", debugMode);
   }
-  parser.getParameterValue("t1c", inputT1ce);
-  parser.getParameterValue("t1", inputT1);
-  parser.getParameterValue("t2", inputT2);
-  parser.getParameterValue("fl", inputFlair);
-
+  parser.getParameterValue("i", inputImageFiles);
+  inputImageFilesVector = cbica::stringSplit(inputImageFiles, ",");
+  if (inputImageFilesVector.size() == 1)
+  {
+    // just in case the user passes input files with a different delimiter
+    inputImageFilesVector = cbica::stringSplit(inputImageFiles, "|");
+    if (inputImageFilesVector.size() == 1)
+    {
+      // at this point, we assume the user wants to pass a single image and proceed
+    }
+  }
+  
   parser.getParameterValue("o", outputDirectory);  
   // sanity check in case the user has passed a file
   if (!cbica::getFilenameExtension(outputDirectory, false).empty())
@@ -541,32 +442,34 @@ int main(int argc, char **argv)
     parser.getParameterValue("t", inferenceType);
   }
 
-  auto imageInfo = cbica::ImageInfo(inputT1ce);
+  if (!cbica::isFile(inputImageFilesVector[0]))
+  {
+    std::cerr << "Could not find the image file '" << inputImageFilesVector[0] << "' in the filesystem.\n";
+    return EXIT_FAILURE;
+  }
+  // perform sanity checks of input images only if multiple images are passed
+  if (inputImageFilesVector.size() > 1)
+  {
+    for (size_t i = 1; i < inputImageFilesVector.size(); i++)
+    {
+      if (!cbica::ImageSanityCheck(inputImageFilesVector[0], inputImageFilesVector[i]))
+      {
+        std::cerr << "The first image file '" << inputImageFilesVector[0] << "' has different physical dimensions with '" << inputImageFilesVector[i] << "', please register them before trying again.\n";
+        return EXIT_FAILURE;
+      }
+    }
+  }
   
-  if (!cbica::ImageSanityCheck(inputT1, inputT1ce))
-  {
-    std::cerr << "T1 and T1CE images are in inconsistent spaces, please register them before trying.\n";
-    return EXIT_FAILURE;
-  }
-  if (!cbica::ImageSanityCheck(inputT2, inputT1ce))
-  {
-    std::cerr << "T2 and T1CE images are in inconsistent spaces, please register them before trying.\n";
-    return EXIT_FAILURE;
-  }
-  if (!cbica::ImageSanityCheck(inputFlair, inputT1ce))
-  {
-    std::cerr << "T2-Flair and T1CE images are in inconsistent spaces, please register them before trying.\n";
-    return EXIT_FAILURE;
-  }
-
   if (maskProvided)
   {
-    if(!cbica::ImageSanityCheck(inputT1ce, inputMaskName))
+    if(!cbica::ImageSanityCheck(inputImageFilesVector[0], inputMaskName))
     {
       std::cerr << "The input image(s) and mask are in inconsistent spaces, please register them before trying.\n";
       return EXIT_FAILURE;
     }
   }
+
+  auto imageInfo = cbica::ImageInfo(inputImageFilesVector[0]);
 
   switch (imageInfo.GetImageDimensions())
   {

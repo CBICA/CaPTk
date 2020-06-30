@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.nonRelease.20200612.b94a1af7</span>
+   &#160;<span id="projectnumber">1.8.0.nonRelease.20200626.013f692f</span>
    </div>
   </td>
  </tr>
@@ -72,8 +72,8 @@ $(document).ready(function(){initNavTree('preprocessing_brats.html',''); initRes
 <li><a href="preprocessing_reg.html">Co-registration</a> to T1CE</li>
 <li><a href="preprocessing_reg.html">Registration</a> to SRI-24 atlas [4]</li>
 <li>Apply registration to re-oriented image to maximize image fidelity</li>
-<li><a href="seg_DL.html">Skull-stripping</a></li>
-<li>Put extracted brain mask back to original patient space</li>
+<li>OPTIONAL: <a href="seg_DL.html">Skull-stripping</a></li>
+<li>OPTIONAL: <a href="seg_DL.html">Tumor Segmentation</a></li>
 </ol>
 <p>Example command: </p><pre class="fragment">${CaPTk_InstallDir}/bin/BraTSPipeline.exe -t1 C:/test/t1.nii.gz -t1c C:/test/t1ce.nii.gz -t2 C:/test/t2.nii.gz -fl C:/test/flair.nii.gz -o C:/test/outputDir 
 </pre><p><b>NOTE</b>: This applications takes ~30 minutes to finish on an 8-core Intel i7 with 16GB of RAM.</p>

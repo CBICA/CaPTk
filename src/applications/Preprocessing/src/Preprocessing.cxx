@@ -398,7 +398,7 @@ int algorithmsRunner()
           commandToCall = greedyPathAndDim + " -a" +
             commonCommands +
             metricsCommand +
-            " -ia-image-centers -dof " + std::to_string(registrationRigidDof) + "-o " + interimFiles_affineTransform;
+            " -ia-image-centers -dof " + std::to_string(registrationRigidDof) + " -o " + interimFiles_affineTransform;
           ;
         }
         else

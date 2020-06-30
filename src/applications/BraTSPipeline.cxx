@@ -322,14 +322,12 @@ int main(int argc, char** argv)
       std::cout << "Starting skull-stripping using DeepMedic.\n";
     }
 
-
-
     if (!cbica::exists(brainMaskFile))
     {
       fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ " +
-        "-t1c " + outputRegisteredImages["T1CE"] + " -t1 " +
-        outputRegisteredImages["T1"] + " -t2 " +
-        outputRegisteredImages["T2"] + " -fl " +
+        "-i " + outputRegisteredImages["T1"] + "," +
+        outputRegisteredImages["T1CE"] + "," +
+        outputRegisteredImages["T2"] + "," +
         outputRegisteredImages["FL"] + " -o " +
         brainMaskFile;
 
@@ -387,9 +385,9 @@ int main(int argc, char** argv)
         cbica::WriteImage< ImageType >(maskFilter->GetOutput(), it->second); // write the masked image 
       }
       fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/brainTumorSegmentation/ " +
-        "-t1c " + outputRegisteredMaskedImages["T1CE"] + " -t1 " +
-        outputRegisteredMaskedImages["T1"] + " -t2 " +
-        outputRegisteredMaskedImages["T2"] + " -fl " +
+        "-i " + outputRegisteredMaskedImages["T1"] + "," +
+        outputRegisteredMaskedImages["T1CE"] + "," +
+        outputRegisteredMaskedImages["T2"] + "," +
         outputRegisteredMaskedImages["FL"] + " -m " + finalBrainMask +
         " -o " + brainTumorMaskFile;
 
