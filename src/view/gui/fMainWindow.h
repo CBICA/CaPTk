@@ -1487,6 +1487,8 @@ public slots:
   //confirm before exit
   void closeEvent(QCloseEvent * event);
 
+  void changeEvent(QEvent* event);
+
   // Progress Update
   void updateProgress(int progress, std::string message = "", int max = 100);
 
