@@ -335,7 +335,7 @@ int main(int argc, char** argv)
   if (alertNoCompatibleOpenGL)
   {
 	  QMessageBox openGLWarningBox(QMessageBox::Warning, "No Compatible OpenGL Found", 
-		  "CaPTk failed to find a compatible version of OpenGL.  The graphical user interface may not function correctly."
+		  "CaPTk failed to find a compatible version of OpenGL. The graphical user interface may not function correctly."
 		  " Please install OpenGL version 3.2 or greater, or use the command line interface to run CaPTk."
 		  "\n\nCheck the documentation for details.");
 	  openGLWarningBox.exec(); // Make sure it's acknowledged!
