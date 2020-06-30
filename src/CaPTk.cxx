@@ -183,7 +183,6 @@ int main(int argc, char** argv)
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
   //cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
-  bool alertNoCompatibleOpenGL = false; 
 
   // starting the OpenGL version checking 
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
@@ -202,15 +201,18 @@ int main(int argc, char** argv)
       std::string msg = "A working 3.2 version of OpenGL was not found in your hardware/software combination; consequently, CaPTk's GUI will not work; all CLIs will work as expected.\n\n";
       msg += "\tOpenGL Version : " + checker.version + "\n";
       msg += "\tOpenGL Renderer: " + checker.renderer + "\n";
-      msg += "\tOpenGL Vendor  : " + checker.vendor;
-	  alertNoCompatibleOpenGL = true;
+      msg += "\tOpenGL Vendor  : " + checker.vendor + "\n\n";
+	  msg += "Please install OpenGL version 3.2 or greater, or use the command line interface to run CaPTk.";
+	  msg += "\n\nCheck the documentation for details.";
+	  ShowErrorMessage(msg);
 #if WIN32
-      ShowErrorMessage(msg);
       cbica::sleep(1000);
       return EXIT_FAILURE;
-#else
+#else // Attempt software rendering on non-Windows platforms, warn user 
       cbica::setEnvironmentVariable("QT_OPENGL", "software");
-      std::cerr << "WARNING: Trying to run CaPTk GUI using software rendering - this might not work on all systems and in those cases, only the CLI will be available.\n";
+	  std::string msg = "WARNING: Trying to run CaPTk GUI using software rendering - this might not work on all systems and in those cases, only the CLI will be available.\n";
+	  std::cerr << msg;
+	  ShowErrorMessage(msg);
 #endif
     }
     else
@@ -329,16 +331,6 @@ int main(int argc, char** argv)
     // auto rec = QApplication::desktop()->screenGeometry();
     // std::cout << "Detected Size: " << rec.width() << "x" << rec.height() << "\n";
     window.about();
-  }
-
-  // Display missing/incompatible OpenGL error on first run 
-  if (alertNoCompatibleOpenGL)
-  {
-	  QMessageBox openGLWarningBox(QMessageBox::Warning, "No Compatible OpenGL Found", 
-		  "CaPTk failed to find a compatible version of OpenGL. The graphical user interface may not function correctly."
-		  " Please install OpenGL version 3.2 or greater, or use the command line interface to run CaPTk."
-		  "\n\nCheck the documentation for details.");
-	  openGLWarningBox.exec(); // Make sure it's acknowledged!
   }
 
 
