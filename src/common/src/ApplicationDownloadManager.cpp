@@ -35,7 +35,7 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 
 		if(downloadStarted && !downloadFinished)
 		{
-			QMessageBox::information(appDownloadDialog,tr("Download"),"Download in progress");
+			QMessageBox::information(&appDownloadDialog,tr("Download"),"Download in progress");
 			std::cout << "Download in progress\n";
 
 			return "";
@@ -53,7 +53,7 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 
 		if(extractionStarted && !extractionFinished)
 		{
-			QMessageBox::information(appDownloadDialog ,tr("Extract"),"Extraction in progress");
+			QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
 			std::cout << "Extraction in progress\n";
 
 			return "";
@@ -78,26 +78,24 @@ void ApplicationDownloadManager::appDownload()
 	std::string downloadLink = m_appDownloadConfigs["appsDownload"][this->m_AppName.toStdString()][linkyml].as<std::string>();
 	
 	appDownloadDialog = new fAppDownloadDialog();
-	appDownloadDialog->SetPaths(downloadFolder);
-	appDownloadDialog->SetDownloadLink(downloadLink);
-
+	appDownloadDialog.SetPaths(downloadFolder);
+	appDownloadDialog.SetDownloadLink(downloadLink);
 	if (this->isCLI) {
-		qDebug() << "Download started" << endl;
 		std::cout << "Downloading " << this->m_AppName.toStdString() << "\n";
 
-		appDownloadDialog->initDownload();
+		appDownloadDialog.initDownload();
 	}
 	else {
-		appDownloadDialog->exec();
+		appDownloadDialog.exec();
 	}
 
-	connect( appDownloadDialog, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgressSlot(int, std::string, int)));   
-	connect( appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(startUnzip(QString, QString)));   
+	connect( &appDownloadDialog, SIGNAL(updateProgress(int, std::string, int)), this, SLOT(updateProgressSlot(int, std::string, int)));   
+	connect( &appDownloadDialog, SIGNAL(doneDownload(QString, QString)), this, SLOT(startUnzip(QString, QString)));   
 }
 
 void ApplicationDownloadManager::updateProgressSlot(int progress, std::string message, int max) {
 	
-	// qDebug() << QString::fromStdString(message) << endl;
+	qDebug() << QString::fromStdString(message) << endl;
 
 	emit updateProgressSignal(progress, message, max);
 }
@@ -116,14 +114,14 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 		asyncExtract->setExtractPath(extractPath);
 		asyncExtract->setAppName(this->m_AppName);
 
-		qDebug() << "Extraction started" << endl;
 		std::cout << "Installing " << this->m_AppName.toStdString() << "\n";
+		qDebug() << "Extracting" << endl;
 
 		updateProgressSlot(0, "Installing " + this->m_AppName.toStdString(), 100);
 
 		asyncExtract->start();
 
-		// QMessageBox::information(appDownloadDialog,tr("Extraction"),"Extraction has started in the background");
+		// QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction has started in the background");
 	}
 }
 
@@ -140,7 +138,7 @@ void ApplicationDownloadManager::doneUnzip() {
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
 		updateProgressSlot(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
-		QMessageBox::information(appDownloadDialog,tr("Extraction"),"Extraction failed");
+		QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
 		std::cout << "Install " << this->m_AppName.toStdString() << "failed\n";
 
 	}
@@ -152,7 +150,8 @@ void ApplicationDownloadManager::doneUnzip() {
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
 		updateProgressSlot(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
-		QMessageBox::information(appDownloadDialog, tr("Extraction"),"Extraction done");
+		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 		std::cout << "Install " << this->m_AppName.toStdString() << "done\n";
+
 	}
 }
