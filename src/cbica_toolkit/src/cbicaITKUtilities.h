@@ -2053,7 +2053,7 @@ namespace cbica
           result.pop_back();
           result.pop_back();
           returnMap[labelString]["Hausdorff95"] = std::atof(result.c_str());
-          cbica::deleteDir(tempDir);
+          cbica::removeDirectoryRecursively(tempDir, true);
         }
         // in case a label is not defined, use the longest diagonal
         if (std::isnan(returnMap[labelString]["Hausdorff95"]) || std::isinf(returnMap[labelString]["Hausdorff95"]))
