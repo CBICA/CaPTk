@@ -77,7 +77,6 @@ void ApplicationDownloadManager::appDownload()
 
 	std::string downloadLink = m_appDownloadConfigs["appsDownload"][this->m_AppName.toStdString()][linkyml].as<std::string>();
 	
-	appDownloadDialog = new fAppDownloadDialog();
 	appDownloadDialog.SetPaths(downloadFolder);
 	appDownloadDialog.SetDownloadLink(downloadLink);
 	if (this->isCLI) {

@@ -9,6 +9,7 @@
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
 
+#include <QApplicao
 #include "CaPTkGUIUtils.h"
 #include "ApplicationPreferences.h"
 #include "ApplicationDownloadManager.h"
@@ -200,6 +201,7 @@ int algorithmsRunner()
 
 int main(int argc, char** argv)
 {
+  QApplication app(argc, argv);
   cbica::CmdParser parser(argc, argv);
 
   parser.addRequiredParameter("i", "inputImage", cbica::Parameter::FILE, "DICOM", "Input Image for processing");
@@ -241,5 +243,5 @@ int main(int argc, char** argv)
   //  return EXIT_FAILURE; // exiting here because no further processing should be done on the image
   //}
 
-  return EXIT_SUCCESS;
+  return app.exec();
 }
