@@ -322,8 +322,6 @@ int main(int argc, char** argv)
       std::cout << "Starting skull-stripping using DeepMedic.\n";
     }
 
-
-
     if (!cbica::exists(brainMaskFile))
     {
       fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ " +
