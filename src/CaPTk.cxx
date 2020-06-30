@@ -210,9 +210,9 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
 #else // Attempt software rendering on non-Windows platforms, warn user 
       cbica::setEnvironmentVariable("QT_OPENGL", "software");
-	  std::string msg = "WARNING: Trying to run CaPTk GUI using software rendering - this might not work on all systems and in those cases, only the CLI will be available.\n";
-	  std::cerr << msg;
-	  ShowErrorMessage(msg);
+	  std::string softwareRenderingMsg = "WARNING: Trying to run CaPTk GUI using software rendering - this might not work on all systems and in those cases, only the CLI will be available.\n";
+	  std::cerr << softwareRenderingMsg;
+	  ShowErrorMessage(softwareRenderingMsg);
 #endif
     }
     else
