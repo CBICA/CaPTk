@@ -93,7 +93,7 @@ int algorithmsRunner()
   std::string libraPath = appDownloadMngr->getApplication("libra", true);
 
   if (libraPath.empty()) {
-    return;
+    return 0;
   }
 
   if (debugMode)
@@ -240,6 +240,7 @@ int main(int argc, char** argv)
   //case 2:
   //{
     //using ImageType = itk::Image< float, 2 >;
+  app.exec();
   return algorithmsRunner();
 
   //  break;
@@ -248,6 +249,4 @@ int main(int argc, char** argv)
   //  std::cerr << "Supplied image has an unsupported dimension of '" << inputImageInfo.GetImageDimensions() << "'; only 2 D images are supported.\n";
   //  return EXIT_FAILURE; // exiting here because no further processing should be done on the image
   //}
-
-  return app.exec();
 }
