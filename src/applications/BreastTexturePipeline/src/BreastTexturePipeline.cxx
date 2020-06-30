@@ -240,7 +240,7 @@ int main(int argc, char** argv)
   //case 2:
   //{
     //using ImageType = itk::Image< float, 2 >;
-  app.exec();
+  // app.exec();
   return algorithmsRunner();
 
   //  break;
