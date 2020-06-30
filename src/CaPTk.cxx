@@ -183,6 +183,8 @@ int main(int argc, char** argv)
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
   //cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
+  bool alertNoCompatibleOpenGL = false; 
+
   // starting the OpenGL version checking 
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
   if (!cbica::isFile(openGLVersionCheckFile))
@@ -195,13 +197,13 @@ int main(int argc, char** argv)
 #else
     CheckOpenGLVersion checker;
 #endif
-
     if (!checker.hasVersion_3_2())
     {
       std::string msg = "A working 3.2 version of OpenGL was not found in your hardware/software combination; consequently, CaPTk's GUI will not work; all CLIs will work as expected.\n\n";
       msg += "\tOpenGL Version : " + checker.version + "\n";
       msg += "\tOpenGL Renderer: " + checker.renderer + "\n";
       msg += "\tOpenGL Vendor  : " + checker.vendor;
+	  alertNoCompatibleOpenGL = true;
 #if WIN32
       ShowErrorMessage(msg);
       cbica::sleep(1000);
@@ -327,6 +329,15 @@ int main(int argc, char** argv)
     // auto rec = QApplication::desktop()->screenGeometry();
     // std::cout << "Detected Size: " << rec.width() << "x" << rec.height() << "\n";
     window.about();
+  }
+
+  // Display missing/incompatible OpenGL error on first run 
+  if (alertNoCompatibleOpenGL)
+  {
+	  QMessageBox openGLWarningBox(QMessageBox::Warning, "No Compatible OpenGL Found", 
+		  "CaPTk failed to find a compatible version of OpenGL.  The graphical user interface may not function correctly."
+		  " Please install OpenGL version 3.2 or greater, or use the command line interface to run CaPTk.");
+	  openGLWarningBox.exec(); // Make sure it's acknowledged!
   }
 
 
