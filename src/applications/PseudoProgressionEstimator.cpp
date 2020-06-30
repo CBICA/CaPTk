@@ -928,7 +928,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 
   for (unsigned int sid = 0; sid < testingsubjects.size(); sid++)
   {
-    std::cout << "Loading Remaining Features: " << sid << std::endl;
+    std::cout << "Loading and processing Feature (testing): " << sid << std::endl;
     VectorDouble neuroScores;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = testingsubjects[sid];
 
@@ -1056,7 +1056,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
         otherFeatures[sid][counter] = Features[j];
         counter++;
       }
-      std::cout << "Counter Size" << counter << std::endl;
+      std::cout << "Counter Size (testing): " << counter << std::endl;
     }
     std::cout << "Basic features copied in the OtherFeatures map." << std::endl;
 
@@ -1366,7 +1366,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
 
   for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
   {
-    std::cout << "Loading Remaining Features: " << sid << std::endl;
+    std::cout << "Loading and processing Feature (training): " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
 
     CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
@@ -1480,7 +1480,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
         otherFeatures[sid][counter] = Features[j];
         counter++;
       }
-      std::cout << "Counter Size" << counter << std::endl;
+      std::cout << "Counter Size (training): " << counter << std::endl;
     }
     std::cout << "Basic features copied in the OtherFeatures map." << std::endl;
 
