@@ -56,11 +56,11 @@ fHelpTutorial::fHelpTutorial()
 
   m_dataDir = getCaPTkDataDir();
 #if CAPTK_PACKAGE_PROJECT
-  m_docDir = cbica::normPath(m_dataDir + "/../share/doc/");
+  m_docDir = cbica::normPath(m_dataDir + "/../share/doc");
 #else
-  m_docDir = std::string(PROJECT_SOURCE_DIR) + "docs/";
+  m_docDir = std::string(PROJECT_SOURCE_DIR) + "docs";
 #endif
-  m_helpFileFullPath = m_docDir + "1_credits.html";
+  m_helpFileFullPath = m_docDir + "/1_credits.html";
 
   QHBoxLayout *toolbar = new QHBoxLayout();
 
@@ -176,6 +176,7 @@ void fHelpTutorial::SetZoom(int zoomValue)
 
 void fHelpTutorial::showEvent(QShowEvent* event)
 {
+	// ensure content reload when showing
 	this->m_webView->reload();
 
 }
