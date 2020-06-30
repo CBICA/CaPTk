@@ -82,7 +82,7 @@ void ApplicationDownloadManager::appDownload()
 	appDownloadDialog->SetDownloadLink(downloadLink);
 
 	if (this->isCLI) {
-		std::cout << "Downloading " << this->m_appName.toStdString() << "\n";
+		std::cout << "Downloading " << this->m_AppName.toStdString() << "\n";
 
 		appDownloadDialog->initDownload();
 	}
@@ -115,7 +115,7 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 		asyncExtract->setExtractPath(extractPath);
 		asyncExtract->setAppName(this->m_AppName);
 
-		std::cout << "Installing " << this->m_appName.toStdString() << "\n";
+		std::cout << "Installing " << this->m_AppName.toStdString() << "\n";
 
 		updateProgressSlot(0, "Installing " + this->m_AppName.toStdString(), 100);
 
@@ -139,7 +139,7 @@ void ApplicationDownloadManager::doneUnzip() {
 		
 		updateProgressSlot(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
 		QMessageBox::information(appDownloadDialog,tr("Extraction"),"Extraction failed");
-		std::cout << "Install " << this->m_appName.toStdString() << "failed\n";
+		std::cout << "Install " << this->m_AppName.toStdString() << "failed\n";
 
 	}
 	else {
@@ -151,7 +151,7 @@ void ApplicationDownloadManager::doneUnzip() {
 		
 		updateProgressSlot(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
 		QMessageBox::information(appDownloadDialog, tr("Extraction"),"Extraction done");
-		std::cout << "Install " << this->m_appName.toStdString() << "done\n";
+		std::cout << "Install " << this->m_AppName.toStdString() << "done\n";
 
 	}
 }
