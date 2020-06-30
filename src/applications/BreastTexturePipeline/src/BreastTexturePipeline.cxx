@@ -87,6 +87,15 @@ std::string findRelativeApplicationPath(const std::string appName)
 //template< class TImageType >
 int algorithmsRunner()
 {
+  cbica::createDir(loggerFolder);
+  cbica::createDir(downloadFolder);
+  ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+  std::string libraPath = appDownloadMngr->getApplication("libra", true);
+
+  if (libraPath.empty()) {
+    return;
+  }
+
   if (debugMode)
   {
     std::cout << "Starting pre-processing.\n";
@@ -111,9 +120,6 @@ int algorithmsRunner()
 
   // auto libraPath = findRelativeApplicationPath("libra");
   //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
-  
-  ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-  std::string libraPath = appDownloadMngr->getApplication("libra", true);
 
   cbica::createDir(outputDir + "/temp");
 
