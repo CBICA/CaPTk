@@ -9,7 +9,7 @@
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
 
-#include <QApplicao
+#include <QApplication>
 #include "CaPTkGUIUtils.h"
 #include "ApplicationPreferences.h"
 #include "ApplicationDownloadManager.h"
