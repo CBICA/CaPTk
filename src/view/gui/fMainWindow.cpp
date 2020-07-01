@@ -241,7 +241,7 @@ fMainWindow::fMainWindow()
   sizePolicy5.setVerticalStretch(0);
 
   m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
-  m_toolTabdock->setWindowFlags(Qt::SubWindow); // SubWindow allows it to be shown while MainWindow is also visible
+  //m_toolTabdock->setWindowFlags(Qt::SubWindow); // SubWindow allows it to be shown while MainWindow is also visible
 
   m_tabWidget = new QTabWidget(m_toolTabdock);
   infoPanel = new fBottomImageInfoTip(centralwidget);
@@ -10325,15 +10325,17 @@ void fMainWindow::changeEvent(QEvent *event)
 	// Check window state change to ensure identical cross-platform behavior of dockwidget
 	if (event->type() == QEvent::WindowStateChange)
 	{
-		if (isMinimized()) {
-			// it was minimised
-			this->m_toolTabdock->hide();
-		}
-		else {
-			// it's normal or maximised
-			this->m_toolTabdock->show();
-		}
+        if (m_toolTabdock->isFloating())
+        {
+            if (isMinimized()) {
+                // this window was minimised
+                this->m_toolTabdock->hide();
+            }
+            else {
+                // this window is normal or maximised
+                this->m_toolTabdock->show();
+            }
+        }
 	}
-
 	return QMainWindow::changeEvent(event); // call and return as base changeEvent
 }
