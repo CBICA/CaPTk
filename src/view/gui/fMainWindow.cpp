@@ -10332,7 +10332,6 @@ void fMainWindow::changeEvent(QEvent *event)
 		else {
 			// it's normal or maximised
 			this->m_toolTabdock->setVisible(true);
-			this->m_toolTabdock->show();
 
 		}
 	}
