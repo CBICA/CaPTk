@@ -1124,9 +1124,9 @@ std::string fMainWindow::ConversionFrom2Dto3D(const std::string &fileName)
 
 void fMainWindow::about()
 {
-#if CAPTK_PACKAGE_PROJECT
-  mHelpTutorial.exec();
-#endif
+//#if CAPTK_PACKAGE_PROJECT
+  mHelpTutorial.show();
+//#endif
 }
 
 void fMainWindow::help_Interactions()
