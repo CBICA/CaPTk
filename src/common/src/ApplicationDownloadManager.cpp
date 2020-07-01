@@ -151,6 +151,5 @@ void ApplicationDownloadManager::doneUnzip() {
 		updateProgressSlot(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
 		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 		std::cout << "Install " << this->m_AppName.toStdString() << "done\n";
-
 	}
 }

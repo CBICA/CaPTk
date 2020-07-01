@@ -5933,7 +5933,6 @@ void fMainWindow::ApplicationLIBRABatch()
   std::string scriptToCall = appDownloadMngr->getApplication("libra", false);
 
   connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
-  // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;

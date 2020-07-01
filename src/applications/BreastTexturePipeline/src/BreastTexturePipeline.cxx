@@ -13,7 +13,7 @@
 
 #include <QApplication>
 #include "CaPTkGUIUtils.h"
-// #include "ApplicationDownloadManager.h"
+#include "ApplicationDownloadManager.h"
 #include "ThreadedDownload.h"
 #include <QThread>
 #include <QDebug>
@@ -23,6 +23,11 @@ std::string inputImageFile, outputDir;
 bool debugMode;
 
 size_t resizingFactor = 100;
+
+void updateProgress(int progress)
+{
+    qDebug() << “ progress = “ << progress << endl;
+}
 
 std::string findRelativeApplicationPath(const std::string appName)
 {
@@ -61,26 +66,6 @@ std::string findRelativeApplicationPath(const std::string appName)
 //template< class TImageType >
 int algorithmsRunner()
 {
-  cbica::createDir(loggerFolder);
-  cbica::createDir(downloadFolder);
-  
-  ThreadedDownload threadedDownload;
-  // // connect(threadedDownload, &ThreadedDownload::resultReady, this, &MyObject::handleResults);
-  // // connect(threadedDownload, &ThreadedDownload::finished, threadedDownload, &QObject::deleteLater);
-
-  threadedDownload.start();
-
-  qDebug() << "after start()\n";
-
-  bool waitFlag = threadedDownload.wait();
-
-  qDebug() << "Wait Flag = " << waitFlag << "\n";
-  qDebug() << "after wait()\n";
-
-  if(threadedDownload.isFinished()) {
-      qDebug() << "finished\n";
-  }
-
   if (debugMode)
   {
     std::cout << "Starting pre-processing.\n";
@@ -225,12 +210,47 @@ int main(int argc, char** argv)
   //case 2:
   //{
     //using ImageType = itk::Image< float, 2 >;
-  return algorithmsRunner();
 
+  cbica::createDir(loggerFolder);
+  cbica::createDir(downloadFolder);
+  
+  // ThreadedDownload threadedDownload;
+  // connect(threadedDownload, &ThreadedDownload::resultReady, this, &MyObject::handleResults);
+  // connect(threadedDownload, &ThreadedDownload::finished, threadedDownload, &QObject::deleteLater);
+  // threadedDownload.start();
+
+  // qDebug() << "after start()\n";
+
+  // bool waitFlag = threadedDownload.wait();
+
+  // qDebug() << "Wait Flag = " << waitFlag << "\n";
+  // qDebug() << "after wait()\n";
+
+  // if(threadedDownload.isFinished()) {
+  //     qDebug() << "finished\n";
+  // }
+
+
+  std::string libraPath = getApplicationDownloadPath("libra");
+  if (libraPath.isEmpty()) { // libra is not present
+    ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+    libraPath = appDownloadMngr->getApplication("libra", true);
+
+    connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
+  }
+  else {
+    bool ret = algorithmsRunner();
+  }
+
+    
+
+  // else
+  
   //  break;
   //}
   //default:
   //  std::cerr << "Supplied image has an unsupported dimension of '" << inputImageInfo.GetImageDimensions() << "'; only 2 D images are supported.\n";
   //  return EXIT_FAILURE; // exiting here because no further processing should be done on the image
   //}
+  return app.exec();
 }
