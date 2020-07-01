@@ -1,4 +1,4 @@
-#include "mythread.h"
+#include "ThreadedInstall.h"
 #include <QDebug>
 #include "ApplicationDownloadManager.h"
 

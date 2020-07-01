@@ -93,9 +93,9 @@ int algorithmsRunner()
   // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   // std::string libraPath = appDownloadMngr->getApplication("libra", true);
 
-  if (libraPath.empty()) {
-    return 0;
-  }
+  // if (libraPath.empty()) {
+  //   return 0;
+  // }
 
   if (debugMode)
   {
