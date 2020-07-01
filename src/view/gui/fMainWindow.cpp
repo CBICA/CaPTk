@@ -10322,22 +10322,20 @@ void fMainWindow::OnPreferencesMenuClicked()
 
 void fMainWindow::changeEvent(QEvent *event)
 {
-	// Check window state change and emit convenience signals
+	// Check window state change to ensure identical cross-platform behavior of dockwidget
 	if (event->type() == QEvent::WindowStateChange)
 	{
-		if (isMinimized())
-		{
+		if (isMinimized()) {
 			// it was minimised
-			emit OnWindowMinimized();
+			this->m_toolTabdock->setVisible(false);
+		}
+		else {
+			// it's normal or maximised
+			this->m_toolTabdock->setVisible(true);
+			this->m_toolTabdock->show();
+
 		}
 	}
-	// Can add other state changes below
 
 	return QMainWindow::changeEvent(event); // call and return as base changeEvent
-}
-
-void fMainWindow::showEvent(QShowEvent* event)
-{
-	emit OnWindowShown();
-	return QMainWindow::showEvent(event);
 }
