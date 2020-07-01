@@ -69,22 +69,12 @@ void CaPTkDockWidget::toolTabDockChanged(bool bUnDocked)
 
 void CaPTkDockWidget::parentMinimized()
 {
-	if (this->isFloating())
-	{
-		this->hide();
-		this->setVisible(false);
-	}
-
+	this->setVisible(false);
+	this->hide();
 }
 
 void CaPTkDockWidget::parentShown()
 {
-	if (this->isFloating())
-	{
-		if (!this->parent->isMinimized())
-		{
-			this->setVisible(true);
-			this->show();
-		}
-	}
+	this->setVisible(true);
+	this->show();
 }
