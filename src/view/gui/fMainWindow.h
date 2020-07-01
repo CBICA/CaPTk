@@ -522,11 +522,15 @@ public:
   void loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage = "", const float maskOpacity = 1.0,
     const std::string &tumorPointFile = "", const std::string &tissuePointFile = "", bool firstRun = false);
 
+  void showEvent(QShowEvent* event) override;
+
 signals:
   void SelectedImageHasChanged(SlicerManager *);
   void LandmarksFocused(bool bFocused);
   void SeedPointsFocused(bool bFocused);
   void TissuePointsFocused(bool bFocused);
+  void OnWindowMinimized();
+  void OnWindowShown();
 
 public slots:
 

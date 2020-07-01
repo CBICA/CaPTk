@@ -25,6 +25,9 @@ protected:
 protected slots:
 	//! Dock/undock behaviour changed
 	void toolTabDockChanged(bool bUnDocked);
+	//! Window state of parent has changed
+	void parentMinimized();
+	void parentShown();
 
 signals:
     void dragEnteredDockWidget(QDragEnterEvent*);

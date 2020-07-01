@@ -15,6 +15,10 @@ CaPTkDockWidget::CaPTkDockWidget(QWidget *parent) : QDockWidget(parent)
 
 	//signal/slots connections
 	connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(toolTabDockChanged(bool)));
+
+	//! Minimize when parent does, show normally when parent becomes visible
+	connect(parent, SIGNAL(OnWindowMinimized()), this, SLOT(parentMinimized()));
+	connect(parent, SIGNAL(OnWindowShown()), this, SLOT(parentShown()));
 }
 
 void CaPTkDockWidget::dragEnterEvent(QDragEnterEvent* event) 
@@ -61,4 +65,14 @@ void CaPTkDockWidget::toolTabDockChanged(bool bUnDocked)
 	{
 		title->setText("Double click to undock");
 	}
+}
+
+void CaPTkDockWidget::parentMinimized()
+{
+	this->showMinimized();
+}
+
+void CaPTkDockWidget::parentShown()
+{
+	this->showNormal();
 }
