@@ -76,6 +76,10 @@ int algorithmsRunner()
 
   qDebug() << "after wait()\n";
 
+  if(threadedDownload.isFinished()) {
+      qDebug() << "finished\n";
+  }
+
   if (debugMode)
   {
     std::cout << "Starting pre-processing.\n";
