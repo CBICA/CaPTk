@@ -61,26 +61,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Pseudoprogression.html','
 <div class="title">Brain Cancer: Pseudoprogression Infiltration Index </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><ul>
-<li>Use Existing Model<ol type="1">
-<li>"Model Directory". Choose the directory of a saved model.</li>
-<li>"Test Subjects". Select the input directory that follows the folder structure described above.</li>
-<li>"Output". Select the output directory where a .csv file with the mutation status for all patients will be saved, and click on 'Confirm'.The first and the second column of .csv will be subject's ID and distancce of the subject from the hyperplance of EGFRvIII model.</li>
-<li>A pop-up window appears displaying the completion of result calculation. The window will also show the detected mutation status of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).</li>
-</ol>
-<ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/EGFRvIIIIndexPredictor.exe -t 1 -i C:/EGFRvIIIInputDirectory -m C:/EGFRvIIIInputModel -o C:/EGFRvIIIOutputDirectory
-</pre></li>
-</ul>
-</li>
-</ul>
-<hr  />
-<p>References:</p>
-<ol type="1">
-<li>H. Akbari, S. Bakas, J.M. Pisapia, M.P. Nasrallah, M. Rozycki, M. Martinez-Lage, J.J.D. Morrissette, N. Dahmane, D.M.O’Rourke, C. Davatzikos. "In vivo evaluation of EGFRvIII mutation in primary glioblastoma patients via complex multiparametric MRI signature", Neuro Oncol. 20(8):1068-1079, 2018</li>
-</ol>
-<hr  />
-<p> This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].</p>
+<div class="textblock"><p>This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].</p>
 <p><b>REQUIREMENTS:</b></p><ol type="1">
 <li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-4D, DSC-PH, DSC-PSR, DSC-RCBV, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
 <li>Segmentation label of the demarcated region of interest (Label=1) in a single NIfTI (.nii.gz) file.</li>
