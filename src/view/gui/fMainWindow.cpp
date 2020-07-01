@@ -241,7 +241,7 @@ fMainWindow::fMainWindow()
   sizePolicy5.setVerticalStretch(0);
 
   m_toolTabdock = new CaPTkDockWidget(this); // custom class to propagate drag-and-drop events to the main window
-  m_toolTabdock->setWindowFlags(Qt::Tool); // SubWindow allows it to be shown while MainWindow is also visible
+  m_toolTabdock->setWindowFlags(Qt::SubWindow); // SubWindow allows it to be shown while MainWindow is also visible
 
   m_tabWidget = new QTabWidget(m_toolTabdock);
   infoPanel = new fBottomImageInfoTip(centralwidget);
@@ -10334,8 +10334,8 @@ void fMainWindow::changeEvent(QEvent *event)
             }
             else {
                 // this window is normal or maximised
-                this->m_toolTabdock->setVisible(true);
-                this->m_toolTabdock->show();
+                //this->m_toolTabdock->setVisible(true);
+                //this->m_toolTabdock->show();
             }
         }
 	}
