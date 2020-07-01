@@ -10327,12 +10327,11 @@ void fMainWindow::changeEvent(QEvent *event)
 	{
 		if (isMinimized()) {
 			// it was minimised
-			this->m_toolTabdock->setVisible(false);
+			this->m_toolTabdock->hide();
 		}
 		else {
 			// it's normal or maximised
-			this->m_toolTabdock->setVisible(true);
-
+			this->m_toolTabdock->show();
 		}
 	}
 
