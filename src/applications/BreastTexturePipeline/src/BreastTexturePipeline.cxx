@@ -63,7 +63,7 @@ int algorithmsRunner()
 {
   cbica::createDir(loggerFolder);
   cbica::createDir(downloadFolder);
-
+  
   ThreadedDownload threadedDownload;
   // // connect(threadedDownload, &ThreadedDownload::resultReady, this, &MyObject::handleResults);
   // // connect(threadedDownload, &ThreadedDownload::finished, threadedDownload, &QObject::deleteLater);
@@ -72,8 +72,9 @@ int algorithmsRunner()
 
   qDebug() << "after start()\n";
 
-  threadedDownload.wait();
+  bool waitFlag = threadedDownload.wait();
 
+  qDebug() << "Wait Flag = " << waitFlag << "\n";
   qDebug() << "after wait()\n";
 
   if(threadedDownload.isFinished()) {
