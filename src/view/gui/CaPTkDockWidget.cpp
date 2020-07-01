@@ -74,5 +74,5 @@ void CaPTkDockWidget::parentMinimized()
 
 void CaPTkDockWidget::parentShown()
 {
-	this->setVisible(true);
+	this->show();
 }
