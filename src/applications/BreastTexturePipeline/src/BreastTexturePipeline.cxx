@@ -65,14 +65,14 @@ int algorithmsRunner()
   cbica::createDir(downloadFolder);
 
   ThreadedDownload threadedDownload;
-  // // connect(threadedInstall, &ThreadedDownload::resultReady, this, &MyObject::handleResults);
-  // // connect(threadedInstall, &ThreadedDownload::finished, threadedInstall, &QObject::deleteLater);
+  // // connect(threadedDownload, &ThreadedDownload::resultReady, this, &MyObject::handleResults);
+  // // connect(threadedDownload, &ThreadedDownload::finished, threadedDownload, &QObject::deleteLater);
 
-  threadedInstall.start();
+  threadedDownload.start();
 
   qDebug() << "after start()\n";
 
-  threadedInstall.wait();
+  threadedDownload.wait();
 
   qDebug() << "after wait()\n";
 
