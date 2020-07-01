@@ -1,5 +1,4 @@
 #include "PseudoProgressionEstimator.h"
-#include "PseudoProgressionEstimator.h"
 #include "fMainWindow.h"
 #include "cbicaStatistics.h"
 #include "CaPTkEnums.h"
