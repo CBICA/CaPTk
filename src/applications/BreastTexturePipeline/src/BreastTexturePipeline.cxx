@@ -9,10 +9,11 @@
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
 
+#include "cbicaProgressBar.h"
+
 #include <QApplication>
 #include "CaPTkGUIUtils.h"
-#include "ApplicationPreferences.h"
-#include "ApplicationDownloadManager.h"
+#include "ThreadedInstall.h"
 
 std::string inputImageFile, outputDir;
 
@@ -89,8 +90,8 @@ int algorithmsRunner()
 {
   cbica::createDir(loggerFolder);
   cbica::createDir(downloadFolder);
-  ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-  std::string libraPath = appDownloadMngr->getApplication("libra", true);
+  // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+  // std::string libraPath = appDownloadMngr->getApplication("libra", true);
 
   if (libraPath.empty()) {
     return 0;
@@ -118,7 +119,7 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  // auto libraPath = findRelativeApplicationPath("libra");
+  auto libraPath = findRelativeApplicationPath("libra");
   //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
 
   cbica::createDir(outputDir + "/temp");

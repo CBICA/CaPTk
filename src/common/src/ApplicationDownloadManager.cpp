@@ -94,7 +94,7 @@ void ApplicationDownloadManager::appDownload()
 
 void ApplicationDownloadManager::updateProgressSlot(int progress, std::string message, int max) {
 	
-	qDebug() << QString::fromStdString(message) << endl;
+	// qDebug() << QString::fromStdString(message) << endl;
 
 	emit updateProgressSignal(progress, message, max);
 }
@@ -114,7 +114,7 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 		asyncExtract->setAppName(this->m_AppName);
 
 		std::cout << "Installing " << this->m_AppName.toStdString() << "\n";
-		qDebug() << "Extracting" << endl;
+		// qDebug() << "Extracting" << endl;
 
 		updateProgressSlot(0, "Installing " + this->m_AppName.toStdString(), 100);
 
@@ -128,7 +128,7 @@ void ApplicationDownloadManager::doneUnzip() {
 
 	if (getApplicationDownloadPath(this->m_AppName.toStdString()).empty()) {
 		
-		qDebug() << "Extraction failed" << endl;
+		// qDebug() << "Extraction failed" << endl;
 		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
@@ -142,7 +142,7 @@ void ApplicationDownloadManager::doneUnzip() {
 
 	}
 	else {
-		qDebug() << "Extraction done" << endl;
+		// qDebug() << "Extraction done" << endl;
 
 		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
 		ApplicationPreferences::GetInstance()->SerializePreferences();
