@@ -13,7 +13,10 @@
 
 #include <QApplication>
 #include "CaPTkGUIUtils.h"
-#include "ThreadedInstall.h"
+#include "ApplicationDownloadManager.h"
+// #include "ThreadedInstall.h"
+#include <QThread>
+#include <QDebug>
 
 std::string inputImageFile, outputDir;
 
@@ -55,47 +58,23 @@ std::string findRelativeApplicationPath(const std::string appName)
   return appName_path;
 }
 
-// inline std::string getCaPTkDataDir()
-// {
-//   auto captk_currentApplicationPath = cbica::normPath(cbica::getExecutablePath());
-//   if (debugMode)
-//   {
-//     std::cout << "Current Application Path: " << captk_currentApplicationPath << "\n";
-//   }  
-
-//   auto captk_dataDir = captk_currentApplicationPath + "../data/";
-//   if (!cbica::exists(captk_dataDir))
-//   {
-//     captk_dataDir = captk_currentApplicationPath + "../../data/";
-//     if (!cbica::exists(captk_dataDir))
-//     {
-//       captk_dataDir = captk_currentApplicationPath + "../Resources/data/";
-//       if (!cbica::exists(captk_dataDir))
-//       {
-//         captk_dataDir = std::string(PROJECT_SOURCE_DIR) + "data/";
-//         if (!cbica::exists(captk_dataDir))
-//         {
-//           std::cerr << "Data Directory not found. Please re-install CaPTk.\n";
-//           return "";
-//         }
-//       }
-//     }
-//   }
-
-//   return cbica::normPath(captk_dataDir);
-// }
-
 //template< class TImageType >
 int algorithmsRunner()
 {
   cbica::createDir(loggerFolder);
   cbica::createDir(downloadFolder);
-  // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-  // std::string libraPath = appDownloadMngr->getApplication("libra", true);
 
-  // if (libraPath.empty()) {
-  //   return 0;
-  // }
+  ThreadedInstall threadedInstall;
+  // connect(threadedInstall, &ThreadedInstall::resultReady, this, &MyObject::handleResults);
+  // connect(threadedInstall, &ThreadedInstall::finished, threadedInstall, &QObject::deleteLater);
+
+  threadedInstall.start();
+
+  qDebug() << "after start()\n";
+
+  threadedInstall.wait();
+
+  qDebug() << "after wait()\n";
 
   if (debugMode)
   {
@@ -241,7 +220,6 @@ int main(int argc, char** argv)
   //case 2:
   //{
     //using ImageType = itk::Image< float, 2 >;
-  // app.exec();
   return algorithmsRunner();
 
   //  break;
@@ -251,3 +229,16 @@ int main(int argc, char** argv)
   //  return EXIT_FAILURE; // exiting here because no further processing should be done on the image
   //}
 }
+
+class ThreadedInstall : public QThread
+{
+    Q_OBJECT
+    void run() override {
+      ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+      std::string libraPath = appDownloadMngr->getApplication("libra", true);
+
+      // emit resultReady(result);
+    }
+signals:
+  // void resultReady(const QString &s);
+};

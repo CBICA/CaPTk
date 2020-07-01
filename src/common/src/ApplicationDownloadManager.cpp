@@ -94,7 +94,7 @@ void ApplicationDownloadManager::appDownload()
 
 void ApplicationDownloadManager::updateProgressSlot(int progress, std::string message, int max) {
 	
-	// qDebug() << QString::fromStdString(message) << endl;
+	qDebug() << QString::fromStdString(message) << endl;
 
 	emit updateProgressSignal(progress, message, max);
 }
