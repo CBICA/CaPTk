@@ -215,7 +215,6 @@ int main(int argc, char** argv)
   cbica::createDir(downloadFolder);
   
   // ThreadedDownload threadedDownload;
-  // connect(threadedDownload, &ThreadedDownload::resultReady, this, &MyObject::handleResults);
   // connect(threadedDownload, &ThreadedDownload::finished, threadedDownload, &QObject::deleteLater);
   // threadedDownload.start();
 
@@ -230,18 +229,37 @@ int main(int argc, char** argv)
   //     qDebug() << "finished\n";
   // }
 
-
   std::string libraPath = getApplicationDownloadPath("libra");
   if (libraPath.isEmpty()) { // libra is not present
     ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
     libraPath = appDownloadMngr->getApplication("libra", true);
 
     connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
+
+    /*
+      if the above crash
+        create separte class for update progres
+        connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), instance of progress class, SLOT(updateProgress(int)));
+          or
+        go back to threaded download method
+
+        ThreadedDownload threadedDownload;
+        connect(threadedDownload, &ThreadedDownload::finished, threadedDownload, &QObject::deleteLater);
+        connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), instance of progress class, SLOT(updateProgress(int)));
+
+        QTimer::singleShot(0,threadedDownload,SLOT(start()));
+        instead of threadedDownload.start()
+        no .wait()
+        put before app.exec();
+
+          or
+        
+    */
+
   }
   else {
     bool ret = algorithmsRunner();
   }
-
     
 
   // else
