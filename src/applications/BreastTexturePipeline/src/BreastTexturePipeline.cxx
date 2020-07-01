@@ -13,8 +13,8 @@
 
 #include <QApplication>
 #include "CaPTkGUIUtils.h"
-#include "ApplicationDownloadManager.h"
-// #include "ThreadedDownload.h"
+// #include "ApplicationDownloadManager.h"
+#include "ThreadedDownload.h"
 #include <QThread>
 #include <QDebug>
 
@@ -64,17 +64,17 @@ int algorithmsRunner()
   cbica::createDir(loggerFolder);
   cbica::createDir(downloadFolder);
 
-  // ThreadedDownload threadedInstall;
+  ThreadedDownload threadedDownload;
   // // connect(threadedInstall, &ThreadedDownload::resultReady, this, &MyObject::handleResults);
   // // connect(threadedInstall, &ThreadedDownload::finished, threadedInstall, &QObject::deleteLater);
 
-  // threadedInstall.start();
+  threadedInstall.start();
 
-  // qDebug() << "after start()\n";
+  qDebug() << "after start()\n";
 
-  // threadedInstall.wait();
+  threadedInstall.wait();
 
-  // qDebug() << "after wait()\n";
+  qDebug() << "after wait()\n";
 
   if (debugMode)
   {

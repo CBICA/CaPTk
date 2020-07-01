@@ -13,11 +13,6 @@ ThreadedDownload::ThreadedDownload(QObject *parent) :
 
 void ThreadedDownload::run()
 {
-    for(int i = 0; i <= 5; i++)
-    {
-        qDebug() << i;
-
-        // slowdown the count change, msec
-        this->msleep(500);
-    }
+    ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+    std::string libraPath = appDownloadMngr->getApplication("libra", true);
 }
