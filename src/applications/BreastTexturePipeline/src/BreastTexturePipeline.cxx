@@ -14,7 +14,7 @@
 #include <QApplication>
 #include "CaPTkGUIUtils.h"
 #include "ApplicationDownloadManager.h"
-// #include "ThreadedInstall.h"
+// #include "ThreadedDownload.h"
 #include <QThread>
 #include <QDebug>
 
@@ -64,17 +64,17 @@ int algorithmsRunner()
   cbica::createDir(loggerFolder);
   cbica::createDir(downloadFolder);
 
-  ThreadedInstall threadedInstall;
-  // connect(threadedInstall, &ThreadedInstall::resultReady, this, &MyObject::handleResults);
-  // connect(threadedInstall, &ThreadedInstall::finished, threadedInstall, &QObject::deleteLater);
+  // ThreadedDownload threadedInstall;
+  // // connect(threadedInstall, &ThreadedDownload::resultReady, this, &MyObject::handleResults);
+  // // connect(threadedInstall, &ThreadedDownload::finished, threadedInstall, &QObject::deleteLater);
 
-  threadedInstall.start();
+  // threadedInstall.start();
 
-  qDebug() << "after start()\n";
+  // qDebug() << "after start()\n";
 
-  threadedInstall.wait();
+  // threadedInstall.wait();
 
-  qDebug() << "after wait()\n";
+  // qDebug() << "after wait()\n";
 
   if (debugMode)
   {
@@ -229,16 +229,3 @@ int main(int argc, char** argv)
   //  return EXIT_FAILURE; // exiting here because no further processing should be done on the image
   //}
 }
-
-class ThreadedInstall : public QThread
-{
-    Q_OBJECT
-    void run() override {
-      ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-      std::string libraPath = appDownloadMngr->getApplication("libra", true);
-
-      // emit resultReady(result);
-    }
-signals:
-  // void resultReady(const QString &s);
-};

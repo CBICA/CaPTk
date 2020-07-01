@@ -17,6 +17,7 @@ SET( ${PROJECT_NAME}_HDRS
   ${PROJECT_SOURCE_DIR}/inc/QZipReader.h
   ${PROJECT_SOURCE_DIR}/inc/QZipWriter.h
   ${PROJECT_SOURCE_DIR}/inc/ThreadedExtraction.h
+  ${PROJECT_SOURCE_DIR}/inc/ThreadedDownload.h
 )
 
 SET( ${PROJECT_NAME}_SRCS
@@ -26,6 +27,7 @@ SET( ${PROJECT_NAME}_SRCS
   ${PROJECT_SOURCE_DIR}/src/fAppDownloadDialog.cpp
   ${PROJECT_SOURCE_DIR}/src/QZip.cpp
   ${PROJECT_SOURCE_DIR}/src/ThreadedExtraction.cpp
+  ${PROJECT_SOURCE_DIR}/src/ThreadedDownload.cpp
 )
 
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/inc
