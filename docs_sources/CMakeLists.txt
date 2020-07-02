@@ -139,7 +139,7 @@ IF(WIN32)
       #MESSAGE("DBG ${PROJECT_BINARY_DIR}/Documentation/html/index.chm \n${OUT}")
       # create target used by install and package commands 
       INSTALL(FILES "${CURRENT_BINARY_DIR}/html/index.chm"
-        DESTINATION Share/docs
+        DESTINATION share/doc
         RENAME "${OUT}"
       )
     ENDIF(EXISTS "${CURRENT_BINARY_DIR}/html/index.chm")
