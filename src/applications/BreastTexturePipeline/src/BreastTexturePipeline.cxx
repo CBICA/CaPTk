@@ -14,7 +14,7 @@
 #include <QApplication>
 #include "CaPTkGUIUtils.h"
 #include "ApplicationDownloadManager.h"
-#include "ThreadedDownload.h"
+// #include "ThreadedDownload.h"
 #include <QThread>
 #include <QDebug>
 
