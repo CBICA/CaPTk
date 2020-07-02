@@ -252,7 +252,7 @@ int main(int argc, char** argv)
         no .wait()
         put before app.exec();
 
-          or
+          
         
     */
 
