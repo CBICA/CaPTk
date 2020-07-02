@@ -26,7 +26,7 @@ size_t resizingFactor = 100;
 
 void updateProgress(int progress)
 {
-    qDebug() << “ progress = “ << progress << endl;
+    qDebug() << "progress = " << progress << endl;
 }
 
 std::string findRelativeApplicationPath(const std::string appName)
@@ -230,7 +230,7 @@ int main(int argc, char** argv)
   // }
 
   std::string libraPath = getApplicationDownloadPath("libra");
-  if (libraPath.isEmpty()) { // libra is not present
+  if (libraPath.empty()) { // libra is not present
     ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
     libraPath = appDownloadMngr->getApplication("libra", true);
 
