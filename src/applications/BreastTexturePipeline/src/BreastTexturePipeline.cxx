@@ -26,7 +26,8 @@ size_t resizingFactor = 100;
 
 void updateProgress(int progress)
 {
-    qDebug() << "progress = " << progress << endl;
+    // qDebug() << "progress = " << progress << endl;
+    std::cout << progress << " %" << "\t\r" << std::flush;
 }
 
 std::string findRelativeApplicationPath(const std::string appName)
@@ -225,8 +226,7 @@ int main(int argc, char** argv)
   else {
     bool ret = algorithmsRunner();
   }
-    
-
+  
   // else
   
   //  break;
