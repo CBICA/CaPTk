@@ -234,7 +234,7 @@ int main(int argc, char** argv)
     ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
     libraPath = appDownloadMngr->getApplication("libra", true);
 
-    connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
+    QObject::connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
 
     /*
       if the above crash
