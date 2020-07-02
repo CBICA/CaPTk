@@ -1,9 +1,10 @@
 #include "PseudoProgressionEstimator.h"
-#include "PseudoProgressionEstimator.h"
 #include "fMainWindow.h"
 #include "cbicaStatistics.h"
 #include "CaPTkEnums.h"
 #include "vtkDoubleArray.h"
+
+#include "cbicaITKSafeImageIO.h"
 
 typedef itk::Image< float, 3 > ImageType;
 
@@ -505,7 +506,7 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
   //  ImageType::Pointer dilatedEdema;
   //  try
   //  {
-  //    LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[IMAGE_TYPE_SEG]));
+  //    LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[IMAGE_TYPE_SEG]));
   //    if (usePerfData)
   //      perfImagePointer = mNiftiLocalPtr.Read4DNiftiImage(static_cast<std::string>(currentsubject[IMAGE_TYPE_PERFUSION]));
   //    if (useConventionalrData)
@@ -794,9 +795,8 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
   {
     std::cout << "Loading Perfusion Image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = testingsubjects[sid];
-    ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-    NiftiDataManager m_obj;
-    auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+    auto perfImagePointerNifti = cbica::ReadImage< PerfusionImageType >(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]);
     std::vector<ImageType::IndexType> indices;
 
     VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
@@ -868,8 +868,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
   {
     std::cout << "Revising Perfusion Image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = testingsubjects[sid];
-    NiftiDataManager m_obj;
-    auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    auto perfImagePointerNifti = cbica::ReadImage< PerfusionImageType >(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]);
     ImageTypeFloat4D::RegionType region = perfImagePointerNifti.GetPointer()->GetLargestPossibleRegion();
     ImageTypeFloat4D::IndexType regionIndex;
     ImageTypeFloat4D::SizeType regionSize;
@@ -942,12 +941,12 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
     //}
 
     testinglabels.push_back(0);
-    ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+    ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
 
-    ImageType::Pointer OriginalT1CEImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]));
-    ImageType::Pointer OriginalT2FlairImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]));
-    ImageType::Pointer OriginalT1ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]));
-    ImageType::Pointer OriginalT2ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]));
+    ImageType::Pointer OriginalT1CEImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]));
+    ImageType::Pointer OriginalT2FlairImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]));
+    ImageType::Pointer OriginalT1ImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]));
+    ImageType::Pointer OriginalT2ImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]));
 
     ImageType::Pointer OriginalT1T1CEImagePointer = MakeAdditionalModality<ImageType>(OriginalT1CEImagePointer, OriginalT1ImagePointer);
     ImageType::Pointer OriginalT2FLImagePointer = MakeAdditionalModality<ImageType>(OriginalT2ImagePointer, OriginalT2FlairImagePointer);
@@ -959,14 +958,14 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
     ImageType::Pointer T1T1CEImagePointer = RescaleImageIntensity<ImageType>(OriginalT1T1CEImagePointer);
     ImageType::Pointer T2FLImagePointer = RescaleImageIntensity<ImageType>(OriginalT2FLImagePointer);
 
-    ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
-    ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
-    ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
-    ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
+    ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
+    ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
+    ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
+    ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
 
-    ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
-    ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
-    ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
+    ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
+    ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
+    ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
 
 
 
@@ -1236,9 +1235,8 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
   {
     std::cout << "Loading Perfusion Image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
-    ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-    NiftiDataManager m_obj;
-    auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+    auto perfImagePointerNifti = cbica::ReadImage< PerfusionImageType >(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]);
     std::vector<ImageType::IndexType> indices;
 
     VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
@@ -1281,8 +1279,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
   {
     std::cout << "Revising Perfusion Image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
-    NiftiDataManager m_obj;
-    auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    auto perfImagePointerNifti = cbica::ReadImage< PerfusionImageType >(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]);
     ImageTypeFloat4D::RegionType region = perfImagePointerNifti.GetPointer()->GetLargestPossibleRegion();
     ImageTypeFloat4D::IndexType regionIndex;
     ImageTypeFloat4D::SizeType regionSize;
@@ -1333,11 +1330,10 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
   //{
   //  std::cout << "Revising Perfusion Image: " << sid << std::endl;
   //  std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
-  //  NiftiDataManager m_obj;
   //  std::vector<ImageType::Pointer> OnePatientperfusionImages;
   //  for (int i = 0; i < 10; i++)
   //  {
-  //    ImageTypeFloat3D::Pointer perfImagePointerNifti = m_obj.ReadNiftiImage("E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/output" + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
+  //    auto perfImagePointerNifti = cbica::ReadImage< ImageTypeFloat3D>("E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/output" + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
   //    OnePatientperfusionImages.push_back(perfImagePointerNifti);
   //  }
   //  RevisedPerfusionImagesOfAllPatients.push_back(OnePatientperfusionImages);
@@ -1361,12 +1357,12 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
     dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
     traininglabels.push_back(dataMatrix(0, 0));
 
-    ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+    ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
 
-    ImageType::Pointer OriginalT1CEImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]));
-    ImageType::Pointer OriginalT2FlairImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]));
-    ImageType::Pointer OriginalT1ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]));
-    ImageType::Pointer OriginalT2ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]));
+    ImageType::Pointer OriginalT1CEImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]));
+    ImageType::Pointer OriginalT2FlairImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]));
+    ImageType::Pointer OriginalT1ImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]));
+    ImageType::Pointer OriginalT2ImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]));
 
     ImageType::Pointer OriginalT1T1CEImagePointer = MakeAdditionalModality<ImageType>(OriginalT1CEImagePointer, OriginalT1ImagePointer);
     ImageType::Pointer OriginalT2FLImagePointer = MakeAdditionalModality<ImageType>(OriginalT2ImagePointer, OriginalT2FlairImagePointer);
@@ -1378,14 +1374,14 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
     ImageType::Pointer T1T1CEImagePointer = RescaleImageIntensity<ImageType>(OriginalT1T1CEImagePointer);
     ImageType::Pointer T2FLImagePointer = RescaleImageIntensity<ImageType>(OriginalT2FLImagePointer);
 
-    ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
-    ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
-    ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
-    ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
+    ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
+    ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
+    ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
+    ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
 
-    ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
-    ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
-    ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
+    ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
+    ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
+    ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
 
     typedef std::tuple< VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble> TupleType;
     typedef std::map<std::string, TupleType> MapType;
