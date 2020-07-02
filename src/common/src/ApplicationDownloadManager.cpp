@@ -94,7 +94,7 @@ void ApplicationDownloadManager::appDownload()
 
 void ApplicationDownloadManager::updateProgressSlot(int progress, std::string message, int max) {
 	
-	qDebug() << QString::fromStdString(message) << endl;
+	// qDebug() << QString::fromStdString(message) << endl;
 
 	emit updateProgressSignal(progress, message, max);
 }
@@ -138,7 +138,7 @@ void ApplicationDownloadManager::doneUnzip() {
 		
 		updateProgressSlot(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
 		QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
-		std::cout << "Install " << this->m_AppName.toStdString() << "failed\n";
+		std::cout << "Install " << this->m_AppName.toStdString() << " failed\n";
 
 	}
 	else {
@@ -150,6 +150,6 @@ void ApplicationDownloadManager::doneUnzip() {
 		
 		updateProgressSlot(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
 		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
-		std::cout << "Install " << this->m_AppName.toStdString() << "done\n";
+		std::cout << "Install " << this->m_AppName.toStdString() << " completed\n";
 	}
 }
