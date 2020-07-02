@@ -88,8 +88,9 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  auto libraPath = findRelativeApplicationPath("libra");
+  // auto libraPath = findRelativeApplicationPath("libra");
   //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
+  std::string libraPath = getApplicationDownloadPath("libra");
 
   cbica::createDir(outputDir + "/temp");
 
@@ -213,21 +214,6 @@ int main(int argc, char** argv)
 
   cbica::createDir(loggerFolder);
   cbica::createDir(downloadFolder);
-  
-  // ThreadedDownload threadedDownload;
-  // connect(threadedDownload, &ThreadedDownload::finished, threadedDownload, &QObject::deleteLater);
-  // threadedDownload.start();
-
-  // qDebug() << "after start()\n";
-
-  // bool waitFlag = threadedDownload.wait();
-
-  // qDebug() << "Wait Flag = " << waitFlag << "\n";
-  // qDebug() << "after wait()\n";
-
-  // if(threadedDownload.isFinished()) {
-  //     qDebug() << "finished\n";
-  // }
 
   std::string libraPath = getApplicationDownloadPath("libra");
   if (libraPath.empty()) { // libra is not present
@@ -235,27 +221,6 @@ int main(int argc, char** argv)
     libraPath = appDownloadMngr->getApplication("libra", true);
 
     QObject::connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
-
-    /*
-      if the above crash
-        create separte class for update progres
-        connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), instance of progress class, SLOT(updateProgress(int)));
-          or
-        go back to threaded download method
-
-        ThreadedDownload threadedDownload;
-        connect(threadedDownload, &ThreadedDownload::finished, threadedDownload, &QObject::deleteLater);
-        connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), instance of progress class, SLOT(updateProgress(int)));
-
-        QTimer::singleShot(0,threadedDownload,SLOT(start()));
-        instead of threadedDownload.start()
-        no .wait()
-        put before app.exec();
-
-          
-        
-    */
-
   }
   else {
     bool ret = algorithmsRunner();
