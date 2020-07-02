@@ -917,7 +917,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 
   for (unsigned int sid = 0; sid < testingsubjects.size(); sid++)
   {
-    std::cout << "Loading Remianing Features: " << sid << std::endl;
+    std::cout << "Loading and processing Feature (testing): " << sid << std::endl;
     VectorDouble neuroScores;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = testingsubjects[sid];
 
@@ -1045,7 +1045,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
         otherFeatures[sid][counter] = Features[j];
         counter++;
       }
-      std::cout << "Counter Size" << counter << std::endl;
+      std::cout << "Counter Size (testing): " << counter << std::endl;
     }
     std::cout << "Basic features copied in the OtherFeatures map." << std::endl;
 
@@ -1348,7 +1348,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
 
   for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
   {
-    std::cout << "Loading Remaining Features: " << sid << std::endl;
+    std::cout << "Loading and processing Feature (training): " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
 
     CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
@@ -1368,7 +1368,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
     ImageType::Pointer OriginalT1ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]));
     ImageType::Pointer OriginalT2ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]));
 
-    ImageType::Pointer OriginalT1T1CEImagePointer = MakeAdditionalModality<ImageType>(OriginalT1ImagePointer, OriginalT1CEImagePointer);
+    ImageType::Pointer OriginalT1T1CEImagePointer = MakeAdditionalModality<ImageType>(OriginalT1CEImagePointer, OriginalT1ImagePointer);
     ImageType::Pointer OriginalT2FLImagePointer = MakeAdditionalModality<ImageType>(OriginalT2ImagePointer, OriginalT2FlairImagePointer);
 
     ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(OriginalT1ImagePointer);
@@ -1462,7 +1462,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
         otherFeatures[sid][counter] = Features[j];
         counter++;
       }
-      std::cout << "Counter Size" << counter << std::endl;
+      std::cout << "Counter Size (training): " << counter << std::endl;
     }
     std::cout << "Basic features copied in the OtherFeatures map." << std::endl;
 
