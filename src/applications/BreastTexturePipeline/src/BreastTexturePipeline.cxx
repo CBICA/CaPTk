@@ -30,6 +30,16 @@ void updateProgress(int progress)
     std::cout << progress << " %" << "\t\r" << std::flush;
 }
 
+void appExit(bool isFinished)
+{
+    if (isFinished) {
+        std::cout << "Successfully finished";
+    }
+    else {
+        std::cout << "Installation failed";
+    }
+}
+
 std::string findRelativeApplicationPath(const std::string appName)
 {
   std::string winExt =
@@ -222,6 +232,8 @@ int main(int argc, char** argv)
     libraPath = appDownloadMngr->getApplication("libra", true);
 
     QObject::connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
+    QObject::connect(appDownloadMngr, &ApplicationDownloadManager::extractResult, appExit);
+    QObject::connect(appDownloadMngr, SIGNAL(extractResult(bool)), &app, SLOT(quit()));
   }
   else {
     bool ret = algorithmsRunner();

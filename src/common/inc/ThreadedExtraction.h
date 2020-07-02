@@ -42,7 +42,7 @@ private slots:
 
 signals:
 	void updateProgressSignal(int progress, std::string message, int max);
-    void resultReady(QString appName);
+    void resultReady(bool);
 };
 
 #endif

@@ -16,12 +16,13 @@ void ThreadedExtraction::run() {
       {
          //after extraction remove the zip
          bool successfullyremoved = QFile::remove(this->fullPath.toStdString().c_str());
+         emit resultReady(ret);
       }
    }
 
    // qDebug() << "Extraction done in background" << this->fullPath << endl;
 
-   emit resultReady(this->appName);
+
 }	
 
 void ThreadedExtraction::updateProgressSlot(int progress) {

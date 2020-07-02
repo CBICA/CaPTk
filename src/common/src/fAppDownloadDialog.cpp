@@ -1,7 +1,7 @@
 #include <QDialog>
 
-#include <CaPTkDefines.h>
-#include "CaPTkUtils.h"
+//#include <CaPTkDefines.h>
+//#include "CaPTkUtils.h"
 
 #include "fAppDownloadDialog.h"
 #include "ApplicationPreferences.h"
@@ -152,7 +152,7 @@ void fAppDownloadDialog::updateDownloadProgress(qint64 bytesRead, qint64 totalBy
     // downloadProgressDialog->setMaximum(totalBytes);
     // downloadProgressDialog->setValue(bytesRead);
     QString msg = "Downloading " + this->appName;
-	emit updateProgress((int) ((bytesRead * 100) / totalBytes), msg.toStdString(), 100);
+    emit updateProgress((int) ((bytesRead * 100) / totalBytes), msg.toStdString(), 100);
 }
 
 // When download finished or canceled, this will be called

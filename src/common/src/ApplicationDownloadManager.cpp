@@ -5,8 +5,8 @@
 #include <QDebug>
 #include <CaPTkDefines.h>
 
-#include "cbicaLogging.h"
-#include "CaPTkUtils.h"
+//#include "cbicaLogging.h"
+//#include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
 #include "ApplicationPreferences.h"
 #include "ThreadedExtraction.h"
@@ -25,9 +25,11 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 	this->m_AppName = appName;
 	this->isCLI = isCLI;
 
-	std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
+    std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
 
-	if (scriptToCall.empty()) {
+    // std::string scriptToCall = this->downloadFolder.toStdString();
+
+    if(!this->IsApplicationAvailable(appName)){
 		ApplicationPreferences::GetInstance()->DeSerializePreferences();
 		bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
 		bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
@@ -60,7 +62,24 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 		}
 	}
 
-	return scriptToCall;
+    return scriptToCall;
+}
+
+bool ApplicationDownloadManager::IsApplicationAvailable(QString app)
+{
+    bool available = false;
+    ApplicationPreferences::GetInstance()->DeSerializePreferences();
+    bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
+    bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
+    bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
+    bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
+
+    if(downloadStarted && downloadFinished && extractionStarted && extractionFinished)
+        available = true;
+    else {
+        available = false;
+    }
+    return available;
 }
 
 void ApplicationDownloadManager::appDownload()
@@ -75,10 +94,10 @@ void ApplicationDownloadManager::appDownload()
 	linkyml = "Linux";
 	#endif
 
-	std::string downloadLink = m_appDownloadConfigs["appsDownload"][this->m_AppName.toStdString()][linkyml].as<std::string>();
+    std::string downloadLink = m_appDownloadConfigs["appsDownload"][this->m_AppName.toStdString()][linkyml].as<std::string>();
 	
-	appDownloadDialog.SetPaths(downloadFolder);
-	appDownloadDialog.SetDownloadLink(downloadLink);
+    appDownloadDialog.SetPaths(downloadFolder);
+    appDownloadDialog.SetDownloadLink(downloadLink);
 	if (this->isCLI) {
 		std::cout << "Downloading " << this->m_AppName.toStdString() << "\n";
 
@@ -94,19 +113,19 @@ void ApplicationDownloadManager::appDownload()
 
 void ApplicationDownloadManager::updateProgressSlot(int progress, std::string message, int max) {
 	
-	// qDebug() << QString::fromStdString(message) << endl;
+//	qDebug() << QString::fromStdString(message) << endl;
 
 	emit updateProgressSignal(progress, message, max);
 }
 
 void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPath) 
 {
-	if (cbica::isFile(fullPath.toStdString())) {
+    if (cbica::isFile(fullPath.toStdString())) {
 
 		ThreadedExtraction* asyncExtract = new ThreadedExtraction();
 
 		connect(asyncExtract, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgressSlot(int, std::string, int))); 
-		connect(asyncExtract, SIGNAL(resultReady(QString)), this, SLOT(doneUnzip()));
+        connect(asyncExtract, SIGNAL(resultReady(bool)), this, SLOT(doneUnzip(bool)));
 		connect(asyncExtract, &ThreadedExtraction::finished, asyncExtract, &QObject::deleteLater);
 
 		asyncExtract->setFullPath(fullPath);
@@ -120,14 +139,17 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 
 		asyncExtract->start();
 
+//        if(this->isCLI)
+//            asyncExtract->wait();
 		// QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction has started in the background");
 	}
 }
 
-void ApplicationDownloadManager::doneUnzip() {
+void ApplicationDownloadManager::doneUnzip(bool extracted) {
 
-	if (getApplicationDownloadPath(this->m_AppName.toStdString()).empty()) {
+    //if (getApplicationDownloadPath(this->m_AppName.toStdString()).empty()) {
 		
+    if(!extracted){
 		// qDebug() << "Extraction failed" << endl;
 		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
@@ -138,7 +160,7 @@ void ApplicationDownloadManager::doneUnzip() {
 		
 		updateProgressSlot(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
 		QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
-		std::cout << "Install " << this->m_AppName.toStdString() << " failed\n";
+        qDebug() << "Install " << this->m_AppName<< "failed\n";
 
 	}
 	else {
@@ -151,6 +173,8 @@ void ApplicationDownloadManager::doneUnzip() {
 		updateProgressSlot(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
 		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 		std::cout << "Install " << this->m_AppName.toStdString() << " completed\n";
-		std::cout << "Please rerun " << this->m_AppName.toStdString() << "\n";
+		std::cout << "Please rerun " << this->m_AppName.toStdString() << "\n";	
 	}
+
+    emit extractResult(extracted);
 }

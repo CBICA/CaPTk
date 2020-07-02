@@ -24,6 +24,18 @@ public:
 	std::string getApplication(QString appName, bool isCLI);
 	// std::string getApplicationCLI(QString appName);
 
+    // void SetDownloadFolder(QString folder)
+    // {
+    //     this->downloadFolder = folder;
+    // }
+
+    // void SetDownloadLink(QString link)
+    // {
+    //     this->downloadLink = link;
+    // }
+
+    bool IsApplicationAvailable(QString app);
+
 private:
 
 	Q_DISABLE_COPY(ApplicationDownloadManager)
@@ -31,19 +43,20 @@ private:
 	fAppDownloadDialog appDownloadDialog;
 	QString m_AppName;
 	bool isCLI;
+    // QString downloadFolder, downloadLink;
 	
-	YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+    YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
 
 	void appDownload();
 
 private slots:
 	void updateProgressSlot(int progress, std::string message, int max);
 	void startUnzip(QString fullPath, QString extractPath);
-	void doneUnzip();
+    void doneUnzip(bool);
 
 signals:
 	void updateProgressSignal(int progress, std::string message, int max);
-	// void updateProgressExtract(int progress, std::string message, int max);
+    void extractResult(bool extracted);
 };
 
 #endif 

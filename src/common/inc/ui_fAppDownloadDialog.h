@@ -20,7 +20,7 @@
 #include <QtWidgets/QRadioButton>
 #include <QProgressDialog>
 
-#include "CaPTkGUIUtils.h"
+//#include "CaPTkGUIUtils.h"
 
 QT_BEGIN_NAMESPACE
 
