@@ -5,6 +5,7 @@
 #include <QMutex>
 #include <QProgressDialog>
 
+#include "CaPTkGUIUtils.h"
 #include "fAppDownloadDialog.h"
 #include "yaml-cpp/node/node.h"
 
