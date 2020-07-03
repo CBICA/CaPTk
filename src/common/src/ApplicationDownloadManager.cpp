@@ -166,7 +166,7 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 		if (!this->isCLI) {
 			QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
 		}
-        std::cout << "Install " << this->m_AppName<< " failed. Please retry.\n";
+        std::cout << "Install " << this->m_AppName.toStdString() << " failed. Please retry.\n";
 
 	}
 	else {
