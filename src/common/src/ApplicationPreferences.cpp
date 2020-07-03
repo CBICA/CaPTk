@@ -58,7 +58,7 @@ void ApplicationPreferences::SerializePreferences()
     appSettings.endGroup();
     appSettings.endGroup();
 
-    qDebug() << " status = " << appSettings.status();
+    // qDebug() << " status = " << appSettings.status();
     //cbica::Logging(loggerFile, "ApplicationPreferences::SerializePreferences status: " + QVariant::fromValue(appSettings.status()).toString().toStdString() );
 }
 

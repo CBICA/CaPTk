@@ -33,14 +33,14 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 		ApplicationPreferences::GetInstance()->DeSerializePreferences();
 		bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
 		bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
-		// ApplicationPreferences::GetInstance()->DisplayPreferences();
+		ApplicationPreferences::GetInstance()->DisplayPreferences();
 
 		if(downloadStarted && !downloadFinished)
 		{
 			if (!this->isCLI) {
-				QMessageBox::information(&appDownloadDialog,tr("Download"),"Download in progress");
+				QMessageBox::information(&appDownloadDialog,tr("Install"),"Installation in progress");
 			}
-			qDebug() << "Download in progress\n";
+			qDebug() << "Installation in progress\n";
 
 			return "";
 		}
@@ -49,22 +49,22 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 		
 		return "";
 	}
-	else {
-		ApplicationPreferences::GetInstance()->DeSerializePreferences();
-		bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
-		bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
-		// ApplicationPreferences::GetInstance()->DisplayPreferences();
+	// else {
+	// 	ApplicationPreferences::GetInstance()->DeSerializePreferences();
+	// 	bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
+	// 	bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
+	// 	ApplicationPreferences::GetInstance()->DisplayPreferences();
 
-		if(extractionStarted && !extractionFinished)
-		{
-			if (!this->isCLI) {
-				QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
-			}
-			qDebug() << "Extraction in progress\n";
+	// 	if(extractionStarted && !extractionFinished)
+	// 	{
+	// 		if (!this->isCLI) {
+	// 			QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
+	// 		}
+	// 		qDebug() << "Extraction in progress\n";
 
-			return "";
-		}
-	}
+	// 		return "";
+	// 	}
+	// }
 
     return scriptToCall;
 }
