@@ -48,7 +48,7 @@ int main(int argc, char** argv)
   {
     outputFea = 1;
     parser.getParameterValue("o", oname);
-    auto temp = cbica::getFilenamePath(oname);
+    auto temp = cbica::getFilenamePath(oname, false);
     if (!cbica::isDir(temp))
     {
       cbica::createDir(temp);
