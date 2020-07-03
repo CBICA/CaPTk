@@ -37,7 +37,9 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 
 		if(downloadStarted && !downloadFinished)
 		{
-			QMessageBox::information(&appDownloadDialog,tr("Download"),"Download in progress");
+			if (!this->isCLI) {
+				QMessageBox::information(&appDownloadDialog,tr("Download"),"Download in progress");
+			}
 			std::cout << "Download in progress\n";
 
 			return "";
@@ -55,7 +57,9 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 
 		if(extractionStarted && !extractionFinished)
 		{
-			QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
+			if (!this->isCLI) {
+				QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
+			}
 			std::cout << "Extraction in progress\n";
 
 			return "";
@@ -159,8 +163,10 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 		// ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
 		updateProgressSlot(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
-		QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
-        qDebug() << "Install " << this->m_AppName<< "failed\n";
+		if (!this->isCLI) {
+			QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
+		}
+        std::cout << "Install " << this->m_AppName<< " failed. Please retry.\n";
 
 	}
 	else {
@@ -171,7 +177,9 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 		// ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
 		updateProgressSlot(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
-		QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
+		if (!this->isCLI) {
+			QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
+		}
 		std::cout << "Install " << this->m_AppName.toStdString() << " completed\n";
 		std::cout << "Please rerun " << this->m_AppName.toStdString() << "\n";	
 	}
