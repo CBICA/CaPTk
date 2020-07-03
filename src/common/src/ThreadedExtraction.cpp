@@ -5,7 +5,7 @@ void ThreadedExtraction::run() {
    {
       ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("true").toString());
       ApplicationPreferences::GetInstance()->SerializePreferences();
-      ApplicationPreferences::GetInstance()->DisplayPreferences();
+      // ApplicationPreferences::GetInstance()->DisplayPreferences();
       
       QZipReader zr(this->fullPath);
       connect(&zr,SIGNAL(progress(int)),this,SLOT(updateProgressSlot(int)));

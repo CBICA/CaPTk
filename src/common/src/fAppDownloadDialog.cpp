@@ -49,7 +49,7 @@ void fAppDownloadDialog::initDownload() {
     bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
     bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
 
-    ApplicationPreferences::GetInstance()->DisplayPreferences();
+    // ApplicationPreferences::GetInstance()->DisplayPreferences();
 
     if (!downloadStarted)
     {
@@ -95,7 +95,7 @@ void fAppDownloadDialog::initDownload() {
 
         ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("true").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
-        ApplicationPreferences::GetInstance()->DisplayPreferences();
+        // ApplicationPreferences::GetInstance()->DisplayPreferences();
         // downloadProgressDialog->setWindowTitle(tr("HTTP"));
         // downloadProgressDialog->setLabelText(tr("Downloading %1").arg(fileName));
         
@@ -174,7 +174,7 @@ void fAppDownloadDialog::httpDownloadFinished()
         ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
         ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
-        ApplicationPreferences::GetInstance()->DisplayPreferences();
+        // ApplicationPreferences::GetInstance()->DisplayPreferences();
 
         // emit cancelDownload();
 
@@ -219,7 +219,7 @@ void fAppDownloadDialog::httpDownloadFinished()
 
     ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("true").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
-    ApplicationPreferences::GetInstance()->DisplayPreferences();
+    // ApplicationPreferences::GetInstance()->DisplayPreferences();
 
     emit doneDownload(fullPath, extractPath);
 }
@@ -235,7 +235,7 @@ void fAppDownloadDialog::cancelDownload()
     ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
     ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
-    ApplicationPreferences::GetInstance()->DisplayPreferences();
+    // ApplicationPreferences::GetInstance()->DisplayPreferences();
 
     // emit cancelDownload();
 
