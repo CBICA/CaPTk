@@ -29,13 +29,22 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 
     // std::string scriptToCall = this->downloadFolder.toStdString();
 
-    if(!this->IsApplicationAvailable(appName)){
+	if (scriptToCall.empty()) { // in case download directory got deleted
+		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SerializePreferences();
+	}
+
+    if(!this->IsApplicationAvailable(appName)) {
+	// if (scriptToCall.empty())
 		ApplicationPreferences::GetInstance()->DeSerializePreferences();
 		bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
 		bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
 		bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
 		bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
-		ApplicationPreferences::GetInstance()->DisplayPreferences();
+		// ApplicationPreferences::GetInstance()->DisplayPreferences();
 
 		if(downloadStarted && !downloadFinished)
 		{
