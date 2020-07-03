@@ -33,14 +33,26 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 		ApplicationPreferences::GetInstance()->DeSerializePreferences();
 		bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
 		bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
+		bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
+		bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
 		ApplicationPreferences::GetInstance()->DisplayPreferences();
 
 		if(downloadStarted && !downloadFinished)
 		{
 			if (!this->isCLI) {
-				QMessageBox::information(&appDownloadDialog,tr("Install"),"Installation in progress");
+				QMessageBox::information(&appDownloadDialog,tr("Install"),"Download in progress");
 			}
-			qDebug() << "Installation in progress\n";
+			qDebug() << "Download in progress\n";
+
+			return "";
+		}
+
+		if(extractionStarted && !extractionFinished)
+		{
+			if (!this->isCLI) {
+				QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
+			}
+			qDebug() << "Extraction in progress\n";
 
 			return "";
 		}
