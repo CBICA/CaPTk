@@ -40,7 +40,7 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 			if (!this->isCLI) {
 				QMessageBox::information(&appDownloadDialog,tr("Download"),"Download in progress");
 			}
-			std::cout << "Download in progress\n";
+			qDebug() << "Download in progress\n";
 
 			return "";
 		}
@@ -60,7 +60,7 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 			if (!this->isCLI) {
 				QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
 			}
-			std::cout << "Extraction in progress\n";
+			qDebug() << "Extraction in progress\n";
 
 			return "";
 		}
@@ -103,7 +103,7 @@ void ApplicationDownloadManager::appDownload()
     appDownloadDialog.SetPaths(downloadFolder);
     appDownloadDialog.SetDownloadLink(downloadLink);
 	if (this->isCLI) {
-		std::cout << "Downloading " << this->m_AppName.toStdString() << ": ";
+		qDebug() << "Downloading " << this->m_AppName << "\n";
 
 		appDownloadDialog.initDownload();
 	}
@@ -136,7 +136,7 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 		asyncExtract->setExtractPath(extractPath);
 		asyncExtract->setAppName(this->m_AppName);
 
-		std::cout << "\nInstalling " << this->m_AppName.toStdString() << ": ";
+		qDebug() << "\nInstalling " << this->m_AppName << "\n";
 		// qDebug() << "Extracting" << endl;
 
 		updateProgressSlot(0, "Installing " + this->m_AppName.toStdString(), 100);
@@ -166,7 +166,7 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 		if (!this->isCLI) {
 			QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
 		}
-        std::cout << "Install " << this->m_AppName.toStdString() << " failed. Please retry.\n";
+        qDebug() << "Install " << this->m_AppName << " failed. Please retry.\n";
 
 	}
 	else {
@@ -180,8 +180,8 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 		if (!this->isCLI) {
 			QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 		}
-		std::cout << "Install " << this->m_AppName.toStdString() << " completed\n";
-		std::cout << "Please rerun " << this->m_AppName.toStdString() << "\n";	
+		qDebug() << "Install " << this->m_AppName << " completed\n";
+		qDebug() << "Please rerun " << this->m_AppName << "\n";	
 	}
 
     emit extractResult(extracted);

@@ -33,10 +33,10 @@ void updateProgress(int progress)
 void appExit(bool isFinished)
 {
     if (isFinished) {
-        std::cout << "Successfully finished";
+        std::cout << "Installation successfully finished\n";
     }
     else {
-        std::cout << "Installation failed";
+        std::cout << "Installation failed\n";
     }
 }
 
@@ -229,11 +229,12 @@ int main(int argc, char** argv)
   std::string libraPath = getApplicationDownloadPath("libra");
   if (libraPath.empty()) { // libra is not present
     ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-    libraPath = appDownloadMngr->getApplication("libra", true);
 
     QObject::connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
-    QObject::connect(appDownloadMngr, &ApplicationDownloadManager::extractResult, appExit);
+    // QObject::connect(appDownloadMngr, &ApplicationDownloadManager::extractResult, appExit);
     QObject::connect(appDownloadMngr, SIGNAL(extractResult(bool)), &app, SLOT(quit()));
+
+    libraPath = appDownloadMngr->getApplication("libra", true);
   }
   else {
     bool ret = algorithmsRunner();
