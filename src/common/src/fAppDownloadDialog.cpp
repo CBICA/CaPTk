@@ -49,7 +49,7 @@ void fAppDownloadDialog::initDownload() {
     bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
     bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
 
-    ApplicationPreferences::GetInstance()->DisplayPreferences();
+    // ApplicationPreferences::GetInstance()->DisplayPreferences();
 
     if (!downloadStarted)
     {
