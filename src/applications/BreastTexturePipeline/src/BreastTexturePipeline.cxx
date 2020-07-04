@@ -226,18 +226,15 @@ int main(int argc, char** argv)
   cbica::createDir(loggerFolder);
   cbica::createDir(downloadFolder);
 
+  ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   std::string libraPath = getApplicationDownloadPath("libra");
-  if (libraPath.empty()) { // libra is not present
-    ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+  QObject::connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
+  QObject::connect(appDownloadMngr, SIGNAL(extractResult(bool)), &app, SLOT(quit()));
 
-    QObject::connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
-    // QObject::connect(appDownloadMngr, &ApplicationDownloadManager::extractResult, appExit);
-    QObject::connect(appDownloadMngr, SIGNAL(extractResult(bool)), &app, SLOT(quit()));
+  libraPath = appDownloadMngr->getApplication("libra", true);
 
-    libraPath = appDownloadMngr->getApplication("libra", true);
-  }
-  else {
-    bool ret = algorithmsRunner();
+  if (!libraPath.empty()) { // libra is not present
+    bool ret = algorithmsRunner(); 
   }
   
   // else

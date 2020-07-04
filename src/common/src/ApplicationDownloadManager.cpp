@@ -27,16 +27,6 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 
     std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
 
-    // std::string scriptToCall = this->downloadFolder.toStdString();
-
-	if (this->IsApplicationAvailable(appName) && scriptToCall.empty()) { // in case download directory got deleted
-		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SerializePreferences();
-	}
-
     if(!this->IsApplicationAvailable(appName)) {
 	// if (scriptToCall.empty())
 		ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -52,6 +42,7 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 				QMessageBox::information(&appDownloadDialog,tr("Install"),"Download in progress");
 			}
 			qDebug() << "Download in progress\n";
+			emit extractResult(false);
 
 			return "";
 		}
@@ -62,6 +53,7 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 				QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
 			}
 			qDebug() << "Extraction in progress\n";
+			emit extractResult(false);
 
 			return "";
 		}
@@ -99,7 +91,9 @@ bool ApplicationDownloadManager::IsApplicationAvailable(QString app)
     bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
     bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
 
-    if(downloadStarted && downloadFinished && extractionStarted && extractionFinished)
+	std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
+
+    if(downloadStarted && downloadFinished && extractionStarted && extractionFinished && !scriptToCall.empty())
         available = true;
     else {
         available = false;
