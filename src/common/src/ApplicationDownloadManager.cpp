@@ -29,13 +29,13 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 
     // std::string scriptToCall = this->downloadFolder.toStdString();
 
-	if (scriptToCall.empty()) { // in case download directory got deleted
-		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SerializePreferences();
-	}
+	// if (scriptToCall.empty()) { // in case download directory got deleted
+	// 	ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
+    //     ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
+    //     ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
+    //     ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+    //     ApplicationPreferences::GetInstance()->SerializePreferences();
+	// }
 
     if(!this->IsApplicationAvailable(appName)) {
 	// if (scriptToCall.empty())
