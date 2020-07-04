@@ -65,7 +65,7 @@ void ApplicationPreferences::SerializePreferences()
 void ApplicationPreferences::DeSerializePreferences()
 {
     QSettings appSettings(QSettings::IniFormat, QSettings::UserScope,
-        "UPenn", "UPenn");
+        "UPenn", "CaPTk");
 	QString filename = appSettings.fileName();
     std::string fname = filename.toStdString();
 	if (QFile(filename).exists())
