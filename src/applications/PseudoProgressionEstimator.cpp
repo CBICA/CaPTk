@@ -226,8 +226,8 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
   CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
 
   std::vector<double> traininglabels;
-  //VariableSizeMatrixType TrainingData = LoadPseudoProgressionTestingData(qualifiedsubjects, traininglabels, outputdirectory, modeldirectory);
-  //WriteCSVFiles(TrainingData, outputdirectory + "/testingfeatures.csv");
+  VariableSizeMatrixType TrainingData = LoadPseudoProgressionTestingData(qualifiedsubjects, traininglabels, outputdirectory, modeldirectory);
+  WriteCSVFiles(TrainingData, outputdirectory + "/testingfeatures.csv");
 
   MatrixType meanMatrix;
   VariableLengthVectorType mean;
@@ -270,19 +270,9 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     //return results;
   }
 
-  //-------------perfusion related data reading------------------
-  VariableSizeMatrixType TrainingData;
-  MatrixType dataMatrix;
-  reader->SetFileName(outputdirectory + "/chiharu_featurefile.csv");
-  reader->Parse();
-  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-  TrainingData.SetSize(dataMatrix.rows(), dataMatrix.cols());
-  for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-      TrainingData(i, j) = dataMatrix(i, j);
-
   std::cout << "parameters read." << std::endl;
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(TrainingData, mean, stddevition);
+  WriteCSVFiles(ScaledTestingData, outputdirectory + "/ScaledFeatures.csv");
 
   ////remove the nan values
   //for (unsigned int index1 = 0; index1 < ScaledTestingData.Rows(); index1++)
@@ -295,7 +285,7 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
   //}
   //WriteCSVFiles(ScaledTestingData, outputdirectory + "/scaledtestingfeatures.csv");
 
-  std::cout << "scaling done." << std::endl;
+ /* std::cout << "scaling done." << std::endl;
   VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
   ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
   for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
@@ -304,12 +294,12 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     for (j = 0; j < ScaledTestingData.Cols(); j++)
       ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
     ScaledFeatureSetAfterAddingLabel(i, j) = 0;
-  }
-  WriteCSVFiles(ScaledFeatureSetAfterAddingLabel, outputdirectory + "/ScaledFeatures.csv");
+  }*/
 
   //feature selection process for test data
   VariableLengthVectorType psuSelectedFeatures;
   VariableLengthVectorType recSelectedFeatures;
+  MatrixType dataMatrix;
   try
   {
     reader->SetFileName(modeldirectory + "/PSU_SelectedFeatures.csv");
@@ -2290,34 +2280,24 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
 
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC1ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC2ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC3ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC4ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC5ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC6ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC7ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC8ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC9ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC10ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
 
     Features.push_back(OnePatient);
   }
