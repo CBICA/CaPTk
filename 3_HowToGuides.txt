@@ -1407,7 +1407,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -t
 		\endverbatim
 - Convert file formats
 	\verbatim
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test.mha
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test.mha -cov
 	\endverbatim
 - Extract Image Series from Joined stack and vice-versa (4D <-> 3D)
 	\verbatim
