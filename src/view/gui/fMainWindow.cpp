@@ -5943,10 +5943,9 @@ void fMainWindow::openDicomImages(QString dir)
 void fMainWindow::ApplicationLIBRABatch()
 {
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-  std::string scriptToCall = appDownloadMngr->getApplication("libra");
+  std::string scriptToCall = appDownloadMngr->getApplication("libra", false);
 
   connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
-  // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
 
   if (scriptToCall.empty()) {
     return;
@@ -6049,10 +6048,8 @@ void fMainWindow::ApplicationBreastSegmentation()
     return;
   }
 
-  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
-
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-  std::string scriptToCall = appDownloadMngr->getApplication("libra");
+  std::string scriptToCall = appDownloadMngr->getApplication("libra", false);
 
   connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
@@ -6060,6 +6057,8 @@ void fMainWindow::ApplicationBreastSegmentation()
   if (scriptToCall.empty()) {
     return;
   }
+
+  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -6112,10 +6111,8 @@ void fMainWindow::ApplicationLIBRASingle()
     return;
   }
 
-  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
-
   ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
-  std::string scriptToCall = appDownloadMngr->getApplication("libra");
+  std::string scriptToCall = appDownloadMngr->getApplication("libra", false);
 
   connect(appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   // connect(appDownloadMngr, SIGNAL(updateProgressExtract(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
@@ -6123,6 +6120,8 @@ void fMainWindow::ApplicationLIBRASingle()
   if (scriptToCall.empty()) {
     return;
   }
+
+  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   if (cbica::fileExists(scriptToCall))
   {

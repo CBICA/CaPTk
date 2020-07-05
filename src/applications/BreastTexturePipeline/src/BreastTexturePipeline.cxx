@@ -9,16 +9,32 @@
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
 
-#include "CaPTkDefines.h"
-// #include <Urlmon.h>
-#include "yaml-cpp/node/node.h"
-
+#include <QApplication>
+#include "CaPTkGUIUtils.h"
+#include "ApplicationDownloadManager.h"
+#include <QDebug>
 
 std::string inputImageFile, outputDir;
 
 bool debugMode;
 
 size_t resizingFactor = 100;
+
+void updateProgress(int progress)
+{
+    // qDebug() << "progress = " << progress << endl;
+    std::cout << progress << " %" << "\t\r" << std::flush;
+}
+
+void appExit(bool isFinished)
+{
+    if (isFinished) {
+        std::cout << "Installation successfully finished\n";
+    }
+    else {
+        std::cout << "Installation failed\n";
+    }
+}
 
 std::string findRelativeApplicationPath(const std::string appName)
 {
@@ -54,76 +70,6 @@ std::string findRelativeApplicationPath(const std::string appName)
   return appName_path;
 }
 
-std::string findRelativeApplicationDownloadPath(const std::string appName)
-{
-  std::string winExt =
-#if WIN32
-    ".exe";
-#else
-    "";
-#endif
-
-  if (appName.find("libra") != std::string::npos)
-  {
-#if WIN32
-    winExt = ".bat";
-#endif
-  }
-
-  auto appName_wrap = appName;
-
-  if (appName_wrap.find("libra") != std::string::npos)
-  {
-#if WIN32
-    winExt = ".bat";
-#elif linux
-    appName_wrap = "bin/" + appName_wrap;
-    winExt = "";
-#endif
-  }
-
-  auto fullPath = downloadFolder + appName + "/" + appName_wrap + winExt;
-
-  if (cbica::isFile(fullPath)) {
-
-    return fullPath;
-  }
-  else {
-    std::cerr << "Please install CaPTk properly (LIBRA executable needs to be in the same location as current executable).\n";
-    exit(EXIT_FAILURE);
-  }
-}
-
-inline std::string getCaPTkDataDir()
-{
-  auto captk_currentApplicationPath = cbica::normPath(cbica::getExecutablePath());
-  if (debugMode)
-  {
-    std::cout << "Current Application Path: " << captk_currentApplicationPath << "\n";
-  }  
-
-  auto captk_dataDir = captk_currentApplicationPath + "../data/";
-  if (!cbica::exists(captk_dataDir))
-  {
-    captk_dataDir = captk_currentApplicationPath + "../../data/";
-    if (!cbica::exists(captk_dataDir))
-    {
-      captk_dataDir = captk_currentApplicationPath + "../Resources/data/";
-      if (!cbica::exists(captk_dataDir))
-      {
-        captk_dataDir = std::string(PROJECT_SOURCE_DIR) + "data/";
-        if (!cbica::exists(captk_dataDir))
-        {
-          std::cerr << "Data Directory not found. Please re-install CaPTk.\n";
-          return "";
-        }
-      }
-    }
-  }
-
-  return cbica::normPath(captk_dataDir);
-}
-
 //template< class TImageType >
 int algorithmsRunner()
 {
@@ -149,41 +95,10 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  auto libraPath = findRelativeApplicationPath("libra");  
-
-  // if (libraPath.empty()) {
-  //   std::cout << "Libra is not installed. Installing libra...\n";
-
-	//   YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
-
-  //   std::string linkyml = "";
-
-  //   #ifdef _WIN32
-  //   linkyml = "Windows";
-  //   #elif __APPLE__
-  //   linkyml = "macOS";
-  //   #else
-  //   linkyml = "Linux";
-  //   #endif
-
-  //   std::string downloadLink = m_appDownloadConfigs["appsDownload"][this->m_AppName.toStdString()][linkyml].as<std::string>();
-
-  //   HRESULT res = URLDownloadToFile(NULL, downloadLink.c_str(), downloadFolder.c_str(), 0, NULL);
-
-  //   if(res == S_OK) {
-  //       std::cout << "Ok\n";
-  //   } else if(res == E_OUTOFMEMORY) {
-  //       std::cout << "Buffer length invalid, or insufficient memory\n";
-  //   } else if(res == INET_E_DOWNLOAD_FAILURE) {
-  //       std::cout << "URL is invalid\n";
-  //   } else {
-  //      std::cout <<"Other error: %d\n", res;
-  //   }
-
-  //   std::cout << "Done\n";
-  // }
-
+  // auto libraPath = findRelativeApplicationPath("libra");
   //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
+  std::string libraPath = getApplicationDownloadPath("libra");
+
   cbica::createDir(outputDir + "/temp");
 
   std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile)
@@ -270,6 +185,7 @@ int algorithmsRunner()
 
 int main(int argc, char** argv)
 {
+  QApplication app(argc, argv);
   cbica::CmdParser parser(argc, argv);
 
   parser.addRequiredParameter("i", "inputImage", cbica::Parameter::FILE, "DICOM", "Input Image for processing");
@@ -302,14 +218,28 @@ int main(int argc, char** argv)
   //case 2:
   //{
     //using ImageType = itk::Image< float, 2 >;
-  return algorithmsRunner();
 
+  cbica::createDir(loggerFolder);
+  cbica::createDir(downloadFolder);
+
+  ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+  std::string libraPath = getApplicationDownloadPath("libra");
+  QObject::connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
+  QObject::connect(appDownloadMngr, SIGNAL(extractResult(bool)), &app, SLOT(quit()));
+
+  libraPath = appDownloadMngr->getApplication("libra", true);
+
+  if (!libraPath.empty()) { // libra is not present
+    bool ret = algorithmsRunner(); 
+  }
+  
+  // else
+  
   //  break;
   //}
   //default:
   //  std::cerr << "Supplied image has an unsupported dimension of '" << inputImageInfo.GetImageDimensions() << "'; only 2 D images are supported.\n";
   //  return EXIT_FAILURE; // exiting here because no further processing should be done on the image
   //}
-
-  return EXIT_SUCCESS;
+  return app.exec();
 }

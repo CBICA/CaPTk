@@ -70,7 +70,7 @@ appsDownload:
     macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/dcm2nii.zip
   libra:
     Windows: ftp://www.nitrc.org/home/groups/captk/downloads/libra.zip
-    Linux: https://github.com/PhucNgo1711/precompiledBinaries/raw/master/linux_ubuntu16.04/libra.zip
+    Linux: ftp://www.nitrc.org/home/groups/captk/downloads/libra_linux.zip
   deepmedic:
     Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/deepmedic.zip
     Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/deepmedic.zip
