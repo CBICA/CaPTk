@@ -9,13 +9,9 @@
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
 
-#include "cbicaProgressBar.h"
-
 #include <QApplication>
 #include "CaPTkGUIUtils.h"
 #include "ApplicationDownloadManager.h"
-// #include "ThreadedDownload.h"
-#include <QThread>
 #include <QDebug>
 
 std::string inputImageFile, outputDir;

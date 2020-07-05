@@ -186,7 +186,7 @@ ADD_DEFINITIONS(-DPROJECT_VARIANT="${${PROJECT_NAME}_Variant}")
 
 ### Building the documentation
 ## The following 4 lines are for generation of public documentation
-SET( BUILD_DOCUMENTATION OFF CACHE BOOL "Do you want to build Documentation (needs Doxygen)?" )
+SET( BUILD_DOCUMENTATION ON CACHE BOOL "Do you want to build Documentation (needs Doxygen)?" )
 SET( BUILD_DOCUMENTATION_ONLY OFF CACHE BOOL "This doesn't build anything else in the project" )
 SET( CAPTK_UPDATE_DOCS OFF CACHE BOOL "Copy HTML files to $PROJECT_SOURCE_DIR/docs for git commit" )
 MARK_AS_ADVANCED(BUILD_DOCUMENTATION)

@@ -39,9 +39,9 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 		if(downloadStarted && !downloadFinished)
 		{
 			if (!this->isCLI) {
-				QMessageBox::information(&appDownloadDialog,tr("Install"),"Download in progress");
+				QMessageBox::information(&appDownloadDialog,tr("Install"),"Download is in progress");
 			}
-			qDebug() << "Download in progress\n";
+			qDebug() << "Download is in progress\n";
 			emit extractResult(false);
 
 			return "";
@@ -50,9 +50,9 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 		if(extractionStarted && !extractionFinished)
 		{
 			if (!this->isCLI) {
-				QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
+				QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction is in progress");
 			}
-			qDebug() << "Extraction in progress\n";
+			qDebug() << "Extraction is in progress\n";
 			emit extractResult(false);
 
 			return "";

@@ -897,11 +897,6 @@ jobs:
         
       displayName: 'Configure and compile CaPTk'
 
-    # - powershell: |
-    #     cd bin/src
-    #     Get-ChildItem -Path ./ -Recurse
-    #   displayName: 'List dir'
-
     # - script: |
     #     cd bin
     #     export GIT_LFS_SKIP_SMUDGE=1
@@ -948,17 +943,17 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_Windows'
         downloadPath: '$(System.ArtifactsDirectory)'
     
-    # - task: CopyFilesOverSSH@0
-    #   inputs:
-    #     sshEndpoint: cbicaNITRC
-    #     sourceFolder: $(Build.ArtifactStagingDirectory)
-    #     contents: '*_Installer.*'
-    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-    #     cleanTargetFolder: false
-    #     overwrite: true
-    #     continueOnError: true
-    #   displayName: Uploading to NITRC
-    #   condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC
+      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
 
 - job: 'Linux_SelfHost_Ubuntu_1604'
   displayName: "Self-hosted agent on Ubuntu 16.04"
@@ -984,7 +979,7 @@ jobs:
 
         mkdir -p bin
         cd bin
-        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
+        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip
         # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/linux.zip -O qt.zip
     
         ls -lt
@@ -1125,24 +1120,24 @@ jobs:
         downloadPath: '$(System.ArtifactsDirectory)'
         continueOnError: true
 
-    # - task: CopyFilesOverSSH@0
-    #   inputs:
-    #     sshEndpoint: cbicaNITRC
-    #     sourceFolder: $(Build.ArtifactStagingDirectory)
-    #     contents: '*_Installer.*'
-    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-    #     cleanTargetFolder: false
-    #     overwrite: true
-    #     continueOnError: true
-    #   displayName: Uploading to NITRC 
-    #   condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC 
+      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
 
 - job: 'macOS_SelfHost_1014'
   displayName: "Self-hosted agent on macOS 10.14"
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool: 'macOS_10.13'
+  pool: 'macOS_10.14'
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
@@ -1310,14 +1305,14 @@ jobs:
         artifactName: '$(Build.DefinitionName)_installer_macOS'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-    # - task: CopyFilesOverSSH@0
-    #   inputs:
-    #     sshEndpoint: cbicaNITRC
-    #     sourceFolder: $(Build.ArtifactStagingDirectory)
-    #     contents: '*_Installer.*'
-    #     targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
-    #     cleanTargetFolder: false
-    #     overwrite: true
-    #     continueOnError: true
-    #   displayName: Uploading to NITRC
-    #   condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC
+      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
