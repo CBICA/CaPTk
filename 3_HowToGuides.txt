@@ -1372,9 +1372,13 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -cm 50,
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -d2n
 	\endverbatim
-- NIfTI to DICOM & DICOM-Seg conversion
+- NIfTI to DICOM conversion
 	\verbatim
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/test_dicom/ -n2d C:/referenceDICOM/
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/imageToConvert.nii.gz -o C:/outputDicom/ -n2d C:/referenceDICOM/
+	\endverbatim
+- NIfTI to DICOM-Seg conversion
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/maskToConvert.nii.gz -o C:/outputDicom/ -ds C:/referenceDICOM/ -dsJ C:/dicomSeg.json
 	\endverbatim
 - Re-orient image
 	\verbatim
