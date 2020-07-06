@@ -1415,7 +1415,8 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test.mha -cov
 	\endverbatim
 - Extract Image Series from Joined stack and vice-versa (4D <-> 3D)
 	\verbatim
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output -j2e 1
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output -j2e 1 # output images are written in the form C:/output_${slice}.nii.gz
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output/ -j2e 1 # output images are written in the form C:/output/extractedImage_${slice}.nii.gz
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/ -o C:/output.nii.gz -e2j 1.5
 	\endverbatim
 - Transform coordinates from world to image and vice-versa
