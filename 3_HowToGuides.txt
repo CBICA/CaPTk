@@ -1110,7 +1110,7 @@ References:
 /**
 \page BreastCancer_breastSegmentation Breast Cancer: Breast Segmentation
 
-This application uses LIBRA [1] to extract the breast region in the loaded image. 
+This application uses LIBRA [1] to extract the breast region in the loaded image and is only availabe via the GUI (the [Breast Texture Pipeline](BreastCancer_texture.html) can be used to generate a mask and perform radiomic analysis via the command line). 
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
