@@ -1372,9 +1372,13 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -cm 50,
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -d2n
 	\endverbatim
-- NIfTI to DICOM & DICOM-Seg conversion
+- NIfTI to DICOM conversion
 	\verbatim
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/test_dicom/ -n2d C:/referenceDICOM/
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/imageToConvert.nii.gz -o C:/outputDicom/ -n2d C:/referenceDICOM/
+	\endverbatim
+- NIfTI to DICOM-Seg conversion
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/maskToConvert.nii.gz -o C:/outputDicom/ -ds C:/referenceDICOM/ -dsJ C:/dicomSeg.json
 	\endverbatim
 - Re-orient image
 	\verbatim
@@ -1407,11 +1411,12 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -t
 		\endverbatim
 - Convert file formats
 	\verbatim
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test.mha
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test.mha -cov
 	\endverbatim
 - Extract Image Series from Joined stack and vice-versa (4D <-> 3D)
 	\verbatim
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output -j2e 1
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output -j2e 1 # output images are written in the form C:/output_${slice}.nii.gz
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output/ -j2e 1 # output images are written in the form C:/output/extractedImage_${slice}.nii.gz
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/ -o C:/output.nii.gz -e2j 1.5
 	\endverbatim
 - Transform coordinates from world to image and vice-versa
