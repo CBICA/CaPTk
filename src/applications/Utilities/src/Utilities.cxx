@@ -1105,7 +1105,18 @@ int algorithmsRunner_join2imageStack()
   auto outputImages = cbica::GetExtractedImages< TImageType, TOutputImageType >(cbica::ReadImage< TImageType >(inputImageFile));
   std::string path, base, ext;
   cbica::splitFileName(outputImageFile, path, base, ext);
-  cbica::createDir(path);
+  if ((outputImageFile.back() == '\\') || (outputImageFile.back() == '/'))
+  {
+    cbica::createDir(outputImageFile);
+    if (base.empty())
+    {
+      base = "extractedImage";
+    }
+  }
+  else
+  {
+    cbica::createDir(path);
+  }
 
   for (size_t i = 0; i < outputImages.size(); i++)
   {
