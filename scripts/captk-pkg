@@ -315,8 +315,8 @@ else
 fi
 
 # Install docs
-echo "[:] Installing docs..."
-cp -r ../docs install/appdir/usr/
+# echo "[:] Installing docs..."
+# cp -r ../docs install/appdir/usr/
 
 # We need to fix the project first
 RUN_FIXES
