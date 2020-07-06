@@ -87,6 +87,7 @@ int main(int argc, char **argv)
   if (parser.compareParameter("o", tempPosition))
   {
     outputDirectoryName = argv[tempPosition + 1];
+    cbica::createDir(outputDirectoryName);
   }
 
   std::cout << "Input File:" << inputFileName << std::endl;
