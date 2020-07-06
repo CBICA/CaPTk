@@ -150,7 +150,7 @@
 //  }
 //  else if (appName_wrap.find("DeepMedic") != std::string::npos)
 //  {
-//    appName_wrap = "deepMedicInference";
+//    appName_wrap = "deepMedicRun";
 //#ifndef _WIN32
 //    winExt = ".py";
 //#else

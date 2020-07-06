@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.nonRelease.20200612.b94a1af7</span>
+   &#160;<span id="projectnumber">1.8.0.Alpha2</span>
    </div>
   </td>
  </tr>
@@ -69,23 +69,25 @@ $(document).ready(function(){initNavTree('Glioblastoma_Atlas.html',''); initResi
 </ol>
 <p><b>USAGE:</b></p><ol type="1">
 <li>Launch the Population Atlases application using the 'Applications -&gt; Population Atlas' menu option.</li>
-<li>Specify the Input batch file (e.g., Data_of_multiple_patients), Atlas file, and Output directories.</li>
+<li>Specify the Input batch file (e.g., Data_of_multiple_patients) in .csv format, Atlas file with delineated region-of-interests in .nii.gz format, and Output directories.</li>
 <li>Click on 'Run PopulationAtlas" and the atlases will be displayed in the visualization window.<ol type="a">
-<li>The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory. <br  />
-</li>
+<li>The atlases (.nii.gz files) and location features i.e., percentage distribution of the tumors in different sub-regions of the standard atlas template (.csv file) will be saved in the Output directory.</li>
 </ol>
+</li>
+<li>The output atlases can be overlayed on the Jacobs atlas (jakob_stripped_with_cere_lps_256256128.nii.gz) given in the corresponding sample data folder. <br  />
 </li>
 </ol>
 <ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/PopulationAtlasesInput -a C:/AtlasFile -o C:/populationAtlasesOutput
+<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/PopulationAtlases.exe -i C:/LabelsFile -a C:/AtlasFile -o C:/populationAtlasesOutput
 </pre></li>
 </ul>
 <hr  />
-<p>Reference:</p>
+<p>References:</p>
 <ol type="1">
-<li>M. Bilello, H. Akbari, X. Da, J.M.Pisapia, S.Mohan, R.L.Wolf, D.M.O'Rourke, M.Martinez-Lage, C.Davatzikos. "Population-based MRI atlases of spatial distribution are specific to patient and tumor characteristics in glioblastoma", Neuroimage Clin. 12:34-40, 2016. DOI:10.1016/j.nicl.2016.03.007 </li>
+<li>M. Bilello, H. Akbari, X. Da, J.M.Pisapia, S.Mohan, R.L.Wolf, D.M.O'Rourke, M.Martinez-Lage, C.Davatzikos. "Population-based MRI atlases of spatial distribution are specific to patient and tumor characteristics in glioblastoma", Neuroimage Clin. 12:34-40, 2016, DOI:10.1016/j.nicl.2016.03.007</li>
 </ol>
-</div></div><!-- contents -->
+<hr  />
+ </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->

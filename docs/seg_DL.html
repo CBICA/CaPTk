@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.nonRelease.20200612.b94a1af7</span>
+   &#160;<span id="projectnumber">1.8.0.Alpha2</span>
    </div>
   </td>
  </tr>
@@ -62,14 +62,24 @@ $(document).ready(function(){initNavTree('seg_DL.html',''); initResizable(); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>For our Deep Learning based segmentation, we use DeepMedic [1,2] and users can do inference using a pre-trained models (trained on BraTS 2017 Training Data) with CaPTk for Brain Tumor Segmentation or Skull Stripping [3]. Users also have the option to train their own models using DeepMedic and using that model for their own tasks (be mindful of the preprocessing).</p>
-<p><b> REQUIREMENTS:</b> The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.</p>
+<p><b> REQUIREMENTS:</b></p><ul>
+<li>For tumor segmentation model and multi-4 skull-stripping model:<ul>
+<li>The 4 basic MRI modalities (T1, T1-Gd, T2 and T2-FLAIR) for a subject which are co-registered.</li>
+</ul>
+</li>
+<li>For modality-agnostic skull-stripping model:<ul>
+<li>A single structural MRI modality (can be either T1, T1-Gd, T2 or T2-FLAIR).</li>
+</ul>
+</li>
+</ul>
 <p><b> USAGE:</b></p><ol type="1">
 <li>Load the images that you want to segment in CaPTk.</li>
 <li>[OPTIONAL] Load the brain mask - this is used for normalization.</li>
 <li>Select the appropriate pre-trained model folder (either brain tumor segmentation or skull stripping is available): for custom models, select appropriate option and browse to the model directory.</li>
 <li>Select the output folder.</li>
 <li>Click on 'Applications' -&gt; 'Brain Tumor Segmentation' or 'Skull Stripping'</li>
-<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/DeepMedic.exe -md ${CaPTk_InstallDir}/data/deepMedic/saved_models/brainTumorSegmentation -t1 C:/data/t1.nii.gz -t2 C:/data/t2.nii.gz -t1c C:/data/t1ce.nii.gz -fl C:/data/fl.nii.gz -m C:/data/optionalMask.nii.gz -o C:/data/outputSegmentation.nii.gz
+<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/DeepMedic.exe -md ${CaPTk_InstallDir}/data/deepMedic/saved_models/brainTumorSegmentation -i C:/data/t1.nii.gz,C:/data/t1ce.nii.gz,C:/data/t2.nii.gz,C:/data/fl.nii.gz -m C:/data/optionalMask.nii.gz -o C:/data/outputSegmentation.nii.gz
+${CaPTk_InstallDir}/bin/DeepMedic.exe -i c:/t1_withSkull.nii.gz -o c:/output -md c:/CaPTk_install/data/deepMedic/saved_models/skullStripping_modalityAgnostic # modality-agnostic skull-stripping
 </pre> <br  />
 </li>
 </ol>
@@ -78,9 +88,12 @@ $(document).ready(function(){initNavTree('seg_DL.html',''); initResizable(); });
 <ol type="1">
 <li>K.Kamnitsas, C.Ledig, V.F.J.Newcombe, J.P.Simpson, A.D.Kane, D.K.Menon, D.Rueckert, B.Glocker, "Efficient Multi-Scale 3D CNN with Fully Connected CRF for Accurate Brain Lesion Segmentation", Medical Image Analysis, 2016.</li>
 <li>K.Kamnitsas, L.Chen, C.Ledig, D.Rueckert, B.Glocker, "Multi-Scale 3D CNNs for segmentation of brain Lesions in multi-modal MRI", in proceeding of ISLES challenge, MICCAI 2015.</li>
-<li>S.P.Thakur, J.Doshi, S.Pati, S.M.Ha, C.Sako, S.Talbar, U.Kulkarni, C.Davatzikos, G.Erus, S.Bakas, "Skull-Stripping of Glioblastoma MRI Scans Using 3D Deep Learning", Springer - BrainLes 2019 - LNCS, Vol.11992, 57-68, 2020. DOI: 10.1007/978-3-030-46640-4_6 </li>
+<li>S.P.Thakur, J.Doshi, S.Pati, S.M.Ha, C.Sako, S.Talbar, U.Kulkarni, C.Davatzikos, G.Erus, S.Bakas, "Skull-Stripping of Glioblastoma MRI Scans Using 3D Deep Learning", Springer - BrainLes 2019 - LNCS, Vol.11992, 57-68, 2020, DOI: 10.1007/978-3-030-46640-4_6</li>
+<li>S.P.Thakur, J.Doshi, S.Pati, S.M.Ha, C.Sako, S.Talbar, U.Kulkarni, C.Davatzikos, G.Erus, S.Bakas, "Brain Extraction on MRI Scans in Presence of Diffuse Glioma:
+Multi-institutional Performance Evaluation of Deep Learning Methods and Robust Modality-Agnostic Training", NeuroImage 2020 [Accepted]</li>
 </ol>
-</div></div><!-- contents -->
+<hr  />
+ </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->

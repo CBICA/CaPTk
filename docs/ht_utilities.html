@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.nonRelease.20200612.b94a1af7</span>
+   &#160;<span id="projectnumber">1.8.0.Alpha2</span>
    </div>
   </td>
  </tr>
@@ -61,31 +61,37 @@ $(document).ready(function(){initNavTree('ht_utilities.html',''); initResizable(
 <div class="title">Utilities (CLI only) </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This is a command line executable containing the following functionalities:</p><ul>
-<li>Resizing</li>
-<li>Resampling</li>
-<li>Image information</li>
-<li>Unique values in image</li>
-<li>Get smallest bounding box in mask (optional isotropic bounding box)</li>
-<li>Test 2 images</li>
-<li>Create mask from threshold</li>
-<li>DICOM to NIfTI conversion</li>
-<li>NIfTI to DICOM &amp; DICOM-Seg conversion</li>
-<li>Re-orient image</li>
-<li>Cast image to another pixel type</li>
+<div class="textblock"><p>This is a command line executable containing the following functionalities (with corresponding examples):</p><ul>
+<li>Resizing <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear</pre></li>
+<li>Resampling <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0 -ri LINEAR
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR</pre></li>
+<li>Image information <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -inf
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -inf</pre></li>
+<li>Unique values in image <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -un</pre></li>
+<li>Get smallest bounding box in mask (optional isotropic bounding box) <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -b C:/testMask.nii.gz -o C:/output.nii.gz</pre></li>
+<li>Test 2 images <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -tb C:/test.nii.gz</pre></li>
+<li>Create mask from threshold <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -cm 50,1000</pre></li>
+<li>DICOM to NIfTI conversion <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -d2n</pre></li>
+<li>NIfTI to DICOM &amp; DICOM-Seg conversion <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/test_dicom/ -n2d C:/referenceDICOM/</pre></li>
+<li>Re-orient image <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -or RAI</pre></li>
+<li>Cast image to another pixel type <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_int.nii.gz -c int</pre></li>
 <li>Thresholding:<ul>
-<li>Below</li>
-<li>Above</li>
-<li>Above &amp; Below</li>
-<li>Otsu</li>
-<li>Binary</li>
+<li>Below <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -thB 100</pre></li>
+<li>Above <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -thA 50</pre></li>
+<li>Above &amp; Below <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100</pre></li>
+<li>Otsu <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -thO 1</pre></li>
+<li>Binary <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100 -tBn</pre></li>
 </ul>
 </li>
-<li>Convert file formats</li>
-<li>Extract Image Series from Joined stack and vice-versa (4D &lt;-&gt; 3D)</li>
-<li>Transform coordinates from world to image and vice-versa</li>
-<li>Label similarity Metrics between 2 label images</li>
-<li>Hausdorff Distance between 2 label images</li>
+<li>Convert file formats <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test.mha</pre></li>
+<li>Extract Image Series from Joined stack and vice-versa (4D &lt;-&gt; 3D) <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output -j2e 1
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/ -o C:/output.nii.gz -e2j 1.5</pre></li>
+<li>Transform coordinates from world to image and vice-versa <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -i2w 10,10,30
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -w2i 10.5,10.1,30.6</pre></li>
+<li>Label similarity Metrics between 2 label images: pure mathematical formulations are given as output <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz</pre></li>
+<li>BraTS similarity Metrics between 2 label images: special considerations for metrics are done in this mode because output needs to be BraTS-compliant. <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -lsb C:/referenceMask.nii.gz</pre></li>
+<li>Collect information from all images in a directory and put it in CSV <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputDirectory -o C:/test/inputDirectoryProperties.csv -co 1 -cF volume -cFE .nii.gz -cP 0,1</pre></li>
 </ul>
 <p>For a full list of available applications and examples, please use the command: </p><pre class="fragment">${CaPTk_InstallDir}/bin/Utilities -h
 </pre> </div></div><!-- contents -->

@@ -4,6 +4,8 @@
 #include "CaPTkEnums.h"
 #include "vtkDoubleArray.h"
 
+#include "cbicaITKSafeImageIO.h"
+
 typedef itk::Image< float, 3 > ImageType;
 
 PseudoProgressionEstimator::~PseudoProgressionEstimator()
@@ -34,16 +36,7 @@ bool PseudoProgressionEstimator::TrainNewModelOnGivenData(const std::vector<std:
   std::vector<double> traininglabels;
   VariableSizeMatrixType TrainingData = LoadPseudoProgressionTrainingData(qualifiedsubjects, traininglabels, outputdirectory);
 
-  //create a vector of loaded subjects. These are used as row[vertical] headers in csv
-  std::vector<std::string> patient_ids;
-  for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
-  {
-	  std::map< CAPTK::ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
-	  patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
-  }
-
-  //write feature file with vertical header[patient_ids] and horizontal header[Featurelabels]
-  WriteCSVFilesWithHorizontalAndVerticalHeaders(TrainingData, patient_ids, FeatureLabels, outputdirectory + "/combinedfeatures-captk-afterfixed.csv");
+  WriteCSVFiles(TrainingData, outputdirectory + "/combinedfeatures-captk-afterfixed.csv");
   WriteCSVFiles(traininglabels, outputdirectory + "/labels.csv");
 
   std::cout << std::endl << "Building model....." << std::endl;
@@ -233,18 +226,8 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
   CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
 
   std::vector<double> traininglabels;
-  VariableSizeMatrixType TrainingData = LoadPseudoProgressionTestingData(qualifiedsubjects, traininglabels, outputdirectory, modeldirectory);
-
-  //create a vector of loaded subjects. These are used as row[vertical] headers in csv
-  std::vector<std::string> patient_ids;
-  for (unsigned int sid = 0; sid < qualifiedsubjects.size(); sid++)
-  {
-	  std::map< CAPTK::ImageModalityType, std::string > currentsubject = qualifiedsubjects[sid];
-	  patient_ids.push_back(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]));
-  }
-
-  //write feature file with vertical header[patient_ids] and horizontal header[Featurelabels]
-  WriteCSVFilesWithHorizontalAndVerticalHeaders(TrainingData, patient_ids, FeatureLabels, outputdirectory + "/testingfeatures.csv");
+  //VariableSizeMatrixType TrainingData = LoadPseudoProgressionTestingData(qualifiedsubjects, traininglabels, outputdirectory, modeldirectory);
+  //WriteCSVFiles(TrainingData, outputdirectory + "/testingfeatures.csv");
 
   MatrixType meanMatrix;
   VariableLengthVectorType mean;
@@ -286,20 +269,31 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     logger.WriteError("Error in reading the file: " + modeldirectory + "/PSU_ZScore_Std.csv. Error code : " + std::string(e1.what()));
     //return results;
   }
+
+  //-------------perfusion related data reading------------------
+  VariableSizeMatrixType TrainingData;
+  MatrixType dataMatrix;
+  reader->SetFileName(outputdirectory + "/chiharu_featurefile.csv");
+  reader->Parse();
+  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+  TrainingData.SetSize(dataMatrix.rows(), dataMatrix.cols());
+  for (unsigned int i = 0; i < dataMatrix.rows(); i++)
+    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+      TrainingData(i, j) = dataMatrix(i, j);
+
   std::cout << "parameters read." << std::endl;
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(TrainingData, mean, stddevition);
 
-  //remove the nan values
-  for (unsigned int index1 = 0; index1 < ScaledTestingData.Rows(); index1++)
-  {
-    for (unsigned int index2 = 0; index2 < ScaledTestingData.Cols(); index2++)
-    {
-      if (std::isnan(ScaledTestingData[index1][index2]))
-        ScaledTestingData[index1][index2] = 0;
-    }
-  }
-
-  WriteCSVFiles(ScaledTestingData, outputdirectory + "/scaledtestingfeatures.csv");
+  ////remove the nan values
+  //for (unsigned int index1 = 0; index1 < ScaledTestingData.Rows(); index1++)
+  //{
+  //  for (unsigned int index2 = 0; index2 < ScaledTestingData.Cols(); index2++)
+  //  {
+  //    if (std::isnan(ScaledTestingData[index1][index2]))
+  //      ScaledTestingData[index1][index2] = 0;
+  //  }
+  //}
+  //WriteCSVFiles(ScaledTestingData, outputdirectory + "/scaledtestingfeatures.csv");
 
   std::cout << "scaling done." << std::endl;
   VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
@@ -311,10 +305,11 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
       ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
     ScaledFeatureSetAfterAddingLabel(i, j) = 0;
   }
+  WriteCSVFiles(ScaledFeatureSetAfterAddingLabel, outputdirectory + "/ScaledFeatures.csv");
+
   //feature selection process for test data
   VariableLengthVectorType psuSelectedFeatures;
   VariableLengthVectorType recSelectedFeatures;
-  MatrixType dataMatrix;
   try
   {
     reader->SetFileName(modeldirectory + "/PSU_SelectedFeatures.csv");
@@ -324,9 +319,9 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     reader->Parse();
     dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
 
-    psuSelectedFeatures.SetSize(dataMatrix.rows());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      psuSelectedFeatures[i] = dataMatrix(i, 1);
+    psuSelectedFeatures.SetSize(dataMatrix.size());
+    for (unsigned int i = 0; i < dataMatrix.size(); i++)
+      psuSelectedFeatures[i] = dataMatrix(i, 0);
   }
   catch (const std::exception& e1)
   {
@@ -334,7 +329,6 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     //return results;
   }
 
-  std::cout << "PSU features all loaded." << std::endl;
   try
   {
     reader->SetFileName(modeldirectory + "/REC_SelectedFeatures.csv");
@@ -344,9 +338,9 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     reader->Parse();
     dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
 
-    recSelectedFeatures.SetSize(dataMatrix.rows());
-    for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-      recSelectedFeatures[i] = dataMatrix(i, 1);
+    recSelectedFeatures.SetSize(dataMatrix.size());
+    for (unsigned int i = 0; i < dataMatrix.size(); i++)
+      recSelectedFeatures[i] = dataMatrix(i, 0);
   }
   catch (const std::exception& e1)
   {
@@ -354,10 +348,8 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     //return results;
   }
 
-  std::cout << "Selected features loaded." << std::endl;
-
-  VariableSizeMatrixType PseudoModelSelectedFeatures = GetModelSelectedFeatures(ScaledFeatureSetAfterAddingLabel, psuSelectedFeatures);
-  VariableSizeMatrixType RecurrenceModelSelectedFeatures = GetModelSelectedFeatures(ScaledFeatureSetAfterAddingLabel, recSelectedFeatures);
+  VariableSizeMatrixType PseudoModelSelectedFeatures = GetModelSelectedFeatures(ScaledTestingData, psuSelectedFeatures);
+  VariableSizeMatrixType RecurrenceModelSelectedFeatures = GetModelSelectedFeatures(ScaledTestingData, recSelectedFeatures);
 
   WriteCSVFiles(PseudoModelSelectedFeatures, outputdirectory + "/PSU_SelectedTestFeatures.csv");
   WriteCSVFiles(RecurrenceModelSelectedFeatures, outputdirectory + "/REC_SelectedTestFeatures.csv");
@@ -369,14 +361,14 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     myfile << "SubjectName,Score (Pseudo), Score (Recurrence)\n";
     if (cbica::fileExists(modeldirectory + "/PSU_SVM_Model.xml") == true && cbica::fileExists(modeldirectory + "/REC_SVM_Model.xml") == true)
     {
-      VectorDouble result_psu;
-      VectorDouble result_rec;
-      result_psu = testOpenCVSVM(PseudoModelSelectedFeatures, modeldirectory + "/PSU_SVM_Model.xml");
-      result_rec = testOpenCVSVM(RecurrenceModelSelectedFeatures, modeldirectory + "/REC_SVM_Model.xml");
-      for (size_t i = 0; i < result_psu.size(); i++)
+      VectorDouble result_6;
+      VectorDouble result_18;
+      result_6 = testOpenCVSVM(PseudoModelSelectedFeatures, modeldirectory + "/PSU_SVM_Model.xml");
+      result_18 = testOpenCVSVM(RecurrenceModelSelectedFeatures, modeldirectory + "/REC_SVM_Model.xml");
+      for (size_t i = 0; i < result_6.size(); i++)
       {
         std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[i];
-        myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(result_psu[i]) + "," + std::to_string(result_rec[i]) + "\n";
+        myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(result_6[i]) + "," + std::to_string(result_18[i]) + "\n";
       }
     }
     myfile.close();
@@ -387,6 +379,7 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
     //return results;
   }
   //  return results;
+
 
   //check for the presence of model file
   //if (!cbica::fileExists(modeldirectory + "/" + mTrainedModelNameXML))
@@ -513,7 +506,7 @@ bool PseudoProgressionEstimator::PseudoProgressionEstimateOnExistingModel(std::v
   //  ImageType::Pointer dilatedEdema;
   //  try
   //  {
-  //    LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[IMAGE_TYPE_SEG]));
+  //    LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[IMAGE_TYPE_SEG]));
   //    if (usePerfData)
   //      perfImagePointer = mNiftiLocalPtr.Read4DNiftiImage(static_cast<std::string>(currentsubject[IMAGE_TYPE_PERFUSION]));
   //    if (useConventionalrData)
@@ -802,11 +795,8 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
   {
     std::cout << "Loading Perfusion Image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = testingsubjects[sid];
-    ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-    //NiftiDataManager m_obj;
-    //auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
-    using ImageTypePerfusion = itk::Image< float, 4 >;
-    auto perfImagePointerNifti = cbica::ReadImage< ImageTypePerfusion >(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+    auto perfImagePointerNifti = cbica::ReadImage< PerfusionImageType >(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]);
     std::vector<ImageType::IndexType> indices;
 
     VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
@@ -871,7 +861,6 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 
   //Apply existing PCA model on the test patient
   //--------------------------------------------------------------------------------------------
-  std::cout << "Combining and calculating perfusion PCA on test data: "<< std::endl;
   PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCAForTestData(PerfusionDataMap, PCA_PERF, Mean_PERF);
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
 
@@ -879,8 +868,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
   {
     std::cout << "Revising Perfusion Image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = testingsubjects[sid];
-    NiftiDataManager m_obj;
-    auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    auto perfImagePointerNifti = cbica::ReadImage< PerfusionImageType >(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]);
     ImageTypeFloat4D::RegionType region = perfImagePointerNifti.GetPointer()->GetLargestPossibleRegion();
     ImageTypeFloat4D::IndexType regionIndex;
     ImageTypeFloat4D::SizeType regionSize;
@@ -928,7 +916,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
 
   for (unsigned int sid = 0; sid < testingsubjects.size(); sid++)
   {
-    std::cout << "Loading Remaining Features: " << sid << std::endl;
+    std::cout << "Loading and processing Feature (testing): " << sid << std::endl;
     VectorDouble neuroScores;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = testingsubjects[sid];
 
@@ -953,12 +941,12 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
     //}
 
     testinglabels.push_back(0);
-    ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+    ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
 
-    ImageType::Pointer OriginalT1CEImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]));
-    ImageType::Pointer OriginalT2FlairImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]));
-    ImageType::Pointer OriginalT1ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]));
-    ImageType::Pointer OriginalT2ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]));
+    ImageType::Pointer OriginalT1CEImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]));
+    ImageType::Pointer OriginalT2FlairImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]));
+    ImageType::Pointer OriginalT1ImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]));
+    ImageType::Pointer OriginalT2ImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]));
 
     ImageType::Pointer OriginalT1T1CEImagePointer = MakeAdditionalModality<ImageType>(OriginalT1CEImagePointer, OriginalT1ImagePointer);
     ImageType::Pointer OriginalT2FLImagePointer = MakeAdditionalModality<ImageType>(OriginalT2ImagePointer, OriginalT2FlairImagePointer);
@@ -970,14 +958,14 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
     ImageType::Pointer T1T1CEImagePointer = RescaleImageIntensity<ImageType>(OriginalT1T1CEImagePointer);
     ImageType::Pointer T2FLImagePointer = RescaleImageIntensity<ImageType>(OriginalT2FLImagePointer);
 
-    ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
-    ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
-    ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
-    ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
+    ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
+    ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
+    ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
+    ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
 
-    ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
-    ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
-    ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
+    ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
+    ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
+    ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
 
 
 
@@ -1056,7 +1044,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
         otherFeatures[sid][counter] = Features[j];
         counter++;
       }
-      std::cout << "Counter Size" << counter << std::endl;
+      std::cout << "Counter Size (testing): " << counter << std::endl;
     }
     std::cout << "Basic features copied in the OtherFeatures map." << std::endl;
 
@@ -1108,10 +1096,6 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
   VectorVectorDouble PSRReducedIntensityHistogram = mFeatureReductionLocalPtr.ApplyPCAOnTestDataWithGivenTransformations(PSIntensityHistogram, PCA_PSR, Mean_PSR);
   VectorVectorDouble RCReducedIntensityHistogram = mFeatureReductionLocalPtr.ApplyPCAOnTestDataWithGivenTransformations(RCIntensityHistogram, PCA_RCBV, Mean_RCBV);
 
-  std::cout << PCA1IntensityHistogram.size() << " " << PCA1IntensityHistogram[0].size() << std::endl;
-  std::cout << PCA_PC1.Rows() << " " << PCA_PC1.Cols() << std::endl;
-  std::cout << Mean_PC1.Size() << std::endl;
-
 
   VectorVectorDouble PC1ReducedIntensityHistogram = mFeatureReductionLocalPtr.ApplyPCAOnTestDataWithGivenTransformations(PCA1IntensityHistogram, PCA_PC1, Mean_PC1);
   VectorVectorDouble PC2ReducedIntensityHistogram = mFeatureReductionLocalPtr.ApplyPCAOnTestDataWithGivenTransformations(PCA2IntensityHistogram, PCA_PC2, Mean_PC2);
@@ -1158,7 +1142,6 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTestingD
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(RCReducedIntensityHistogram[i][j]);
 
-    std::cout<<PC1ReducedIntensityHistogram.size() << " " << PC1ReducedIntensityHistogram[0].size() << std::endl;
     std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC1ReducedIntensityHistogram[i][j]);
@@ -1245,18 +1228,15 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
   VectorVectorDouble PCA8IntensityHistogram;
   VectorVectorDouble PCA9IntensityHistogram;
   VectorVectorDouble PCA10IntensityHistogram;
-
   PerfusionMapType PerfusionDataMap;
-
 
   //Extracting perfusion data of all the patients and putting in PerfusionDataMap
   for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
   {
     std::cout << "Loading Perfusion Image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
-    ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-    NiftiDataManager m_obj;
-    auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+    auto perfImagePointerNifti = cbica::ReadImage< PerfusionImageType >(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]);
     std::vector<ImageType::IndexType> indices;
 
     VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
@@ -1299,8 +1279,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
   {
     std::cout << "Revising Perfusion Image: " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
-    NiftiDataManager m_obj;
-    auto perfImagePointerNifti = m_obj.Read4DNiftiImage(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+    auto perfImagePointerNifti = cbica::ReadImage< PerfusionImageType >(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]);
     ImageTypeFloat4D::RegionType region = perfImagePointerNifti.GetPointer()->GetLargestPossibleRegion();
     ImageTypeFloat4D::IndexType regionIndex;
     ImageTypeFloat4D::SizeType regionSize;
@@ -1338,7 +1317,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
         CurrentTimePoint.GetPointer()->SetPixel(indices[j], revisedPerfData(j, i));
 
       OnePatientperfusionImages.push_back(CurrentTimePoint);
-      cbica::WriteImage<ImageType>(CurrentTimePoint, outputdirectory + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
+      //cbica::WriteImage<ImageType>(CurrentTimePoint, outputdirectory + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
     }
     RevisedPerfusionImagesOfAllPatients.push_back(OnePatientperfusionImages);
   }
@@ -1351,11 +1330,10 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
   //{
   //  std::cout << "Revising Perfusion Image: " << sid << std::endl;
   //  std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
-  //  NiftiDataManager m_obj;
   //  std::vector<ImageType::Pointer> OnePatientperfusionImages;
   //  for (int i = 0; i < 10; i++)
   //  {
-  //    ImageTypeFloat3D::Pointer perfImagePointerNifti = m_obj.ReadNiftiImage("E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/output" + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
+  //    auto perfImagePointerNifti = cbica::ReadImage< ImageTypeFloat3D>("E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/output" + std::to_string(sid) + "_" + std::to_string(i) + ".nii.gz");
   //    OnePatientperfusionImages.push_back(perfImagePointerNifti);
   //  }
   //  RevisedPerfusionImagesOfAllPatients.push_back(OnePatientperfusionImages);
@@ -1366,7 +1344,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
 
   for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
   {
-    std::cout << "Loading Remaining Features: " << sid << std::endl;
+    std::cout << "Loading and processing Feature (training): " << sid << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
 
     CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
@@ -1379,14 +1357,14 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
     dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
     traininglabels.push_back(dataMatrix(0, 0));
 
-    ImageType::Pointer LabelImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+    ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
 
-    ImageType::Pointer OriginalT1CEImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]));
-    ImageType::Pointer OriginalT2FlairImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]));
-    ImageType::Pointer OriginalT1ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]));
-    ImageType::Pointer OriginalT2ImagePointer = ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]));
+    ImageType::Pointer OriginalT1CEImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1CE]));
+    ImageType::Pointer OriginalT2FlairImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR]));
+    ImageType::Pointer OriginalT1ImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1]));
+    ImageType::Pointer OriginalT2ImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2]));
 
-    ImageType::Pointer OriginalT1T1CEImagePointer = MakeAdditionalModality<ImageType>( OriginalT1CEImagePointer, OriginalT1ImagePointer);
+    ImageType::Pointer OriginalT1T1CEImagePointer = MakeAdditionalModality<ImageType>(OriginalT1CEImagePointer, OriginalT1ImagePointer);
     ImageType::Pointer OriginalT2FLImagePointer = MakeAdditionalModality<ImageType>(OriginalT2ImagePointer, OriginalT2FlairImagePointer);
 
     ImageType::Pointer T1ImagePointer = RescaleImageIntensity<ImageType>(OriginalT1ImagePointer);
@@ -1396,14 +1374,14 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
     ImageType::Pointer T1T1CEImagePointer = RescaleImageIntensity<ImageType>(OriginalT1T1CEImagePointer);
     ImageType::Pointer T2FLImagePointer = RescaleImageIntensity<ImageType>(OriginalT2FLImagePointer);
 
-    ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
-    ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
-    ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
-    ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
+    ImageType::Pointer AXImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_AX])));
+    ImageType::Pointer RADImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD])));
+    ImageType::Pointer FAImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA])));
+    ImageType::Pointer TRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR])));
 
-    ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
-    ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
-    ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(ReadNiftiImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
+    ImageType::Pointer RCBVImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV])));
+    ImageType::Pointer PHImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH])));
+    ImageType::Pointer PSRImagePointer = RescaleImageIntensity<ImageType>(cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR])));
 
     typedef std::tuple< VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble> TupleType;
     typedef std::map<std::string, TupleType> MapType;
@@ -1480,7 +1458,7 @@ VariableSizeMatrixType PseudoProgressionEstimator::LoadPseudoProgressionTraining
         otherFeatures[sid][counter] = Features[j];
         counter++;
       }
-      std::cout << "Counter Size" << counter << std::endl;
+      std::cout << "Counter Size (training): " << counter << std::endl;
     }
     std::cout << "Basic features copied in the OtherFeatures map." << std::endl;
 
@@ -1553,13 +1531,13 @@ PerfusionMapType PseudoProgressionEstimator::CombineAndCalculatePerfusionPCA(Per
     for (unsigned int i = 0; i < Features.Rows(); i++)
     {
       VectorDouble oneVector;
-      for (unsigned int j = 0; j < Features.Cols(); j++)
+      for (unsigned int j = 0; j < 45; j++)
         oneVector.push_back(Features(i, j));
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
   }
   FeatureReductionClass m_featureReduction;
-  vtkSmartPointer<vtkTable> ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsForPSU(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
+  vtkSmartPointer<vtkTable> ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
 
   int start = 0;
   for (unsigned int index = 0; index<sizes.size(); index++)// for (auto const &mapiterator : PerfusionDataMap) 
@@ -1595,12 +1573,11 @@ PerfusionMapType PseudoProgressionEstimator::CombineAndCalculatePerfusionPCAForT
     for (unsigned int i = 0; i < Features.Rows(); i++)
     {
       VectorDouble oneVector;
-      for (unsigned int j = 0; j < Features.Cols(); j++)
+      for (unsigned int j = 0; j < 45; j++)
         oneVector.push_back(Features(i, j));
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
   }
-
   FeatureReductionClass m_featureReduction;
   VectorVectorDouble ReducedPCAs = m_featureReduction.ApplyPCAOnTestDataWithGivenTransformations(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
 
@@ -1780,29 +1757,29 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   std::string outputdirectory)
 {
   //writing of all the modalities perfusion data finished
-  //WriteCSVFiles(T1IntensityHistogram, outputdirectory+ "/t1.csv");
-  //WriteCSVFiles(TCIntensityHistogram, outputdirectory+ "/t1ce.csv");
-  //WriteCSVFiles(T2IntensityHistogram, outputdirectory + "/t2.csv");
-  //WriteCSVFiles(FLIntensityHistogram, outputdirectory + "/flair.csv");
-  //WriteCSVFiles(T1TCIntensityHistogram, outputdirectory + "/t1t1ce.csv");
-  //WriteCSVFiles(T2FLIntensityHistogram, outputdirectory + "/t2flair.csv");
-  //WriteCSVFiles(AXIntensityHistogram, outputdirectory + "/AX.csv");
-  //WriteCSVFiles(FAIntensityHistogram, outputdirectory + "/FA.csv");
-  //WriteCSVFiles(RDIntensityHistogram, outputdirectory + "/RAD.csv");
-  //WriteCSVFiles(TRIntensityHistogram, outputdirectory + "/TR.csv");
-  //WriteCSVFiles(PHIntensityHistogram, outputdirectory + "/PH.csv");
-  //WriteCSVFiles(PSIntensityHistogram, outputdirectory + "/PSR.csv");
-  //WriteCSVFiles(RCIntensityHistogram, outputdirectory + "/RCBV.csv");
-  //WriteCSVFiles(PCA1IntensityHistogram, outputdirectory + "/PCA1.csv");
-  //WriteCSVFiles(PCA2IntensityHistogram, outputdirectory +"/PCA2.csv");
-  //WriteCSVFiles(PCA3IntensityHistogram, outputdirectory +"/PCA3.csv");
-  //WriteCSVFiles(PCA4IntensityHistogram, outputdirectory +"/PCA4.csv");
-  //WriteCSVFiles(PCA5IntensityHistogram, outputdirectory +"/PCA5.csv");
-  //WriteCSVFiles(PCA6IntensityHistogram, outputdirectory +"/PCA6.csv");
-  //WriteCSVFiles(PCA7IntensityHistogram, outputdirectory +"/PCA7.csv");
-  //WriteCSVFiles(PCA8IntensityHistogram, outputdirectory +"/PCA8.csv");
-  //WriteCSVFiles(PCA9IntensityHistogram, outputdirectory +"/PCA9.csv");
-  //WriteCSVFiles(PCA10IntensityHistogram, outputdirectory +"/PCA10.csv");
+  WriteCSVFiles(T1IntensityHistogram, outputdirectory + "/t1.csv");
+  WriteCSVFiles(TCIntensityHistogram, outputdirectory + "/t1ce.csv");
+  WriteCSVFiles(T2IntensityHistogram, outputdirectory + "/t2.csv");
+  WriteCSVFiles(FLIntensityHistogram, outputdirectory + "/flair.csv");
+  WriteCSVFiles(T1TCIntensityHistogram, outputdirectory + "/t1t1ce.csv");
+  WriteCSVFiles(T2FLIntensityHistogram, outputdirectory + "/t2flair.csv");
+  WriteCSVFiles(AXIntensityHistogram, outputdirectory + "/AX.csv");
+  WriteCSVFiles(FAIntensityHistogram, outputdirectory + "/FA.csv");
+  WriteCSVFiles(RDIntensityHistogram, outputdirectory + "/RAD.csv");
+  WriteCSVFiles(TRIntensityHistogram, outputdirectory + "/TR.csv");
+  WriteCSVFiles(PHIntensityHistogram, outputdirectory + "/PH.csv");
+  WriteCSVFiles(PSIntensityHistogram, outputdirectory + "/PSR.csv");
+  WriteCSVFiles(RCIntensityHistogram, outputdirectory + "/RCBV.csv");
+  WriteCSVFiles(PCA1IntensityHistogram, outputdirectory + "/PCA1.csv");
+  WriteCSVFiles(PCA2IntensityHistogram, outputdirectory + "/PCA2.csv");
+  WriteCSVFiles(PCA3IntensityHistogram, outputdirectory + "/PCA3.csv");
+  WriteCSVFiles(PCA4IntensityHistogram, outputdirectory + "/PCA4.csv");
+  WriteCSVFiles(PCA5IntensityHistogram, outputdirectory + "/PCA5.csv");
+  WriteCSVFiles(PCA6IntensityHistogram, outputdirectory + "/PCA6.csv");
+  WriteCSVFiles(PCA7IntensityHistogram, outputdirectory + "/PCA7.csv");
+  WriteCSVFiles(PCA8IntensityHistogram, outputdirectory + "/PCA8.csv");
+  WriteCSVFiles(PCA9IntensityHistogram, outputdirectory + "/PCA9.csv");
+  WriteCSVFiles(PCA10IntensityHistogram, outputdirectory + "/PCA10.csv");
 
 
   FeatureReductionClass m_featureReduction;
@@ -1821,7 +1798,7 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   vtkSmartPointer<vtkTable> FAReducedIntensityHistogram;
   vtkSmartPointer<vtkTable> RDReducedIntensityHistogram;
   vtkSmartPointer<vtkTable> TRReducedIntensityHistogram;
-  
+
   vtkSmartPointer<vtkTable> PHReducedIntensityHistogram;
   vtkSmartPointer<vtkTable> PSReducedIntensityHistogram;
   vtkSmartPointer<vtkTable> RCReducedIntensityHistogram;
@@ -1842,10 +1819,11 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   {
     T1ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T1IntensityHistogram, PCA_T1, Mean_T1);
     std::cout << "T1" << std::endl;
+    WriteCSVFiles(T1ReducedIntensityHistogram, outputdirectory + "/t1_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
-    T1ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples); 
+    T1ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
     logger.WriteError("Error in writing T1 reduced intensity histogram. Error code : " + std::string(e1.what()));
   }
 
@@ -1853,6 +1831,7 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   {
     TCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(TCIntensityHistogram, PCA_T1CE, Mean_T1CE);
     std::cout << "TC" << std::endl;
+    WriteCSVFiles(TCReducedIntensityHistogram, outputdirectory + "/t1ce_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
@@ -1863,18 +1842,21 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   try
   {
     T2ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T2IntensityHistogram, PCA_T2, Mean_T2);
-  }
+    std::cout << "T2" << std::endl;
+    WriteCSVFiles(T2ReducedIntensityHistogram, outputdirectory + "/t2_Reduced.csv");
+}
   catch (const std::exception& e1)
   {
     T2ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
     logger.WriteError("Error in writing T2 reduced intensity histogram. Error code : " + std::string(e1.what()));
   }
-  
+
   try
   {
     T1TCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T1TCIntensityHistogram, PCA_T1T1CE, Mean_T1T1CE);
     std::cout << "T1TC" << std::endl;
-  }
+    WriteCSVFiles(T1TCReducedIntensityHistogram, outputdirectory + "/t1t1ce_Reduced.csv");
+}
   catch (const std::exception& e1)
   {
     T1TCReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
@@ -1883,8 +1865,8 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
 
   try
   {
-  FLReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(FLIntensityHistogram, PCA_FL, Mean_FL);
-  std::cout << "FL" << std::endl;
+    FLReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(FLIntensityHistogram, PCA_FL, Mean_FL);
+    std::cout << "FL" << std::endl;
   }
   catch (const std::exception& e1)
   {
@@ -1895,8 +1877,10 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
 
   try
   {
-  T2FLReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T2FLIntensityHistogram, PCA_T2FL, Mean_T2FL);
-  std::cout << "T2FL" << std::endl;
+    T2FLReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(T2FLIntensityHistogram, PCA_T2FL, Mean_T2FL);
+    std::cout << "T2FL" << std::endl;
+    WriteCSVFiles(T2FLReducedIntensityHistogram, outputdirectory + "/t2flair_Reduced.csv");
+
   }
   catch (const std::exception& e1)
   {
@@ -1908,6 +1892,7 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   {
     AXReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(AXIntensityHistogram, PCA_AX, Mean_AX);
     std::cout << "AX" << std::endl;
+    WriteCSVFiles(AXReducedIntensityHistogram, outputdirectory + "/AX_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
@@ -1919,6 +1904,7 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   {
     FAReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(FAIntensityHistogram, PCA_FA, Mean_FA);
     std::cout << "FA" << std::endl;
+    WriteCSVFiles(FAReducedIntensityHistogram, outputdirectory + "/FA_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
@@ -1928,8 +1914,9 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
 
   try
   {
-  RDReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(RDIntensityHistogram, PCA_RAD, Mean_RAD);
-  std::cout << "RD" << std::endl;
+    RDReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(RDIntensityHistogram, PCA_RAD, Mean_RAD);
+    std::cout << "RD" << std::endl;
+    WriteCSVFiles(RDReducedIntensityHistogram, outputdirectory + "/RAD_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
@@ -1941,54 +1928,62 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   {
     TRReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(TRIntensityHistogram, PCA_TR, Mean_TR);
     std::cout << "TR" << std::endl;
+    WriteCSVFiles(TRReducedIntensityHistogram, outputdirectory + "/TR_Reduced.csv");
   }
-    catch (const std::exception& e1)
-    {
-      TRReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
-      logger.WriteError("Error in writing TR reduced intensity histogram. Error code : " + std::string(e1.what()));
-    }
+  catch (const std::exception& e1)
+  {
+    TRReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing TR reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
 
-    try
-    {
-  PHReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PHIntensityHistogram, PCA_PH, Mean_PH);
-  std::cout << "PH" << std::endl;
-    }
-    catch (const std::exception& e1)
-    {
-      PHReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
-      logger.WriteError("Error in writing PH reduced intensity histogram. Error code : " + std::string(e1.what()));
-    }
+  try
+  {
+    PHReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PHIntensityHistogram, PCA_PH, Mean_PH);
+    std::cout << "PH" << std::endl;
+    WriteCSVFiles(PHReducedIntensityHistogram, outputdirectory + "/PH_Reduced.csv");
+  }
+  catch (const std::exception& e1)
+  {
+    PHReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PH reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
-    try
-    {
-  PSReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PSIntensityHistogram, PCA_PSR, Mean_PSR);
-  std::cout << "PS" << std::endl;
-    }
-    catch (const std::exception& e1)
-    {
-      PSReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
-      logger.WriteError("Error in writing PS reduced intensity histogram. Error code : " + std::string(e1.what()));
-    }
+  try
+  {
+    PSReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PSIntensityHistogram, PCA_PSR, Mean_PSR);
+    std::cout << "PS" << std::endl;
+    WriteCSVFiles(PSReducedIntensityHistogram, outputdirectory + "/PS_Reduced.csv");
+
+  }
+  catch (const std::exception& e1)
+  {
+    PSReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing PS reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
 
-    try
-    {
-  RCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(RCIntensityHistogram, PCA_RCBV, Mean_RCBV);
-  std::cout << "RC" << std::endl;
-    }
-    catch (const std::exception& e1)
-    {
-      RCReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
-      logger.WriteError("Error in writing RC reduced intensity histogram. Error code : " + std::string(e1.what()));
-    }
+  try
+  {
+    RCReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(RCIntensityHistogram, PCA_RCBV, Mean_RCBV);
+    std::cout << "RC" << std::endl;
+    WriteCSVFiles(RCReducedIntensityHistogram, outputdirectory + "/RC_Reduced.csv");
+
+  }
+  catch (const std::exception& e1)
+  {
+    RCReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
+    logger.WriteError("Error in writing RC reduced intensity histogram. Error code : " + std::string(e1.what()));
+  }
 
   std::cout << "basic modalities perfusion components extracted" << std::endl;
 
   try
   {
     PC1ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA1IntensityHistogram, PCA_PC1, Mean_PC1);
-  std::cout << "PC1" << std::endl;
+    std::cout << "PC1" << std::endl;
+    WriteCSVFiles(PC1ReducedIntensityHistogram, outputdirectory + "/pc1_Reduced.csv");
+
   }
   catch (const std::exception& e1)
   {
@@ -2000,7 +1995,8 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   try
   {
     PC2ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA2IntensityHistogram, PCA_PC2, Mean_PC2);
-  std::cout << "PC2" << std::endl;
+    std::cout << "PC2" << std::endl;
+    WriteCSVFiles(PC2ReducedIntensityHistogram, outputdirectory + "/pc2_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
@@ -2010,8 +2006,10 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
 
   try
   {
-  PC3ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA3IntensityHistogram, PCA_PC3, Mean_PC3);
-  std::cout << "PC3" << std::endl;
+    PC3ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA3IntensityHistogram, PCA_PC3, Mean_PC3);
+    std::cout << "PC3" << std::endl;
+    WriteCSVFiles(PC3ReducedIntensityHistogram, outputdirectory + "/pc3_Reduced.csv");
+
   }
   catch (const std::exception& e1)
   {
@@ -2021,7 +2019,9 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   try
   {
     PC4ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA4IntensityHistogram, PCA_PC4, Mean_PC4);
-  std::cout << "PC4" << std::endl;
+    std::cout << "PC4" << std::endl;
+    WriteCSVFiles(PC4ReducedIntensityHistogram, outputdirectory + "/pc4_Reduced.csv");
+
   }
   catch (const std::exception& e1)
   {
@@ -2032,7 +2032,8 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   try
   {
     PC5ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA5IntensityHistogram, PCA_PC5, Mean_PC5);
-  std::cout << "PC5" << std::endl;
+    std::cout << "PC5" << std::endl;
+    WriteCSVFiles(PC5ReducedIntensityHistogram, outputdirectory + "/pc5_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
@@ -2043,7 +2044,8 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   try
   {
     PC6ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA6IntensityHistogram, PCA_PC6, Mean_PC6);
-  std::cout << "PC6" << std::endl;
+    std::cout << "PC6" << std::endl;
+    WriteCSVFiles(PC6ReducedIntensityHistogram, outputdirectory + "/pc6_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
@@ -2054,40 +2056,41 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
   try
   {
     PC7ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA7IntensityHistogram, PCA_PC7, Mean_PC7);
-  std::cout << "PC7" << std::endl;
+    std::cout << "PC7" << std::endl;
+    WriteCSVFiles(PC7ReducedIntensityHistogram, outputdirectory + "/pc7_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
     PC7ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
     logger.WriteError("Error in writing PC7 reduced intensity histogram. Error code : " + std::string(e1.what()));
   }
-
   try
   {
     PC8ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA8IntensityHistogram, PCA_PC8, Mean_PC8);
-  std::cout << "PC8" << std::endl;
+    std::cout << "PC8" << std::endl;
+    WriteCSVFiles(PC8ReducedIntensityHistogram, outputdirectory + "/pc8_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
     PC8ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
     logger.WriteError("Error in writing PC8 reduced intensity histogram. Error code : " + std::string(e1.what()));
   }
-
   try
   {
     PC9ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA9IntensityHistogram, PCA_PC9, Mean_PC9);
     std::cout << "PC9" << std::endl;
+    WriteCSVFiles(PC9ReducedIntensityHistogram, outputdirectory + "/pc9_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
     PC9ReducedIntensityHistogram = MakePCAMatrix(NumberOfFeatures, NumberOfSamples);
     logger.WriteError("Error in writing PC9 reduced intensity histogram. Error code : " + std::string(e1.what()));
   }
-
   try
   {
     PC10ReducedIntensityHistogram = m_featureReduction.GetDiscerningPerfusionTimePointsFullPCA(PCA10IntensityHistogram, PCA_PC10, Mean_PC10);
     std::cout << "PC10" << std::endl;
+    WriteCSVFiles(PC10ReducedIntensityHistogram, outputdirectory + "/pc10_Reduced.csv");
   }
   catch (const std::exception& e1)
   {
@@ -2095,129 +2098,134 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
     logger.WriteError("Error in writing PC10 reduced intensity histogram. Error code : " + std::string(e1.what()));
   }
 
+
+
+
   VariableSizeMatrixType AllPCAs;
   VariableSizeMatrixType AllMeans;
-  AllPCAs.SetSize(23 * 20, 20);
-  AllMeans.SetSize(23, 20);
+  AllPCAs.SetSize(23 * 255, 255);
+  AllMeans.SetSize(23, 255);
 
   int start_counter = 0;
   for (unsigned int i = 0; i <PCA_T1.Rows(); i++)
     for (unsigned int j = 0; j < PCA_T1.Cols(); j++)
-      AllPCAs(i+start_counter, j) = PCA_T1(i, j);
+      AllPCAs(i + start_counter, j) = PCA_T1(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_T1CE.Rows(); i++)
     for (unsigned int j = 0; j < PCA_T1CE.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_T1CE(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_T2.Rows(); i++)
     for (unsigned int j = 0; j < PCA_T2.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_T2(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_FL.Rows(); i++)
     for (unsigned int j = 0; j < PCA_FL.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_FL(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_T1T1CE.Rows(); i++)
     for (unsigned int j = 0; j < PCA_T1T1CE.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_T1T1CE(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_T2FL.Rows(); i++)
     for (unsigned int j = 0; j < PCA_T2FL.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_T2FL(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_AX.Rows(); i++)
     for (unsigned int j = 0; j < PCA_AX.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_AX(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_FA.Rows(); i++)
     for (unsigned int j = 0; j < PCA_FA.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_FA(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_RAD.Rows(); i++)
     for (unsigned int j = 0; j < PCA_RAD.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_RAD(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_TR.Rows(); i++)
     for (unsigned int j = 0; j < PCA_TR.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_TR(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PH.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PH.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PH(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PSR.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PSR.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PSR(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_RCBV.Rows(); i++)
     for (unsigned int j = 0; j < PCA_RCBV.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_RCBV(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PC1.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC1.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC1(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PC2.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC2.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC2(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PC3.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC3.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC3(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PC4.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC4.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC4(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PC5.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC5.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC5(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PC6.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC6.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC6(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PC7.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC7.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC7(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PC8.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC8.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC8(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PC9.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC9.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC9(i, j);
 
-  start_counter = start_counter + 20;
+  start_counter = start_counter + 255;
   for (unsigned int i = 0; i <PCA_PC10.Rows(); i++)
     for (unsigned int j = 0; j < PCA_PC10.Cols(); j++)
       AllPCAs(i + start_counter, j) = PCA_PC10(i, j);
 
+
+
   for (unsigned int i = 0; i < Mean_T1.Size(); i++)
   {
-    AllMeans(0,i) = Mean_T1[i];
+    AllMeans(0, i) = Mean_T1[i];
     AllMeans(1, i) = Mean_T1CE[i];
     AllMeans(2, i) = Mean_T2[i];
     AllMeans(3, i) = Mean_FL[i];
@@ -2241,11 +2249,12 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
     AllMeans(21, i) = Mean_PC9[i];
     AllMeans(22, i) = Mean_PC10[i];
   }
+
   WriteCSVFiles(AllPCAs, outputdirectory + "/PCA_Others.csv");
   WriteCSVFiles(AllMeans, outputdirectory + "/Mean_Others.csv");
-
   std::cout << "pca modalities perfusion components extracted" << std::endl;
 
+  //writing of all the modalities perfusion data finished
   VectorVectorDouble Features;
   for (int i = 0; i < T1ReducedIntensityHistogram.GetPointer()->GetNumberOfRows(); i++)
   {
@@ -2253,6 +2262,7 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
     VectorDouble OnePatient;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(T1ReducedIntensityHistogram->GetValue(i, j).ToDouble());
+
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(TCReducedIntensityHistogram->GetValue(i, j).ToDouble());
     for (int j = 0; j < 10; j++)
@@ -2278,28 +2288,35 @@ VectorVectorDouble PseudoProgressionEstimator::CombineAllThePerfusionFeaures(Vec
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(RCReducedIntensityHistogram->GetValue(i, j).ToDouble());
 
-    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC1ReducedIntensityHistogram->GetValue(i, j).ToDouble());
+    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC2ReducedIntensityHistogram->GetValue(i, j).ToDouble());
+    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC3ReducedIntensityHistogram->GetValue(i, j).ToDouble());
+    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC4ReducedIntensityHistogram->GetValue(i, j).ToDouble());
+    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC5ReducedIntensityHistogram->GetValue(i, j).ToDouble());
+    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC6ReducedIntensityHistogram->GetValue(i, j).ToDouble());
+    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC7ReducedIntensityHistogram->GetValue(i, j).ToDouble());
+    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC8ReducedIntensityHistogram->GetValue(i, j).ToDouble());
+    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC9ReducedIntensityHistogram->GetValue(i, j).ToDouble());
+    std::cout << "One patient size" << OnePatient.size() << std::endl;
     for (int j = 0; j < 10; j++)
       OnePatient.push_back(PC10ReducedIntensityHistogram->GetValue(i, j).ToDouble());
-
     std::cout << "One patient size" << OnePatient.size() << std::endl;
 
     Features.push_back(OnePatient);
@@ -2622,7 +2639,7 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
   reader->HasColumnHeadersOff();
   reader->HasRowHeadersOff();
 
-  std::cout << "Reading model files" << std::endl;
+
   //-------------perfusion related data reading------------------
   reader->SetFileName(modeldirectory + "/PCA_PERF.csv");
   reader->Parse();
@@ -2632,6 +2649,7 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PERF(i, j) = dataMatrix(i, j);
 
+
   reader->SetFileName(modeldirectory + "/Mean_PERF.csv");
   reader->Parse();
   dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
@@ -2639,8 +2657,12 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
   for (unsigned int i = 0; i < dataMatrix.size(); i++)
     Mean_PERF[i] = dataMatrix(0, i);
 
+
+
+
+
   //-------------others related data reading------------------
-  int PCA_Others_Size = 20;
+  int PCA_Others_Size = 255;
   reader->SetFileName(modeldirectory + "/PCA_Others.csv");
   reader->Parse();
   dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
@@ -2694,188 +2716,140 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
   Mean_PC10.SetSize(PCA_Others_Size);
 
   int start_counter = 0;
-  int end_counter = 19;
+  int end_counter = 254;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1(i, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_T1 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1CE(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_T1CE read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T2(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_T2 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_FL(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_FL read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T1T1CE(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_T1T1CE read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_T2FL(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_T2FL read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_AX(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_AX read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_FA(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_FA read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_RAD(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_RAD read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_TR(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_TR read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PH(i - start_counter, j) = dataMatrix(i, j);
-
-  std::cout << "PCA_PH read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PSR(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_PSR read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_RCBV(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_RCBV read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC1(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_PC1 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC2(i - start_counter, j) = dataMatrix(i, j);
-
-  std::cout << "PCA_PC2 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC3(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_PC3 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC4(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_PC4 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC5(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_PC5 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC6(i - start_counter, j) = dataMatrix(i, j);
-
-  std::cout << "PCA_PC6 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC7(i - start_counter, j) = dataMatrix(i, j);
-
-  std::cout << "PCA_PC7 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC8(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_PC8 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC9(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_PC9 read.\n";
-
-  start_counter = start_counter + PCA_Others_Size;
-  end_counter = end_counter + PCA_Others_Size;
+  start_counter = start_counter + 255;
+  end_counter = end_counter + 255;
   for (int i = start_counter; i <= end_counter; i++)
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PC10(i - start_counter, j) = dataMatrix(i, j);
 
-  std::cout << "PCA_PC10 read.\n";
+
 
   reader->SetFileName(modeldirectory + "/Mean_Others.csv");
   reader->Parse();
@@ -2907,7 +2881,6 @@ void PseudoProgressionEstimator::ReadAllTheModelParameters(std::string modeldire
     Mean_PC9[i] = dataMatrix(21, i);
     Mean_PC10[i] = dataMatrix(22, i);
   }
-  std::cout << "Finished reading all model files" << std::endl;
   int a = 0;
 }
 
@@ -2927,7 +2900,6 @@ void PseudoProgressionEstimator::WriteCSVFiles(VariableSizeMatrixType inputdata,
     }
     myfile << "\n";
   }
-  myfile.close();
 }
 void PseudoProgressionEstimator::WriteCSVFiles(VectorVectorDouble inputdata, std::string filepath)
 {
@@ -2944,7 +2916,6 @@ void PseudoProgressionEstimator::WriteCSVFiles(VectorVectorDouble inputdata, std
     }
     myfile << "\n";
   }
-  myfile.close();
 }
 void PseudoProgressionEstimator::WriteCSVFiles(vtkSmartPointer<vtkTable> inputdata, std::string filepath)
 {
@@ -2961,7 +2932,6 @@ void PseudoProgressionEstimator::WriteCSVFiles(vtkSmartPointer<vtkTable> inputda
     }
     myfile << "\n";
   }
-  myfile.close();
 }
 void PseudoProgressionEstimator::WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath)
 {
@@ -2971,7 +2941,6 @@ void PseudoProgressionEstimator::WriteCSVFiles(VariableLengthVectorType inputdat
     myfile << std::to_string(inputdata[index1]) << ",";
 
   myfile << "\n";
-  myfile.close();
 }
 
 void PseudoProgressionEstimator::WriteCSVFiles(std::vector<double> inputdata, std::string filepath)
@@ -2982,13 +2951,12 @@ void PseudoProgressionEstimator::WriteCSVFiles(std::vector<double> inputdata, st
     myfile << std::to_string(inputdata[index1]) << ",";
 
   myfile << "\n";
-  myfile.close();
 }
 
 VariableSizeMatrixType PseudoProgressionEstimator::GetModelSelectedFeatures(VariableSizeMatrixType & ScaledFeatureSetAfterAddingLabel, VariableLengthVectorType & SelectedFeatures)
 {
   VariableSizeMatrixType ModelSelectedFeatures;
-  ModelSelectedFeatures.SetSize(ScaledFeatureSetAfterAddingLabel.Rows(), SelectedFeatures.Size() + 1);
+  ModelSelectedFeatures.SetSize(ScaledFeatureSetAfterAddingLabel.Rows(), SelectedFeatures.Size());
   int counter = 0;
   for (unsigned int i = 0; i < SelectedFeatures.Size(); i++)
   {
@@ -2996,9 +2964,6 @@ VariableSizeMatrixType PseudoProgressionEstimator::GetModelSelectedFeatures(Vari
       ModelSelectedFeatures(j, counter) = ScaledFeatureSetAfterAddingLabel(j, SelectedFeatures[i]);
     counter++;
   }
-  for (unsigned int j = 0; j < ScaledFeatureSetAfterAddingLabel.Rows(); j++)
-    ModelSelectedFeatures(j, counter) = ScaledFeatureSetAfterAddingLabel(j, ScaledFeatureSetAfterAddingLabel.Cols() - 1);
-
   return ModelSelectedFeatures;
 }
 

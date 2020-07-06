@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.18"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): BraTS Preprocessing Pipeline</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): BraTS Pre-processing Pipeline</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.nonRelease.20200612.b94a1af7</span>
+   &#160;<span id="projectnumber">1.8.0.Alpha2</span>
    </div>
   </td>
  </tr>
@@ -58,7 +58,7 @@ $(document).ready(function(){initNavTree('preprocessing_brats.html',''); initRes
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">BraTS Preprocessing Pipeline </div>  </div>
+<div class="title">BraTS Pre-processing Pipeline </div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><b>REQUIREMENTS:</b></p><ol type="1">
@@ -72,18 +72,18 @@ $(document).ready(function(){initNavTree('preprocessing_brats.html',''); initRes
 <li><a href="preprocessing_reg.html">Co-registration</a> to T1CE</li>
 <li><a href="preprocessing_reg.html">Registration</a> to SRI-24 atlas [4]</li>
 <li>Apply registration to re-oriented image to maximize image fidelity</li>
-<li><a href="seg_DL.html">Skull-stripping</a></li>
-<li>Put extracted brain mask back to original patient space</li>
+<li>OPTIONAL: <a href="seg_DL.html">Skull-stripping</a></li>
+<li>OPTIONAL: <a href="seg_DL.html">Tumor Segmentation</a></li>
 </ol>
 <p>Example command: </p><pre class="fragment">${CaPTk_InstallDir}/bin/BraTSPipeline.exe -t1 C:/test/t1.nii.gz -t1c C:/test/t1ce.nii.gz -t2 C:/test/t2.nii.gz -fl C:/test/flair.nii.gz -o C:/test/outputDir 
 </pre><p><b>NOTE</b>: This applications takes ~30 minutes to finish on an 8-core Intel i7 with 16GB of RAM.</p>
 <hr  />
 <p>Reference:</p>
 <ol type="1">
-<li>B. H. Menze, A. Jakab, S. Bauer, J. Kalpathy-Cramer, K. Farahani, J. Kirby, et al. "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)", IEEE Transactions on Medical Imaging 34(10), 1993-2024 (2015) DOI: 10.1109/TMI.2014.2377694</li>
-<li>S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J.S. Kirby, et al., "Advancing The Cancer Genome Atlas glioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data, 4:170117 (2017) DOI: 10.1038/sdata.2017.117</li>
+<li>B. H. Menze, A. Jakab, S. Bauer, J. Kalpathy-Cramer, K. Farahani, J. Kirby, et al. "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)", IEEE Transactions on Medical Imaging 34(10), 1993-2024 (2015) DOI:10.1109/TMI.2014.2377694</li>
+<li>S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J.S. Kirby, et al., "Advancing The Cancer Genome Atlas glioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data, 4:170117 (2017) DOI:10.1038/sdata.2017.117</li>
 <li>S. Bakas, M. Reyes, A. Jakab, S. Bauer, M. Rempfler, A. Crimi, et al., "Identifying the Best Machine Learning Algorithms for Brain Tumor Segmentation, Progression Assessment, and Overall Survival Prediction in the BRATS Challenge", arXiv preprint arXiv:1811.02629 (2018)</li>
-<li>T.Rohlfing, N.M.Zahr, E.V.Sullivan,A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human brain mapping, 31(5), pp.798-819. (2010) </li>
+<li>T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010, DOI:10.1002/hbm.20906 </li>
 </ol>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

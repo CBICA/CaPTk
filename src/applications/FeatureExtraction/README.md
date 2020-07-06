@@ -74,6 +74,10 @@ The ```Generic``` options in the parameter file control all options, which are:
 4. ```Column D```: Range, lists of possible values for the parameter
 5. ```Column E```: Value of the specified parameter
 
+### Effect of Resampling
+
+Please see the following presentation: https://upenn.box.com/v/spacingsIssue
+
 ## Batch Processing
 
 Calculating features (using the same parameter file) for a list of subjects (with multi-modal data).
