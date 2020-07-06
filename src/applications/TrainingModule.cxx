@@ -91,6 +91,7 @@ int main(int argc, char *argv[])
   if (parser.compareParameter("o", tempPosition))
   {
     outputDirectoryName = argv[tempPosition + 1];
+    cbica::createDir(outputDirectoryName);
   }
   if (parser.compareParameter("m", tempPosition))
   {
