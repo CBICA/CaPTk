@@ -5,13 +5,14 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.nonRelease.20200626.013f692f" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.Alpha2" ref="index.html">
         <section title="Overview" ref="index.html">
           <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md136" />
           <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md137" />
-          <section title="Supporting Grant" ref="index.html#autotoc_md138" />
-          <section title="Disclaimer" ref="index.html#autotoc_md139" />
-          <section title="Contact" ref="index.html#autotoc_md140" />
+          <section title="Citations" ref="index.html#autotoc_md138" />
+          <section title="Supporting Grant" ref="index.html#autotoc_md139" />
+          <section title="Disclaimer" ref="index.html#autotoc_md140" />
+          <section title="Contact" ref="index.html#autotoc_md141" />
         </section>
       </section>
       <section title="Getting Started" ref="Getting_Started.html">
@@ -55,7 +56,7 @@
           <section title="Bias Correction (ITK filter)" ref="preprocessing_bias.html" />
           <section title="Histogram Matching" ref="preprocessing_histoMatch.html" />
           <section title="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
-          <section title="BraTS Preprocessing Pipeline" ref="preprocessing_brats.html" />
+          <section title="BraTS Pre-processing Pipeline" ref="preprocessing_brats.html" />
         </section>
         <section title="Segmentation" ref="ht_Segmentation.html">
           <section title="Geodesic Training Segmentation" ref="seg_GeoTrain.html" />
@@ -167,7 +168,7 @@
       <keyword name="Bias Correction (ITK filter)" id="Bias Correction (ITK filter)" ref="preprocessing_bias.html" />
       <keyword name="Histogram Matching" id="Histogram Matching" ref="preprocessing_histoMatch.html" />
       <keyword name="Z-Scoring Normalization" id="Z-Scoring Normalization" ref="preprocessing_zScoreNorm.html" />
-      <keyword name="BraTS Preprocessing Pipeline" id="BraTS Preprocessing Pipeline" ref="preprocessing_brats.html" />
+      <keyword name="BraTS Pre-processing Pipeline" id="BraTS Pre-processing Pipeline" ref="preprocessing_brats.html" />
       <keyword name="Segmentation" id="Segmentation" ref="ht_Segmentation.html" />
       <keyword name="Geodesic Training Segmentation" id="Geodesic Training Segmentation" ref="seg_GeoTrain.html" />
       <keyword name="Geodesic Distance Transform-based Segmentation" id="Geodesic Distance Transform-based Segmentation" ref="seg_Geodesic.html" />

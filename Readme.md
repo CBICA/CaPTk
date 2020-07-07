@@ -45,7 +45,7 @@ By downloading CaPTk, you agree to our [License](./LICENSE). You can review Inst
 | macOS          | https://www.nitrc.org/frs/downloadlink.php/11650 |
 | Archive        | https://www.nitrc.org/frs/?group_id=1059         |
 
-## Test Build (1.8.0.Alpha)
+## Test Build (1.8.0.Alpha2)
 
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
@@ -72,7 +72,7 @@ For more information, please contact <a href="mailto:software@cbica.upenn.edu">C
 
 ## GitHub Distribution
 
-We currently provide only our tagged versions of the code via GitHub. Check the "tags" using your favorite Git client after cloning our repository. The analogous commands are as follows:
+We currently provide only our tagged versions of the code via GitHub. Check the "tags" using your favorite Git client after cloning our repository. The analogous commands are as follows: 
 
 ```bash
 git clone https://github.com/cbica/captk.git

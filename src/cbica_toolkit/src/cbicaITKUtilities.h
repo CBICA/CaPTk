@@ -1913,118 +1913,127 @@ namespace cbica
     for (const auto &region : regionsToCompare_1)
     {
       auto labelString = region.first; // the label for stats
-      // get the images to compare up front
-      auto imageToCompare_1 = region.second;
-      auto imageToCompare_2 = regionsToCompare_2[labelString];
-
-      auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
-
-      similarityFilter->SetSourceImage(imageToCompare_1);
-      similarityFilter->SetTargetImage(imageToCompare_2);
-      similarityFilter->Update();
-
-      returnMap[labelString]["Overlap"] = similarityFilter->GetTotalOverlap();
-      returnMap[labelString]["Jaccard"] = similarityFilter->GetUnionOverlap();
-      returnMap[labelString]["Dice"] = similarityFilter->GetMeanOverlap();
-      if (std::isinf(returnMap[labelString]["Dice"])) 
+      if (!labelString.empty())
       {
-        // this happens in the case where there is a label missing in both the reference and input annotations
-        returnMap[labelString]["Dice"] = 1;
-      }
-      returnMap[labelString]["VolumeSimilarity"] = similarityFilter->GetVolumeSimilarity();
-      returnMap[labelString]["FalseNegativeError"] = similarityFilter->GetFalseNegativeError();
-      returnMap[labelString]["FalsePositiveError"] = similarityFilter->GetFalsePositiveError();
+        // get the images to compare up front
+        auto imageToCompare_1 = region.second;
+        auto imageToCompare_2 = regionsToCompare_2[labelString];
 
-      auto temp_roc = GetSensitivityAndSpecificity< TImageType >(imageToCompare_1, imageToCompare_2);
+        // in case one of the labels is missing, just put something
+        auto stats_1 = itk::StatisticsImageFilter< TImageType >::New();
+        stats_1->SetInput(imageToCompare_1);
+        stats_1->Update();
+        auto max_1 = stats_1->GetMaximum();
+        auto stats_2 = itk::StatisticsImageFilter< TImageType >::New();
+        stats_2->SetInput(imageToCompare_2);
+        stats_2->Update();
+        auto max_2 = stats_2->GetMaximum();
 
-      for (const auto &metric : temp_roc)
-      {
-        returnMap[labelString][metric.first] = metric.second;
-      }
+        auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
 
-      // in case one of the labels is missing, just put something
-      auto stats_1 = itk::StatisticsImageFilter< TImageType >::New();
-      stats_1->SetInput(imageToCompare_1);
-      stats_1->Update();
-      auto max_1 = stats_1->GetMaximum();
-      auto stats_2 = itk::StatisticsImageFilter< TImageType >::New();
-      stats_2->SetInput(imageToCompare_2);
-      stats_2->Update();
-      auto max_2 = stats_2->GetMaximum();
+        similarityFilter->SetSourceImage(imageToCompare_1);
+        similarityFilter->SetTargetImage(imageToCompare_2);
+        similarityFilter->Update();
 
-      if ((max_1 == 0) && (max_2 == 0))
-      {
-        returnMap[labelString]["Sensitivity"] = 1;
-        returnMap[labelString]["Specificity"] = 1;
-      }
-      if (std::isnan(returnMap[labelString]["Sensitivity"]))
-      {
-        returnMap[labelString]["Sensitivity"] = 1;
-      }
-      if (std::isinf(returnMap[labelString]["Sensitivity"]))
-      {
-        returnMap[labelString]["Sensitivity"] = 1;
-      }
+        returnMap[labelString]["Overlap"] = similarityFilter->GetTotalOverlap();
+        returnMap[labelString]["Jaccard"] = similarityFilter->GetUnionOverlap();
+        returnMap[labelString]["Dice"] = similarityFilter->GetMeanOverlap();
+        if (std::isinf(returnMap[labelString]["Dice"]))
+        {
+          // this happens in the case where there is a label missing in both the reference and input annotations
+          returnMap[labelString]["Dice"] = 1;
+        }
+        returnMap[labelString]["VolumeSimilarity"] = similarityFilter->GetVolumeSimilarity();
+        returnMap[labelString]["FalseNegativeError"] = similarityFilter->GetFalseNegativeError();
+        returnMap[labelString]["FalsePositiveError"] = similarityFilter->GetFalsePositiveError();
 
-      /// not used till implementation gets standardized
-      //returnMap[labelString]["Hausdorff95"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
-      //returnMap[labelString]["Hausdorff99"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
-      bool hausdorffFound = true;
-      std::string hausdorffExe = cbica::getExecutablePath() + "/Hausdorff95"
-#if WIN32
-        + ".exe"
-#endif
-        ;
-      if (!cbica::isFile(hausdorffExe))
-      {
-        hausdorffExe = cbica::getExecutablePath() + "../hausdorff95/Hausdorff95"
+        auto temp_roc = GetSensitivityAndSpecificity< TImageType >(imageToCompare_1, imageToCompare_2);
+
+        for (const auto &metric : temp_roc)
+        {
+          returnMap[labelString][metric.first] = metric.second;
+        }
+
+        if ((max_1 == 0) && (max_2 == 0))
+        {
+          returnMap[labelString]["Sensitivity"] = 1;
+          returnMap[labelString]["Specificity"] = 1;
+        }
+        if (std::isnan(returnMap[labelString]["Sensitivity"]))
+        {
+          if (max_1 != max_2)
+          {
+            returnMap[labelString]["Sensitivity"] = 0;
+          }
+          else
+          {
+            returnMap[labelString]["Sensitivity"] = 1;
+          }
+        }
+        if (std::isinf(returnMap[labelString]["Sensitivity"]))
+        {
+          returnMap[labelString]["Sensitivity"] = 1;
+        }
+
+        /// not used till implementation gets standardized
+        //returnMap[labelString]["Hausdorff95"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
+        //returnMap[labelString]["Hausdorff99"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
+        bool hausdorffFound = true;
+        std::string hausdorffExe = cbica::getExecutablePath() + "/Hausdorff95"
 #if WIN32
           + ".exe"
 #endif
           ;
         if (!cbica::isFile(hausdorffExe))
         {
-          std::cerr << "Could not find Hausdorff95 executable, so not computing this metric.\n";
-          hausdorffFound = false;
+          hausdorffExe = cbica::getExecutablePath() + "../hausdorff95/Hausdorff95"
+#if WIN32
+            + ".exe"
+#endif
+            ;
+          if (!cbica::isFile(hausdorffExe))
+          {
+            std::cerr << "Could not find Hausdorff95 executable, so not computing this metric.\n";
+            hausdorffFound = false;
+          }
         }
-      }
 
-      if (hausdorffFound)
-      {
-        if ((max_1 == 0) || (max_2 == 0))
+        if (hausdorffFound)
         {
-          // this is the case where one of the labels is missing
-          returnMap[labelString]["Hausdorff95"] = NAN;
-        }
-        else
-        {
-          auto tempDir = cbica::createTmpDir();
-          auto file_1 = tempDir + "/mask_1.nii.gz";
-          auto file_2 = tempDir + "/mask_2.nii.gz";
-          auto writer = itk::ImageFileWriter< TImageType >::New();
-          writer->SetInput(imageToCompare_1);
-          writer->SetFileName(file_1);
-          try
+          if ((max_1 == 0) || (max_2 == 0))
           {
-            writer->Write();
+            // this is the case where one of the labels is missing
+            returnMap[labelString]["Hausdorff95"] = NAN;
           }
-          catch (itk::ExceptionObject &e)
+          else
           {
-            std::cerr << "Error occurred while trying to write the image '" << file_1 << "': " << e.what() << "\n";
-          }
-          writer->SetInput(imageToCompare_2);
-          writer->SetFileName(file_2);
-          try
-          {
-            writer->Write();
-          }
-          catch (itk::ExceptionObject &e)
-          {
-            std::cerr << "Error occurred while trying to write the image '" << file_2 << "': " << e.what() << "\n";
-          }
-          std::array< char, 128 > buffer;
-          std::string result;
-          FILE *pPipe;
+            auto tempDir = cbica::createTmpDir();
+            auto file_1 = tempDir + "/mask_1.nii.gz";
+            auto file_2 = tempDir + "/mask_2.nii.gz";
+            auto writer = itk::ImageFileWriter< TImageType >::New();
+            writer->SetInput(imageToCompare_1);
+            writer->SetFileName(file_1);
+            try
+            {
+              writer->Write();
+            }
+            catch (itk::ExceptionObject &e)
+            {
+              std::cerr << "Error occurred while trying to write the image '" << file_1 << "': " << e.what() << "\n";
+            }
+            writer->SetInput(imageToCompare_2);
+            writer->SetFileName(file_2);
+            try
+            {
+              writer->Write();
+            }
+            catch (itk::ExceptionObject &e)
+            {
+              std::cerr << "Error occurred while trying to write the image '" << file_2 << "': " << e.what() << "\n";
+            }
+            std::array< char, 128 > buffer;
+            std::string result;
+            FILE *pPipe;
 #if WIN32
 #define POPEN _popen
 #define PCLOSE _pclose
@@ -2032,39 +2041,40 @@ namespace cbica
 #define POPEN popen
 #define PCLOSE pclose
 #endif
-          pPipe = POPEN((hausdorffExe + " -gt " + file_1 + " -m " + file_2).c_str(), "r");
-          if (!pPipe)
-          {
-            std::cerr << "Couldn't start command.\n";
+            pPipe = POPEN((hausdorffExe + " -gt " + file_1 + " -m " + file_2).c_str(), "r");
+            if (!pPipe)
+            {
+              std::cerr << "Couldn't start command.\n";
+            }
+            while (fgets(buffer.data(), 128, pPipe) != NULL)
+            {
+              result += buffer.data();
+            }
+            auto returnCode = PCLOSE(pPipe);
+            // remove "\n"
+            result.pop_back();
+            result.pop_back();
+            returnMap[labelString]["Hausdorff95"] = std::atof(result.c_str());
+            cbica::removeDirectoryRecursively(tempDir, true);
           }
-          while (fgets(buffer.data(), 128, pPipe) != NULL)
+          // in case a label is not defined, use the longest diagonal
+          if (std::isnan(returnMap[labelString]["Hausdorff95"]) || std::isinf(returnMap[labelString]["Hausdorff95"]))
           {
-            result += buffer.data();
+            // correct prediction for missing label
+            if ((max_1 == 0) && (max_2 == 0))
+            {
+              returnMap[labelString]["Hausdorff95"] = 0;
+            }
+            else
+            {
+              auto size = imageToCompare_1->GetLargestPossibleRegion().GetSize();
+              auto diag_plane_squared = std::pow(size[0], 2) + std::pow(size[1], 2);
+              auto diag_cube = std::sqrt(std::pow(size[2], 2) + diag_plane_squared);
+              returnMap[labelString]["Hausdorff95"] = diag_cube;
+            }
           }
-          auto returnCode = PCLOSE(pPipe);
-          // remove "\n"
-          result.pop_back();
-          result.pop_back();
-          returnMap[labelString]["Hausdorff95"] = std::atof(result.c_str());
-          cbica::deleteDir(tempDir);
-        }
-        // in case a label is not defined, use the longest diagonal
-        if (std::isnan(returnMap[labelString]["Hausdorff95"]) || std::isinf(returnMap[labelString]["Hausdorff95"]))
-        {
-          // correct prediction for missing label
-          if ((max_1 == 0) && (max_2 == 0))
-          {
-            returnMap[labelString]["Hausdorff95"] = 0;
-          }
-          else
-          {
-            auto size = imageToCompare_1->GetLargestPossibleRegion().GetSize();
-            auto diag_plane_squared = std::pow(size[0], 2) + std::pow(size[1], 2);
-            auto diag_cube = std::sqrt(std::pow(size[2], 2) + diag_plane_squared);
-            returnMap[labelString]["Hausdorff95"] = diag_cube;
-          }
-        }
-      } // end hausdorff found
+        } // end hausdorff found
+      } // end labelString check
     }
 
     return returnMap;
