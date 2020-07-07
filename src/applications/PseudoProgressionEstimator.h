@@ -50,6 +50,8 @@ typedef vnl_matrix<double> MatrixType;
 typedef std::tuple< std::vector<ImageType::IndexType>, VariableSizeMatrixType> PerfusionTupleType;
 typedef std::map<int, PerfusionTupleType> PerfusionMapType;
 
+#define PSP_NO_OF_FEATURES 1040
+#define TXT_NO_OF_FEATURES 810
 
 /**
 \class PseudoProgressionEstimator
