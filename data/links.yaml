@@ -12,7 +12,7 @@ inputs:
     Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/All.zip
   EGFRvIIISVMIndex:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIISVMIndex.zip
-    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/EGFRvIIIIndexPredictor_Model.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/1.8.0/EGFRvIIIIndexPredictor_PretrainedModel.zip
   EGFRvIIISurrogateIndex:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIISurrogateIndex.zip
     Model: N.A.
@@ -30,10 +30,10 @@ inputs:
     Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip
   PseudoProgressionEstimator:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PseudoProgressionEstimator.zip
-    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/PseudoProgressionEstimator_Model.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/1.8.0/PseudoProgressionEstimator_PretrainedModel.zip
   SurvivalPredictor:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/SurvivalPredictor.zip
-    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/SurvivalPredictor_Model.zip
+    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/1.8.0/SurvivalPredictor_PretrainedModel.zip
   MolecularSubtypePredictor:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/MolecularSubtypePredictor.zip
     Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/MolecularSubtypePredictor_Model.zip
@@ -41,7 +41,7 @@ inputs:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PerfusionDerivatives.zip
     Model: N.A.
   PerfusionPCA:
-    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PerfusionPCA.zip
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData/1.8.0/PerfusionPCA.zip
     Model: N.A.
   PopulationAtlases:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PopulationAtlases.zip
