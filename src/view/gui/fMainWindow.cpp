@@ -9773,7 +9773,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         labelPath = subjectPath + "/" + files[i];
       else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
         && isExtensionSupported(extension))
-        perfFilePath = subjectPath + "/SEGMENTATION" + "/" + files[i];
+        perfFilePath = subjectPath + "/" + files[i];
     }
 
     if (labelPath.empty() || perfFilePath.empty())
