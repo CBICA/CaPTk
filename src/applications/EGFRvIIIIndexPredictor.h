@@ -1150,9 +1150,9 @@ std::vector<double> EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForEGFR(ty
   {
     if (tumorIt.Get() == CAPTK::VOXEL_STATUS::ON)
     {
-      if (negAtlasIt.Get() > 0)
+//      if (negAtlasIt.Get() > 0)
         probNEGAtlas.push_back(negAtlasIt.Get());
-      if (posAtlasIt.Get() > 0)
+//      if (posAtlasIt.Get() > 0)
         probPOSAtlas.push_back(posAtlasIt.Get());
     }
     ++tumorIt;
@@ -1185,17 +1185,17 @@ std::vector<double> EGFRvIIIIndexPredictor::GetSpatialLocationFeaturesForEGFR(ty
   }
 
   //previous implementation of location features
-  //std::vector<double> SpatialFeatures;
-  //SpatialFeatures.push_back(average_NEG_Atlas-average_POS_Atlas);
-  //SpatialFeatures.push_back(max_NEG_Atlas- max_POS_Atlas);
-  //SpatialFeatures.push_back(average_NEG_Atlas/average_POS_Atlas);
-  //SpatialFeatures.push_back(max_NEG_Atlas/max_POS_Atlas);
-
   std::vector<double> SpatialFeatures;
-  SpatialFeatures.push_back(average_POS_Atlas - average_NEG_Atlas);
-  SpatialFeatures.push_back(max_POS_Atlas - max_NEG_Atlas);
-  SpatialFeatures.push_back(average_POS_Atlas / average_NEG_Atlas);
-  SpatialFeatures.push_back(max_POS_Atlas / max_NEG_Atlas);
+  SpatialFeatures.push_back(average_NEG_Atlas-average_POS_Atlas);
+  SpatialFeatures.push_back(max_NEG_Atlas- max_POS_Atlas);
+  SpatialFeatures.push_back(average_NEG_Atlas/average_POS_Atlas);
+  SpatialFeatures.push_back(max_NEG_Atlas/max_POS_Atlas);
+
+  //std::vector<double> SpatialFeatures;
+  //SpatialFeatures.push_back(average_POS_Atlas - average_NEG_Atlas);
+  //SpatialFeatures.push_back(max_POS_Atlas - max_NEG_Atlas);
+  //SpatialFeatures.push_back(average_POS_Atlas / average_NEG_Atlas);
+  //SpatialFeatures.push_back(max_POS_Atlas / max_NEG_Atlas);
 
   std::cout << SpatialFeatures[0] << " " << SpatialFeatures[1] << " " << SpatialFeatures[2] << " " << SpatialFeatures[3] << std::endl;
 
