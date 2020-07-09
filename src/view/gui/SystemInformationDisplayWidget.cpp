@@ -22,10 +22,10 @@ void SystemInformationDisplayWidget::SetupUi()
 	horizontalLayout = new QHBoxLayout();
 	horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
 
-	CopyToClipboardPushButton = new QPushButton("Copy to clipboard", this);
-	CopyToClipboardPushButton->setObjectName(QStringLiteral("CopyToClipboardPushButton"));
+	copyToClipboardPushButton = new QPushButton("Copy to clipboard", this);
+	copyToClipboardPushButton->setObjectName(QStringLiteral("CopyToClipboardPushButton"));
 
-	horizontalLayout->addWidget(CopyToClipboardPushButton);
+	horizontalLayout->addWidget(copyToClipboardPushButton);
 
 	verticalLayout->addLayout(horizontalLayout);
 

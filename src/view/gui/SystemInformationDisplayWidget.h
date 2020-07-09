@@ -27,7 +27,7 @@ private:
 	//ivars
 	QVBoxLayout *verticalLayout;
 	QHBoxLayout *horizontalLayout;
-	QPushButton *CopyToClipboardPushButton;
+	QPushButton *copyToClipboardPushButton;
 	QTextEdit *textEdit;
 	QLabel *label;
 };
