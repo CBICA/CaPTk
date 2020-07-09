@@ -86,6 +86,8 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.cpp"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/SystemInformationDisplayWidget.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/SystemInformationDisplayWidget.cpp"
   #"${CMAKE_CURRENT_SOURCE_DIR}/ApplicationBase.h"
   #"${CMAKE_CURRENT_SOURCE_DIR}/NearFarDrawingManager.h"
   #"${CMAKE_CURRENT_SOURCE_DIR}/NearFarDrawingManager.cpp"
