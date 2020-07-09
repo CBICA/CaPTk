@@ -580,6 +580,8 @@ fMainWindow::fMainWindow()
 
   connect(actionModelLibrary, SIGNAL(triggered()), this, SLOT(OpenModelLibrary()));
 
+  connect(help_systeminformation, SIGNAL(triggered()), this, SLOT(OnSystemInformationMenuClicked()));
+
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
   for (size_t i = 0; i < vectorOfGBMApps.size(); i++)
