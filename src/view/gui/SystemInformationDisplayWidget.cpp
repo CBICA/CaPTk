@@ -10,7 +10,7 @@ SystemInformationDisplayWidget::SystemInformationDisplayWidget(QWidget *parent) 
 {
 }
 
-void SystemInformationDisplayWidget2::SetupUi()
+void SystemInformationDisplayWidget::SetupUi()
 {
 	this->setWindowTitle("System Information");
 	this->setMinimumWidth(550);
