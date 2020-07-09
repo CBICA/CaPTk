@@ -222,10 +222,10 @@ int main(int argc, char** argv)
   cbica::createDir(loggerFolder);
   cbica::createDir(downloadFolder);
 
-  ApplicationDownloadManager appDownloadMngr;
-  QObject::connect(&appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
-  QObject::connect(&appDownloadMngr, SIGNAL(extractResult(bool)), QApplication::instance(), SLOT(quit()));
-  std::string libraPath = appDownloadMngr.getApplication("libra", true);
+  ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
+  QObject::connect(appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
+  QObject::connect(appDownloadMngr, SIGNAL(extractResult(bool)), QApplication::instance(), SLOT(quit()));
+  std::string libraPath = appDownloadMngr->getApplication("libra", true);
 
   if (!libraPath.empty()) { // libra is not present
     bool ret = algorithmsRunner(); 
