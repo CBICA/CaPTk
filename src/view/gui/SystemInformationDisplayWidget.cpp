@@ -37,7 +37,7 @@ void SystemInformationDisplayWidget::SetupUi()
 
 	label = new QLabel(this);
 	label->setObjectName(QStringLiteral("label"));
-	label->setText("Please edit the above information as you see fit");
+	label->setText("Please review & edit the above information if needed.");
 
 	verticalLayout->addWidget(label);
 
