@@ -7377,6 +7377,8 @@ void fMainWindow::CallBiasCorrection(const std::string correctionType, QString s
       auto mask2D = extractor_mask->GetOutput();
       //mask2D->DisconnectPipeline();
 
+      updateProgress(5, "Bias correction in process");
+
       auto outputImage = biasCorrector.Run<ImageTypeFloat2D>(correctionType,
         image_2d,
         bias_splineOrder,
@@ -7407,7 +7409,7 @@ void fMainWindow::CallBiasCorrection(const std::string correctionType, QString s
       updateProgress(5, "Bias correction in process");
 
       ImageTypeFloat3D::Pointer outputImage = biasCorrector.Run<ImageTypeFloat3D>(correctionType,
-        mSlicerManagers[index]->mITKImage,
+        currentImage,
         bias_splineOrder,
         bias_maxIterations,
         bias_fittingLevels,
