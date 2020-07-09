@@ -1,4 +1,9 @@
 #include "SystemInformationDisplayWidget.h"
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QTextEdit>
+#include <QPushButton>
 
 SystemInformationDisplayWidget::SystemInformationDisplayWidget(QWidget *parent) :
     QWidget(parent)
