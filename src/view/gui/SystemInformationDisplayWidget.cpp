@@ -8,6 +8,7 @@
 SystemInformationDisplayWidget::SystemInformationDisplayWidget(QWidget *parent) :
     QWidget(parent)
 {
+	this->SetupUi();
 }
 
 void SystemInformationDisplayWidget::SetupUi()
