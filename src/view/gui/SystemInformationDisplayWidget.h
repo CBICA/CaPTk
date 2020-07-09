@@ -3,6 +3,12 @@
 
 #include <QWidget>
 
+class QVBoxLayout;
+class QHBoxLayout;
+class QPushButton;
+class QTextEdit;
+class QLabel;
+
 class SystemInformationDisplayWidget : public QWidget
 {
     Q_OBJECT
@@ -15,6 +21,15 @@ public slots:
 
 private:
 
+	//set up UI
+	void SetupUi();
+
+	//ivars
+	QVBoxLayout *verticalLayout;
+	QHBoxLayout *horizontalLayout;
+	QPushButton *CopyToClipboardPushButton;
+	QTextEdit *textEdit;
+	QLabel *label;
 };
 
 #endif // SYSTEMINFORMATIONDISPLAYWIDGET_H
