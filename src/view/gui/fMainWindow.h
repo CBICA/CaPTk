@@ -293,6 +293,7 @@ private:
   QAction *help_forum;
   QAction *help_bugs;
   QAction *help_features;
+  QAction *help_systeminformation;
 
   //-------------actions-------------
 

@@ -181,6 +181,7 @@ fMainWindow::fMainWindow()
   help_forum = new QAction(this);
   help_bugs = new QAction(this);
   helpMenu_download = new QAction(this);
+  help_systeminformation = new QAction(this);
   actionLoad_Recurrence_Images = new QAction(this);
   actionLoad_Nifti_Images = new QAction(this);
   actionLoad_Dicom_Images = new QAction(this);
@@ -294,6 +295,7 @@ fMainWindow::fMainWindow()
   menuHelp->addAction(actionHelp_Interactions);
   menuDownload = menuHelp->addMenu("Sample Data");
   auto supportMenu = menuHelp->addMenu("Support Links");
+  menuHelp->addAction(this->help_systeminformation);
   menuHelp->addAction(this->actionModelLibrary);
   menuHelp->addAction(actionAbout);
 
