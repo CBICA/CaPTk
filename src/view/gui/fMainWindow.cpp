@@ -1175,6 +1175,10 @@ void fMainWindow::OpenModelLibrary()
 	}
 }
 
+void fMainWindow::OnSystemInformationMenuClicked()
+{
+}
+
 void fMainWindow::EnableThresholdOfMask()
 {
 

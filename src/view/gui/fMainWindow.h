@@ -967,6 +967,11 @@ public slots:
   void OpenModelLibrary();
 
   /**
+ \brief system information menu click 
+ */
+  void OnSystemInformationMenuClicked();
+
+  /**
   \brief Get contextual help 
 
   \param startPage The starting page for the web engine view
