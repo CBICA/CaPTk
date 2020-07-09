@@ -7369,13 +7369,12 @@ void fMainWindow::CallBiasCorrection(const std::string correctionType, QString s
       image_2d = extractor->GetOutput();
       image_2d->DisconnectPipeline();
 
-      auto extractor = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
-      ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
-      extractor->SetExtractionRegion(desiredRegion);
-      extractor->SetInput(maskImg);
-      extractor->SetDirectionCollapseToIdentity();
-      extractor->Update();
-      auto mask2D = extractor->GetOutput();
+      auto extractor_mask = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
+      extractor_mask->SetExtractionRegion(desiredRegion);
+      extractor_mask->SetInput(maskImg);
+      extractor_mask->SetDirectionCollapseToIdentity();
+      extractor_mask->Update();
+      auto mask2D = extractor_mask->GetOutput();
       //mask2D->DisconnectPipeline();
 
       auto outputImage = biasCorrector.Run<ImageTypeFloat2D>(correctionType,
