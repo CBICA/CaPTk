@@ -86,6 +86,7 @@ class Slicer;
 class SimpleImageManager;
 class fHelpDialog;
 class PreferencesDialog;
+class SystemInformationDisplayWidget;
 
 #define USE_PROCESSDIALOG
 
@@ -266,6 +267,7 @@ private:
   fBraTSSegmentation bratsPipelineDialog;
   fDirectionalityDialog directionalityEstimator;
   PreferencesDialog *preferenceDialog;
+  SystemInformationDisplayWidget *sysinfowidget;
   
 
   fDrawingPanel *drawingPanel;

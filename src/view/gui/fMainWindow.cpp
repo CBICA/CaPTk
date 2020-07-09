@@ -67,6 +67,7 @@
 #include "ApplicationPreferences.h"
 
 #include "CaPTkDockWidget.h"
+#include "SystemInformationDisplayWidget.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -258,6 +259,7 @@ fMainWindow::fMainWindow()
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
+  this->sysinfowidget = new SystemInformationDisplayWidget();
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
@@ -1179,6 +1181,7 @@ void fMainWindow::OpenModelLibrary()
 
 void fMainWindow::OnSystemInformationMenuClicked()
 {
+	this->sysinfowidget->show();
 }
 
 void fMainWindow::EnableThresholdOfMask()
