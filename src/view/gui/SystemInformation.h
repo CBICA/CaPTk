@@ -13,8 +13,11 @@ public:
 
 private:
 
-	//! Get OS information
-	void GetOSInformation();
+	//! Get Basic OS information
+	void GetBasicOSInformation();
+
+	//! Get Detailed OS information
+	void GetDetailedOSInformation();
 
 	QStringList m_InfoList;
 
