@@ -13,6 +13,9 @@ public:
 
 private:
 
+	//! Get OS information
+	void GetOSInformation();
+
 	QStringList m_InfoList;
 
 };
