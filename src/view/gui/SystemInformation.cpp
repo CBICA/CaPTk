@@ -14,7 +14,10 @@ SystemInformation::SystemInformation()
 	this->GetBasicOSInformation();
 	this->GetDetailedOSInformation();
 	this->GetMemoryInformation();
-	this->GetOpenGLInformation();
+
+	//TBD: The following method needs to be tested on various platforms 
+	//If results are incorrect, can be commented till we fix
+	this->GetOpenGLInformation(); 
 }
 
 QStringList SystemInformation::GetSystemInformation()
