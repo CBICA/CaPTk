@@ -42,3 +42,11 @@ void SystemInformationDisplayWidget::SetupUi()
 	verticalLayout->addWidget(label);
 
 }
+
+void SystemInformationDisplayWidget::SetInformation(QStringList sl)
+{
+	foreach(QString str, sl)
+	{
+		this->textEdit->append(str);
+	}
+}
