@@ -61,3 +61,8 @@ void SystemInformationDisplayWidget::OnCopyToClipboardBtnClicked()
 	this->textEdit->copy();
 
 }
+
+void SystemInformationDisplayWidget::ClearInformation()
+{
+	this->textEdit->clear();
+}

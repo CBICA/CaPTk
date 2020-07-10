@@ -1183,6 +1183,9 @@ void fMainWindow::OpenModelLibrary()
 void fMainWindow::OnSystemInformationMenuClicked()
 {
 	SystemInformation info;
+	//first we clear any previous information
+	this->sysinfowidget->ClearInformation();
+
 	this->sysinfowidget->SetInformation(info.GetSystemInformation());
 	this->sysinfowidget->show();
 }

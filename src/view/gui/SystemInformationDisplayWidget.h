@@ -18,6 +18,9 @@ public:
 	//! set information to display on widget
 	void SetInformation(QStringList sl);
 
+	//!clear previous information
+	void ClearInformation();
+
 public slots:
 	void OnCopyToClipboardBtnClicked();
 
