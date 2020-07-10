@@ -172,12 +172,14 @@ int algorithmsRunner()
     features.Update();
 
     std::cout << "Done.\n";
+    QApplication::quit();
 
     return EXIT_SUCCESS;
   }
   else
   {
     std::cerr << "Libra did not succeed. Please recheck.\n";
+    QApplication::quit();
     return EXIT_FAILURE;
   }
 }
@@ -229,7 +231,6 @@ int main(int argc, char** argv)
 
   if (!libraPath.empty()) { // libra is not present
     bool ret = algorithmsRunner(); 
-    app.quit();
   }
   
   // else
