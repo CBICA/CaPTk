@@ -22,6 +22,9 @@ private:
 	//! Get memory information
 	void GetMemoryInformation();
 
+	//! Get OpenGL information
+	void GetOpenGLInformation();
+
 	QStringList m_InfoList;
 
 };

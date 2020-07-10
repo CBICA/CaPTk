@@ -3,13 +3,19 @@
 #include <QStorageInfo>
 #include <QNetworkInterface>
 
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QOffscreenSurface>
+
 #include "CaPTkUtils.h"
+#include "CheckOpenGLVersion.h"
 
 SystemInformation::SystemInformation()
 {
 	this->GetBasicOSInformation();
 	this->GetDetailedOSInformation();
 	this->GetMemoryInformation();
+	this->GetOpenGLInformation();
 }
 
 QStringList SystemInformation::GetSystemInformation()
@@ -37,7 +43,7 @@ void SystemInformation::GetDetailedOSInformation()
 	this->m_InfoList << "Machine Host Name: " + systemInfo.machineHostName();
 	this->m_InfoList << "Product Type: " + systemInfo.productType();
 	this->m_InfoList << "Product Version: " + systemInfo.productVersion();
-	this->m_InfoList << "Byte Order: " + systemInfo.buildAbi();
+	this->m_InfoList << "CPU ABI: " + systemInfo.buildAbi();
 	this->m_InfoList << "Pretty ProductName: " + systemInfo.prettyProductName();
 	this->m_InfoList << "\n";
 }
@@ -48,5 +54,25 @@ void SystemInformation::GetMemoryInformation()
 	unsigned long long ram = getTotalInstalledMemory();
 	this->m_InfoList << "****Memory Information****";
 	this->m_InfoList << "RAM: " + QString::number(ram / (1024.0 * 1024 * 1024), 'f', 2) + "GB";
+	this->m_InfoList << "\n";
+}
+
+void SystemInformation::GetOpenGLInformation()
+{
+	QOffscreenSurface surf;
+	surf.create();
+
+	QOpenGLContext ctx;
+	ctx.create();
+	ctx.makeCurrent(&surf);
+
+	std::string glVersion = std::string(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VERSION)));
+	std::string glRenderer = std::string(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_RENDERER)));
+	std::string glvendor = std::string(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VENDOR)));
+
+	this->m_InfoList << "****OpenGL Information****";
+	this->m_InfoList << "OpenGL Vendor: " + QString(glvendor.c_str());
+	this->m_InfoList << "OpenGL Version: " + QString(glVersion.c_str());
+	this->m_InfoList << "OpenGL Renderer: " + QString(glRenderer.c_str());
 	this->m_InfoList << "\n";
 }
