@@ -7,3 +7,8 @@ SystemInformation::SystemInformation()
 {
 
 }
+
+QStringList SystemInformation::GetSystemInformation()
+{
+	return m_InfoList;
+}
