@@ -8,7 +8,6 @@
 #include <QOffscreenSurface>
 
 #include "CaPTkUtils.h"
-#include "CheckOpenGLVersion.h"
 
 SystemInformation::SystemInformation()
 {
