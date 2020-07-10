@@ -68,6 +68,7 @@
 
 #include "CaPTkDockWidget.h"
 #include "SystemInformationDisplayWidget.h"
+#include "SystemInformation.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -1181,6 +1182,8 @@ void fMainWindow::OpenModelLibrary()
 
 void fMainWindow::OnSystemInformationMenuClicked()
 {
+	SystemInformation info;
+	this->sysinfowidget->SetInformation(info.GetSystemInformation());
 	this->sysinfowidget->show();
 }
 
