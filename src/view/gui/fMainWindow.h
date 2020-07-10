@@ -266,6 +266,7 @@ private:
   fBraTSSegmentation bratsPipelineDialog;
   fDirectionalityDialog directionalityEstimator;
   PreferencesDialog *preferenceDialog;
+  ApplicationDownloadManager appDownloadMngr;
   
 
   fDrawingPanel *drawingPanel;

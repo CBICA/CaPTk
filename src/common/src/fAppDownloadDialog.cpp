@@ -85,7 +85,7 @@ void fAppDownloadDialog::initDownload() {
                         tr("Unable to save the file %1: %2")
                         .arg(fileName).arg(file->errorString()));
             delete file;
-            file = 0;
+            file = nullptr;
             return;
         }
         
@@ -164,7 +164,7 @@ void fAppDownloadDialog::httpDownloadFinished()
             file->close();
             file->remove();
             delete file;
-            file = 0;
+            file = nullptr;
         }
         reply->deleteLater();
         // downloadProgressDialog->hide();
@@ -212,10 +212,10 @@ void fAppDownloadDialog::httpDownloadFinished()
     }
 
     reply->deleteLater();
-    reply = 0;
+    reply = nullptr;
     delete file;
-    file = 0;
-    manager = 0;
+    file = nullptr;
+    manager = nullptr;
 
     ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("true").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
