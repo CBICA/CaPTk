@@ -19,6 +19,9 @@ private:
 	//! Get Detailed OS information
 	void GetDetailedOSInformation();
 
+	//! Get memory information
+	void GetMemoryInformation();
+
 	QStringList m_InfoList;
 
 };

@@ -3,10 +3,13 @@
 #include <QStorageInfo>
 #include <QNetworkInterface>
 
+#include "CaPTkUtils.h"
+
 SystemInformation::SystemInformation()
 {
 	this->GetBasicOSInformation();
 	this->GetDetailedOSInformation();
+	this->GetMemoryInformation();
 }
 
 QStringList SystemInformation::GetSystemInformation()
@@ -22,7 +25,6 @@ void SystemInformation::GetBasicOSInformation()
 	this->m_InfoList << "Minor Version: " + QString::number(QOperatingSystemVersion::current().minorVersion());
 	this->m_InfoList << "Micro Version: " + QString::number(QOperatingSystemVersion::current().microVersion());
 	this->m_InfoList << "\n";
-
 }
 
 void SystemInformation::GetDetailedOSInformation()
@@ -37,5 +39,14 @@ void SystemInformation::GetDetailedOSInformation()
 	this->m_InfoList << "Product Version: " + systemInfo.productVersion();
 	this->m_InfoList << "Byte Order: " + systemInfo.buildAbi();
 	this->m_InfoList << "Pretty ProductName: " + systemInfo.prettyProductName();
+	this->m_InfoList << "\n";
+}
+
+void SystemInformation::GetMemoryInformation()
+{
+	/**** Get total amount of ram ****/
+	unsigned long long ram = getTotalInstalledMemory();
+	this->m_InfoList << "****Memory Information****";
+	this->m_InfoList << "RAM: " + QString::number(ram / (1024.0 * 1024 * 1024), 'f', 2) + "GB";
 	this->m_InfoList << "\n";
 }
