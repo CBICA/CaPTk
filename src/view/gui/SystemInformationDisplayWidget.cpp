@@ -14,6 +14,20 @@ SystemInformationDisplayWidget::SystemInformationDisplayWidget(QWidget *parent) 
 	connect(this->copyToClipboardPushButton, SIGNAL(clicked()), this, SLOT(OnCopyToClipboardBtnClicked()));
 }
 
+SystemInformationDisplayWidget::~SystemInformationDisplayWidget()
+{
+	if (this->label)
+		delete this->label;
+	if (this->textEdit)
+		delete this->textEdit;
+	if (this->copyToClipboardPushButton)
+		delete this->copyToClipboardPushButton;
+	if (this->horizontalLayout)
+		delete this->horizontalLayout;
+	if (this->verticalLayout)
+		delete this->verticalLayout;
+}
+
 void SystemInformationDisplayWidget::SetupUi()
 {
 	this->setWindowTitle("System Information");

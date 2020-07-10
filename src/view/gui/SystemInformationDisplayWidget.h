@@ -14,6 +14,7 @@ class SystemInformationDisplayWidget : public QWidget
     Q_OBJECT
 public:
     explicit SystemInformationDisplayWidget(QWidget *parent = nullptr);
+	~SystemInformationDisplayWidget();
 
 	//! set information to display on widget
 	void SetInformation(QStringList sl);
