@@ -9,6 +9,9 @@ SystemInformationDisplayWidget::SystemInformationDisplayWidget(QWidget *parent) 
     QWidget(parent)
 {
 	this->SetupUi();
+
+	//connections
+	connect(this->copyToClipboardPushButton, SIGNAL(clicked()), this, SLOT(OnCopyToClipboardBtnClicked()));
 }
 
 void SystemInformationDisplayWidget::SetupUi()
@@ -19,7 +22,7 @@ void SystemInformationDisplayWidget::SetupUi()
 	verticalLayout = new QVBoxLayout(this);
 	verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
 
-	horizontalLayout = new QHBoxLayout();
+	horizontalLayout = new QHBoxLayout(this);
 	horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
 
 	copyToClipboardPushButton = new QPushButton("Copy to clipboard", this);
@@ -40,7 +43,6 @@ void SystemInformationDisplayWidget::SetupUi()
 	label->setText("Please review & edit the above information if needed.");
 
 	verticalLayout->addWidget(label);
-
 }
 
 void SystemInformationDisplayWidget::SetInformation(QStringList sl)
@@ -49,4 +51,13 @@ void SystemInformationDisplayWidget::SetInformation(QStringList sl)
 	{
 		this->textEdit->append(str);
 	}
+}
+
+void SystemInformationDisplayWidget::OnCopyToClipboardBtnClicked()
+{
+	//what to copy?
+	this->textEdit->selectAll();
+
+	this->textEdit->copy();
+
 }
