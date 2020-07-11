@@ -4973,12 +4973,6 @@ void fMainWindow::CallForNewSurvivalPredictionModelFromMain(const std::string in
   }
 }
 
-
-
-
-
-
-
 void fMainWindow::CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::string modeldirectory, const std::string inputdirectory, const std::string outputdirectory)
 {
   if (modeldirectory.empty())
