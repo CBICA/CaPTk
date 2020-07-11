@@ -177,10 +177,11 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 		ApplicationPreferences::GetInstance()->SerializePreferences();
 		// ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
-		updateProgressSlot(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
 		if (!this->isCLI) {
 			QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
 		}
+		updateProgressSlot(0, "Install " + this->m_AppName.toStdString() + " not completed", 100);
+
         qDebug() << "Install " << this->m_AppName << " failed. Please retry.\n";
 
 	}
@@ -191,10 +192,11 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 		ApplicationPreferences::GetInstance()->SerializePreferences();
 		// ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
-		updateProgressSlot(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
 		if (!this->isCLI) {
 			QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 		}
+		updateProgressSlot(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
+
 		qDebug() << "Install " << this->m_AppName << " completed\n";
 		qDebug() << "Please rerun " << this->m_AppName << "\n";	
 	}

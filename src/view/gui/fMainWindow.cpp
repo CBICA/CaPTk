@@ -5942,7 +5942,6 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   connect(&appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   std::string scriptToCall = appDownloadMngr.getApplication("libra", false);
   
@@ -6047,7 +6046,6 @@ void fMainWindow::ApplicationBreastSegmentation()
     return;
   }
 
-  // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   connect(&appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   std::string scriptToCall = appDownloadMngr.getApplication("libra", false);
   
@@ -6108,7 +6106,6 @@ void fMainWindow::ApplicationLIBRASingle()
     return;
   }
 
-  // ApplicationDownloadManager* appDownloadMngr = new ApplicationDownloadManager();
   connect(&appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
   std::string scriptToCall = appDownloadMngr.getApplication("libra", false);
   
