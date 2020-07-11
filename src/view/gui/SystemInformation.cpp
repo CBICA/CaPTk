@@ -1,4 +1,4 @@
-#include "systeminformation.h"
+#include "SystemInformation.h"
 #include <QOperatingSystemVersion>
 #include <QStorageInfo>
 #include <QNetworkInterface>
