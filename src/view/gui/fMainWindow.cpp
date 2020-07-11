@@ -5125,11 +5125,6 @@ void fMainWindow::CallForNewEGFRvIIIPredictionModelFromMain(const std::string in
   }
 }
 
-
-
-
-
-
 ImageTypeFloat3D::Pointer fMainWindow::RescaleImageIntensity(ImageTypeFloat3D::Pointer image)
 {
   typedef itk::RescaleIntensityImageFilter< ImageTypeFloat3D, ImageTypeFloat3D > RescaleFilterType;
