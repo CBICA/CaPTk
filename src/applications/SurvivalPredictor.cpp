@@ -259,18 +259,18 @@ int SurvivalPredictor::TrainNewSurvivalPredictionModel(const std::string &inputd
 
   //append labels to 6-months and 18-months model features as the training function expects labels in the last column
   VariableSizeMatrixType finaldatamatrix_6Months, finaldatamatrix_18Months;
-  finaldatamatrix_6Months.SetSize(scaledFeatureSet.Rows(), scaledFeatureSet.Cols() + 1);
-  finaldatamatrix_18Months.SetSize(scaledFeatureSet.Rows(), scaledFeatureSet.Cols() + 1);
+  finaldatamatrix_6Months.SetSize(SixModelSelectedFeatures.Rows(), SixModelSelectedFeatures.Cols() + 1);
+  finaldatamatrix_18Months.SetSize(EighteenModelSelectedFeatures.Rows(), EighteenModelSelectedFeatures.Cols() + 1);
   for (unsigned int i = 0; i < finaldatamatrix_6Months.Rows(); i++)
   {
     for (unsigned int j = 0; j < finaldatamatrix_6Months.Cols() - 1; j++)
-      finaldatamatrix_6Months(i, j) = scaledFeatureSet(i, j);
+      finaldatamatrix_6Months(i, j) = SixModelSelectedFeatures(i, j);
     finaldatamatrix_6Months(i, finaldatamatrix_6Months.Cols() - 1) = SixModelLabels[i];
   }
   for (unsigned int i = 0; i < finaldatamatrix_18Months.Rows(); i++)
   {
     for (unsigned int j = 0; j < finaldatamatrix_18Months.Cols() - 1; j++)
-      finaldatamatrix_18Months(i, j) = scaledFeatureSet(i, j);
+      finaldatamatrix_18Months(i, j) = EighteenModelSelectedFeatures(i, j);
     finaldatamatrix_18Months(i, finaldatamatrix_18Months.Cols() - 1) = EighteenModelLabels[i];
   }
   std::cout << std::endl << "Building model....." << std::endl;
@@ -705,8 +705,8 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
   }
 
   //write selected features in a .csv file
-  WriteCSVFilesWithHorizontalAndVerticalHeaders(SixModelSelectedFeatures, patient_ids, SelectedFeatureLabels_6months, outputdirectory + "/ScaledFeatures_6Months.csv");
-  WriteCSVFilesWithHorizontalAndVerticalHeaders(EighteenModelSelectedFeatures, patient_ids, SelectedFeatureLabels_18months, outputdirectory + "/ScaledFeatures_18Months.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(SixModelSelectedFeatures, patient_ids, SelectedFeatureLabels_6months, outputdirectory + "/SelectedFeatures_6Months.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(EighteenModelSelectedFeatures, patient_ids, SelectedFeatureLabels_18months, outputdirectory + "/SelectedFeatures_18Months.csv");
 
   try
 	{
@@ -730,8 +730,8 @@ VectorDouble SurvivalPredictor::SurvivalPredictionOnExistingModel(const std::str
 		{
 			VectorDouble result_6;
 			VectorDouble result_18;
-			result_6 = testOpenCVSVM(ScaledTestingData, modeldirectory + "/Survival_SVM_Model6.xml");
-			result_18 = testOpenCVSVM(ScaledTestingData, modeldirectory + "/Survival_SVM_Model18.xml");
+			result_6 = testOpenCVSVM(SixModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model6.xml");
+			result_18 = testOpenCVSVM(EighteenModelSelectedFeatures, modeldirectory + "/Survival_SVM_Model18.xml");
 			results = CombineEstimates(result_6, result_18);
 			for (size_t i = 0; i < results.size(); i++)
 			{
