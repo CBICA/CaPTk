@@ -28,7 +28,6 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
     std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
 
     if(!this->IsApplicationAvailable(appName)) {
-	// if (scriptToCall.empty())
 		ApplicationPreferences::GetInstance()->DeSerializePreferences();
 		bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
 		bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
@@ -62,22 +61,6 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 		
 		return "";
 	}
-	// else {
-	// 	ApplicationPreferences::GetInstance()->DeSerializePreferences();
-	// 	bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
-	// 	bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
-	// 	ApplicationPreferences::GetInstance()->DisplayPreferences();
-
-	// 	if(extractionStarted && !extractionFinished)
-	// 	{
-	// 		if (!this->isCLI) {
-	// 			QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction in progress");
-	// 		}
-	// 		qDebug() << "Extraction in progress\n";
-
-	// 		return "";
-	// 	}
-	// }
 
     return scriptToCall;
 }
@@ -152,24 +135,16 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 		asyncExtract->setAppName(this->m_AppName);
 
 		qDebug() << "\nInstalling " << this->m_AppName << "\n";
-		// qDebug() << "Extracting" << endl;
 
 		updateProgressSlot(0, "Installing " + this->m_AppName.toStdString(), 100);
 
 		asyncExtract->start();
-
-//        if(this->isCLI)
-//            asyncExtract->wait();
-		// QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction has started in the background");
 	}
 }
 
 void ApplicationDownloadManager::doneUnzip(bool extracted) {
-
-    //if (getApplicationDownloadPath(this->m_AppName.toStdString()).empty()) {
 		
     if(!extracted){
-		// qDebug() << "Extraction failed" << endl;
 		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
@@ -186,7 +161,6 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 
 	}
 	else {
-		// qDebug() << "Extraction done" << endl;
 
 		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
 		ApplicationPreferences::GetInstance()->SerializePreferences();
