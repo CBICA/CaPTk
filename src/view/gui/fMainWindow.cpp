@@ -5267,11 +5267,6 @@ void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory,
     //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-  //if (QualifiedSubjects.size() > 0 && QualifiedSubjects.size() <= 20)
-  //{
-  //  ShowErrorMessage("There should be atleast 20 patients to build reliable pseudo-progression model.");
-  //  return;
-  //}
   PerfusionPCA mPCAEstimator;
   if (mPCAEstimator.TrainNewPerfusionModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
     ShowMessage("Trained PCA model has been saved at the specified location.", this);
