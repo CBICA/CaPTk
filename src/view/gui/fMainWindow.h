@@ -87,6 +87,7 @@ class Slicer;
 class SimpleImageManager;
 class fHelpDialog;
 class PreferencesDialog;
+class SystemInformationDisplayWidget;
 
 #define USE_PROCESSDIALOG
 
@@ -267,7 +268,11 @@ private:
   fBraTSSegmentation bratsPipelineDialog;
   fDirectionalityDialog directionalityEstimator;
   PreferencesDialog *preferenceDialog;
+<<<<<<< HEAD
   ApplicationDownloadManager appDownloadMngr;
+=======
+  SystemInformationDisplayWidget *sysinfowidget;
+>>>>>>> d05838074fc39eeb61a9d0dc644d21bda12559a6
   
 
   fDrawingPanel *drawingPanel;
@@ -295,6 +300,7 @@ private:
   QAction *help_forum;
   QAction *help_bugs;
   QAction *help_features;
+  QAction *help_systeminformation;
 
   //-------------actions-------------
 
@@ -966,6 +972,11 @@ public slots:
   \brief open model library webpage
   */
   void OpenModelLibrary();
+
+  /**
+ \brief system information menu click 
+ */
+  void OnSystemInformationMenuClicked();
 
   /**
   \brief Get contextual help 
