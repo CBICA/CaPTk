@@ -423,39 +423,39 @@ jobs:
 
     #   displayName: 'Configure and compile Superbuild'
 
-    - bash: |
-        # mkdir $(Build.SourcesDirectory)/../superbuild
-        # cd bin
-        # mv ./* $(Build.SourcesDirectory)/../superbuild
-        # cd $(Build.SourcesDirectory)/..
-        # ls
-        # echo "Done cd"
-        # tar cvfz superbuild.tar.gz superbuild
-        # ls
-        # echo "done tar"
-        # rm -rf superbuild
-        # ls
-        # cd $(Build.SourcesDirectory)
+    # - bash: |
+    #     # mkdir $(Build.SourcesDirectory)/../superbuild
+    #     # cd bin
+    #     # mv ./* $(Build.SourcesDirectory)/../superbuild
+    #     # cd $(Build.SourcesDirectory)/..
+    #     # ls
+    #     # echo "Done cd"
+    #     # tar cvfz superbuild.tar.gz superbuild
+    #     # ls
+    #     # echo "done tar"
+    #     # rm -rf superbuild
+    #     # ls
+    #     # cd $(Build.SourcesDirectory)
 
-        pwd
+    #     pwd
 
-        rm -rf bin
+    #     rm -rf bin
 
-        mkdir bin
-        cd bin
+    #     mkdir bin
+    #     cd bin
         
-        cp -r $(Build.SourcesDirectory)/../superbuild.tar.gz ./
-        ls
-        echo "Done cp"
-        tar xvfz superbuild.tar.gz
-        rm -rf superbuild.tar.gz
+    #     cp -r $(Build.SourcesDirectory)/../superbuild.tar.gz ./
+    #     ls
+    #     echo "Done cp"
+    #     tar xvfz superbuild.tar.gz
+    #     rm -rf superbuild.tar.gz
 
-        ls
-        echo "Done tar"
+    #     ls
+    #     echo "Done tar"
 
-        mv superbuild/* ./
-        ls
-      displayName: 'Move superbuild and qt and compiled apps'
+    #     mv superbuild/* ./
+    #     ls
+    #   displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
         git pull origin master
@@ -473,7 +473,7 @@ jobs:
     # # Configure and build CaPTk
     # - bash: |
     #     cd bin
-    #     export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+    #     export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
     #     cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ..
     #     make -j2
     #   displayName: 'Configure and compile CaPTk with Testing enabled'
@@ -487,10 +487,11 @@ jobs:
     # Configure and build CaPTk
     - bash: |
         cd bin
-        export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        ls $(Build.SourcesDirectory)/../../superbuild/bin
+        export PATH=$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
         
-        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR="$(Build.SourcesDirectory)/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
+        cmake -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DBUILD_TESTING=OFF ..
         
         rm -rf binaries_linux.zip
         rm -rf qt.zip
@@ -513,8 +514,8 @@ jobs:
 
     # Build a package
     - bash: |
-        export PATH=$(Build.SourcesDirectory)/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/bin/qt/5.12.1/libexec:$PATH
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
+        export PATH=$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/libexec:$PATH
+        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/lib/cmake/Qt5:$CMAKE_PREFIX_PATH
 
         rm -rf regression
         rm -rf binaries

@@ -231,7 +231,7 @@ int main(int argc, char** argv)
     bool ret = algorithmsRunner(); 
     QApplication::quit();
     app.quit();
-    quit();
+    // quit();
   }
   
   // else
