@@ -482,7 +482,7 @@ jobs:
     #    cd bin
     #    make test
     #    rm -rf testing
-    #   displayName: 'Performing the Tests'
+    #   displayName: 'Performing the Tests' 
 
     # Configure and build CaPTk
     - bash: |
