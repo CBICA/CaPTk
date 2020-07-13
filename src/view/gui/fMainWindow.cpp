@@ -4973,12 +4973,6 @@ void fMainWindow::CallForNewSurvivalPredictionModelFromMain(const std::string in
   }
 }
 
-
-
-
-
-
-
 void fMainWindow::CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::string modeldirectory, const std::string inputdirectory, const std::string outputdirectory)
 {
   if (modeldirectory.empty())
@@ -5125,11 +5119,6 @@ void fMainWindow::CallForNewEGFRvIIIPredictionModelFromMain(const std::string in
   }
 }
 
-
-
-
-
-
 ImageTypeFloat3D::Pointer fMainWindow::RescaleImageIntensity(ImageTypeFloat3D::Pointer image)
 {
   typedef itk::RescaleIntensityImageFilter< ImageTypeFloat3D, ImageTypeFloat3D > RescaleFilterType;
@@ -5267,16 +5256,11 @@ void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory,
     //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-  if (QualifiedSubjects.size() > 0 && QualifiedSubjects.size() <= 20)
-  {
-    ShowErrorMessage("There should be atleast 20 patients to build reliable pseudo-progression model.");
-    return;
-  }
   PerfusionPCA mPCAEstimator;
   if (mPCAEstimator.TrainNewPerfusionModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
-    ShowMessage("Trained pseudoprogression model has been saved at the specified location.", this);
+    ShowMessage("Trained PCA model has been saved at the specified location.", this);
   else
-    ShowErrorMessage("Pseudoprogression Estimator wasn't able to save the training files as expected. See log file for details: " + loggerFile, this);
+    ShowErrorMessage("PCA model wasn't able to save the PCA matrices as expected. See log file for details: " + loggerFile, this);
 }
 
 
@@ -7241,33 +7225,82 @@ void fMainWindow::ImageDenoising()
     return;
 
   QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "denoise.nii.gz");
+
+  auto currentImage = mSlicerManagers[index]->mITKImage;
+  auto maskImg = getMaskImage();
+
+  SusanDenoising denoising;
+
   if (!saveFileName.isEmpty())
   {
     auto saveFileName_string = saveFileName.toStdString();
-    //Job TBD replace with app name
-    typedef itk::ImageDuplicator<ImageTypeFloat3D> DuplicatorType;
-    DuplicatorType::Pointer duplicator = DuplicatorType::New();
-    duplicator->SetInputImage(mSlicerManagers[index]->mITKImage);
-    duplicator->Update();
-    ImageTypeFloat3D::Pointer inputImage = duplicator->GetOutput();
-    updateProgress(5, "Susan noise removal in process");
-    SusanDenoising denoising /*= SusanDenoising()*/;
-    ImageTypeFloat3D::Pointer outputImage = denoising.Run<ImageTypeFloat3D>(inputImage);
-    if (outputImage.IsNotNull())
+    if (currentImage->GetLargestPossibleRegion().GetSize()[2] == 1)
     {
-      updateProgress(80, "Saving file");
-      cbica::WriteImage< ImageTypeFloat3D >(outputImage, saveFileName_string);
-      if (cbica::fileExists(saveFileName_string))
-      {
-        updateProgress(90, "Displaying output");
-        LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+      // this is actually a 2D image which has been loaded as a 3D image with a single slize in z-direction
+      cbica::Logging(loggerFile, "2D Image detected, doing conversion and then passing into FE module");
+      using ImageTypeFloat2D = itk::Image< float, 2 >;
+      ImageTypeFloat2D::Pointer image_2d;
 
+      ImageTypeFloat3D::IndexType regionIndex;
+      regionIndex.Fill(0);
+      auto regionSize = currentImage->GetLargestPossibleRegion().GetSize();
+      regionSize[2] = 0; // only 2D image is needed
+      auto extractor = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
+      ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->SetInput(currentImage);
+      extractor->SetDirectionCollapseToIdentity();
+      extractor->Update();
+      image_2d = extractor->GetOutput();
+      image_2d->DisconnectPipeline();
+
+      auto extractor_mask = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
+      extractor_mask->SetExtractionRegion(desiredRegion);
+      extractor_mask->SetInput(maskImg);
+      extractor_mask->SetDirectionCollapseToIdentity();
+      extractor_mask->Update();
+      auto mask2D = extractor_mask->GetOutput();
+      //mask2D->DisconnectPipeline();
+
+      updateProgress(5, "Susan noise removal in process");
+      auto outputImage = denoising.Run< ImageTypeFloat2D >(image_2d);
+      if (outputImage.IsNotNull())
+      {
+        updateProgress(80, "Saving file");
+        cbica::WriteImage< ImageTypeFloat2D >(outputImage, saveFileName_string);
+        if (cbica::fileExists(saveFileName_string))
+        {
+          updateProgress(90, "Displaying output");
+          LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+
+        }
+        updateProgress(0, "Susan noise removal finished");
       }
-      updateProgress(0, "Susan noise removal finished");
+      else
+      {
+        updateProgress(0, "Error in Susan noise removal!!");
+      }
     }
     else
     {
-      updateProgress(0, "Error in Susan noise removal!!");
+      updateProgress(5, "Susan noise removal in process");
+      auto outputImage = denoising.Run<ImageTypeFloat3D>(currentImage);
+      if (outputImage.IsNotNull())
+      {
+        updateProgress(80, "Saving file");
+        cbica::WriteImage< ImageTypeFloat3D >(outputImage, saveFileName_string);
+        if (cbica::fileExists(saveFileName_string))
+        {
+          updateProgress(90, "Displaying output");
+          LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+
+        }
+        updateProgress(0, "Susan noise removal finished");
+      }
+      else
+      {
+        updateProgress(0, "Error in Susan noise removal!!");
+      }
     }
   }
 }
@@ -7343,37 +7376,95 @@ void fMainWindow::CallBiasCorrection(const std::string correctionType, QString s
     auto items = m_imagesTable->selectedItems();
     int index = GetSlicerIndexFromItem(items[0]);
     auto saveFileName_string = saveFileName.toStdString();
-    typedef itk::ImageDuplicator<ImageType> DuplicatorType;
-    DuplicatorType::Pointer duplicator = DuplicatorType::New();
-    duplicator->SetInputImage(mSlicerManagers[index]->mITKImage);
-    duplicator->Update();
-    ImageType::Pointer inputImage = duplicator->GetOutput();
-    updateProgress(5, "Bias correction in process");
+
+    auto currentImage = mSlicerManagers[index]->mITKImage;
+    auto maskImg = getMaskImage();
+
     BiasCorrection biasCorrector;
 
-    ImageType::Pointer outputImage = biasCorrector.Run<ImageType>(correctionType,
-                                                                  inputImage,
-                                                                  bias_splineOrder,
-                                                                  bias_maxIterations,
-                                                                  bias_fittingLevels,
-                                                                  bias_filterNoise,
-                                                                  bias_fwhm,
-                                                                  bias_otsuBins);
-
-    if (outputImage.IsNotNull())
+    if (currentImage->GetLargestPossibleRegion().GetSize()[2] == 1)
     {
-      updateProgress(80, "Saving file");
-      cbica::WriteImage< ImageTypeFloat3D >(outputImage, saveFileName_string);
-      if (cbica::fileExists(saveFileName_string))
+      // this is actually a 2D image which has been loaded as a 3D image with a single slize in z-direction
+      cbica::Logging(loggerFile, "2D Image detected, doing conversion and then passing into FE module");
+      using ImageTypeFloat2D = itk::Image< float, 2 >;
+      ImageTypeFloat2D::Pointer image_2d;
+
+      ImageTypeFloat3D::IndexType regionIndex;
+      regionIndex.Fill(0);
+      auto regionSize = currentImage->GetLargestPossibleRegion().GetSize();
+      regionSize[2] = 0; // only 2D image is needed
+      auto extractor = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
+      ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->SetInput(currentImage);
+      extractor->SetDirectionCollapseToIdentity();
+      extractor->Update();
+      image_2d = extractor->GetOutput();
+      image_2d->DisconnectPipeline();
+
+      auto extractor_mask = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
+      extractor_mask->SetExtractionRegion(desiredRegion);
+      extractor_mask->SetInput(maskImg);
+      extractor_mask->SetDirectionCollapseToIdentity();
+      extractor_mask->Update();
+      auto mask2D = extractor_mask->GetOutput();
+      //mask2D->DisconnectPipeline();
+
+      updateProgress(5, "Bias correction in process");
+
+      auto outputImage = biasCorrector.Run<ImageTypeFloat2D>(correctionType,
+        image_2d,
+        bias_splineOrder,
+        bias_maxIterations,
+        bias_fittingLevels,
+        bias_filterNoise,
+        bias_fwhm,
+        bias_otsuBins);
+
+      if (outputImage.IsNotNull())
       {
-        updateProgress(90, "Displaying output");
-        LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+        updateProgress(80, "Saving file");
+        cbica::WriteImage< ImageTypeFloat2D >(outputImage, saveFileName_string);
+        if (cbica::fileExists(saveFileName_string))
+        {
+          updateProgress(90, "Displaying output");
+          LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+        }
+        updateProgress(0, "Bias correction finished");
       }
-      updateProgress(0, "Bias correction finished");
+      else
+      {
+        updateProgress(0, "Error in Bias correction!");
+      }
     }
     else
     {
-      updateProgress(0, "Error in Bias correction!");
+      updateProgress(5, "Bias correction in process");
+
+      ImageTypeFloat3D::Pointer outputImage = biasCorrector.Run<ImageTypeFloat3D>(correctionType,
+        currentImage,
+        bias_splineOrder,
+        bias_maxIterations,
+        bias_fittingLevels,
+        bias_filterNoise,
+        bias_fwhm,
+        bias_otsuBins);
+
+      if (outputImage.IsNotNull())
+      {
+        updateProgress(80, "Saving file");
+        cbica::WriteImage< ImageTypeFloat3D >(outputImage, saveFileName_string);
+        if (cbica::fileExists(saveFileName_string))
+        {
+          updateProgress(90, "Displaying output");
+          LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+        }
+        updateProgress(0, "Bias correction finished");
+      }
+      else
+      {
+        updateProgress(0, "Error in Bias correction!");
+      }
     }
   }
 }
