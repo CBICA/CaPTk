@@ -486,6 +486,7 @@ jobs:
 
     # Configure and build CaPTk
     - bash: |
+        pwd
         cd bin
         ls $(Build.SourcesDirectory)/../../superbuild/bin
         export PATH=$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/bin:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/libexec:$PATH
