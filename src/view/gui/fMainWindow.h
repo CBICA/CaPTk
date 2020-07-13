@@ -268,11 +268,8 @@ private:
   fBraTSSegmentation bratsPipelineDialog;
   fDirectionalityDialog directionalityEstimator;
   PreferencesDialog *preferenceDialog;
-<<<<<<< HEAD
   ApplicationDownloadManager appDownloadMngr;
-=======
   SystemInformationDisplayWidget *sysinfowidget;
->>>>>>> d05838074fc39eeb61a9d0dc644d21bda12559a6
   
 
   fDrawingPanel *drawingPanel;
