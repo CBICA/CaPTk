@@ -4990,12 +4990,6 @@ void fMainWindow::CallForNewSurvivalPredictionModelFromMain(const std::string in
   }
 }
 
-
-
-
-
-
-
 void fMainWindow::CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::string modeldirectory, const std::string inputdirectory, const std::string outputdirectory)
 {
   if (modeldirectory.empty())
@@ -5142,11 +5136,6 @@ void fMainWindow::CallForNewEGFRvIIIPredictionModelFromMain(const std::string in
   }
 }
 
-
-
-
-
-
 ImageTypeFloat3D::Pointer fMainWindow::RescaleImageIntensity(ImageTypeFloat3D::Pointer image)
 {
   typedef itk::RescaleIntensityImageFilter< ImageTypeFloat3D, ImageTypeFloat3D > RescaleFilterType;
@@ -5284,16 +5273,11 @@ void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory,
     //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-  if (QualifiedSubjects.size() > 0 && QualifiedSubjects.size() <= 20)
-  {
-    ShowErrorMessage("There should be atleast 20 patients to build reliable pseudo-progression model.");
-    return;
-  }
   PerfusionPCA mPCAEstimator;
   if (mPCAEstimator.TrainNewPerfusionModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
-    ShowMessage("Trained pseudoprogression model has been saved at the specified location.", this);
+    ShowMessage("Trained PCA model has been saved at the specified location.", this);
   else
-    ShowErrorMessage("Pseudoprogression Estimator wasn't able to save the training files as expected. See log file for details: " + loggerFile, this);
+    ShowErrorMessage("PCA model wasn't able to save the PCA matrices as expected. See log file for details: " + loggerFile, this);
 }
 
 

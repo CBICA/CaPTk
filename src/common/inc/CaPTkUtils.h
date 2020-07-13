@@ -351,14 +351,26 @@ inline void WriteCSVFiles(VectorVectorDouble inputdata, std::string filepath)
   myfile.close();
 }
 
-inline void WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath)
+inline void WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath, bool vertical=false)
 {
   std::ofstream myfile;
   myfile.open(filepath);
-  for (unsigned int index1 = 0; index1 < inputdata.Size(); index1++)
-    myfile << std::to_string(inputdata[index1]) << ",";
+  if (vertical == false)
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.Size(); index1++)
+      myfile << std::to_string(inputdata[index1]) << ",";
 
-  myfile << "\n";
+    myfile << "\n";
+  }
+  else
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.Size(); index1++)
+    {
+      myfile << std::to_string(inputdata[index1]) << ",";
+      if (index1 < inputdata.Size() - 1)
+        myfile << "\n";
+    }
+  }
   myfile.close();
 }
 inline void WriteCSVFiles(std::vector<int> inputdata, std::string filepath)
@@ -371,13 +383,25 @@ inline void WriteCSVFiles(std::vector<int> inputdata, std::string filepath)
   myfile << "\n";
   myfile.close();
 }
-inline void WriteCSVFiles(std::vector<double> inputdata, std::string filepath)
+inline void WriteCSVFiles(std::vector<double> inputdata, std::string filepath,bool vertical=false)
 {
   std::ofstream myfile;
   myfile.open(filepath);
-  for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
-    myfile << std::to_string(inputdata[index1]) << ",";
+  if (vertical == false)
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+      myfile << std::to_string(inputdata[index1]) << ",";
 
-  myfile << "\n";
+    myfile << "\n";
+  }
+  else
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+    {
+      myfile << std::to_string(inputdata[index1]) << ",";
+      if (index1 < inputdata.size() - 1)
+        myfile << "\n";
+    }
+  }
   myfile.close();
 }
