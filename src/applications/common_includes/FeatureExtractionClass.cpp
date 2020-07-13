@@ -22,6 +22,22 @@ FeatureExtractionClass::FeatureExtractionClass()
 
 }
 
+void FeatureExtractionClass::FormulateSurvivalTrainingData(VectorDouble inputSurvival, VectorDouble & SixModelLabels, VectorDouble & EighteenModelLabels)
+{
+  for (unsigned int i = 0; i < inputSurvival.size(); i++)
+  {
+    if (inputSurvival[i] <= 6)
+      SixModelLabels.push_back(1);
+    else
+      SixModelLabels.push_back(-1);
+
+    if (inputSurvival[i] >= 18)
+      EighteenModelLabels.push_back(1);
+    else
+      EighteenModelLabels.push_back(-1);
+  }
+}
+
 VariableSizeMatrixType FeatureExtractionClass::ResampleTrainingData(const VariableSizeMatrixType &trainingdata, const unsigned int NumberOfNearSamples, const unsigned int NumberOfFarSamples)
 {
   VariableSizeMatrixType sampledTrainingData;
@@ -95,58 +111,7 @@ VariableSizeMatrixType FeatureExtractionClass::FormulateTestData(const std::vect
   return mTestData;
 }
 
-void FeatureExtractionClass::FormulateSurvivalTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & SixModelFeatures, VariableSizeMatrixType & EighteenModelFeatures)
-{
-  std::vector<int> SixModelLowerIndices;
-  std::vector<int> SixModelHigherIndices;
-  std::vector<int> EighteenModelLowerIndices;
-  std::vector<int> EighteenModelHigherIndices;
 
-  for (unsigned int i = 0; i < inputSurvival.size(); i++)
-  {
-    if (inputSurvival[i] <= 6)
-      SixModelLowerIndices.push_back(i);
-    else
-      SixModelHigherIndices.push_back(i);
-
-    if (inputSurvival[i] <= 18)
-      EighteenModelLowerIndices.push_back(i);
-    else
-      EighteenModelHigherIndices.push_back(i);
-  }
-  SixModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
-  EighteenModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
-
-  for (unsigned int i = 0; i < SixModelLowerIndices.size(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < inputFeatures.Cols(); j++)
-      SixModelFeatures(i, j) = inputFeatures(SixModelLowerIndices[i], j);
-    SixModelFeatures(i, j) = 0;
-  }
-  for (unsigned int i = 0; i < SixModelHigherIndices.size(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < inputFeatures.Cols(); j++)
-      SixModelFeatures(i + SixModelLowerIndices.size(), j) = inputFeatures(SixModelHigherIndices[i], j);
-    SixModelFeatures(i + SixModelLowerIndices.size(), j) = 1;
-  }
-
-  for (unsigned int i = 0; i < EighteenModelLowerIndices.size(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < inputFeatures.Cols(); j++)
-      EighteenModelFeatures(i, j) = inputFeatures(EighteenModelLowerIndices[i], j);
-    EighteenModelFeatures(i, j) = 0;
-  }
-  for (unsigned int i = 0; i < EighteenModelHigherIndices.size(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < inputFeatures.Cols(); j++)
-      EighteenModelFeatures(i + EighteenModelLowerIndices.size(), j) = inputFeatures(EighteenModelHigherIndices[i], j);
-    EighteenModelFeatures(i + EighteenModelLowerIndices.size(), j) = 1;
-  }
-}
 
 
 void FeatureExtractionClass::FormulatePseudoprogressionTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & PseudoModelFeatures, VariableSizeMatrixType & RecurrenceModelFeatures)

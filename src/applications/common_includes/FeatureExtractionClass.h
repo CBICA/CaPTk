@@ -63,7 +63,6 @@ public:
   \param farintensitities Intensities of far voxels
   */
   void FormulateTrainingData(const std::vector< VectorDouble > &nearintensitities, const std::vector< VectorDouble > &farintensitities);
-  void FormulateSurvivalTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & SixModelFeatures, VariableSizeMatrixType & EighteenModelFeatures);
   void FormulatePseudoprogressionTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & SixModelFeatures, VariableSizeMatrixType & EighteenModelFeatures);
 
   void FormulateEGFRTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & SixModelFeatures);
@@ -83,6 +82,8 @@ public:
   \param farsamples Number of far samples
   */
   VariableSizeMatrixType ResampleTrainingData(const VariableSizeMatrixType &trainingdata, const unsigned int nearsamples, const unsigned int farsamples);
+
+  void FormulateSurvivalTrainingData(VectorDouble inputSurvival, VectorDouble & SixModelLabels, VectorDouble & EighteenModelLabels);
 
   VariableSizeMatrixType mTrainingData;
   VariableSizeMatrixType mTestData;
