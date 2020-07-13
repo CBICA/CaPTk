@@ -51,10 +51,10 @@
 #include <QDir>
 #include <QtMath>
 
-#ifdef __linux__ 
-    #include <zlib.h>
-#else 
+#ifdef _WIN32
     #include <QtZlib/zlib.h>
+#else 
+    #include <zlib.h>
 #endif
 
 // Zip standard version for archives handled by this API
