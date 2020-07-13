@@ -1177,7 +1177,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("co", "collectInfo", cbica::Parameter::BOOLEAN, "Dir with read", "Collects information about all images in input directory", "Input directory passed using '-i'", "Recursion defined using '-co 1'", "Output CSV passed using '-o'");
   parser.addOptionalParameter("cF", "collectFileName", cbica::Parameter::STRING, "File pattern", "The file pattern to check for in every file when collecting information", "Defaults to check all");
   parser.addOptionalParameter("cFE", "collectFileExt", cbica::Parameter::STRING, "File extension", "The file extension to check for in every file when collecting information", "Defaults to check all");
-  parser.addOptionalParameter("cP", "collectProperties", cbica::Parameter::STRING, "0-2", "Requested image property", "0: spacings, 1: size, 2: origin", "Defaults to 0", "Defaults to '-cP" + collectInfoProps + "'");
+  parser.addOptionalParameter("cP", "collectProperties", cbica::Parameter::STRING, "0-2", "Requested image property", "0: spacings, 1: size, 2: origin", "Defaults to 0", "Defaults to '-cP " + collectInfoProps + "'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
