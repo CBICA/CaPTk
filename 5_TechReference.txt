@@ -385,8 +385,13 @@ An example of the list of commands to run to compile CaPTk and its dependencies:
 
 \verbatim
 git clone https://github.com/CBICA/CaPTk.git
-git lfs fetch --all # downloads all the precompiled binaries for different applications and Qt with the required installation options
 cd CaPTk
+mkdir bin
+cd bin
+#git lfs fetch --all # downloads all the precompiled binaries for different applications and Qt with the required installation options
+# change ${platform} to either windows, linux or macos (case sensitive)
+wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/${platform}.zip -O precompiledApps.zip 
+wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/${platform}.zip -O qt.zip
 git submodule update --init --recursive # this ensures all submodules are initialized and up-to-date
 mkdir build # this is where we will build all the binaries
 cd build

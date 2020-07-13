@@ -1116,18 +1116,6 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
   return true;
 }
 
-template <typename T>
-std::vector<size_t> TrainingModule::sort_indexes(const std::vector<T> &v)
-{
-  // initialize original index locations
-  std::vector<size_t> idx(v.size());
-  std::iota(idx.begin(), idx.end(), 0);
-
-  // sort indexes based on comparing values in v
-  sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) {return v[i1] > v[i2]; });
-
-  return idx;
-}
 
 
 
@@ -2174,7 +2162,8 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
     //check crossvalidated performance after adding the current feature
     double bestCV = 0;
     double bestC = 1;
-    double bestG = 1 / currentFeatureSet.Cols();
+    double numerator = 1;
+    double bestG = numerator / ((double)currentFeatureSet.Cols());
     if (optimizationtype == 1)
     {
       if (classifiertype == 2)

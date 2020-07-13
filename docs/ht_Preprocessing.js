@@ -5,5 +5,6 @@ var ht_Preprocessing =
     [ "Denoise-SUSAN (ITK filter)", "preprocessing_susan.html", null ],
     [ "Bias Correction (ITK filter)", "preprocessing_bias.html", null ],
     [ "Histogram Matching", "preprocessing_histoMatch.html", null ],
-    [ "Z-Scoring Normalization", "preprocessing_zScoreNorm.html", null ]
+    [ "Z-Scoring Normalization", "preprocessing_zScoreNorm.html", null ],
+    [ "BraTS Pre-processing Pipeline", "preprocessing_brats.html", null ]
 ];

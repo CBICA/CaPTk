@@ -25,6 +25,21 @@ We coordinate our bugs and feature requests via out GitHub page: https://github.
 
 Please see our [FAQ Section](gs_FAQ.html).
 
+## Citations
+
+Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:
+
+- C.Davatzikos, S.Rathore, S.Bakas, S.Pati, M.Bergman, R.Kalarot, P.Sridharan, A.Gastounioti, N.Jahani, E.Cohen, H.Akbari, B.Tunc, J.Doshi, D.Parker, M.Hsieh, A.Sotiras, H.Li, Y.Ou, R.K.Doot, M.Bilello, Y.Fan, R.T.Shinohara, P.Yushkevich, R.Verma, D.Kontos, "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome", J Med Imaging, 5(1):011018, 2018, DOI:10.1117/1.JMI.5.1.011018
+- S.Pati, A.Singh, S.Rathore, A.Gastounioti, M.Bergman, P.Ngo, S.M.Ha, D.Bounias, J.Minock, G.Murphy, H.Li, A.Bhattarai, A.Wolf, P.Sridaran, R.Kalarot, H.Akbari, A.Sotiras, S.P.Thakur, R.Verma, R.T.Shinohara, P.Yushkevich, Y.Fan, D.Kontos, C.Davatzikos, S.Bakas, "The Cancer Imaging Phenomics Toolkit (CaPTk): Technical Overview", Springer - BrainLes 2019 - LNCS, Vol.11993, 380-394, 2020, DOI:10.1007/978-3-030-46643-5_38
+  
+In addition, if the journal/conference where you submit your paper does not restrict you from citing abstracts you might also cite the following:
+
+- RRID: SCR_017323 
+- S.Rathore, S.Bakas, S.Pati, H.Akbari, R.Kalarot, P.Sridharan, M.Rozycki, M.Bergman, B.Tunc, R.Verma, M.Bilello, C.Davatzikos. "Brain Cancer Imaging Phenomics Toolkit (brain-CaPTk): An Interactive Platform for Quantitative Analysis of Glioblastoma", BrainLes 2017. LNCS Springer, 10670:133-145, 2017, DOI:10.1007/978-3-319-75238-9_12
+- S.Pati, S.Bakas, A.Sotiras, R.Kalarot, P.Sridharan, M.Bergman, S.Rathore, H.Akbari, P.Yushkevich, T.Shinohara, Y.Fan, D.Kontos, R.Verma, C.Davatzikos. "Cancer Imaging Phenomics Toolkit (CaPTk): A Radio(geno)mics Software Platform Leveraging Quantitative Imaging Analytics for Computational Oncology", 103rd Scientific Assembly and Annual Meeting of the Radiological Society of North America (RSNA), Nov.26-Dec.1, 2017, Chicago IL.
+- S.Pati, S.Rathore, R.Kalarot, P.Sridharan, M.Bergman, T.Shinohara, P.Yushkevich, Y.Fan, R.Verma, D.Kontos, C.Davatzikos. "Cancer and Phenomics Toolkit (CaPTk): A Software Suite for Computational Oncology and Radiomics", 102nd Scientific Assembly and Annual Meeting of the Radiological Society of North America (RSNA), Nov.27-Dec.2, 2016, Chicago IL. archive.rsna.org/2016/16014589.html
+
+
 ## Supporting Grant
 This work is supported by the NIH/NCI/ITCR* grant U24-CA189523.
 <br>* National Institutes of Health / National Cancer Institute / Informatics Technology for Cancer Research

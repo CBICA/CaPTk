@@ -4,6 +4,7 @@
 #include "itkGDCMImageIO.h"
 #include "itkGDCMSeriesFileNames.h"
 #include <string>
+#include "gdcmReader.h"
 
 namespace cbica
 {

@@ -162,14 +162,21 @@ int MolecularSubtypePredictionOnExistingModel(const std::string modeldirectory,
   std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
 
   MolecularSubtypePredictor objMolecularSubtypePredictor;
+
+  VectorDouble result = objMolecularSubtypePredictor.MolecularSubtypePredictionOnExistingModel(modeldirectory, inputdirectory, QualifiedSubjects, outputdirectory);
+
   for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
   {
     std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
+    if(result[subjectID]==1)
+      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Proneural" << std::endl;
+    else if (result[subjectID] == 2)
+      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Neural" << std::endl;
+    else if (result[subjectID] == 3)
+      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Mesenchymal" << std::endl;
+    else
+      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Classical" << std::endl;
 
-    std::vector<std::map<CAPTK::ImageModalityType, std::string>> OneQualifiedSubject;
-    OneQualifiedSubject.push_back(QualifiedSubjects[subjectID]);
-    VectorDouble result = objMolecularSubtypePredictor.MolecularSubtypePredictionOnExistingModel(modeldirectory, inputdirectory, QualifiedSubjects, outputdirectory);
-    std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << " " << result[0] << std::endl;
   }
   return EXIT_SUCCESS;
 }
@@ -258,6 +265,14 @@ int main(int argc, char **argv)
     {
       std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
       return EXIT_FAILURE;
+    }
+    if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))
+    {
+        if (!cbica::IsCompatible(modelDirectoryName + "/VERSION.yaml"))
+        {
+            std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+            return EXIT_FAILURE;
+        }
     }
     else
       std::cout << "Model directory name:" << modelDirectoryName << std::endl;

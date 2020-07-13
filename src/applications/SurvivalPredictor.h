@@ -27,6 +27,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "CaPTkEnums.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaLogging.h"
+#include "TrainingModule.h"
 #ifdef APP_BASE_CAPTK_H
 #include "ApplicationBase.h"
 #endif
@@ -301,6 +302,8 @@ public:
   */
   template<class ImageType>
 	typename ImageType::Pointer RescaleImageIntensity(const typename ImageType::Pointer &image);
+
+  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VectorDouble &selectedFeatures);
 
 	void Run()
 	{

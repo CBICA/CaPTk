@@ -171,7 +171,6 @@ fMainWindow::fMainWindow()
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
-  ApplicationPreferences::GetInstance()->DisplayPreferences();
 
   //! comparison mode OFF at startup
   this->SetComparisonMode(false);
@@ -198,6 +197,7 @@ fMainWindow::fMainWindow()
   actionHelp_Interactions = new QAction(this);
   actionAbout = new QAction(this);
   actionPreferences = new QAction(this);
+  actionModelLibrary = new QAction("Model Library",this);
 
   //---------------setting menu and status bar for the main window---------------
   this->setStatusBar(statusbar);
@@ -294,6 +294,7 @@ fMainWindow::fMainWindow()
   menuHelp->addAction(actionHelp_Interactions);
   menuDownload = menuHelp->addMenu("Sample Data");
   auto supportMenu = menuHelp->addMenu("Support Links");
+  menuHelp->addAction(this->actionModelLibrary);
   menuHelp->addAction(actionAbout);
 
   supportMenu->addAction(help_bugs);
@@ -385,11 +386,10 @@ fMainWindow::fMainWindow()
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
-  //std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionAlignment PerfusionDerivatives PerfusionPCA TrainingModule";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
-  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives TrainingModule";
+  std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionPCA PerfusionDerivatives TrainingModule";
   
-  std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain";
+  std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain BraTSPipeline";
 #ifndef __APPLE__
   preProcessingAlgos += " breastNormalize";
 #endif
@@ -443,17 +443,6 @@ fMainWindow::fMainWindow()
         menuDownload->addAction("LIBRA");
       }
     }
-    //if (currentActionAndName.name != "Breast Cancer")
-    //{
-    //  if (!libraCheck)
-    //  {
-    //    if (currentActionAndName.name.find("libra") != std::string::npos)
-    //    {
-    //      libraCheck = true;
-    //      menuDownload->addAction("LIBRA");
-    //    }
-    //  }
-    //}
   }
 
   bool sbrtCheck = false;
@@ -478,12 +467,9 @@ fMainWindow::fMainWindow()
   {
     if (currentActionAndName.name != "Miscellaneous")
     {
-      if ((currentActionAndName.name != "itksnap") && (currentActionAndName.name != "deepmedic"))
+      if (!currentActionAndName.name.empty())
       {
-        if (!currentActionAndName.name.empty())
-        {
-          menuDownload->addAction(currentActionAndName.name.c_str());
-        }
+        menuDownload->addAction(currentActionAndName.name.c_str());
       }
     }
   }
@@ -573,7 +559,6 @@ fMainWindow::fMainWindow()
 
   connect(actionLoad_Recurrence_Images, SIGNAL(triggered()), this, SLOT(openImages()));
   connect(actionLoad_Nifti_Images, SIGNAL(triggered()), this, SLOT(openImages()));
-  //connect(actionLoad_Dicom_Images, SIGNAL(triggered()), this, SLOT(openDicomImages()));
 
   connect(actionSave_ROI_Images, SIGNAL(triggered()), this, SLOT(SaveDrawing()));
   connect(actionSave_ROI_Dicom_Images, SIGNAL(triggered()), this, SLOT(SaveDicomDrawing()));
@@ -586,11 +571,12 @@ fMainWindow::fMainWindow()
   connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
   connect(actionHelp_Interactions, SIGNAL(triggered()), this, SLOT(help_Interactions()));
-  connect(help_bugs, SIGNAL(triggered()), this, SLOT(help_BugTracker()));
 
   connect(menuDownload, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
+
+  connect(actionModelLibrary, SIGNAL(triggered()), this, SLOT(OpenModelLibrary()));
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
@@ -809,7 +795,12 @@ fMainWindow::fMainWindow()
     {
       vectorOfPreprocessingActionsAndNames[i].action->setText("Mammogram Preprocessing");
       connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageMamogramPreprocess()));
-    }
+    } 
+    else if (vectorOfPreprocessingActionsAndNames[i].name.find("BraTSPipeline") != std::string::npos)
+    {
+      vectorOfPreprocessingActionsAndNames[i].action->setText("BraTS Pipeline");
+      connect(vectorOfPreprocessingActionsAndNames[i].action, SIGNAL(triggered()), this, SLOT(ImageBraTSPipeline()));
+    } 
   }
 
   // add a single function for all preprocessing steps, this function will check for the specific names and then initiate that algorithm
@@ -883,6 +874,7 @@ fMainWindow::fMainWindow()
   connect(&histoMatchPanel, SIGNAL(RunHistogramMatching(const std::string, const std::string, const std::string)), this, SLOT(CallImageHistogramMatching(const std::string, const std::string, const std::string)));
   connect(&deepMedicNormPanel, SIGNAL(RunDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)), this, SLOT(CallImageDeepMedicNormalizer(const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, const std::string, bool)));
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
+  connect(&bratsPipelineDialog, SIGNAL(RunBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)));
 
   connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(std::string, std::string, std::string)), this, SLOT(PCAEstimateOnExistingModel(const std::string &, const std::string &, const std::string &)));
   connect(&pcaPanel, SIGNAL(TrainNewPCAModel(std::string, std::string)), this, SLOT(TrainNewPCAModelOnGivenData(const std::string &, const std::string &)));
@@ -891,8 +883,8 @@ fMainWindow::fMainWindow()
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)));
 
-  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
-  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string, const std::string, const std::string)));
+  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string,  const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string,  const std::string)));
 
 
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -1132,9 +1124,9 @@ std::string fMainWindow::ConversionFrom2Dto3D(const std::string &fileName)
 
 void fMainWindow::about()
 {
-#if CAPTK_PACKAGE_PROJECT
-  mHelpTutorial.exec();
-#endif
+//#if CAPTK_PACKAGE_PROJECT
+  mHelpTutorial.show();
+//#endif
 }
 
 void fMainWindow::help_Interactions()
@@ -1162,13 +1154,23 @@ void fMainWindow::help_Download(QAction* action)
   }
 }
 
-void fMainWindow::help_BugTracker()
+void fMainWindow::OpenModelLibrary()
 {
-  if (!openLink("https://github.com/CBICA/CaPTk/issues"))
-  {
-    ShowErrorMessage("CaPTk couldn't open the browser to open the Bug Tracker");
-    return;
-  }
+	auto currentLink = m_downloadLinks["inputs"]["Model Library"]["Data"].as<std::string>();
+	if (!currentLink.empty() && (currentLink != "N.A."))
+	{
+		cbica::Logging(loggerFile, currentLink);
+		if (!openLink(currentLink))
+		{
+			ShowErrorMessage("CaPTk couldn't open the browser to open model library.", this);
+			return;
+		}
+	}
+	else
+	{
+		ShowErrorMessage("CaPTk couldn't open the link for the model library; please contact software@cbica.upenn.edu for details.", this);
+		return;
+	}
 }
 
 void fMainWindow::EnableThresholdOfMask()
@@ -4343,6 +4345,14 @@ void fMainWindow::RecurrenceEstimateOnExistingModel(const std::string &modeldire
     help_contextual("Glioblastoma_Recurrence.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (inputdirectory.empty())
   {
     ShowErrorMessage("Please provide path of a directory having input images");
@@ -4406,6 +4416,14 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
     help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (!cbica::isDir(outputdirectory))
   {
     if (!cbica::createDir(outputdirectory))
@@ -4442,6 +4460,14 @@ void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, 
     ShowErrorMessage("Please provide path of a directory having PCA model");
     //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (inputdirectory.empty())
   {
@@ -4523,20 +4549,36 @@ void fMainWindow::CallGeneratePopualtionAtlas(const std::string inputFileName, c
   } 
   //put the data in respective vectors
   std::vector< std::string > patient_ids, image_paths, atlas_labels;
+  std::vector<int> image_available;
   for (int j = 1; j < allRows.size(); j++)
   {
+    int patient_id_index = -1;
+    int images_index = -1;
+    int atlas_labels_index = -1;
     for (size_t k = 0; k < allRows[0].size(); k++)
     {
       auto check_wrap = allRows[0][k];
       std::transform(check_wrap.begin(), check_wrap.end(), check_wrap.begin(), ::tolower);
-
       if (check_wrap == "patient_ids")
-        patient_ids.push_back(allRows[j][k]);
+        patient_id_index = k;
       else if (check_wrap == "images")
-        image_paths.push_back(allRows[j][k]);
+        images_index = k;
       else if (check_wrap == "atlas_labels")
-        atlas_labels.push_back(allRows[j][k]);
+        atlas_labels_index = k;
     }
+    if (!cbica::fileExists(allRows[j][images_index]))
+    {
+      std::cout << "Image does not exist: " << allRows[j][images_index] << std::endl;
+      continue;
+    }
+    image_paths.push_back(allRows[j][images_index]);
+    patient_ids.push_back(allRows[j][patient_id_index]);
+    atlas_labels.push_back(allRows[j][atlas_labels_index]);
+  }
+  if (image_paths.size() == 0)
+  {
+    ShowErrorMessage("The given data in the .csv file does not exist.", this);
+    return;
   }
 
   // sanity check to make sure that all patient ids have corresponding atlas numbers and paths
@@ -4801,6 +4843,14 @@ void fMainWindow::CallForSurvivalPredictionOnExistingModelFromMain(const std::st
     help_contextual("Glioblastoma_Survival.html");
     return;
   }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
+  }
   if (!(cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.csv") || cbica::fileExists(modeldirectory + "/Survival_SVM_Model6.xml"))
     || !(cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.csv") || cbica::fileExists(modeldirectory + "/Survival_SVM_Model18.xml"))
     || !cbica::fileExists(modeldirectory + "/Survival_ZScore_Std.csv") || !cbica::fileExists(modeldirectory + "/Survival_ZScore_Mean.csv"))
@@ -4923,12 +4973,6 @@ void fMainWindow::CallForNewSurvivalPredictionModelFromMain(const std::string in
   }
 }
 
-
-
-
-
-
-
 void fMainWindow::CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::string modeldirectory, const std::string inputdirectory, const std::string outputdirectory)
 {
   if (modeldirectory.empty())
@@ -4942,6 +4986,14 @@ void fMainWindow::CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::st
     ShowErrorMessage("The given SVM model directory does not exist");
     help_contextual("Glioblastoma_EGFRvIII.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (!(cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.csv") || cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.xml"))
     || !cbica::fileExists(modeldirectory + "/EGFRvIII_ZScore_Std.csv") || !cbica::fileExists(modeldirectory + "/EGFRvIII_ZScore_Mean.csv"))
@@ -5066,11 +5118,6 @@ void fMainWindow::CallForNewEGFRvIIIPredictionModelFromMain(const std::string in
     ShowMessage("An EGFRvIII model has been prepared and saved. \n\nInput Directory = " + inputdirectory + "\nOutput Directory = " + outputdirectory, this);
   }
 }
-
-
-
-
-
 
 ImageTypeFloat3D::Pointer fMainWindow::RescaleImageIntensity(ImageTypeFloat3D::Pointer image)
 {
@@ -5209,16 +5256,11 @@ void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory,
     //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-  if (QualifiedSubjects.size() > 0 && QualifiedSubjects.size() <= 20)
-  {
-    ShowErrorMessage("There should be atleast 20 patients to build reliable pseudo-progression model.");
-    return;
-  }
   PerfusionPCA mPCAEstimator;
   if (mPCAEstimator.TrainNewPerfusionModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
-    ShowMessage("Trained pseudoprogression model has been saved at the specified location.", this);
+    ShowMessage("Trained PCA model has been saved at the specified location.", this);
   else
-    ShowErrorMessage("Pseudoprogression Estimator wasn't able to save the training files as expected. See log file for details: " + loggerFile, this);
+    ShowErrorMessage("PCA model wasn't able to save the PCA matrices as expected. See log file for details: " + loggerFile, this);
 }
 
 
@@ -6272,79 +6314,78 @@ void fMainWindow::ApplicationSBRTAnalysis()
   }
 
   analysisPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["LungCancer"]["Model"].as<std::string>());
-  analysisPanel.exec();
+  int result = analysisPanel.exec();
 
-  std::string inputFileName;
-  std::string maskName;
-  int roiLabel = 1;
-  std::string oname;
-  int outputFea = 0;
-  std::string logName;
-  std::string modelDir;
-
-  std::string metaName = analysisPanel.mInputPathName.toStdString() + "/meta_fea_proj.txt";
-  std::string projName = analysisPanel.mInputPathName.toStdString() + "/triFac_res_cpp_kc3_kr5_pet_cox_coeff_train_all.txt";
-
-  if (cbica::fileExists(metaName) == false ||
-    cbica::fileExists(projName) == false)
+  if (result == QDialog::Accepted)
   {
-    ShowErrorMessage("Model files not found. Please re-select the directory containing model files.", this);
-    return;
+	  std::string inputFileName;
+	  std::string maskName;
+	  int roiLabel = 1;
+	  std::string oname;
+	  int outputFea = 0;
+	  std::string logName;
+	  std::string modelDir = analysisPanel.mInputPathName.toStdString();
+
+	  std::string metaName = analysisPanel.mInputPathName.toStdString() + "/meta_fea_proj.txt";
+	  std::string projName = analysisPanel.mInputPathName.toStdString() + "/triFac_res_cpp_kc3_kr5_pet_cox_coeff_train_all.txt";
+
+      if (cbica::isFile(modelDir + "/VERSION.yaml"))
+      {
+          if (!cbica::IsCompatible(modelDir + "/VERSION.yaml"))
+          {
+              ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+              return;
+          }
+      }
+	  if (cbica::fileExists(metaName) == false ||
+		  cbica::fileExists(projName) == false)
+	  {
+		  ShowErrorMessage("Model files not found. Please re-select the directory containing model files.", this);
+		  return;
+	  }
+
+	  cbica::WriteImage< ImageTypeFloat3D >(getMaskImage(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
+	  cbica::Logging(loggerFile, "written temp mask");
+	  auto loadedMaskFile = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
+
+	  //! calling algorithm
+	  SBRT_Analysis< float, ImageTypeFloat3D::ImageDimension > anaObject;
+
+	  if (!logName.empty())
+	  {
+		  anaObject.SetLogger(logName);
+	  }
+
+	  inputFileName = petImageFile;
+	  maskName = loadedMaskFile;
+
+	  anaObject.SetParameters(roiLabel);
+
+	  updateProgress(20, "Initializing");
+	  anaObject.Initialization(inputFileName, maskName);
+	  cbica::Logging(loggerFile, "SBRT Analysis Initialization complete");
+
+	  updateProgress(50, "Feature Extraction");
+	  anaObject.FeaExtraction();
+	  cbica::Logging(loggerFile, "SBRT Analysis Feature Extraction complete");
+
+	  updateProgress(100, "Risk prediction");
+	  anaObject.GetPredictedRisk(metaName, projName);
+	  cbica::Logging(loggerFile, "SBRT Analysis Risk Prediction complete");
+
+	  if (outputFea == 1)
+	  {
+		  anaObject.OutputFeature(oname);
+	  }
+
+	  updateProgress(0, ""); //! reset progress bar
+
+	  QString msgStr = QString("Predicted Risk (Survival): %1\nPredicted Risk(Nodal Failure): %2").arg(anaObject.GetSurivalRisk())
+		  .arg(anaObject.GetNodalFailureRisk());
+	  QMessageBox::information(this, "Predicted Risk", msgStr, QMessageBox::Ok);
   }
-
-  //! Following image flip is needed to correct the image orientation issue
-  typedef itk::FlipImageFilter< ImageType> FlipType;
-  FlipType::Pointer flip = FlipType::New();
-  FlipType::FlipAxesArrayType flipAxesSet;
-
-  flipAxesSet[0] = 0;
-  flipAxesSet[1] = -1;
-  flipAxesSet[2] = 0;
-
-  flip->SetFlipAxes(flipAxesSet);
-  flip->FlipAboutOriginOff();
-  flip->SetInput(getMaskImage());
-  flip->Update();
-
-  cbica::WriteImage< ImageTypeFloat3D >(flip->GetOutput(), m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz");
-  cbica::Logging(loggerFile, "written temp mask");
-  auto loadedMaskFile = m_tempFolderLocation + "/sbrtLoadedMask_flipped.nii.gz";
-
-  //! calling algorithm
-  SBRT_Analysis< float, ImageTypeFloat3D::ImageDimension > anaObject;
-
-  if (!logName.empty())
-  {
-    anaObject.SetLogger(logName);
-  }
-
-  inputFileName = petImageFile;
-  maskName = loadedMaskFile;
-
-  anaObject.SetParameters(roiLabel);
-
-  updateProgress(20, "Initializing");
-  anaObject.Initialization(inputFileName, maskName);
-  cbica::Logging(loggerFile, "SBRT Analysis Initialization complete");
-
-  updateProgress(50, "Feature Extraction");
-  anaObject.FeaExtraction();
-  cbica::Logging(loggerFile, "SBRT Analysis Feature Extraction complete");
-
-  updateProgress(100, "Risk prediction");
-  anaObject.GetPredictedRisk(metaName, projName);
-  cbica::Logging(loggerFile, "SBRT Analysis Risk Prediction complete");
-
-  if (outputFea == 1)
-  {
-    anaObject.OutputFeature(oname);
-  }
-
-  updateProgress(0, ""); //! reset progress bar
-
-  QString msgStr = QString("Predicted Risk (Survival): %1\nPredicted Risk(Nodal Failure): %2").arg(anaObject.GetSurivalRisk())
-    .arg(anaObject.GetNodalFailureRisk());
-  QMessageBox::information(this, "Predicted Risk", msgStr, QMessageBox::Ok);
+  else
+	  cbica::Logging(loggerFile, "ApplicationSBRTAnalysis Canceled");
 
   cbica::Logging(loggerFile, "Exiting ApplicationSBRTAnalysis ");
 }
@@ -7184,35 +7225,91 @@ void fMainWindow::ImageDenoising()
     return;
 
   QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "denoise.nii.gz");
+
+  auto currentImage = mSlicerManagers[index]->mITKImage;
+  auto maskImg = getMaskImage();
+
+  SusanDenoising denoising;
+
   if (!saveFileName.isEmpty())
   {
     auto saveFileName_string = saveFileName.toStdString();
-    //Job TBD replace with app name
-    typedef itk::ImageDuplicator<ImageTypeFloat3D> DuplicatorType;
-    DuplicatorType::Pointer duplicator = DuplicatorType::New();
-    duplicator->SetInputImage(mSlicerManagers[index]->mITKImage);
-    duplicator->Update();
-    ImageTypeFloat3D::Pointer inputImage = duplicator->GetOutput();
-    updateProgress(5, "Susan noise removal in process");
-    SusanDenoising denoising /*= SusanDenoising()*/;
-    ImageTypeFloat3D::Pointer outputImage = denoising.Run<ImageTypeFloat3D>(inputImage);
-    if (outputImage.IsNotNull())
+    if (currentImage->GetLargestPossibleRegion().GetSize()[2] == 1)
     {
-      updateProgress(80, "Saving file");
-      cbica::WriteImage< ImageTypeFloat3D >(outputImage, saveFileName_string);
-      if (cbica::fileExists(saveFileName_string))
-      {
-        updateProgress(90, "Displaying output");
-        LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+      // this is actually a 2D image which has been loaded as a 3D image with a single slize in z-direction
+      cbica::Logging(loggerFile, "2D Image detected, doing conversion and then passing into FE module");
+      using ImageTypeFloat2D = itk::Image< float, 2 >;
+      ImageTypeFloat2D::Pointer image_2d;
 
+      ImageTypeFloat3D::IndexType regionIndex;
+      regionIndex.Fill(0);
+      auto regionSize = currentImage->GetLargestPossibleRegion().GetSize();
+      regionSize[2] = 0; // only 2D image is needed
+      auto extractor = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
+      ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->SetInput(currentImage);
+      extractor->SetDirectionCollapseToIdentity();
+      extractor->Update();
+      image_2d = extractor->GetOutput();
+      image_2d->DisconnectPipeline();
+
+      auto extractor_mask = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
+      extractor_mask->SetExtractionRegion(desiredRegion);
+      extractor_mask->SetInput(maskImg);
+      extractor_mask->SetDirectionCollapseToIdentity();
+      extractor_mask->Update();
+      auto mask2D = extractor_mask->GetOutput();
+      //mask2D->DisconnectPipeline();
+
+      updateProgress(5, "Susan noise removal in process");
+      auto outputImage = denoising.Run< ImageTypeFloat2D >(image_2d);
+      if (outputImage.IsNotNull())
+      {
+        updateProgress(80, "Saving file");
+        cbica::WriteImage< ImageTypeFloat2D >(outputImage, saveFileName_string);
+        if (cbica::fileExists(saveFileName_string))
+        {
+          updateProgress(90, "Displaying output");
+          LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+
+        }
+        updateProgress(0, "Susan noise removal finished");
       }
-      updateProgress(0, "Susan noise removal finished");
+      else
+      {
+        updateProgress(0, "Error in Susan noise removal!!");
+      }
     }
     else
     {
-      updateProgress(0, "Error in Susan noise removal!!");
+      updateProgress(5, "Susan noise removal in process");
+      auto outputImage = denoising.Run<ImageTypeFloat3D>(currentImage);
+      if (outputImage.IsNotNull())
+      {
+        updateProgress(80, "Saving file");
+        cbica::WriteImage< ImageTypeFloat3D >(outputImage, saveFileName_string);
+        if (cbica::fileExists(saveFileName_string))
+        {
+          updateProgress(90, "Displaying output");
+          LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+
+        }
+        updateProgress(0, "Susan noise removal finished");
+      }
+      else
+      {
+        updateProgress(0, "Error in Susan noise removal!!");
+      }
     }
   }
+}
+
+void fMainWindow::ImageBraTSPipeline()
+{
+  // open a simple dialog box with reference image, input and output
+  bratsPipelineDialog.SetCurrentImagePath(mInputPathName);
+  bratsPipelineDialog.exec();
 }
 
 void fMainWindow::ImageMamogramPreprocess()
@@ -7279,37 +7376,95 @@ void fMainWindow::CallBiasCorrection(const std::string correctionType, QString s
     auto items = m_imagesTable->selectedItems();
     int index = GetSlicerIndexFromItem(items[0]);
     auto saveFileName_string = saveFileName.toStdString();
-    typedef itk::ImageDuplicator<ImageType> DuplicatorType;
-    DuplicatorType::Pointer duplicator = DuplicatorType::New();
-    duplicator->SetInputImage(mSlicerManagers[index]->mITKImage);
-    duplicator->Update();
-    ImageType::Pointer inputImage = duplicator->GetOutput();
-    updateProgress(5, "Bias correction in process");
+
+    auto currentImage = mSlicerManagers[index]->mITKImage;
+    auto maskImg = getMaskImage();
+
     BiasCorrection biasCorrector;
 
-    ImageType::Pointer outputImage = biasCorrector.Run<ImageType>("n3",
-                                                                  inputImage,
-                                                                  bias_splineOrder,
-                                                                  bias_maxIterations,
-                                                                  bias_fittingLevels,
-                                                                  bias_filterNoise,
-                                                                  bias_fwhm,
-                                                                  bias_otsuBins);
-
-    if (outputImage.IsNotNull())
+    if (currentImage->GetLargestPossibleRegion().GetSize()[2] == 1)
     {
-      updateProgress(80, "Saving file");
-      cbica::WriteImage< ImageTypeFloat3D >(outputImage, saveFileName_string);
-      if (cbica::fileExists(saveFileName_string))
+      // this is actually a 2D image which has been loaded as a 3D image with a single slize in z-direction
+      cbica::Logging(loggerFile, "2D Image detected, doing conversion and then passing into FE module");
+      using ImageTypeFloat2D = itk::Image< float, 2 >;
+      ImageTypeFloat2D::Pointer image_2d;
+
+      ImageTypeFloat3D::IndexType regionIndex;
+      regionIndex.Fill(0);
+      auto regionSize = currentImage->GetLargestPossibleRegion().GetSize();
+      regionSize[2] = 0; // only 2D image is needed
+      auto extractor = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
+      ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->SetInput(currentImage);
+      extractor->SetDirectionCollapseToIdentity();
+      extractor->Update();
+      image_2d = extractor->GetOutput();
+      image_2d->DisconnectPipeline();
+
+      auto extractor_mask = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
+      extractor_mask->SetExtractionRegion(desiredRegion);
+      extractor_mask->SetInput(maskImg);
+      extractor_mask->SetDirectionCollapseToIdentity();
+      extractor_mask->Update();
+      auto mask2D = extractor_mask->GetOutput();
+      //mask2D->DisconnectPipeline();
+
+      updateProgress(5, "Bias correction in process");
+
+      auto outputImage = biasCorrector.Run<ImageTypeFloat2D>(correctionType,
+        image_2d,
+        bias_splineOrder,
+        bias_maxIterations,
+        bias_fittingLevels,
+        bias_filterNoise,
+        bias_fwhm,
+        bias_otsuBins);
+
+      if (outputImage.IsNotNull())
       {
-        updateProgress(90, "Displaying output");
-        LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+        updateProgress(80, "Saving file");
+        cbica::WriteImage< ImageTypeFloat2D >(outputImage, saveFileName_string);
+        if (cbica::fileExists(saveFileName_string))
+        {
+          updateProgress(90, "Displaying output");
+          LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+        }
+        updateProgress(0, "Bias correction finished");
       }
-      updateProgress(0, "Bias correction finished");
+      else
+      {
+        updateProgress(0, "Error in Bias correction!");
+      }
     }
     else
     {
-      updateProgress(0, "Error in Bias correction!");
+      updateProgress(5, "Bias correction in process");
+
+      ImageTypeFloat3D::Pointer outputImage = biasCorrector.Run<ImageTypeFloat3D>(correctionType,
+        currentImage,
+        bias_splineOrder,
+        bias_maxIterations,
+        bias_fittingLevels,
+        bias_filterNoise,
+        bias_fwhm,
+        bias_otsuBins);
+
+      if (outputImage.IsNotNull())
+      {
+        updateProgress(80, "Saving file");
+        cbica::WriteImage< ImageTypeFloat3D >(outputImage, saveFileName_string);
+        if (cbica::fileExists(saveFileName_string))
+        {
+          updateProgress(90, "Displaying output");
+          LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
+        }
+        updateProgress(0, "Bias correction finished");
+      }
+      else
+      {
+        updateProgress(0, "Error in Bias correction!");
+      }
     }
   }
 }
@@ -7654,6 +7809,8 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
 
   auto modelConfigFile = modelDirectory + "/modelConfig.txt",
     modelCkptFile = modelDirectory + "/model.ckpt";
+  
+  std::string files_forCommand;
 
   int progressBar = 0;
   for (size_t i = 0; i < mSlicerManagers.size(); i++)
@@ -7714,8 +7871,39 @@ void fMainWindow::CallDeepMedicSegmentation(const std::string modelDirectory, co
     }
 
     QStringList args;
-    args << "-md" << modelDirectory.c_str()
-      << "-t1" << file_t1.c_str() << "-t1c" << file_t1ce.c_str() << "-t2" << file_t2.c_str() << "-fl" << file_flair.c_str() << "-o" << outputDirectory.c_str();
+    args << "-md" << modelDirectory.c_str() << "-o" << outputDirectory.c_str();
+
+    // parsing the modality-agnostic case
+    auto modelDir_lower = modelDirectory;
+    std::transform(modelDir_lower.begin(), modelDir_lower.end(), modelDir_lower.begin(), ::tolower);
+    if (modelDir_lower.find("modalityagnostic") != std::string::npos)
+    {
+      // we only want to pick up a single modality, in this case, so the first one loaded is picked
+      // order of preference is t1, t1ce, t2, fl
+      if (!file_t1.empty())
+      {
+        files_forCommand += file_t1 + ",";
+      }
+      else if (!file_t1ce.empty())
+      {
+        files_forCommand += file_t1ce + ",";
+      }
+      else if (!file_t2.empty())
+      {
+        files_forCommand += file_t2 + ",";
+      }
+      else if (!file_flair.empty())
+      {
+        files_forCommand += file_flair + ",";
+      }
+    }
+    else
+    {
+      files_forCommand = file_t1 + "," + file_t1ce + "," + file_t2 + "," + file_flair + ",";
+    }
+    files_forCommand.pop_back(); // last "," removed
+
+    args << "-i" << files_forCommand.c_str() << "-o" << outputDirectory.c_str();
 
     if (!file_mask.empty())
     {
@@ -8592,6 +8780,49 @@ void fMainWindow::CallLabelValuesChange(const std::string oldValues, const std::
   readMaskFile(tempFile);
 }
 
+void fMainWindow::CallBraTSPipeline(const std::string t1ceImage, const std::string t1Image, const std::string t2Image, const std::string flImage, const std::string outputDir)
+{
+  if (!t1ceImage.empty() && !t1Image.empty() && !t2Image.empty() && !flImage.empty() && !outputDir.empty())
+  {
+    auto bratsPipelineExe = getApplicationPath("BraTSPipeline");
+    if (!cbica::exists(bratsPipelineExe))
+    {
+      ShowErrorMessage("Could not find the BraTSPipeline executable");
+      return;
+    }
+    
+    QStringList args;
+    args << "-t1" << t1Image.c_str() << 
+      "-t1c" << t1ceImage.c_str() << 
+      "-t2" << t2Image.c_str() << 
+      "-fl" << flImage.c_str() << 
+      "-o" << outputDir.c_str();
+
+    QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application",
+      "BraTS Pipeline takes ~30 minutes to run, during which CaPTk will not be responsive; press OK to continue...",
+      QMessageBox::Ok | QMessageBox::Cancel);
+    box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
+    box->setWindowModality(Qt::NonModal);
+    QCoreApplication::processEvents();
+    if (box->exec() == QMessageBox::Ok)
+    {
+      updateProgress(5, "Starting BraTS Pipeline");
+
+      if (startExternalProcess(bratsPipelineExe.c_str(), args) != 0)
+      {
+        ShowErrorMessage("BraTS Pipeline returned with exit code != 0");
+        updateProgress(0, "");
+        return;
+      }
+    }
+  }
+  else
+  {
+    ShowErrorMessage("All input images need to be provided for BraTS Pipeline to run.");
+    return;
+  }
+}
+
 void fMainWindow::CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile)
 {
   if (!referenceImage.empty() && !inputImageFile.empty() && !outputImageFile.empty())
@@ -8711,7 +8942,7 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
   msg = "Diffusion derivatives have been saved at the specified locations.";
   ShowMessage(msg.toStdString(), this);
 }
-void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
+void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
@@ -8721,7 +8952,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
-  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, TE,outputFolder);
+  std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, outputFolder);
 
   if (perfusionDerivatives.size() == 0)
   {
@@ -8747,7 +8978,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const double TE, const bool r
 }
 
 
-void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder)
+void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
@@ -8759,17 +8990,13 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
     ShowErrorMessage("Input T1ce Image passed is not a valid file, please re-check", this);
     return;
   }
-  if (!cbica::isFile(inputdicomfilename))
-  {
-    ShowErrorMessage("Input Dicom Image passed is not a valid file, please re-check", this);
-    return;
-  }
+
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionAlignment objPerfusion;
 
   std::vector<double> OriginalCurve, RevisedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, inputdicomfilename, inputt1cefilename, before, after, OriginalCurve, RevisedCurve,echotime);
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename,  inputt1cefilename, before, after, OriginalCurve, RevisedCurve,echotime);
   for (int index = 0; index < PerfusionAlignment.size(); index++)
   {
     std::cout << "Writing time-point: " << index + 1 << "/" << PerfusionAlignment.size() << std::endl;
@@ -8792,14 +9019,14 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
   ShowMessage(msg.toStdString(), this);
 }
 
-void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds)
+void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int confType, int folds)
 {
   int defaultfeatureselectiontype = 3;
   int defaultoptimizationtype = 0;
   int defaultcvtype = 1;
 
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, conf,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype))
+  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, confType,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
@@ -9502,13 +9729,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string filePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
           t1ceFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
           t1FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
           t2FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
       }
     }
@@ -9522,13 +9749,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string extension = cbica::getFilenameExtension(filePath, false);
         filePath_lower = filePath;
         std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
           && isExtensionSupported(extension))
           rcbvFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
           && isExtensionSupported(extension))
           psrFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
           && isExtensionSupported(extension))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
@@ -9542,13 +9769,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
@@ -9606,12 +9833,12 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> fMainWindow::LoadQu
       std::string extension = cbica::getFilenameExtension(filePath, false);
       filePath_lower = filePath;
       std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-      if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG)
+      if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG)
         && isExtensionSupported(extension))
         labelPath = subjectPath + "/" + files[i];
-      else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+      else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
         && isExtensionSupported(extension))
-        perfFilePath = subjectPath + "/SEGMENTATION" + "/" + files[i];
+        perfFilePath = subjectPath + "/" + files[i];
     }
 
     if (labelPath.empty() || perfFilePath.empty())
@@ -9675,7 +9902,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
       {
         std::string filePath = subjectPath + "/SEGMENTATION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && isExtensionSupported(extension))
           labelPath = subjectPath + "/SEGMENTATION/" + files[i];
       }
     }
@@ -9686,7 +9913,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
       {
         std::string filePath = subjectPath + "/PERFUSION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION) && isExtensionSupported(extension))
           perfFilePath = subjectPath + "/PERFUSION/" + files[i];
       }
     }
@@ -9698,13 +9925,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/CONVENTIONAL/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
           t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
           t1FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
           t2FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
       }
     }
@@ -9718,13 +9945,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
@@ -9813,7 +10040,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
       {
         std::string filePath = subjectPath + "/SEGMENTATION/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_SEG) && isExtensionSupported(extension))
           labelPath = subjectPath + "/SEGMENTATION/" + files[i];
         else if ((files[i].find("atlas") != std::string::npos) && isExtensionSupported(extension))
           atlasPath = subjectPath + "/SEGMENTATION/" + files[i];
@@ -9828,16 +10055,16 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string extension = cbica::getFilenameExtension(filePath, false);
         filePath_lower = filePath;
         std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_RCBV)
           && isExtensionSupported(extension))
           rcbvFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PSR)
           && isExtensionSupported(extension))
           psrFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PH)
           && isExtensionSupported(extension))
           phFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
           && isExtensionSupported(extension))
           perfFilePath = subjectPath + "/PERFUSION" + "/" + files[i];
       }
@@ -9850,13 +10077,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/CONVENTIONAL/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1CE) && isExtensionSupported(extension))
           t1ceFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T1) && isExtensionSupported(extension))
           t1FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2) && isExtensionSupported(extension))
           t2FilePath = subjectPath + "/CONVENTIONAL/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_T2FLAIR) && isExtensionSupported(extension))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL/" + files[i];
       }
     }
@@ -9870,13 +10097,13 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
         std::string filePath = subjectPath + "/DTI/" + files[i];
         std::string extension = cbica::getFilenameExtension(filePath, false);
 
-        if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
+        if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_AX) && isExtensionSupported(extension))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_FA) && isExtensionSupported(extension))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_RAD) && isExtensionSupported(extension))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((guessImageType(files[i]) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
+        else if ((guessImageType(files[i], false) == CAPTK::ImageModalityType::IMAGE_TYPE_TR) && isExtensionSupported(extension))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
@@ -9923,6 +10150,14 @@ void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const
     ShowErrorMessage("The given SVM model directory does not exist");
     help_contextual("Glioblastoma_MolecularSubtype.html");
     return;
+  }
+  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  {
+      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+      {
+          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+          return;
+      }
   }
   if (!cbica::fileExists(modeldirectory + "/ProneuralModelFile.xml") || !cbica::fileExists(modeldirectory + "/NeuralModelFile.xml") ||
     !cbica::fileExists(modeldirectory + "/MessenchymalModelFile.xml") || !cbica::fileExists(modeldirectory + "/ClassicalModelFile.xml") ||

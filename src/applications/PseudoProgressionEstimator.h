@@ -3,7 +3,7 @@
 
 This file holds the declaration of the class PseudoProgressionEstimator.
 
-https://www.med.upenn.edu/sbia/software/ <br>
+http://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
@@ -33,12 +33,9 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "CaPTkEnums.h"
 #include "CaPTkClassifierUtils.h"
 #include "cbicaLogging.h"
-#include "itkEnhancedScalarImageToRunLengthFeaturesFilter.h"
-#include "itkRoundImageFilter.h"
 
 #define RECURRENCE_MODEL_G 0.5
 #define RECURRENCE_MODEL_RHO 0.0896
-#define PSEUDOPROGRESSION_NO_OF_FEATURES 1041
 
 #ifdef APP_BASE_CAPTK_H
 #include "ApplicationBase.h"
@@ -53,6 +50,8 @@ typedef vnl_matrix<double> MatrixType;
 typedef std::tuple< std::vector<ImageType::IndexType>, VariableSizeMatrixType> PerfusionTupleType;
 typedef std::map<int, PerfusionTupleType> PerfusionMapType;
 
+#define PSP_NO_OF_FEATURES 1040
+#define TXT_NO_OF_FEATURES 810
 
 /**
 \class PseudoProgressionEstimator
@@ -253,14 +252,14 @@ public:
   VectorDouble GetIntensityFeatures(std::vector<float> m_intensities);
 
   template<class ImageType>
-  VectorDouble GetGLCMFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask,double minvalue,double maxvalue);
+  VectorDouble GetGLCMFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask);
 
   template<class ImageType>
   typename ImageType::Pointer MakeAdditionalModality(typename ImageType::Pointer image1, typename ImageType::Pointer image2);
 
 
   template<class ImageType>
-  VectorDouble GetRunLengthFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask, double minvalue, double maxvalue);
+  VectorDouble GetRunLengthFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask);
 
   template<class PerfusionImageType, class ImageType>
   VectorVectorDouble GetPerfusionFeatures(typename PerfusionImageType::Pointer image, typename ImageType::Pointer mask);
@@ -394,191 +393,6 @@ public:
   std::string mRecurrenceMapFileName;
 private:
   std::string mCurrentOutputDir;
-
-  //feature header
-  std::vector<std::string> FeatureLabels = { "Eccentricity","Elongation","Perimeter","Roundedness","Flatness",
-"T1_Bins_1","T1_Bins_2","T1_Bins_3","T1_Bins_4","T1_Bins_5","T1_Bins_6","T1_Bins_7","T1_Bins_8","T1_Bins_9",
-"T1_Bins_10","T1_Intensity_Min","T1_Intensity_Max","T1_Intensity_Mean","T1_Intensity_Variance","T1_Intensity_Std",
-"T1_Intensity_Skew","T1_Intensity_Kurtosis","T1_GLCM_Correlation","T1_GLCM_Contrast","T1_GLCM_Entropy",
-"T1_GLCM_Homogeneity","T1_GLCM_ClusterShade","T1_GLCM_ClusterProminence","T1_GLCM_AutoCorrelation",
-"T1_GLCM_Energy","T1_GLRLM_ShortRunEmphasis","T1_GLRLM_LongRunEmphasis","T1_GLRLM_GLNonUniformity",
-"T1_GLRLM_RLNonUniformity","T1_GLRLM_LowGreyLevelRunEmphasis","T1_GLRLM_HighGreyLevelRunEmphasis",
-"T1_GLRLM_ShortRunLowGreyLevelEmphasis","T1_GLRLM_ShortRunHighGreyLevelEmphasis","T1_GLRLM_LongRunLowGreyLevelEmphasis",
-"T1_GLRLM_LongRunHighGreyLevelEmphasis","T1CE_Bins_1","T1CE_Bins_2","T1CE_Bins_3","T1CE_Bins_4","T1CE_Bins_5",
-"T1CE_Bins_6","T1CE_Bins_7","T1CE_Bins_8","T1CE_Bins_9","T1CE_Bins_10","T1CE_Intensity_Min","T1CE_Intensity_Max",
-"T1CE_Intensity_Mean","T1CE_Intensity_Variance","T1CE_Intensity_Std","T1CE_Intensity_Skew","T1CE_Intensity_Kurtosis",
-"T1CE_GLCM_Correlation","T1CE_GLCM_Contrast","T1CE_GLCM_Entropy","T1CE_GLCM_Homogeneity","T1CE_GLCM_ClusterShade",
-"T1CE_GLCM_ClusterProminence","T1CE_GLCM_AutoCorrelation","T1CE_GLCM_Energy","T1CE_GLRLM_ShortRunEmphasis",
-"T1CE_GLRLM_LongRunEmphasis","T1CE_GLRLM_GLNonUniformity","T1CE_GLRLM_RLNonUniformity","T1CE_GLRLM_LowGreyLevelRunEmphasis",
-"T1CE_GLRLM_HighGreyLevelRunEmphasis","T1CE_GLRLM_ShortRunLowGreyLevelEmphasis","T1CE_GLRLM_ShortRunHighGreyLevelEmphasis",
-"T1CE_GLRLM_LongRunLowGreyLevelEmphasis","T1CE_GLRLM_LongRunHighGreyLevelEmphasis","T2_Bins_1","T2_Bins_2","T2_Bins_3",
-"T2_Bins_4","T2_Bins_5","T2_Bins_6","T2_Bins_7","T2_Bins_8","T2_Bins_9","T2_Bins_10","T2_Intensity_Min","T2_Intensity_Max",
-"T2_Intensity_Mean","T2_Intensity_Variance","T2_Intensity_Std","T2_Intensity_Skew","T2_Intensity_Kurtosis","T2_GLCM_Correlation",
-"T2_GLCM_Contrast","T2_GLCM_Entropy","T2_GLCM_Homogeneity","T2_GLCM_ClusterShade","T2_GLCM_ClusterProminence","T2_GLCM_AutoCorrelation",
-"T2_GLCM_Energy","T2_GLRLM_ShortRunEmphasis","T2_GLRLM_LongRunEmphasis","T2_GLRLM_GLNonUniformity","T2_GLRLM_RLNonUniformity",
-"T2_GLRLM_LowGreyLevelRunEmphasis","T2_GLRLM_HighGreyLevelRunEmphasis","T2_GLRLM_ShortRunLowGreyLevelEmphasis",
-"T2_GLRLM_ShortRunHighGreyLevelEmphasis","T2_GLRLM_LongRunLowGreyLevelEmphasis","T2_GLRLM_LongRunHighGreyLevelEmphasis",
-"FL_Bins_1","FL_Bins_2","FL_Bins_3","FL_Bins_4","FL_Bins_5","FL_Bins_6","FL_Bins_7","FL_Bins_8","FL_Bins_9","FL_Bins_10",
-"FL_Intensity_Min","FL_Intensity_Max","FL_Intensity_Mean","FL_Intensity_Variance","FL_Intensity_Std","FL_Intensity_Skew",
-"FL_Intensity_Kurtosis","FL_GLCM_Correlation","FL_GLCM_Contrast","FL_GLCM_Entropy","FL_GLCM_Homogeneity","FL_GLCM_ClusterShade",
-"FL_GLCM_ClusterProminence","FL_GLCM_AutoCorrelation","FL_GLCM_Energy","FL_GLRLM_ShortRunEmphasis","FL_GLRLM_LongRunEmphasis",
-"FL_GLRLM_GLNonUniformity","FL_GLRLM_RLNonUniformity","FL_GLRLM_LowGreyLevelRunEmphasis","FL_GLRLM_HighGreyLevelRunEmphasis",
-"FL_GLRLM_ShortRunLowGreyLevelEmphasis","FL_GLRLM_ShortRunHighGreyLevelEmphasis","FL_GLRLM_LongRunLowGreyLevelEmphasis",
-"FL_GLRLM_LongRunHighGreyLevelEmphasis","T1TC_Bins_1","T1TC_Bins_2","T1TC_Bins_3","T1TC_Bins_4","T1TC_Bins_5","T1TC_Bins_6",
-"T1TC_Bins_7","T1TC_Bins_8","T1TC_Bins_9","T1TC_Bins_10","T1TC_Intensity_Min","T1TC_Intensity_Max","T1TC_Intensity_Mean",
-"T1TC_Intensity_Variance","T1TC_Intensity_Std","T1TC_Intensity_Skew","T1TC_Intensity_Kurtosis","T1TC_GLCM_Correlation",
-"T1TC_GLCM_Contrast","T1TC_GLCM_Entropy","T1TC_GLCM_Homogeneity","T1TC_GLCM_ClusterShade","T1TC_GLCM_ClusterProminence",
-"T1TC_GLCM_AutoCorrelation","T1TC_GLCM_Energy","T1TC_GLRLM_ShortRunEmphasis","T1TC_GLRLM_LongRunEmphasis","T1TC_GLRLM_GLNonUniformity",
-"T1TC_GLRLM_RLNonUniformity","T1TC_GLRLM_LowGreyLevelRunEmphasis","T1TC_GLRLM_HighGreyLevelRunEmphasis",
-"T1TC_GLRLM_ShortRunLowGreyLevelEmphasis","T1TC_GLRLM_ShortRunHighGreyLevelEmphasis","T1TC_GLRLM_LongRunLowGreyLevelEmphasis",
-"T1TC_GLRLM_LongRunHighGreyLevelEmphasis","T2FL_Bins_1","T2FL_Bins_2","T2FL_Bins_3","T2FL_Bins_4","T2FL_Bins_5","T2FL_Bins_6",
-"T2FL_Bins_7","T2FL_Bins_8","T2FL_Bins_9","T2FL_Bins_10","T2FL_Intensity_Min","T2FL_Intensity_Max","T2FL_Intensity_Mean",
-"T2FL_Intensity_Variance","T2FL_Intensity_Std","T2FL_Intensity_Skew","T2FL_Intensity_Kurtosis","T2FL_GLCM_Correlation",
-"T2FL_GLCM_Contrast","T2FL_GLCM_Entropy","T2FL_GLCM_Homogeneity","T2FL_GLCM_ClusterShade","T2FL_GLCM_ClusterProminence",
-"T2FL_GLCM_AutoCorrelation","T2FL_GLCM_Energy","T2FL_GLRLM_ShortRunEmphasis","T2FL_GLRLM_LongRunEmphasis","T2FL_GLRLM_GLNonUniformity",
-"T2FL_GLRLM_RLNonUniformity","T2FL_GLRLM_LowGreyLevelRunEmphasis","T2FL_GLRLM_HighGreyLevelRunEmphasis","T2FL_GLRLM_ShortRunLowGreyLevelEmphasis",
-"T2FL_GLRLM_ShortRunHighGreyLevelEmphasis","T2FL_GLRLM_LongRunLowGreyLevelEmphasis","T2FL_GLRLM_LongRunHighGreyLevelEmphasis",
-"AX_Bins_1","AX_Bins_2","AX_Bins_3","AX_Bins_4","AX_Bins_5","AX_Bins_6","AX_Bins_7","AX_Bins_8","AX_Bins_9","AX_Bins_10",
-"AX_Intensity_Min","AX_Intensity_Max","AX_Intensity_Mean","AX_Intensity_Variance","AX_Intensity_Std","AX_Intensity_Skew",
-"AX_Intensity_Kurtosis","AX_GLCM_Correlation","AX_GLCM_Contrast","AX_GLCM_Entropy","AX_GLCM_Homogeneity","AX_GLCM_ClusterShade",
-"AX_GLCM_ClusterProminence","AX_GLCM_AutoCorrelation","AX_GLCM_Energy","AX_GLRLM_ShortRunEmphasis","AX_GLRLM_LongRunEmphasis",
-"AX_GLRLM_GLNonUniformity","AX_GLRLM_RLNonUniformity","AX_GLRLM_LowGreyLevelRunEmphasis","AX_GLRLM_HighGreyLevelRunEmphasis",
-"AX_GLRLM_ShortRunLowGreyLevelEmphasis","AX_GLRLM_ShortRunHighGreyLevelEmphasis","AX_GLRLM_LongRunLowGreyLevelEmphasis",
-"AX_GLRLM_LongRunHighGreyLevelEmphasis","FA_Bins_1","FA_Bins_2","FA_Bins_3","FA_Bins_4","FA_Bins_5","FA_Bins_6","FA_Bins_7",
-"FA_Bins_8","FA_Bins_9","FA_Bins_10","FA_Intensity_Min","FA_Intensity_Max","FA_Intensity_Mean","FA_Intensity_Variance",
-"FA_Intensity_Std","FA_Intensity_Skew","FA_Intensity_Kurtosis","FA_GLCM_Correlation","FA_GLCM_Contrast","FA_GLCM_Entropy",
-"FA_GLCM_Homogeneity","FA_GLCM_ClusterShade","FA_GLCM_ClusterProminence","FA_GLCM_AutoCorrelation","FA_GLCM_Energy",
-"FA_GLRLM_ShortRunEmphasis","FA_GLRLM_LongRunEmphasis","FA_GLRLM_GLNonUniformity","FA_GLRLM_RLNonUniformity",
-"FA_GLRLM_LowGreyLevelRunEmphasis","FA_GLRLM_HighGreyLevelRunEmphasis","FA_GLRLM_ShortRunLowGreyLevelEmphasis",
-"FA_GLRLM_ShortRunHighGreyLevelEmphasis","FA_GLRLM_LongRunLowGreyLevelEmphasis","FA_GLRLM_LongRunHighGreyLevelEmphasis",
-"RAD_Bins_1","RAD_Bins_2","RAD_Bins_3","RAD_Bins_4","RAD_Bins_5","RAD_Bins_6","RAD_Bins_7","RAD_Bins_8","RAD_Bins_9",
-"RAD_Bins_10","RAD_Intensity_Min","RAD_Intensity_Max","RAD_Intensity_Mean","RAD_Intensity_Variance","RAD_Intensity_Std",
-"RAD_Intensity_Skew","RAD_Intensity_Kurtosis","RAD_GLCM_Correlation","RAD_GLCM_Contrast","RAD_GLCM_Entropy","RAD_GLCM_Homogeneity",
-"RAD_GLCM_ClusterShade","RAD_GLCM_ClusterProminence","RAD_GLCM_AutoCorrelation","RAD_GLCM_Energy","RAD_GLRLM_ShortRunEmphasis",
-"RAD_GLRLM_LongRunEmphasis","RAD_GLRLM_GLNonUniformity","RAD_GLRLM_RLNonUniformity","RAD_GLRLM_LowGreyLevelRunEmphasis",
-"RAD_GLRLM_HighGreyLevelRunEmphasis","RAD_GLRLM_ShortRunLowGreyLevelEmphasis","RAD_GLRLM_ShortRunHighGreyLevelEmphasis",
-"RAD_GLRLM_LongRunLowGreyLevelEmphasis","RAD_GLRLM_LongRunHighGreyLevelEmphasis","TR_Bins_1","TR_Bins_2","TR_Bins_3",
-"TR_Bins_4","TR_Bins_5","TR_Bins_6","TR_Bins_7","TR_Bins_8","TR_Bins_9","TR_Bins_10","TR_Intensity_Min","TR_Intensity_Max",
-"TR_Intensity_Mean","TR_Intensity_Variance","TR_Intensity_Std","TR_Intensity_Skew","TR_Intensity_Kurtosis","TR_GLCM_Correlation",
-"TR_GLCM_Contrast","TR_GLCM_Entropy","TR_GLCM_Homogeneity","TR_GLCM_ClusterShade","TR_GLCM_ClusterProminence","TR_GLCM_AutoCorrelation",
-"TR_GLCM_Energy","TR_GLRLM_ShortRunEmphasis","TR_GLRLM_LongRunEmphasis","TR_GLRLM_GLNonUniformity","TR_GLRLM_RLNonUniformity",
-"TR_GLRLM_LowGreyLevelRunEmphasis","TR_GLRLM_HighGreyLevelRunEmphasis","TR_GLRLM_ShortRunLowGreyLevelEmphasis",
-"TR_GLRLM_ShortRunHighGreyLevelEmphasis","TR_GLRLM_LongRunLowGreyLevelEmphasis","TR_GLRLM_LongRunHighGreyLevelEmphasis",
-"PH_Bins_1","PH_Bins_2","PH_Bins_3","PH_Bins_4","PH_Bins_5","PH_Bins_6","PH_Bins_7","PH_Bins_8","PH_Bins_9","PH_Bins_10",
-"PH_Intensity_Min","PH_Intensity_Max","PH_Intensity_Mean","PH_Intensity_Variance","PH_Intensity_Std","PH_Intensity_Skew",
-"PH_Intensity_Kurtosis","PH_GLCM_Correlation","PH_GLCM_Contrast","PH_GLCM_Entropy","PH_GLCM_Homogeneity","PH_GLCM_ClusterShade",
-"PH_GLCM_ClusterProminence","PH_GLCM_AutoCorrelation","PH_GLCM_Energy","PH_GLRLM_ShortRunEmphasis","PH_GLRLM_LongRunEmphasis",
-"PH_GLRLM_GLNonUniformity","PH_GLRLM_RLNonUniformity","PH_GLRLM_LowGreyLevelRunEmphasis","PH_GLRLM_HighGreyLevelRunEmphasis",
-"PH_GLRLM_ShortRunLowGreyLevelEmphasis","PH_GLRLM_ShortRunHighGreyLevelEmphasis","PH_GLRLM_LongRunLowGreyLevelEmphasis",
-"PH_GLRLM_LongRunHighGreyLevelEmphasis","PS_Bins_1","PS_Bins_2","PS_Bins_3","PS_Bins_4","PS_Bins_5","PS_Bins_6","PS_Bins_7",
-"PS_Bins_8","PS_Bins_9","PS_Bins_10","PS_Intensity_Min","PS_Intensity_Max","PS_Intensity_Mean","PS_Intensity_Variance",
-"PS_Intensity_Std","PS_Intensity_Skew","PS_Intensity_Kurtosis","PS_GLCM_Correlation","PS_GLCM_Contrast","PS_GLCM_Entropy",
-"PS_GLCM_Homogeneity","PS_GLCM_ClusterShade","PS_GLCM_ClusterProminence","PS_GLCM_AutoCorrelation","PS_GLCM_Energy",
-"PS_GLRLM_ShortRunEmphasis","PS_GLRLM_LongRunEmphasis","PS_GLRLM_GLNonUniformity","PS_GLRLM_RLNonUniformity",
-"PS_GLRLM_LowGreyLevelRunEmphasis","PS_GLRLM_HighGreyLevelRunEmphasis","PS_GLRLM_ShortRunLowGreyLevelEmphasis",
-"PS_GLRLM_ShortRunHighGreyLevelEmphasis","PS_GLRLM_LongRunLowGreyLevelEmphasis","PS_GLRLM_LongRunHighGreyLevelEmphasis",
-"RCBV_Bins_1","RCBV_Bins_2","RCBV_Bins_3","RCBV_Bins_4","RCBV_Bins_5","RCBV_Bins_6","RCBV_Bins_7","RCBV_Bins_8","RCBV_Bins_9",
-"RCBV_Bins_10","RCBV_Intensity_Min","RCBV_Intensity_Max","RCBV_Intensity_Mean","RCBV_Intensity_Variance","RCBV_Intensity_Std",
-"RCBV_Intensity_Skew","RCBV_Intensity_Kurtosis","RCBV_GLCM_Correlation","RCBV_GLCM_Contrast","RCBV_GLCM_Entropy",
-"RCBV_GLCM_Homogeneity","RCBV_GLCM_ClusterShade","RCBV_GLCM_ClusterProminence","RCBV_GLCM_AutoCorrelation","RCBV_GLCM_Energy",
-"RCBV_GLRLM_ShortRunEmphasis","RCBV_GLRLM_LongRunEmphasis","RCBV_GLRLM_GLNonUniformity","RCBV_GLRLM_RLNonUniformity",
-"RCBV_GLRLM_LowGreyLevelRunEmphasis","RCBV_GLRLM_HighGreyLevelRunEmphasis","RCBV_GLRLM_ShortRunLowGreyLevelEmphasis",
-"RCBV_GLRLM_ShortRunHighGreyLevelEmphasis","RCBV_GLRLM_LongRunLowGreyLevelEmphasis","RCBV_GLRLM_LongRunHighGreyLevelEmphasis",
-"PCA1_Bins_1","PCA1_Bins_2","PCA1_Bins_3","PCA1_Bins_4","PCA1_Bins_5","PCA1_Bins_6","PCA1_Bins_7","PCA1_Bins_8","PCA1_Bins_9",
-"PCA1_Bins_10","PCA1_Intensity_Min","PCA1_Intensity_Max","PCA1_Intensity_Mean","PCA1_Intensity_Variance","PCA1_Intensity_Std",
-"PCA1_Intensity_Skew","PCA1_Intensity_Kurtosis","PCA1_GLCM_Correlation","PCA1_GLCM_Contrast","PCA1_GLCM_Entropy",
-"PCA1_GLCM_Homogeneity","PCA1_GLCM_ClusterShade","PCA1_GLCM_ClusterProminence","PCA1_GLCM_AutoCorrelation","PCA1_GLCM_Energy",
-"PCA1_GLRLM_ShortRunEmphasis","PCA1_GLRLM_LongRunEmphasis","PCA1_GLRLM_GLNonUniformity","PCA1_GLRLM_RLNonUniformity",
-"PCA1_GLRLM_LowGreyLevelRunEmphasis","PCA1_GLRLM_HighGreyLevelRunEmphasis","PCA1_GLRLM_ShortRunLowGreyLevelEmphasis",
-"PCA1_GLRLM_ShortRunHighGreyLevelEmphasis","PCA1_GLRLM_LongRunLowGreyLevelEmphasis","PCA1_GLRLM_LongRunHighGreyLevelEmphasis",
-"PCA2_Bins_1","PCA2_Bins_2","PCA2_Bins_3","PCA2_Bins_4","PCA2_Bins_5","PCA2_Bins_6","PCA2_Bins_7","PCA2_Bins_8","PCA2_Bins_9",
-"PCA2_Bins_10","PCA2_Intensity_Min","PCA2_Intensity_Max","PCA2_Intensity_Mean","PCA2_Intensity_Variance","PCA2_Intensity_Std",
-"PCA2_Intensity_Skew","PCA2_Intensity_Kurtosis","PCA2_GLCM_Correlation","PCA2_GLCM_Contrast","PCA2_GLCM_Entropy",
-"PCA2_GLCM_Homogeneity","PCA2_GLCM_ClusterShade","PCA2_GLCM_ClusterProminence","PCA2_GLCM_AutoCorrelation","PCA2_GLCM_Energy",
-"PCA2_GLRLM_ShortRunEmphasis","PCA2_GLRLM_LongRunEmphasis","PCA2_GLRLM_GLNonUniformity","PCA2_GLRLM_RLNonUniformity",
-"PCA2_GLRLM_LowGreyLevelRunEmphasis","PCA2_GLRLM_HighGreyLevelRunEmphasis","PCA2_GLRLM_ShortRunLowGreyLevelEmphasis",
-"PCA2_GLRLM_ShortRunHighGreyLevelEmphasis","PCA2_GLRLM_LongRunLowGreyLevelEmphasis","PCA2_GLRLM_LongRunHighGreyLevelEmphasis",
-"PCA3_Bins_1","PCA3_Bins_2","PCA3_Bins_3","PCA3_Bins_4","PCA3_Bins_5","PCA3_Bins_6","PCA3_Bins_7","PCA3_Bins_8","PCA3_Bins_9",
-"PCA3_Bins_10","PCA3_Intensity_Min","PCA3_Intensity_Max","PCA3_Intensity_Mean","PCA3_Intensity_Variance","PCA3_Intensity_Std",
-"PCA3_Intensity_Skew","PCA3_Intensity_Kurtosis","PCA3_GLCM_Correlation","PCA3_GLCM_Contrast","PCA3_GLCM_Entropy",
-"PCA3_GLCM_Homogeneity","PCA3_GLCM_ClusterShade","PCA3_GLCM_ClusterProminence","PCA3_GLCM_AutoCorrelation","PCA3_GLCM_Energy",
-"PCA3_GLRLM_ShortRunEmphasis","PCA3_GLRLM_LongRunEmphasis","PCA3_GLRLM_GLNonUniformity","PCA3_GLRLM_RLNonUniformity",
-"PCA3_GLRLM_LowGreyLevelRunEmphasis","PCA3_GLRLM_HighGreyLevelRunEmphasis","PCA3_GLRLM_ShortRunLowGreyLevelEmphasis",
-"PCA3_GLRLM_ShortRunHighGreyLevelEmphasis","PCA3_GLRLM_LongRunLowGreyLevelEmphasis","PCA3_GLRLM_LongRunHighGreyLevelEmphasis",
-"PCA4_Bins_1","PCA4_Bins_2","PCA4_Bins_3","PCA4_Bins_4","PCA4_Bins_5","PCA4_Bins_6","PCA4_Bins_7","PCA4_Bins_8","PCA4_Bins_9",
-"PCA4_Bins_10","PCA4_Intensity_Min","PCA4_Intensity_Max","PCA4_Intensity_Mean","PCA4_Intensity_Variance","PCA4_Intensity_Std",
-"PCA4_Intensity_Skew","PCA4_Intensity_Kurtosis","PCA4_GLCM_Correlation","PCA4_GLCM_Contrast","PCA4_GLCM_Entropy","PCA4_GLCM_Homogeneity",
-"PCA4_GLCM_ClusterShade","PCA4_GLCM_ClusterProminence","PCA4_GLCM_AutoCorrelation","PCA4_GLCM_Energy","PCA4_GLRLM_ShortRunEmphasis",
-"PCA4_GLRLM_LongRunEmphasis","PCA4_GLRLM_GLNonUniformity","PCA4_GLRLM_RLNonUniformity","PCA4_GLRLM_LowGreyLevelRunEmphasis",
-"PCA4_GLRLM_HighGreyLevelRunEmphasis","PCA4_GLRLM_ShortRunLowGreyLevelEmphasis","PCA4_GLRLM_ShortRunHighGreyLevelEmphasis",
-"PCA4_GLRLM_LongRunLowGreyLevelEmphasis","PCA4_GLRLM_LongRunHighGreyLevelEmphasis","PCA5_Bins_1","PCA5_Bins_2","PCA5_Bins_3",
-"PCA5_Bins_4","PCA5_Bins_5","PCA5_Bins_6","PCA5_Bins_7","PCA5_Bins_8","PCA5_Bins_9","PCA5_Bins_10","PCA5_Intensity_Min",
-"PCA5_Intensity_Max","PCA5_Intensity_Mean","PCA5_Intensity_Variance","PCA5_Intensity_Std","PCA5_Intensity_Skew",
-"PCA5_Intensity_Kurtosis","PCA5_GLCM_Correlation","PCA5_GLCM_Contrast","PCA5_GLCM_Entropy","PCA5_GLCM_Homogeneity",
-"PCA5_GLCM_ClusterShade","PCA5_GLCM_ClusterProminence","PCA5_GLCM_AutoCorrelation","PCA5_GLCM_Energy","PCA5_GLRLM_ShortRunEmphasis",
-"PCA5_GLRLM_LongRunEmphasis","PCA5_GLRLM_GLNonUniformity","PCA5_GLRLM_RLNonUniformity","PCA5_GLRLM_LowGreyLevelRunEmphasis",
-"PCA5_GLRLM_HighGreyLevelRunEmphasis","PCA5_GLRLM_ShortRunLowGreyLevelEmphasis","PCA5_GLRLM_ShortRunHighGreyLevelEmphasis",
-"PCA5_GLRLM_LongRunLowGreyLevelEmphasis","PCA5_GLRLM_LongRunHighGreyLevelEmphasis","PCA6_Bins_1","PCA6_Bins_2","PCA6_Bins_3",
-"PCA6_Bins_4","PCA6_Bins_5","PCA6_Bins_6","PCA6_Bins_7","PCA6_Bins_8","PCA6_Bins_9","PCA6_Bins_10","PCA6_Intensity_Min",
-"PCA6_Intensity_Max","PCA6_Intensity_Mean","PCA6_Intensity_Variance","PCA6_Intensity_Std","PCA6_Intensity_Skew",
-"PCA6_Intensity_Kurtosis","PCA6_GLCM_Correlation","PCA6_GLCM_Contrast","PCA6_GLCM_Entropy","PCA6_GLCM_Homogeneity",
-"PCA6_GLCM_ClusterShade","PCA6_GLCM_ClusterProminence","PCA6_GLCM_AutoCorrelation","PCA6_GLCM_Energy","PCA6_GLRLM_ShortRunEmphasis",
-"PCA6_GLRLM_LongRunEmphasis","PCA6_GLRLM_GLNonUniformity","PCA6_GLRLM_RLNonUniformity","PCA6_GLRLM_LowGreyLevelRunEmphasis",
-"PCA6_GLRLM_HighGreyLevelRunEmphasis","PCA6_GLRLM_ShortRunLowGreyLevelEmphasis","PCA6_GLRLM_ShortRunHighGreyLevelEmphasis",
-"PCA6_GLRLM_LongRunLowGreyLevelEmphasis","PCA6_GLRLM_LongRunHighGreyLevelEmphasis","PCA7_Bins_1","PCA7_Bins_2","PCA7_Bins_3",
-"PCA7_Bins_4","PCA7_Bins_5","PCA7_Bins_6","PCA7_Bins_7","PCA7_Bins_8","PCA7_Bins_9","PCA7_Bins_10","PCA7_Intensity_Min",
-"PCA7_Intensity_Max","PCA7_Intensity_Mean","PCA7_Intensity_Variance","PCA7_Intensity_Std","PCA7_Intensity_Skew","PCA7_Intensity_Kurtosis",
-"PCA7_GLCM_Correlation","PCA7_GLCM_Contrast","PCA7_GLCM_Entropy","PCA7_GLCM_Homogeneity","PCA7_GLCM_ClusterShade",
-"PCA7_GLCM_ClusterProminence","PCA7_GLCM_AutoCorrelation","PCA7_GLCM_Energy","PCA7_GLRLM_ShortRunEmphasis","PCA7_GLRLM_LongRunEmphasis",
-"PCA7_GLRLM_GLNonUniformity","PCA7_GLRLM_RLNonUniformity","PCA7_GLRLM_LowGreyLevelRunEmphasis","PCA7_GLRLM_HighGreyLevelRunEmphasis",
-"PCA7_GLRLM_ShortRunLowGreyLevelEmphasis","PCA7_GLRLM_ShortRunHighGreyLevelEmphasis","PCA7_GLRLM_LongRunLowGreyLevelEmphasis",
-"PCA7_GLRLM_LongRunHighGreyLevelEmphasis","PCA8_Bins_1","PCA8_Bins_2","PCA8_Bins_3","PCA8_Bins_4","PCA8_Bins_5","PCA8_Bins_6",
-"PCA8_Bins_7","PCA8_Bins_8","PCA8_Bins_9","PCA8_Bins_10","PCA8_Intensity_Min","PCA8_Intensity_Max","PCA8_Intensity_Mean",
-"PCA8_Intensity_Variance","PCA8_Intensity_Std","PCA8_Intensity_Skew","PCA8_Intensity_Kurtosis","PCA8_GLCM_Correlation",
-"PCA8_GLCM_Contrast","PCA8_GLCM_Entropy","PCA8_GLCM_Homogeneity","PCA8_GLCM_ClusterShade","PCA8_GLCM_ClusterProminence",
-"PCA8_GLCM_AutoCorrelation","PCA8_GLCM_Energy","PCA8_GLRLM_ShortRunEmphasis","PCA8_GLRLM_LongRunEmphasis","PCA8_GLRLM_GLNonUniformity",
-"PCA8_GLRLM_RLNonUniformity","PCA8_GLRLM_LowGreyLevelRunEmphasis","PCA8_GLRLM_HighGreyLevelRunEmphasis",
-"PCA8_GLRLM_ShortRunLowGreyLevelEmphasis","PCA8_GLRLM_ShortRunHighGreyLevelEmphasis","PCA8_GLRLM_LongRunLowGreyLevelEmphasis",
-"PCA8_GLRLM_LongRunHighGreyLevelEmphasis","PCA9_Bins_1","PCA9_Bins_2","PCA9_Bins_3","PCA9_Bins_4","PCA9_Bins_5","PCA9_Bins_6",
-"PCA9_Bins_7","PCA9_Bins_8","PCA9_Bins_9","PCA9_Bins_10","PCA9_Intensity_Min","PCA9_Intensity_Max","PCA9_Intensity_Mean",
-"PCA9_Intensity_Variance","PCA9_Intensity_Std","PCA9_Intensity_Skew","PCA9_Intensity_Kurtosis","PCA9_GLCM_Correlation",
-"PCA9_GLCM_Contrast","PCA9_GLCM_Entropy","PCA9_GLCM_Homogeneity","PCA9_GLCM_ClusterShade","PCA9_GLCM_ClusterProminence",
-"PCA9_GLCM_AutoCorrelation","PCA9_GLCM_Energy","PCA9_GLRLM_ShortRunEmphasis","PCA9_GLRLM_LongRunEmphasis","PCA9_GLRLM_GLNonUniformity",
-"PCA9_GLRLM_RLNonUniformity","PCA9_GLRLM_LowGreyLevelRunEmphasis","PCA9_GLRLM_HighGreyLevelRunEmphasis",
-"PCA9_GLRLM_ShortRunLowGreyLevelEmphasis","PCA9_GLRLM_ShortRunHighGreyLevelEmphasis","PCA9_GLRLM_LongRunLowGreyLevelEmphasis",
-"PCA9_GLRLM_LongRunHighGreyLevelEmphasis","PCA10_Bins_1","PCA10_Bins_2","PCA10_Bins_3","PCA10_Bins_4","PCA10_Bins_5",
-"PCA10_Bins_6","PCA10_Bins_7","PCA10_Bins_8","PCA10_Bins_9","PCA10_Bins_10","PCA10_Intensity_Min","PCA10_Intensity_Max",
-"PCA10_Intensity_Mean","PCA10_Intensity_Variance","PCA10_Intensity_Std","PCA10_Intensity_Skew","PCA10_Intensity_Kurtosis",
-"PCA10_GLCM_Correlation","PCA10_GLCM_Contrast","PCA10_GLCM_Entropy","PCA10_GLCM_Homogeneity","PCA10_GLCM_ClusterShade",
-"PCA10_GLCM_ClusterProminence","PCA10_GLCM_AutoCorrelation","PCA10_GLCM_Energy","PCA10_GLRLM_ShortRunEmphasis",
-"PCA10_GLRLM_LongRunEmphasis","PCA10_GLRLM_GLNonUniformity","PCA10_GLRLM_RLNonUniformity","PCA10_GLRLM_LowGreyLevelRunEmphasis",
-"PCA10_GLRLM_HighGreyLevelRunEmphasis","PCA10_GLRLM_ShortRunLowGreyLevelEmphasis","PCA10_GLRLM_ShortRunHighGreyLevelEmphasis",
-"PCA10_GLRLM_LongRunLowGreyLevelEmphasis","PCA10_GLRLM_LongRunHighGreyLevelEmphasis","T1_PCA_1","T1_PCA_2","T1_PCA_3",
-"T1_PCA_4","T1_PCA_5","T1_PCA_6","T1_PCA_7","T1_PCA_8","T1_PCA_9","T1_PCA_10","T1CE_PCA_1","T1CE_PCA_2","T1CE_PCA_3",
-"T1CE_PCA_4","T1CE_PCA_5","T1CE_PCA_6","T1CE_PCA_7","T1CE_PCA_8","T1CE_PCA_9","T1CE_PCA_10","T1T1CE_PCA_1","T1T1CE_PCA_2",
-"T1T1CE_PCA_3","T1T1CE_PCA_4","T1T1CE_PCA_5","T1T1CE_PCA_6","T1T1CE_PCA_7","T1T1CE_PCA_8","T1T1CE_PCA_9","T1T1CE_PCA_10",
-"T2_PCA_1","T2_PCA_2","T2_PCA_3","T2_PCA_4","T2_PCA_5","T2_PCA_6","T2_PCA_7","T2_PCA_8","T2_PCA_9","T2_PCA_10","FL_PCA_1",
-"FL_PCA_2","FL_PCA_3","FL_PCA_4","FL_PCA_5","FL_PCA_6","FL_PCA_7","FL_PCA_8","FL_PCA_9","FL_PCA_10","T2FL_PCA_1","T2FL_PCA_2",
-"T2FL_PCA_3","T2FL_PCA_4","T2FL_PCA_5","T2FL_PCA_6","T2FL_PCA_7","T2FL_PCA_8","T2FL_PCA_9","T2FL_PCA_10","AX_PCA_1",
-"AX_PCA_2","AX_PCA_3","AX_PCA_4","AX_PCA_5","AX_PCA_6","AX_PCA_7","AX_PCA_8","AX_PCA_9","AX_PCA_10","FA_PCA_1","FA_PCA_2",
-"FA_PCA_3","FA_PCA_4","FA_PCA_5","FA_PCA_6","FA_PCA_7","FA_PCA_8","FA_PCA_9","FA_PCA_10","RAD_PCA_1","RAD_PCA_2","RAD_PCA_3",
-"RAD_PCA_4","RAD_PCA_5","RAD_PCA_6","RAD_PCA_7","RAD_PCA_8","RAD_PCA_9","RAD_PCA_10","TR_PCA_1","TR_PCA_2","TR_PCA_3",
-"TR_PCA_4","TR_PCA_5","TR_PCA_6","TR_PCA_7","TR_PCA_8","TR_PCA_9","TR_PCA_10","PH_PCA_1","PH_PCA_2","PH_PCA_3","PH_PCA_4",
-"PH_PCA_5","PH_PCA_6","PH_PCA_7","PH_PCA_8","PH_PCA_9","PH_PCA_10","PSR_PCA_1","PSR_PCA_2","PSR_PCA_3","PSR_PCA_4",
-"PSR_PCA_5","PSR_PCA_6","PSR_PCA_7","PSR_PCA_8","PSR_PCA_9","PSR_PCA_10","RCBV_PCA_1","RCBV_PCA_2","RCBV_PCA_3",
-"RCBV_PCA_4","RCBV_PCA_5","RCBV_PCA_6","RCBV_PCA_7","RCBV_PCA_8","RCBV_PCA_9","RCBV_PCA_10","PCA1_PCA_1","PCA1_PCA_2",
-"PCA1_PCA_3","PCA1_PCA_4","PCA1_PCA_5","PCA1_PCA_6","PCA1_PCA_7","PCA1_PCA_8","PCA1_PCA_9","PCA1_PCA_10","PCA2_PCA_1",
-"PCA2_PCA_2","PCA2_PCA_3","PCA2_PCA_4","PCA2_PCA_5","PCA2_PCA_6","PCA2_PCA_7","PCA2_PCA_8","PCA2_PCA_9","PCA2_PCA_10",
-"PCA3_PCA_1","PCA3_PCA_2","PCA3_PCA_3","PCA3_PCA_4","PCA3_PCA_5","PCA3_PCA_6","PCA3_PCA_7","PCA3_PCA_8","PCA3_PCA_9",
-"PCA3_PCA_10","PCA4_PCA_1","PCA4_PCA_2","PCA4_PCA_3","PCA4_PCA_4","PCA4_PCA_5","PCA4_PCA_6","PCA4_PCA_7","PCA4_PCA_8",
-"PCA4_PCA_9","PCA4_PCA_10","PCA5_PCA_1","PCA5_PCA_2","PCA5_PCA_3","PCA5_PCA_4","PCA5_PCA_5","PCA5_PCA_6","PCA5_PCA_7",
-"PCA5_PCA_8","PCA5_PCA_9","PCA5_PCA_10","PCA6_PCA_1","PCA6_PCA_2","PCA6_PCA_3","PCA6_PCA_4","PCA6_PCA_5","PCA6_PCA_6",
-"PCA6_PCA_7","PCA6_PCA_8","PCA6_PCA_9","PCA6_PCA_10","PCA7_PCA_1","PCA7_PCA_2","PCA7_PCA_3","PCA7_PCA_4","PCA7_PCA_5",
-"PCA7_PCA_6","PCA7_PCA_7","PCA7_PCA_8","PCA7_PCA_9","PCA7_PCA_10","PCA8_PCA_1","PCA8_PCA_2","PCA8_PCA_3","PCA8_PCA_4",
-"PCA8_PCA_5","PCA8_PCA_6","PCA8_PCA_7","PCA8_PCA_8","PCA8_PCA_9","PCA8_PCA_10","PCA9_PCA_1","PCA9_PCA_2","PCA9_PCA_3",
-"PCA9_PCA_4","PCA9_PCA_5","PCA9_PCA_6","PCA9_PCA_7","PCA9_PCA_8","PCA9_PCA_9","PCA9_PCA_10","PCA10_PCA_1","PCA10_PCA_2",
-"PCA10_PCA_3","PCA10_PCA_4","PCA10_PCA_5","PCA10_PCA_6","PCA10_PCA_7","PCA10_PCA_8","PCA10_PCA_9","PCA10_PCA_10" };
-
 };
 
 template<class ImageType>
@@ -1748,26 +1562,42 @@ std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble>
   for (unsigned int i = 0; i < roiIndices.size(); i++)
     ROIIntensities.push_back(std::round(image.GetPointer()->GetPixel(roiIndices[i])));
 
-  double minvalue = *min_element(ROIIntensities.begin(), ROIIntensities.end());
-  double maxvalue = *max_element(ROIIntensities.begin(), ROIIntensities.end());
-
   VectorDouble HistogramFeatures = GetHistogramFeatures(ROIIntensities, 10);
-  VectorDouble HistogramFeatures1 = GetHistogramFeatures(ROIIntensities, 20);
+  VectorDouble HistogramFeatures1 = GetHistogramFeaturesWhole(ROIIntensities);
   VectorDouble IntensityFeatures = GetIntensityFeatures(ROIIntensities);
-  typename ImageType::Pointer isotropicImageGLCM = cbica::ResampleImage< ImageType >(image, 1.0, "Linear");
-  typename ImageType::Pointer isotropicMaskGLCM  = cbica::ResampleImage< ImageType >(mask, 1.0, "Nearest");
-  auto roundingFilter = itk::RoundImageFilter<ImageType,ImageType>::New();
-  roundingFilter->SetInput(isotropicMaskGLCM);
-  roundingFilter->Update();
-  isotropicMaskGLCM = roundingFilter->GetOutput();
-  VectorDouble GLCMFeatures = GetGLCMFeatures<ImageType>(isotropicImageGLCM, isotropicMaskGLCM,minvalue,maxvalue);
+  VectorDouble GLCMFeatures = GetGLCMFeatures<ImageType>(image, mask);
+  VectorDouble GLRLMFeatures = GetRunLengthFeatures<ImageType>(image, mask);
 
-  typename ImageType::Pointer isotropicImageGLRLM = cbica::ResampleImage< ImageType >(image, 1.0, "Linear");
-  typename ImageType::Pointer isotropicMaskGLRLM = cbica::ResampleImage< ImageType >(mask, 1.0, "Nearest");
-  roundingFilter->SetInput(isotropicMaskGLRLM);
-  roundingFilter->Update();
-  isotropicMaskGLRLM = roundingFilter->GetOutput();
-  VectorDouble GLRLMFeatures = GetRunLengthFeatures<ImageType>(isotropicImageGLRLM, isotropicMaskGLRLM, minvalue, maxvalue);
+  //VectorDouble IntensityFeatures;
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+  //IntensityFeatures.push_back(100);
+
+  /* VectorDouble GLCMFeatures;
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+  GLCMFeatures.push_back(100);
+
+  VectorDouble GLRLMFeatures;
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);
+  GLRLMFeatures.push_back(100);*/
 
   std::tuple<VectorDouble, VectorDouble, VectorDouble, VectorDouble, VectorDouble> new_tuple(HistogramFeatures, IntensityFeatures, GLCMFeatures, GLRLMFeatures, HistogramFeatures1);
   return new_tuple;
@@ -1846,7 +1676,7 @@ VectorDouble PseudoProgressionEstimator::GetShapeFeatures(typename TImageTypeSha
 }
 
 template<class ImageType>
-VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask, double minvalue, double maxvalue)
+VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask)
 {
   double m_Bins = 16;
   using FeatureextractionImageType = typename ImageType::Pointer;
@@ -1856,6 +1686,7 @@ VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Poi
   using OffsetType = typename ImageType::OffsetType;
   using Offsets = OffsetType;
   using OffsetVector = itk::VectorContainer< unsigned char, OffsetType >;
+
 
   double inputRadius = 1;
   double inputDirections = 13;
@@ -1873,14 +1704,10 @@ VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Poi
   }
 
   typename OffsetVector::Pointer offsets = OffsetVector::New();
-  auto centerIndex = neighborhood.GetCenterNeighborhoodIndex();
 
-  for (int d = directionsToCompute - 1; d >= 0; d--)
+  for (int d = 0; d < directionsToCompute; d++)
   {
-    if (d != static_cast<int>(centerIndex))
-    {
-      offsets->push_back(neighborhood.GetOffset(d));
-    }
+    offsets->push_back(neighborhood.GetOffset(d));
   }
 
 
@@ -1891,7 +1718,7 @@ VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Poi
   {
     auto glcmGenerator = Image2CoOccuranceType::New();
     glcmGenerator->SetNumberOfBinsPerAxis(m_Bins); //reasonable number of bins
-    glcmGenerator->SetPixelValueMinMax(minvalue,maxvalue);
+    glcmGenerator->SetPixelValueMinMax(0, 255);
     glcmGenerator->SetMaskImage(mask);
     glcmGenerator->SetInput(image);
     auto featureCalc = Hist2FeaturesType::New();
@@ -1928,24 +1755,28 @@ VectorDouble PseudoProgressionEstimator::GetGLCMFeatures(typename ImageType::Poi
   features.push_back(clusterprominance);
   features.push_back(autocorr);
   features.push_back(ener);
+
+  // TODO: Sung to add his GLCM extraction code here
+  //featurevec[std::string(IndividualFeaturesString[Correlation]) + "_Sung"] = 0;
   return features;
 }
 
 template<class ImageType>
-VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask, double minvalue, double maxvalue)
+VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType::Pointer image, typename ImageType::Pointer mask)
 {
-  double m_Bins = 16;
-  using HistogramFrequencyContainerType = itk::Statistics::DenseFrequencyContainer2;
-  using RunLengthFilterType = itk::Statistics::EnhancedScalarImageToRunLengthFeaturesFilter< ImageType, HistogramFrequencyContainerType >;
-  using RunLengthMatrixGenerator = typename RunLengthFilterType::RunLengthMatrixFilterType;
-  using RunLengthFeatures = typename RunLengthFilterType::RunLengthFeaturesFilterType;
+  using FeatureextractionImageType = typename ImageType::Pointer;
+  using Image2CoOccuranceType = itk::Statistics::ScalarImageToCooccurrenceMatrixFilter<ImageType>;
+  using HistogramType = typename Image2CoOccuranceType::HistogramType;
+  using Hist2FeaturesType = itk::Statistics::HistogramToTextureFeaturesFilter<HistogramType>;
   using OffsetType = typename ImageType::OffsetType;
+  using Offsets = OffsetType;
   using OffsetVector = itk::VectorContainer< unsigned char, OffsetType >;
 
-  //offset calculation
+  double m_Bins = 16;
+  double inputRadius = 1;
   double inputDirections = 13;
   itk::Neighborhood< typename ImageType::PixelType, ImageType::ImageDimension > neighborhood;
-  neighborhood.SetRadius(1);
+  neighborhood.SetRadius(inputRadius);
   auto size = neighborhood.GetSize();
   auto directionsToCompute = 1;
   for (size_t sizeCount = 0; sizeCount < ImageType::ImageDimension; sizeCount++)
@@ -1956,83 +1787,69 @@ VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType
   {
     directionsToCompute = inputDirections;
   }
+
   typename OffsetVector::Pointer offsets = OffsetVector::New();
-  auto centerIndex = neighborhood.GetCenterNeighborhoodIndex();
-  for (int d = directionsToCompute - 1; d >= 0; d--)
+
+  for (int d = 0; d < directionsToCompute; d++)
   {
-    if (d != static_cast<int>(centerIndex))
-    {
-      offsets->push_back(neighborhood.GetOffset(d));
-    }
+    offsets->push_back(neighborhood.GetOffset(d));
   }
+  //---------------------------------------------
+  using HistogramFrequencyContainerType = itk::Statistics::DenseFrequencyContainer2;
+  using RunLengthFilterType = itk::Statistics::ScalarImageToRunLengthFeaturesFilter< ImageType, HistogramFrequencyContainerType >;
+  using RunLengthMatrixGenerator = typename RunLengthFilterType::RunLengthMatrixFilterType;
+  using RunLengthFeatures = typename RunLengthFilterType::RunLengthFeaturesFilterType;
+  using InternalRunLengthFeatureName = typename RunLengthFeatures::RunLengthFeatureName;
 
-  //matrix generation
   typename  RunLengthMatrixGenerator::Pointer matrix_generator = RunLengthMatrixGenerator::New();
-  matrix_generator->SetInput(image);
   matrix_generator->SetMaskImage(mask);
+  matrix_generator->SetInput(image);
   matrix_generator->SetInsidePixelValue(1);
-  matrix_generator->SetPixelValueMinMax(minvalue,maxvalue);
+  matrix_generator->SetPixelValueMinMax(0, 255);
+  //removed SetDistanceValueMinMax
+  //matrix_generator->SetDistanceValueMinMax(0, m_Range); // TOCHECK - why is this only between 0-4? P
+  matrix_generator->SetNumberOfBinsPerAxis(m_Bins); // TOCHECK - needs to be statistically significant
 
-  matrix_generator->SetDistanceValueMinMax(0,10);
-  matrix_generator->SetNumberOfBinsPerAxis(m_Bins);
   typename  RunLengthFeatures::Pointer runLengthMatrixCalculator = RunLengthFeatures::New();
-  typename  RunLengthFeatures::Pointer runLengthFeaturesCalculator = RunLengthFeatures::New();
-  typename  OffsetVector::ConstIterator offsetIt;
-  size_t offsetNum = 0;
 
-  double sre = 0, lre = 0, gln = 0, glnn = 0, rln = 0, rlnn = 0, rp = 0, lglre = 0, hglre = 0, srlgle = 0, srhgle = 0, lrlgle = 0, lrhgle = 0;
+  typename  RunLengthFilterType::FeatureNameVectorPointer requestedFeatures = RunLengthFilterType::FeatureNameVector::New();
+  requestedFeatures->push_back(RunLengthFeatures::ShortRunEmphasis);
+  requestedFeatures->push_back(RunLengthFeatures::LongRunEmphasis);
+  requestedFeatures->push_back(RunLengthFeatures::GreyLevelNonuniformity);
+  requestedFeatures->push_back(RunLengthFeatures::RunLengthNonuniformity);
+  requestedFeatures->push_back(RunLengthFeatures::LowGreyLevelRunEmphasis);
+  requestedFeatures->push_back(RunLengthFeatures::HighGreyLevelRunEmphasis);
+  requestedFeatures->push_back(RunLengthFeatures::ShortRunLowGreyLevelEmphasis);
+  requestedFeatures->push_back(RunLengthFeatures::ShortRunHighGreyLevelEmphasis);
+  requestedFeatures->push_back(RunLengthFeatures::LongRunLowGreyLevelEmphasis);
+  requestedFeatures->push_back(RunLengthFeatures::LongRunHighGreyLevelEmphasis);
+
   std::vector<double> features;
+  typename  OffsetVector::ConstIterator offsetIt;
+  size_t offsetNum = 0, featureNum = 0;
 
+  std::vector<double> tempfeatures/*(requestedFeatures->size(), 0)*/;
+  tempfeatures.resize(requestedFeatures->size());
   for (offsetIt = offsets->Begin(); offsetIt != offsets->End(); offsetIt++, offsetNum++)
   {
     matrix_generator->SetOffset(offsetIt.Value());
     matrix_generator->Update();
-    
-    //auto outputglcmGenerator = matrix_generator->GetOutput();
-    //auto iterator = outputglcmGenerator->Begin();
-    //while (iterator != outputglcmGenerator->End())
-    //{
-    //  std::cout << iterator.GetIndex() << " " << iterator.GetFrequency() << std::endl;
-    //  ++iterator;
-    //}
 
-    runLengthFeaturesCalculator->SetInput(matrix_generator->GetOutput());
-    runLengthFeaturesCalculator->Update();
-
-
-    sre += runLengthFeaturesCalculator->GetShortRunEmphasis();
-    lre += runLengthFeaturesCalculator->GetLongRunEmphasis();
-    gln += runLengthFeaturesCalculator->GetGreyLevelNonuniformity();
-    rln += runLengthFeaturesCalculator->GetRunLengthNonuniformity();
-    lglre += runLengthFeaturesCalculator->GetLowGreyLevelRunEmphasis();
-    hglre += runLengthFeaturesCalculator->GetHighGreyLevelRunEmphasis();
-    srlgle += runLengthFeaturesCalculator->GetShortRunLowGreyLevelEmphasis();
-    srhgle += runLengthFeaturesCalculator->GetShortRunHighGreyLevelEmphasis();
-    lrlgle += runLengthFeaturesCalculator->GetLongRunLowGreyLevelEmphasis();
-    lrhgle += runLengthFeaturesCalculator->GetLongRunHighGreyLevelEmphasis();
+    runLengthMatrixCalculator->SetInput(matrix_generator->GetOutput());
+    runLengthMatrixCalculator->Update();
+    typename RunLengthFilterType::FeatureNameVector::ConstIterator fnameIt;
+    //std::ostringstream ss;
+    featureNum = 0;
+    for (fnameIt = requestedFeatures->Begin(); fnameIt != requestedFeatures->End(); ++fnameIt, featureNum++)
+    {
+      tempfeatures[featureNum] = tempfeatures[featureNum] + runLengthMatrixCalculator->GetFeature((InternalRunLengthFeatureName)fnameIt.Value());
+    }
   }
-  sre /= offsets->size();
-  lre /= offsets->size();
-  gln /= offsets->size();
-  rln /= offsets->size();
-  lglre /= offsets->size();
-  hglre /= offsets->size();
-  srlgle /= offsets->size();
-  srhgle /= offsets->size();
-  lrlgle /= offsets->size();
-  lrhgle /= offsets->size();
-
-  features.push_back(sre);
-  features.push_back(lre);
-  features.push_back(gln);
-  features.push_back(rln);
-  features.push_back(lglre);
-  features.push_back(hglre);
-  features.push_back(srlgle);
-  features.push_back(srhgle);
-  features.push_back(lrlgle);
-  features.push_back(lrhgle);
-
+  for (size_t i = 0; i < tempfeatures.size(); i++)
+  {
+    tempfeatures[i] = tempfeatures[i] / offsets->size();
+    features.push_back(tempfeatures[i]);
+  }
   return features;
 }
 template<class ImageType>

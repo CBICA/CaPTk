@@ -15,7 +15,7 @@ Histogram,Bins,Int,,20,The number of bins (FBN) or size of each bin (FBS) to cal
 Histogram,Bins_Min,Float,,-666,The starting index of the bin; leave to '-666' for this not to be considered
 GLCM,Bins,Int,,20,The number of bins (FBN) or size of each bin (FBS) to calculate for the Histogram
 GLCM,Radius,Int,(1:9),1,Radius around the center voxel which can be in mm as well (needs to be defined as float in same space as input image/mask)
-GLCM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averagedcomputation for individual offsets might not work)
+GLCM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averaged computation for individual offsets might not work)
 GLRLM,Bins,Int,,20,The number of bins (FBN) or size of each bin (FBS) to calculate for the Histogram
 GLRLM,Radius,Int,(1:9),1,Radius around the center voxel which can be in mm as well (needs to be defined as float in same space as input image/mask)
 GLRLM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averaged

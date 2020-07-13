@@ -318,7 +318,7 @@ public:
 
     // this is done solely for the reason for saving everything in the tempDir
     // this folder is deleted after this command to ensure no conflict with m_tempFolderLocation from fMainWindow
-    m_txtSaveFileName = new QLineEdit(std::string(loggerFolder + "features.csv").c_str());
+    m_txtSaveFileName = new QLineEdit(std::string(cbica::getUserHomeDirectory() + "/captk_features.csv").c_str());
     m_txtSaveFileName->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
 
     //flLayout->addWidget(m_verticalConcat);
