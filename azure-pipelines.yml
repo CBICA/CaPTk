@@ -603,30 +603,30 @@ jobs:
 
     #   displayName: 'Configure and compile Superbuild'
 
-    - bash: |
-        # mkdir $(Build.SourcesDirectory)/../superbuild
-        # cd bin
-        # mv ./* $(Build.SourcesDirectory)/../superbuild
-        # cd $(Build.SourcesDirectory)/..
-        # ls
-        # echo "Done cd"
-        # tar cvfz superbuild.tar.gz superbuild
-        # ls
-        # echo "done tar"
-        # rm -rf superbuild
-        # ls
-        # cd $(Build.SourcesDirectory)
+    # - bash: |
+    #     # mkdir $(Build.SourcesDirectory)/../superbuild
+    #     # cd bin
+    #     # mv ./* $(Build.SourcesDirectory)/../superbuild
+    #     # cd $(Build.SourcesDirectory)/..
+    #     # ls
+    #     # echo "Done cd"
+    #     # tar cvfz superbuild.tar.gz superbuild
+    #     # ls
+    #     # echo "done tar"
+    #     # rm -rf superbuild
+    #     # ls
+    #     # cd $(Build.SourcesDirectory)
 
-        pwd
+    #     pwd
 
-        cd $(Build.SourcesDirectory)/../../
-        ls
-        tar xvfz superbuild.tar.gz
-        rm -rf superbuild.tar.gz
-        cd $(Build.SourcesDirectory)/../../superbuild/bin
-        ls
-        echo "Done tar"
-      displayName: 'Move superbuild and qt and compiled apps'
+    #     cd $(Build.SourcesDirectory)/../../
+    #     ls
+    #     tar xvfz superbuild.tar.gz
+    #     rm -rf superbuild.tar.gz
+    #     cd $(Build.SourcesDirectory)/../../superbuild/bin
+    #     ls
+    #     echo "Done tar"
+    #   displayName: 'Move superbuild and qt and compiled apps'
 
     - bash: |
         git pull origin master
