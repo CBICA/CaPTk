@@ -31,11 +31,9 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "itkCSVArray2DFileReader.h"
 #include "itkConnectedComponentImageFilter.h"
 #include "CaPTkEnums.h"
+#include "CaPTkUtils.h"
 #include "CaPTkClassifierUtils.h"
 #include "cbicaLogging.h"
-
-#define RECURRENCE_MODEL_G 0.5
-#define RECURRENCE_MODEL_RHO 0.0896
 
 #ifdef APP_BASE_CAPTK_H
 #include "ApplicationBase.h"
@@ -87,8 +85,8 @@ public:
   */
   PseudoProgressionEstimator()
   {
-    mPseudoTrainedFile = "Pseudo_SVM_Model.xml";
-    mRecurrenceTrainedFile = "Recurrence_SVM_Model.xml";
+    mPseudoTrainedFile = "PSU_SVM_Model.xml";
+    mRecurrenceTrainedFile = "REC_SVM_Model.xml";
     logger.UseNewFile(loggerFile);
   };
 
@@ -101,16 +99,8 @@ public:
   std::string mRecurrenceTrainedFile;
   cbica::Logging logger;
 
-  void WriteCSVFiles(VariableSizeMatrixType inputdata, std::string filepath);
-  void WriteCSVFiles(vtkSmartPointer<vtkTable> inputdata, std::string filepath);
-  void WriteCSVFiles(VectorVectorDouble inputdata, std::string filepath);
-  void WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath);
-  void WriteCSVFiles(std::vector<double> inputdata, std::string filepath);
-
 
   VariableSizeMatrixType GetModelSelectedFeatures(VariableSizeMatrixType & ScaledFeatureSetAfterAddingLabel, VariableLengthVectorType & psuSelectedFeatures);
-  void WritePCAOutputs(std::string suffix, std::string outputdirectory, const VariableLengthVectorType mean, const VariableSizeMatrixType coefs);
-
   VectorVectorDouble CombineAllThePerfusionFeaures(VectorVectorDouble T1IntensityHistogram,
     VectorVectorDouble TCIntensityHistogram,
     VectorVectorDouble T1TCIntensityHistogram,
@@ -145,15 +135,6 @@ public:
 
   template<class PerfusionImageType, class ImageType>
   VariableSizeMatrixType LoadPerfusionData(typename ImageType::Pointer maskImagePointerNifti, typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector< typename ImageType::IndexType> &indices);
-
-  VectorDouble CombineEstimates(const VariableLengthVectorType &estimates1, const VariableLengthVectorType &estimates2);
-
-  VariableLengthVectorType DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename, const double &rho, const double &bestg);
-  /**
-  \brief Get the size of the Feature Vector
-
-  */
-  int GetFeatureVectorSize(bool &useConvetionalData, bool &useDTIData, bool &usePerfData, bool &useDistData);
 
   /**
   Image Intensity using the itk::RescaleIntensityImageFilter to the 0-255 range
@@ -232,14 +213,8 @@ public:
     const std::string &outputdirectory,
     bool useConventionalData, bool useDTIData, bool usePerfData, bool useDistData);
 
-  template <typename T>
-  std::vector<size_t> sort_indexes(const std::vector<T> &v);
+  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VectorDouble &selectedFeatures);
 
-  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures);
-  VectorDouble EffectSizeFeatureSelection(const VariableSizeMatrixType training_features, std::vector<double> target);
-
-  template <class ImageType>
-  typename ImageType::Pointer ReadNiftiImage(const std::string &filename);
   template<class ImageType>
   typename ImageType::Pointer RescaleImageIntensity(const typename ImageType::Pointer &image);
 
@@ -263,15 +238,6 @@ public:
 
   template<class PerfusionImageType, class ImageType>
   VectorVectorDouble GetPerfusionFeatures(typename PerfusionImageType::Pointer image, typename ImageType::Pointer mask);
-
-  /**
-
-  \brief Postprocessing of a recurrence map
-  */
-  template<class ImageType>
-  VectorDouble RecurrenceMapPostprocessing(VectorDouble result, std::vector<typename ImageType::IndexType> indices, typename ImageType::Pointer RecurrenceProbabilityMap, typename ImageType::Pointer edemaMap);
-
-
 
   /**
   \brief Recurrence Estimation using existing model on given subject
@@ -388,9 +354,6 @@ public:
       imagetype, conDataPresent, dtiDataPresent, perfusionDataPresent, distanceDataPresent,
       useOtherModalities, t1cebasefilename, nearRegionIndices, farRegionIndices, modeldirectory);
   }
-
-
-  std::string mRecurrenceMapFileName;
 private:
   std::string mCurrentOutputDir;
 };
@@ -1300,9 +1263,6 @@ void PseudoProgressionEstimator::PseudoProgressionEstimateOnGivenSubjectUsingExi
 #endif
 }
 
-
-
-
 template<class ImageType>
 typename ImageType::Pointer PseudoProgressionEstimator::RescaleImageIntensity(const typename ImageType::Pointer &image)
 {
@@ -1315,193 +1275,7 @@ typename ImageType::Pointer PseudoProgressionEstimator::RescaleImageIntensity(co
   typename ImageType::Pointer outputimage = rescaleFilter->GetOutput();
   return outputimage;
 }
-template <class ImageType>
-typename ImageType::Pointer PseudoProgressionEstimator::ReadNiftiImage(const std::string &filename)
-{
-  typedef itk::ImageFileReader<ImageType> ImageReaderType;
-  typename ImageReaderType::Pointer reader = ImageReaderType::New();
-  reader->SetFileName(filename);
 
-  try
-  {
-    reader->Update();
-  }
-  catch (itk::ExceptionObject& e)
-  {
-    std::cerr << "Error caught: " << e.what() << "\n";
-    //cbica::Logging(loggerFile, "Error caught during testing: " + std::string(e.GetDescription()));
-    exit(EXIT_FAILURE);
-  }
-
-
-  return reader->GetOutput();
-}
-
-template<class ImageType>
-VectorDouble PseudoProgressionEstimator::RecurrenceMapPostprocessing(VectorDouble result, std::vector<typename ImageType::IndexType> testindices, typename ImageType::Pointer RecurrenceProbabilityMap, typename ImageType::Pointer edemaMap)
-{
-  VectorDouble revised_result;
-  VectorDouble positiveDistances;
-  VectorDouble negativeDistances;
-  for (size_t x = 0; x < result.size(); x++)
-  {
-    if (result[x] > 0)
-      positiveDistances.push_back(result[x]);
-    else
-      negativeDistances.push_back(result[x]);
-  }
-  std::sort(positiveDistances.begin(), positiveDistances.end());
-  std::sort(negativeDistances.rbegin(), negativeDistances.rend());
-
-  double positivePercentileCutOff = positiveDistances[positiveDistances.size() - 1];
-  double negativePercentileCutOff = negativeDistances[negativeDistances.size() - 1];
-
-  for (size_t x = 0; x < positiveDistances.size(); x++)
-  {
-    double percentile = (100 * (x + 0.5)) / positiveDistances.size();
-    if (percentile > 99)
-    {
-      positivePercentileCutOff = positiveDistances[x];
-      break;
-    }
-  }
-  for (size_t x = 0; x < negativeDistances.size(); x++)
-  {
-    double percentile = (100 * (x + 0.5)) / negativeDistances.size();
-    if (percentile > 99)
-    {
-      negativePercentileCutOff = negativeDistances[x];
-      break;
-    }
-  }
-  for (size_t x = 0; x < result.size(); x++)
-  {
-    if (result[x] > positivePercentileCutOff)
-      result[x] = positivePercentileCutOff;
-    if (result[x] < negativePercentileCutOff)
-      result[x] = negativePercentileCutOff;
-  }
-  double min = 0;
-  double max = positivePercentileCutOff;
-  for (size_t x = 0; x < result.size(); x++)
-  {
-    if (result[x] > 0)
-      result[x] = (result[x] - min) / (max - min);
-  }
-  min = negativePercentileCutOff;
-  max = 0;
-  for (size_t x = 0; x < result.size(); x++)
-  {
-    if (result[x] < 0)
-      result[x] = (result[x] - min) / (max - min);
-  }
-  for (int x = 0; x < result[x]; x++)
-    result[x] = (result[x] + 1) / 2;
-
-  revised_result = result;
-  return revised_result;
-
-
-
-  ////eroding edema
-  //typename ImageType::Pointer dilatedEdema;
-  //typedef itk::BinaryBallStructuringElement<typename ImageType::PixelType, 3> StructuringElementType;
-  //StructuringElementType structuringElement;
-  //structuringElement.SetRadius(2);
-  //structuringElement.CreateStructuringElement();
-  //typedef itk::BinaryErodeImageFilter <ImageType, ImageType, StructuringElementType> BinaryErodeImageFilterType;
-  //typename BinaryErodeImageFilterType::Pointer dilateFilter = BinaryErodeImageFilterType::New();
-  //dilateFilter->SetInput(edemaMap);
-  //dilateFilter->SetKernel(structuringElement);
-  //dilateFilter->SetErodeValue(1);
-  //dilateFilter->Update();
-  //dilatedEdema = dilateFilter->GetOutput();
-
-  ////find voxels which are not in eroded in edema
-  //typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
-  //IteratorType RecIt(RecurrenceProbabilityMap, RecurrenceProbabilityMap->GetLargestPossibleRegion());
-  //IteratorType EdeIt(edemaMap, edemaMap->GetLargestPossibleRegion());
-  //IteratorType DilIt(dilatedEdema, dilatedEdema->GetLargestPossibleRegion());
-  //int counter1 = 0;
-  //int counter2 = 0; int counter3 = 0;
-  //int counter4 = 0;
-
-  //RecIt.GoToBegin();
-  //EdeIt.GoToBegin();
-  //DilIt.GoToBegin();
-  //while (!RecIt.IsAtEnd())
-  //{
-  //	if (EdeIt.Get() == 1)
-  //		counter1++;
-
-  //	if (DilIt.Get() == 0)
-  //		counter2++;
-
-
-  //	if (DilIt.Get() < 0)
-  //		counter3++;
-
-
-  //	if (DilIt.Get() == 1)
-  //		counter4++;
-
-
-
-  //	if (EdeIt.Get() > 0 && DilIt.Get() != 1)
-  //	{
-  //		if (RecIt.Get() > 0.7)
-  //			RecIt.Set(0.1);
-  //	}
-  //	++RecIt;
-  //	++EdeIt;
-  //	++DilIt;
-  //}
-  //cbica::WriteImage<ImageType>(RecurrenceProbabilityMap, "BeforeMean.nii.gz");
-
-  //typename ImageType::Pointer meanRecurrenceMap;
-  //typedef itk::MeanImageFilter<ImageType, ImageType> filterType;
-  //typename filterType::Pointer meanFilter = filterType::New();
-  //meanFilter->SetInput(RecurrenceProbabilityMap);
-  //meanFilter->SetRadius(2);
-  //meanRecurrenceMap = meanFilter->GetOutput();
-  //cbica::WriteImage<ImageType>(meanRecurrenceMap, "AfterMean.nii.gz");
-
-  //RecurrenceIt.GoToBegin();
-  //EdeIt.GoToBegin();
-  //while (!RecurrenceIt.IsAtEnd())
-  //{
-  //	if (EdeIt.Get() == 0)
-  //		RecurrenceIt.Set(minvalue);
-  //	++RecurrenceIt;
-  //	++EdeIt;
-  //}
-
-
-  //averaging filter
-  //typedef itk::MeanImageFilter<ImageType, ImageType > FilterType;
-  //FilterType::Pointer meanFilter = FilterType::New();
-  //FilterType::InputSizeType radius;
-  //radius.Fill(2);
-  //meanFilter->SetRadius(radius);
-  //meanFilter->SetInput(RecurrenceProbabilityMap);
-  //typename ImageType::Pointer RevisedRecurrenceMap = meanFilter->GetOutput();
-
-
-
-
-
-  //for (int i = 0; i < indices.size();i++)
-  //	RevisedRecurrenceMap->SetPixel(indices[i],minvalue
-  //IteratorType EdeIt(edemaMask, edemaMask->GetLargestPossibleRegion());
-  //ErodedEdeIt.GoToBegin();
-  //EdeIt.GoToBegin();
-  //while (!ErodedEdeIt.IsAtEnd())
-  //{
-  //	++ErodedEdeIt;
-  //	++EdeIt;
-  //}
-  //	return meanRecurrenceMap;
-}
 template<class PerfusionImageType, class ImageType>
 VariableSizeMatrixType PseudoProgressionEstimator::LoadPerfusionData(typename ImageType::Pointer maskImagePointerNifti, typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector<typename ImageType::IndexType> &qualifiedIndices)
 {
@@ -1852,6 +1626,7 @@ VectorDouble PseudoProgressionEstimator::GetRunLengthFeatures(typename ImageType
   }
   return features;
 }
+
 template<class ImageType>
 typename ImageType::Pointer PseudoProgressionEstimator::MakeAdditionalModality(typename ImageType::Pointer image1, typename ImageType::Pointer image2)
 {
