@@ -67,6 +67,8 @@
 #include "ApplicationPreferences.h"
 
 #include "CaPTkDockWidget.h"
+#include "SystemInformationDisplayWidget.h"
+#include "SystemInformation.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -181,6 +183,7 @@ fMainWindow::fMainWindow()
   help_forum = new QAction(this);
   help_bugs = new QAction(this);
   helpMenu_download = new QAction(this);
+  help_systeminformation = new QAction("System Information",this);
   actionLoad_Recurrence_Images = new QAction(this);
   actionLoad_Nifti_Images = new QAction(this);
   actionLoad_Dicom_Images = new QAction(this);
@@ -257,6 +260,7 @@ fMainWindow::fMainWindow()
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
 
+  this->sysinfowidget = new SystemInformationDisplayWidget();
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
   m_toolTabdock->setWidget(m_tabWidget);
   this->addDockWidget(Qt::TopDockWidgetArea, m_toolTabdock);
@@ -294,6 +298,7 @@ fMainWindow::fMainWindow()
   menuHelp->addAction(actionHelp_Interactions);
   menuDownload = menuHelp->addMenu("Sample Data");
   auto supportMenu = menuHelp->addMenu("Support Links");
+  menuHelp->addAction(this->help_systeminformation);
   menuHelp->addAction(this->actionModelLibrary);
   menuHelp->addAction(actionAbout);
 
@@ -577,6 +582,8 @@ fMainWindow::fMainWindow()
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
   connect(actionModelLibrary, SIGNAL(triggered()), this, SLOT(OpenModelLibrary()));
+
+  connect(help_systeminformation, SIGNAL(triggered()), this, SLOT(OnSystemInformationMenuClicked()));
 
   connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
@@ -1171,6 +1178,16 @@ void fMainWindow::OpenModelLibrary()
 		ShowErrorMessage("CaPTk couldn't open the link for the model library; please contact software@cbica.upenn.edu for details.", this);
 		return;
 	}
+}
+
+void fMainWindow::OnSystemInformationMenuClicked()
+{
+	SystemInformation info;
+	//first we clear any previous information
+	this->sysinfowidget->ClearInformation();
+
+	this->sysinfowidget->SetInformation(info.GetSystemInformation());
+	this->sysinfowidget->show();
 }
 
 void fMainWindow::EnableThresholdOfMask()
