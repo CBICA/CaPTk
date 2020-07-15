@@ -229,10 +229,8 @@ int main(int argc, char** argv)
 
   if (!libraPath.empty()) { // libra is not present
     bool ret = algorithmsRunner(); 
-    QApplication::quit();
     app.quit();
     return ret;
-    // quit();
   }
   
   // else
