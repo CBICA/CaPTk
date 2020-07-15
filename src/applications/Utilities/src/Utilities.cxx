@@ -1587,6 +1587,7 @@ int main(int argc, char** argv)
       requestedProps.push_back(std::atoi(temp[p].c_str()));
     }
     CollectImageInfo(requestedProps);
+    return EXIT_SUCCESS;
   }
   
   // this doesn't need any template initialization
