@@ -116,6 +116,7 @@ fHelpTutorial::fHelpTutorial()
   //this->m_webView->setTextSizeMultiplier(QApplication::desktop()->screen()->logicalDpiX() / 96.0);
   //this->show();
 
+  this->setFocus();
   QCoreApplication::processEvents();
 
 }
