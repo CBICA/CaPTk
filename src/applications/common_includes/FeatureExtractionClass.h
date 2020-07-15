@@ -63,7 +63,7 @@ public:
   \param farintensitities Intensities of far voxels
   */
   void FormulateTrainingData(const std::vector< VectorDouble > &nearintensitities, const std::vector< VectorDouble > &farintensitities);
-  void FormulatePseudoprogressionTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & SixModelFeatures, VariableSizeMatrixType & EighteenModelFeatures);
+  void FormulatePseudoprogressionTrainingData(std::vector<double> inputLabels, VectorDouble & PseudoModelLabels, VectorDouble & RecurrenceModelLabels);
 
   void FormulateEGFRTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & SixModelFeatures);
 
