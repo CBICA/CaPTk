@@ -94,4 +94,18 @@ Calculating features (using the same parameter file) for a list of subjects (wit
 
 ## Frequently Asked Questions
 
-- 
+- What do the various parameters mean and how do I customize them?
+
+Take a look at the [sample parameter file](https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/1_params_default.csv) for details.
+
+- Why is preprocessing required?
+
+See [this presentation](https://upenn.box.com/v/spacingsIssue) for a detailed explanation.
+
+- Why do I see `#NAME` for some features?
+
+These would be NaNs and depending on how features have been extracted, these are completely normal.
+
+- Anything else?
+
+Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) 
