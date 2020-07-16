@@ -91,3 +91,7 @@ Calculating features (using the same parameter file) for a list of subjects (wit
 5. ```Column E```: SELECTED_ROI, is the value(s) in the label file that you want to use as ROI region, separated by "|" as delimiter
 6. ```Column F```: ROI, is the corresponding naming of the label(s) you chose in Column E
 7. [OPTIONAL] ```Column G```: OUTPUT, the optional output file, if you want each subject's output to be written into a different file
+
+## Frequently Asked Questions
+
+- 
