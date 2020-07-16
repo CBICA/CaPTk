@@ -552,7 +552,7 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
   
   //write scaled features in a .csv file
-  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, FeatureLabels, outputdirectory + "/ScaledFeatures.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(ScaledTestingData, patient_ids, StringFeatureLabels, outputdirectory + "/ScaledFeatures.csv");
 
   //select model features
   VariableSizeMatrixType ModelSelectedFeatures = SelectModelFeatures(ScaledTestingData,selectedfeatures);

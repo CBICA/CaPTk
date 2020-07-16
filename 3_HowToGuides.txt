@@ -1376,10 +1376,11 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -d2n
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/imageToConvert.nii.gz -o C:/outputDicom/ -n2d C:/referenceDICOM/
 	\endverbatim
-- NIfTI to DICOM-Seg conversion
+- NIfTI to DICOM-Seg conversion (using [DCMQI](https://qiicr.gitbook.io/dcmqi-guide/))
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/maskToConvert.nii.gz -o C:/outputDicom/ -ds C:/referenceDICOM/ -dsJ C:/dicomSeg.json
 	\endverbatim
+	Please see DCMQI's [FAQ](https://qiicr.gitbook.io/dcmqi-guide/faq) and [use case](https://qiicr.gitbook.io/dcmqi-guide/use-cases/prostate#creating-the-meta-information-json-file) for JSON-related information.
 - Re-orient image
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -or RAI
@@ -1434,7 +1435,11 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -lsb C:/refer
 	\endverbatim
 - Collect information from all images in a directory and put it in CSV
 	\verbatim
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputDirectory -o C:/test/inputDirectoryProperties.csv -co 1 -cF volume -cFE .nii.gz -cP 0,1
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputDirectory -o C:/test/inputDirectoryProperties.csv \
+-co 1 \ # enable recursion
+-cF volume \ # only process files that contain this string pattern 
+-cFE .nii.gz \ # only process files with this extension 
+-cP 0,1 \ # which properties to read; see usage for all options
 	\endverbatim
 
 For a full list of available applications and examples, please use the command: 

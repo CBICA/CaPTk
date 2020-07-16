@@ -279,9 +279,9 @@ int main(int argc, char** argv)
 
   cbica::createDir(loggerFolderBase);
   cbica::createDir(loggerFolder);
-  cbica::createDir(captk_StuffFolderBase);
-  cbica::createDir(captk_SampleDataFolder);
-  cbica::createDir(captk_PretrainedFolder);
+  //cbica::createDir(captk_StuffFolderBase);
+  //cbica::createDir(captk_SampleDataFolder);
+  //cbica::createDir(captk_PretrainedFolder);
 
 #ifndef _WIN32
   std::string old_locale = setlocale(LC_NUMERIC, NULL);
