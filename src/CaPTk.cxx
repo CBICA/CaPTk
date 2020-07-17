@@ -51,6 +51,8 @@ int main(int argc, char** argv)
 	cbica::createDir(loggerFolderBase);
 	cbica::createDir(loggerFolder);
 
+	cbica::Logging(loggerFile, "New CaPTk session starting...");
+
   std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
   float cmd_maskOpacity = 1;
   bool comparisonMode = false;
