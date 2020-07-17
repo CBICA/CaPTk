@@ -10,9 +10,8 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
   std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
   std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
-  std::cout << subjectNames.size();
+  std::cout << "Number of sub-directories: "<< subjectNames.size();
   std::sort(subjectNames.begin(), subjectNames.end());
-
   for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
   {
     std::string subjectPath = directoryname + "/" + subjectNames[sid];
@@ -21,9 +20,6 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
     std::string t1FilePath = "";
     std::string t2FilePath = "";
     std::string t2FlairFilePath = "";
-
-    //std::string t1t1ceFilePath    = "";
-    //std::string t2t2FlairFilePath = "";
 
     std::string axFilePath = "";
     std::string faFilePath = "";
