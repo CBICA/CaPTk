@@ -496,6 +496,10 @@ docker run -it \
   cbica/captk
 \endverbatim
 
+\section gs_FAQ_9 Is there something wrong with Feature Extraction?
+
+Please see the [Feature Extraction FAQ](https://github.com/sarthakpati/CaPTk/tree/featureExtraction/src/applications/FeatureExtraction#frequently-asked-questions).
+
 \section gs_FAQ_9 What if I am having an issue not listed here?
   
 Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
