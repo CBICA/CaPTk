@@ -1018,6 +1018,7 @@ fMainWindow::~fMainWindow()
     delete mHelpDlg;
 
   ApplicationPreferences::GetInstance()->SerializePreferences();
+  cbica::Logging(loggerFile, "CaPTk session Ending...");
 }
 
   void fMainWindow::loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage, const float maskOpacity,
