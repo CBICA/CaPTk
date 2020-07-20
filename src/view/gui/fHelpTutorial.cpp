@@ -87,7 +87,7 @@ fHelpTutorial::fHelpTutorial()
 
   if (!cbica::fileExists(m_helpFileFullPath))
   {
-    cbica::Logging(loggerFile, "Unable to start help page, file '" + m_helpFileFullPath + "' not found");
+    cbica::Logging(loggerFile, "Unable to start about page, file '" + m_helpFileFullPath + "' not found");
   }
   else
   {

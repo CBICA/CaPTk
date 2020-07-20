@@ -582,10 +582,13 @@ fMainWindow::fMainWindow()
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
   connect(actionModelLibrary, SIGNAL(triggered()), this, SLOT(OpenModelLibrary()));
+  
+  mHelpDlg = new fHelpDialog();
+  mHelpTutorial = new fHelpTutorial();
 
   connect(help_systeminformation, SIGNAL(triggered()), this, SLOT(OnSystemInformationMenuClicked()));
 
-  connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
+  connect(mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
   for (size_t i = 0; i < vectorOfGBMApps.size(); i++)
   {
@@ -944,7 +947,7 @@ fMainWindow::fMainWindow()
   statusBar()->addPermanentWidget(m_progressBar);
   m_progressBar->setValue(0);
 
-  mHelpDlg = new fHelpDialog();
+
 
   recurrencePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   msubtypePanel.SetCurrentLoggerPath(m_tempFolderLocation);
@@ -1132,7 +1135,7 @@ std::string fMainWindow::ConversionFrom2Dto3D(const std::string &fileName)
 void fMainWindow::about()
 {
 //#if CAPTK_PACKAGE_PROJECT
-  mHelpTutorial.show();
+  mHelpTutorial->show();
 //#endif
 }
 
@@ -2289,6 +2292,7 @@ void fMainWindow::CloseImage(QTableWidgetItem* item)
 
 void fMainWindow::MousePositionChanged(int visibility, double x, double y, double z, double X, double Y, double Z, double value)
 {
+  
   infoPanel->setCurrentInfo(visibility, x, y, z, X, Y, Z, value);
   tumorPanel->HighlightCurrentSelctedPoints(x, y, z, X, Y, Z, value);
 }
@@ -2724,9 +2728,10 @@ void fMainWindow::MoveSlicerCursor(double x, double y, double z, int mode)
     mSlicerManagers[mCurrentPickedImageIndex]->GetSlicer(0)->SetCurrentPosition(x, y, z);
     //
     mSlicerManagers[mCurrentPickedImageIndex]->Picked();
+    mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateViews(0);
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateLinked(0);
-    mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
+    
   }
   else if (mode == 1)
   {
@@ -2738,9 +2743,9 @@ void fMainWindow::MoveSlicerCursor(double x, double y, double z, int mode)
     mSlicerManagers[mCurrentPickedImageIndex]->GetSlicer(0)->SetCurrentPosition(x, y, z);
     //
     mSlicerManagers[mCurrentPickedImageIndex]->Picked();
+    mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateViews(0);
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateLinked(0);
-    mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
   }
   propogateSlicerPosition();
 }
