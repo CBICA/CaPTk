@@ -111,59 +111,19 @@ VariableSizeMatrixType FeatureExtractionClass::FormulateTestData(const std::vect
   return mTestData;
 }
 
-
-
-
-void FeatureExtractionClass::FormulatePseudoprogressionTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & PseudoModelFeatures, VariableSizeMatrixType & RecurrenceModelFeatures)
+void FeatureExtractionClass::FormulatePseudoprogressionTrainingData(std::vector<double> inputLabels, VectorDouble & PseudoModelLabels, VectorDouble & RecurrenceModelLabels)
 {
-  std::vector<int> PseudoModelLowerIndices;
-  std::vector<int> PseudoModelHigherIndices;
-  std::vector<int> RecurrenceModelLowerIndices;
-  std::vector<int> RecurrenceModelHigherIndices;
-
-  for (unsigned int i = 0; i < inputSurvival.size(); i++)
+  for (unsigned int i = 0; i < inputLabels.size(); i++)
   {
-    if (inputSurvival[i] ==1 || inputSurvival[i] == 2)
-      PseudoModelLowerIndices.push_back(i);
+    if (inputLabels[i] == 1 || inputLabels[i]==2)
+      PseudoModelLabels.push_back(1);
     else
-      PseudoModelHigherIndices.push_back(i);
+      PseudoModelLabels.push_back(-1);
 
-    if (inputSurvival[i] == 5 || inputSurvival[i] == 6)
-      RecurrenceModelLowerIndices.push_back(i);
+    if (inputLabels[i] == 5 || inputLabels[i] == 6)
+      RecurrenceModelLabels.push_back(1);
     else
-      RecurrenceModelHigherIndices.push_back(i);
-  }
-  PseudoModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
-  RecurrenceModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
-
-  for (unsigned int i = 0; i < PseudoModelLowerIndices.size(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < inputFeatures.Cols(); j++)
-      PseudoModelFeatures(i, j) = inputFeatures(PseudoModelLowerIndices[i], j);
-    PseudoModelFeatures(i, j) = 0;
-  }
-  for (unsigned int i = 0; i < PseudoModelHigherIndices.size(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < inputFeatures.Cols(); j++)
-      PseudoModelFeatures(i + PseudoModelLowerIndices.size(), j) = inputFeatures(PseudoModelHigherIndices[i], j);
-    PseudoModelFeatures(i + PseudoModelLowerIndices.size(), j) = 1;
-  }
-
-  for (unsigned int i = 0; i < RecurrenceModelLowerIndices.size(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < inputFeatures.Cols(); j++)
-      RecurrenceModelFeatures(i, j) = inputFeatures(RecurrenceModelLowerIndices[i], j);
-    RecurrenceModelFeatures(i, j) = 0;
-  }
-  for (unsigned int i = 0; i < RecurrenceModelHigherIndices.size(); i++)
-  {
-    unsigned int j = 0;
-    for (j = 0; j < inputFeatures.Cols(); j++)
-      RecurrenceModelFeatures(i + RecurrenceModelLowerIndices.size(), j) = inputFeatures(RecurrenceModelHigherIndices[i], j);
-    RecurrenceModelFeatures(i + RecurrenceModelLowerIndices.size(), j) = 1;
+      RecurrenceModelLabels.push_back(-1);
   }
 }
 
