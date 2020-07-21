@@ -1563,7 +1563,7 @@ public:
   Fetalbrain mfetalbrain;
 
   fHelpDialog* mHelpDlg;
-  fHelpTutorial mHelpTutorial;
+  fHelpTutorial* mHelpTutorial;
 
   std::string t1cePath;
   std::string m_imagetype_string;
