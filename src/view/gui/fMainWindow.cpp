@@ -344,7 +344,7 @@ fMainWindow::fMainWindow()
   {
     nonNativeAppPaths_wrap.erase(0, 1);
   }
-  nonNativeAppPaths_wrap = nonNativeAppPaths_wrap + " itksnap";
+  nonNativeAppPaths_wrap = nonNativeAppPaths_wrap + " itksnap" + " confetti";
   m_pyGUIApps = cbica::stringSplit(nonNativeAppPaths_wrap, " ");
   nonNativeAppPaths_wrap = std::string(CAPTK_APP_LIST_PY_CLI);
   if (nonNativeAppPaths_wrap[0] == ' ')
@@ -358,7 +358,8 @@ fMainWindow::fMainWindow()
   {
     if (m_pyGUIApps[i] == "confetti")
     {
-      m_pyGUIApps[i] = "ConfettiGUI";
+      // Below line causes getApplicationPath to fail in developer mode
+      //m_pyGUIApps[i] = "ConfettiGUI"; 
     }
     if ((m_pyGUIApps[i] == "librabatch") || (m_pyGUIApps[i] == "librasingle"))
     {
