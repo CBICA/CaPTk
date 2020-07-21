@@ -356,11 +356,6 @@ fMainWindow::fMainWindow()
   size_t allAppCounter = 0;
   for (size_t i = 0; i < m_pyGUIApps.size(); i++)
   {
-    if (m_pyGUIApps[i] == "confetti")
-    {
-      // Below line causes getApplicationPath to fail in developer mode
-      //m_pyGUIApps[i] = "ConfettiGUI"; 
-    }
     if ((m_pyGUIApps[i] == "librabatch") || (m_pyGUIApps[i] == "librasingle"))
     {
       m_pyGUIApps[i] = "libra";
