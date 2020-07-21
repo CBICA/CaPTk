@@ -6129,8 +6129,8 @@ void fMainWindow::ApplicationLIBRASingle()
 
 void fMainWindow::ApplicationConfetti()
 {
-  std::string scriptToCall = m_allNonNativeApps["ConfettiGUI"];
-
+  std::string scriptToCall = m_allNonNativeApps["confetti"];
+   
   if (startExternalProcess(scriptToCall.c_str(), QStringList()) != 0)
   {
     ShowErrorMessage("Confetti failed to execute. Please check installation requirements and retry.", this);
