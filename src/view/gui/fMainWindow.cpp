@@ -1013,6 +1013,9 @@ fMainWindow::~fMainWindow()
     file.close();
   }
 
+  if (mHelpTutorial)
+    delete mHelpTutorial;
+
   if (mHelpDlg)
     delete mHelpDlg;
 
