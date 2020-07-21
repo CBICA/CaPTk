@@ -17,6 +17,7 @@
 #include "yaml-cpp/yaml.h"
 
 #include "CheckOpenGLVersion.h"
+#include "SystemInformation.h"
 
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
@@ -46,6 +47,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCmdLin
 int main(int argc, char** argv)
 {
 #endif
+
+	cbica::createDir(loggerFolderBase);
+	cbica::createDir(loggerFolder);
+
+	cbica::Logging(loggerFile, "New CaPTk session starting...");
 
   std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
   float cmd_maskOpacity = 1;
@@ -183,6 +189,10 @@ int main(int argc, char** argv)
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
   //cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
+  SystemInformation info;
+  QStringList sl = info.GetSystemInformation();
+  foreach(QString str, sl)
+	  cbica::Logging(loggerFile, str.toStdString());
 
   // starting the OpenGL version checking 
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
@@ -276,12 +286,6 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
   }
-
-  cbica::createDir(loggerFolderBase);
-  cbica::createDir(loggerFolder);
-  //cbica::createDir(captk_StuffFolderBase);
-  //cbica::createDir(captk_SampleDataFolder);
-  //cbica::createDir(captk_PretrainedFolder);
 
 #ifndef _WIN32
   std::string old_locale = setlocale(LC_NUMERIC, NULL);
