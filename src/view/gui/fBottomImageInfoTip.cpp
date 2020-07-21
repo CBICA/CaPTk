@@ -17,6 +17,9 @@ fBottomImageInfoTip::fBottomImageInfoTip(QWidget * parent) :QWidget(parent)
 {
   setupUi(this);
   connect(pixelPosButton, SIGNAL(clicked()), this, SLOT(pixelPosButtonClicked()));
+  connect(pixelPosX, SIGNAL(returnPressed()), this, SLOT(pixelPosButtonClicked()));
+  connect(pixelPosY, SIGNAL(returnPressed()), this, SLOT(pixelPosButtonClicked()));
+  connect(pixelPosZ, SIGNAL(returnPressed()), this, SLOT(pixelPosButtonClicked()));
 }
 
 void fBottomImageInfoTip::setFileName(QString text)

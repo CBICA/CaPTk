@@ -1018,6 +1018,7 @@ fMainWindow::~fMainWindow()
     delete mHelpDlg;
 
   ApplicationPreferences::GetInstance()->SerializePreferences();
+  cbica::Logging(loggerFile, "CaPTk session Ending...");
 }
 
   void fMainWindow::loadFromCommandLine(std::vector< QString > files, bool comparisonMode, const std::string &maskImage, const float maskOpacity,
@@ -5620,7 +5621,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     {
       QString extensions = IMAGES_EXTENSIONS;
       extensions += ";;All Files (*)";
-      files = QFileDialog::getOpenFileNames(this, tr("Load Images"), mInputPathName, extensions, 0, QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+      files = QFileDialog::getOpenFileNames(this, tr("Load Images"), mInputPathName, extensions, 0, QFileDialog::DontResolveSymlinks);
       if (files.isEmpty())
         return;
     }
