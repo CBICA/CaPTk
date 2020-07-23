@@ -9,11 +9,32 @@
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
 
+#include <QApplication>
+#include "CaPTkGUIUtils.h"
+#include "ApplicationDownloadManager.h"
+#include <QDebug>
+
 std::string inputImageFile, outputDir;
 
 bool debugMode;
 
 size_t resizingFactor = 100;
+
+void updateProgress(int progress)
+{
+    // qDebug() << "progress = " << progress << endl;
+    std::cout << progress << " %" << "\t\r" << std::flush;
+}
+
+void appExit(bool isFinished)
+{
+    if (isFinished) {
+        std::cout << "Installation successfully finished\n";
+    }
+    else {
+        std::cout << "Installation failed\n";
+    }
+}
 
 std::string findRelativeApplicationPath(const std::string appName)
 {
@@ -49,36 +70,6 @@ std::string findRelativeApplicationPath(const std::string appName)
   return appName_path;
 }
 
-inline std::string getCaPTkDataDir()
-{
-  auto captk_currentApplicationPath = cbica::normPath(cbica::getExecutablePath());
-  if (debugMode)
-  {
-    std::cout << "Current Application Path: " << captk_currentApplicationPath << "\n";
-  }  
-
-  auto captk_dataDir = captk_currentApplicationPath + "../data/";
-  if (!cbica::exists(captk_dataDir))
-  {
-    captk_dataDir = captk_currentApplicationPath + "../../data/";
-    if (!cbica::exists(captk_dataDir))
-    {
-      captk_dataDir = captk_currentApplicationPath + "../Resources/data/";
-      if (!cbica::exists(captk_dataDir))
-      {
-        captk_dataDir = std::string(PROJECT_SOURCE_DIR) + "data/";
-        if (!cbica::exists(captk_dataDir))
-        {
-          std::cerr << "Data Directory not found. Please re-install CaPTk.\n";
-          return "";
-        }
-      }
-    }
-  }
-
-  return cbica::normPath(captk_dataDir);
-}
-
 //template< class TImageType >
 int algorithmsRunner()
 {
@@ -104,8 +95,10 @@ int algorithmsRunner()
     std::cout << "Done.\n";
   }
 
-  auto libraPath = findRelativeApplicationPath("libra");
+  // auto libraPath = findRelativeApplicationPath("libra");
   //auto libraPath = cbica::normPath("C:/Projects/CaPTk_myFork/src/applications/individualApps/libra/libra.bat");
+  std::string libraPath = getApplicationDownloadPath("libra");
+
   cbica::createDir(outputDir + "/temp");
 
   std::string command = libraPath + " " + inputImageFile + " " + outputDir + "/temp/" + cbica::getFilenameBase(inputImageFile)
@@ -192,6 +185,7 @@ int algorithmsRunner()
 
 int main(int argc, char** argv)
 {
+  QApplication app(argc, argv);
   cbica::CmdParser parser(argc, argv);
 
   parser.addRequiredParameter("i", "inputImage", cbica::Parameter::FILE, "DICOM", "Input Image for processing");
@@ -224,14 +218,28 @@ int main(int argc, char** argv)
   //case 2:
   //{
     //using ImageType = itk::Image< float, 2 >;
-  return algorithmsRunner();
 
+  cbica::createDir(loggerFolder);
+  cbica::createDir(downloadFolder);
+
+  ApplicationDownloadManager appDownloadMngr;
+  QObject::connect(&appDownloadMngr, &ApplicationDownloadManager::updateProgressSignal, updateProgress);
+  QObject::connect(&appDownloadMngr, SIGNAL(extractResult(bool)), QApplication::instance(), SLOT(quit()));
+  std::string libraPath = appDownloadMngr.getApplication("libra", true);
+
+  if (!libraPath.empty()) { // libra is not present
+    bool ret = algorithmsRunner(); 
+    app.quit();
+    return ret;
+  }
+  
+  // else
+  
   //  break;
   //}
   //default:
   //  std::cerr << "Supplied image has an unsupported dimension of '" << inputImageInfo.GetImageDimensions() << "'; only 2 D images are supported.\n";
   //  return EXIT_FAILURE; // exiting here because no further processing should be done on the image
   //}
-
-  return EXIT_SUCCESS;
+  return app.exec();
 }

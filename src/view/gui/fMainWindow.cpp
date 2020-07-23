@@ -74,6 +74,8 @@
 
 #include <QFile>
 
+#include "ApplicationDownloadManager.h"
+
 // this function calls an external application from CaPTk in the most generic way while waiting for output
 int fMainWindow::startExternalProcess(const QString &application, const QStringList &arguments)
 {
@@ -519,6 +521,7 @@ fMainWindow::fMainWindow()
     SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
+  cbica::createDir(downloadFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
   if (cbica::directoryExists(m_tempFolderLocation))
   {
@@ -5940,7 +5943,12 @@ void fMainWindow::openDicomImages(QString dir)
 
 void fMainWindow::ApplicationLIBRABatch()
 {
-  std::string scriptToCall = m_allNonNativeApps["libra"];
+  connect(&appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  std::string scriptToCall = appDownloadMngr.getApplication("libra", false);
+  
+  if (scriptToCall.empty()) {
+    return;
+  }
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -6039,9 +6047,14 @@ void fMainWindow::ApplicationBreastSegmentation()
     return;
   }
 
-  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
+  connect(&appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  std::string scriptToCall = appDownloadMngr.getApplication("libra", false);
+  
+  if (scriptToCall.empty()) {
+    return;
+  }
 
-  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   if (cbica::fileExists(scriptToCall))
   {
@@ -6094,9 +6107,14 @@ void fMainWindow::ApplicationLIBRASingle()
     return;
   }
 
-  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
+  connect(&appDownloadMngr, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgress(int, std::string, int)));
+  std::string scriptToCall = appDownloadMngr.getApplication("libra", false);
+  
+  if (scriptToCall.empty()) {
+    return;
+  }
 
-  std::string scriptToCall = getApplicationPath("libra");// m_allNonNativeApps["libra"];
+  updateProgress(15, "Initializing and running LIBRA compiled by MCC");
 
   if (cbica::fileExists(scriptToCall))
   {

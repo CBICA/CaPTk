@@ -61,6 +61,27 @@ inputs:
   WhiteStripe:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/WhiteStripe.zip
     Model: N.A.
+appsDownload:
+  confetti:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/confetti.zip
+  dcm2nii:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/dcm2nii.zip
+    Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/dcm2nii.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/dcm2nii.zip
+  libra:
+    Windows: ftp://www.nitrc.org/home/groups/captk/downloads/libra.zip
+    Linux: ftp://www.nitrc.org/home/groups/captk/downloads/libra_linux.zip
+  deepmedic:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/deepmedic.zip
+    Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/deepmedic.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/deepmedic.zip
+  itksnap:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/itksnap.zip
+    Linux: https://github.com/CBICA/precompiledBinaries/raw/master/linux_ubuntu16.04/itksnap.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/itksnap.zip
+  theia:
+    Windows: https://github.com/CBICA/precompiledBinaries/raw/master/windows/theia.zip
+    macOS: https://github.com/CBICA/precompiledBinaries/raw/master/macos_10.13/theia.zip
 hints:
   SoftwareRequirement:
     packages:

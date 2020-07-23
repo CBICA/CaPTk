@@ -79,6 +79,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "vtkGenericOpenGLRenderWindow.h"
 #include "fBottomImageInfoTip.h"
 
+#include "ApplicationDownloadManager.h"
 #include "yaml-cpp/node/node.h"
 
 class SlicerManager;
@@ -267,6 +268,7 @@ private:
   fBraTSSegmentation bratsPipelineDialog;
   fDirectionalityDialog directionalityEstimator;
   PreferencesDialog *preferenceDialog;
+  ApplicationDownloadManager appDownloadMngr;
   SystemInformationDisplayWidget *sysinfowidget;
   
 
@@ -957,7 +959,7 @@ public slots:
   {
     m_skipTutorialOnNextRun = flag;
   }
-
+ 
   /**
   \brief Help for downloading Sample Data
   */

@@ -205,6 +205,66 @@ inline QString getSaveFile(QWidget *parent, const std::string inputPath, const s
   return getSaveFile(parent, QString(inputPath.c_str()), QString(defaultFileName.c_str()), QString(extensions.c_str()));
 }
 
+inline std::string getApplicationDownloadPath(std::string appName)
+{
+  std::string winExt
+#if WIN32
+    = ".exe"
+#endif
+    ;
+
+  auto appName_wrap = appName;
+
+  if (appName_wrap.find("libra") != std::string::npos)
+  {
+#if WIN32
+    winExt = ".bat";
+#elif linux
+    appName_wrap = "bin/" + appName_wrap;
+    winExt = "";
+#endif
+  }
+  else if (appName_wrap.find("itksnap") != std::string::npos) {
+#if WIN32
+    winExt = ".bat";
+#elif linux
+    winExt = "";
+#endif
+  }
+  else if (appName_wrap.find("confetti") != std::string::npos)
+  {
+    // appName_wrap = "ConfettiGUI";
+#ifndef _WIN32
+    winExt = ".py";
+#endif
+  }
+  else if (appName_wrap.find("theia") != std::string::npos)
+  {
+#ifndef _WIN32
+    winExt = ".py";
+#endif
+  }
+  else if (appName_wrap.find("deepmedic") != std::string::npos)
+  {
+    // appName_wrap = "deepMedicRun";
+#ifndef _WIN32
+    winExt = ".py";
+#endif
+  }
+
+  auto fullPath = downloadFolder + appName + "/" + appName_wrap + winExt;
+
+  if (cbica::isFile(fullPath)) {
+
+    return fullPath;
+  }
+  else {
+    // ShowErrorMessage("Specified application was not found, please check");
+    return "";
+  }
+}
+
+
 /**
 \brief Get full path of the executable from the application name
 */
