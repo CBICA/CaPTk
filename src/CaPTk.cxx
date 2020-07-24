@@ -183,6 +183,7 @@ int main(int argc, char** argv)
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
   //cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
+
   // starting the OpenGL version checking 
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
   if (!cbica::isFile(openGLVersionCheckFile))
@@ -195,20 +196,23 @@ int main(int argc, char** argv)
 #else
     CheckOpenGLVersion checker;
 #endif
-
     if (!checker.hasVersion_3_2())
     {
       std::string msg = "A working 3.2 version of OpenGL was not found in your hardware/software combination; consequently, CaPTk's GUI will not work; all CLIs will work as expected.\n\n";
       msg += "\tOpenGL Version : " + checker.version + "\n";
       msg += "\tOpenGL Renderer: " + checker.renderer + "\n";
-      msg += "\tOpenGL Vendor  : " + checker.vendor;
+      msg += "\tOpenGL Vendor  : " + checker.vendor + "\n\n";
+	  msg += "Please install OpenGL version 3.2 or greater, or use the command line interface to run CaPTk.";
+	  msg += "\n\nCheck the documentation for details.";
+	  ShowErrorMessage(msg);
 #if WIN32
-      ShowErrorMessage(msg);
       cbica::sleep(1000);
       return EXIT_FAILURE;
-#else
+#else // Attempt software rendering on non-Windows platforms, warn user 
       cbica::setEnvironmentVariable("QT_OPENGL", "software");
-      std::cerr << "WARNING: Trying to run CaPTk GUI using software rendering - this might not work on all systems and in those cases, only the CLI will be available.\n";
+	  std::string softwareRenderingMsg = "WARNING: Trying to run CaPTk GUI using software rendering - this might not work on all systems and in those cases, only the CLI will be available.\n";
+	  std::cerr << softwareRenderingMsg;
+	  ShowErrorMessage(softwareRenderingMsg);
 #endif
     }
     else
@@ -275,9 +279,9 @@ int main(int argc, char** argv)
 
   cbica::createDir(loggerFolderBase);
   cbica::createDir(loggerFolder);
-  cbica::createDir(captk_StuffFolderBase);
-  cbica::createDir(captk_SampleDataFolder);
-  cbica::createDir(captk_PretrainedFolder);
+  //cbica::createDir(captk_StuffFolderBase);
+  //cbica::createDir(captk_SampleDataFolder);
+  //cbica::createDir(captk_PretrainedFolder);
 
 #ifndef _WIN32
   std::string old_locale = setlocale(LC_NUMERIC, NULL);

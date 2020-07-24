@@ -79,6 +79,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "vtkGenericOpenGLRenderWindow.h"
 #include "fBottomImageInfoTip.h"
 
+#include "ApplicationDownloadManager.h"
 #include "yaml-cpp/node/node.h"
 
 class SlicerManager;
@@ -86,6 +87,7 @@ class Slicer;
 class SimpleImageManager;
 class fHelpDialog;
 class PreferencesDialog;
+class SystemInformationDisplayWidget;
 
 #define USE_PROCESSDIALOG
 
@@ -266,6 +268,8 @@ private:
   fBraTSSegmentation bratsPipelineDialog;
   fDirectionalityDialog directionalityEstimator;
   PreferencesDialog *preferenceDialog;
+  ApplicationDownloadManager appDownloadMngr;
+  SystemInformationDisplayWidget *sysinfowidget;
   
 
   fDrawingPanel *drawingPanel;
@@ -293,6 +297,7 @@ private:
   QAction *help_forum;
   QAction *help_bugs;
   QAction *help_features;
+  QAction *help_systeminformation;
 
   //-------------actions-------------
 
@@ -954,7 +959,7 @@ public slots:
   {
     m_skipTutorialOnNextRun = flag;
   }
-
+ 
   /**
   \brief Help for downloading Sample Data
   */
@@ -964,6 +969,11 @@ public slots:
   \brief open model library webpage
   */
   void OpenModelLibrary();
+
+  /**
+ \brief system information menu click 
+ */
+  void OnSystemInformationMenuClicked();
 
   /**
   \brief Get contextual help 

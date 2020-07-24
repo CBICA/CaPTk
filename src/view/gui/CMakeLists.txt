@@ -54,6 +54,7 @@ SET( GUI
   AppearancePage
   CaPTkDockWidget
   fBiasCorrectionDialog
+  # fAppDownloadDialog
   fBraTSSegmentation
   #fSegmentationPanel
   #fHelpAppDialog
@@ -76,16 +77,27 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/QBorderWidget.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/OutputInteractorStyleNavigator.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ASyncAppManager.h"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/ThreadedExtraction.h"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/ThreadedExtraction.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/CheckOpenGLVersion.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/CheckOpenGLVersion.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/PreferencesDialog.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/PreferencesDialog.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/IPreferencePage.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/IPreferencePage.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.cpp"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.h"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.cpp"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/QZipReader.h"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/QZipWriter.h"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/QZip.cpp"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationDownloadManager.h"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationDownloadManager.cpp"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/SystemInformationDisplayWidget.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/SystemInformationDisplayWidget.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/SystemInformation.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/SystemInformation.cpp"
   #"${CMAKE_CURRENT_SOURCE_DIR}/ApplicationBase.h"
   #"${CMAKE_CURRENT_SOURCE_DIR}/NearFarDrawingManager.h"
   #"${CMAKE_CURRENT_SOURCE_DIR}/NearFarDrawingManager.cpp"

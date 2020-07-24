@@ -90,8 +90,7 @@ void CollectImageInfo(std::vector< int > requestedInfoVector)
   std::vector< std::string > subDirsInInput = { inputImageFile };
   if (collectInfoRecurse)
   {
-    auto temp = cbica::subdirectoriesInDirectory(inputImageFile, collectInfoRecurse, true);
-    subDirsInInput.insert(subDirsInInput.end(), temp.begin(), temp.end());
+    subDirsInInput = cbica::subdirectoriesInDirectory(inputImageFile, collectInfoRecurse, true);
   }
 
   std::vector< int > imageDimensions;
@@ -1105,7 +1104,18 @@ int algorithmsRunner_join2imageStack()
   auto outputImages = cbica::GetExtractedImages< TImageType, TOutputImageType >(cbica::ReadImage< TImageType >(inputImageFile));
   std::string path, base, ext;
   cbica::splitFileName(outputImageFile, path, base, ext);
-  cbica::createDir(path);
+  if ((outputImageFile.back() == '\\') || (outputImageFile.back() == '/'))
+  {
+    cbica::createDir(outputImageFile);
+    if (base.empty())
+    {
+      base = "extractedImage";
+    }
+  }
+  else
+  {
+    cbica::createDir(path);
+  }
 
   for (size_t i = 0; i < outputImages.size(); i++)
   {
@@ -1166,7 +1176,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("co", "collectInfo", cbica::Parameter::BOOLEAN, "Dir with read", "Collects information about all images in input directory", "Input directory passed using '-i'", "Recursion defined using '-co 1'", "Output CSV passed using '-o'");
   parser.addOptionalParameter("cF", "collectFileName", cbica::Parameter::STRING, "File pattern", "The file pattern to check for in every file when collecting information", "Defaults to check all");
   parser.addOptionalParameter("cFE", "collectFileExt", cbica::Parameter::STRING, "File extension", "The file extension to check for in every file when collecting information", "Defaults to check all");
-  parser.addOptionalParameter("cP", "collectProperties", cbica::Parameter::STRING, "0-2", "Requested image property", "0: spacings, 1: size, 2: origin", "Defaults to 0", "Defaults to '-cP" + collectInfoProps + "'");
+  parser.addOptionalParameter("cP", "collectProperties", cbica::Parameter::STRING, "0-2", "Requested image property", "0: spacings, 1: size, 2: origin", "Defaults to 0", "Defaults to '-cP " + collectInfoProps + "'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
@@ -1576,6 +1586,7 @@ int main(int argc, char** argv)
       requestedProps.push_back(std::atoi(temp[p].c_str()));
     }
     CollectImageInfo(requestedProps);
+    return EXIT_SUCCESS;
   }
   
   // this doesn't need any template initialization
