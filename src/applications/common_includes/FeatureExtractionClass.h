@@ -67,8 +67,9 @@ public:
 
   void FormulateEGFRTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & SixModelFeatures);
 
-  void FormulateMolecularTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputLabels, VariableSizeMatrixType & proneuralModelFeatures, VariableSizeMatrixType & neuralModelFeatures, VariableSizeMatrixType & messenchymalModelFeatures, VariableSizeMatrixType & classicalModelFeatures);
-
+  void FormulateMolecularTrainingData(VectorDouble inputLabels,
+    VectorDouble & proneuralModelLabels, VectorDouble & neuralModelLabels,
+    VectorDouble & messModelLabels, VectorDouble & classicalModelLabels);
   /**
   \brief Formulates the test data by using intensities of near and far regions, and adding corresponding label
   \param testdata Intensities of test voxels

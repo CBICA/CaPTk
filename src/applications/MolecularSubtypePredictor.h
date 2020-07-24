@@ -20,6 +20,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "NiftiDataManager.h"
 #include "FeatureReductionClass.h"
 #include "FeatureScalingClass.h"
+#include "TrainingModule.h"
 #include "FeatureExtractionClass.h"
 #include "itkCSVArray2DFileReader.h"
 #include "itkConnectedComponentImageFilter.h"
@@ -262,10 +263,10 @@ public:
 
 
 
-	VariableSizeMatrixType SelectSixMonthsModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures);
-	VariableSizeMatrixType SelectEighteenMonthsModelFeatures(const VariableSizeMatrixType &EighteenModelFeatures);
-
-	template<class ImageType>
+  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VariableLengthVectorType &selectedFeatures);
+  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VectorDouble &selectedFeatures);
+  
+  template<class ImageType>
 	typename ImageType::Pointer RemoveSmallerComponentsFromTumor(const typename ImageType::Pointer &etumorImage, const typename ImageType::Pointer &ncrImage);
 
 	VariableLengthVectorType DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename, const double &rho, const double &bestg);
