@@ -344,7 +344,7 @@ fMainWindow::fMainWindow()
   {
     nonNativeAppPaths_wrap.erase(0, 1);
   }
-  nonNativeAppPaths_wrap = nonNativeAppPaths_wrap + " itksnap";
+  nonNativeAppPaths_wrap = nonNativeAppPaths_wrap + " itksnap" + " confetti";
   m_pyGUIApps = cbica::stringSplit(nonNativeAppPaths_wrap, " ");
   nonNativeAppPaths_wrap = std::string(CAPTK_APP_LIST_PY_CLI);
   if (nonNativeAppPaths_wrap[0] == ' ')
@@ -356,10 +356,6 @@ fMainWindow::fMainWindow()
   size_t allAppCounter = 0;
   for (size_t i = 0; i < m_pyGUIApps.size(); i++)
   {
-    if (m_pyGUIApps[i] == "confetti")
-    {
-      m_pyGUIApps[i] = "ConfettiGUI";
-    }
     if ((m_pyGUIApps[i] == "librabatch") || (m_pyGUIApps[i] == "librasingle"))
     {
       m_pyGUIApps[i] = "libra";
@@ -582,10 +578,13 @@ fMainWindow::fMainWindow()
   connect(supportMenu, SIGNAL(triggered(QAction*)), this, SLOT(help_Download(QAction*)));
 
   connect(actionModelLibrary, SIGNAL(triggered()), this, SLOT(OpenModelLibrary()));
+  
+  mHelpDlg = new fHelpDialog();
+  mHelpTutorial = new fHelpTutorial();
 
   connect(help_systeminformation, SIGNAL(triggered()), this, SLOT(OnSystemInformationMenuClicked()));
 
-  connect(&mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
+  connect(mHelpTutorial, SIGNAL(skipTutorialOnNextRun(bool)), this, SLOT(skipTutorial(bool)));
 
   for (size_t i = 0; i < vectorOfGBMApps.size(); i++)
   {
@@ -944,7 +943,7 @@ fMainWindow::fMainWindow()
   statusBar()->addPermanentWidget(m_progressBar);
   m_progressBar->setValue(0);
 
-  mHelpDlg = new fHelpDialog();
+
 
   recurrencePanel.SetCurrentLoggerPath(m_tempFolderLocation);
   msubtypePanel.SetCurrentLoggerPath(m_tempFolderLocation);
@@ -1013,6 +1012,9 @@ fMainWindow::~fMainWindow()
     file << "User doesn't need the tutorial screen.\n";
     file.close();
   }
+
+  if (mHelpTutorial)
+    delete mHelpTutorial;
 
   if (mHelpDlg)
     delete mHelpDlg;
@@ -1133,7 +1135,7 @@ std::string fMainWindow::ConversionFrom2Dto3D(const std::string &fileName)
 void fMainWindow::about()
 {
 //#if CAPTK_PACKAGE_PROJECT
-  mHelpTutorial.show();
+  mHelpTutorial->show();
 //#endif
 }
 
@@ -2290,6 +2292,7 @@ void fMainWindow::CloseImage(QTableWidgetItem* item)
 
 void fMainWindow::MousePositionChanged(int visibility, double x, double y, double z, double X, double Y, double Z, double value)
 {
+  
   infoPanel->setCurrentInfo(visibility, x, y, z, X, Y, Z, value);
   tumorPanel->HighlightCurrentSelctedPoints(x, y, z, X, Y, Z, value);
 }
@@ -2725,9 +2728,10 @@ void fMainWindow::MoveSlicerCursor(double x, double y, double z, int mode)
     mSlicerManagers[mCurrentPickedImageIndex]->GetSlicer(0)->SetCurrentPosition(x, y, z);
     //
     mSlicerManagers[mCurrentPickedImageIndex]->Picked();
+    mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateViews(0);
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateLinked(0);
-    mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
+    
   }
   else if (mode == 1)
   {
@@ -2739,9 +2743,9 @@ void fMainWindow::MoveSlicerCursor(double x, double y, double z, int mode)
     mSlicerManagers[mCurrentPickedImageIndex]->GetSlicer(0)->SetCurrentPosition(x, y, z);
     //
     mSlicerManagers[mCurrentPickedImageIndex]->Picked();
+    mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateViews(0);
     mSlicerManagers[mCurrentPickedImageIndex]->UpdateLinked(0);
-    mSlicerManagers[mCurrentPickedImageIndex]->UpdateInfoOnCursorPosition(0);
   }
   propogateSlicerPosition();
 }
@@ -6124,8 +6128,8 @@ void fMainWindow::ApplicationLIBRASingle()
 
 void fMainWindow::ApplicationConfetti()
 {
-  std::string scriptToCall = m_allNonNativeApps["ConfettiGUI"];
-
+  std::string scriptToCall = m_allNonNativeApps["confetti"];
+   
   if (startExternalProcess(scriptToCall.c_str(), QStringList()) != 0)
   {
     ShowErrorMessage("Confetti failed to execute. Please check installation requirements and retry.", this);
