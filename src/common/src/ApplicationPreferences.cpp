@@ -61,6 +61,7 @@ void ApplicationPreferences::SerializePreferences()
     // qDebug() << " status = " << appSettings.status();
     //cbica::Logging(loggerFile, "ApplicationPreferences::SerializePreferences status: " + QVariant::fromValue(appSettings.status()).toString().toStdString() );
 
+	//we iterate over the map and serialize settings for each app in map
 	if (!this->m_UserInstallationSettings.isEmpty())
 	{
 		appSettings.beginGroup("User-Installed-Applications");
@@ -102,6 +103,37 @@ void ApplicationPreferences::DeSerializePreferences()
 		//this->SetLibraExtractionFinishedStatus(appSettings.value("Libra_Extraction_Finished").toString());
 		//appSettings.endGroup();
 		//appSettings.endGroup();
+
+		//we enter the 'user-installed-applications' group
+		//then we iterate over all the groups and  de-serialize settings for each app in group
+		appSettings.beginGroup("User-Installed-Applications");
+		QStringList groups = appSettings.childGroups();
+		foreach(QString group, groups)
+		{
+			qDebug() << " group: " << group << endl;
+			appSettings.beginGroup(group);
+			UserInstallationSettings appInstallsettings;
+			QStringList keys = appSettings.childKeys();
+			QStringListIterator itr(keys);
+			while (itr.hasNext())
+			{
+				QString key = itr.next();
+				QString value = appSettings.value(key).toString();
+				qDebug() << "key: " << key << " value: " << value << endl;
+
+				if (!key.compare("DownloadStarted", Qt::CaseSensitivity::CaseInsensitive))
+					appInstallsettings.DownloadStarted = value;
+				if (!key.compare("DownloadFinished", Qt::CaseSensitivity::CaseInsensitive))
+					appInstallsettings.DownloadFinished = value;
+				if (!key.compare("ExtractionStarted", Qt::CaseSensitivity::CaseInsensitive))
+					appInstallsettings.ExtractionStarted = value;
+				if (!key.compare("ExtractionFinished", Qt::CaseSensitivity::CaseInsensitive))
+					appInstallsettings.ExtractionFinished = value;
+
+			}
+			this->m_UserInstallationSettings[group] = appInstallsettings;
+			appSettings.endGroup();
+		}
 	}
 	else
 		this->SetUserPreferencesAvailability(QVariant(false).toString());
