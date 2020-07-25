@@ -53,6 +53,9 @@ public:
 	//! Add a new user installed application
 	void AddApplication(QString app);
 
+	//! Get user installation settings
+	UserInstallation GetUserInstallationSettingsForApp(QString app);
+
 private:
 	//! constructor/desctrucor
 	ApplicationPreferences() = default;

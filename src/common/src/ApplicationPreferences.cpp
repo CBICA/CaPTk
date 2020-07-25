@@ -110,6 +110,14 @@ void ApplicationPreferences::AddApplication(QString app)
 	}
 }
 
+ApplicationPreferences::UserInstallation ApplicationPreferences::GetUserInstallationSettingsForApp(QString app)
+{
+	if (this->m_UserInstallationSettings.contains(app))
+	{
+		return this->m_UserInstallationSettings[app];
+	}
+}
+
 void ApplicationPreferences::SetUserPreferencesAvailability(QString available)
 {
 	this->m_UserPreferencesAvailability = available;
