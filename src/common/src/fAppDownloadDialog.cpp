@@ -33,21 +33,21 @@ void fAppDownloadDialog::ConfirmButtonPressed()
 
 void fAppDownloadDialog::initDownload() {
     ApplicationPreferences::GetInstance()->DeSerializePreferences();
-    bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
+    bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetDownloadFinishedStatus(this->appName)).toBool();
 
     if (downloadFinished) { // if download is done but file is not found and extraction progress is not picked up then reset
-        ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetDownloadStartedStatus(this->appName,QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetDownloadFinishedStatus(this->appName, QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetExtractionStartedStatus(this->appName, QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetExtractionFinishedStatus(this->appName, QVariant("false").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
     }
 
     ApplicationPreferences::GetInstance()->DeSerializePreferences();
-    bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
-    downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
-    bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
-    bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
+    bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetDownloadStartedStatus(this->appName)).toBool();
+    downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetDownloadFinishedStatus(this->appName)).toBool();
+    bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetExtractionStartedStatus(this->appName)).toBool();
+    bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetExtractionFinishedStatus(this->appName)).toBool();
 
     // ApplicationPreferences::GetInstance()->DisplayPreferences();
 
@@ -62,7 +62,7 @@ void fAppDownloadDialog::initDownload() {
         // url = 
         QFileInfo fileInfo(url.path());
         QString fileName = fileInfo.fileName();
-        appName = fileName;
+        //appName = fileName;
 
         if (fileName.isEmpty())
             fileName = "index.html";
@@ -93,7 +93,7 @@ void fAppDownloadDialog::initDownload() {
         // This will be set true when canceled from progress dialog
         httpRequestAborted = false;
 
-        ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("true").toString());
+        ApplicationPreferences::GetInstance()->SetDownloadStartedStatus(this->appName,QVariant("true").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
         // ApplicationPreferences::GetInstance()->DisplayPreferences();
         // downloadProgressDialog->setWindowTitle(tr("HTTP"));
@@ -169,10 +169,10 @@ void fAppDownloadDialog::httpDownloadFinished()
         reply->deleteLater();
         // downloadProgressDialog->hide();
 
-        ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
-        ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetDownloadStartedStatus(this->appName,QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetDownloadFinishedStatus(this->appName,QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetExtractionStartedStatus(this->appName,QVariant("false").toString());
+        ApplicationPreferences::GetInstance()->SetExtractionFinishedStatus(this->appName,QVariant("false").toString());
         ApplicationPreferences::GetInstance()->SerializePreferences();
         // ApplicationPreferences::GetInstance()->DisplayPreferences();
 
@@ -217,7 +217,7 @@ void fAppDownloadDialog::httpDownloadFinished()
     file = nullptr;
     manager = nullptr;
 
-    ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("true").toString());
+    ApplicationPreferences::GetInstance()->SetDownloadFinishedStatus(this->appName,QVariant("true").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
     // ApplicationPreferences::GetInstance()->DisplayPreferences();
 
@@ -230,10 +230,10 @@ void fAppDownloadDialog::cancelDownload()
     httpRequestAborted = true;
     reply->abort();
 
-    ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
-    ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
-    ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
-    ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->SetDownloadStartedStatus(this->appName,QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->SetDownloadFinishedStatus(this->appName,QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->SetExtractionStartedStatus(this->appName,QVariant("false").toString());
+    ApplicationPreferences::GetInstance()->SetExtractionFinishedStatus(this->appName,QVariant("false").toString());
     ApplicationPreferences::GetInstance()->SerializePreferences();
     // ApplicationPreferences::GetInstance()->DisplayPreferences();
 
