@@ -60,6 +60,24 @@ void ApplicationPreferences::SerializePreferences()
 
     // qDebug() << " status = " << appSettings.status();
     //cbica::Logging(loggerFile, "ApplicationPreferences::SerializePreferences status: " + QVariant::fromValue(appSettings.status()).toString().toStdString() );
+
+	if (!this->m_UserInstallationSettings.isEmpty())
+	{
+		appSettings.beginGroup("User-Installed-Applications");
+		QMapIterator<QString, UserInstallationSettings> itr(this->m_UserInstallationSettings);
+		while (itr.hasNext())
+		{
+			itr.next();
+			appSettings.beginGroup(itr.key());
+			UserInstallationSettings appInstallsettings = itr.value();
+			appSettings.setValue("DownloadStarted", appInstallsettings.DownloadStarted);
+			appSettings.setValue("DownloadFinished", appInstallsettings.DownloadFinished);
+			appSettings.setValue("ExtractionStarted", appInstallsettings.ExtractionStarted);
+			appSettings.setValue("ExtractionFinished", appInstallsettings.ExtractionFinished);
+			appSettings.endGroup();
+		}
+		appSettings.endGroup();
+	}
 }
 
 void ApplicationPreferences::DeSerializePreferences()
@@ -105,12 +123,12 @@ void ApplicationPreferences::AddApplication(QString app)
 {
 	if (!this->m_UserInstallationSettings.contains(app))
 	{
-		UserInstallation appInstallSettings;
+		UserInstallationSettings appInstallSettings;
 		this->m_UserInstallationSettings.insert(app, appInstallSettings);
 	}
 }
 
-ApplicationPreferences::UserInstallation ApplicationPreferences::GetUserInstallationSettingsForApp(QString app)
+ApplicationPreferences::UserInstallationSettings ApplicationPreferences::GetUserInstallationSettingsForApp(QString app)
 {
 	if (this->m_UserInstallationSettings.contains(app))
 	{

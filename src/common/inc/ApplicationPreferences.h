@@ -8,7 +8,7 @@
 class ApplicationPreferences : public QObject
 {
 public:
-	struct UserInstallation
+	struct UserInstallationSettings
 	{
 		//app download extract settings
 		QString DownloadStarted = "false";
@@ -54,7 +54,7 @@ public:
 	void AddApplication(QString app);
 
 	//! Get user installation settings
-	UserInstallation GetUserInstallationSettingsForApp(QString app);
+	UserInstallationSettings GetUserInstallationSettingsForApp(QString app);
 
 private:
 	//! constructor/desctrucor
@@ -70,7 +70,7 @@ private:
 	QString m_Font;
 	QString m_Theme;
 	QString m_UserPreferencesAvailability = QVariant("false").toString();
-	QMap<QString, UserInstallation> m_UserInstallationSettings;
+	QMap<QString, UserInstallationSettings> m_UserInstallationSettings;
 
 	//app download extract settings
 	//QString m_LibraDownloadStarted;
