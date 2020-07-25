@@ -50,6 +50,9 @@ public:
 	//! print preferences(for debugging purposes)
 	void DisplayPreferences();
 
+	//! Add a new user installed application
+	void AddApplication(QString app);
+
 private:
 	//! constructor/desctrucor
 	ApplicationPreferences() = default;
