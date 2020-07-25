@@ -196,43 +196,83 @@ QString ApplicationPreferences::GetUserPreferencesAvailability() const
 {
     return m_UserPreferencesAvailability;
 }
-//
-//void ApplicationPreferences::SetLibraDownloadStartedStatus(QString status)
-//{
-//	this->m_LibraDownloadStarted = status;
-//}
-//
-//QString ApplicationPreferences::GetLibraDownloadStartedStatus()
-//{
-//	return this->m_LibraDownloadStarted;
-//}
-//
-//void ApplicationPreferences::SetLibraDownloadFinishedStatus(QString status)
-//{
-//	this->m_LibraDownloadFinished = status;
-//}
-//
-//QString ApplicationPreferences::GetLibraDownloadFinishedStatus()
-//{
-//	return this->m_LibraDownloadFinished;
-//}
-//
-//void ApplicationPreferences::SetLibraExtractionStartedStatus(QString status)
-//{
-//	this->m_LibraExtractionStarted = status;
-//}
-//
-//QString ApplicationPreferences::GetLibraExtractionStartedStatus()
-//{
-//	return this->m_LibraExtractionStarted;
-//}
-//
-//void ApplicationPreferences::SetLibraExtractionFinishedStatus(QString status)
-//{
-//	this->m_LibraExtractionFinished = status;
-//}
-//
-//QString ApplicationPreferences::GetLibraExtractionFinishedStatus()
-//{
-//	return this->m_LibraExtractionFinished;
-//}
+
+void ApplicationPreferences::SetDownloadStartedStatus(QString app, QString status)
+{
+	//this->m_LibraDownloadStarted = status;
+	if (this->m_UserInstallationSettings.contains(app))
+	{
+		this->m_UserInstallationSettings[app].DownloadStarted = status;
+	}
+}
+
+QString ApplicationPreferences::GetDownloadStartedStatus(QString app)
+{
+	//return this->m_LibraDownloadStarted;
+	QString status;
+	if (this->m_UserInstallationSettings.contains(app))
+	{
+		status = this->m_UserInstallationSettings[app].DownloadStarted;
+	}
+	return status;
+}
+
+void ApplicationPreferences::SetDownloadFinishedStatus(QString app, QString status)
+{
+	//this->m_LibraDownloadFinished = status;
+	if (this->m_UserInstallationSettings.contains(app))
+	{
+		this->m_UserInstallationSettings[app].DownloadFinished = status;
+	}
+}
+
+QString ApplicationPreferences::GetDownloadFinishedStatus(QString app)
+{
+	//return this->m_LibraDownloadFinished;
+	QString status;
+	if (this->m_UserInstallationSettings.contains(app))
+	{
+		status = this->m_UserInstallationSettings[app].DownloadFinished;
+	}
+	return status;
+}
+
+void ApplicationPreferences::SetExtractionStartedStatus(QString app, QString status)
+{
+	//this->m_LibraExtractionStarted = status;
+	if (this->m_UserInstallationSettings.contains(app))
+	{
+		this->m_UserInstallationSettings[app].ExtractionStarted = status;
+	}
+}
+
+QString ApplicationPreferences::GetExtractionStartedStatus(QString app)
+{
+	//return this->m_LibraExtractionStarted;
+	QString status;
+	if (this->m_UserInstallationSettings.contains(app))
+	{
+		status = this->m_UserInstallationSettings[app].ExtractionStarted;
+	}
+	return status;
+}
+
+void ApplicationPreferences::SetExtractionFinishedStatus(QString app, QString status)
+{
+	//this->m_LibraExtractionFinished = status;
+	if (this->m_UserInstallationSettings.contains(app))
+	{
+		this->m_UserInstallationSettings[app].ExtractionFinished = status;
+	}
+}
+
+QString ApplicationPreferences::GetExtractionFinishedStatus(QString app)
+{
+	//return this->m_LibraExtractionFinished;
+	QString status;
+	if (this->m_UserInstallationSettings.contains(app))
+	{
+		status = this->m_UserInstallationSettings[app].ExtractionFinished;
+	}
+	return status;
+}
