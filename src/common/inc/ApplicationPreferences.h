@@ -64,12 +64,13 @@ private:
 	QString m_Font;
 	QString m_Theme;
 	QString m_UserPreferencesAvailability = QVariant("false").toString();
+	QMap<QString, UserInstallation> m_UserInstallationSettings;
 
 	//app download extract settings
-	QString m_LibraDownloadStarted;
-	QString m_LibraDownloadFinished;
-	QString m_LibraExtractionStarted;
-	QString m_LibraExtractionFinished;
+	//QString m_LibraDownloadStarted;
+	//QString m_LibraDownloadFinished;
+	//QString m_LibraExtractionStarted;
+	//QString m_LibraExtractionFinished;
 };
 
 #endif // APPLICATIONPREFERENCES_H
