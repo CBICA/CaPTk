@@ -3,7 +3,7 @@
 void ThreadedExtraction::run() {
    if (QFile::exists(this->fullPath))
    {
-      ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("true").toString());
+      ApplicationPreferences::GetInstance()->SetExtractionStartedStatus(this->appName,QVariant("true").toString());
       ApplicationPreferences::GetInstance()->SerializePreferences();
       // ApplicationPreferences::GetInstance()->DisplayPreferences();
       
