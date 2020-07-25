@@ -72,11 +72,6 @@ private:
 	QString m_UserPreferencesAvailability = QVariant("false").toString();
 	QMap<QString, UserInstallationStatus> m_UserInstallationSettings;
 
-	//app download extract settings
-	//QString m_LibraDownloadStarted;
-	//QString m_LibraDownloadFinished;
-	//QString m_LibraExtractionStarted;
-	//QString m_LibraExtractionFinished;
 };
 
 #endif // APPLICATIONPREFERENCES_H

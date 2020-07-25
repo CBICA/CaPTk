@@ -49,18 +49,6 @@ void ApplicationPreferences::SerializePreferences()
 	appSettings.setValue("Theme", this->m_Theme);
 	appSettings.endGroup();
 
-    //appSettings.beginGroup("User-Installed-Applications");
-    //appSettings.beginGroup("Libra");
-    //appSettings.setValue("Libra_Download_Started",this->m_LibraDownloadStarted);
-    //appSettings.setValue("Libra_Download_Finished",this->m_LibraDownloadFinished);
-    //appSettings.setValue("Libra_Extraction_Started",this->m_LibraExtractionStarted);
-    //appSettings.setValue("Libra_Extraction_Finished",this->m_LibraExtractionFinished);
-    //appSettings.endGroup();
-    //appSettings.endGroup();
-
-    // qDebug() << " status = " << appSettings.status();
-    //cbica::Logging(loggerFile, "ApplicationPreferences::SerializePreferences status: " + QVariant::fromValue(appSettings.status()).toString().toStdString() );
-
 	//we iterate over the map and serialize settings for each app in map
 	if (!this->m_UserInstallationSettings.isEmpty())
 	{
@@ -94,15 +82,6 @@ void ApplicationPreferences::DeSerializePreferences()
 		this->SetFont(appSettings.value("Font").toString());
 		this->SetTheme(appSettings.value("Theme").toString());
 		appSettings.endGroup();
-
-		//appSettings.beginGroup("User-Installed-Applications");
-		//appSettings.beginGroup("Libra");
-		//this->SetLibraDownloadStartedStatus(appSettings.value("Libra_Download_Started").toString());
-		//this->SetLibraDownloadFinishedStatus(appSettings.value("Libra_Download_Finished").toString());
-		//this->SetLibraExtractionStartedStatus(appSettings.value("Libra_Extraction_Started").toString());
-		//this->SetLibraExtractionFinishedStatus(appSettings.value("Libra_Extraction_Finished").toString());
-		//appSettings.endGroup();
-		//appSettings.endGroup();
 
 		//we enter the 'user-installed-applications' group
 		//then we iterate over all the groups and  de-serialize settings for each app in group
@@ -144,10 +123,6 @@ void ApplicationPreferences::DisplayPreferences()
 	qDebug() << " ApplicationPreferences::DisplayPreferences() " << endl;
 	qDebug() << " font = " << this->m_Font << endl;
 	qDebug() << " theme = " << this->m_Theme << endl;
-	//qDebug() << " Libra_Download_Started = " << this->m_LibraDownloadStarted << endl;
-	//qDebug() << " Libra_Download_Finished = " << this->m_LibraDownloadFinished << endl;
-	//qDebug() << " Libra_Extraction_Started = " << this->m_LibraExtractionStarted << endl;
-	//qDebug() << " Libra_Extraction_Finished = " << this->m_LibraExtractionFinished << endl;
 
 	//we iterate over the map and write out settings for each app in map
 	if (!this->m_UserInstallationSettings.isEmpty())
