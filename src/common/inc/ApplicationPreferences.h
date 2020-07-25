@@ -8,6 +8,15 @@
 class ApplicationPreferences : public QObject
 {
 public:
+	struct UserInstallation
+	{
+		//app download extract settings
+		QString DownloadStarted = "false";
+		QString DownloadFinished = "false";
+		QString ExtractionStarted = "false";
+		QString ExtractionFinished = "false";
+	};
+
 	static ApplicationPreferences* GetInstance();
 
 	//! setters/getters
