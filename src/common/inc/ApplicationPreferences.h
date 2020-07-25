@@ -20,17 +20,17 @@ public:
 	void SetUserPreferencesAvailability(QString available);
 	QString GetUserPreferencesAvailability() const;
 
-	void SetLibraDownloadStartedStatus(QString status);
-	QString GetLibraDownloadStartedStatus();
+	//void SetLibraDownloadStartedStatus(QString status);
+	//QString GetLibraDownloadStartedStatus();
 
-	void SetLibraDownloadFinishedStatus(QString status);
-	QString GetLibraDownloadFinishedStatus();
+	//void SetLibraDownloadFinishedStatus(QString status);
+	//QString GetLibraDownloadFinishedStatus();
 
-	void SetLibraExtractionStartedStatus(QString status);
-	QString GetLibraExtractionStartedStatus();
+	//void SetLibraExtractionStartedStatus(QString status);
+	//QString GetLibraExtractionStartedStatus();
 
-	void SetLibraExtractionFinishedStatus(QString status);
-	QString GetLibraExtractionFinishedStatus();
+	//void SetLibraExtractionFinishedStatus(QString status);
+	//QString GetLibraExtractionFinishedStatus();
 
     //! Serialize
 	void SerializePreferences();

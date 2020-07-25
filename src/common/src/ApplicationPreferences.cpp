@@ -110,43 +110,43 @@ QString ApplicationPreferences::GetUserPreferencesAvailability() const
 {
     return m_UserPreferencesAvailability;
 }
-
-void ApplicationPreferences::SetLibraDownloadStartedStatus(QString status)
-{
-	this->m_LibraDownloadStarted = status;
-}
-
-QString ApplicationPreferences::GetLibraDownloadStartedStatus()
-{
-	return this->m_LibraDownloadStarted;
-}
-
-void ApplicationPreferences::SetLibraDownloadFinishedStatus(QString status)
-{
-	this->m_LibraDownloadFinished = status;
-}
-
-QString ApplicationPreferences::GetLibraDownloadFinishedStatus()
-{
-	return this->m_LibraDownloadFinished;
-}
-
-void ApplicationPreferences::SetLibraExtractionStartedStatus(QString status)
-{
-	this->m_LibraExtractionStarted = status;
-}
-
-QString ApplicationPreferences::GetLibraExtractionStartedStatus()
-{
-	return this->m_LibraExtractionStarted;
-}
-
-void ApplicationPreferences::SetLibraExtractionFinishedStatus(QString status)
-{
-	this->m_LibraExtractionFinished = status;
-}
-
-QString ApplicationPreferences::GetLibraExtractionFinishedStatus()
-{
-	return this->m_LibraExtractionFinished;
-}
+//
+//void ApplicationPreferences::SetLibraDownloadStartedStatus(QString status)
+//{
+//	this->m_LibraDownloadStarted = status;
+//}
+//
+//QString ApplicationPreferences::GetLibraDownloadStartedStatus()
+//{
+//	return this->m_LibraDownloadStarted;
+//}
+//
+//void ApplicationPreferences::SetLibraDownloadFinishedStatus(QString status)
+//{
+//	this->m_LibraDownloadFinished = status;
+//}
+//
+//QString ApplicationPreferences::GetLibraDownloadFinishedStatus()
+//{
+//	return this->m_LibraDownloadFinished;
+//}
+//
+//void ApplicationPreferences::SetLibraExtractionStartedStatus(QString status)
+//{
+//	this->m_LibraExtractionStarted = status;
+//}
+//
+//QString ApplicationPreferences::GetLibraExtractionStartedStatus()
+//{
+//	return this->m_LibraExtractionStarted;
+//}
+//
+//void ApplicationPreferences::SetLibraExtractionFinishedStatus(QString status)
+//{
+//	this->m_LibraExtractionFinished = status;
+//}
+//
+//QString ApplicationPreferences::GetLibraExtractionFinishedStatus()
+//{
+//	return this->m_LibraExtractionFinished;
+//}
