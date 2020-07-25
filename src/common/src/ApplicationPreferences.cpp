@@ -162,6 +162,13 @@ ApplicationPreferences::UserInstallationStatus ApplicationPreferences::GetUserIn
 	}
 }
 
+void ApplicationPreferences::ResetAllPreferences()
+{
+	QSettings appSettings(QSettings::IniFormat, QSettings::UserScope,
+		"UPenn", "CaPTk");
+	appSettings.clear();
+}
+
 void ApplicationPreferences::SetUserPreferencesAvailability(QString available)
 {
 	this->m_UserPreferencesAvailability = available;

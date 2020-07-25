@@ -56,6 +56,9 @@ public:
 	//! Get user installation settings
 	UserInstallationStatus GetUserInstallationSettingsForApp(QString app);
 
+	//!Reset All Preferences
+	void ResetAllPreferences();
+
 private:
 	//! constructor/desctrucor
 	ApplicationPreferences() = default;
