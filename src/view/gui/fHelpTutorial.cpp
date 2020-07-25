@@ -87,7 +87,7 @@ fHelpTutorial::fHelpTutorial()
 
   if (!cbica::fileExists(m_helpFileFullPath))
   {
-    cbica::Logging(loggerFile, "Unable to start help page, file '" + m_helpFileFullPath + "' not found");
+    cbica::Logging(loggerFile, "Unable to start about page, file '" + m_helpFileFullPath + "' not found");
   }
   else
   {
@@ -116,6 +116,7 @@ fHelpTutorial::fHelpTutorial()
   //this->m_webView->setTextSizeMultiplier(QApplication::desktop()->screen()->logicalDpiX() / 96.0);
   //this->show();
 
+  this->setFocus();
   QCoreApplication::processEvents();
 
 }

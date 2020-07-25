@@ -601,21 +601,11 @@ void SlicerManager::UpdateInfoOnCursorPosition(int slicer)
   z = Z * mSlicers[slicer]->GetInput()->GetSpacing()[2] + mSlicers[slicer]->GetInput()->GetOrigin()[2];
   //
   double value = -VTK_DOUBLE_MAX;
-#if VTK_MAJOR_VERSION <= 5
-  if (X >= mSlicers[slicer]->GetInput()->GetWholeExtent()[0] && X <= mSlicers[slicer]->GetInput()->GetWholeExtent()[1] &&
-    Y >= mSlicers[slicer]->GetInput()->GetWholeExtent()[2] && Y <= mSlicers[slicer]->GetInput()->GetWholeExtent()[3] &&
-    Z >= mSlicers[slicer]->GetInput()->GetWholeExtent()[4] && Z <= mSlicers[slicer]->GetInput()->GetWholeExtent()[5])
-#else
-  if (X >= mSlicers[slicer]->GetInput()->GetExtent()[0] && X <= mSlicers[slicer]->GetInput()->GetExtent()[1] &&
-    Y >= mSlicers[slicer]->GetInput()->GetExtent()[2] && Y <= mSlicers[slicer]->GetInput()->GetExtent()[3] &&
-    Z >= mSlicers[slicer]->GetInput()->GetExtent()[4] && Z <= mSlicers[slicer]->GetInput()->GetExtent()[5])
-#endif
-  {
-    //	mSlicers[slicer]->GetInput()
-    value = this->GetScalarComponentAsDouble(mSlicers[slicer]->GetInput(), X, Y, Z);
 
-    emit UpdatePosition(mSlicers[slicer]->GetCursorVisibility(), x, y, z, X, Y, Z, value);
-  }
+  value = this->GetScalarComponentAsDouble(mSlicers[slicer]->GetInput(), X, Y, Z);
+  // Update position to specified or bounded coords
+  emit UpdatePosition(mSlicers[slicer]->GetCursorVisibility(), x, y, z, X, Y, Z, value);
+ 
 }
 
 void SlicerManager::Activated()
