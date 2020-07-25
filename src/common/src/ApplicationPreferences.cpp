@@ -65,12 +65,12 @@ void ApplicationPreferences::SerializePreferences()
 	if (!this->m_UserInstallationSettings.isEmpty())
 	{
 		appSettings.beginGroup("User-Installed-Applications");
-		QMapIterator<QString, UserInstallationSettings> itr(this->m_UserInstallationSettings);
+		QMapIterator<QString, UserInstallationStatus> itr(this->m_UserInstallationSettings);
 		while (itr.hasNext())
 		{
 			itr.next();
 			appSettings.beginGroup(itr.key());
-			UserInstallationSettings appInstallsettings = itr.value();
+			UserInstallationStatus appInstallsettings = itr.value();
 			appSettings.setValue("DownloadStarted", appInstallsettings.DownloadStarted);
 			appSettings.setValue("DownloadFinished", appInstallsettings.DownloadFinished);
 			appSettings.setValue("ExtractionStarted", appInstallsettings.ExtractionStarted);
@@ -112,7 +112,7 @@ void ApplicationPreferences::DeSerializePreferences()
 		{
 			qDebug() << " group: " << group << endl;
 			appSettings.beginGroup(group);
-			UserInstallationSettings appInstallsettings;
+			UserInstallationStatus appInstallsettings;
 			QStringList keys = appSettings.childKeys();
 			QStringListIterator itr(keys);
 			while (itr.hasNext())
@@ -149,18 +149,37 @@ void ApplicationPreferences::DisplayPreferences()
 	//qDebug() << " Libra_Extraction_Started = " << this->m_LibraExtractionStarted << endl;
 	//qDebug() << " Libra_Extraction_Finished = " << this->m_LibraExtractionFinished << endl;
 
+	//we iterate over the map and write out settings for each app in map
+	if (!this->m_UserInstallationSettings.isEmpty())
+	{
+		//appSettings.beginGroup("User-Installed-Applications");
+		QMapIterator<QString, UserInstallationStatus> itr(this->m_UserInstallationSettings);
+		while (itr.hasNext())
+		{
+			itr.next();
+			qDebug() << " group: " << itr.key();
+			UserInstallationStatus appInstallsettings = itr.value();
+
+			qDebug() << "DownloadStarted " << appInstallsettings.DownloadStarted;
+			qDebug() << "DownloadFinished " << appInstallsettings.DownloadFinished;
+			qDebug() << "ExtractionStarted " << appInstallsettings.ExtractionStarted;
+			qDebug() << "ExtractionFinished " << appInstallsettings.ExtractionFinished;
+
+		}
+	}
+
 }
 
 void ApplicationPreferences::AddApplication(QString app)
 {
 	if (!this->m_UserInstallationSettings.contains(app))
 	{
-		UserInstallationSettings appInstallSettings;
+		UserInstallationStatus appInstallSettings;
 		this->m_UserInstallationSettings.insert(app, appInstallSettings);
 	}
 }
 
-ApplicationPreferences::UserInstallationSettings ApplicationPreferences::GetUserInstallationSettingsForApp(QString app)
+ApplicationPreferences::UserInstallationStatus ApplicationPreferences::GetUserInstallationSettingsForApp(QString app)
 {
 	if (this->m_UserInstallationSettings.contains(app))
 	{
