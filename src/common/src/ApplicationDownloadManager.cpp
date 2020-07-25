@@ -26,6 +26,8 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 	this->isCLI = isCLI;
 	appDownloadDialog.setAppName(appName);
 
+	ApplicationPreferences::GetInstance()->AddApplication(this->m_AppName);
+
     std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
 
     if(!this->IsApplicationAvailable(appName)) {
