@@ -703,10 +703,8 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 	  # TODO: Figure out how to set properties on files only present after configuration
 	  FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs_sources/html/*.*")
       FOREACH(docFiles ${ALL_DOC_FILES_BASE})
-        IF (APPLE)
-          SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
-          SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
-        ENDIF()
+        SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
+        SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
       ENDFOREACH()  
 	ELSE() # Windows or Linux
       # Need to install the directory to pick up files that are not present at configure time (for CI/Azure)
