@@ -160,72 +160,99 @@ void FeatureExtractionClass::FormulateEGFRTrainingData(const VariableSizeMatrixT
   }
 }
 
-
-
-
-
-
-void FeatureExtractionClass::FormulateMolecularTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputLabels, VariableSizeMatrixType & proneuralModelFeatures, VariableSizeMatrixType & neuralModelFeatures, VariableSizeMatrixType & messenchymalModelFeatures, VariableSizeMatrixType & classicalModelFeatures)
+void FeatureExtractionClass::FormulateMolecularTrainingData(VectorDouble inputLabels, 
+  VectorDouble & proneuralModelLabels, VectorDouble & neuralModelLabels,
+  VectorDouble & messModelLabels, VectorDouble & classicalModelLabels)
 {
-	std::vector<int> proneuralModelIndices;
-	std::vector<int> neuralModelIndices;
-	std::vector<int> messenchymalModelIndices;
-	std::vector<int> classicalModelIndices;
+  for (unsigned int i = 0; i < inputLabels.size(); i++)
+  {
+    if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::PRONEURAL)
+      proneuralModelLabels.push_back(1);
+    else
+      proneuralModelLabels.push_back(-1);
 
-	for (unsigned int i = 0; i < inputLabels.size(); i++)
-	{
-		if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::PRONEURAL)
-			proneuralModelIndices.push_back(i);
-		else if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::NEURAL)
-			neuralModelIndices.push_back(i);
-		else if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::MESSENCHYMAL)
-			messenchymalModelIndices.push_back(i);
-		else
-			classicalModelIndices.push_back(i);
-	}
-	classicalModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
-	proneuralModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
-	neuralModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
-	messenchymalModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
+    if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::NEURAL)
+      neuralModelLabels.push_back(1);
+    else
+      neuralModelLabels.push_back(-1);
 
+    if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::MESSENCHYMAL)
+      messModelLabels.push_back(1);
+    else
+      messModelLabels.push_back(-1);
 
-	for (unsigned int i = 0; i < inputFeatures.Rows(); i++)
-	{
-		unsigned int j = 0;
-		for (j = 0; j < inputFeatures.Cols(); j++)
-		{
-			classicalModelFeatures(i, j) = inputFeatures(i, j);
-			neuralModelFeatures(i, j) = inputFeatures(i, j);
-			proneuralModelFeatures(i, j) = inputFeatures(i, j);
-			messenchymalModelFeatures(i, j) = inputFeatures(i, j);
-		}
-		if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::PRONEURAL)
-		{
-			proneuralModelFeatures(i, j) = 1;
-			neuralModelFeatures(i, j) = 0;
-			messenchymalModelFeatures(i, j) = 0;
-			classicalModelFeatures(i, j) = 0;
-		}
-		else if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::NEURAL)
-		{
-			proneuralModelFeatures(i, j) = 0;
-			neuralModelFeatures(i, j) = 1;
-			messenchymalModelFeatures(i, j) = 0;
-			classicalModelFeatures(i, j) = 0;
-		}
-		else if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::CLASSICAL)
-		{
-			proneuralModelFeatures(i, j) = 0;
-			neuralModelFeatures(i, j) = 0;
-			messenchymalModelFeatures(i, j) = 0;
-			classicalModelFeatures(i, j) = 1;
-		}
-		else
-		{
-			proneuralModelFeatures(i, j) = 0;
-			neuralModelFeatures(i, j) = 0;
-			messenchymalModelFeatures(i, j) = 1;
-			classicalModelFeatures(i, j) = 0;
-		}
-	}
+    if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::CLASSICAL)
+      classicalModelLabels.push_back(1);
+    else
+      classicalModelLabels.push_back(-1);
+  }
 }
+
+
+
+//
+//
+//void FeatureExtractionClass::FormulateMolecularTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputLabels, VariableSizeMatrixType & proneuralModelFeatures, VariableSizeMatrixType & neuralModelFeatures, VariableSizeMatrixType & messenchymalModelFeatures, VariableSizeMatrixType & classicalModelFeatures)
+//{
+//	std::vector<int> proneuralModelIndices;
+//	std::vector<int> neuralModelIndices;
+//	std::vector<int> messenchymalModelIndices;
+//	std::vector<int> classicalModelIndices;
+//
+//	for (unsigned int i = 0; i < inputLabels.size(); i++)
+//	{
+//		if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::PRONEURAL)
+//			proneuralModelIndices.push_back(i);
+//		else if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::NEURAL)
+//			neuralModelIndices.push_back(i);
+//		else if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::MESSENCHYMAL)
+//			messenchymalModelIndices.push_back(i);
+//		else
+//			classicalModelIndices.push_back(i);
+//	}
+//	classicalModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
+//	proneuralModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
+//	neuralModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
+//	messenchymalModelFeatures.SetSize(inputFeatures.Rows(), inputFeatures.Cols() + 1);
+//
+//
+//	for (unsigned int i = 0; i < inputFeatures.Rows(); i++)
+//	{
+//		unsigned int j = 0;
+//		for (j = 0; j < inputFeatures.Cols(); j++)
+//		{
+//			classicalModelFeatures(i, j) = inputFeatures(i, j);
+//			neuralModelFeatures(i, j) = inputFeatures(i, j);
+//			proneuralModelFeatures(i, j) = inputFeatures(i, j);
+//			messenchymalModelFeatures(i, j) = inputFeatures(i, j);
+//		}
+//		if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::PRONEURAL)
+//		{
+//			proneuralModelFeatures(i, j) = 1;
+//			neuralModelFeatures(i, j) = 0;
+//			messenchymalModelFeatures(i, j) = 0;
+//			classicalModelFeatures(i, j) = 0;
+//		}
+//		else if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::NEURAL)
+//		{
+//			proneuralModelFeatures(i, j) = 0;
+//			neuralModelFeatures(i, j) = 1;
+//			messenchymalModelFeatures(i, j) = 0;
+//			classicalModelFeatures(i, j) = 0;
+//		}
+//		else if (inputLabels[i] == CAPTK::MOLECULAR_SUBTYPES::CLASSICAL)
+//		{
+//			proneuralModelFeatures(i, j) = 0;
+//			neuralModelFeatures(i, j) = 0;
+//			messenchymalModelFeatures(i, j) = 0;
+//			classicalModelFeatures(i, j) = 1;
+//		}
+//		else
+//		{
+//			proneuralModelFeatures(i, j) = 0;
+//			neuralModelFeatures(i, j) = 0;
+//			messenchymalModelFeatures(i, j) = 1;
+//			classicalModelFeatures(i, j) = 0;
+//		}
+//	}
+//}
