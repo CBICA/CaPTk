@@ -84,7 +84,7 @@ void ApplicationPreferences::DeSerializePreferences()
 		appSettings.endGroup();
 
 		//we enter the 'user-installed-applications' group
-		//then we iterate over all the groups and  de-serialize settings for each app in group
+		//then we iterate over all sub groups and  de-serialize settings for each app
 		appSettings.beginGroup("User-Installed-Applications");
 		QStringList groups = appSettings.childGroups();
 		foreach(QString group, groups)
@@ -166,7 +166,14 @@ void ApplicationPreferences::ResetAllPreferences()
 {
 	QSettings appSettings(QSettings::IniFormat, QSettings::UserScope,
 		"UPenn", "CaPTk");
-	appSettings.clear();
+	appSettings.clear(); // clear settings in file
+
+	//clear stored settings
+	this->m_UserInstallationSettings.clear();
+	this->m_Font.clear();
+	this->m_Theme.clear();
+	this->m_UserPreferencesAvailability.clear();
+
 }
 
 void ApplicationPreferences::SetUserPreferencesAvailability(QString available)
@@ -181,7 +188,6 @@ QString ApplicationPreferences::GetUserPreferencesAvailability() const
 
 void ApplicationPreferences::SetDownloadStartedStatus(QString app, QString status)
 {
-	//this->m_LibraDownloadStarted = status;
 	if (this->m_UserInstallationSettings.contains(app))
 	{
 		this->m_UserInstallationSettings[app].DownloadStarted = status;
@@ -190,7 +196,6 @@ void ApplicationPreferences::SetDownloadStartedStatus(QString app, QString statu
 
 QString ApplicationPreferences::GetDownloadStartedStatus(QString app)
 {
-	//return this->m_LibraDownloadStarted;
 	QString status;
 	if (this->m_UserInstallationSettings.contains(app))
 	{
@@ -201,7 +206,6 @@ QString ApplicationPreferences::GetDownloadStartedStatus(QString app)
 
 void ApplicationPreferences::SetDownloadFinishedStatus(QString app, QString status)
 {
-	//this->m_LibraDownloadFinished = status;
 	if (this->m_UserInstallationSettings.contains(app))
 	{
 		this->m_UserInstallationSettings[app].DownloadFinished = status;
@@ -210,7 +214,6 @@ void ApplicationPreferences::SetDownloadFinishedStatus(QString app, QString stat
 
 QString ApplicationPreferences::GetDownloadFinishedStatus(QString app)
 {
-	//return this->m_LibraDownloadFinished;
 	QString status;
 	if (this->m_UserInstallationSettings.contains(app))
 	{
@@ -221,7 +224,6 @@ QString ApplicationPreferences::GetDownloadFinishedStatus(QString app)
 
 void ApplicationPreferences::SetExtractionStartedStatus(QString app, QString status)
 {
-	//this->m_LibraExtractionStarted = status;
 	if (this->m_UserInstallationSettings.contains(app))
 	{
 		this->m_UserInstallationSettings[app].ExtractionStarted = status;
@@ -230,7 +232,6 @@ void ApplicationPreferences::SetExtractionStartedStatus(QString app, QString sta
 
 QString ApplicationPreferences::GetExtractionStartedStatus(QString app)
 {
-	//return this->m_LibraExtractionStarted;
 	QString status;
 	if (this->m_UserInstallationSettings.contains(app))
 	{
@@ -241,7 +242,6 @@ QString ApplicationPreferences::GetExtractionStartedStatus(QString app)
 
 void ApplicationPreferences::SetExtractionFinishedStatus(QString app, QString status)
 {
-	//this->m_LibraExtractionFinished = status;
 	if (this->m_UserInstallationSettings.contains(app))
 	{
 		this->m_UserInstallationSettings[app].ExtractionFinished = status;
@@ -250,7 +250,6 @@ void ApplicationPreferences::SetExtractionFinishedStatus(QString app, QString st
 
 QString ApplicationPreferences::GetExtractionFinishedStatus(QString app)
 {
-	//return this->m_LibraExtractionFinished;
 	QString status;
 	if (this->m_UserInstallationSettings.contains(app))
 	{
