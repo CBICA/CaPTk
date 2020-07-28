@@ -4,17 +4,17 @@ schedules:
   displayName: Daily midnight build
   branches:
     include:
-    - master
+    - decoupleApps
 
 trigger:
   batch: true
   branches:
-    include: ['master']
+    include: ['decoupleApps']
 
 # 20200312: apparently this is now explicitly required for azure
 pr:
   branches:
-    include: ['*']
+    include: ['decoupleApps']
 
 jobs:
 - job: 'WindowsBuild'
