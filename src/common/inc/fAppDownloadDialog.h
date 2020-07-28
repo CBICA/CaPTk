@@ -72,6 +72,10 @@ public:
     url.setUrl(qInputLink);
   }
 
+  void setAppName(QString appName) {
+	  this->appName = appName;
+  }
+
   void initDownload();
   void startRequest(QUrl url);
 
