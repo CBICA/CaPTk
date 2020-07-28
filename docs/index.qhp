@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.Alpha2" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.Beta" ref="index.html">
         <section title="Overview" ref="index.html">
           <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md136" />
           <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md137" />
@@ -46,7 +46,7 @@
         <section title="Is there a minimum recommended screen resolution for running CaPTk?" ref="FAQ.html#gs_FAQ_6" />
         <section title="Where can I find the CaPTk Docker Image?" ref="FAQ.html#gs_FAQ_7" />
         <section title="How do I run the CaPTk Docker Image to show the interface?" ref="FAQ.html#gs_FAQ_8" />
-        <section title="What if I am having an issue not listed here?" ref="FAQ.html#gs_FAQ_9" />
+        <section title="Is there something wrong with Feature Extraction?" ref="FAQ.html#gs_FAQ_9" />
       </section>
       <section title="How To Guides" ref="How_To_Guides.html">
         <section title="Preprocessing" ref="ht_Preprocessing.html">

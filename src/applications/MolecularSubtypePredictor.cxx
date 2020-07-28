@@ -1,9 +1,7 @@
 #include "MolecularSubtypePredictor.h"
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
-
 #include "CaPTkGUIUtils.h"
-
 
 //------------------Molecular subtype prediction on existing model-----------------------
 std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname)

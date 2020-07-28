@@ -8,6 +8,15 @@
 class ApplicationPreferences : public QObject
 {
 public:
+	struct UserInstallationStatus
+	{
+		//app download extract settings
+		QString DownloadStarted = "false";
+		QString DownloadFinished = "false";
+		QString ExtractionStarted = "false";
+		QString ExtractionFinished = "false";
+	};
+
 	static ApplicationPreferences* GetInstance();
 
 	//! setters/getters
@@ -20,17 +29,17 @@ public:
 	void SetUserPreferencesAvailability(QString available);
 	QString GetUserPreferencesAvailability() const;
 
-	void SetLibraDownloadStartedStatus(QString status);
-	QString GetLibraDownloadStartedStatus();
+	void SetDownloadStartedStatus(QString app, QString status);
+	QString GetDownloadStartedStatus(QString app);
 
-	void SetLibraDownloadFinishedStatus(QString status);
-	QString GetLibraDownloadFinishedStatus();
+	void SetDownloadFinishedStatus(QString app, QString status);
+	QString GetDownloadFinishedStatus(QString app);
 
-	void SetLibraExtractionStartedStatus(QString status);
-	QString GetLibraExtractionStartedStatus();
+	void SetExtractionStartedStatus(QString app, QString status);
+	QString GetExtractionStartedStatus(QString app);
 
-	void SetLibraExtractionFinishedStatus(QString status);
-	QString GetLibraExtractionFinishedStatus();
+	void SetExtractionFinishedStatus(QString app, QString status);
+	QString GetExtractionFinishedStatus(QString app);
 
     //! Serialize
 	void SerializePreferences();
@@ -40,6 +49,15 @@ public:
 
 	//! print preferences(for debugging purposes)
 	void DisplayPreferences();
+
+	//! Add a new user installed application
+	void AddApplication(QString app);
+
+	//! Get user installation settings
+	UserInstallationStatus GetUserInstallationSettingsForApp(QString app);
+
+	//!Reset All Preferences
+	void ResetAllPreferences();
 
 private:
 	//! constructor/desctrucor
@@ -55,12 +73,8 @@ private:
 	QString m_Font;
 	QString m_Theme;
 	QString m_UserPreferencesAvailability = QVariant("false").toString();
+	QMap<QString, UserInstallationStatus> m_UserInstallationSettings;
 
-	//app download extract settings
-	QString m_LibraDownloadStarted;
-	QString m_LibraDownloadFinished;
-	QString m_LibraExtractionStarted;
-	QString m_LibraExtractionFinished;
 };
 
 #endif // APPLICATIONPREFERENCES_H

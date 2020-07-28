@@ -24,15 +24,18 @@ QString ApplicationDownloadManager::GetName() const
 std::string ApplicationDownloadManager::getApplication(QString appName, bool isCLI) {
 	this->m_AppName = appName;
 	this->isCLI = isCLI;
+	appDownloadDialog.setAppName(appName);
+
+	ApplicationPreferences::GetInstance()->AddApplication(this->m_AppName);
 
     std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
 
     if(!this->IsApplicationAvailable(appName)) {
 		ApplicationPreferences::GetInstance()->DeSerializePreferences();
-		bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
-		bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
-		bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
-		bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
+		bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetDownloadStartedStatus(this->m_AppName)).toBool();
+		bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetDownloadFinishedStatus(this->m_AppName)).toBool();
+		bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetExtractionStartedStatus(this->m_AppName)).toBool();
+		bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetExtractionFinishedStatus(this->m_AppName)).toBool();
 		// ApplicationPreferences::GetInstance()->DisplayPreferences();
 
 		if(downloadStarted && !downloadFinished)
@@ -69,10 +72,10 @@ bool ApplicationDownloadManager::IsApplicationAvailable(QString app)
 {
     bool available = false;
     ApplicationPreferences::GetInstance()->DeSerializePreferences();
-    bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadStartedStatus()).toBool();
-    bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraDownloadFinishedStatus()).toBool();
-    bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionStartedStatus()).toBool();
-    bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetLibraExtractionFinishedStatus()).toBool();
+    bool downloadStarted = QVariant(ApplicationPreferences::GetInstance()->GetDownloadStartedStatus(this->m_AppName)).toBool();
+    bool downloadFinished = QVariant(ApplicationPreferences::GetInstance()->GetDownloadFinishedStatus(this->m_AppName)).toBool();
+    bool extractionStarted = QVariant(ApplicationPreferences::GetInstance()->GetExtractionStartedStatus(this->m_AppName)).toBool();
+    bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetExtractionFinishedStatus(this->m_AppName)).toBool();
 
 	std::string scriptToCall = getApplicationDownloadPath(this->m_AppName.toStdString());
 
@@ -145,10 +148,10 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 void ApplicationDownloadManager::doneUnzip(bool extracted) {
 		
     if(!extracted){
-		ApplicationPreferences::GetInstance()->SetLibraDownloadStartedStatus(QVariant("false").toString());
-		ApplicationPreferences::GetInstance()->SetLibraDownloadFinishedStatus(QVariant("false").toString());
-		ApplicationPreferences::GetInstance()->SetLibraExtractionStartedStatus(QVariant("false").toString());
-		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->SetDownloadStartedStatus(this->m_AppName,QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->SetDownloadFinishedStatus(this->m_AppName,QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->SetExtractionStartedStatus(this->m_AppName,QVariant("false").toString());
+		ApplicationPreferences::GetInstance()->SetExtractionFinishedStatus(this->m_AppName,QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SerializePreferences();
 		// ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
@@ -162,7 +165,7 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 	}
 	else {
 
-		ApplicationPreferences::GetInstance()->SetLibraExtractionFinishedStatus(QVariant("true").toString());
+		ApplicationPreferences::GetInstance()->SetExtractionFinishedStatus(this->m_AppName,QVariant("true").toString());
 		ApplicationPreferences::GetInstance()->SerializePreferences();
 		// ApplicationPreferences::GetInstance()->DisplayPreferences();
 		

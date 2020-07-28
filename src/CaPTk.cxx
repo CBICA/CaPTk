@@ -17,6 +17,8 @@
 #include "yaml-cpp/yaml.h"
 
 #include "CheckOpenGLVersion.h"
+#include "SystemInformation.h"
+#include "ApplicationPreferences.h"
 
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
@@ -46,6 +48,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCmdLin
 int main(int argc, char** argv)
 {
 #endif
+
+	cbica::createDir(loggerFolderBase);
+	cbica::createDir(loggerFolder);
+
+	cbica::Logging(loggerFile, "New CaPTk session starting...");
 
   std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
   float cmd_maskOpacity = 1;
@@ -80,6 +87,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("ts", "tissuePt", cbica::Parameter::FILE, ".txt", "Tissue Point file for the image(s) being loaded");
   parser.addOptionalParameter("a", "advanced", cbica::Parameter::BOOLEAN, "none", "Advanced visualizer which does *not* consider", "origin information during loading");
   parser.addOptionalParameter("c", "comparisonMode", cbica::Parameter::BOOLEAN, "true or false", "Enable/Disable comparison mode", "comparison mode during loading");
+  parser.addOptionalParameter("rp", "resetPreferences", cbica::Parameter::NONE, "N.A.", "Reset application preferences");
 
   //parser.exampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt");
   parser.addExampleUsage("-i C:/data/input1.nii.gz,C:/data/input2.nii.gz -m C:/data/inputMask.nii.gz -tu C:/data/init_seed.txt -ts C:/data/init_GLISTR.txt",
@@ -163,6 +171,12 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("c", comparisonMode);
   }
+  if (parser.isPresent("rp"))
+  {
+	  cbica::Logging(loggerFile, "Reseting all CaPTk preferences.");
+	  ApplicationPreferences::GetInstance()->ResetAllPreferences();
+	  return EXIT_SUCCESS;
+  }
 
 #if defined(__linux__)
   //auto defaultFormat = QVTKOpenGLWidget::defaultFormat();
@@ -183,6 +197,10 @@ int main(int argc, char** argv)
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
   //cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
+  SystemInformation info;
+  QStringList sl = info.GetSystemInformation();
+  foreach(QString str, sl)
+	  cbica::Logging(loggerFile, str.toStdString());
 
   // starting the OpenGL version checking 
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
@@ -276,12 +294,6 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
   }
-
-  cbica::createDir(loggerFolderBase);
-  cbica::createDir(loggerFolder);
-  //cbica::createDir(captk_StuffFolderBase);
-  //cbica::createDir(captk_SampleDataFolder);
-  //cbica::createDir(captk_PretrainedFolder);
 
 #ifndef _WIN32
   std::string old_locale = setlocale(LC_NUMERIC, NULL);

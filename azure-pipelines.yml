@@ -527,11 +527,6 @@ jobs:
         # export PKG_COPY_QT_LIBS=1
         ./scripts/captk-pkg
 
-        rm -rf src
-        rm -rf docs*
-
-        rm -rf scripts
-
         mv *_Installer.* $(Build.ArtifactStagingDirectory)
 
         rm -rf bin

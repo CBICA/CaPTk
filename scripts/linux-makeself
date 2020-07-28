@@ -120,7 +120,6 @@ install_captk () {
 
   echo "Done."
   echo "To run CaPTk, change to the directory where CaPTk is installed and enter the command \"./CaPTk/${ver}/captk\" in your console."
-  
 }
 
 # Print license with a reader

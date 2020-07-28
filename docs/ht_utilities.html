@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.Alpha2</span>
+   &#160;<span id="projectnumber">1.8.0.Beta</span>
    </div>
   </td>
  </tr>
@@ -73,7 +73,8 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -inf</pre></li>
 <li>Test 2 images <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -tb C:/test.nii.gz</pre></li>
 <li>Create mask from threshold <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -cm 50,1000</pre></li>
 <li>DICOM to NIfTI conversion <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -d2n</pre></li>
-<li>NIfTI to DICOM &amp; DICOM-Seg conversion <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/test_dicom/ -n2d C:/referenceDICOM/</pre></li>
+<li>NIfTI to DICOM conversion <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/imageToConvert.nii.gz -o C:/outputDicom/ -n2d C:/referenceDICOM/</pre></li>
+<li>NIfTI to DICOM-Seg conversion (using <a href="https://qiicr.gitbook.io/dcmqi-guide/">DCMQI</a>) <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/maskToConvert.nii.gz -o C:/outputDicom/ -ds C:/referenceDICOM/ -dsJ C:/dicomSeg.json</pre> Please see DCMQI's <a href="https://qiicr.gitbook.io/dcmqi-guide/faq">FAQ</a> and <a href="https://qiicr.gitbook.io/dcmqi-guide/use-cases/prostate#creating-the-meta-information-json-file">use case</a> for JSON-related information.</li>
 <li>Re-orient image <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -or RAI</pre></li>
 <li>Cast image to another pixel type <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_int.nii.gz -c int</pre></li>
 <li>Thresholding:<ul>
@@ -84,14 +85,19 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -inf</pre></li>
 <li>Binary <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100 -tBn</pre></li>
 </ul>
 </li>
-<li>Convert file formats <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test.mha</pre></li>
-<li>Extract Image Series from Joined stack and vice-versa (4D &lt;-&gt; 3D) <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output -j2e 1
+<li>Convert file formats <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test.mha -cov</pre></li>
+<li>Extract Image Series from Joined stack and vice-versa (4D &lt;-&gt; 3D) <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output -j2e 1 # output images are written in the form C:/output_${slice}.nii.gz
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.nii.gz -o C:/output/ -j2e 1 # output images are written in the form C:/output/extractedImage_${slice}.nii.gz
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/ -o C:/output.nii.gz -e2j 1.5</pre></li>
 <li>Transform coordinates from world to image and vice-versa <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -i2w 10,10,30
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -w2i 10.5,10.1,30.6</pre></li>
 <li>Label similarity Metrics between 2 label images: pure mathematical formulations are given as output <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz</pre></li>
 <li>BraTS similarity Metrics between 2 label images: special considerations for metrics are done in this mode because output needs to be BraTS-compliant. <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -lsb C:/referenceMask.nii.gz</pre></li>
-<li>Collect information from all images in a directory and put it in CSV <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputDirectory -o C:/test/inputDirectoryProperties.csv -co 1 -cF volume -cFE .nii.gz -cP 0,1</pre></li>
+<li>Collect information from all images in a directory and put it in CSV <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputDirectory -o C:/test/inputDirectoryProperties.csv \
+-co 1 \ # enable recursion
+-cF volume \ # only process files that contain this string pattern 
+-cFE .nii.gz \ # only process files with this extension 
+-cP 0,1 \ # which properties to read; see usage for all options</pre></li>
 </ul>
 <p>For a full list of available applications and examples, please use the command: </p><pre class="fragment">${CaPTk_InstallDir}/bin/Utilities -h
 </pre> </div></div><!-- contents -->
