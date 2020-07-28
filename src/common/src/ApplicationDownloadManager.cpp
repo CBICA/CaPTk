@@ -5,7 +5,6 @@
 #include <QDebug>
 #include <CaPTkDefines.h>
 
-#include "cbicaLogging.h"
 //#include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
 #include "ApplicationPreferences.h"
