@@ -14,7 +14,7 @@ trigger:
 # 20200312: apparently this is now explicitly required for azure
 pr:
   branches:
-    include: ['*']
+    include: ['master']
 
 jobs:
 - job: 'WindowsBuild'
