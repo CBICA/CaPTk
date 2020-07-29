@@ -5,7 +5,6 @@
 #include <QDebug>
 #include <CaPTkDefines.h>
 
-//#include "cbicaLogging.h"
 //#include "CaPTkUtils.h"
 #include "CaPTkGUIUtils.h"
 #include "ApplicationPreferences.h"
@@ -24,6 +23,8 @@ QString ApplicationDownloadManager::GetName() const
 std::string ApplicationDownloadManager::getApplication(QString appName, bool isCLI) {
 	this->m_AppName = appName;
 	this->isCLI = isCLI;
+	m_logger.Write("Application requested: " + appName.toStdString());
+
 	appDownloadDialog.setAppName(appName);
 
 	ApplicationPreferences::GetInstance()->AddApplication(this->m_AppName);
@@ -38,11 +39,14 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 		bool extractionFinished = QVariant(ApplicationPreferences::GetInstance()->GetExtractionFinishedStatus(this->m_AppName)).toBool();
 		// ApplicationPreferences::GetInstance()->DisplayPreferences();
 
+		m_logger.Write(appName.toStdString() + " was not found. Checking for ongoing installation...");
+
 		if(downloadStarted && !downloadFinished)
 		{
 			if (!this->isCLI) {
 				QMessageBox::information(&appDownloadDialog,tr("Install"),"Download is in progress");
 			}
+			m_logger.Write("An ongoing download of " + appName.toStdString() + " was detected. ");
 			qDebug() << "Download is in progress\n";
 			emit extractResult(false);
 
@@ -54,17 +58,19 @@ std::string ApplicationDownloadManager::getApplication(QString appName, bool isC
 			if (!this->isCLI) {
 				QMessageBox::information(&appDownloadDialog ,tr("Extract"),"Extraction is in progress");
 			}
+			m_logger.Write("An ongoing extraction of " + appName.toStdString() + " was detected. ");
 			qDebug() << "Extraction is in progress\n";
 			emit extractResult(false);
 
 			return "";
 		}
-
+		m_logger.Write("No ongoing installation was detected.");
+		m_logger.Write("Preparing to install " + appName.toStdString());
 		appDownload();
 		
 		return "";
 	}
-
+	m_logger.Write(appName.toStdString() + " application was installed at: " + scriptToCall );
     return scriptToCall;
 }
 
@@ -100,7 +106,8 @@ void ApplicationDownloadManager::appDownload()
 	#endif
 
     std::string downloadLink = m_appDownloadConfigs["appsDownload"][this->m_AppName.toStdString()][linkyml].as<std::string>();
-	
+	m_logger.Write("Preparing to download " + m_AppName.toStdString() + " from " + downloadLink +
+		" into " + downloadFolder);
     appDownloadDialog.SetPaths(downloadFolder);
     appDownloadDialog.SetDownloadLink(downloadLink);
 	if (this->isCLI) {
@@ -125,8 +132,9 @@ void ApplicationDownloadManager::updateProgressSlot(int progress, std::string me
 
 void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPath) 
 {
-    if (cbica::isFile(fullPath.toStdString())) {
+	m_logger.Write("Looking for the downloaded file...");
 
+    if (cbica::isFile(fullPath.toStdString())) {
 		ThreadedExtraction* asyncExtract = new ThreadedExtraction();
 
 		connect(asyncExtract, SIGNAL(updateProgressSignal(int, std::string, int)), this, SLOT(updateProgressSlot(int, std::string, int))); 
@@ -137,16 +145,22 @@ void ApplicationDownloadManager::startUnzip(QString fullPath, QString extractPat
 		asyncExtract->setExtractPath(extractPath);
 		asyncExtract->setAppName(this->m_AppName);
 
-		qDebug() << "\nInstalling " << this->m_AppName << "\n";
+		qDebug() << "\nExtracting " << this->m_AppName << "\n";
+		m_logger.Write("Starting extraction of " + m_AppName.toStdString() + " from " + fullPath.toStdString()
+			+ " into " + extractPath.toStdString());
 
-		updateProgressSlot(0, "Installing " + this->m_AppName.toStdString(), 100);
+		updateProgressSlot(0, "Extracting " + this->m_AppName.toStdString(), 100);
 
 		asyncExtract->start();
+	}
+	else
+	{
+		m_logger.WriteError("Failed to find the archive file at " + fullPath.toStdString()
+			+ ". Installation cannot proceed.");
 	}
 }
 
 void ApplicationDownloadManager::doneUnzip(bool extracted) {
-		
     if(!extracted){
 		ApplicationPreferences::GetInstance()->SetDownloadStartedStatus(this->m_AppName,QVariant("false").toString());
 		ApplicationPreferences::GetInstance()->SetDownloadFinishedStatus(this->m_AppName,QVariant("false").toString());
@@ -155,6 +169,7 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 		ApplicationPreferences::GetInstance()->SerializePreferences();
 		// ApplicationPreferences::GetInstance()->DisplayPreferences();
 		
+		m_logger.WriteError("Extraction failed. Installation cannot continue.");
 		if (!this->isCLI) {
 			QMessageBox::information(&appDownloadDialog,tr("Extraction"),"Extraction failed");
 		}
@@ -164,6 +179,7 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 
 	}
 	else {
+		m_logger.Write("Extraction finished successfully.");
 
 		ApplicationPreferences::GetInstance()->SetExtractionFinishedStatus(this->m_AppName,QVariant("true").toString());
 		ApplicationPreferences::GetInstance()->SerializePreferences();
@@ -173,7 +189,7 @@ void ApplicationDownloadManager::doneUnzip(bool extracted) {
 			QMessageBox::information(&appDownloadDialog, tr("Extraction"),"Extraction done");
 		}
 		updateProgressSlot(100, "Install " + this->m_AppName.toStdString() + " completed", 100);
-
+		m_logger.Write("Succesfully installed " + m_AppName.toStdString());
 		qDebug() << "Install " << this->m_AppName << " completed\n";
 		qDebug() << "Please rerun " << this->m_AppName << "\n";	
 	}

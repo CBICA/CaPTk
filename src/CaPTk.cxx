@@ -18,6 +18,7 @@
 
 #include "CheckOpenGLVersion.h"
 #include "SystemInformation.h"
+
 #include "ApplicationPreferences.h"
 
 ///// debug

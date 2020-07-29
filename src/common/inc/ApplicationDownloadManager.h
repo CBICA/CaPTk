@@ -5,6 +5,8 @@
 #include <QMutex>
 #include <QProgressDialog>
 
+#include "cbicaLogging.h"
+#include "CaPTkDefines.h"
 #include "CaPTkGUIUtils.h"
 #include "fAppDownloadDialog.h"
 #include "yaml-cpp/node/node.h"
@@ -47,6 +49,7 @@ private:
     // QString downloadFolder, downloadLink;
 	
     YAML::Node m_appDownloadConfigs = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+	cbica::Logging m_logger = cbica::Logging(loggerFile, "");
 
 	void appDownload();
 
