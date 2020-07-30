@@ -699,16 +699,17 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   SET(META_FILES_TO_INCLUDE "") # used for Apple package
   #IF( BUILD_DOCUMENTATION )
-    FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs_sources/html/*.*")
-    FOREACH(docFiles ${ALL_DOC_FILES_BASE})
-      IF (APPLE)
+	IF (APPLE) 
+	  # TODO: Figure out how to set properties on files only present after configuration
+	  FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs_sources/html/*.*")
+      FOREACH(docFiles ${ALL_DOC_FILES_BASE})
         SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
         SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
-      ELSE()
-        INSTALL(FILES "${docFiles}" DESTINATION share/doc)
-      ENDIF()
-    ENDFOREACH()
-    #INSTALL( DIRECTORY ${PROJECT_BINARY_DIR}/docs_sources/html DESTINATION share/doc )
+      ENDFOREACH()  
+	ELSE() # Windows or Linux
+      # Need to install the directory to pick up files that are not present at configure time (for CI/Azure)
+      INSTALL( DIRECTORY ${PROJECT_BINARY_DIR}/docs_sources/html/ DESTINATION share/doc )
+	ENDIF()
   #ENDIF()
 
   # ensure all licenses are in the package
