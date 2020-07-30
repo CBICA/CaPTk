@@ -80,6 +80,7 @@
           <section title="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
           <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
           <section title="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
+          <section title="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
           <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
           <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
           <section title="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
@@ -191,6 +192,7 @@
       <keyword name="Breast Cancer: Breast Segmentation" id="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
       <keyword name="Lung Cancer: Radiomics Analysis of Lung Cancer" id="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
       <keyword name="Miscellaneous: Diffusion Derivatives" id="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
+      <keyword name="Miscellaneous: Perfusion Alignment" id="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
       <keyword name="Miscellaneous: Perfusion Derivatives" id="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
       <keyword name="Miscellaneous: PCA Volume Extraction" id="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
       <keyword name="Miscellaneous: Training Module" id="Miscellaneous: Training Module" ref="Training_Module.html" />
@@ -255,6 +257,7 @@
       <file>BreastCancer_breastSegmentation.html</file>
       <file>LungCancer_SBRT.html</file>
       <file>Diffusion_Derivatives.html</file>
+      <file>Perfusion_Alignment.html</file>
       <file>Perfusion_Derivatives.html</file>
       <file>PCA_Extraction.html</file>
       <file>Training_Module.html</file>
