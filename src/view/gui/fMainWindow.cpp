@@ -9004,7 +9004,7 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 {
   if (!cbica::isFile(inputfilename))
   {
-    ShowErrorMessage("Input DSC-MRI Image passed is not a valid file, please re-check", this); 
+    ShowErrorMessage("Input DSC-MRI Image passed is not a valid file, please re-check", this);
     return;
   }
   if (!cbica::isFile(inputt1cefilename))
