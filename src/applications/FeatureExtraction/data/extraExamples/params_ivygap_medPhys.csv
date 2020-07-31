@@ -5,7 +5,6 @@ Generic,Resampling,mm,0:10,1.0,Resamples all images and masks to this value of v
 Generic,ResamplingInterpolator_Image,mm,Nearest:Linear:BSpline,Linear,Type of interpolator to use if resampling is happening; ignored if m_resamplingResolution = 0
 Generic,ResamplingInterpolator_Mask,mm,Nearest:NearestLabel:Linear:BSpline,Nearest,Type of interpolator to use if resampling is happening; ignored if m_resamplingResolution = 0
 Generic,SliceComputation,Int,(0:1),0,Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only
-Generic,WholeImageBinning,Int,(0:1),1,Controls whether the entire image binning happens or just the defined region
 Intensity,,,,,
 Morphologic,Range,Int,(0:25),0,0:largest connected component in ROI; N: all connected components larger than (N*10^-6) of total image size are taken into account
 Morphologic,Feret,Int,(0:1),0,Whether or not to calculate the Feret Diameter (substantially increases computation time)

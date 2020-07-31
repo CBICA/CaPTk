@@ -193,6 +193,11 @@
     <filename>Diffusion_Derivatives.html</filename>
   </compound>
   <compound kind="page">
+    <name>Perfusion_Alignment</name>
+    <title>Miscellaneous: Perfusion Alignment</title>
+    <filename>Perfusion_Alignment.html</filename>
+  </compound>
+  <compound kind="page">
     <name>Perfusion_Derivatives</name>
     <title>Miscellaneous: Perfusion Derivatives</title>
     <filename>Perfusion_Derivatives.html</filename>
